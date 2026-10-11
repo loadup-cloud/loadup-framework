@@ -19,21 +19,23 @@
  */
 package io.github.loadup.modules.upms.app.strategy;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.upms.app.service.VerificationCodeService;
-import io.github.loadup.modules.upms.client.dto.AuthenticatedUser;
-import io.github.loadup.modules.upms.domain.entity.User;
+import io.github.loadup.modules.upms.client.dto.AuthenticatedUserDTO;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
+import io.github.loadup.modules.upms.domain.model.User;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 /**
- * 邮箱验证码登录策略
  *
  * @author LoadUp Framework
  * @since 1.0.0
  */
 @Component
 public class EmailLoginStrategy implements LoginStrategy {
+    private final java.time.Clock clock;
 
     private final UserGateway userGateway;
     private final VerificationCodeService verificationCodeService;
@@ -44,35 +46,35 @@ public class EmailLoginStrategy implements LoginStrategy {
     }
 
     @Override
-    public AuthenticatedUser authenticate(LoginCredentials credentials) {
-        // 1. 校验参数
+    public AuthenticatedUserDTO authenticate(LoginCredentials credentials) {
+
         if (StringUtils.isBlank(credentials.getEmail())) {
-            throw new RuntimeException("邮箱不能为空");
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Email is required");
         }
         if (StringUtils.isBlank(credentials.getEmailCode())) {
-            throw new RuntimeException("验证码不能为空");
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Verification code is required");
         }
 
-        // 2. 验证邮箱验证码
         boolean valid = verificationCodeService.verifyEmailCode(credentials.getEmail(), credentials.getEmailCode());
         if (!valid) {
-            throw new RuntimeException("验证码错误或已过期");
+            throw new CommonException(CommonResultCodeEnum.UNAUTHENTICATED, "Verification code is invalid or expired");
         }
 
-        // 3. 查询用户
-        User user = userGateway.findByEmail(credentials.getEmail()).orElseThrow(() -> new RuntimeException("邮箱未注册"));
+        User user = userGateway
+                .findByEmail(credentials.getEmail())
+                .orElseThrow(
+                        () -> new CommonException(CommonResultCodeEnum.UNAUTHENTICATED, "Invalid login credentials"));
 
-        // 4. 检查账号状态
         if (!user.isActive()) {
-            throw new RuntimeException("账号已被锁定或停用");
+            throw new CommonException(CommonResultCodeEnum.INVALID_STATE, "Account is locked or disabled");
         }
 
-        // 5. 更新登录信息
-        user.updateLastLogin(credentials.getIpAddress());
+        user.updateLastLogin(
+                credentials.getIpAddress(),
+                java.time.LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
         userGateway.update(user);
 
-        // 6. 构建认证结果
-        return AuthenticatedUser.builder()
+        return AuthenticatedUserDTO.builder()
                 .userId(user.getId())
                 .username(user.getUsername())
                 .nickname(user.getNickname())
@@ -83,7 +85,11 @@ public class EmailLoginStrategy implements LoginStrategy {
                 .build();
     }
 
-    public EmailLoginStrategy(UserGateway userGateway, VerificationCodeService verificationCodeService) {
+    public EmailLoginStrategy(
+            UserGateway userGateway,
+            VerificationCodeService verificationCodeService,
+            @org.springframework.beans.factory.annotation.Qualifier("upmsClock") java.time.Clock clock) {
+        this.clock = clock;
         this.userGateway = userGateway;
         this.verificationCodeService = verificationCodeService;
     }

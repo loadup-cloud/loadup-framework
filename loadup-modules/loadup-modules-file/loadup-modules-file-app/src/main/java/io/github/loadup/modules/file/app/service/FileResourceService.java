@@ -19,6 +19,8 @@
  */
 package io.github.loadup.modules.file.app.service;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.components.dfs.DfsService;
 import io.github.loadup.components.dfs.model.FileDownloadResponse;
@@ -31,20 +33,28 @@ import io.github.loadup.modules.file.domain.gateway.FileResourceGateway;
 import io.github.loadup.modules.file.domain.model.FileReference;
 import io.github.loadup.modules.file.domain.model.FileResource;
 import java.io.InputStream;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 
 /** File lifecycle and business references; DFS remains responsible for bytes. */
 public class FileResourceService implements io.github.loadup.modules.file.client.facade.FileResourceFacade {
+    private final Clock clock;
     private static final String DEFAULT_TENANT = "__default__";
     private final FileDTOConverter converter;
     private final FileResourceGateway repository;
     private final DfsService dfs;
 
-    public FileResourceService(FileResourceGateway repository, DfsService dfs, FileDTOConverter converter) {
+    public FileResourceService(
+            FileResourceGateway repository,
+            DfsService dfs,
+            FileDTOConverter converter,
+            @Qualifier("fileClock") Clock clock) {
+        this.clock = clock;
         this.converter = converter;
         this.repository = repository;
         this.dfs = dfs;
@@ -58,16 +68,16 @@ public class FileResourceService implements io.github.loadup.modules.file.client
         if (safeName.contains("/")
                 || safeName.contains("\\")
                 || safeName.chars().anyMatch(Character::isISOControl)) {
-            throw new IllegalArgumentException("filename contains invalid characters");
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "filename contains invalid characters");
         }
         if (content == null || size < 0)
-            throw new IllegalArgumentException("content and nonnegative size are required");
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "content and nonnegative size are required");
         String type = contentType == null || contentType.isBlank()
                 ? "application/octet-stream"
                 : required(contentType, "contentType", 255);
         FileMetadata stored = dfs.upload(
                 new FileUploadRequest(safeName, content, size, type, "resources/" + UUID.randomUUID(), Map.of()));
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC);
         FileResource file = new FileResource(
                 UUID.randomUUID().toString(),
                 tenant,
@@ -101,7 +111,7 @@ public class FileResourceService implements io.github.loadup.modules.file.client
         FileResource file = repository
                 .find(tenant(tenantId), required(id, "id", 64))
                 .filter(item -> "ACTIVE".equals(item.state()))
-                .orElseThrow(() -> new IllegalArgumentException("file not found"));
+                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "file not found"));
         authorize(file, actorId, admin);
         return file;
     }
@@ -112,7 +122,8 @@ public class FileResourceService implements io.github.loadup.modules.file.client
 
     public PageDTO<FileResourceDTO> list(
             String tenantId, String actorId, boolean admin, String ownerId, int page, int size) {
-        if (page < 1 || size < 1 || size > 100) throw new IllegalArgumentException("invalid page or size");
+        if (page < 1 || size < 1 || size > 100)
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "invalid page or size");
         String owner = admin && ownerId != null && !ownerId.isBlank()
                 ? required(ownerId, "ownerId", 64)
                 : required(actorId, "actorId", 64);
@@ -130,7 +141,7 @@ public class FileResourceService implements io.github.loadup.modules.file.client
                 file.id(),
                 key(referenceType, "referenceType"),
                 key(referenceId, "referenceId"),
-                LocalDateTime.now());
+                LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
         repository.addReference(reference);
         return converter.toDTO(reference);
     }
@@ -154,14 +165,15 @@ public class FileResourceService implements io.github.loadup.modules.file.client
         String tenant = tenant(tenantId);
         FileResource file = lockActive(tenant, id, actorId, admin);
         if (repository.countReferences(tenant, file.id()) > 0) {
-            throw new IllegalStateException("file is referenced by a business object");
+            throw new CommonException(CommonResultCodeEnum.INVALID_STATE, "file is referenced by a business object");
         }
         repository.markPending(tenant, file.id());
     }
 
     /** Idempotent cleanup entry point for operators or a scheduler. */
     public int cleanupPending(int limit) {
-        if (limit < 1 || limit > 1000) throw new IllegalArgumentException("limit must be between 1 and 1000");
+        if (limit < 1 || limit > 1000)
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "limit must be between 1 and 1000");
         int cleaned = 0;
         RuntimeException failure = null;
         for (FileResource file : repository.pending(limit)) {
@@ -184,7 +196,8 @@ public class FileResourceService implements io.github.loadup.modules.file.client
         FileResource file = repository
                 .find(tenant(tenantId), required(id, "id", 64))
                 .filter(item -> "PENDING_DELETE".equals(item.state()))
-                .orElseThrow(() -> new IllegalArgumentException("file is not pending deletion"));
+                .orElseThrow(
+                        () -> new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "file is not pending deletion"));
         dfs.delete(file.storageId());
         repository.markDeleted(file.tenantId(), file.id());
     }
@@ -193,13 +206,14 @@ public class FileResourceService implements io.github.loadup.modules.file.client
         FileResource file = repository
                 .lock(tenant, required(id, "id", 64))
                 .filter(item -> "ACTIVE".equals(item.state()))
-                .orElseThrow(() -> new IllegalArgumentException("file not found"));
+                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "file not found"));
         authorize(file, actorId, admin);
         return file;
     }
 
     private static void authorize(FileResource file, String actorId, boolean admin) {
-        if (!admin && !file.ownerId().equals(actorId)) throw new IllegalArgumentException("file not found");
+        if (!admin && !file.ownerId().equals(actorId))
+            throw new CommonException(CommonResultCodeEnum.NOT_FOUND, "file not found");
     }
 
     private static String tenant(String tenantId) {
@@ -209,13 +223,14 @@ public class FileResourceService implements io.github.loadup.modules.file.client
     private static String key(String value, String name) {
         String result = required(value, name, 128);
         if (!result.matches("[A-Za-z0-9_.:-]+"))
-            throw new IllegalArgumentException(name + " contains invalid characters");
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, name + " contains invalid characters");
         return result;
     }
 
     private static String required(String value, String name, int max) {
         if (value == null || value.isBlank() || value.trim().length() > max) {
-            throw new IllegalArgumentException(name + " must contain 1 to " + max + " characters");
+            throw new CommonException(
+                    CommonResultCodeEnum.PARAM_ILLEGAL, name + " must contain 1 to " + max + " characters");
         }
         return value.trim();
     }

@@ -38,6 +38,12 @@ import org.springframework.context.annotation.*;
         havingValue = "true",
         matchIfMissing = true)
 public class NotificationPersistenceAutoConfiguration {
+    @Bean("notificationStorageClock")
+    @ConditionalOnMissingBean(name = "notificationStorageClock")
+    public java.time.Clock storageClock() {
+        return java.time.Clock.systemUTC();
+    }
+
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnMissingBean(InboxGateway.class)
     @MapperScan(basePackageClasses = InboxMessageDOMapper.class)
@@ -45,8 +51,11 @@ public class NotificationPersistenceAutoConfiguration {
     static class DefaultPersistence {
         @Bean
         public InboxGateway notificationGateway(
-                InboxMessageDOMapper inboxMessageMapper, NotificationStorageConverter converter) {
-            return new InboxGatewayImpl(inboxMessageMapper, converter);
+                InboxMessageDOMapper inboxMessageMapper,
+                NotificationStorageConverter converter,
+                @org.springframework.beans.factory.annotation.Qualifier("notificationStorageClock")
+                        java.time.Clock clock) {
+            return new InboxGatewayImpl(inboxMessageMapper, converter, clock);
         }
     }
 }

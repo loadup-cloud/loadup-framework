@@ -21,14 +21,14 @@ package io.github.loadup.modules.upms.client.facade;
 
 import io.github.loadup.modules.upms.client.command.UserLoginCommand;
 import io.github.loadup.modules.upms.client.command.UserRegisterCommand;
-import io.github.loadup.modules.upms.client.dto.AuthenticatedUser;
+import io.github.loadup.modules.upms.client.dto.AuthenticatedUserDTO;
 import io.github.loadup.modules.upms.client.dto.UserDetailDTO;
 
 /** Public business facade. */
 public interface AuthenticationFacade {
 
     /** Public business facade. */
-    AuthenticatedUser login(UserLoginCommand command);
+    AuthenticatedUserDTO login(UserLoginCommand command);
 
     UserDetailDTO register(UserRegisterCommand command);
 }

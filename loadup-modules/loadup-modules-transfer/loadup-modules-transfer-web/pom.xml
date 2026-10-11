@@ -9,9 +9,7 @@
     </parent>
     <artifactId>loadup-modules-transfer-web</artifactId>
     <name>LoadUp Import Export Tasks Web Adapter</name>
-    <properties>
-        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
-    </properties>
+    <properties/>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

@@ -1,6 +1,6 @@
-/*-
+/*
  * #%L
- * Loadup Common DTO
+ * Loadup Modules UPMS Client Layer
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

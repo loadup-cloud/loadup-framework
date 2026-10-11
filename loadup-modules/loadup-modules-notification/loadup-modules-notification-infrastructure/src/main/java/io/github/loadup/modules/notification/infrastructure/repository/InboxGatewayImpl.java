@@ -33,11 +33,14 @@ import java.util.*;
 import org.springframework.dao.DuplicateKeyException;
 
 public class InboxGatewayImpl implements InboxGateway {
+    private final java.time.Clock clock;
 
     private final InboxMessageDOMapper mapper;
     private final NotificationStorageConverter converter;
 
-    public InboxGatewayImpl(InboxMessageDOMapper mapper, NotificationStorageConverter converter) {
+    public InboxGatewayImpl(
+            InboxMessageDOMapper mapper, NotificationStorageConverter converter, java.time.Clock clock) {
+        this.clock = clock;
         this.mapper = mapper;
         this.converter = converter;
     }
@@ -88,7 +91,7 @@ public class InboxGatewayImpl implements InboxGateway {
     @Override
     public int markRead(String tenant, String recipient, String id) {
         var patch = UpdateEntity.of(InboxMessageDO.class);
-        patch.setReadAt(LocalDateTime.now(java.time.ZoneOffset.UTC));
+        patch.setReadAt(LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
         int changed = mapper.updateByQuery(
                 patch,
                 active(tenant, recipient).and(INBOX_MESSAGE_DO.ID.eq(id)).and(INBOX_MESSAGE_DO.READ_AT.isNull()));
@@ -100,14 +103,14 @@ public class InboxGatewayImpl implements InboxGateway {
     @Override
     public int markAllRead(String tenant, String recipient) {
         var patch = UpdateEntity.of(InboxMessageDO.class);
-        patch.setReadAt(LocalDateTime.now(java.time.ZoneOffset.UTC));
+        patch.setReadAt(LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
         return mapper.updateByQuery(patch, active(tenant, recipient).and(INBOX_MESSAGE_DO.READ_AT.isNull()));
     }
 
     @Override
     public int archive(String tenant, String recipient, String id) {
         var patch = UpdateEntity.of(InboxMessageDO.class);
-        patch.setArchivedAt(LocalDateTime.now(java.time.ZoneOffset.UTC));
+        patch.setArchivedAt(LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
         int changed = mapper.updateByQuery(patch, active(tenant, recipient).and(INBOX_MESSAGE_DO.ID.eq(id)));
         return changed > 0
                 ? changed

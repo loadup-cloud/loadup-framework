@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * Loadup Common DTO
  * %%
@@ -26,17 +26,17 @@ import io.github.loadup.commons.json.ToStringAsJson;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Collection;
 
-@Schema(description = "成功响应体")
+@Schema(description = "Successful response envelope")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"result", "data", "pageInfo"})
 public record SuccessResponse<T>(
-        @Schema(description = "结果元数据") @JsonProperty("result")
+        @Schema(description = "Result metadata") @JsonProperty("result")
         Result result,
 
-        @Schema(description = "业务数据") @JsonProperty("data") @JsonInclude(JsonInclude.Include.ALWAYS)
+        @Schema(description = "Business data") @JsonProperty("data") @JsonInclude(JsonInclude.Include.ALWAYS)
         T data,
 
-        @Schema(description = "分页信息") @JsonProperty("pageInfo")
+        @Schema(description = "Pagination metadata") @JsonProperty("pageInfo")
         PageInfo pageInfo)
         implements IResponse<T> {
 
@@ -45,25 +45,14 @@ public record SuccessResponse<T>(
         return result;
     }
 
-    // --- 静态工厂方法 ---
-
-    /**
-     * 单体数据成功
-     */
     public static <T> SuccessResponse<T> of(T data) {
         return new SuccessResponse<>(Result.buildSuccess(), data, null);
     }
 
-    /**
-     * 无数据成功 (Void)
-     */
     public static SuccessResponse<Void> success() {
         return new SuccessResponse<>(Result.buildSuccess(), null, null);
     }
 
-    /**
-     * 分页数据成功
-     */
     public static <T> SuccessResponse<Collection<T>> ofPage(Collection<T> data, Long total, Long size, Long index) {
         return new SuccessResponse<>(Result.buildSuccess(), data, new PageInfo(total, size, index));
     }

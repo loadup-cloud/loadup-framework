@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * Loadup Common DTO
  * %%
@@ -32,6 +32,9 @@ public enum CommonResultCodeEnum implements ResultCode {
     UNAUTHENTICATED(ResultStatusEnum.FAIL, "Authentication required or invalid token."),
     INVALID_CLIENT(ResultStatusEnum.FAIL, "Invalid client."),
     NOT_FOUND(ResultStatusEnum.FAIL, "Key is not found."),
+    CONFLICT(ResultStatusEnum.FAIL, "Resource conflict."),
+    INVALID_STATE(ResultStatusEnum.FAIL, "Operation not allowed in the current state."),
+    RATE_LIMITED(ResultStatusEnum.FAIL, "Request rate limit exceeded."),
     SYS_ERROR(ResultStatusEnum.FAIL, "System error."),
     ;
     private final String status;

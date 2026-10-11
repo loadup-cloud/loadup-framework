@@ -36,14 +36,14 @@ public class PermissionCreateCommand {
     @Schema(description = "Parent id")
     private String parentId;
 
-    @NotBlank(message = "权限名称不能为空")
-    @Size(max = 50, message = "权限名称长度不能超过50")
+    @NotBlank()
+    @Size(max = 50)
     @Schema(description = "Permission name")
     private String permissionName;
 
-    @NotBlank(message = "权限编码不能为空")
-    @Size(max = 100, message = "权限编码长度不能超过100")
-    @Pattern(regexp = "^[a-z:]+$", message = "权限编码只能包含小写字母和冒号")
+    @NotBlank()
+    @Size(max = 100)
+    @Pattern(regexp = "^[a-z:]+$")
     @Schema(description = "Permission code")
     private String permissionCode;
 

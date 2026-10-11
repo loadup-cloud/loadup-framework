@@ -12,9 +12,7 @@
     <name>LoadUp Components Signature</name>
     <description>KMS-backed request signatures, replay protection and JCA cryptographic primitives</description>
 
-    <properties>
-        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
-    </properties>
+    <properties/>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

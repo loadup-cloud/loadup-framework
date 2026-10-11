@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * Testify Assert Engine
  * %%

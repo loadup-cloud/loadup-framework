@@ -1,17 +1,35 @@
+/*
+ * #%L
+ * Loadup Modules UPMS Infrastructure Layer
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package io.github.loadup.modules.upms.infrastructure.repository;
 
 import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.PERMISSION_DO;
 import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.ROLE_PERMISSION_DO;
 
 import com.mybatisflex.core.query.QueryWrapper;
-import io.github.loadup.modules.upms.domain.entity.Permission;
 import io.github.loadup.modules.upms.domain.gateway.PermissionGateway;
+import io.github.loadup.modules.upms.domain.model.Permission;
 import io.github.loadup.modules.upms.infrastructure.converter.PermissionConverter;
 import io.github.loadup.modules.upms.infrastructure.dataobject.PermissionDO;
 import io.github.loadup.modules.upms.infrastructure.dataobject.RolePermissionDO;
 import io.github.loadup.modules.upms.infrastructure.mapper.PermissionDOMapper;
 import io.github.loadup.modules.upms.infrastructure.mapper.RolePermissionDOMapper;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -36,8 +54,7 @@ public class PermissionGatewayImpl implements PermissionGateway {
         if (permission.getId() == null) permission.setId(UUID.randomUUID().toString());
         PermissionDO permissionDO = permissionConverter.toDataObject(permission);
         if (permissionDO.getId() == null) permissionDO.setId(UUID.randomUUID().toString());
-        if (permissionDO.getCreatedAt() == null) permissionDO.setCreatedAt(LocalDateTime.now());
-        if (permissionDO.getUpdatedAt() == null) permissionDO.setUpdatedAt(permissionDO.getCreatedAt());
+
         permissionDOMapper.insert(permissionDO);
         permission = permissionConverter.toEntity(permissionDO);
         return permission;

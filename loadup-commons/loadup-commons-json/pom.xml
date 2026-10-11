@@ -9,9 +9,7 @@
     </parent>
     <artifactId>loadup-commons-json</artifactId>
     <name>LoadUp Common JSON</name>
-    <properties>
-        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
-    </properties>
+    <properties/>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Contract
+ * LoadUp Contract App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Import;
 @AutoConfiguration(
         afterName = {
             "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration",
-            "io.github.loadup.components.database.autoconfig.MyBatisFlexAutoConfiguration"
+            "io.github.loadup.components.database.autoconfigure.MyBatisFlexAutoConfiguration"
         })
 @ConditionalOnSingleCandidate(DataSource.class)
 @ConditionalOnProperty(
@@ -61,4 +61,10 @@ import org.springframework.context.annotation.Import;
     CatalogGatewayImpl.class,
     MerchantContractGatewayImpl.class
 })
-public class ContractAutoConfiguration {}
+public class ContractAutoConfiguration {
+    @org.springframework.context.annotation.Bean
+    @ConditionalOnMissingBean(name = "contractClock")
+    public java.time.Clock contractClock() {
+        return java.time.Clock.systemUTC();
+    }
+}

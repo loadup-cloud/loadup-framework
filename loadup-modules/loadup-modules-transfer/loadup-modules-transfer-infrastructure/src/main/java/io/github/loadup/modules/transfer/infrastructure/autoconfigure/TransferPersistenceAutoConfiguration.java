@@ -38,6 +38,12 @@ import org.springframework.context.annotation.*;
         havingValue = "true",
         matchIfMissing = true)
 public class TransferPersistenceAutoConfiguration {
+    @Bean("transferStorageClock")
+    @ConditionalOnMissingBean(name = "transferStorageClock")
+    public java.time.Clock storageClock() {
+        return java.time.Clock.systemUTC();
+    }
+
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnMissingBean(TransferGateway.class)
     @MapperScan(basePackageClasses = TransferTaskDOMapper.class)
@@ -47,8 +53,9 @@ public class TransferPersistenceAutoConfiguration {
         public TransferGateway transferGateway(
                 TransferTaskDOMapper transferTaskMapper,
                 TransferTaskOptionDOMapper transferTaskOptionMapper,
-                TransferStorageConverter converter) {
-            return new TransferGatewayImpl(transferTaskMapper, transferTaskOptionMapper, converter);
+                TransferStorageConverter converter,
+                @org.springframework.beans.factory.annotation.Qualifier("transferStorageClock") java.time.Clock clock) {
+            return new TransferGatewayImpl(transferTaskMapper, transferTaskOptionMapper, converter, clock);
         }
     }
 }

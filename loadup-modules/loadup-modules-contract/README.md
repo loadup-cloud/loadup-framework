@@ -143,3 +143,7 @@ JSON Controller 显式返回 SuccessResponse，分页保留已有分页报文契
 ## 入参与分页约定
 
 写操作入参采用业务动作 Command，查询入参采用 Query，分页查询使用 PageQuery 后缀；纯 ID 查询复用公共 IdQuery。Facade 分页统一返回 `PageDTO<T>`，HTTP 分页统一返回 `PageResponse<T>`：`result` 表示结果，`data` 为当前页数组，顶层 `pageInfo` 提供 totalCount/pageIndex/pageSize。不再提供模块专用分页 DTO。完整规则与示例见 [commons-dto](../../loadup-commons/loadup-commons-dto/README.md)。
+
+## 公开接口与时间
+
+Web Controller 依赖 client.facade 中的 CatalogFacade、MerchantContractFacade、ContractResolveFacade。服务编排与 MapStruct 转换由 app 负责；数据库 Gateway 使用生成的 Mapper 与 Tables。业务 Clock 以 `contractClock` 具名注入，避免多个模块同时装配产生歧义。

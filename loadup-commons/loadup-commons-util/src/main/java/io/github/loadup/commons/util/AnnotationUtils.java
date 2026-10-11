@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * Loadup Common Utils
  * %%
@@ -27,15 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 注解工具类
  *
- * <p>提供注解查找、处理和扫描功能：
  *
  * <ul>
- *   <li>查找带指定注解的方法
- *   <li>查找带指定注解的字段
- *   <li>检查类、方法、字段是否有指定注解
- *   <li>获取注解实例
  * </ul>
  *
  * @author loadup_cloud
@@ -43,15 +37,6 @@ import java.util.List;
  */
 public class AnnotationUtils {
 
-    /**
-     * 查找类中所有带指定注解的方法
-     *
-     * @param clazz           目标类
-     * @param annotationClass 注解类型
-     * @param <T>             注解类型
-     * @return 带指定注解的方法列表
-     * @throws IllegalArgumentException 如果参数为null
-     */
     public static <T extends Annotation> List<Method> findMethods(Class<?> clazz, Class<T> annotationClass) {
         if (clazz == null || annotationClass == null) {
             throw new IllegalArgumentException("Class and annotation class cannot be null");
@@ -73,15 +58,6 @@ public class AnnotationUtils {
         return result;
     }
 
-    /**
-     * 查找类中所有带指定注解的字段
-     *
-     * @param clazz           目标类
-     * @param annotationClass 注解类型
-     * @param <T>             注解类型
-     * @return 带指定注解的字段列表
-     * @throws IllegalArgumentException 如果参数为null
-     */
     public static <T extends Annotation> List<Field> findFields(Class<?> clazz, Class<T> annotationClass) {
         if (clazz == null || annotationClass == null) {
             throw new IllegalArgumentException("Class and annotation class cannot be null");
@@ -103,14 +79,6 @@ public class AnnotationUtils {
         return result;
     }
 
-    /**
-     * 检查类是否有指定注解
-     *
-     * @param clazz           目标类
-     * @param annotationClass 注解类型
-     * @param <T>             注解类型
-     * @return true-有指定注解，false-没有
-     */
     public static <T extends Annotation> boolean hasAnnotation(Class<?> clazz, Class<T> annotationClass) {
         if (clazz == null || annotationClass == null) {
             return false;
@@ -118,14 +86,6 @@ public class AnnotationUtils {
         return clazz.getAnnotation(annotationClass) != null;
     }
 
-    /**
-     * 检查方法是否有指定注解
-     *
-     * @param method          目标方法
-     * @param annotationClass 注解类型
-     * @param <T>             注解类型
-     * @return true-有指定注解，false-没有
-     */
     public static <T extends Annotation> boolean hasAnnotation(Method method, Class<T> annotationClass) {
         if (method == null || annotationClass == null) {
             return false;
@@ -133,14 +93,6 @@ public class AnnotationUtils {
         return method.getAnnotation(annotationClass) != null;
     }
 
-    /**
-     * 检查字段是否有指定注解
-     *
-     * @param field           目标字段
-     * @param annotationClass 注解类型
-     * @param <T>             注解类型
-     * @return true-有指定注解，false-没有
-     */
     public static <T extends Annotation> boolean hasAnnotation(Field field, Class<T> annotationClass) {
         if (field == null || annotationClass == null) {
             return false;
@@ -148,14 +100,6 @@ public class AnnotationUtils {
         return field.getAnnotation(annotationClass) != null;
     }
 
-    /**
-     * 获取类上的注解实例
-     *
-     * @param clazz           目标类
-     * @param annotationClass 注解类型
-     * @param <T>             注解类型
-     * @return 注解实例，不存在返回null
-     */
     public static <T extends Annotation> T getAnnotation(Class<?> clazz, Class<T> annotationClass) {
         if (clazz == null || annotationClass == null) {
             return null;
@@ -163,14 +107,6 @@ public class AnnotationUtils {
         return clazz.getAnnotation(annotationClass);
     }
 
-    /**
-     * 获取方法上的注解实例
-     *
-     * @param method          目标方法
-     * @param annotationClass 注解类型
-     * @param <T>             注解类型
-     * @return 注解实例，不存在返回null
-     */
     public static <T extends Annotation> T getAnnotation(Method method, Class<T> annotationClass) {
         if (method == null || annotationClass == null) {
             return null;
@@ -178,14 +114,6 @@ public class AnnotationUtils {
         return method.getAnnotation(annotationClass);
     }
 
-    /**
-     * 获取字段上的注解实例
-     *
-     * @param field           目标字段
-     * @param annotationClass 注解类型
-     * @param <T>             注解类型
-     * @return 注解实例，不存在返回null
-     */
     public static <T extends Annotation> T getAnnotation(Field field, Class<T> annotationClass) {
         if (field == null || annotationClass == null) {
             return null;
@@ -193,12 +121,6 @@ public class AnnotationUtils {
         return field.getAnnotation(annotationClass);
     }
 
-    /**
-     * 获取类上的所有注解
-     *
-     * @param clazz 目标类
-     * @return 注解数组
-     */
     public static Annotation[] getAnnotations(Class<?> clazz) {
         if (clazz == null) {
             return new Annotation[0];

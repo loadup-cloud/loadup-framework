@@ -44,7 +44,7 @@ import org.springframework.context.annotation.Import;
         afterName = {
             "io.github.loadup.modules.transfer.infrastructure.autoconfigure.TransferPersistenceAutoConfiguration",
             "io.github.loadup.modules.file.app.autoconfigure.FileResourceAutoConfiguration",
-            "io.github.loadup.retrytask.jobrunr.autoconfig.JobRunrRetryTaskAutoConfiguration"
+            "io.github.loadup.retrytask.jobrunr.autoconfigure.JobRunrRetryTaskAutoConfiguration"
         })
 @ConditionalOnSingleCandidate(DataSource.class)
 @ConditionalOnBean({TransferGateway.class, FileResourceFacade.class, RetryTaskFacade.class})
@@ -64,7 +64,14 @@ public class TransferAutoConfiguration {
             RetryTaskFacade retryTasks,
             List<TransferHandler> handlers,
             TransferTaskProperties properties,
-            TransferDTOConverter converter) {
-        return new TransferTaskService(repository, files, retryTasks, handlers, properties, converter);
+            TransferDTOConverter converter,
+            @org.springframework.beans.factory.annotation.Qualifier("transferClock") java.time.Clock clock) {
+        return new TransferTaskService(repository, files, retryTasks, handlers, properties, converter, clock);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "transferClock")
+    public java.time.Clock transferClock() {
+        return java.time.Clock.systemUTC();
     }
 }

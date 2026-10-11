@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * Loadup Common DTO
  * %%
@@ -59,14 +59,8 @@ public enum OSTypeEnum implements IEnum {
     LINUX("LINUX", "Linux"),
     ;
 
-    /**
-     * 终端类型代码
-     */
     private final String code;
 
-    /**
-     * 描述
-     */
     private final String description;
 
     public static OSTypeEnum getByCode(String code) {

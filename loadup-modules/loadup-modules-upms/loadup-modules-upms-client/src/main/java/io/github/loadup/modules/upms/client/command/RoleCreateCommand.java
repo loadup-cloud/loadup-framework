@@ -34,14 +34,14 @@ import java.util.List;
  */
 public class RoleCreateCommand {
 
-    @NotBlank(message = "角色名称不能为空")
-    @Size(max = 50, message = "角色名称长度不能超过50")
+    @NotBlank()
+    @Size(max = 50)
     @Schema(description = "Role name")
     private String roleName;
 
-    @NotBlank(message = "角色编码不能为空")
-    @Size(max = 50, message = "角色编码长度不能超过50")
-    @Pattern(regexp = "^[A-Z_]+$", message = "角色编码只能包含大写字母和下划线")
+    @NotBlank()
+    @Size(max = 50)
+    @Pattern(regexp = "^[A-Z_]+$")
     @Schema(description = "Role code")
     private String roleCode;
 

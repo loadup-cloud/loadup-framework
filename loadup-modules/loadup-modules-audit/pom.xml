@@ -18,7 +18,5 @@
         <module>loadup-modules-audit-web</module>
         <module>loadup-modules-audit-test</module>
     </modules>
-    <properties>
-        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
-    </properties>
+    <properties/>
 </project>

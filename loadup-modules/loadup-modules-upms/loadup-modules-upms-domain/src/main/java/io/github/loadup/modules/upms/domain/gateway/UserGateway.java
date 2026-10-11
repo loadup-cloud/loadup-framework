@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * Loadup Modules UPMS Domain Layer
  * %%
@@ -21,7 +21,7 @@ package io.github.loadup.modules.upms.domain.gateway;
 
 import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.dto.PageQuery;
-import io.github.loadup.modules.upms.domain.entity.User;
+import io.github.loadup.modules.upms.domain.model.User;
 import java.util.List;
 import java.util.Optional;
 
@@ -76,12 +76,12 @@ public interface UserGateway {
     /**
      * Find all users (with pagination)
      */
-    PageResult<User> findAll(PageQuery query);
+    PageResult<User> findAll(PageQuery query, String sortBy, String sortOrder);
 
     /**
      * Search users by keyword
      */
-    PageResult<User> search(String keyword, PageQuery query);
+    PageResult<User> search(String keyword, PageQuery query, String sortBy, String sortOrder);
 
     /**
      * Check if username exists

@@ -1,1 +1,1 @@
-io.github.loadup.components.captcha.nanocaptcha.autoconfig.NanocaptchaAutoConfiguration
+io.github.loadup.components.captcha.nanocaptcha.autoconfigure.NanocaptchaAutoConfiguration

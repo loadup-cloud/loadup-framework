@@ -1,0 +1,43 @@
+/*
+ * #%L
+ * Loadup Dfs Components Api
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+package io.github.loadup.components.dfs.autoconfigure;
+
+import io.github.loadup.components.dfs.DefaultDfsService;
+import io.github.loadup.components.dfs.DfsProperties;
+import io.github.loadup.components.dfs.DfsProvider;
+import io.github.loadup.components.dfs.DfsService;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+
+/** Creates the facade only when exactly one DFS binder is active. */
+@AutoConfiguration
+@ConditionalOnSingleCandidate(DfsProvider.class)
+@EnableConfigurationProperties(DfsProperties.class)
+public class DfsAutoConfiguration {
+
+    @Bean
+    @ConditionalOnMissingBean
+    public DfsService dfsService(DfsProvider provider) {
+        return new DefaultDfsService(provider);
+    }
+}

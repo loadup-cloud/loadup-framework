@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * Loadup Modules UPMS Domain Layer
  * %%
@@ -19,13 +19,13 @@
  */
 package io.github.loadup.modules.upms.domain.service;
 
-import io.github.loadup.modules.upms.domain.entity.Department;
-import io.github.loadup.modules.upms.domain.entity.Role;
-import io.github.loadup.modules.upms.domain.entity.User;
 import io.github.loadup.modules.upms.domain.gateway.DepartmentGateway;
 import io.github.loadup.modules.upms.domain.gateway.PermissionGateway;
 import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
+import io.github.loadup.modules.upms.domain.model.Department;
+import io.github.loadup.modules.upms.domain.model.Role;
+import io.github.loadup.modules.upms.domain.model.User;
 import io.github.loadup.modules.upms.domain.valueobject.AccessDecision;
 import io.github.loadup.modules.upms.domain.valueobject.DataScope;
 import io.github.loadup.modules.upms.domain.valueobject.ResourceAttributes;

@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * Testify Assert Engine
  * %%
@@ -36,7 +36,6 @@ public class SimpleMatcher {
             return MatchResult.fail(actual, expected, "One of the values is null");
         }
 
-        // 核心：处理数字和字符串的等值比对（如 Long 123 vs Integer 123）
         if (StringUtils.isNumeric(actual.toString()) && StringUtils.isNumeric(expected.toString())) {
             return new BigDecimal(actual.toString()).compareTo(new BigDecimal(expected.toString())) == 0
                     ? MatchResult.pass()

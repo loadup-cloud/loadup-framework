@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Contract
+ * LoadUp Contract Infrastructure
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -29,8 +29,6 @@ import io.github.loadup.modules.contract.domain.model.*;
 import io.github.loadup.modules.contract.infrastructure.converter.ContractStorageConverter;
 import io.github.loadup.modules.contract.infrastructure.dataobject.*;
 import io.github.loadup.modules.contract.infrastructure.mapper.*;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
@@ -106,7 +104,7 @@ public class MerchantContractGatewayImpl implements MerchantContractGateway {
         MerchantContractDO patch = new MerchantContractDO();
         patch.setStatus(status.name());
         patch.setGeneration(Math.addExact(generation, 1));
-        patch.setUpdatedAt(LocalDateTime.now(ZoneOffset.UTC));
+
         int changed = contracts.updateByQuery(
                 patch,
                 true,

@@ -19,14 +19,15 @@
  */
 package io.github.loadup.modules.upms.app.service;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.upms.app.converter.UpmsDTOConverter;
 import io.github.loadup.modules.upms.client.command.PermissionCreateCommand;
 import io.github.loadup.modules.upms.client.command.PermissionUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.PermissionDTO;
-import io.github.loadup.modules.upms.domain.entity.Permission;
 import io.github.loadup.modules.upms.domain.gateway.PermissionGateway;
+import io.github.loadup.modules.upms.domain.model.Permission;
 import io.github.loadup.modules.upms.domain.service.UserPermissionService;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -51,7 +52,7 @@ public class PermissionService implements io.github.loadup.modules.upms.client.f
     @Transactional
     public PermissionDTO createPermission(PermissionCreateCommand command) {
         if (permissionGateway.existsByPermissionCode(command.getPermissionCode())) {
-            throw new RuntimeException("权限编码已存在");
+            throw new CommonException(CommonResultCodeEnum.CONFLICT, "Permission code already exists");
         }
 
         validateParent(null, command.getParentId());
@@ -71,7 +72,6 @@ public class PermissionService implements io.github.loadup.modules.upms.client.f
         permission.setDeleted(false);
         permission.setRemark(command.getRemark());
         permission.setCreatedBy(command.getCreatedBy());
-        permission.setCreatedAt(LocalDateTime.now());
 
         permission = permissionGateway.save(permission);
         return convertToDTO(permission);
@@ -79,8 +79,9 @@ public class PermissionService implements io.github.loadup.modules.upms.client.f
 
     @Transactional
     public PermissionDTO updatePermission(PermissionUpdateCommand command) {
-        Permission permission =
-                permissionGateway.findById(command.getId()).orElseThrow(() -> new RuntimeException("权限不存在"));
+        Permission permission = permissionGateway
+                .findById(command.getId())
+                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Permission not found"));
 
         if (command.getParentId() != null) validateParent(command.getId(), command.getParentId());
 
@@ -119,7 +120,6 @@ public class PermissionService implements io.github.loadup.modules.upms.client.f
         }
 
         permission.setUpdatedBy(command.getUpdatedBy());
-        permission.setUpdatedAt(LocalDateTime.now());
 
         permission = permissionGateway.update(permission);
         return convertToDTO(permission);
@@ -127,18 +127,22 @@ public class PermissionService implements io.github.loadup.modules.upms.client.f
 
     @Transactional
     public void deletePermission(String id) {
-        permissionGateway.findById(id).orElseThrow(() -> new RuntimeException("权限不存在"));
+        permissionGateway
+                .findById(id)
+                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Permission not found"));
 
         List<Permission> children = permissionGateway.findByParentId(id);
         if (!children.isEmpty()) {
-            throw new RuntimeException("该权限下存在子权限，无法删除");
+            throw new CommonException(CommonResultCodeEnum.INVALID_STATE, "Permission contains child permissions");
         }
 
         permissionGateway.deleteById(id);
     }
 
     public PermissionDTO getPermissionById(String id) {
-        Permission permission = permissionGateway.findById(id).orElseThrow(() -> new RuntimeException("权限不存在"));
+        Permission permission = permissionGateway
+                .findById(id)
+                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Permission not found"));
         return convertToDTO(permission);
     }
 
@@ -200,13 +204,14 @@ public class PermissionService implements io.github.loadup.modules.upms.client.f
         String current = parentId;
         while (current != null && !"0".equals(current)) {
             if (current.equals(permissionId) || !visited.add(current)) {
-                throw new IllegalArgumentException("Permission hierarchy contains a cycle");
+                throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Permission hierarchy contains a cycle");
             }
             String parentPermissionId = current;
             Permission parent = permissionGateway
                     .findById(parentPermissionId)
-                    .orElseThrow(() ->
-                            new IllegalArgumentException("Parent permission does not exist: " + parentPermissionId));
+                    .orElseThrow(() -> new CommonException(
+                            CommonResultCodeEnum.PARAM_ILLEGAL,
+                            "Parent permission does not exist: " + parentPermissionId));
             current = parent.getParentId();
         }
     }

@@ -19,15 +19,16 @@
  */
 package io.github.loadup.modules.upms.app.service;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.upms.app.converter.UpmsDTOConverter;
 import io.github.loadup.modules.upms.client.command.DepartmentCreateCommand;
 import io.github.loadup.modules.upms.client.command.DepartmentUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.DepartmentDTO;
-import io.github.loadup.modules.upms.domain.entity.Department;
-import io.github.loadup.modules.upms.domain.entity.User;
 import io.github.loadup.modules.upms.domain.gateway.DepartmentGateway;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
-import java.time.LocalDateTime;
+import io.github.loadup.modules.upms.domain.model.Department;
+import io.github.loadup.modules.upms.domain.model.User;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -53,20 +54,25 @@ public class DepartmentService implements io.github.loadup.modules.upms.client.f
     public DepartmentDTO createDepartment(DepartmentCreateCommand command) {
         // Validate department code uniqueness
         if (departmentGateway.existsByDeptCode(command.getDeptCode())) {
-            throw new RuntimeException("部门编码已存在");
+            throw new CommonException(CommonResultCodeEnum.CONFLICT, "Department code already exists");
         }
 
         // Validate parent department exists
         Integer deptLevel = 1;
         if (command.getParentId() != null && !"0".equals(command.getParentId())) {
-            Department parentDept =
-                    departmentGateway.findById(command.getParentId()).orElseThrow(() -> new RuntimeException("父部门不存在"));
+            Department parentDept = departmentGateway
+                    .findById(command.getParentId())
+                    .orElseThrow(
+                            () -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Parent department not found"));
             deptLevel = (parentDept.getDeptLevel() != null ? parentDept.getDeptLevel() : 0) + 1;
         }
 
         // Validate leader user exists
         if (command.getLeaderUserId() != null) {
-            userGateway.findById(command.getLeaderUserId()).orElseThrow(() -> new RuntimeException("部门负责人不存在"));
+            userGateway
+                    .findById(command.getLeaderUserId())
+                    .orElseThrow(
+                            () -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Department leader not found"));
         }
         Department department = new Department();
         // Create department entity
@@ -82,7 +88,6 @@ public class DepartmentService implements io.github.loadup.modules.upms.client.f
         department.setDeleted(false);
         department.setRemark(command.getRemark());
         department.setCreatedBy(command.getCreatedBy());
-        department.setCreatedAt(LocalDateTime.now());
 
         department = departmentGateway.save(department);
 
@@ -94,23 +99,29 @@ public class DepartmentService implements io.github.loadup.modules.upms.client.f
      */
     @Transactional
     public DepartmentDTO updateDepartment(DepartmentUpdateCommand command) {
-        Department department =
-                departmentGateway.findById(command.getId()).orElseThrow(() -> new RuntimeException("部门不存在"));
+        Department department = departmentGateway
+                .findById(command.getId())
+                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Department not found"));
 
         // Validate parent department (prevent circular reference)
         if (command.getParentId() != null && !"0".equals(command.getParentId())) {
             if (command.getParentId().equals(command.getId())) {
-                throw new RuntimeException("父部门不能是自己");
+                throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Department cannot be its own parent");
             }
-            Department parentDept =
-                    departmentGateway.findById(command.getParentId()).orElseThrow(() -> new RuntimeException("父部门不存在"));
+            Department parentDept = departmentGateway
+                    .findById(command.getParentId())
+                    .orElseThrow(
+                            () -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Parent department not found"));
 
             department.setDeptLevel((parentDept.getDeptLevel() != null ? parentDept.getDeptLevel() : 0) + 1);
         }
 
         // Validate leader user exists
         if (command.getLeaderUserId() != null) {
-            userGateway.findById(command.getLeaderUserId()).orElseThrow(() -> new RuntimeException("部门负责人不存在"));
+            userGateway
+                    .findById(command.getLeaderUserId())
+                    .orElseThrow(
+                            () -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Department leader not found"));
         }
 
         // Update department fields
@@ -140,7 +151,6 @@ public class DepartmentService implements io.github.loadup.modules.upms.client.f
         }
 
         department.setUpdatedBy(command.getUpdatedBy());
-        department.setUpdatedAt(LocalDateTime.now());
 
         department = departmentGateway.update(department);
 
@@ -152,16 +162,18 @@ public class DepartmentService implements io.github.loadup.modules.upms.client.f
      */
     @Transactional
     public void deleteDepartment(String id) {
-        departmentGateway.findById(id).orElseThrow(() -> new RuntimeException("部门不存在"));
+        departmentGateway
+                .findById(id)
+                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Department not found"));
 
         // Check if department has children
         if (departmentGateway.hasChildren(id)) {
-            throw new RuntimeException("该部门下存在子部门，无法删除");
+            throw new CommonException(CommonResultCodeEnum.INVALID_STATE, "Department contains child departments");
         }
 
         // Check if department has users
         if (departmentGateway.hasUsers(id)) {
-            throw new RuntimeException("该部门下存在用户，无法删除");
+            throw new CommonException(CommonResultCodeEnum.INVALID_STATE, "Department contains users");
         }
 
         departmentGateway.deleteById(id);
@@ -171,7 +183,9 @@ public class DepartmentService implements io.github.loadup.modules.upms.client.f
      * Get department by ID
      */
     public DepartmentDTO getDepartmentById(String id) {
-        Department department = departmentGateway.findById(id).orElseThrow(() -> new RuntimeException("部门不存在"));
+        Department department = departmentGateway
+                .findById(id)
+                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Department not found"));
         return convertToDTO(department);
     }
 
@@ -187,7 +201,9 @@ public class DepartmentService implements io.github.loadup.modules.upms.client.f
      * Get department tree (from specific department)
      */
     public DepartmentDTO getDepartmentTreeById(String id) {
-        Department department = departmentGateway.findById(id).orElseThrow(() -> new RuntimeException("部门不存在"));
+        Department department = departmentGateway
+                .findById(id)
+                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Department not found"));
         List<Department> allDepartments = departmentGateway.findAll();
 
         DepartmentDTO dto = convertToDTO(department);
@@ -203,19 +219,24 @@ public class DepartmentService implements io.github.loadup.modules.upms.client.f
      */
     @Transactional
     public void moveDepartment(String deptId, String newParentId) {
-        Department department = departmentGateway.findById(deptId).orElseThrow(() -> new RuntimeException("部门不存在"));
+        Department department = departmentGateway
+                .findById(deptId)
+                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Department not found"));
 
         // Validate new parent exists
         if (newParentId != null && !"0".equals(newParentId)) {
             if (newParentId.equals(deptId)) {
-                throw new RuntimeException("父部门不能是自己");
+                throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Department cannot be its own parent");
             }
-            Department newParent =
-                    departmentGateway.findById(newParentId).orElseThrow(() -> new RuntimeException("新父部门不存在"));
+            Department newParent = departmentGateway
+                    .findById(newParentId)
+                    .orElseThrow(() ->
+                            new CommonException(CommonResultCodeEnum.NOT_FOUND, "New parent department not found"));
 
             // Check if new parent is a child of current department (prevent circular)
             if (isDescendant(deptId, newParentId)) {
-                throw new RuntimeException("不能将部门移动到其子部门下");
+                throw new CommonException(
+                        CommonResultCodeEnum.INVALID_STATE, "Department cannot be moved below its descendants");
             }
 
             department.setParentId(newParentId);
@@ -225,7 +246,6 @@ public class DepartmentService implements io.github.loadup.modules.upms.client.f
             department.setDeptLevel(1);
         }
 
-        department.setUpdatedAt(LocalDateTime.now());
         departmentGateway.update(department);
     }
 

@@ -77,24 +77,20 @@ public class GitHubOAuthProvider implements io.github.loadup.modules.upms.app.st
             UpmsSecurityProperties.OAuthConfig config =
                     securityProperties.getOauth().getGithub();
 
-            // 构建请求参数
             MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
             params.add("client_id", config.getClientId());
             params.add("client_secret", config.getClientSecret());
             params.add("code", code);
             params.add("redirect_uri", redirectUri);
 
-            // 设置请求头
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
             headers.set("Accept", "application/json");
 
             HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
-            // 发送请求
             ResponseEntity<String> response = restTemplate.postForEntity(TOKEN_URL, request, String.class);
 
-            // 解析响应
             JsonNode jsonNode = objectMapper.readTree(response.getBody());
 
             return OAuthToken.builder()
@@ -111,18 +107,16 @@ public class GitHubOAuthProvider implements io.github.loadup.modules.upms.app.st
     @Override
     public OAuthUserInfo getUserInfo(String accessToken) {
         try {
-            // 设置请求头
+
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", "Bearer " + accessToken);
             headers.set("Accept", "application/json");
 
             HttpEntity<String> request = new HttpEntity<>(headers);
 
-            // 获取用户信息
             ResponseEntity<String> response =
                     restTemplate.exchange(USER_INFO_URL, HttpMethod.GET, request, String.class);
 
-            // 解析响应
             JsonNode jsonNode = objectMapper.readTree(response.getBody());
 
             return OAuthUserInfo.builder()

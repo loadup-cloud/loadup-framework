@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Merchant
+ * LoadUp Merchant Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,6 +22,8 @@ package io.github.loadup.modules.merchant.client.query;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
 public record MerchantPageQuery(
         @Schema(description = "Merchant code") @Size(max = 64)
@@ -32,11 +34,27 @@ public record MerchantPageQuery(
         @Schema(description = "Current lifecycle status") @Size(max = 16)
         String status,
 
-        @Schema(description = "Page number, starting at 1", minimum = "1") @Min(1)
-        int page,
+        @Schema(description = "Page number, starting at 1", minimum = "1", defaultValue = "1") @Min(1)
+        Integer page,
 
-        @Schema(description = "Page size; list queries allow at most 100", minimum = "1") @Min(1) @Max(100)
-        int size) {
+        @Schema(
+                description = "Page size; list queries allow at most 100",
+                minimum = "1",
+                maximum = "100",
+                defaultValue = "20")
+        @Min(1)
+        @Max(100)
+        Integer size) {
+    public MerchantPageQuery {
+        page = page == null ? 1 : page;
+        size = size == null ? 20 : size;
+        if (page < 1 || size < 1 || size > 100) {
+            throw new io.github.loadup.commons.error.CommonException(
+                    io.github.loadup.commons.enums.CommonResultCodeEnum.PARAM_ILLEGAL,
+                    "Page must be positive and size must be between 1 and 100");
+        }
+    }
+
     @Override
     public String toString() {
         return ToStringAsJson.reflectionToString(this);

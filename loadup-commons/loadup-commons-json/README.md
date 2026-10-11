@@ -10,13 +10,13 @@
 
 ```java
 import io.github.loadup.commons.json.JsonUtil;
-import io.github.loadup.commons.json.ToStringUtils;
+import io.github.loadup.commons.json.ToStringAsJson;
 
 String json = JsonUtil.toJson(value);
 MyDTO dto = JsonUtil.fromJson(json, MyDTO.class);
 
 @Override public String toString() {
-    return ToStringUtils.reflectionToString(this);
+    return ToStringAsJson.reflectionToString(this);
 }
 ```
 
@@ -36,7 +36,7 @@ MyDTO dto = JsonUtil.fromJson(json, MyDTO.class);
 
 ## JSON 与日期约定
 
-`JsonUtil` 输出格式仍为 `yyyy-MM-dd` 和 `yyyy-MM-dd HH:mm:ss`，保留 null 字段，忽略未知属性和空 Bean 错误。Jackson 3 自带 Java Time 支持，本模块补充项目日期格式。WebMVC 复用 `JsonUtil.customize`，装配后将应用 mapper 交给 JsonUtil；ToStringUtils 始终使用独立的诊断 mapper。
+`JsonUtil` 输出格式仍为 `yyyy-MM-dd` 和 `yyyy-MM-dd HH:mm:ss`，保留 null 字段，忽略未知属性和空 Bean 错误。Jackson 3 自带 Java Time 支持，本模块补充项目日期格式。WebMVC 复用 `JsonUtil.customize`，装配后将应用 mapper 交给 JsonUtil；ToStringAsJson 始终使用独立的诊断 mapper。
 
 ### 多格式输入
 
@@ -59,3 +59,7 @@ Date 的无时区文本按应用 ObjectMapper 的时区转换，日期取该时�
 LocalDate / LocalDateTime 的显式 `@JsonFormat(pattern = "...")` 仍由 Jackson 按字段格式解析；多格式是未指定字段格式时的默认策略。
 
 迁移后的包为 `io.github.loadup.commons.json`，旧 `commons.util.JsonUtil` 和 `commons.util.json.MultiDateDeserializer` 已移除。现有转换失败时返回 null/空集合、String 输入直接返回等行为保持不变；需要强制失败语义时直接使用注入的 Jackson ObjectMapper。
+
+## 日志与转换约定
+
+JSON 转换失败日志只包含操作名和异常类型，不包含输入 JSON、对象内容及 Jackson 异常链。`ToStringAsJson.reflectionToString` 用于对象日志 JSON，遵循独立于 HTTP JSON 的脱敏规则。

@@ -10,9 +10,7 @@
     <artifactId>loadup-modules-contract-domain</artifactId>
     <name>LoadUp Contract Domain</name>
 
-    <properties>
-        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
-    </properties>
+    <properties/>
 
     <dependencies>
         <dependency>

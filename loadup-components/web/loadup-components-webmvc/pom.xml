@@ -9,9 +9,7 @@
     </parent>
     <artifactId>loadup-components-webmvc</artifactId>
     <name>LoadUp Web MVC</name>
-    <properties>
-        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
-    </properties>
+    <properties/>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
@@ -45,6 +43,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

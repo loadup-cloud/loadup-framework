@@ -19,6 +19,8 @@
  */
 package io.github.loadup.modules.upms.app.service;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.modules.upms.app.converter.UpmsDTOConverter;
 import io.github.loadup.modules.upms.app.strategy.LoginCredentials;
@@ -26,17 +28,20 @@ import io.github.loadup.modules.upms.app.strategy.LoginStrategyManager;
 import io.github.loadup.modules.upms.app.strategy.LoginType;
 import io.github.loadup.modules.upms.client.command.UserLoginCommand;
 import io.github.loadup.modules.upms.client.command.UserRegisterCommand;
-import io.github.loadup.modules.upms.client.dto.AuthenticatedUser;
+import io.github.loadup.modules.upms.client.dto.AuthenticatedUserDTO;
 import io.github.loadup.modules.upms.client.dto.UserDetailDTO;
 import io.github.loadup.modules.upms.client.facade.AuthenticationFacade;
 import io.github.loadup.modules.upms.client.facade.UserQueryFacade;
-import io.github.loadup.modules.upms.domain.entity.LoginLog;
-import io.github.loadup.modules.upms.domain.entity.User;
+import io.github.loadup.modules.upms.client.validation.PasswordPolicy;
 import io.github.loadup.modules.upms.domain.gateway.LoginLogGateway;
 import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
+import io.github.loadup.modules.upms.domain.model.LoginLog;
+import io.github.loadup.modules.upms.domain.model.User;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,6 +54,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class AuthenticationService implements AuthenticationFacade {
+    private final Clock clock;
     private final UpmsDTOConverter dtoConverter;
 
     private final UserGateway userGateway;
@@ -62,37 +68,33 @@ public class AuthenticationService implements AuthenticationFacade {
      * User login
      */
     @Override
-    public AuthenticatedUser login(UserLoginCommand command) {
+    public AuthenticatedUserDTO login(UserLoginCommand command) {
         try {
-            // 1. 构建登录凭证
+
             LoginCredentials credentials = buildLoginCredentials(command);
 
-            // 2. 选择登录策略（如果未指定，默认为密码登录）
             String loginType =
                     StringUtils.isNotBlank(command.getLoginType()) ? command.getLoginType() : LoginType.PASSWORD;
 
-            // 3. 执行认证
             LogUtil.info(
                     AuthenticationService.class,
                     "用户 {} 尝试使用 {} 方式登录",
                     credentials.getUsername() != null ? credentials.getUsername() : credentials.getMobile(),
                     loginType);
 
-            AuthenticatedUser authenticatedUser =
+            AuthenticatedUserDTO authenticatedUser =
                     loginStrategyManager.getStrategy(loginType).authenticate(credentials);
 
-            // 4. 查询完整用户信息
             User user = userGateway
                     .findById(authenticatedUser.getUserId())
-                    .orElseThrow(() -> new RuntimeException("用户不存在"));
+                    .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "User not found"));
 
-            // 5. 记录登录成功日志
             recordLoginSuccess(user, command, loginType);
 
             return authenticatedUser;
 
         } catch (Exception e) {
-            // 记录登录失败
+
             recordLoginFailure(
                     command,
                     e.getMessage(),
@@ -101,9 +103,6 @@ public class AuthenticationService implements AuthenticationFacade {
         }
     }
 
-    /**
-     * 构建登录凭证
-     */
     private LoginCredentials buildLoginCredentials(UserLoginCommand command) {
         return dtoConverter.toCredentials(command);
     }
@@ -114,19 +113,21 @@ public class AuthenticationService implements AuthenticationFacade {
     @Transactional
     @Override
     public UserDetailDTO register(UserRegisterCommand command) {
+        if (command == null) throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
+        PasswordPolicy.requireValid(command.getPassword());
         // Check if username exists
         if (userGateway.existsByUsername(command.getUsername())) {
-            throw new RuntimeException("用户名已存在");
+            throw new CommonException(CommonResultCodeEnum.CONFLICT, "Username already exists");
         }
 
         // Check if email exists
         if (command.getEmail() != null && userGateway.existsByEmail(command.getEmail())) {
-            throw new RuntimeException("邮箱已被注册");
+            throw new CommonException(CommonResultCodeEnum.CONFLICT, "Email is already registered");
         }
 
         // Check if phone exists
         if (command.getMobile() != null && userGateway.existsByMobile(command.getMobile())) {
-            throw new RuntimeException("手机号已被注册");
+            throw new CommonException(CommonResultCodeEnum.CONFLICT, "Phone number is already registered");
         }
 
         // Create user
@@ -144,7 +145,6 @@ public class AuthenticationService implements AuthenticationFacade {
         user.setMobileVerified(false);
         user.setDeleted(false);
         user.setCreatedBy("0");
-        user.setCreatedAt(LocalDateTime.now());
 
         user = userGateway.save(user);
 
@@ -161,7 +161,7 @@ public class AuthenticationService implements AuthenticationFacade {
         LoginLog loginLog = new LoginLog();
         loginLog.setUserId(user.getId());
         loginLog.setUsername(user.getUsername());
-        loginLog.setLoginTime(LocalDateTime.now());
+        loginLog.setLoginTime(LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
         loginLog.setIpAddress(command.getIpAddress());
         loginLog.setLoginStatus((short) 1);
         loginLog.setLoginMessage("登录成功");
@@ -182,7 +182,7 @@ public class AuthenticationService implements AuthenticationFacade {
         if (command.getUsername() != null) {
             userGateway.findByUsername(command.getUsername()).ifPresent(user -> loginLog.setUserId(user.getId()));
         }
-        loginLog.setLoginTime(LocalDateTime.now());
+        loginLog.setLoginTime(LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
         loginLog.setIpAddress(command.getIpAddress());
         loginLog.setLoginStatus((short) 0);
         loginLog.setLoginMessage(message);
@@ -210,7 +210,9 @@ public class AuthenticationService implements AuthenticationFacade {
             PasswordEncoder passwordEncoder,
             LoginStrategyManager loginStrategyManager,
             UserQueryFacade userQueryService,
-            UpmsDTOConverter dtoConverter) {
+            UpmsDTOConverter dtoConverter,
+            @Qualifier("upmsClock") Clock clock) {
+        this.clock = clock;
         this.dtoConverter = dtoConverter;
         this.userGateway = userGateway;
         this.roleGateway = roleGateway;

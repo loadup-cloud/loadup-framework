@@ -39,5 +39,6 @@ public interface AuditDTOConverter {
     @Mapping(target = "pageInfo.pageSize", source = "size")
     PageDTO<AuditEventDTO> toPageDTO(AuditPage value);
 
-    AuditQuery toDomain(io.github.loadup.modules.audit.client.query.AuditQuery value);
+    @Mapping(target = "tenantId", source = "tenantId")
+    AuditQuery toDomain(io.github.loadup.modules.audit.client.query.AuditPageQuery value, String tenantId);
 }

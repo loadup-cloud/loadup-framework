@@ -26,8 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 统一登录凭证对象
- * 不同策略从中提取所需字段
  *
  * @author LoadUp Framework
  * @since 1.0.0
@@ -37,88 +35,40 @@ public class LoginCredentials implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 登录类型：PASSWORD | MOBILE | EMAIL | OAUTH
-     */
     private String loginType;
 
-    /**
-     * 账号密码登录 - 用户名
-     */
     private String username;
 
-    /**
-     * 账号密码登录 - 密码
-     */
     private String password;
 
-    /**
-     * 手机验证码登录 - 手机号
-     */
     private String mobile;
 
-    /**
-     * 手机验证码登录 - 短信验证码
-     */
     @io.github.loadup.commons.masking.Masked(io.github.loadup.commons.masking.MaskType.FULL)
     private String smsCode;
 
-    /**
-     * 邮箱验证码登录 - 邮箱
-     */
     private String email;
 
-    /**
-     * 邮箱验证码登录 - 邮箱验证码
-     */
     @io.github.loadup.commons.masking.Masked(io.github.loadup.commons.masking.MaskType.FULL)
     private String emailCode;
 
-    /**
-     * OAuth 登录 - 提供商（wechat | github | google）
-     */
     private String provider;
 
-    /**
-     * OAuth 登录 - 授权码
-     */
     @io.github.loadup.commons.masking.Masked(io.github.loadup.commons.masking.MaskType.FULL)
     private String code;
 
-    /**
-     * OAuth 登录 - ��态参数（防CSRF）
-     */
     private String state;
 
-    /**
-     * OAuth 登录 - 回调地址
-     */
     private String redirectUri;
 
-    /**
-     * 通用字段 - IP地址
-     */
     private String ipAddress;
 
-    /**
-     * 通用字段 - 用户代理
-     */
     private String userAgent;
 
-    /**
-     * 通用字段 - 图形验证码Key
-     */
     private String captchaKey;
 
-    /**
-     * 通用字段 - 图形验证码值
-     */
     @io.github.loadup.commons.masking.Masked(io.github.loadup.commons.masking.MaskType.FULL)
     private String captchaCode;
 
-    /**
-     * 扩展字段
-     */
     private Map<String, Object> extra = new HashMap<>();
 
     public LoginCredentials(

@@ -19,6 +19,8 @@
  */
 package io.github.loadup.modules.upms.app.service;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.upms.app.converter.UserSensitiveConverter;
 import io.github.loadup.modules.upms.client.dto.UserSensitiveDTO;
 import io.github.loadup.modules.upms.client.query.UserSensitiveQuery;
@@ -55,7 +57,7 @@ public class UserSensitiveReadService implements io.github.loadup.modules.upms.c
                 || query.id() == null
                 || !query.id().matches("[A-Za-z0-9_-]{1,64}")
                 || query.purpose() == null) {
-            throw new IllegalArgumentException("Invalid sensitive read request");
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Invalid sensitive read request");
         }
         var subject = users.findById(query.id()).orElseThrow(() -> new AccessDeniedException("Sensitive read denied"));
         var decision =

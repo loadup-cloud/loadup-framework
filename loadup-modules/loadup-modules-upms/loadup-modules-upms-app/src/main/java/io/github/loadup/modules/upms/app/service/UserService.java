@@ -21,6 +21,8 @@ package io.github.loadup.modules.upms.app.service;
 
 import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.dto.PageQuery;
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.request.query.IdQuery;
 import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.upms.app.converter.UpmsDTOConverter;
@@ -30,15 +32,18 @@ import io.github.loadup.modules.upms.client.command.UserUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.RoleDTO;
 import io.github.loadup.modules.upms.client.dto.UserDetailDTO;
 import io.github.loadup.modules.upms.client.query.UserPageQuery;
-import io.github.loadup.modules.upms.domain.entity.Department;
-import io.github.loadup.modules.upms.domain.entity.Role;
-import io.github.loadup.modules.upms.domain.entity.User;
+import io.github.loadup.modules.upms.client.validation.PasswordPolicy;
 import io.github.loadup.modules.upms.domain.gateway.DepartmentGateway;
 import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
+import io.github.loadup.modules.upms.domain.model.Department;
+import io.github.loadup.modules.upms.domain.model.Role;
+import io.github.loadup.modules.upms.domain.model.User;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +56,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class UserService implements io.github.loadup.modules.upms.client.facade.UserFacade {
+    private final Clock clock;
     private final UpmsDTOConverter dtoConverter;
 
     private final UserGateway userGateway;
@@ -63,20 +69,22 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
      */
     @Transactional
     public UserDetailDTO createUser(UserCreateCommand command) {
+        if (command == null) throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
+        PasswordPolicy.requireValid(command.getPassword());
         rejectMaskedValues(command.getRealName(), command.getEmail(), command.getMobile());
         // Validate username uniqueness
         if (userGateway.existsByUsername(command.getUsername())) {
-            throw new RuntimeException("用户名已存在");
+            throw new CommonException(CommonResultCodeEnum.CONFLICT, "Username already exists");
         }
 
         // Validate email uniqueness
         if (command.getEmail() != null && userGateway.existsByEmail(command.getEmail())) {
-            throw new RuntimeException("邮箱已被注册");
+            throw new CommonException(CommonResultCodeEnum.CONFLICT, "Email is already registered");
         }
 
         // Validate phone uniqueness
         if (command.getMobile() != null && userGateway.existsByMobile(command.getMobile())) {
-            throw new RuntimeException("手机号已被注册");
+            throw new CommonException(CommonResultCodeEnum.CONFLICT, "Phone number is already registered");
         }
         validateDepartment(command.getDeptId());
         validateRoles(command.getRoleIds());
@@ -103,7 +111,6 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
         user.setLoginFailCount(0);
         user.setRemark(command.getRemark());
         user.setCreatedBy(command.getCreatedBy());
-        user.setCreatedAt(LocalDateTime.now());
 
         user = userGateway.save(user);
 
@@ -123,14 +130,16 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
     @Transactional
     public UserDetailDTO updateUser(UserUpdateCommand command) {
         rejectMaskedValues(command.getRealName(), command.getEmail(), command.getMobile());
-        User user = userGateway.findById(command.getId()).orElseThrow(() -> new RuntimeException("用户不存在"));
+        User user = userGateway
+                .findById(command.getId())
+                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "User not found"));
 
         // Validate email uniqueness (if changed)
         if (command.getEmail() != null
                 && !command.getEmail().isBlank()
                 && !command.getEmail().equals(user.getEmail())
                 && userGateway.existsByEmail(command.getEmail())) {
-            throw new RuntimeException("邮箱已被注册");
+            throw new CommonException(CommonResultCodeEnum.CONFLICT, "Email is already registered");
         }
 
         // Validate phone uniqueness (if changed)
@@ -138,7 +147,7 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
                 && !command.getMobile().isBlank()
                 && !command.getMobile().equals(user.getMobile())
                 && userGateway.existsByMobile(command.getMobile())) {
-            throw new RuntimeException("手机号已被注册");
+            throw new CommonException(CommonResultCodeEnum.CONFLICT, "Phone number is already registered");
         }
 
         // Update user fields
@@ -177,7 +186,6 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
         }
 
         user.setUpdatedBy(command.getUpdatedBy());
-        user.setUpdatedAt(LocalDateTime.now());
 
         user = userGateway.update(user);
 
@@ -203,7 +211,9 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
      */
     @Transactional
     public void deleteUser(String id) {
-        userGateway.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
+        userGateway
+                .findById(id)
+                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "User not found"));
         for (Role role : roleGateway.findByUserId(id)) {
             roleGateway.removeRoleFromUser(id, role.getId());
         }
@@ -213,7 +223,7 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
     private static void rejectMaskedValues(String... values) {
         for (String value : values) {
             if (value != null && value.contains("*"))
-                throw new IllegalArgumentException("Masked values cannot be saved");
+                throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Masked values cannot be saved");
         }
     }
 
@@ -223,7 +233,8 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
                         .findById(deptId)
                         .filter(Department::isEnabled)
                         .isEmpty()) {
-            throw new IllegalArgumentException("Department does not exist or is disabled: " + deptId);
+            throw new CommonException(
+                    CommonResultCodeEnum.PARAM_ILLEGAL, "Department does not exist or is disabled: " + deptId);
         }
     }
 
@@ -231,7 +242,8 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
         if (roleIds == null) return;
         for (String roleId : roleIds) {
             if (roleGateway.findById(roleId).filter(Role::isEnabled).isEmpty()) {
-                throw new IllegalArgumentException("Role does not exist or is disabled: " + roleId);
+                throw new CommonException(
+                        CommonResultCodeEnum.PARAM_ILLEGAL, "Role does not exist or is disabled: " + roleId);
             }
         }
     }
@@ -240,7 +252,9 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
      * Get user by ID
      */
     public UserDetailDTO getUserById(IdQuery idQuery) {
-        User user = userGateway.findById(idQuery.id()).orElseThrow(() -> new RuntimeException("用户不存在"));
+        User user = userGateway
+                .findById(idQuery.id())
+                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "User not found"));
         return convertToDetailDTO(user);
     }
 
@@ -248,7 +262,16 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
      * Query users with pagination
      */
     public PageDTO<UserDetailDTO> queryUsers(UserPageQuery query) {
-        PageQuery pageQuery = PageQuery.of(query.getPage(), query.getSize());
+        int page = query.getPage() == null ? 1 : query.getPage();
+        int size = query.getSize() == null ? 20 : query.getSize();
+        if (page < 1 || size < 1 || size > 100) throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
+        String sortBy = query.getSortBy() == null ? "createdAt" : query.getSortBy();
+        String sortOrder = query.getSortOrder() == null ? "DESC" : query.getSortOrder();
+        if (!java.util.Set.of("createdAt", "username", "nickname", "id").contains(sortBy)
+                || !java.util.Set.of("ASC", "DESC").contains(sortOrder.toUpperCase(java.util.Locale.ROOT))) {
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Unsupported user sort field or direction");
+        }
+        PageQuery pageQuery = PageQuery.of(page, size);
 
         PageResult<User> userPage;
         if (query.getUsername() != null || query.getEmail() != null || query.getMobile() != null) {
@@ -259,9 +282,9 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
             if (keyword == null) {
                 keyword = query.getMobile();
             }
-            userPage = userGateway.search(keyword, pageQuery);
+            userPage = userGateway.search(keyword, pageQuery, sortBy, sortOrder);
         } else {
-            userPage = userGateway.findAll(pageQuery);
+            userPage = userGateway.findAll(pageQuery, sortBy, sortOrder);
         }
 
         List<UserDetailDTO> dtoList =
@@ -279,32 +302,32 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
                 || command.getOldPassword() == null
                 || command.getOldPassword().isBlank()
                 || command.getNewPassword() == null
-                || command.getNewPassword().length() < 8
-                || command.getNewPassword().getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72
                 || command.getConfirmPassword() == null) {
-            throw new IllegalArgumentException("invalid password change request");
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "invalid password change request");
         }
-        User user = userGateway.findById(command.getUserId()).orElseThrow(() -> new RuntimeException("用户不存在"));
+        PasswordPolicy.requireValid(command.getNewPassword());
+        User user = userGateway
+                .findById(command.getUserId())
+                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "User not found"));
 
-        if (!user.isActive()) throw new IllegalStateException("account is not active");
+        if (!user.isActive()) throw new CommonException(CommonResultCodeEnum.INVALID_STATE, "account is not active");
 
         // Verify old password
         if (!passwordEncoder.matches(command.getOldPassword(), user.getPassword())) {
-            throw new RuntimeException("旧密码不正确");
+            throw new CommonException(CommonResultCodeEnum.UNAUTHENTICATED, "Current password is incorrect");
         }
 
         // Check new password confirmation
         if (!command.getNewPassword().equals(command.getConfirmPassword())) {
-            throw new RuntimeException("两次输入的密码不一致");
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Password confirmation does not match");
         }
         if (passwordEncoder.matches(command.getNewPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("new password must differ from old password");
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "new password must differ from old password");
         }
 
         // Update password
         user.setPassword(passwordEncoder.encode(command.getNewPassword()));
-        user.setPasswordUpdateTime(LocalDateTime.now());
-        user.setUpdatedAt(LocalDateTime.now());
+        user.setPasswordUpdateTime(LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
 
         userGateway.update(user);
     }
@@ -314,9 +337,11 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
      */
     @Transactional
     public void lockUser(String id) {
-        User user = userGateway.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
+        User user = userGateway
+                .findById(id)
+                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "User not found"));
         user.setAccountNonLocked(false);
-        user.setLockedTime(LocalDateTime.now());
+        user.setLockedTime(LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
         userGateway.update(user);
     }
 
@@ -325,7 +350,9 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
      */
     @Transactional
     public void unlockUser(String id) {
-        User user = userGateway.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
+        User user = userGateway
+                .findById(id)
+                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "User not found"));
         user.setAccountNonLocked(true);
         user.setLoginFailCount(0);
         user.setLockedTime(null);
@@ -360,7 +387,9 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
             RoleGateway roleGateway,
             DepartmentGateway departmentGateway,
             PasswordEncoder passwordEncoder,
-            UpmsDTOConverter dtoConverter) {
+            UpmsDTOConverter dtoConverter,
+            @Qualifier("upmsClock") Clock clock) {
+        this.clock = clock;
         this.dtoConverter = dtoConverter;
         this.userGateway = userGateway;
         this.roleGateway = roleGateway;

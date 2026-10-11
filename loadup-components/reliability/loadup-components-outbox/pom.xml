@@ -9,9 +9,7 @@
     </parent>
     <artifactId>loadup-components-outbox</artifactId>
     <name>LoadUp Outbox</name>
-    <properties>
-        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
-    </properties>
+    <properties/>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

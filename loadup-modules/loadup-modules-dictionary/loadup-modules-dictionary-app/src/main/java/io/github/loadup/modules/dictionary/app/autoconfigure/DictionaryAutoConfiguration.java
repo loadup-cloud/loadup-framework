@@ -48,7 +48,16 @@ public class DictionaryAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(io.github.loadup.modules.dictionary.client.facade.DictionaryFacade.class)
-    public DictionaryService dictionaryService(DictionaryGateway repository, DictionaryDTOConverter converter) {
-        return new DictionaryService(repository, converter);
+    public DictionaryService dictionaryService(
+            DictionaryGateway repository,
+            DictionaryDTOConverter converter,
+            @org.springframework.beans.factory.annotation.Qualifier("dictionaryClock") java.time.Clock clock) {
+        return new DictionaryService(repository, converter, clock);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "dictionaryClock")
+    public java.time.Clock dictionaryClock() {
+        return java.time.Clock.systemUTC();
     }
 }

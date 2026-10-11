@@ -18,7 +18,5 @@
         <module>loadup-modules-notification-web</module>
         <module>loadup-modules-notification-test</module>
     </modules>
-    <properties>
-        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
-    </properties>
+    <properties/>
 </project>

@@ -37,14 +37,14 @@ public class DepartmentCreateCommand {
     @Schema(description = "Parent id")
     private String parentId;
 
-    @NotBlank(message = "部门名称不能为空")
-    @Size(max = 50, message = "部门名称长度不能超过50")
+    @NotBlank()
+    @Size(max = 50)
     @Schema(description = "Dept name")
     private String deptName;
 
-    @NotBlank(message = "部门编码不能为空")
-    @Size(max = 50, message = "部门编码长度不能超过50")
-    @Pattern(regexp = "^[A-Z0-9_]+$", message = "部门编码只能包含大写字母、数字和下划线")
+    @NotBlank()
+    @Size(max = 50)
+    @Pattern(regexp = "^[A-Z0-9_]+$")
     @Schema(description = "Dept code")
     private String deptCode;
 
@@ -54,11 +54,11 @@ public class DepartmentCreateCommand {
     @Schema(description = "Leader user id")
     private String leaderUserId;
 
-    @Pattern(regexp = "^1[3-9]\\d{9}$", message = "手机号格式不正确")
+    @Pattern(regexp = "^1[3-9]\\d{9}$")
     @Schema(description = "Mobile")
     private String mobile;
 
-    @Email(message = "邮箱格式不正确")
+    @Email()
     @Schema(description = "Email")
     private String email;
 

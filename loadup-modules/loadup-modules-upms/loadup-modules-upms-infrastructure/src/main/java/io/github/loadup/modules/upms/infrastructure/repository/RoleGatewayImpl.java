@@ -1,3 +1,22 @@
+/*
+ * #%L
+ * Loadup Modules UPMS Infrastructure Layer
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package io.github.loadup.modules.upms.infrastructure.repository;
 
 import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.ROLE_DEPARTMENT_DO;
@@ -9,8 +28,8 @@ import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.dto.PageQuery;
-import io.github.loadup.modules.upms.domain.entity.Role;
 import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
+import io.github.loadup.modules.upms.domain.model.Role;
 import io.github.loadup.modules.upms.infrastructure.converter.RoleConverter;
 import io.github.loadup.modules.upms.infrastructure.dataobject.RoleDO;
 import io.github.loadup.modules.upms.infrastructure.dataobject.RoleDepartmentDO;
@@ -20,7 +39,6 @@ import io.github.loadup.modules.upms.infrastructure.mapper.RoleDOMapper;
 import io.github.loadup.modules.upms.infrastructure.mapper.RoleDepartmentDOMapper;
 import io.github.loadup.modules.upms.infrastructure.mapper.RolePermissionDOMapper;
 import io.github.loadup.modules.upms.infrastructure.mapper.UserRoleDOMapper;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -47,8 +65,7 @@ public class RoleGatewayImpl implements RoleGateway {
         if (role.getId() == null) role.setId(UUID.randomUUID().toString());
         RoleDO roleDO = roleConverter.toDataObject(role);
         if (roleDO.getId() == null) roleDO.setId(UUID.randomUUID().toString());
-        if (roleDO.getCreatedAt() == null) roleDO.setCreatedAt(LocalDateTime.now());
-        if (roleDO.getUpdatedAt() == null) roleDO.setUpdatedAt(roleDO.getCreatedAt());
+
         roleDOMapper.insert(roleDO);
         role = roleConverter.toEntity(roleDO);
         return role;
@@ -201,8 +218,7 @@ public class RoleGatewayImpl implements RoleGateway {
 
     private static void initialize(io.github.loadup.commons.dataobject.BaseDO relation) {
         relation.setId(UUID.randomUUID().toString());
-        relation.setCreatedAt(LocalDateTime.now());
-        relation.setUpdatedAt(relation.getCreatedAt());
+
         relation.setDeleted(0);
     }
 

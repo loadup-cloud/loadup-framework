@@ -19,6 +19,8 @@
  */
 package io.github.loadup.modules.upms.app.strategy;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.log.LogUtil;
 import java.util.Comparator;
 import java.util.List;
@@ -27,8 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Component;
 
 /**
- * 登录策略管理器
- * 管理所有登录策略，根据 loginType 路由
  *
  * @author LoadUp Framework
  * @since 1.0.0
@@ -38,12 +38,9 @@ public class LoginStrategyManager {
 
     private final Map<String, LoginStrategy> strategyMap = new ConcurrentHashMap<>();
 
-    /**
-     * 构造器注入所有策略实现
-     */
     public LoginStrategyManager(List<LoginStrategy> strategies) {
         if (strategies != null && !strategies.isEmpty()) {
-            // 按优先级排序
+
             strategies.stream()
                     .sorted(Comparator.comparingInt(LoginStrategy::getOrder))
                     .forEach(strategy -> {
@@ -70,27 +67,14 @@ public class LoginStrategyManager {
                 strategyMap.keySet());
     }
 
-    /**
-     * 根据登录类型获取策略
-     *
-     * @param loginType 登录类型
-     * @return 登录策略
-     * @throws IllegalArgumentException 不支持的登录类型
-     */
     public LoginStrategy getStrategy(String loginType) {
         LoginStrategy strategy = strategyMap.get(loginType);
         if (strategy == null) {
-            throw new IllegalArgumentException("Unsupported login type: " + loginType);
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Unsupported login type");
         }
         return strategy;
     }
 
-    /**
-     * 检查是否支持某种登录类型
-     *
-     * @param loginType 登录类型
-     * @return true-支持，false-不支持
-     */
     public boolean supportsLoginType(String loginType) {
         return strategyMap.containsKey(loginType);
     }

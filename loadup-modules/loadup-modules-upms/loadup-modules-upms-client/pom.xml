@@ -6,13 +6,13 @@
         <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-parent</artifactId>
         <version>0.0.2-SNAPSHOT</version>
+        <relativePath>../../../pom.xml</relativePath>
     </parent>
 
     <artifactId>loadup-modules-upms-client</artifactId>
     <name>Loadup Modules UPMS Client Layer</name>
     <description>Client utilities and SDK for interacting with the UPMS module</description>
     <properties>
-        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
         <java.version>25</java.version>
         <project.encoding>UTF-8</project.encoding>
         <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -23,6 +23,10 @@
         <project.reporting.outputEncoding>${project.encoding}</project.reporting.outputEncoding>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-commons-masking</artifactId>

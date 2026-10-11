@@ -38,7 +38,7 @@ import org.springframework.context.annotation.Import;
 @AutoConfiguration(
         afterName = {
             "io.github.loadup.modules.file.infrastructure.autoconfigure.FilePersistenceAutoConfiguration",
-            "io.github.loadup.components.dfs.autoconfig.DfsAutoConfiguration"
+            "io.github.loadup.components.dfs.autoconfigure.DfsAutoConfiguration"
         })
 @ConditionalOnSingleCandidate(DataSource.class)
 @ConditionalOnBean({FileResourceGateway.class, DfsService.class})
@@ -48,7 +48,16 @@ public class FileResourceAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(io.github.loadup.modules.file.client.facade.FileResourceFacade.class)
     public FileResourceService fileResourceService(
-            FileResourceGateway repository, DfsService dfs, FileDTOConverter converter) {
-        return new FileResourceService(repository, dfs, converter);
+            FileResourceGateway repository,
+            DfsService dfs,
+            FileDTOConverter converter,
+            @org.springframework.beans.factory.annotation.Qualifier("fileClock") java.time.Clock clock) {
+        return new FileResourceService(repository, dfs, converter, clock);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "fileClock")
+    public java.time.Clock fileClock() {
+        return java.time.Clock.systemUTC();
     }
 }

@@ -1,3 +1,22 @@
+/*
+ * #%L
+ * Loadup Components TestContainers
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package io.github.loadup.components.testcontainers;
 
 import io.github.loadup.commons.log.LogUtil;
@@ -17,19 +36,15 @@ public abstract class BaseContainerInitializer
     public void initialize(ConfigurableApplicationContext applicationContext) {
         ConfigurableEnvironment env = applicationContext.getEnvironment();
 
-        // 1. 统一绑定配置对象
         TestContainersProperties properties = Binder.get(env)
                 .bind("loadup.testcontainers", TestContainersProperties.class)
                 .orElseGet(TestContainersProperties::new);
 
-        // 2. 获取具体子类的容器配置
         ContainerConfig config = getContainerConfig(properties);
 
-        // 3. 检查开关
         if (properties.isEnabled() && config.isEnabled()) {
             LogUtil.info(BaseContainerInitializer.class, "🚀 Initializing TestContainer for: {}", getContainerName());
 
-            // 启动并注入属性
             startAndApplyProperties(config, env);
         } else {
             LogUtil.info(BaseContainerInitializer.class, "⏭️ TestContainer for {} is disabled.", getContainerName());
@@ -42,9 +57,6 @@ public abstract class BaseContainerInitializer
 
     protected abstract void startAndApplyProperties(ContainerConfig config, ConfigurableEnvironment env);
 
-    /**
-     * 辅助工具：应用属性到 Spring 环境
-     */
     protected void applyProperties(ConfigurableEnvironment env, Map<String, String> properties) {
         TestPropertyValues.of(properties).applyTo(env);
     }

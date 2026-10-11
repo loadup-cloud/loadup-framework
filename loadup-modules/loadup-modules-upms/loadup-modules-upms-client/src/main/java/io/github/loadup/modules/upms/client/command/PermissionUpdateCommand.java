@@ -32,14 +32,14 @@ import jakarta.validation.constraints.Size;
  */
 public class PermissionUpdateCommand {
 
-    @NotNull(message = "权限ID不能为空")
+    @NotNull()
     @Schema(description = "Resource identifier")
     private String id;
 
     @Schema(description = "Parent id")
     private String parentId;
 
-    @Size(max = 50, message = "权限名称长度不能超过50")
+    @Size(max = 50)
     @Schema(description = "Permission name")
     private String permissionName;
 

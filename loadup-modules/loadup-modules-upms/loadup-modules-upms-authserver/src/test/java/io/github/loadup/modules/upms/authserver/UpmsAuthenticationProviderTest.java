@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * LoadUp UPMS Authorization Server Adapter
  * %%
@@ -26,10 +26,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.github.loadup.modules.upms.client.command.UserLoginCommand;
-import io.github.loadup.modules.upms.client.dto.AuthenticatedUser;
+import io.github.loadup.modules.upms.client.dto.AuthenticatedUserDTO;
 import io.github.loadup.modules.upms.client.facade.AuthenticationFacade;
-import io.github.loadup.modules.upms.domain.entity.Role;
 import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
+import io.github.loadup.modules.upms.domain.model.Role;
 import io.github.loadup.modules.upms.domain.service.UserPermissionService;
 import java.util.List;
 import java.util.Set;
@@ -44,7 +44,7 @@ class UpmsAuthenticationProviderTest {
         RoleGateway roleGateway = mock(RoleGateway.class);
         UserPermissionService permissionService = mock(UserPermissionService.class);
         when(authenticationService.login(any(UserLoginCommand.class)))
-                .thenReturn(AuthenticatedUser.builder()
+                .thenReturn(AuthenticatedUserDTO.builder()
                         .userId("u-1")
                         .username("ada")
                         .build());

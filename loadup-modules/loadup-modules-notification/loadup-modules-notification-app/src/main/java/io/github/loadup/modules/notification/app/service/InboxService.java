@@ -19,23 +19,30 @@
  */
 package io.github.loadup.modules.notification.app.service;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.notification.app.converter.NotificationDTOConverter;
 import io.github.loadup.modules.notification.client.dto.InboxMessageDTO;
 import io.github.loadup.modules.notification.domain.gateway.InboxGateway;
 import io.github.loadup.modules.notification.domain.model.InboxMessage;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 
 /** Delivery to a private, persistent inbox and recipient-owned read operations. */
 public class InboxService implements io.github.loadup.modules.notification.client.facade.InboxFacade {
+    private final Clock clock;
     private static final String DEFAULT_TENANT = "__default__";
     private final NotificationDTOConverter converter;
     private final InboxGateway repository;
 
-    public InboxService(InboxGateway repository, NotificationDTOConverter converter) {
+    public InboxService(
+            InboxGateway repository, NotificationDTOConverter converter, @Qualifier("notificationClock") Clock clock) {
+        this.clock = clock;
         this.converter = converter;
         this.repository = repository;
     }
@@ -52,7 +59,7 @@ public class InboxService implements io.github.loadup.modules.notification.clien
             String requestKey) {
         String tenant = tenant(tenantId);
         if (recipients == null || recipients.isEmpty() || recipients.size() > 100) {
-            throw new IllegalArgumentException("recipients must contain 1 to 100 users");
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "recipients must contain 1 to 100 users");
         }
         String sender = senderId == null || senderId.isBlank() ? null : required(senderId, "senderId", 64);
         String kind = required(category, "category", 64);
@@ -64,10 +71,11 @@ public class InboxService implements io.github.loadup.modules.notification.clien
                         || url.startsWith("//")
                         || url.indexOf('\\') >= 0
                         || url.chars().anyMatch(Character::isISOControl))) {
-            throw new IllegalArgumentException("actionUrl must be an application-relative path");
+            throw new CommonException(
+                    CommonResultCodeEnum.PARAM_ILLEGAL, "actionUrl must be an application-relative path");
         }
         String key = requestKey == null || requestKey.isBlank() ? null : required(requestKey, "requestKey", 128);
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC);
         int inserted = 0;
         for (String recipient : recipients.stream().distinct().toList()) {
             InboxMessage message = new InboxMessage(
@@ -87,7 +95,8 @@ public class InboxService implements io.github.loadup.modules.notification.clien
     }
 
     public PageDTO<InboxMessageDTO> list(String tenantId, String recipientId, boolean unreadOnly, int page, int size) {
-        if (page < 1 || size < 1 || size > 100) throw new IllegalArgumentException("invalid page or size");
+        if (page < 1 || size < 1 || size > 100)
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "invalid page or size");
         return converter.toPageDTO(
                 repository.list(tenant(tenantId), required(recipientId, "recipientId", 64), unreadOnly, page, size));
     }
@@ -98,7 +107,7 @@ public class InboxService implements io.github.loadup.modules.notification.clien
 
     public void markRead(String tenantId, String recipientId, String id) {
         if (repository.markRead(tenant(tenantId), required(recipientId, "recipientId", 64), required(id, "id", 64))
-                == 0) throw new IllegalArgumentException("notification not found");
+                == 0) throw new CommonException(CommonResultCodeEnum.NOT_FOUND, "notification not found");
     }
 
     public int markAllRead(String tenantId, String recipientId) {
@@ -107,7 +116,7 @@ public class InboxService implements io.github.loadup.modules.notification.clien
 
     public void archive(String tenantId, String recipientId, String id) {
         if (repository.archive(tenant(tenantId), required(recipientId, "recipientId", 64), required(id, "id", 64)) == 0)
-            throw new IllegalArgumentException("notification not found");
+            throw new CommonException(CommonResultCodeEnum.NOT_FOUND, "notification not found");
     }
 
     private static String tenant(String value) {
@@ -116,7 +125,8 @@ public class InboxService implements io.github.loadup.modules.notification.clien
 
     private static String required(String value, String name, int max) {
         if (value == null || value.isBlank() || value.trim().length() > max) {
-            throw new IllegalArgumentException(name + " must contain 1 to " + max + " characters");
+            throw new CommonException(
+                    CommonResultCodeEnum.PARAM_ILLEGAL, name + " must contain 1 to " + max + " characters");
         }
         return value.trim();
     }

@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Contract
+ * LoadUp Contract Web
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,9 +22,9 @@ package io.github.loadup.modules.contract.web;
 import io.github.loadup.commons.request.query.IdQuery;
 import io.github.loadup.commons.result.PageResponse;
 import io.github.loadup.commons.result.SuccessResponse;
-import io.github.loadup.modules.contract.app.service.*;
 import io.github.loadup.modules.contract.client.command.*;
 import io.github.loadup.modules.contract.client.dto.*;
+import io.github.loadup.modules.contract.client.facade.*;
 import io.github.loadup.modules.contract.client.query.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,12 +37,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/contract")
 @Tag(name = "Contract", description = "Product catalog, sales plans and merchant contracts")
 public class ContractController {
-    private final CatalogService catalog;
-    private final MerchantContractService contracts;
-    private final ContractResolveService runtime;
+    private final CatalogFacade catalog;
+    private final MerchantContractFacade contracts;
+    private final ContractResolveFacade runtime;
 
-    public ContractController(
-            CatalogService catalog, MerchantContractService contracts, ContractResolveService runtime) {
+    public ContractController(CatalogFacade catalog, MerchantContractFacade contracts, ContractResolveFacade runtime) {
         this.catalog = catalog;
         this.contracts = contracts;
         this.runtime = runtime;

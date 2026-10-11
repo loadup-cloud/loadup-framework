@@ -5,12 +5,11 @@
         <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-parent</artifactId>
         <version>0.0.2-SNAPSHOT</version>
+        <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-upms-authserver</artifactId>
     <name>LoadUp UPMS Authorization Server Adapter</name>
-    <properties>
-        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
-    </properties>
+    <properties/>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

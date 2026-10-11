@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * Loadup Components Extension
  * %%
@@ -34,7 +34,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class ExtensionTest {
 
     @Resource
-    private ExtensionExecutor extensionExecutor; // 直接注入，自动装配完成
+    private ExtensionExecutor extensionExecutor;
 
     @Test
     public void testExtensionRegistration() {

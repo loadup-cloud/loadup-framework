@@ -20,6 +20,7 @@
 package io.github.loadup.modules.upms.client.command;
 
 import io.github.loadup.commons.json.ToStringAsJson;
+import io.github.loadup.modules.upms.client.validation.ValidPassword;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record AccountPasswordChangeCommand(
@@ -28,9 +29,12 @@ public record AccountPasswordChangeCommand(
                 access = com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY)
         String oldPassword,
 
-        @Schema(description = "New password", accessMode = Schema.AccessMode.WRITE_ONLY)
+        @Schema(
+                description = "New password: at least 8 Unicode characters, at most 72 UTF-8 bytes",
+                accessMode = Schema.AccessMode.WRITE_ONLY)
         @com.fasterxml.jackson.annotation.JsonProperty(
                 access = com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY)
+        @ValidPassword
         String newPassword,
 
         @Schema(description = "Confirmation of the new password", accessMode = Schema.AccessMode.WRITE_ONLY)

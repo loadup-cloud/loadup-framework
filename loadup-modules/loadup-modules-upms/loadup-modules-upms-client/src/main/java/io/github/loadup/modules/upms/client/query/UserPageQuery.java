@@ -21,6 +21,8 @@ package io.github.loadup.modules.upms.client.query;
 
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
 /**
  * User Query Parameters
@@ -55,9 +57,25 @@ public class UserPageQuery {
     private Boolean deleted;
 
     // Pagination
+    @Min(1)
+    @Schema(description = "Page number, starting at 1", minimum = "1", defaultValue = "1")
     private Integer page = 1;
+
+    @Min(1)
+    @Max(100)
+    @Schema(description = "Page size", minimum = "1", maximum = "100", defaultValue = "20")
     private Integer size = 20;
+
+    @jakarta.validation.constraints.Pattern(regexp = "createdAt|username|nickname|id")
+    @Schema(
+            description = "Whitelisted sort field",
+            allowableValues = {"createdAt", "username", "nickname", "id"})
     private String sortBy = "createdAt";
+
+    @jakarta.validation.constraints.Pattern(regexp = "(?i)ASC|DESC")
+    @Schema(
+            description = "Sort direction",
+            allowableValues = {"ASC", "DESC"})
     private String sortOrder = "DESC";
 
     public UserPageQuery(
@@ -69,8 +87,8 @@ public class UserPageQuery {
             String deptId,
             Short status,
             Boolean deleted,
-            Integer page,
-            Integer size,
+            @Min(1) Integer page,
+            @Min(1) @Max(100) Integer size,
             String sortBy,
             String sortOrder) {
         this.username = username;
@@ -198,9 +216,16 @@ public class UserPageQuery {
         private String deptId;
         private Short status;
         private Boolean deleted;
+
+        @Min(1)
         private Integer page = 1;
+
+        @Min(1)
+        @Max(100)
         private Integer size = 20;
+
         private String sortBy = "createdAt";
+
         private String sortOrder = "DESC";
 
         public Builder username(String username) {

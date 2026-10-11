@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Merchant
+ * LoadUp Merchant App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,6 +19,8 @@
  */
 package io.github.loadup.modules.merchant.app.service;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.merchant.app.converter.MerchantConverter;
 import io.github.loadup.modules.merchant.client.dto.MerchantProfileDTO;
 import io.github.loadup.modules.merchant.client.facade.MerchantQueryFacade;
@@ -39,7 +41,7 @@ public class MerchantQueryService implements MerchantQueryFacade {
 
     public Optional<MerchantProfileDTO> find(String tenant, String id) {
         if (!MerchantIdentity.tenant().equals(tenant))
-            throw new IllegalArgumentException("Merchant lookup tenant mismatch");
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Merchant lookup tenant mismatch");
         return gateway.find(tenant, id).map(converter::toProfile);
     }
 }

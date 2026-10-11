@@ -34,13 +34,18 @@ import java.util.*;
 import org.springframework.transaction.annotation.Transactional;
 
 public class TransferGatewayImpl implements TransferGateway {
+    private final java.time.Clock clock;
 
     private final TransferTaskDOMapper tasks;
     private final TransferTaskOptionDOMapper options;
     private final TransferStorageConverter converter;
 
     public TransferGatewayImpl(
-            TransferTaskDOMapper tasks, TransferTaskOptionDOMapper options, TransferStorageConverter converter) {
+            TransferTaskDOMapper tasks,
+            TransferTaskOptionDOMapper options,
+            TransferStorageConverter converter,
+            java.time.Clock clock) {
+        this.clock = clock;
         this.tasks = tasks;
         this.options = options;
         this.converter = converter;
@@ -99,7 +104,7 @@ public class TransferGatewayImpl implements TransferGateway {
     public boolean start(String id) {
         var patch = UpdateEntity.of(TransferTaskDO.class);
         patch.setStatus(TransferStatus.RUNNING);
-        patch.setStartedAt(LocalDateTime.now(java.time.ZoneOffset.UTC));
+        patch.setStartedAt(LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
         patch.setErrorMessage(null);
         return tasks.updateByQuery(
                         patch,
@@ -125,7 +130,7 @@ public class TransferGatewayImpl implements TransferGateway {
         var patch = UpdateEntity.of(TransferTaskDO.class);
         patch.setStatus(TransferStatus.SUCCEEDED);
         patch.setResultFileId(file);
-        patch.setFinishedAt(LocalDateTime.now(java.time.ZoneOffset.UTC));
+        patch.setFinishedAt(LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
         patch.setErrorMessage(null);
         if (tasks.updateByQuery(patch, task(id).and(TRANSFER_TASK_DO.STATUS.eq(TransferStatus.RUNNING.name()))) != 1)
             throw new IllegalStateException("transfer task is no longer running");
@@ -136,7 +141,7 @@ public class TransferGatewayImpl implements TransferGateway {
         var patch = UpdateEntity.of(TransferTaskDO.class);
         patch.setStatus(TransferStatus.FAILED);
         patch.setErrorMessage(message);
-        patch.setFinishedAt(LocalDateTime.now(java.time.ZoneOffset.UTC));
+        patch.setFinishedAt(LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
         tasks.updateByQuery(
                 patch,
                 task(id).and(TRANSFER_TASK_DO.STATUS.in(TransferStatus.QUEUED.name(), TransferStatus.RUNNING.name())));

@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Merchant
+ * LoadUp Merchant App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.merchant.app.service;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.merchant.app.converter.MerchantConverter;
@@ -39,7 +40,10 @@ public class MerchantService implements io.github.loadup.modules.merchant.client
     private final MerchantConverter converter;
     private final Clock clock;
 
-    public MerchantService(MerchantGateway gateway, MerchantConverter converter, Clock clock) {
+    public MerchantService(
+            MerchantGateway gateway,
+            MerchantConverter converter,
+            @org.springframework.beans.factory.annotation.Qualifier("merchantClock") Clock clock) {
         this.gateway = gateway;
         this.converter = converter;
         this.clock = clock;
@@ -109,7 +113,7 @@ public class MerchantService implements io.github.loadup.modules.merchant.client
     @Transactional(readOnly = true)
     public PageDTO<MerchantDTO> page(MerchantPageQuery query) {
         if (query.page() < 1 || query.size() < 1 || query.size() > 100)
-            throw new IllegalArgumentException("Invalid page");
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Invalid page");
         var result = gateway.page(
                 MerchantIdentity.tenant(),
                 query.merchantCode(),

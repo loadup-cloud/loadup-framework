@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * Loadup Modules UPMS Domain Layer
  * %%
@@ -21,7 +21,7 @@ package io.github.loadup.modules.upms.domain.gateway;
 
 import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.dto.PageQuery;
-import io.github.loadup.modules.upms.domain.entity.LoginLog;
+import io.github.loadup.modules.upms.domain.model.LoginLog;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;

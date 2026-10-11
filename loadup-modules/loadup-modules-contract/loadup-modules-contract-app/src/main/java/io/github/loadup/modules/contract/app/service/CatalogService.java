@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Contract
+ * LoadUp Contract App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.contract.app.service;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.contract.app.converter.ContractConverter;
@@ -46,7 +47,7 @@ public class CatalogService implements io.github.loadup.modules.contract.client.
             ContractCodec codec,
             CatalogAssembler assembler,
             ContractConverter converter,
-            Clock clock) {
+            @org.springframework.beans.factory.annotation.Qualifier("contractClock") Clock clock) {
         this.gateway = gateway;
         this.codec = codec;
         this.assembler = assembler;
@@ -61,7 +62,7 @@ public class CatalogService implements io.github.loadup.modules.contract.client.
         String code = ContractIdentity.code(command.code(), 128);
         CatalogKind kind = CatalogKind.valueOf(command.kind());
         if (command.version() < 1 || command.definition() == null)
-            throw new IllegalArgumentException("Invalid catalog definition");
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Invalid catalog definition");
         LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), ZoneOffset.UTC);
         CatalogEntry previous = command.id() == null
                 ? null

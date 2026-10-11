@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * Loadup Common DTO
  * %%
@@ -21,9 +21,9 @@ package io.github.loadup.commons.result;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "统一响应接口")
+@Schema(description = "Common response contract")
 public sealed interface IResponse<T> permits SuccessResponse, FailureResponse, PageResponse {
 
-    @Schema(description = "结果元数据")
+    @Schema(description = "Result metadata")
     Result getResult();
 }

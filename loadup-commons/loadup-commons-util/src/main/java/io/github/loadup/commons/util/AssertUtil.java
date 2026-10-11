@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * Loadup Common Utils
  * %%
@@ -198,7 +198,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言是否为真，如果为 {@code false} 抛出给定的异常<br>
      *
      * <pre class="code">
      * Assert.isTrue(i &gt; 0, IllegalArgumentException::new);
@@ -214,7 +213,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言是否为真，如果为 {@code false} 抛出 {@code IllegalArgumentException} 异常<br>
      *
      * <pre class="code">
      * Assert.isTrue(i &gt; 0, "The value must be greater than zero");
@@ -228,7 +226,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言是否为真，如果为 {@code false} 抛出 {@code IllegalArgumentException} 异常<br>
      *
      * <pre class="code">
      * Assert.isTrue(i &gt; 0);
@@ -241,8 +238,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言是否为假，如果为 {@code true} 抛出指定类型异常<br>
-     * 并使用指定的函数获取错误信息返回
      *
      * <pre class="code">
      *  Assert.isFalse(i &gt; 0, ()-&gt;{
@@ -262,7 +257,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言是否为假，如果为 {@code true} 抛出 {@code IllegalArgumentException} 异常<br>
      *
      * <pre class="code">
      * Assert.isFalse(i &lt; 0, "The value must not be negative");
@@ -276,7 +270,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言是否为假，如果为 {@code true} 抛出 {@code IllegalArgumentException} 异常<br>
      *
      * <pre class="code">
      * Assert.isFalse(i &lt; 0);
@@ -289,7 +282,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言对象是否为{@code null} ，如果不为{@code null} 抛出指定类型异常 并使用指定的函数获取错误信息返回
      *
      * <pre class="code">
      * Assert.isNull(value, ()-&gt;{
@@ -308,7 +300,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言对象是否为{@code null} ，如果不为{@code null} 抛出{@link IllegalArgumentException} 异常
      *
      * <pre class="code">
      * Assert.isNull(value, "The value must be null");
@@ -322,7 +313,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言对象是否为{@code null} ，如果不为{@code null} 抛出{@link IllegalArgumentException} 异常
      *
      * <pre class="code">
      * Assert.isNull(value);
@@ -338,7 +328,6 @@ public class AssertUtil {
     // not null
 
     /**
-     * 断言对象是否不为{@code null} ，如果为{@code null} 抛出指定类型异常 并使用指定的函数获取错误信息返回
      *
      * <pre class="code">
      * Assert.notNull(clazz, ()-&gt;{
@@ -358,7 +347,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言对象是否不为{@code null} ，如果为{@code null} 抛出{@link IllegalArgumentException} 异常 Assert that an
      * object is not {@code null} .
      *
      * <pre class="code">
@@ -373,7 +361,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言对象是否不为{@code null} ，如果为{@code null} 抛出{@link IllegalArgumentException} 异常
      *
      * <pre class="code">
      * Assert.notNull(clazz);
@@ -389,7 +376,6 @@ public class AssertUtil {
     // empty
 
     /**
-     * 检查给定字符串是否为空，为空抛出自定义异常，并使用指定的函数获取错误信息返回。
      *
      * <pre class="code">
      * Assert.notEmpty(name, ()-&gt;{
@@ -398,7 +384,6 @@ public class AssertUtil {
      *  });
      * </pre>
      *
-     * @throws X 被检查字符串为空抛出此异常
      * @see StringUtils#isNotEmpty(CharSequence)
      * @since 5.4.5
      */
@@ -411,13 +396,11 @@ public class AssertUtil {
     }
 
     /**
-     * 检查给定字符串是否为空，为空抛出 {@link IllegalArgumentException}
      *
      * <pre class="code">
      * Assert.notEmpty(name, "Name must not be empty");
      * </pre>
      *
-     * @throws IllegalArgumentException 被检查字符串为空
      * @see StringUtils#isNotEmpty(CharSequence)
      */
     public static <T extends CharSequence> T notEmpty(
@@ -426,13 +409,11 @@ public class AssertUtil {
     }
 
     /**
-     * 检查给定字符串是否为空，为空抛出 {@link IllegalArgumentException}
      *
      * <pre class="code">
      * Assert.notEmpty(name);
      * </pre>
      *
-     * @throws IllegalArgumentException 被检查字符串为空
      * @see StringUtils#isNotEmpty(CharSequence)
      */
     public static <T extends CharSequence> T notEmpty(final T text) throws IllegalArgumentException {
@@ -441,7 +422,6 @@ public class AssertUtil {
     }
 
     /**
-     * 检查给定字符串是否为空白（null、空串或只包含空白符），为空抛出自定义异常。 并使用指定的函数获取错误信息返回
      *
      * <pre class="code">
      * Assert.notBlank(name, ()-&gt;{
@@ -450,7 +430,6 @@ public class AssertUtil {
      *  });
      * </pre>
      *
-     * @throws X 被检查字符串为空白
      * @see StringUtils#isNotBlank(CharSequence)
      */
     public static <T extends CharSequence, X extends Throwable> T notBlank(
@@ -462,13 +441,11 @@ public class AssertUtil {
     }
 
     /**
-     * 检查给定字符串是否为空白（null、空串或只包含空白符），为空抛出 {@link IllegalArgumentException}
      *
      * <pre class="code">
      * Assert.notBlank(name, "Name must not be blank");
      * </pre>
      *
-     * @throws IllegalArgumentException 被检查字符串为空白
      * @see StringUtils#isNotBlank(CharSequence)
      */
     public static <T extends CharSequence> T notBlank(
@@ -477,13 +454,11 @@ public class AssertUtil {
     }
 
     /**
-     * 检查给定字符串是否为空白（null、空串或只包含空白符），为空抛出 {@link IllegalArgumentException}
      *
      * <pre class="code">
      * Assert.notBlank(name);
      * </pre>
      *
-     * @throws IllegalArgumentException 被检查字符串为空白
      * @see StringUtils#isNotBlank(CharSequence)
      */
     public static <T extends CharSequence> T notBlank(final T text) throws IllegalArgumentException {
@@ -493,8 +468,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言给定字符串是否不被另一个字符串包含（即是否为子串），并使用指定的函数获取错误信息返回<br>
-     * 如果非子串，返回子串，如果是子串，则抛出{@link IllegalArgumentException}异常。
      *
      * <pre class="code">
      * Assert.notContain(name, "rod", ()-&gt;{
@@ -503,7 +476,6 @@ public class AssertUtil {
      *  });
      * </pre>
      *
-     * @throws X 非子串抛出异常
      * @see StringUtils#contains(CharSequence, CharSequence)
      * @since 5.4.5
      */
@@ -516,14 +488,11 @@ public class AssertUtil {
     }
 
     /**
-     * 断言给定字符串是否不被另一个字符串包含（即是否为子串）<br>
-     * 如果非子串，返回子串，如果是子串，则抛出{@link IllegalArgumentException}异常。
      *
      * <pre class="code">
      * Assert.notContain(name, "rod", "Name must not contain 'rod'");
      * </pre>
      *
-     * @throws IllegalArgumentException 非子串抛出异常
      */
     public static String notContain(
             final String textToSearch, final String subString, final String errorMsgTemplate, final Object... params)
@@ -535,14 +504,11 @@ public class AssertUtil {
     }
 
     /**
-     * 断言给定字符串是否不被另一个字符串包含（即是否为子串），即subString是否不是textToSearch的子串。<br>
-     * 如果非子串，返回子串，如果是子串，则抛出{@link IllegalArgumentException}异常。
      *
      * <pre class="code">
      * Assert.notContain(name, "rod");
      * </pre>
      *
-     * @throws IllegalArgumentException 非子串抛出异常
      */
     public static String notContain(final String textToSearch, final String subString) throws IllegalArgumentException {
         return notContain(
@@ -553,7 +519,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言给定数组是否包含元素，数组必须不为 {@code null} 且至少包含一个元素 并使用指定的函数获取错误信息返回
      *
      * <pre class="code">
      * Assert.notEmpty(array, ()-&gt;{
@@ -573,7 +538,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言给定数组是否包含元素，数组必须不为 {@code null} 且至少包含一个元素
      *
      * <pre class="code">
      * Assert.notEmpty(array, "The array must have elements");
@@ -587,7 +551,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言给定数组是否包含元素，数组必须不为 {@code null} 且至少包含一个元素
      *
      * <pre class="code">
      * Assert.notEmpty(array, "The array must have elements");
@@ -601,7 +564,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言给定数组是否不包含{@code null}元素，如果数组为空或 {@code null}将被认为不包含 并使用指定的函数获取错误信息返回
      *
      * <pre class="code">
      * Assert.noNullElements(array, ()-&gt;{
@@ -622,7 +584,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言给定数组是否不包含{@code null}元素，如果数组为空或 {@code null}将被认为不包含
      *
      * <pre class="code">
      * Assert.noNullElements(array, "The array must not have null elements");
@@ -636,7 +597,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言给定数组是否不包含{@code null}元素，如果数组为空或 {@code null}将被认为不包含
      *
      * <pre class="code">
      * Assert.noNullElements(array);
@@ -649,7 +609,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言给定集合非空 并使用指定的函数获取错误信息返回
      *
      * <pre class="code">
      * Assert.notEmpty(collection, ()-&gt;{
@@ -670,7 +629,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言给定集合非空
      *
      * <pre class="code">
      * Assert.notEmpty(collection, "Collection must have elements");
@@ -684,7 +642,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言给定集合非空
      *
      * <pre class="code">
      * Assert.notEmpty(collection);
@@ -699,7 +656,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言给定Map非空 并使用指定的函数获取错误信息返回
      *
      * <pre class="code">
      * Assert.notEmpty(map, ()-&gt;{
@@ -720,7 +676,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言给定Map非空
      *
      * <pre class="code">
      * Assert.notEmpty(map, "Map must have entries");
@@ -734,7 +689,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言给定Map非空
      *
      * <pre class="code">
      * Assert.notEmpty(map, "Map must have entries");
@@ -748,7 +702,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言给定对象是否是给定类的实例
      *
      * <pre class="code">
      * Assert.instanceOf(Foo.class, foo);
@@ -762,7 +715,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言给定对象是否是给定类的实例
      *
      * <pre class="code">
      * Assert.instanceOf(Foo.class, foo, "foo must be an instance of class Foo");
@@ -782,26 +734,22 @@ public class AssertUtil {
     }
 
     /**
-     * 断言 {@code superType.isAssignableFrom(subType)} 是否为 {@code true}.
      *
      * <pre class="code">
      * Assert.isAssignable(Number.class, myClass);
      * </pre>
      *
-     * @throws IllegalArgumentException 如果子类非继承父类，抛出此异常
      */
     public static void isAssignable(final Class<?> superType, final Class<?> subType) throws IllegalArgumentException {
         isAssignable(superType, subType, "{} is not assignable to {})", subType, superType);
     }
 
     /**
-     * 断言 {@code superType.isAssignableFrom(subType)} 是否为 {@code true}.
      *
      * <pre class="code">
      * Assert.isAssignable(Number.class, myClass, "myClass must can be assignable to class Number");
      * </pre>
      *
-     * @throws IllegalArgumentException 如果子类非继承父类，抛出此异常
      */
     public static void isAssignable(
             final Class<?> superType, final Class<?> subType, final String errorMsgTemplate, final Object... params)
@@ -813,7 +761,6 @@ public class AssertUtil {
     }
 
     /**
-     * 检查boolean表达式，当检查结果为false时抛出 {@code IllegalStateException}。 并使用指定的函数获取错误信息返回
      *
      * <pre class="code">
      * Assert.state(id == null, ()-&gt;{
@@ -822,7 +769,6 @@ public class AssertUtil {
      *  });
      * </pre>
      *
-     * @throws IllegalStateException 表达式为 {@code false} 抛出此异常
      */
     public static void state(final boolean expression, final Supplier<String> errorMsgSupplier)
             throws IllegalStateException {
@@ -832,13 +778,11 @@ public class AssertUtil {
     }
 
     /**
-     * 检查boolean表达式，当检查结果为false时抛出 {@code IllegalStateException}。
      *
      * <pre class="code">
      * Assert.state(id == null, "The id property must not already be initialized");
      * </pre>
      *
-     * @throws IllegalStateException 表达式为 {@code false} 抛出此异常
      */
     public static void state(final boolean expression, final String errorMsgTemplate, final Object... params)
             throws IllegalStateException {
@@ -848,27 +792,22 @@ public class AssertUtil {
     }
 
     /**
-     * 检查boolean表达式，当检查结果为false时抛出 {@code IllegalStateException}。
      *
      * <pre class="code">
      * Assert.state(id == null);
      * </pre>
      *
-     * @throws IllegalStateException 表达式为 {@code false} 抛出此异常
      */
     public static void state(final boolean expression) throws IllegalStateException {
         state(expression, "[Assertion failed] - this state invariant must be true");
     }
 
     /**
-     * 检查下标（数组、集合、字符串）是否符合要求，下标必须满足：
      *
      * <pre>
      * 0 &le; index &lt; size
      * </pre>
      *
-     * @throws IllegalArgumentException  如果size &lt; 0 抛出此异常
-     * @throws IndexOutOfBoundsException 如果index &lt; 0或者 index &ge; size 抛出此异常
      * @since 4.1.9
      */
     public static int checkIndex(final int index, final int size)
@@ -877,14 +816,11 @@ public class AssertUtil {
     }
 
     /**
-     * 检查下标（数组、集合、字符串）是否符合要求，下标必须满足：
      *
      * <pre>
      * 0 &le; index &lt; size
      * </pre>
      *
-     * @throws IllegalArgumentException  如果size &lt; 0 抛出此异常
-     * @throws IndexOutOfBoundsException 如果index &lt; 0或者 index &ge; size 抛出此异常
      * @since 4.1.9
      */
     public static int checkIndex(final int index, final int size, final String errorMsgTemplate, final Object... params)
@@ -896,7 +832,6 @@ public class AssertUtil {
     }
 
     /**
-     * 检查值是否在指定范围内
      *
      * @throws X if value is out of bound
      * @since 5.7.15
@@ -911,7 +846,6 @@ public class AssertUtil {
     }
 
     /**
-     * 检查值是否在指定范围内
      *
      * @since 5.7.15
      */
@@ -922,7 +856,6 @@ public class AssertUtil {
     }
 
     /**
-     * 检查值是否在指定范围内
      *
      * @since 4.1.10
      */
@@ -931,7 +864,6 @@ public class AssertUtil {
     }
 
     /**
-     * 检查值是否在指定范围内
      *
      * @throws X if value is out of bound
      * @since 5.7.15
@@ -946,7 +878,6 @@ public class AssertUtil {
     }
 
     /**
-     * 检查值是否在指定范围内
      *
      * @since 5.7.15
      */
@@ -957,7 +888,6 @@ public class AssertUtil {
     }
 
     /**
-     * 检查值是否在指定范围内
      *
      * @since 4.1.10
      */
@@ -966,7 +896,6 @@ public class AssertUtil {
     }
 
     /**
-     * 检查值是否在指定范围内
      *
      * @throws X if value is out of bound
      * @since 5.7.15
@@ -982,7 +911,6 @@ public class AssertUtil {
     }
 
     /**
-     * 检查值是否在指定范围内
      *
      * @since 5.7.15
      */
@@ -997,7 +925,6 @@ public class AssertUtil {
     }
 
     /**
-     * 检查值是否在指定范围内
      *
      * @since 4.1.10
      */
@@ -1006,7 +933,6 @@ public class AssertUtil {
     }
 
     /**
-     * 检查值是否在指定范围内
      *
      * @since 4.1.10
      */
@@ -1024,7 +950,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言两个对象是否不相等,如果两个对象相等 抛出IllegalArgumentException 异常
      *
      * <pre class="code">
      *   Assert.notEquals(obj1,obj2);
@@ -1037,7 +962,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言两个对象是否不相等,如果两个对象相等 抛出IllegalArgumentException 异常
      *
      * <pre class="code">
      *   Assert.notEquals(obj1,obj2,"obj1 must be not equals obj2");
@@ -1052,7 +976,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言两个对象是否不相等,如果两个对象相等,抛出指定类型异常,并使用指定的函数获取错误信息返回
      *
      * @throws X obj1 must be not equals obj2
      */
@@ -1067,7 +990,6 @@ public class AssertUtil {
     // not equals
 
     /**
-     * 断言两个对象是否相等,如果两个对象不相等 抛出IllegalArgumentException 异常
      *
      * <pre class="code">
      *   Assert.isEquals(obj1,obj2);
@@ -1080,7 +1002,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言两个对象是否相等,如果两个对象不相等 抛出IllegalArgumentException 异常
      *
      * <pre class="code">
      *   Assert.isEquals(obj1,obj2,"obj1 must be equals obj2");
@@ -1095,7 +1016,6 @@ public class AssertUtil {
     }
 
     /**
-     * 断言两个对象是否相等,如果两个对象不相等,抛出指定类型异常,并使用指定的函数获取错误信息返回
      *
      * @throws X obj1 must be equals obj2
      */
@@ -1111,9 +1031,6 @@ public class AssertUtil {
 
     // -------------------------------------------------------------------------------------------------------------------------------------------- Private method start
 
-    /**
-     * 错误的下标时显示的消息
-     */
     private static String badIndexMsg(final int index, final int size, final String desc, final Object... params) {
         if (index < 0) {
             return StringUtils.format("{} ({}) must not be negative", StringUtils.format(desc, params), index);

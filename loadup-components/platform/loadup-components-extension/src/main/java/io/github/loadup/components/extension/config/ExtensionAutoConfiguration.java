@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * Loadup Components Extension
  * %%
@@ -31,9 +31,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
-/**
- * Extension 框架的 Spring Boot 自动装配类
- */
 @AutoConfiguration
 @ConditionalOnClass({ExtensionExecutor.class, ExtensionRegistry.class})
 public class ExtensionAutoConfiguration {
@@ -50,12 +47,6 @@ public class ExtensionAutoConfiguration {
         return new ExtensionExecutor(extensionRegistry);
     }
 
-    /**
-     * 注册 {@link BizScenario @BizScenario} AOP 拦截器。
-     *
-     * <p>拦截所有标注了 {@code @BizScenario} 的 Service 方法，在方法执行前后自动管理
-     * {@link io.github.loadup.components.extension.context.BizContextHolder} 的生命周期。
-     */
     @Bean
     @ConditionalOnMissingBean(BizScenarioInterceptor.class)
     public BizScenarioInterceptor bizScenarioInterceptor() {

@@ -19,23 +19,27 @@
  */
 package io.github.loadup.modules.upms.app.strategy;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.modules.upms.app.autoconfigure.UpmsSecurityProperties;
-import io.github.loadup.modules.upms.client.dto.AuthenticatedUser;
-import io.github.loadup.modules.upms.domain.entity.User;
+import io.github.loadup.modules.upms.client.dto.AuthenticatedUserDTO;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
+import io.github.loadup.modules.upms.domain.model.User;
+import java.time.Clock;
 import java.time.LocalDateTime;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 /**
- * 账号密码登录策略
  *
  * @author LoadUp Framework
  * @since 1.0.0
  */
 @Component
 public class PasswordLoginStrategy implements LoginStrategy {
+    private final Clock clock;
 
     private final UserGateway userGateway;
     private final PasswordEncoder passwordEncoder;
@@ -47,34 +51,34 @@ public class PasswordLoginStrategy implements LoginStrategy {
     }
 
     @Override
-    public AuthenticatedUser authenticate(LoginCredentials credentials) {
-        // 1. 查询用户
+    public AuthenticatedUserDTO authenticate(LoginCredentials credentials) {
+
         User user = userGateway
                 .findByUsername(credentials.getUsername())
-                .orElseThrow(() -> new RuntimeException("用户名或密码错误"));
+                .orElseThrow(
+                        () -> new CommonException(CommonResultCodeEnum.UNAUTHENTICATED, "Invalid login credentials"));
 
         // Resolve an expired temporary lock before evaluating account activity.
         if (isAccountLocked(user)) {
-            throw new RuntimeException("账号已被锁定，请稍后再试");
+            throw new CommonException(CommonResultCodeEnum.INVALID_STATE, "Account is locked");
         }
         if (!user.isActive()) {
-            throw new RuntimeException("账号已被锁定或停用");
+            throw new CommonException(CommonResultCodeEnum.INVALID_STATE, "Account is locked or disabled");
         }
 
-        // 2. 验证密码
         if (!passwordEncoder.matches(credentials.getPassword(), user.getPassword())) {
-            // 增加失败次数
+
             handleLoginFailure(user);
-            throw new RuntimeException("用户名或密码错误");
+            throw new CommonException(CommonResultCodeEnum.UNAUTHENTICATED, "Invalid login credentials");
         }
 
-        // 5. 更新登录信息
-        user.updateLastLogin(credentials.getIpAddress());
+        user.updateLastLogin(
+                credentials.getIpAddress(),
+                java.time.LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
         user.resetLoginFailCount();
         userGateway.update(user);
 
-        // 6. 构建认证结果
-        return AuthenticatedUser.builder()
+        return AuthenticatedUserDTO.builder()
                 .userId(user.getId())
                 .username(user.getUsername())
                 .nickname(user.getNickname())
@@ -85,18 +89,16 @@ public class PasswordLoginStrategy implements LoginStrategy {
                 .build();
     }
 
-    /**
-     * 检查账号是否被锁定
-     */
     private boolean isAccountLocked(User user) {
         if (!Boolean.TRUE.equals(user.getAccountNonLocked())) {
             if (Short.valueOf((short) 2).equals(user.getStatus()) && user.getLockedTime() != null) {
                 LocalDateTime unlockTime = user.getLockedTime()
                         .plusMinutes(securityProperties.getLogin().getLockDuration());
-                if (LocalDateTime.now().isBefore(unlockTime)) {
+                if (LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC)
+                        .isBefore(unlockTime)) {
                     return true;
                 } else {
-                    // 自动解锁
+
                     user.unlockAccount();
                     userGateway.update(user);
                     return false;
@@ -107,15 +109,12 @@ public class PasswordLoginStrategy implements LoginStrategy {
         return false;
     }
 
-    /**
-     * 处理登录失败
-     */
     private void handleLoginFailure(User user) {
         if (Boolean.TRUE.equals(securityProperties.getLogin().getEnableFailureTracking())) {
             user.incrementLoginFailCount();
 
             if (user.getLoginFailCount() >= securityProperties.getLogin().getMaxFailAttempts()) {
-                user.lockAccount();
+                user.lockAccount(java.time.LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
                 LogUtil.warn(PasswordLoginStrategy.class, "用户 {} 因失败次数过多被锁定", user.getUsername());
             }
 
@@ -124,7 +123,11 @@ public class PasswordLoginStrategy implements LoginStrategy {
     }
 
     public PasswordLoginStrategy(
-            UserGateway userGateway, PasswordEncoder passwordEncoder, UpmsSecurityProperties securityProperties) {
+            UserGateway userGateway,
+            PasswordEncoder passwordEncoder,
+            UpmsSecurityProperties securityProperties,
+            @Qualifier("upmsClock") Clock clock) {
+        this.clock = clock;
         this.userGateway = userGateway;
         this.passwordEncoder = passwordEncoder;
         this.securityProperties = securityProperties;

@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * Loadup Modules UPMS Domain Layer
  * %%
@@ -19,7 +19,7 @@
  */
 package io.github.loadup.modules.upms.domain.gateway;
 
-import io.github.loadup.modules.upms.domain.entity.Permission;
+import io.github.loadup.modules.upms.domain.model.Permission;
 import java.util.List;
 import java.util.Optional;
 

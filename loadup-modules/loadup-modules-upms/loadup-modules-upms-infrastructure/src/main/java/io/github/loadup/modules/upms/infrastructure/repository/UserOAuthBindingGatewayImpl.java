@@ -1,22 +1,39 @@
+/*
+ * #%L
+ * Loadup Modules UPMS Infrastructure Layer
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package io.github.loadup.modules.upms.infrastructure.repository;
 
 import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.USER_OAUTH_BINDING_DO;
 
 import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.commons.util.IdUtils;
-import io.github.loadup.modules.upms.domain.entity.UserOAuthBinding;
 import io.github.loadup.modules.upms.domain.gateway.UserOAuthBindingGateway;
+import io.github.loadup.modules.upms.domain.model.UserOAuthBinding;
 import io.github.loadup.modules.upms.infrastructure.converter.UserOAuthBindingConverter;
 import io.github.loadup.modules.upms.infrastructure.dataobject.UserOAuthBindingDO;
 import io.github.loadup.modules.upms.infrastructure.mapper.UserOAuthBindingDOMapper;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 /**
- * 用户OAuth绑定 Gateway 实现
  *
  * @author LoadUp Framework
  * @since 1.0.0
@@ -32,9 +49,8 @@ public class UserOAuthBindingGatewayImpl implements UserOAuthBindingGateway {
         UserOAuthBindingDO dataObject = converter.toDO(binding);
         if (dataObject.getId() == null) {
             dataObject.setId(IdUtils.uuid());
-            dataObject.setCreatedAt(LocalDateTime.now());
         }
-        dataObject.setUpdatedAt(LocalDateTime.now());
+
         mapper.insertOrUpdate(dataObject);
         return converter.toEntity(dataObject);
     }

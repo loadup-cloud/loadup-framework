@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Merchant
+ * LoadUp Merchant App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Import;
 @AutoConfiguration(
         afterName = {
             "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration",
-            "io.github.loadup.components.database.autoconfig.MyBatisFlexAutoConfiguration"
+            "io.github.loadup.components.database.autoconfigure.MyBatisFlexAutoConfiguration"
         })
 @ConditionalOnSingleCandidate(DataSource.class)
 @ConditionalOnProperty(
@@ -49,4 +49,10 @@ import org.springframework.context.annotation.Import;
     MerchantStorageConverterImpl.class,
     MerchantGatewayImpl.class
 })
-public class MerchantAutoConfiguration {}
+public class MerchantAutoConfiguration {
+    @org.springframework.context.annotation.Bean
+    @ConditionalOnMissingBean(name = "merchantClock")
+    public java.time.Clock merchantClock() {
+        return java.time.Clock.systemUTC();
+    }
+}

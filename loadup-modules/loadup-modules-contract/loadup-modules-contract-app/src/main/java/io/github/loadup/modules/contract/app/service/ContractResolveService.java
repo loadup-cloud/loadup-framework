@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Contract
+ * LoadUp Contract App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.contract.app.service;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.contract.app.converter.ContractConverter;
 import io.github.loadup.modules.contract.app.support.*;
@@ -43,7 +44,7 @@ public class ContractResolveService implements io.github.loadup.modules.contract
             MerchantContractService contracts,
             MerchantFacts facts,
             ContractConverter converter,
-            Clock clock) {
+            @org.springframework.beans.factory.annotation.Qualifier("contractClock") Clock clock) {
         this.gateway = gateway;
         this.contracts = contracts;
         this.facts = facts;
@@ -58,10 +59,10 @@ public class ContractResolveService implements io.github.loadup.modules.contract
         ContractIdentity.code(query.itemKey(), 256);
         Map<String, TypedValue> values = new HashMap<>(facts.load(tenant, query.merchantId()));
         if (query.transactionFacts() == null || query.transactionFacts().size() > 256)
-            throw new IllegalArgumentException("Invalid facts");
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Invalid facts");
         query.transactionFacts().forEach((key, value) -> {
             if (key == null || value == null || !key.startsWith("transaction."))
-                throw new IllegalArgumentException("Transaction fact namespace required");
+                throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Transaction fact namespace required");
             values.put(key, converter.toValue(value));
         });
         // Read authoritative state after external fact loading; do not use asynchronous caches for revocation.

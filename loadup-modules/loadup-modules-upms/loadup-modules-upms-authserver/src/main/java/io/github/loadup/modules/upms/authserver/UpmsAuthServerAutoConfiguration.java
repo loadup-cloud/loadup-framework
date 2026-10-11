@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * LoadUp UPMS Authorization Server Adapter
  * %%
@@ -68,7 +68,8 @@ public class UpmsAuthServerAutoConfiguration {
     public UpmsTokenController upmsTokenController(
             UpmsAuthenticationProvider authenticationProvider,
             JwtEncoder jwtEncoder,
-            LoadUpAuthServerProperties properties) {
-        return new UpmsTokenController(authenticationProvider, jwtEncoder, properties);
+            LoadUpAuthServerProperties properties,
+            @org.springframework.beans.factory.annotation.Qualifier("upmsClock") java.time.Clock clock) {
+        return new UpmsTokenController(authenticationProvider, jwtEncoder, properties, clock);
     }
 }

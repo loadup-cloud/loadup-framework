@@ -28,8 +28,8 @@ import io.github.loadup.modules.upms.app.service.UserSensitiveReadService;
 import io.github.loadup.modules.upms.client.dto.UserSensitiveDTO;
 import io.github.loadup.modules.upms.client.query.SensitiveReadPurpose;
 import io.github.loadup.modules.upms.client.query.UserSensitiveQuery;
-import io.github.loadup.modules.upms.domain.entity.User;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
+import io.github.loadup.modules.upms.domain.model.User;
 import io.github.loadup.modules.upms.domain.service.AccessDecisionService;
 import io.github.loadup.modules.upms.domain.valueobject.AccessDecision;
 import java.util.Optional;
@@ -96,9 +96,9 @@ class UserSensitiveReadServiceTest {
     @Test
     void rejectsUntrustedQueryMetadata() {
         var service = service(true);
-        assertThatIllegalArgumentException()
+        assertThatExceptionOfType(io.github.loadup.commons.error.CommonException.class)
                 .isThrownBy(() -> service.read("actor", new UserSensitiveQuery("../subject", query.purpose())));
-        assertThatIllegalArgumentException()
+        assertThatExceptionOfType(io.github.loadup.commons.error.CommonException.class)
                 .isThrownBy(() -> service.read("actor", new UserSensitiveQuery("subject", null)));
         verifyNoInteractions(decisions, audit);
     }

@@ -43,6 +43,8 @@
     </scm>
 
     <properties>
+        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
+        <license.trimHeaderLine>true</license.trimHeaderLine>
         <java.version>25</java.version>
         <project.encoding>UTF-8</project.encoding>
         <license.licenseName>apache_v2</license.licenseName>

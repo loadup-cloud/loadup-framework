@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * Testify Assert Engine
  * %%
@@ -53,7 +53,6 @@ public class DbAssertEngine implements TestifyAssertEngine {
             return;
         }
 
-        // 1. 变量解析：支持 ${serviceCode} 等变量在整个数据库断言块中的替换
         Object resolved = variableEngine.resolveValue(expectNode, context);
         JsonNode resolvedExpect = JsonUtil.valueToTree(resolved);
 
@@ -77,9 +76,9 @@ public class DbAssertEngine implements TestifyAssertEngine {
         AssertionError lastError = null;
         do {
             try {
-                // 2. 抓取数据：根据 _match 条件精准抓取
+
                 List<Map<String, Object>> actualRows = fetchActualRows(tableName, expectedRows);
-                // 3. 执行多维度验证（包含 _count 和明细）
+
                 verify(tableName, actualRows, expectedRows, mode);
                 return;
             } catch (AssertionError e) {
@@ -105,7 +104,6 @@ public class DbAssertEngine implements TestifyAssertEngine {
             String mode) {
         List<RowDiff> diffs = new ArrayList<>();
 
-        // 标准化实际行 Key
         List<Map<String, Object>> normalizedActuals = actualRows.stream()
                 .map(row -> ColumnNormalizer.normalizeMap(row, columnNamingStrategy))
                 .collect(Collectors.toList());
@@ -121,13 +119,11 @@ public class DbAssertEngine implements TestifyAssertEngine {
             diffs.add(RowDiff.diff(-1, "Row count mismatch", Map.of("_count", expectedRows.size()), countDiffs));
         }
 
-        // 2. 逐行比对逻辑
         for (int i = 0; i < expectedRows.size(); i++) {
             Map<String, Object> expectedRow = expectedRows.get(i);
             Map<String, Object> normalizedExpected = ColumnNormalizer.normalizeMap(expectedRow, columnNamingStrategy);
             Map<String, FieldDiff> fieldDiffs = new HashMap<>();
 
-            // --- A. 处理 _count 校验逻辑 ---
             if (normalizedExpected.containsKey("_count")) {
                 long expectedCount =
                         Long.parseLong(normalizedExpected.get("_count").toString());
@@ -144,22 +140,20 @@ public class DbAssertEngine implements TestifyAssertEngine {
                                             "Count mismatch for criteria! Expected: %d, Actual: %d",
                                             expectedCount, actualCount)));
                 }
-                // 如果只需校验 count 且 count 为 0，则无需寻找 actualRow 进行明细校验
+
                 if (expectedCount == 0 && fieldDiffs.isEmpty()) {
                     continue;
                 }
             }
 
-            // --- B. 寻找匹配行进行明细校验 ---
             Map<String, Object> actualRow = findMatchedRow(normalizedActuals, normalizedExpected, i);
 
             if (actualRow == null && !normalizedExpected.containsKey("_count")) {
-                // 如果既没有匹配到行，也没有声明 _count (即默认为期望存在 1 条)，报错
+
                 diffs.add(RowDiff.missing(i, "No matching row found in DB", expectedRow));
                 continue;
             }
 
-            // --- C. 字段级比对 (排除控制符) ---
             final Map<String, Object> finalActualRow = actualRow;
             normalizedExpected.forEach((field, expVal) -> {
                 if ("_match".equals(field) || "_count".equals(field)) {
@@ -167,7 +161,7 @@ public class DbAssertEngine implements TestifyAssertEngine {
                 }
 
                 if (finalActualRow == null) {
-                    // 如果定义了除 _count 外的字段，但没找到行
+
                     fieldDiffs.put(field, new FieldDiff(field, expVal, "ABSENT", "Row not found for field validation"));
                 } else {
                     Object actVal = finalActualRow.get(field);
@@ -183,7 +177,6 @@ public class DbAssertEngine implements TestifyAssertEngine {
             }
         }
 
-        // 3. 错误报表构建
         if (!diffs.isEmpty()) {
             List<FieldDiff> finalDiffs = diffs.stream()
                     .flatMap(rd -> {
@@ -249,7 +242,6 @@ public class DbAssertEngine implements TestifyAssertEngine {
                 List<Object> params = new ArrayList<>();
 
                 criteria.forEach((k, v) -> {
-                    // 只处理基础类型条件的拼装，复杂算子交由内存过滤
                     if (!(v instanceof Map)) {
                         sql.append(" AND ").append(identifier(k)).append(" = ?");
                         params.add(v);
@@ -259,7 +251,6 @@ public class DbAssertEngine implements TestifyAssertEngine {
             }
         }
 
-        // 如果没有 _match 或 没查到数据且期望的是非 0 count，尝试全表前100条作为候选集
         if (results.isEmpty()
                 && (!hasMatchCriteria
                         || expectedRows.stream()

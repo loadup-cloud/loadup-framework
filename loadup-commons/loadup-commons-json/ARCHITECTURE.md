@@ -4,7 +4,7 @@
 
 `JsonUtil` 负责真实报文的 Jackson 3 转换和默认日期配置；`MultiDateDeserializer` 负责 Date 的多格式输入。格式常量由 JsonUtil 统一定义，commons-dto 的 CommonConstants 引用这些常量。JSON 不依赖 commons-util 或 commons-dto，空值检查使用 JDK，避免循环依赖。
 
-`ToStringUtils` 将项目数据投影为安全的 Map/List/标量，再由独立 Jackson 3 JsonMapper 编码。投影直接读取字段，避免 bean getter、对象自定义 toString 递归及资源访问。继承字段统一处理，静态字段和合成字段跳过。
+`ToStringAsJson` 将项目数据投影为安全的 Map/List/标量，再由独立 Jackson 3 JsonMapper 编码。投影直接读取字段，避免 bean getter、对象自定义 toString 递归及资源访问。继承字段统一处理，静态字段和合成字段跳过。
 
 ## 边界
 
@@ -29,3 +29,7 @@ TemporalFormats 在模块内集中维护不可变 DateTimeFormatter，使用 `uu
 Date 无时区输入使用 DeserializationContext 的 mapper 时区；显式时区输入先解析成 Instant，再转换为毫秒精度 Date。JSON 整数固定解释为 Unix 毫秒。Local 类型只接受相应的本地文本，不丢弃时区、不截取日期、不自动补时间。Local 反序列化器继承 Jackson 的 Java Time reader，字段明确指定 JsonFormat 格式时使用 Jackson 原生 contextual reader。
 
 输出规则和其他 Java Time 类型保持不变。MultiTemporalDeserializerTest 验证格式矩阵、闰日和严格解析、时区转换、时间戳边界、null、非法 token、字段格式及固定输出。
+
+## 日志与转换约定
+
+JSON 转换失败日志只包含操作名和异常类型，不包含输入 JSON、对象内容及 Jackson 异常链。`ToStringAsJson.reflectionToString` 用于对象日志 JSON，遵循独立于 HTTP JSON 的脱敏规则。

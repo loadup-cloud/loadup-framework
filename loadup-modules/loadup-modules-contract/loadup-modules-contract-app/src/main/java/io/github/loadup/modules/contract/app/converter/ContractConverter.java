@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Contract
+ * LoadUp Contract App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

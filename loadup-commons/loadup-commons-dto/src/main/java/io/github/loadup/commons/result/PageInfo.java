@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * Loadup Common DTO
  * %%
@@ -22,12 +22,12 @@ package io.github.loadup.commons.result;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "分页元数据")
+@Schema(description = "Pagination metadata")
 public record PageInfo(
-        @Schema(description = "总记录数") Long totalCount,
-        @Schema(description = "每页条数") Long pageSize,
-        @Schema(description = "当前页码") Long pageIndex) {
-    @Schema(description = "总页数")
+        @Schema(description = "Total record count") Long totalCount,
+        @Schema(description = "Page size") Long pageSize,
+        @Schema(description = "Page number, starting at 1") Long pageIndex) {
+    @Schema(description = "Total page count")
     public Long getTotalPages() {
         if (pageSize == null || pageSize <= 0) return 0L;
         return (totalCount + pageSize - 1) / pageSize;

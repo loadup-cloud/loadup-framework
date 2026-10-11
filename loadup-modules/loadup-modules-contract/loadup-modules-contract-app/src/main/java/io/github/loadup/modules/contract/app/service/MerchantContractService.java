@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Contract
+ * LoadUp Contract App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.contract.app.service;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.contract.app.converter.ContractConverter;
@@ -55,7 +56,7 @@ public class MerchantContractService implements io.github.loadup.modules.contrac
             ContractCodec codec,
             ContractConverter converter,
             MerchantFacts facts,
-            Clock clock,
+            @org.springframework.beans.factory.annotation.Qualifier("contractClock") Clock clock,
             PlatformTransactionManager transactionManager) {
         this.catalog = catalog;
         this.gateway = gateway;
@@ -125,7 +126,7 @@ public class MerchantContractService implements io.github.loadup.modules.contrac
         ContractIdentity.code(command.scopeKey(), 128);
         ContractIdentity.code(command.requestKey(), 128);
         if (command.selectedItems() == null || command.values() == null)
-            throw new IllegalArgumentException("Selection and values required");
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Selection and values required");
     }
 
     private void requirePlan(CatalogEntry entry) {

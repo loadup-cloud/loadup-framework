@@ -1,16 +1,34 @@
+/*
+ * #%L
+ * Loadup Modules UPMS Infrastructure Layer
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package io.github.loadup.modules.upms.infrastructure.repository;
 
 import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.DEPARTMENT_DO;
 import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.USER_DO;
 
 import com.mybatisflex.core.query.QueryWrapper;
-import io.github.loadup.modules.upms.domain.entity.Department;
 import io.github.loadup.modules.upms.domain.gateway.DepartmentGateway;
+import io.github.loadup.modules.upms.domain.model.Department;
 import io.github.loadup.modules.upms.infrastructure.converter.DepartmentConverter;
 import io.github.loadup.modules.upms.infrastructure.dataobject.DepartmentDO;
 import io.github.loadup.modules.upms.infrastructure.mapper.DepartmentDOMapper;
 import io.github.loadup.modules.upms.infrastructure.mapper.UserDOMapper;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,8 +52,7 @@ public class DepartmentGatewayImpl implements DepartmentGateway {
     public Department save(Department department) {
         DepartmentDO departmentDO = departmentConverter.toDataObject(department);
         if (departmentDO.getId() == null) departmentDO.setId(UUID.randomUUID().toString());
-        if (departmentDO.getCreatedAt() == null) departmentDO.setCreatedAt(LocalDateTime.now());
-        if (departmentDO.getUpdatedAt() == null) departmentDO.setUpdatedAt(departmentDO.getCreatedAt());
+
         departmentDOMapper.insert(departmentDO);
         department = departmentConverter.toEntity(departmentDO);
         return department;

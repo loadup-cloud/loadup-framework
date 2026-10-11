@@ -18,8 +18,6 @@
         <module>loadup-modules-contract-domain</module>
         <module>loadup-modules-contract-test</module>
     </modules>
-    <properties>
-        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
-    </properties>
+    <properties/>
 
 </project>

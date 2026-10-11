@@ -24,7 +24,6 @@ import java.io.Serial;
 import java.io.Serializable;
 
 /**
- * OAuth 用户信息
  *
  * @author LoadUp Framework
  * @since 1.0.0
@@ -34,34 +33,16 @@ public class OAuthUserInfo implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 第三方平台的用户唯一标识
-     */
     private String openId;
 
-    /**
-     * 联合 ID（如微信的 unionId）
-     */
     private String unionId;
 
-    /**
-     * 昵称
-     */
     private String nickname;
 
-    /**
-     * 头像
-     */
     private String avatar;
 
-    /**
-     * 邮箱
-     */
     private String email;
 
-    /**
-     * 手机号
-     */
     private String mobile;
 
     public OAuthUserInfo(String openId, String unionId, String nickname, String avatar, String email, String mobile) {

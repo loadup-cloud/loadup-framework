@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * LoadUp UPMS Authorization Server Adapter
  * %%
@@ -20,7 +20,7 @@
 package io.github.loadup.modules.upms.authserver;
 
 import io.github.loadup.modules.upms.client.command.UserLoginCommand;
-import io.github.loadup.modules.upms.client.dto.AuthenticatedUser;
+import io.github.loadup.modules.upms.client.dto.AuthenticatedUserDTO;
 import io.github.loadup.modules.upms.client.facade.AuthenticationFacade;
 import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
 import io.github.loadup.modules.upms.domain.service.UserPermissionService;
@@ -59,7 +59,7 @@ public final class UpmsAuthenticationProvider implements AuthenticationProvider 
         command.setUsername(authentication.getName());
         command.setPassword(String.valueOf(authentication.getCredentials()));
         command.setIpAddress(ipAddress);
-        AuthenticatedUser user;
+        AuthenticatedUserDTO user;
         try {
             user = authenticationService.login(command);
         } catch (RuntimeException ex) {

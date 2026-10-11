@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * LoadUp UPMS Authorization Server Adapter
  * %%
@@ -52,14 +52,17 @@ public class UpmsTokenController {
     private final UpmsAuthenticationProvider authenticationProvider;
     private final JwtEncoder jwtEncoder;
     private final LoadUpAuthServerProperties properties;
+    private final java.time.Clock clock;
 
     public UpmsTokenController(
             UpmsAuthenticationProvider authenticationProvider,
             JwtEncoder jwtEncoder,
-            LoadUpAuthServerProperties properties) {
+            LoadUpAuthServerProperties properties,
+            @org.springframework.beans.factory.annotation.Qualifier("upmsClock") java.time.Clock clock) {
         this.authenticationProvider = authenticationProvider;
         this.jwtEncoder = jwtEncoder;
         this.properties = properties;
+        this.clock = clock;
     }
 
     @PostMapping(
@@ -91,7 +94,7 @@ public class UpmsTokenController {
                     permissions.add(name);
                 }
             }
-            Instant issuedAt = Instant.now();
+            Instant issuedAt = clock.instant();
             Instant expiresAt = issuedAt.plus(properties.getUserAccessTokenTtl());
             JwtClaimsSet claims = JwtClaimsSet.builder()
                     .issuer(properties.getIssuer())
@@ -116,8 +119,19 @@ public class UpmsTokenController {
             @Schema(description = "Login name", example = "admin")
             String username,
 
-            @Schema(description = "Password", format = "password")
-            String password) {}
+            @Schema(
+                    description = "Password",
+                    format = "password",
+                    example = "Example-password-123",
+                    accessMode = Schema.AccessMode.WRITE_ONLY)
+            @com.fasterxml.jackson.annotation.JsonProperty(
+                    access = com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY)
+            String password) {
+        @Override
+        public String toString() {
+            return io.github.loadup.commons.json.ToStringAsJson.reflectionToString(this);
+        }
+    }
 
     public record TokenData(
             @Schema(description = "JWT access token") String accessToken,
@@ -126,5 +140,10 @@ public class UpmsTokenController {
             String tokenType,
 
             @Schema(description = "Token lifetime in seconds", example = "1800")
-            long expiresIn) {}
+            long expiresIn) {
+        @Override
+        public String toString() {
+            return io.github.loadup.commons.json.ToStringAsJson.reflectionToString(this);
+        }
+    }
 }

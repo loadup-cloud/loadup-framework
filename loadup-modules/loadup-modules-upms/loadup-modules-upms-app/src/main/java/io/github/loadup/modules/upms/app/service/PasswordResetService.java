@@ -19,11 +19,18 @@
  */
 package io.github.loadup.modules.upms.app.service;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.log.LogUtil;
+import io.github.loadup.commons.masking.MaskType;
+import io.github.loadup.commons.masking.Masking;
 import io.github.loadup.modules.upms.client.command.UserPasswordResetCommand;
-import io.github.loadup.modules.upms.domain.entity.User;
+import io.github.loadup.modules.upms.client.validation.PasswordPolicy;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
+import io.github.loadup.modules.upms.domain.model.User;
+import java.time.Clock;
 import java.time.LocalDateTime;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class PasswordResetService implements io.github.loadup.modules.upms.client.facade.PasswordResetFacade {
+    private final Clock clock;
 
     private final UserGateway userGateway;
     private final VerificationCodeService verificationCodeService;
@@ -46,18 +54,23 @@ public class PasswordResetService implements io.github.loadup.modules.upms.clien
      */
     public void sendEmailVerificationCode(String email) {
         // Validate email exists
-        userGateway.findByEmail(email).orElseThrow(() -> new RuntimeException("该邮箱未注册"));
+        userGateway
+                .findByEmail(email)
+                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Email is not registered"));
 
         // Check rate limiting
         if (!verificationCodeService.canSendCode(email, "EMAIL")) {
-            throw new RuntimeException("验证码发送过于频繁，请稍后再试");
+            throw new CommonException(CommonResultCodeEnum.RATE_LIMITED, "Verification requests are rate limited");
         }
 
         // Generate code
         String code = verificationCodeService.generateCode(email, "EMAIL");
 
         // TODO: Send email using loadup-components-gotone
-        LogUtil.info(PasswordResetService.class, "Sending email verification code to {}: {}", email, code);
+        LogUtil.info(
+                PasswordResetService.class,
+                "Email verification code generated for {}",
+                Masking.mask(email, MaskType.EMAIL));
     }
 
     /**
@@ -65,18 +78,24 @@ public class PasswordResetService implements io.github.loadup.modules.upms.clien
      */
     public void sendSmsVerificationCode(String mobile) {
         // Validate mobile exists
-        userGateway.findByMobile(mobile).orElseThrow(() -> new RuntimeException("该手机号未注册"));
+        userGateway
+                .findByMobile(mobile)
+                .orElseThrow(
+                        () -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Phone number is not registered"));
 
         // Check rate limiting
         if (!verificationCodeService.canSendCode(mobile, "SMS")) {
-            throw new RuntimeException("验证码发送过于频繁，请稍后再试");
+            throw new CommonException(CommonResultCodeEnum.RATE_LIMITED, "Verification requests are rate limited");
         }
 
         // Generate code
         String code = verificationCodeService.generateCode(mobile, "SMS");
 
         // TODO: Send SMS using loadup-components-gotone
-        LogUtil.info(PasswordResetService.class, "Sending SMS verification code to {}: {}", mobile, code);
+        LogUtil.info(
+                PasswordResetService.class,
+                "SMS verification code generated for {}",
+                Masking.mask(mobile, MaskType.PHONE));
     }
 
     /**
@@ -84,8 +103,17 @@ public class PasswordResetService implements io.github.loadup.modules.upms.clien
      */
     @Transactional
     public void resetPassword(UserPasswordResetCommand command) {
+        if (command == null) throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
+        PasswordPolicy.requireValid(command.getNewPassword());
+        // Check new password confirmation
+        if (!command.getNewPassword().equals(command.getConfirmPassword())) {
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Password confirmation does not match");
+        }
+
         // Find user
-        User user = userGateway.findByUsername(command.getUsername()).orElseThrow(() -> new RuntimeException("用户不存在"));
+        User user = userGateway
+                .findByUsername(command.getUsername())
+                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "User not found"));
 
         // Determine verification target (email or phone)
         String target;
@@ -93,39 +121,37 @@ public class PasswordResetService implements io.github.loadup.modules.upms.clien
 
         if ("EMAIL".equalsIgnoreCase(type)) {
             if (user.getEmail() == null) {
-                throw new RuntimeException("该用户未绑定邮箱");
+                throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Email is not bound to the user");
             }
             target = user.getEmail();
         } else if ("SMS".equalsIgnoreCase(type)) {
             if (user.getMobile() == null) {
-                throw new RuntimeException("该用户未绑定手机号");
+                throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Phone number is not bound to the user");
             }
             target = user.getMobile();
         } else {
-            throw new RuntimeException("不支持的验证方式");
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Unsupported verification method");
         }
 
         // Validate verification code
         if (!verificationCodeService.validateCode(target, type, command.getVerificationCode())) {
-            throw new RuntimeException("验证码无效或已过期");
-        }
-
-        // Check new password confirmation
-        if (!command.getNewPassword().equals(command.getConfirmPassword())) {
-            throw new RuntimeException("两次输入的密码不一致");
+            throw new CommonException(CommonResultCodeEnum.UNAUTHENTICATED, "Verification code is invalid or expired");
         }
 
         // Reset password
         user.setPassword(passwordEncoder.encode(command.getNewPassword()));
-        user.setPasswordUpdateTime(LocalDateTime.now());
-        user.setUpdatedAt(LocalDateTime.now());
+        user.setPasswordUpdateTime(LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
 
         userGateway.update(user);
         LogUtil.info(PasswordResetService.class, "Password reset successful for user: {}", user.getUsername());
     }
 
     public PasswordResetService(
-            UserGateway userGateway, VerificationCodeService verificationCodeService, PasswordEncoder passwordEncoder) {
+            UserGateway userGateway,
+            VerificationCodeService verificationCodeService,
+            PasswordEncoder passwordEncoder,
+            @Qualifier("upmsClock") Clock clock) {
+        this.clock = clock;
         this.userGateway = userGateway;
         this.verificationCodeService = verificationCodeService;
         this.passwordEncoder = passwordEncoder;

@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * Loadup Common DTO
  * %%
@@ -25,19 +25,16 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-/**
- * 失败响应实现 使用 Record 保证数据不可变，通过 Jackson 注解确保 JSON 格式平整
- */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"result", "data", "traceId"})
 public record FailureResponse<T>(
-        @Schema(description = "结果元数据") @JsonProperty("result")
+        @Schema(description = "Result metadata") @JsonProperty("result")
         Result result,
 
-        @Schema(description = "业务数据") @JsonProperty("data") @JsonInclude(JsonInclude.Include.ALWAYS)
+        @Schema(description = "Business data") @JsonProperty("data") @JsonInclude(JsonInclude.Include.ALWAYS)
         T data,
 
-        @Schema(description = "请求追踪ID") @JsonProperty("traceId")
+        @Schema(description = "Request trace identifier") @JsonProperty("traceId")
         String traceId)
         implements IResponse<T> {
 
@@ -45,8 +42,6 @@ public record FailureResponse<T>(
     public Result getResult() {
         return result;
     }
-
-    // --- 静态工厂方法 ---
 
     public static <T> FailureResponse<T> of(ResultCode code) {
         return new FailureResponse<>(Result.buildFailure(code), null, null);
@@ -56,9 +51,6 @@ public record FailureResponse<T>(
         return new FailureResponse<>(Result.buildFailure(errCode, errMessage), null, null);
     }
 
-    /**
-     * 带 TraceId 的工厂方法（推荐在 GlobalExceptionHandler 中使用）
-     */
     public static <T> FailureResponse<T> of(String errCode, String errMessage, String traceId) {
         return new FailureResponse<>(Result.buildFailure(errCode, errMessage), null, traceId);
     }

@@ -43,7 +43,16 @@ public class AuditAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public AuditService auditService(AuditGateway repository, AuditDTOConverter converter) {
-        return new AuditService(repository, converter);
+    public AuditService auditService(
+            AuditGateway repository,
+            AuditDTOConverter converter,
+            @org.springframework.beans.factory.annotation.Qualifier("auditClock") java.time.Clock clock) {
+        return new AuditService(repository, converter, clock);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "auditClock")
+    public java.time.Clock auditClock() {
+        return java.time.Clock.systemUTC();
     }
 }

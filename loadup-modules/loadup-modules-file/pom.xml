@@ -18,7 +18,5 @@
         <module>loadup-modules-file-web</module>
         <module>loadup-modules-file-test</module>
     </modules>
-    <properties>
-        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
-    </properties>
+    <properties/>
 </project>

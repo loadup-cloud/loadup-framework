@@ -98,6 +98,12 @@ public class LoadUpWebMvcAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(ApiExceptionHandler.class)
+    public ApiExceptionHandler loadUpApiExceptionHandler(ApiPathMatcher matcher) {
+        return new ApiExceptionHandler(matcher);
+    }
+
+    @Bean
     @ConditionalOnMissingBean(ErrorController.class)
     public ApiErrorController loadUpApiErrorController(ApiPathMatcher pathMatcher, ErrorAttributes errorAttributes) {
         return new ApiErrorController(pathMatcher, errorAttributes);

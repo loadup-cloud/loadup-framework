@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * Loadup Common DTO
  * %%
@@ -29,19 +29,11 @@ public interface IEnum {
 
     String getDescription();
 
-    /**
-     * 优化的枚举转换工具
-     */
     class EnumLookup {
-        // 如果对内存极其敏感，可考虑使用 WeakHashMap 或添加清理机制
+
         private static final Map<Class<?>, Map<String, Object>> NAME_CACHE = new ConcurrentHashMap<>();
         private static final Map<Class<?>, Map<String, Object>> CODE_CACHE = new ConcurrentHashMap<>();
 
-        /**
-         * 核心查找逻辑：支持按 Name 或 Code 查找
-         *
-         * @param isName 为 true 按 Enum.name() 查找，为 false 按 IEnum.getCode() 查找
-         */
         @SuppressWarnings("unchecked")
         private static <T extends Enum<T> & IEnum> T get(Class<T> enumClass, String value, boolean isName) {
             if (value == null || value.trim().isEmpty()) return null;

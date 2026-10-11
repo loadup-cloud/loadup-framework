@@ -34,24 +34,12 @@ public class OAuthToken implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 访问令牌
-     */
     private String accessToken;
 
-    /**
-     * 刷新令牌
-     */
     private String refreshToken;
 
-    /**
-     * 过期时间（秒）
-     */
     private Long expiresIn;
 
-    /**
-     * 作用域
-     */
     private String scope;
 
     public OAuthToken(String accessToken, String refreshToken, Long expiresIn, String scope) {

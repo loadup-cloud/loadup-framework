@@ -34,14 +34,14 @@ import jakarta.validation.constraints.Size;
  */
 public class DepartmentUpdateCommand {
 
-    @NotNull(message = "部门ID不能为空")
+    @NotNull()
     @Schema(description = "Resource identifier")
     private String id;
 
     @Schema(description = "Parent id")
     private String parentId;
 
-    @Size(max = 50, message = "部门名称长度不能超过50")
+    @Size(max = 50)
     @Schema(description = "Dept name")
     private String deptName;
 
@@ -51,11 +51,11 @@ public class DepartmentUpdateCommand {
     @Schema(description = "Leader user id")
     private String leaderUserId;
 
-    @Pattern(regexp = "^$|^1[3-9]\\d{9}$", message = "手机号格式不正确")
+    @Pattern(regexp = "^$|^1[3-9]\\d{9}$")
     @Schema(description = "Mobile")
     private String mobile;
 
-    @Email(message = "邮箱格式不正确")
+    @Email()
     @Schema(description = "Email")
     private String email;
 

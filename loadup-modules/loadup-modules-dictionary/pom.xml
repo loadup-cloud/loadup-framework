@@ -18,7 +18,5 @@
         <module>loadup-modules-dictionary-web</module>
         <module>loadup-modules-dictionary-test</module>
     </modules>
-    <properties>
-        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
-    </properties>
+    <properties/>
 </project>

@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * Loadup Common Utils
  * %%
@@ -25,9 +25,7 @@ public class DurationUtils {
     private DurationUtils() {}
 
     /**
-     * 解析字符串为Duration
      *
-     * @param duration 字符串，格式为 PT1H2M3S
      * @return Duration
      */
     public static Duration parse(String duration) {

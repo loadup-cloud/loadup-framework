@@ -5,6 +5,7 @@
         <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-parent</artifactId>
         <version>0.0.2-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>io.github.loadup-cloud</groupId>
@@ -13,7 +14,6 @@
     <description>Loadup Common Utils - utility helpers used across the project</description>
 
     <properties>
-        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
         <java.version>25</java.version>
         <project.encoding>UTF-8</project.encoding>
         <maven.compiler.source>${java.version}</maven.compiler.source>

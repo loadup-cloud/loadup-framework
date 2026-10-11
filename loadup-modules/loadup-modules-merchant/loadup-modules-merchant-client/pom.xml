@@ -9,9 +9,7 @@
     </parent>
     <artifactId>loadup-modules-merchant-client</artifactId>
     <name>LoadUp Merchant Client</name>
-    <properties>
-        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
-    </properties>
+    <properties/>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

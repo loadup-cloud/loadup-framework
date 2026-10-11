@@ -9,9 +9,7 @@
     </parent>
     <artifactId>loadup-modules-notification-web</artifactId>
     <name>LoadUp In-App Notifications Web Adapter</name>
-    <properties>
-        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
-    </properties>
+    <properties/>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

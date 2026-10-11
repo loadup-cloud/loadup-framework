@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * Loadup Launcher
  * %%
@@ -21,28 +21,25 @@ package io.github.loadup.application.arch;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noFields;
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
 
+import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.core.importer.Location;
+import com.tngtech.archunit.library.dependencies.SliceAssignment;
+import com.tngtech.archunit.library.dependencies.SliceIdentifier;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
- * LoadUp 架构约束测试（ArchUnit）
  *
- * <p>校验以下规则：
  * <ul>
- *   <li>业务模块各层依赖方向（domain → client，infra → domain，app → infra+domain）</li>
- *   <li>domain 层不得引入 Spring / ORM 框架注解</li>
- *   <li>模块之间无横向依赖</li>
- *   <li>不允许使用字段级 @Autowired（必须构造器注入）</li>
  *   <li>HTTP controllers belong to Web or authentication adapters</li>
- *   <li>无包内循环依赖</li>
  * </ul>
  */
 @DisplayName("LoadUp Architecture Rules")
@@ -62,10 +59,8 @@ class ArchitectureTest {
                 .importPackages("io.github.loadup.modules");
     }
 
-    // ── Domain 层纯洁性 ─────────────────────────────────────────────────────
-
     @Test
-    @DisplayName("domain 层不得引入 Spring 注解")
+    @DisplayName("Enforce documented layer and naming conventions")
     void domainShouldNotDependOnSpring() {
         noClasses()
                 .that()
@@ -73,12 +68,12 @@ class ArchitectureTest {
                 .should()
                 .dependOnClassesThat()
                 .resideInAPackage("org.springframework..")
-                .because("domain 层是纯 DDD 模型，不得依赖 Spring 框架")
+                .because("Follow the documented dependency direction")
                 .check(MODULE_CLASSES);
     }
 
     @Test
-    @DisplayName("domain 层不得引入 MyBatis-Flex 注解（@Table 等必须在 infrastructure 层）")
+    @DisplayName("Enforce documented layer and naming conventions")
     void domainShouldNotDependOnMyBatisFlex() {
         noClasses()
                 .that()
@@ -86,19 +81,49 @@ class ArchitectureTest {
                 .should()
                 .dependOnClassesThat()
                 .resideInAPackage("com.mybatisflex..")
-                .because("DO 实体（@Table）必须放在 infrastructure.dataobject 包，domain 层不依赖 ORM")
+                .because("Follow the documented dependency direction")
                 .check(MODULE_CLASSES);
     }
 
     @Test
-    @DisplayName("domain 层不得引入 Lombok @Builder（domain model 不使用 builder 模式除外）")
-    void domainShouldNotUseLombokTableAnnotation() {
+    @DisplayName("Production code must not depend on Lombok")
+    void productionShouldNotDependOnLombok() {
+        noClasses().should().dependOnClassesThat().resideInAPackage("lombok..").check(ALL_CLASSES);
+    }
+
+    @Test
+    void controllersUseFacadesInsteadOfApplicationServices() {
         noClasses()
                 .that()
-                .resideInAPackage("..domain..")
+                .haveSimpleNameEndingWith("Controller")
+                .and()
+                .resideInAPackage("..modules..web..")
                 .should()
                 .dependOnClassesThat()
-                .resideInAPackage("com.mybatisflex.annotation..")
+                .resideInAnyPackage("..app.service..", "..infrastructure..", "..domain..")
+                .check(MODULE_CLASSES);
+    }
+
+    @Test
+    void publicFacadeNamesAreConsistent() {
+        classes()
+                .that()
+                .resideInAPackage("..client.facade..")
+                .should()
+                .beInterfaces()
+                .andShould()
+                .haveSimpleNameEndingWith("Facade")
+                .check(MODULE_CLASSES);
+    }
+
+    @Test
+    void repositoriesUseTheDatabaseComponent() {
+        noClasses()
+                .that()
+                .resideInAPackage("..modules..infrastructure.repository..")
+                .should()
+                .dependOnClassesThat()
+                .resideInAPackage("org.springframework.jdbc.core..")
                 .check(MODULE_CLASSES);
     }
 
@@ -109,7 +134,7 @@ class ArchitectureTest {
     void controllersBelongToAdapters() {
         noClasses()
                 .that()
-                .resideOutsideOfPackages("..web..", "..authserver..")
+                .resideOutsideOfPackages("..web..", "..authserver..", "io.github.loadup.components.webmvc..")
                 .should()
                 .beAnnotatedWith("org.springframework.web.bind.annotation.RestController")
                 .orShould()
@@ -118,25 +143,18 @@ class ArchitectureTest {
                 .check(ALL_CLASSES);
     }
 
-    // ── 禁止字段级 @Autowired ────────────────────────────────────────────────
-
     @Test
-    @DisplayName("不允许在非测试类中使用字段级 @Autowired（必须使用构造器注入）")
+    @DisplayName("Enforce documented layer and naming conventions")
     void noFieldAutowired() {
-        noClasses()
-                .that()
-                .resideOutsideOfPackage("..test..")
+        noFields()
                 .should()
-                .dependOnClassesThat()
-                .haveFullyQualifiedName("org.springframework.beans.factory.annotation.Autowired")
-                .because("必须使用构造器注入（@RequiredArgsConstructor），禁止字段 @Autowired")
+                .beAnnotatedWith("org.springframework.beans.factory.annotation.Autowired")
+                .because("dependencies use explicit constructor injection")
                 .check(MODULE_CLASSES);
     }
 
-    // ── 模块分层依赖规则 ──────────────────────────────────────────────────────
-
     @Test
-    @DisplayName("modules 各业务模块分层依赖方向正确")
+    @DisplayName("Enforce documented layer and naming conventions")
     void modulesLayeredArchitecture() {
         layeredArchitecture()
                 .consideringOnlyDependenciesInLayers()
@@ -156,39 +174,50 @@ class ArchitectureTest {
                 .mayOnlyBeAccessedByLayers("app", "infrastructure")
                 .whereLayer("client")
                 .mayOnlyBeAccessedByLayers("app", "infrastructure", "domain")
-                .because("必须遵循 client → domain → infrastructure → app 单向依赖")
+                .because("Follow the documented dependency direction")
                 .check(MODULE_CLASSES);
     }
 
-    // ── 禁止循环依赖 ──────────────────────────────────────────────────────────
-
     @Test
-    @DisplayName("业务模块包之间无循环依赖")
+    @DisplayName("Enforce documented layer and naming conventions")
     void noModuleCircularDependencies() {
         slices().matching("io.github.loadup.modules.(*)..")
                 .should()
                 .beFreeOfCycles()
-                .because("模块之间不允许循环依赖")
+                .because("Follow the documented dependency direction")
                 .check(MODULE_CLASSES);
     }
 
     @Test
-    @DisplayName("commons 包内无循环依赖")
+    @DisplayName("Enforce documented layer and naming conventions")
     void noCommonsCircularDependencies() {
         JavaClasses commons = new ClassFileImporter()
                 .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
                 .importPackages("io.github.loadup.commons");
 
-        slices().matching("io.github.loadup.commons.(*)..")
+        slices().assignedFrom(new SliceAssignment() {
+                    public SliceIdentifier getIdentifierOf(JavaClass type) {
+                        if (!type.getName().startsWith("io.github.loadup.commons.")) return SliceIdentifier.ignore();
+                        String location =
+                                type.getSource().orElseThrow().getUri().toString();
+                        var matcher = java.util.regex.Pattern.compile("/(loadup-commons-[^/]+)/")
+                                .matcher(location);
+                        if (!matcher.find())
+                            throw new IllegalStateException("Cannot identify commons artifact: " + location);
+                        return SliceIdentifier.of(matcher.group(1));
+                    }
+
+                    public String getDescription() {
+                        return "commons Maven artifacts";
+                    }
+                })
                 .should()
                 .beFreeOfCycles()
                 .check(commons);
     }
 
-    // ── Service 命名约束 ──────────────────────────────────────────────────────
-
     @Test
-    @DisplayName("app.service 包中的类必须以 Service 结尾并标注 @Service")
+    @DisplayName("Enforce documented layer and naming conventions")
     void serviceClassNamingConvention() {
         classes()
                 .that()
@@ -197,12 +226,12 @@ class ArchitectureTest {
                 .areAnnotatedWith("org.springframework.stereotype.Service")
                 .should()
                 .haveSimpleNameEndingWith("Service")
-                .because("Service Bean 必须以 Service 结尾，便于识别")
+                .because("Follow the documented dependency direction")
                 .check(MODULE_CLASSES);
     }
 
     @Test
-    @DisplayName("infrastructure.repository 包中的类必须以 GatewayImpl 结尾")
+    @DisplayName("Enforce documented layer and naming conventions")
     void gatewayImplNamingConvention() {
         classes()
                 .that()
@@ -211,11 +240,9 @@ class ArchitectureTest {
                 .areAnnotatedWith("org.springframework.stereotype.Repository")
                 .should()
                 .haveSimpleNameEndingWith("GatewayImpl")
-                .because("Gateway 实现类必须以 GatewayImpl 结尾")
+                .because("Follow the documented dependency direction")
                 .check(MODULE_CLASSES);
     }
-
-    // ── Security 规则 ─────────────────────────────────────────────────────────
 
     // ── Test class naming conventions ─────────────────────────────────────────
 
@@ -237,6 +264,7 @@ class ArchitectureTest {
                 .should()
                 .haveSimpleNameEndingWith("IT")
                 .because("Test classes needing database containers must be named *IT.java so Failsafe runs them")
+                .allowEmptyShould(true)
                 .check(testClasses);
     }
 

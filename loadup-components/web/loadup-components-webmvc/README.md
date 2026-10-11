@@ -53,3 +53,7 @@ HTTP JSON 输出中的 `13812345678` 变为 `138****5678`。注解支持字段�
 传递引入 [commons-context](../../../loadup-commons/loadup-commons-context/README.md)，使用 JDK 25 ScopedValue。`ExecutionContextFilter` 以最高优先级通过 ServiceTemplate 在每次分派的 FilterChain 执行期间绑定不可变上下文，返回/异常后自动恢复。REQUEST/ASYNC/ERROR 从请求属性 `ExecutionContext.class.getName()` 获取显式元数据，默认空 context；下游临时覆盖不会写回父请求。
 
 应用的可信租户适配器应在此后确定元数据、写入同名请求属性，并通过 ContextHolder.callWith/runWith 包裹自己的 FilterChain。本组件不从外部请求自动绑定租户/用户。异步任务使用 Observability 的业务 TaskDecorator 或显式 wrap；只有标准 Micrometer snapshot 不会传播 ScopedValue。
+
+## 失败响应契约
+
+`/api` 下的 CommonException 保留 ResultCode，并返回 HTTP 200 的 FailureResponse（result、data）；输入绑定和 Validation 错误返回 PARAM_ILLEGAL，未知异常返回 SYS_ERROR。异常日志只记录类型，不记录可能携带请求明文的消息或异常链。Spring Security 异常交回认证/鉴权过滤器，非 API 协议端点保留原协议行为。

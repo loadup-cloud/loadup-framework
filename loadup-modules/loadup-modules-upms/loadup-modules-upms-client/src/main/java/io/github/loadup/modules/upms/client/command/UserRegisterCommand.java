@@ -20,6 +20,7 @@
 package io.github.loadup.modules.upms.client.command;
 
 import io.github.loadup.commons.json.ToStringAsJson;
+import io.github.loadup.modules.upms.client.validation.ValidPassword;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
@@ -36,6 +37,7 @@ public class UserRegisterCommand {
     @Schema(description = "Password, supplied only in requests", accessMode = Schema.AccessMode.WRITE_ONLY)
     @com.fasterxml.jackson.annotation.JsonProperty(
             access = com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY)
+    @ValidPassword
     private String password;
 
     @Schema(description = "Nickname")

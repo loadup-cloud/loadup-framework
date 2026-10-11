@@ -19,6 +19,8 @@
  */
 package io.github.loadup.modules.dictionary.app.service;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.dictionary.app.converter.DictionaryDTOConverter;
 import io.github.loadup.modules.dictionary.client.command.DictionaryItemCreateCommand;
@@ -30,34 +32,39 @@ import io.github.loadup.modules.dictionary.client.dto.DictionaryTypeDTO;
 import io.github.loadup.modules.dictionary.domain.gateway.DictionaryGateway;
 import io.github.loadup.modules.dictionary.domain.model.DictionaryItem;
 import io.github.loadup.modules.dictionary.domain.model.DictionaryType;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 
 /** Dictionary administration and effective-value queries. */
 public class DictionaryService implements io.github.loadup.modules.dictionary.client.facade.DictionaryFacade {
+    private final Clock clock;
     private static final String DEFAULT_TENANT = "__default__";
     private final DictionaryDTOConverter converter;
     private final DictionaryGateway repository;
 
-    public DictionaryService(DictionaryGateway repository, DictionaryDTOConverter converter) {
+    public DictionaryService(
+            DictionaryGateway repository, DictionaryDTOConverter converter, @Qualifier("dictionaryClock") Clock clock) {
+        this.clock = clock;
         this.converter = converter;
         this.repository = repository;
     }
 
     @Transactional
     public DictionaryTypeDTO createType(String tenantId, DictionaryTypeCreateCommand command) {
-        if (command == null) throw new IllegalArgumentException("type is required");
+        if (command == null) throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "type is required");
         String tenant = tenant(tenantId);
         String code = code(command.code());
         String name = required(command.name(), "name", 100);
         if (repository.findTypeByCode(tenant, code).isPresent()) {
-            throw new IllegalArgumentException("dictionary type code already exists");
+            throw new CommonException(CommonResultCodeEnum.CONFLICT, "dictionary type code already exists");
         }
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC);
         DictionaryType type = new DictionaryType(
                 UUID.randomUUID().toString(),
                 tenant,
@@ -70,7 +77,7 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
         try {
             repository.insertType(type);
         } catch (DuplicateKeyException duplicate) {
-            throw new IllegalArgumentException("dictionary type code already exists", duplicate);
+            throw new CommonException(CommonResultCodeEnum.CONFLICT, "dictionary type code already exists", duplicate);
         }
         return converter.toDTO(type);
     }
@@ -78,7 +85,7 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
     @Transactional
     public DictionaryTypeDTO updateType(String tenantId, DictionaryTypeUpdateCommand command) {
         if (command == null || command.enabled() == null) {
-            throw new IllegalArgumentException("type and enabled are required");
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "type and enabled are required");
         }
         String tenant = tenant(tenantId);
         DictionaryType previous = requireType(tenant, command.id());
@@ -90,7 +97,7 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
                 optional(command.description(), 500),
                 command.enabled(),
                 previous.createdAt(),
-                LocalDateTime.now());
+                LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
         repository.updateType(updated);
         return converter.toDTO(updated);
     }
@@ -100,7 +107,8 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
         String tenant = tenant(tenantId);
         DictionaryType type = requireType(tenant, id);
         if (repository.countItems(tenant, type.id()) != 0) {
-            throw new IllegalStateException("delete dictionary items before deleting their type");
+            throw new CommonException(
+                    CommonResultCodeEnum.INVALID_STATE, "delete dictionary items before deleting their type");
         }
         repository.deleteType(tenant, type.id());
     }
@@ -112,10 +120,10 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
 
     @Transactional
     public DictionaryItemDTO createItem(String tenantId, DictionaryItemCreateCommand command) {
-        if (command == null) throw new IllegalArgumentException("item is required");
+        if (command == null) throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "item is required");
         String tenant = tenant(tenantId);
         DictionaryType type = requireTypeByCode(tenant, command.typeCode());
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC);
         DictionaryItem item = new DictionaryItem(
                 UUID.randomUUID().toString(),
                 tenant,
@@ -130,7 +138,8 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
         try {
             repository.insertItem(item);
         } catch (DuplicateKeyException duplicate) {
-            throw new IllegalArgumentException("dictionary item value already exists in this type", duplicate);
+            throw new CommonException(
+                    CommonResultCodeEnum.CONFLICT, "dictionary item value already exists in this type", duplicate);
         }
         return converter.toDTO(item);
     }
@@ -138,7 +147,7 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
     @Transactional
     public DictionaryItemDTO updateItem(String tenantId, DictionaryItemUpdateCommand command) {
         if (command == null || command.enabled() == null || command.sortOrder() == null) {
-            throw new IllegalArgumentException("item, enabled and sortOrder are required");
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "item, enabled and sortOrder are required");
         }
         String tenant = tenant(tenantId);
         DictionaryItem previous = requireItem(tenant, command.id());
@@ -152,7 +161,7 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
                 command.sortOrder(),
                 command.enabled(),
                 previous.createdAt(),
-                LocalDateTime.now());
+                LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
         repository.updateItem(updated);
         return converter.toDTO(updated);
     }
@@ -179,19 +188,19 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
     private DictionaryType requireType(String tenant, String id) {
         return repository
                 .findTypeById(tenant, required(id, "id", 64))
-                .orElseThrow(() -> new IllegalArgumentException("dictionary type not found"));
+                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "dictionary type not found"));
     }
 
     private DictionaryType requireTypeByCode(String tenant, String typeCode) {
         return repository
                 .findTypeByCode(tenant, code(typeCode))
-                .orElseThrow(() -> new IllegalArgumentException("dictionary type not found"));
+                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "dictionary type not found"));
     }
 
     private DictionaryItem requireItem(String tenant, String id) {
         return repository
                 .findItemById(tenant, required(id, "id", 64))
-                .orElseThrow(() -> new IllegalArgumentException("dictionary item not found"));
+                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "dictionary item not found"));
     }
 
     private static String tenant(String tenantId) {
@@ -201,7 +210,8 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
     private static String code(String code) {
         String normalized = required(code, "code", 64).toLowerCase(Locale.ROOT);
         if (!normalized.matches("[a-z][a-z0-9_.-]*")) {
-            throw new IllegalArgumentException(
+            throw new CommonException(
+                    CommonResultCodeEnum.PARAM_ILLEGAL,
                     "code must start with a letter and contain only letters, digits, _, . or -");
         }
         return normalized;
@@ -209,7 +219,8 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
 
     private static String required(String value, String name, int maxLength) {
         if (value == null || value.isBlank() || value.trim().length() > maxLength) {
-            throw new IllegalArgumentException(name + " must contain 1 to " + maxLength + " characters");
+            throw new CommonException(
+                    CommonResultCodeEnum.PARAM_ILLEGAL, name + " must contain 1 to " + maxLength + " characters");
         }
         return value.trim();
     }
@@ -217,14 +228,16 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
     private static String optional(String value, int maxLength) {
         if (value == null || value.isBlank()) return null;
         if (value.trim().length() > maxLength) {
-            throw new IllegalArgumentException("description must be at most " + maxLength + " characters");
+            throw new CommonException(
+                    CommonResultCodeEnum.PARAM_ILLEGAL, "description must be at most " + maxLength + " characters");
         }
         return value.trim();
     }
 
     private static void validatePage(int page, int size) {
         if (page < 1 || size < 1 || size > 100) {
-            throw new IllegalArgumentException("page must be positive and size must be between 1 and 100");
+            throw new CommonException(
+                    CommonResultCodeEnum.PARAM_ILLEGAL, "page must be positive and size must be between 1 and 100");
         }
     }
 }

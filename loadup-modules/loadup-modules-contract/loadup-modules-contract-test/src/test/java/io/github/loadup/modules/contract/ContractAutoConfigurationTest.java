@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Contract
+ * LoadUp Contract Test
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -45,7 +45,7 @@ import tools.jackson.databind.json.JsonMapper;
 class ContractAutoConfigurationTest {
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(ContractAutoConfiguration.class))
-            .withBean(Clock.class, Clock::systemUTC)
+            .withBean("contractClock", Clock.class, Clock::systemUTC)
             .withBean(JsonMapper.class, () -> JsonMapper.builder().build())
             .withBean(PlatformTransactionManager.class, () -> mock(PlatformTransactionManager.class))
             .withBean("catalogVersionDOMapper", CatalogVersionDOMapper.class, () -> mock(CatalogVersionDOMapper.class))

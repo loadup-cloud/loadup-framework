@@ -1,1 +1,1 @@
-io.github.loadup.components.cache.caffeine.autoconfig.CaffeineCacheAutoConfiguration
+io.github.loadup.components.cache.caffeine.autoconfigure.CaffeineCacheAutoConfiguration

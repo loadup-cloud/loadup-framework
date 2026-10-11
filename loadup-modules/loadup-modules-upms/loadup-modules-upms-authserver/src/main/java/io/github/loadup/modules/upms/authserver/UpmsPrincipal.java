@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * LoadUp UPMS Authorization Server Adapter
  * %%

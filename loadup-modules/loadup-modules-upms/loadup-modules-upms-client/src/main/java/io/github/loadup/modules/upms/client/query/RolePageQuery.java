@@ -21,6 +21,8 @@ package io.github.loadup.modules.upms.client.query;
 
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
 /**
  * Role Query Parameters
@@ -46,9 +48,25 @@ public class RolePageQuery {
     private Boolean deleted;
 
     // Pagination
+    @Min(1)
+    @Schema(description = "Page number, starting at 1", minimum = "1", defaultValue = "1")
     private Integer page = 1;
+
+    @Min(1)
+    @Max(100)
+    @Schema(description = "Page size", minimum = "1", maximum = "100", defaultValue = "20")
     private Integer size = 20;
+
+    @jakarta.validation.constraints.Pattern(regexp = "sortOrder|roleName|roleCode")
+    @Schema(
+            description = "Whitelisted sort field",
+            allowableValues = {"sortOrder", "roleName", "roleCode"})
     private String sortBy = "sortOrder";
+
+    @jakarta.validation.constraints.Pattern(regexp = "(?i)ASC|DESC")
+    @Schema(
+            description = "Sort direction",
+            allowableValues = {"ASC", "DESC"})
     private String sortOrder = "ASC";
 
     public RolePageQuery(
@@ -57,8 +75,8 @@ public class RolePageQuery {
             String parentId,
             Short status,
             Boolean deleted,
-            Integer page,
-            Integer size,
+            @Min(1) Integer page,
+            @Min(1) @Max(100) Integer size,
             String sortBy,
             String sortOrder) {
         this.roleName = roleName;
@@ -156,9 +174,16 @@ public class RolePageQuery {
         private String parentId;
         private Short status;
         private Boolean deleted;
+
+        @Min(1)
         private Integer page = 1;
+
+        @Min(1)
+        @Max(100)
         private Integer size = 20;
+
         private String sortBy = "sortOrder";
+
         private String sortOrder = "ASC";
 
         public Builder roleName(String roleName) {

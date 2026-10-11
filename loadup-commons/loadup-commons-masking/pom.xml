@@ -5,12 +5,11 @@
         <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-parent</artifactId>
         <version>0.0.2-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-commons-masking</artifactId>
     <name>LoadUp Common Masking</name>
-    <properties>
-        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
-    </properties>
+    <properties/>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>

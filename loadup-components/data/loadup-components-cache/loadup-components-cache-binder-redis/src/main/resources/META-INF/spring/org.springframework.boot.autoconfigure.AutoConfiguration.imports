@@ -1,1 +1,1 @@
-io.github.loadup.components.cache.redis.autoconfig.RedisCacheAutoConfiguration
+io.github.loadup.components.cache.redis.autoconfigure.RedisCacheAutoConfiguration

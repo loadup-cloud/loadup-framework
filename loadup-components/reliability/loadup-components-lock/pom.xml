@@ -10,9 +10,7 @@
     <artifactId>loadup-components-lock</artifactId>
     <name>LoadUp Lock</name>
     <description>Synchronous distributed lock execution backed by Redisson</description>
-    <properties>
-        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
-    </properties>
+    <properties/>
     <dependencies>
         <dependency>
             <groupId>org.redisson</groupId>

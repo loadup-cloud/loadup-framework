@@ -50,12 +50,21 @@ public class NotificationAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(io.github.loadup.modules.notification.client.facade.InboxFacade.class)
-    public InboxService inboxService(InboxGateway repository, NotificationDTOConverter converter) {
-        return new InboxService(repository, converter);
+    public InboxService inboxService(
+            InboxGateway repository,
+            NotificationDTOConverter converter,
+            @org.springframework.beans.factory.annotation.Qualifier("notificationClock") java.time.Clock clock) {
+        return new InboxService(repository, converter, clock);
     }
 
     @Bean
     public NotificationChannelProvider inAppNotificationChannelProvider(InboxService inbox) {
         return new InAppChannelProvider(inbox);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "notificationClock")
+    public java.time.Clock notificationClock() {
+        return java.time.Clock.systemUTC();
     }
 }

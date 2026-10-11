@@ -19,7 +19,7 @@
  */
 package io.github.loadup.modules.upms.service;
 
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -44,13 +44,17 @@ class UserMaskedWriteTest {
                 roles,
                 departments,
                 passwords,
-                mock(io.github.loadup.modules.upms.app.converter.UpmsDTOConverter.class));
+                mock(io.github.loadup.modules.upms.app.converter.UpmsDTOConverter.class),
+                java.time.Clock.systemUTC());
         var create = new UserCreateCommand();
+        create.setPassword("Valid12345");
         create.setMobile("138****5678");
-        assertThatIllegalArgumentException().isThrownBy(() -> service.createUser(create));
+        assertThatExceptionOfType(io.github.loadup.commons.error.CommonException.class)
+                .isThrownBy(() -> service.createUser(create));
         var update = new UserUpdateCommand();
         update.setRealName("A****");
-        assertThatIllegalArgumentException().isThrownBy(() -> service.updateUser(update));
+        assertThatExceptionOfType(io.github.loadup.commons.error.CommonException.class)
+                .isThrownBy(() -> service.updateUser(update));
         verifyNoInteractions(users, roles, departments, passwords);
     }
 }

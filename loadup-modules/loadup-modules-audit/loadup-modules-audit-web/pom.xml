@@ -10,9 +10,7 @@
     <artifactId>loadup-modules-audit-web</artifactId>
     <name>LoadUp Audit Center Web Adapter</name>
     <description>HTTP audit capture and administrator query endpoint</description>
-    <properties>
-        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
-    </properties>
+    <properties/>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

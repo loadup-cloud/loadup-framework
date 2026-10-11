@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * Loadup Components Extension
  * %%
@@ -36,9 +36,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.util.CollectionUtils;
 
-/**
- * 扩展点执行器
- */
 public class ExtensionExecutor {
 
     private final ExtensionRegistry extensionRegistry;
@@ -47,9 +44,6 @@ public class ExtensionExecutor {
         this.extensionRegistry = extensionRegistry;
     }
 
-    /**
-     * 执行单个最佳匹配的扩展点（有返回值） 使用降级匹配策略自动找到最合适的扩展点实现
-     */
     public <E extends IExtensionPoint, R> R execute(
             Class<E> extensionPointClass, BizScenario scenario, Function<E, R> action) {
         E extension = findBestMatch(extensionPointClass, scenario);
@@ -61,20 +55,10 @@ public class ExtensionExecutor {
         return action.apply(extension);
     }
 
-    /**
-     * 从 {@link BizContextHolder} 读取当前线程的业务场景并执行（有返回值）。
-     *
-     * <p>配合 {@code @BizScenario} 方法注解使用，无需显式传入 {@link BizScenario}。
-     *
-     * @throws IllegalStateException 若当前线程无业务场景上下文
-     */
     public <E extends IExtensionPoint, R> R execute(Class<E> extensionPointClass, Function<E, R> action) {
         return execute(extensionPointClass, requireContext(), action);
     }
 
-    /**
-     * 执行单个最佳匹配的扩展点（无返回值）
-     */
     public <E extends IExtensionPoint> void run(
             Class<E> extensionPointClass, BizScenario scenario, Consumer<E> action) {
         E extension = findBestMatch(extensionPointClass, scenario);
@@ -86,16 +70,10 @@ public class ExtensionExecutor {
         action.accept(extension);
     }
 
-    /**
-     * 从 {@link BizContextHolder} 读取场景并执行（无返回值）。
-     */
     public <E extends IExtensionPoint> void run(Class<E> extensionPointClass, Consumer<E> action) {
         run(extensionPointClass, requireContext(), action);
     }
 
-    /**
-     * 执行指定场景的所有匹配扩展点（精确匹配）
-     */
     public <E extends IExtensionPoint> void executeAll(
             Class<E> extensionPointClass, BizScenario scenario, Consumer<E> action) {
         List<E> extensions = findAllByScenario(extensionPointClass, scenario);
@@ -111,9 +89,6 @@ public class ExtensionExecutor {
         extensions.forEach(action);
     }
 
-    /**
-     * 执行指定业务代码的所有扩展点（忽略 useCase 和 scenario）
-     */
     public <E extends IExtensionPoint> void executeAll(
             Class<E> extensionPointClass, String bizCode, Consumer<E> action) {
         List<E> extensions = findAllByBizCode(extensionPointClass, bizCode);
@@ -125,9 +100,6 @@ public class ExtensionExecutor {
         extensions.forEach(action);
     }
 
-    /**
-     * 收集指定场景所有扩展点的执行结果
-     */
     public <E extends IExtensionPoint, R> List<R> collect(
             Class<E> extensionPointClass, BizScenario scenario, Function<E, R> action) {
         List<E> extensions = findAllByScenario(extensionPointClass, scenario);
@@ -143,9 +115,6 @@ public class ExtensionExecutor {
         return extensions.stream().map(action).collect(Collectors.toList());
     }
 
-    /**
-     * 收集指定业务代码所有扩展点的执行结果
-     */
     public <E extends IExtensionPoint, R> List<R> collect(
             Class<E> extensionPointClass, String bizCode, Function<E, R> action) {
         List<E> extensions = findAllByBizCode(extensionPointClass, bizCode);
@@ -172,20 +141,16 @@ public class ExtensionExecutor {
                     + scenario.getUniqueIdentity());
         }
 
-        // 1. 精确匹配：bizCode + useCase + scenario
         Optional<ExtensionCoordinate> bestMatch = findMatch(candidates, scenario, true, true);
 
-        // 2. 降级匹配：bizCode + useCase (忽略 scenario)
         if (bestMatch.isEmpty()) {
             bestMatch = findMatch(candidates, scenario, true, false);
         }
 
-        // 3. 再次降级匹配：bizCode (忽略 useCase 和 scenario)
         if (bestMatch.isEmpty()) {
             bestMatch = findMatch(candidates, scenario, false, false);
         }
 
-        // 4. 最终降级：查找 useCase 和 scenario 均为 "default" 的通用实现
         if (bestMatch.isEmpty()) {
             bestMatch = findDefaultMatch(candidates, scenario.bizCode());
         }

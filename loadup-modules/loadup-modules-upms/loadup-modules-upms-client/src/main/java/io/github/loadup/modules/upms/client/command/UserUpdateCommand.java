@@ -56,26 +56,26 @@ public class UserUpdateCommand {
     @Schema(description = "Avatar")
     private String avatar;
 
-    @Pattern(regexp = "^$|^1[3-9]\\d{9}$", message = "手机号格式不正确")
+    @Pattern(regexp = "^$|^1[3-9]\\d{9}$")
     @Schema(description = "Mobile")
     private String mobile;
 
-    @Email(message = "邮箱格式不正确")
+    @Email()
     @Schema(description = "Email")
     private String email;
 
     @Schema(description = "Dept id")
     private String deptId;
 
-    @Size(max = 50, message = "真实姓名长度不能超过50")
+    @Size(max = 50)
     @Schema(description = "Real name")
     private String realName;
 
-    @Size(max = 50, message = "昵称长度不能超过50")
+    @Size(max = 50)
     @Schema(description = "Nickname")
     private String nickname;
 
-    @NotNull(message = "用户ID不能为空")
+    @NotNull()
     @Schema(description = "Resource identifier")
     private String id;
 

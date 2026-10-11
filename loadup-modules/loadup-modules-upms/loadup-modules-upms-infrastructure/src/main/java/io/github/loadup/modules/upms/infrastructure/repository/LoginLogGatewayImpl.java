@@ -1,3 +1,22 @@
+/*
+ * #%L
+ * Loadup Modules UPMS Infrastructure Layer
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package io.github.loadup.modules.upms.infrastructure.repository;
 
 import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.LOGIN_LOG_DO;
@@ -6,8 +25,8 @@ import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.dto.PageQuery;
-import io.github.loadup.modules.upms.domain.entity.LoginLog;
 import io.github.loadup.modules.upms.domain.gateway.LoginLogGateway;
+import io.github.loadup.modules.upms.domain.model.LoginLog;
 import io.github.loadup.modules.upms.infrastructure.converter.LoginLogConverter;
 import io.github.loadup.modules.upms.infrastructure.dataobject.LoginLogDO;
 import io.github.loadup.modules.upms.infrastructure.mapper.LoginLogDOMapper;
@@ -34,8 +53,7 @@ public class LoginLogGatewayImpl implements LoginLogGateway {
     public LoginLog save(LoginLog entity) {
         LoginLogDO loginLogDO = loginLogConverter.toDataObject(entity);
         if (loginLogDO.getId() == null) loginLogDO.setId(UUID.randomUUID().toString());
-        if (loginLogDO.getCreatedAt() == null) loginLogDO.setCreatedAt(LocalDateTime.now());
-        if (loginLogDO.getUpdatedAt() == null) loginLogDO.setUpdatedAt(loginLogDO.getCreatedAt());
+
         loginLogDOMapper.insert(loginLogDO);
         entity = loginLogConverter.toEntity(loginLogDO);
         return entity;

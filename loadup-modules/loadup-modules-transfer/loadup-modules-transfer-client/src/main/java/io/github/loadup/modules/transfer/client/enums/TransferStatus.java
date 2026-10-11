@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Transfer Domain
+ * LoadUp Transfer Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

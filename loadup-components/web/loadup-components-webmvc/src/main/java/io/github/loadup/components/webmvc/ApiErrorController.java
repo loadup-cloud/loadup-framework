@@ -56,11 +56,11 @@ public class ApiErrorController implements ErrorController {
                             new ServletWebRequest(request), ErrorAttributeOptions.defaults()));
         }
         if (status >= 500) {
+            Throwable failure = errorAttributes.getError(new ServletWebRequest(request));
             LogUtil.error(
                     ApiErrorController.class,
-                    "API request failed: {}",
-                    originalUri,
-                    errorAttributes.getError(new ServletWebRequest(request)));
+                    "API request failed; failureType={}",
+                    failure == null ? "unknown" : failure.getClass().getName());
         }
         CommonResultCodeEnum code =
                 switch (status) {

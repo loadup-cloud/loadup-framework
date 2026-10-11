@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * Loadup Modules UPMS Domain Layer
  * %%
@@ -24,14 +24,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import io.github.loadup.modules.upms.domain.entity.Department;
-import io.github.loadup.modules.upms.domain.entity.Permission;
-import io.github.loadup.modules.upms.domain.entity.Role;
-import io.github.loadup.modules.upms.domain.entity.User;
 import io.github.loadup.modules.upms.domain.gateway.DepartmentGateway;
 import io.github.loadup.modules.upms.domain.gateway.PermissionGateway;
 import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
+import io.github.loadup.modules.upms.domain.model.Department;
+import io.github.loadup.modules.upms.domain.model.Permission;
+import io.github.loadup.modules.upms.domain.model.Role;
+import io.github.loadup.modules.upms.domain.model.User;
 import io.github.loadup.modules.upms.domain.valueobject.DataScope;
 import io.github.loadup.modules.upms.domain.valueobject.ResourceAttributes;
 import java.util.List;

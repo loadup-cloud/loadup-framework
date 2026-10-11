@@ -6,13 +6,13 @@
         <groupId>io.github.loadup-cloud</groupId>
         <artifactId>loadup-parent</artifactId>
         <version>0.0.2-SNAPSHOT</version>
+        <relativePath>../../../pom.xml</relativePath>
     </parent>
 
     <artifactId>loadup-modules-upms-app</artifactId>
     <name>Loadup Modules UPMS App Layer</name>
     <description>UPMS Application Layer - Business Orchestration and Command/Query Handlers</description>
     <properties>
-        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
         <java.version>25</java.version>
         <project.encoding>UTF-8</project.encoding>
         <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -23,6 +23,10 @@
         <project.reporting.outputEncoding>${project.encoding}</project.reporting.outputEncoding>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-commons-masking</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-commons-log</artifactId>

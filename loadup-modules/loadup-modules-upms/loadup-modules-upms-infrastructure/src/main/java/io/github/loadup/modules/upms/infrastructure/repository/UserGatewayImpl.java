@@ -1,3 +1,22 @@
+/*
+ * #%L
+ * Loadup Modules UPMS Infrastructure Layer
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package io.github.loadup.modules.upms.infrastructure.repository;
 
 import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.USER_DO;
@@ -6,12 +25,11 @@ import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.dto.PageQuery;
-import io.github.loadup.modules.upms.domain.entity.User;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
+import io.github.loadup.modules.upms.domain.model.User;
 import io.github.loadup.modules.upms.infrastructure.converter.UserConverter;
 import io.github.loadup.modules.upms.infrastructure.dataobject.UserDO;
 import io.github.loadup.modules.upms.infrastructure.mapper.UserDOMapper;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,8 +52,7 @@ public class UserGatewayImpl implements UserGateway {
     public User save(User user) {
         UserDO userDO = userConverter.toDataObject(user);
         if (userDO.getId() == null) userDO.setId(UUID.randomUUID().toString());
-        if (userDO.getCreatedAt() == null) userDO.setCreatedAt(LocalDateTime.now());
-        if (userDO.getUpdatedAt() == null) userDO.setUpdatedAt(userDO.getCreatedAt());
+
         userDOMapper.insert(userDO);
         user = userConverter.toEntity(userDO);
         return user;
@@ -89,8 +106,9 @@ public class UserGatewayImpl implements UserGateway {
     }
 
     @Override
-    public PageResult<User> findAll(PageQuery query) {
-        Page<UserDO> page = userDOMapper.paginate(Page.of(query.pageNum(), query.pageSize()), QueryWrapper.create());
+    public PageResult<User> findAll(PageQuery query, String sortBy, String sortOrder) {
+        Page<UserDO> page = userDOMapper.paginate(
+                Page.of(query.pageNum(), query.pageSize()), ordered(QueryWrapper.create(), sortBy, sortOrder));
 
         List<User> users =
                 page.getRecords().stream().map(userConverter::toEntity).collect(Collectors.toList());
@@ -99,15 +117,15 @@ public class UserGatewayImpl implements UserGateway {
     }
 
     @Override
-    public PageResult<User> search(String keyword, PageQuery query) {
+    public PageResult<User> search(String keyword, PageQuery query, String sortBy, String sortOrder) {
         QueryWrapper search = QueryWrapper.create()
-                .where(
-                        "username LIKE ? OR nickname LIKE ? OR real_name LIKE ?",
-                        "%" + keyword + "%",
-                        "%" + keyword + "%",
-                        "%" + keyword + "%");
+                .where(USER_DO.USERNAME
+                        .like(keyword)
+                        .or(USER_DO.NICKNAME.like(keyword))
+                        .or(USER_DO.REAL_NAME.like(keyword)));
 
-        Page<UserDO> page = userDOMapper.paginate(Page.of(query.pageNum(), query.pageSize()), search);
+        Page<UserDO> page =
+                userDOMapper.paginate(Page.of(query.pageNum(), query.pageSize()), ordered(search, sortBy, sortOrder));
 
         List<User> users =
                 page.getRecords().stream().map(userConverter::toEntity).collect(Collectors.toList());
@@ -142,5 +160,17 @@ public class UserGatewayImpl implements UserGateway {
     public UserGatewayImpl(UserDOMapper userDOMapper, UserConverter userConverter) {
         this.userDOMapper = userDOMapper;
         this.userConverter = userConverter;
+    }
+
+    private static QueryWrapper ordered(QueryWrapper query, String sortBy, String direction) {
+        var column =
+                switch (sortBy) {
+                    case "createdAt" -> USER_DO.CREATED_AT;
+                    case "username" -> USER_DO.USERNAME;
+                    case "nickname" -> USER_DO.NICKNAME;
+                    case "id" -> USER_DO.ID;
+                    default -> throw new IllegalArgumentException("Unsupported user sort field");
+                };
+        return query.orderBy("DESC".equalsIgnoreCase(direction) ? column.desc() : column.asc());
     }
 }

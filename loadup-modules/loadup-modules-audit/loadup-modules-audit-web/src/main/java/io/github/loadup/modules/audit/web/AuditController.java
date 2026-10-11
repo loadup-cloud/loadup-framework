@@ -21,13 +21,12 @@ package io.github.loadup.modules.audit.web;
 
 import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.commons.result.PageResponse;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.modules.audit.client.dto.AuditEventDTO;
 import io.github.loadup.modules.audit.client.facade.AuditFacade;
-import io.github.loadup.modules.audit.client.query.AuditQuery;
-import io.github.loadup.modules.audit.client.query.AuditSearchQuery;
+import io.github.loadup.modules.audit.client.query.AuditPageQuery;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,16 +45,8 @@ public class AuditController {
     @PostMapping("/audit/events/query")
     @Operation(summary = "Search audit events")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
-    public PageResponse<AuditEventDTO> query(@RequestBody AuditSearchQuery request) {
-        PageDTO<AuditEventDTO> result = service.search(new AuditQuery(
-                TenantUtil.getTenantId(),
-                request.actorId(),
-                request.action(),
-                request.outcome(),
-                request.from(),
-                request.to(),
-                request.page() == null ? 1 : request.page(),
-                request.size() == null ? 20 : request.size()));
+    public PageResponse<AuditEventDTO> query(@Valid @RequestBody AuditPageQuery request) {
+        PageDTO<AuditEventDTO> result = service.search(request);
         return PageResponse.of(result);
     }
 }

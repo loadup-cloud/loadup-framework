@@ -176,3 +176,9 @@ Command/Query 命名、ID 查询复用、字典 Command 合并、七类重复分
 
 - [ ] 实际 WebMVC 请求验证分页 OpenAPI、响应 envelope、租户与权限；运行 Router.http 验证字典扁平 Command，联调商户/合约分页页面。
 - [ ] 修复前端 vue-tsc 报出的多页面表格插槽 DefaultRow 类型错误并重新执行类型检查；本次分页和 API 字段调整未报错，整体检查未通过。
+
+## 代码规范一致性检查验收
+
+2026-10-11 已实现敏感日志清理、共享密码策略、UTC Clock 与审计填充分工、合约 Facade、OAuth MapStruct 转换、分页默认值/上限/排序白名单、稳定业务错误码和全局 API 异常响应；统一 DTO/domain/autoconfigure 命名及 Java 注释，更新 AGENTS 和 License 默认配置。52 个受影响模块 clean package 成功。密码、验证码 Clock/日志、JSON 日志及 MVC 响应定向测试已通过。合约/审计/字典/文件/通知/导入导出自动配置、密码写入入口、分页排序、OAuth 绑定映射及令牌 Clock 回归均已执行通过。最终 69 个相关模块 clean test 成功，16 项 ArchUnit 规则和 4 项源码规范检查通过；License/Spotless 全仓校验通过，文档站已同步。子模块统一显式引用当前根 POM，避免本地旧父 POM 配置污染；未运行完整 reactor 测试或真实数据库 IT。
+
+- [ ] 在真实消费工程验证数据库审计填充、租户隔离、密码重置与权限失败 HTTP 响应；单元测试不能代替真实环境验收。

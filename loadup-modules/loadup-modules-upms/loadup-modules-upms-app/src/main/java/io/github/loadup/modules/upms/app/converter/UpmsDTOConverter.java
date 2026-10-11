@@ -21,7 +21,7 @@ package io.github.loadup.modules.upms.app.converter;
 
 import io.github.loadup.commons.mapping.LoadUpMapStructConfig;
 import io.github.loadup.modules.upms.client.dto.*;
-import io.github.loadup.modules.upms.domain.entity.*;
+import io.github.loadup.modules.upms.domain.model.*;
 import io.github.loadup.modules.upms.domain.valueobject.AccessDecision;
 import java.util.List;
 import org.mapstruct.*;

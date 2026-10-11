@@ -9,10 +9,12 @@
     </parent>
     <artifactId>loadup-modules-file-client</artifactId>
     <name>LoadUp File Client</name>
-    <properties>
-        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
-    </properties>
+    <properties/>
     <dependencies>
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-dfs-api</artifactId>

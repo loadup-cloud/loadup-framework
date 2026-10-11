@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * Testify Assert Engine
  * %%
@@ -32,17 +32,16 @@ import java.util.Map;
 
 public class OperatorProcessor {
 
-    // 建议通过 Spring 自动注入所有的 Matcher 实现类
     private static final List<OperatorMatcher> MATCHERS = List.of(
             new NumberMatcher(),
             new RegexMatcher(),
             new ApproxTimeMatcher(),
             new JsonMatcher(),
-            new StringMatcher(), // 包含 contains, ne 等
+            new StringMatcher(),
             new ListMatcher());
 
     public static MatchResult process(Object actual, Object expected) {
-        // 1. 如果不是 Map，走最简单的等值比对
+
         if (!(expected instanceof Map<?, ?> config)) {
             return SimpleMatcher.eq(actual, expected);
         }
@@ -52,12 +51,10 @@ public class OperatorProcessor {
         String op = String.valueOf(operatorConfig.getOrDefault("op", "eq"));
         Object val = operatorConfig.get("val");
 
-        // 2. 寻找合适的 Matcher 并执行
         return MATCHERS.stream()
                 .filter(m -> m.support(op))
                 .findFirst()
                 .map(m -> m.match(actual, val, operatorConfig))
-                // 3. 兜底逻辑：如果找不到算子，尝试 eq
                 .orElseGet(() -> SimpleMatcher.eq(actual, val));
     }
 }

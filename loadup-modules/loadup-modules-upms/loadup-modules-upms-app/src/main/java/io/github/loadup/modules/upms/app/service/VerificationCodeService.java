@@ -20,12 +20,16 @@
 package io.github.loadup.modules.upms.app.service;
 
 import io.github.loadup.commons.log.LogUtil;
-import io.github.loadup.modules.upms.domain.entity.VerificationCode;
+import io.github.loadup.commons.masking.MaskType;
+import io.github.loadup.commons.masking.Masking;
+import io.github.loadup.modules.upms.domain.model.VerificationCode;
 import java.security.SecureRandom;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 /**
@@ -36,6 +40,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class VerificationCodeService {
+    private final Clock clock;
 
     private static final int CODE_LENGTH = 6;
     private static final int CODE_EXPIRY_MINUTES = 5;
@@ -57,12 +62,17 @@ public class VerificationCodeService {
         verificationCode.setTarget(target);
         verificationCode.setType(type);
         verificationCode.setAttempts(0);
-        verificationCode.setCreatedAt(LocalDateTime.now());
-        verificationCode.setExpiryTime(LocalDateTime.now().plusMinutes(CODE_EXPIRY_MINUTES));
+        verificationCode.setCreatedAt(LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
+
+        verificationCode.setExpiryTime(LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC)
+                .plusMinutes(CODE_EXPIRY_MINUTES));
 
         codeStorage.put(key, verificationCode);
 
-        LogUtil.info(VerificationCodeService.class, "Generated verification code for {}: {}", target, code);
+        LogUtil.info(
+                VerificationCodeService.class,
+                "Generated verification code for {}",
+                Masking.mask(target, type.equalsIgnoreCase("EMAIL") ? MaskType.EMAIL : MaskType.PHONE));
         return code;
     }
 
@@ -74,20 +84,26 @@ public class VerificationCodeService {
         VerificationCode verificationCode = codeStorage.get(key);
 
         if (verificationCode == null) {
-            LogUtil.warn(VerificationCodeService.class, "Verification code not found for: {}", target);
+            LogUtil.warn(
+                    VerificationCodeService.class, "Verification code not found for: {}", Masking.keep(target, 1, 1));
             return false;
         }
 
         // Check expiry
-        if (LocalDateTime.now().isAfter(verificationCode.getExpiryTime())) {
-            LogUtil.warn(VerificationCodeService.class, "Verification code expired for: {}", target);
+        if (!LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC)
+                .isBefore(verificationCode.getExpiryTime())) {
+            LogUtil.warn(
+                    VerificationCodeService.class, "Verification code expired for: {}", Masking.keep(target, 1, 1));
             codeStorage.remove(key);
             return false;
         }
 
         // Check attempts
         if (verificationCode.getAttempts() >= MAX_ATTEMPTS) {
-            LogUtil.warn(VerificationCodeService.class, "Too many verification attempts for: {}", target);
+            LogUtil.warn(
+                    VerificationCodeService.class,
+                    "Too many verification attempts for: {}",
+                    Masking.keep(target, 1, 1));
             codeStorage.remove(key);
             return false;
         }
@@ -95,13 +111,17 @@ public class VerificationCodeService {
         // Validate code
         verificationCode.setAttempts(verificationCode.getAttempts() + 1);
         if (!code.equals(verificationCode.getCode())) {
-            LogUtil.warn(VerificationCodeService.class, "Invalid verification code for: {}", target);
+            LogUtil.warn(
+                    VerificationCodeService.class, "Invalid verification code for: {}", Masking.keep(target, 1, 1));
             return false;
         }
 
         // Code is valid, remove it
         codeStorage.remove(key);
-        LogUtil.info(VerificationCodeService.class, "Verification code validated successfully for: {}", target);
+        LogUtil.info(
+                VerificationCodeService.class,
+                "Verification code validated successfully for: {}",
+                Masking.keep(target, 1, 1));
         return true;
     }
 
@@ -117,41 +137,29 @@ public class VerificationCodeService {
         }
 
         // Check if previous code is still valid (prevent spamming)
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC);
         LocalDateTime minResendTime = existingCode.getCreatedAt().plusMinutes(1);
 
         if (now.isBefore(minResendTime)) {
-            LogUtil.warn(VerificationCodeService.class, "Too soon to resend code for: {}", target);
+            LogUtil.warn(VerificationCodeService.class, "Too soon to resend code for: {}", Masking.keep(target, 1, 1));
             return false;
         }
 
         return true;
     }
 
-    /**
-     * 验证短信验证码
-     */
     public boolean verifySmsCode(String mobile, String code) {
         return validateCode(mobile, "SMS", code);
     }
 
-    /**
-     * 验证邮箱验证码
-     */
     public boolean verifyEmailCode(String email, String code) {
         return validateCode(email, "EMAIL", code);
     }
 
-    /**
-     * 生成短信验证码
-     */
     public String generateSmsCode(String mobile) {
         return generateCode(mobile, "SMS");
     }
 
-    /**
-     * 生成邮箱验证码
-     */
     public String generateEmailCode(String email) {
         return generateCode(email, "EMAIL");
     }
@@ -172,5 +180,9 @@ public class VerificationCodeService {
             code.append(RANDOM.nextInt(10));
         }
         return code.toString();
+    }
+
+    public VerificationCodeService(@Qualifier("upmsClock") Clock clock) {
+        this.clock = clock;
     }
 }

@@ -9,9 +9,7 @@
     </parent>
     <artifactId>loadup-modules-notification-test</artifactId>
     <name>LoadUp Notification Test</name>
-    <properties>
-        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
-    </properties>
+    <properties/>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

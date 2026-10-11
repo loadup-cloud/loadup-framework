@@ -20,9 +20,9 @@
 package io.github.loadup.modules.upms.client.command;
 
 import io.github.loadup.commons.json.ToStringAsJson;
+import io.github.loadup.modules.upms.client.validation.ValidPassword;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 
 /**
  * User Password Reset Command (with verification code)
@@ -32,22 +32,24 @@ import jakarta.validation.constraints.Size;
  */
 public class UserPasswordResetCommand {
 
-    @NotBlank(message = "用户名不能为空")
+    @NotBlank()
     @Schema(description = "Username")
     private String username;
 
-    @NotBlank(message = "验证码不能为空")
+    @NotBlank()
     @Schema(description = "Verification code")
     private String verificationCode;
 
-    @NotBlank(message = "新密码不能为空")
-    @Size(min = 6, max = 20, message = "新密码长度必须在6-20之间")
-    @Schema(description = "New password", accessMode = Schema.AccessMode.WRITE_ONLY)
+    @NotBlank()
+    @Schema(
+            description = "New password: at least 8 Unicode characters, at most 72 UTF-8 bytes",
+            accessMode = Schema.AccessMode.WRITE_ONLY)
     @com.fasterxml.jackson.annotation.JsonProperty(
             access = com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY)
+    @ValidPassword
     private String newPassword;
 
-    @NotBlank(message = "确认密码不能为空")
+    @NotBlank()
     @Schema(description = "Confirmation of the new password", accessMode = Schema.AccessMode.WRITE_ONLY)
     @com.fasterxml.jackson.annotation.JsonProperty(
             access = com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY)

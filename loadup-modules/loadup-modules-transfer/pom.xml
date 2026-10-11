@@ -18,7 +18,5 @@
         <module>loadup-modules-transfer-web</module>
         <module>loadup-modules-transfer-test</module>
     </modules>
-    <properties>
-        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
-    </properties>
+    <properties/>
 </project>

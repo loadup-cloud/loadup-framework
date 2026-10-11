@@ -19,6 +19,8 @@
  */
 package io.github.loadup.modules.upms.app.service;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.upms.app.converter.UpmsDTOConverter;
 import io.github.loadup.modules.upms.client.command.RoleCreateCommand;
@@ -26,14 +28,13 @@ import io.github.loadup.modules.upms.client.command.RoleUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.PermissionDTO;
 import io.github.loadup.modules.upms.client.dto.RoleDTO;
 import io.github.loadup.modules.upms.client.query.RolePageQuery;
-import io.github.loadup.modules.upms.domain.entity.Permission;
-import io.github.loadup.modules.upms.domain.entity.Role;
 import io.github.loadup.modules.upms.domain.gateway.DepartmentGateway;
 import io.github.loadup.modules.upms.domain.gateway.PermissionGateway;
 import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
+import io.github.loadup.modules.upms.domain.model.Permission;
+import io.github.loadup.modules.upms.domain.model.Role;
 import io.github.loadup.modules.upms.domain.valueobject.DataScope;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -67,7 +68,7 @@ public class RoleService implements io.github.loadup.modules.upms.client.facade.
     public RoleDTO createRole(RoleCreateCommand command) {
         // Validate role code uniqueness
         if (roleGateway.existsByRoleCode(command.getRoleCode())) {
-            throw new RuntimeException("角色编码已存在");
+            throw new CommonException(CommonResultCodeEnum.CONFLICT, "Role code already exists");
         }
 
         validateParent(null, command.getParentId());
@@ -85,7 +86,6 @@ public class RoleService implements io.github.loadup.modules.upms.client.facade.
         role.setDeleted(false);
         role.setRemark(command.getRemark());
         role.setCreatedBy(command.getCreatedBy());
-        role.setCreatedAt(LocalDateTime.now());
 
         role = roleGateway.save(role);
 
@@ -111,7 +111,9 @@ public class RoleService implements io.github.loadup.modules.upms.client.facade.
      */
     @Transactional
     public RoleDTO updateRole(RoleUpdateCommand command) {
-        Role role = roleGateway.findById(command.getId()).orElseThrow(() -> new RuntimeException("角色不存在"));
+        Role role = roleGateway
+                .findById(command.getId())
+                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Role not found"));
         boolean parentChanged =
                 command.getParentId() != null && !command.getParentId().equals(role.getParentId());
 
@@ -140,7 +142,6 @@ public class RoleService implements io.github.loadup.modules.upms.client.facade.
         }
 
         role.setUpdatedBy(command.getUpdatedBy());
-        role.setUpdatedAt(LocalDateTime.now());
 
         role = roleGateway.update(role);
         if (parentChanged) updateDescendantLevels(role, new HashSet<>());
@@ -178,18 +179,20 @@ public class RoleService implements io.github.loadup.modules.upms.client.facade.
      */
     @Transactional
     public void deleteRole(String id) {
-        roleGateway.findById(id).orElseThrow(() -> new RuntimeException("角色不存在"));
+        roleGateway
+                .findById(id)
+                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Role not found"));
 
         // Check if role has child roles
         List<Role> childRoles = roleGateway.findByParentId(id);
         if (!childRoles.isEmpty()) {
-            throw new RuntimeException("该角色下存在子角色，无法删除");
+            throw new CommonException(CommonResultCodeEnum.INVALID_STATE, "Role still has child roles");
         }
 
         // Check if role is assigned to users
         long userCount = roleGateway.countUsersByRoleId(id);
         if (userCount > 0) {
-            throw new RuntimeException("该角色已分配给用户，无法删除");
+            throw new CommonException(CommonResultCodeEnum.INVALID_STATE, "Role is still assigned to users");
         }
 
         roleGateway.deleteById(id);
@@ -199,7 +202,9 @@ public class RoleService implements io.github.loadup.modules.upms.client.facade.
      * Get role by ID
      */
     public RoleDTO getRoleById(String id) {
-        Role role = roleGateway.findById(id).orElseThrow(() -> new RuntimeException("角色不存在"));
+        Role role = roleGateway
+                .findById(id)
+                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Role not found"));
         return convertToDTO(role);
     }
 
@@ -207,16 +212,23 @@ public class RoleService implements io.github.loadup.modules.upms.client.facade.
      * Query roles with pagination
      */
     public PageDTO<RoleDTO> queryRoles(RolePageQuery query) {
+        if (query.getSortOrder() != null
+                && !query.getSortOrder().equalsIgnoreCase("ASC")
+                && !query.getSortOrder().equalsIgnoreCase("DESC")) {
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Unsupported sort direction");
+        }
         int page = query.getPage() == null ? 1 : query.getPage();
         int size = query.getSize() == null ? 20 : query.getSize();
-        if (page < 1 || size < 1 || size > 500) throw new IllegalArgumentException("Invalid page or size");
+        if (page < 1 || size < 1 || size > 100)
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Invalid page or size");
         Comparator<Role> order =
                 switch (query.getSortBy() == null ? "sortOrder" : query.getSortBy()) {
                     case "roleName" -> Comparator.comparing(Role::getRoleName, Comparator.nullsLast(String::compareTo));
                     case "roleCode" -> Comparator.comparing(Role::getRoleCode, Comparator.nullsLast(String::compareTo));
                     case "sortOrder" ->
                         Comparator.comparing(Role::getSortOrder, Comparator.nullsLast(Comparator.naturalOrder()));
-                    default -> throw new IllegalArgumentException("Unsupported role sort field");
+                    default ->
+                        throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Unsupported role sort field");
                 };
         if ("DESC".equalsIgnoreCase(query.getSortOrder())) order = order.reversed();
         List<Role> matches = roleGateway.findAll().stream()
@@ -265,9 +277,13 @@ public class RoleService implements io.github.loadup.modules.upms.client.facade.
      */
     @Transactional
     public void assignRoleToUser(String roleId, String userId) {
-        Role role = roleGateway.findById(roleId).orElseThrow(() -> new RuntimeException("角色不存在"));
-        if (!role.isEnabled()) throw new IllegalArgumentException("Role is disabled");
-        userGateway.findById(userId).orElseThrow(() -> new IllegalArgumentException("User does not exist"));
+        Role role = roleGateway
+                .findById(roleId)
+                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Role not found"));
+        if (!role.isEnabled()) throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Role is disabled");
+        userGateway
+                .findById(userId)
+                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "User does not exist"));
         roleGateway.assignRoleToUser(userId, roleId, "0");
     }
 
@@ -284,10 +300,14 @@ public class RoleService implements io.github.loadup.modules.upms.client.facade.
      */
     @Transactional
     public void assignPermissionsToRole(String roleId, List<String> permissionIds) {
-        roleGateway.findById(roleId).orElseThrow(() -> new RuntimeException("角色不存在"));
+        roleGateway
+                .findById(roleId)
+                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Role not found"));
 
         for (String permissionId : permissionIds) {
-            permissionGateway.findById(permissionId).orElseThrow(() -> new RuntimeException("权限不存在: " + permissionId));
+            permissionGateway
+                    .findById(permissionId)
+                    .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Permission not found"));
         }
 
         roleGateway.assignPermissionsToRole(roleId, permissionIds);
@@ -334,8 +354,11 @@ public class RoleService implements io.github.loadup.modules.upms.client.facade.
         for (String permissionId : permissionIds) {
             Permission permission = permissionGateway
                     .findById(permissionId)
-                    .orElseThrow(() -> new IllegalArgumentException("Permission does not exist: " + permissionId));
-            if (!permission.isEnabled()) throw new IllegalArgumentException("Permission is disabled: " + permissionId);
+                    .orElseThrow(() -> new CommonException(
+                            CommonResultCodeEnum.PARAM_ILLEGAL, "Permission does not exist: " + permissionId));
+            if (!permission.isEnabled())
+                throw new CommonException(
+                        CommonResultCodeEnum.PARAM_ILLEGAL, "Permission is disabled: " + permissionId);
         }
     }
 
@@ -345,14 +368,16 @@ public class RoleService implements io.github.loadup.modules.upms.client.facade.
                     .findById(departmentId)
                     .filter(d -> d.isEnabled())
                     .isEmpty()) {
-                throw new IllegalArgumentException("Department does not exist or is disabled: " + departmentId);
+                throw new CommonException(
+                        CommonResultCodeEnum.PARAM_ILLEGAL,
+                        "Department does not exist or is disabled: " + departmentId);
             }
         }
     }
 
     private void validateScope(Short scope) {
         if (DataScope.fromCode(scope).isEmpty()) {
-            throw new IllegalArgumentException("Unknown data scope: " + scope);
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Unknown data scope: " + scope);
         }
     }
 
@@ -361,12 +386,13 @@ public class RoleService implements io.github.loadup.modules.upms.client.facade.
         String current = parentId;
         while (current != null) {
             if (current.equals(roleId) || !visited.add(current)) {
-                throw new IllegalArgumentException("Role hierarchy contains a cycle");
+                throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Role hierarchy contains a cycle");
             }
             String parentRoleId = current;
             Role parent = roleGateway
                     .findById(parentRoleId)
-                    .orElseThrow(() -> new IllegalArgumentException("Parent role does not exist: " + parentRoleId));
+                    .orElseThrow(() -> new CommonException(
+                            CommonResultCodeEnum.PARAM_ILLEGAL, "Parent role does not exist: " + parentRoleId));
             current = parent.getParentId();
         }
     }
@@ -375,7 +401,8 @@ public class RoleService implements io.github.loadup.modules.upms.client.facade.
         if (parentId == null) return 1;
         Role parent = roleGateway
                 .findById(parentId)
-                .orElseThrow(() -> new IllegalArgumentException("Parent role does not exist: " + parentId));
+                .orElseThrow(() -> new CommonException(
+                        CommonResultCodeEnum.PARAM_ILLEGAL, "Parent role does not exist: " + parentId));
         return parent.getRoleLevel() == null ? 2 : parent.getRoleLevel() + 1;
     }
 

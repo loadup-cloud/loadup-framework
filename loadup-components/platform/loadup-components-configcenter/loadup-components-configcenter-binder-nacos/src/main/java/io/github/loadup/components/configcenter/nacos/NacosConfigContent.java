@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * LoadUp ConfigCenter Binder Nacos
  * %%

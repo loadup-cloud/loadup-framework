@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * Loadup Common DTO
  * %%
@@ -27,10 +27,8 @@ import java.util.Objects;
 
 public record ResultMeta(String requestId, String timestamp) {
 
-    // 主构造函数
     public ResultMeta {}
 
-    // 静态工厂方法
     public static ResultMeta of(String requestId) {
         return new ResultMeta(requestId, LocalDateTime.now().toString());
     }

@@ -9,9 +9,7 @@
     </parent>
     <artifactId>loadup-modules-dictionary-web</artifactId>
     <name>LoadUp Data Dictionary Web Adapter</name>
-    <properties>
-        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
-    </properties>
+    <properties/>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

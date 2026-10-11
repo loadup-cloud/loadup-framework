@@ -9,9 +9,7 @@
     </parent>
     <artifactId>loadup-commons-context</artifactId>
     <name>LoadUp Common Context</name>
-    <properties>
-        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
-    </properties>
+    <properties/>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>

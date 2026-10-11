@@ -21,15 +21,17 @@ package io.github.loadup.modules.upms.app.service;
 
 import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.dto.PageQuery;
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.upms.app.converter.UpmsDTOConverter;
 import io.github.loadup.modules.upms.client.command.UserPasswordChangeCommand;
 import io.github.loadup.modules.upms.client.dto.LoginEntryDTO;
 import io.github.loadup.modules.upms.client.dto.SecurityOverviewDTO;
-import io.github.loadup.modules.upms.domain.entity.LoginLog;
-import io.github.loadup.modules.upms.domain.entity.User;
 import io.github.loadup.modules.upms.domain.gateway.LoginLogGateway;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
+import io.github.loadup.modules.upms.domain.model.LoginLog;
+import io.github.loadup.modules.upms.domain.model.User;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -50,13 +52,14 @@ public class AccountSecurityService implements io.github.loadup.modules.upms.cli
     }
 
     public SecurityOverviewDTO overview(String userId) {
-        User user =
-                users.findById(requiredUser(userId)).orElseThrow(() -> new IllegalArgumentException("user not found"));
+        User user = users.findById(requiredUser(userId))
+                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "user not found"));
         return dtoConverter.toSecurityOverview(user);
     }
 
     public PageDTO<LoginEntryDTO> loginHistory(String userId, int page, int size) {
-        if (page < 1 || size < 1 || size > 100) throw new IllegalArgumentException("invalid page or size");
+        if (page < 1 || size < 1 || size > 100)
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "invalid page or size");
         PageResult<LoginLog> result = logins.findByUserId(requiredUser(userId), PageQuery.of(page, size));
         List<LoginEntryDTO> entries =
                 result.records().stream().map(dtoConverter::toLoginEntry).toList();
@@ -69,7 +72,8 @@ public class AccountSecurityService implements io.github.loadup.modules.upms.cli
     }
 
     private static String requiredUser(String userId) {
-        if (userId == null || userId.isBlank()) throw new IllegalArgumentException("userId is required");
+        if (userId == null || userId.isBlank())
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "userId is required");
         return userId;
     }
 }

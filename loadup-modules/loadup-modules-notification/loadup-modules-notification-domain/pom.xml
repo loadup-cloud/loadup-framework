@@ -9,9 +9,7 @@
     </parent>
     <artifactId>loadup-modules-notification-domain</artifactId>
     <name>LoadUp Notification Domain</name>
-    <properties>
-        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
-    </properties>
+    <properties/>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

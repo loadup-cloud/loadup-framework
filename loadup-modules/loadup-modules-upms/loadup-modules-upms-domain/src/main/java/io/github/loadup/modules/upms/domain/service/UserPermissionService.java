@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * Loadup Modules UPMS Domain Layer
  * %%
@@ -19,10 +19,10 @@
  */
 package io.github.loadup.modules.upms.domain.service;
 
-import io.github.loadup.modules.upms.domain.entity.Permission;
-import io.github.loadup.modules.upms.domain.entity.Role;
 import io.github.loadup.modules.upms.domain.gateway.PermissionGateway;
 import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
+import io.github.loadup.modules.upms.domain.model.Permission;
+import io.github.loadup.modules.upms.domain.model.Role;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;

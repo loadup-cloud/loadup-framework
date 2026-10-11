@@ -33,11 +33,11 @@ import java.util.List;
  */
 public class RoleUpdateCommand {
 
-    @NotNull(message = "角色ID不能为空")
+    @NotNull()
     @Schema(description = "Resource identifier")
     private String id;
 
-    @Size(max = 50, message = "角色名称长度不能超过50")
+    @Size(max = 50)
     @Schema(description = "Role name")
     private String roleName;
 

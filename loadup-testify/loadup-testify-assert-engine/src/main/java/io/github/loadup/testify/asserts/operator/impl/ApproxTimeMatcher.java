@@ -1,4 +1,4 @@
-/*-
+/*
  * #%L
  * Testify Assert Engine
  * %%
@@ -41,7 +41,7 @@ public class ApproxTimeMatcher implements OperatorMatcher {
 
     @Override
     public MatchResult match(Object actual, Object val, Map<String, Object> config) {
-        // 默认容差为 3000 毫秒
+
         long threshold = Long.parseLong(String.valueOf(config.getOrDefault("threshold", 3000)));
 
         try {
@@ -63,12 +63,10 @@ public class ApproxTimeMatcher implements OperatorMatcher {
             throw new IllegalArgumentException("时间值不能为空");
         }
 
-        // 如果是数字（时间戳）
         if (value instanceof Number n) {
             return n.longValue();
         }
 
-        // 如果是 Java 8 时间对象
         if (value instanceof java.time.temporal.TemporalAccessor ta) {
             try {
                 return java.time.Instant.from(ta).toEpochMilli();
@@ -80,12 +78,10 @@ public class ApproxTimeMatcher implements OperatorMatcher {
             }
         }
 
-        // 如果是 SQL Timestamp 或 Date
         if (value instanceof java.util.Date d) {
             return d.getTime();
         }
 
-        // 如果是字符串，尝试多种常用格式解析
         if (value instanceof String str) {
             return TIME_PARSER.toMillis(str);
         }

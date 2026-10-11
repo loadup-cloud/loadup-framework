@@ -10,9 +10,7 @@
     <artifactId>loadup-modules-contract-test</artifactId>
     <name>LoadUp Contract Test</name>
 
-    <properties>
-        <license.useJavaNoReformatCommentStartTag>false</license.useJavaNoReformatCommentStartTag>
-    </properties>
+    <properties/>
 
     <dependencies>
         <dependency>

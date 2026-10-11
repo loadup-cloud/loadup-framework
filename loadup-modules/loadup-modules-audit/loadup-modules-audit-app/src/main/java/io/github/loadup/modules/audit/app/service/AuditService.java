@@ -19,29 +19,35 @@
  */
 package io.github.loadup.modules.audit.app.service;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.audit.app.converter.AuditDTOConverter;
 import io.github.loadup.modules.audit.client.command.AuditRecordCommand;
 import io.github.loadup.modules.audit.client.dto.AuditEventDTO;
-import io.github.loadup.modules.audit.client.query.AuditQuery;
+import io.github.loadup.modules.audit.client.query.AuditPageQuery;
 import io.github.loadup.modules.audit.domain.gateway.AuditGateway;
 import io.github.loadup.modules.audit.domain.model.AuditEvent;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /** Records and searches immutable audit events. */
 public class AuditService implements io.github.loadup.modules.audit.client.facade.AuditFacade {
+    private final Clock clock;
     private final AuditDTOConverter converter;
     private final AuditGateway repository;
 
-    public AuditService(AuditGateway repository, AuditDTOConverter converter) {
+    public AuditService(AuditGateway repository, AuditDTOConverter converter, @Qualifier("auditClock") Clock clock) {
+        this.clock = clock;
         this.converter = converter;
         this.repository = repository;
     }
 
     public void record(AuditRecordCommand write) {
         if (write == null || write.action() == null || write.action().isBlank()) {
-            throw new IllegalArgumentException("audit action is required");
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "audit action is required");
         }
         repository.insert(new AuditEvent(
                 UUID.randomUUID().toString(),
@@ -52,10 +58,11 @@ public class AuditService implements io.github.loadup.modules.audit.client.facad
                 write.path(),
                 write.outcome(),
                 write.traceId(),
-                LocalDateTime.now()));
+                LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC)));
     }
 
-    public PageDTO<AuditEventDTO> search(AuditQuery query) {
-        return converter.toPageDTO(repository.search(converter.toDomain(query)));
+    public PageDTO<AuditEventDTO> search(AuditPageQuery query) {
+        return converter.toPageDTO(
+                repository.search(converter.toDomain(query, io.github.loadup.commons.util.TenantUtil.getTenantId())));
     }
 }
