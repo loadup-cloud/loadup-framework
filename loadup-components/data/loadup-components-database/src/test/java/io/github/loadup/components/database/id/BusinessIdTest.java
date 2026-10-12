@@ -1,0 +1,110 @@
+/*
+ * #%L
+ * Loadup Components Database
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+package io.github.loadup.components.database.id;
+
+import static org.assertj.core.api.Assertions.*;
+
+import io.github.loadup.commons.error.CommonException;
+import io.github.loadup.components.database.sequence.*;
+import java.time.*;
+import java.util.concurrent.atomic.AtomicReference;
+import org.junit.jupiter.api.Test;
+
+class BusinessIdTest {
+    private final BusinessIdFormatter formatter = new BusinessIdFormatter();
+
+    private BusinessIdCommand command(String extension) {
+        return new BusinessIdCommand(0, 1, "11000000", extension, 1, 440);
+    }
+
+    @Test
+    void preservesFixedVectorAndLeadingZeros() {
+        BusinessIdParts parts = new BusinessIdParts(LocalDate.of(2026, 10, 12), command(""), 12345678);
+        String id = formatter.format(parts);
+        assertThat(id).isEqualTo("20261012011100000000144012345678");
+        assertThat(id).hasSize(32);
+        assertThat(formatter.parse(id)).isEqualTo(parts);
+    }
+
+    @Test
+    void supportsMaximumLength() {
+        BusinessIdParts parts = new BusinessIdParts(LocalDate.of(2026, 10, 12), command("A".repeat(32)), 99_999_999);
+        String id = formatter.format(parts);
+        assertThat(id).hasSize(64);
+        assertThat(formatter.parse(id)).isEqualTo(parts);
+    }
+
+    @Test
+    void rejectsInvalidFieldsAndSequence() {
+        assertThatThrownBy(() -> command("A".repeat(33))).isInstanceOf(CommonException.class);
+        assertThatThrownBy(() -> formatter.format(new BusinessIdParts(LocalDate.now(), command(""), 100_000_000)))
+                .isInstanceOf(CommonException.class);
+        assertThatThrownBy(() -> formatter.format(new BusinessIdParts(LocalDate.now(), command(""), 0)))
+                .isInstanceOf(CommonException.class);
+        assertThatThrownBy(() -> new BusinessIdCommand(1, 1, "abcdefgh", "", 1000, 0))
+                .isInstanceOf(CommonException.class);
+    }
+
+    @Test
+    void rejectsInvalidDateAndZeroSequence() {
+        assertThatThrownBy(() -> formatter.parse("20260230011100000000144012345678"))
+                .isInstanceOf(CommonException.class);
+        assertThatThrownBy(() -> formatter.parse("20261012011100000000144000000000"))
+                .isInstanceOf(CommonException.class);
+        assertThatThrownBy(() -> formatter.parse("")).isInstanceOf(CommonException.class);
+    }
+
+    @Test
+    void capturesLocalDateAndBatchScope() {
+        AtomicReference<SequenceScope> seen = new AtomicReference<>();
+        Sequence sequence = new Sequence() {
+            public long next(SequenceScope s) {
+                return 1;
+            }
+
+            public long[] nextBatch(SequenceScope s, int n) {
+                seen.set(s);
+                return new long[] {1, 2};
+            }
+        };
+        Clock clock = Clock.fixed(Instant.parse("2026-10-11T16:30:00Z"), ZoneId.of("Asia/Shanghai"));
+        String[] ids = new BusinessIdGenerator(sequence, clock, formatter).generateBatch(command(""), 2);
+        assertThat(ids).allMatch(id -> id.startsWith("20261012"));
+        assertThat(seen.get().date()).isEqualTo(LocalDate.of(2026, 10, 12));
+        assertThat(ids[0]).endsWith("00000001");
+        assertThat(ids[1]).endsWith("00000002");
+    }
+
+    @Test
+    void singleGenerationUsesSingleNumericClaim() {
+        Sequence sequence = new Sequence() {
+            public long next(SequenceScope scope) {
+                return 7;
+            }
+
+            public long[] nextBatch(SequenceScope scope, int count) {
+                throw new AssertionError("Single generation must not allocate batch arrays");
+            }
+        };
+        BusinessIdGenerator generator = new BusinessIdGenerator(
+                sequence, Clock.fixed(Instant.parse("2026-10-12T00:00:00Z"), ZoneOffset.UTC), formatter);
+        assertThat(generator.generate(command(""))).hasSize(32).endsWith("00000007");
+    }
+}
