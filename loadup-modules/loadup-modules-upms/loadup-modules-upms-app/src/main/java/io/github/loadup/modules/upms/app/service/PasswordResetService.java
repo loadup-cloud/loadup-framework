@@ -140,7 +140,7 @@ public class PasswordResetService implements io.github.loadup.modules.upms.clien
 
         // Reset password
         user.setPassword(passwordEncoder.encode(command.getNewPassword()));
-        user.setPasswordUpdateTime(LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
+        user.setPasswordUpdateTime(LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
 
         userGateway.update(user);
         LogUtil.info(PasswordResetService.class, "Password reset successful for user: {}", user.getUsername());

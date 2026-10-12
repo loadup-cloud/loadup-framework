@@ -27,7 +27,7 @@ DO extends BaseDO
 | `updatedAt` | `updated_at` | `DATETIME` | Filled on insert and every entity update |
 | `deleted` | `deleted` | `TINYINT` | `0` normal, `1` deleted |
 
-Timestamps use the framework UTC clock. Unit tests may construct a listener with a deterministic clock.
+Timestamps use the framework clock using the JVM system default time zone. Unit tests may construct a listener with a deterministic clock.
 
 ## ID generation
 

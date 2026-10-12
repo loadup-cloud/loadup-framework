@@ -75,7 +75,7 @@ public class InboxService implements io.github.loadup.modules.notification.clien
                     CommonResultCodeEnum.PARAM_ILLEGAL, "actionUrl must be an application-relative path");
         }
         String key = requestKey == null || requestKey.isBlank() ? null : required(requestKey, "requestKey", 128);
-        LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), clock.getZone());
         int inserted = 0;
         for (String recipient : recipients.stream().distinct().toList()) {
             InboxMessage message = new InboxMessage(

@@ -39,7 +39,7 @@ public record AuditEventDTO(
         @Schema(description = "Trace identifier for request diagnostics")
         String traceId,
 
-        @Schema(description = "Event time in UTC") LocalDateTime occurredAt) {
+        @Schema(description = "Event time in the application local time zone") LocalDateTime occurredAt) {
     @Override
     public String toString() {
         return ToStringAsJson.reflectionToString(this);

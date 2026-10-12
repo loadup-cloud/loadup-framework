@@ -63,7 +63,7 @@ public class CatalogService implements io.github.loadup.modules.contract.client.
         CatalogKind kind = CatalogKind.valueOf(command.kind());
         if (command.version() < 1 || command.definition() == null)
             throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Invalid catalog definition");
-        LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), clock.getZone());
         CatalogEntry previous = command.id() == null
                 ? null
                 : gateway.lock(tenant, command.id()).orElseThrow(() -> new CommonException(ContractError.NOT_FOUND));
@@ -131,7 +131,7 @@ public class CatalogService implements io.github.loadup.modules.contract.client.
                 entry.content(),
                 actor,
                 entry.createdAt(),
-                LocalDateTime.ofInstant(clock.instant(), ZoneOffset.UTC));
+                LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
         gateway.update(updated, entry.rowVersion());
         return converter.toCatalog(updated);
     }

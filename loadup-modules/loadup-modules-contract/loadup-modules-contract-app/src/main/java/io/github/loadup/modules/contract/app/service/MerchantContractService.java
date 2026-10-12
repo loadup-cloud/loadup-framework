@@ -160,7 +160,7 @@ public class MerchantContractService implements io.github.loadup.modules.contrac
 
     private ContractRecord header(
             String tenant, String id, ContractSignCommand command, String digest, String actor, Instant now) {
-        LocalDateTime at = LocalDateTime.ofInstant(now, ZoneOffset.UTC);
+        LocalDateTime at = LocalDateTime.ofInstant(now, clock.getZone());
         return new ContractRecord(
                 id,
                 tenant,

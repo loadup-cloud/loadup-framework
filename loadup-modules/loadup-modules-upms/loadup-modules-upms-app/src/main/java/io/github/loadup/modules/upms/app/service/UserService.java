@@ -327,7 +327,7 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
 
         // Update password
         user.setPassword(passwordEncoder.encode(command.getNewPassword()));
-        user.setPasswordUpdateTime(LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
+        user.setPasswordUpdateTime(LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
 
         userGateway.update(user);
     }
@@ -341,7 +341,7 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
                 .findById(id)
                 .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "User not found"));
         user.setAccountNonLocked(false);
-        user.setLockedTime(LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
+        user.setLockedTime(LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
         userGateway.update(user);
     }
 

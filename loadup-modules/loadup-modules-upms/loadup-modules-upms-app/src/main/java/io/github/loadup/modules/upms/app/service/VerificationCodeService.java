@@ -62,9 +62,9 @@ public class VerificationCodeService {
         verificationCode.setTarget(target);
         verificationCode.setType(type);
         verificationCode.setAttempts(0);
-        verificationCode.setCreatedAt(LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
+        verificationCode.setCreatedAt(LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
 
-        verificationCode.setExpiryTime(LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC)
+        verificationCode.setExpiryTime(LocalDateTime.ofInstant(clock.instant(), clock.getZone())
                 .plusMinutes(CODE_EXPIRY_MINUTES));
 
         codeStorage.put(key, verificationCode);
@@ -90,7 +90,7 @@ public class VerificationCodeService {
         }
 
         // Check expiry
-        if (!LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC)
+        if (!LocalDateTime.ofInstant(clock.instant(), clock.getZone())
                 .isBefore(verificationCode.getExpiryTime())) {
             LogUtil.warn(
                     VerificationCodeService.class, "Verification code expired for: {}", Masking.keep(target, 1, 1));
@@ -137,7 +137,7 @@ public class VerificationCodeService {
         }
 
         // Check if previous code is still valid (prevent spamming)
-        LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), clock.getZone());
         LocalDateTime minResendTime = existingCode.getCreatedAt().plusMinutes(1);
 
         if (now.isBefore(minResendTime)) {

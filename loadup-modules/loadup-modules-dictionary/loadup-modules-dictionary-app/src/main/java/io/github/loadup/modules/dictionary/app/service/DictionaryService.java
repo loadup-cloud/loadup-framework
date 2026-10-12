@@ -64,7 +64,7 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
         if (repository.findTypeByCode(tenant, code).isPresent()) {
             throw new CommonException(CommonResultCodeEnum.CONFLICT, "dictionary type code already exists");
         }
-        LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), clock.getZone());
         DictionaryType type = new DictionaryType(
                 UUID.randomUUID().toString(),
                 tenant,
@@ -97,7 +97,7 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
                 optional(command.description(), 500),
                 command.enabled(),
                 previous.createdAt(),
-                LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
+                LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
         repository.updateType(updated);
         return converter.toDTO(updated);
     }
@@ -123,7 +123,7 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
         if (command == null) throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "item is required");
         String tenant = tenant(tenantId);
         DictionaryType type = requireTypeByCode(tenant, command.typeCode());
-        LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), clock.getZone());
         DictionaryItem item = new DictionaryItem(
                 UUID.randomUUID().toString(),
                 tenant,
@@ -161,7 +161,7 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
                 command.sortOrder(),
                 command.enabled(),
                 previous.createdAt(),
-                LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
+                LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
         repository.updateItem(updated);
         return converter.toDTO(updated);
     }

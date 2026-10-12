@@ -71,10 +71,10 @@ public class RoleDTO {
     @Schema(description = "Remark")
     private String remark;
 
-    @Schema(description = "Creation time in UTC")
+    @Schema(description = "Creation time in the application local time zone")
     private LocalDateTime createdAt;
 
-    @Schema(description = "Last update time in UTC")
+    @Schema(description = "Last update time in the application local time zone")
     private LocalDateTime updatedAt;
 
     public RoleDTO(

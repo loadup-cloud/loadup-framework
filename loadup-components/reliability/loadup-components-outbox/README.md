@@ -119,3 +119,7 @@ mvn clean verify -pl loadup-components/reliability/loadup-components-outbox -am 
 | 归档 / 自动清理 | 尚未提供；不得过早删除 Inbox 去重记录 |
 
 设计细节见 [ARCHITECTURE.md](ARCHITECTURE.md)。
+
+## 默认时区
+
+时间默认使用系统本地时区（JVM `ZoneId.systemDefault()`）。无偏移的 JSON 日期按本地时区解释；数据库会话和应用时区保持一致。Outbox 就绪时间和租约仍由数据库会话的 `CURRENT_TIMESTAMP(6)` 计算。显式偏移或 epoch 协议时间保持绝对时间语义。

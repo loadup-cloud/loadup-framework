@@ -71,7 +71,7 @@ public class MobileLoginStrategy implements LoginStrategy {
 
         user.updateLastLogin(
                 credentials.getIpAddress(),
-                java.time.LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
+                java.time.LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
         userGateway.update(user);
 
         return AuthenticatedUserDTO.builder()

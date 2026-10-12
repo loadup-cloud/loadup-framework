@@ -65,6 +65,6 @@ public class NotificationAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = "notificationClock")
     public java.time.Clock notificationClock() {
-        return java.time.Clock.systemUTC();
+        return java.time.Clock.systemDefaultZone();
     }
 }

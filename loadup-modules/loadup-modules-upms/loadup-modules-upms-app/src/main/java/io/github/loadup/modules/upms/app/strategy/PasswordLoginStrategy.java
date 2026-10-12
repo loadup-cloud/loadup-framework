@@ -74,7 +74,7 @@ public class PasswordLoginStrategy implements LoginStrategy {
 
         user.updateLastLogin(
                 credentials.getIpAddress(),
-                java.time.LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
+                java.time.LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
         user.resetLoginFailCount();
         userGateway.update(user);
 
@@ -94,7 +94,7 @@ public class PasswordLoginStrategy implements LoginStrategy {
             if (Short.valueOf((short) 2).equals(user.getStatus()) && user.getLockedTime() != null) {
                 LocalDateTime unlockTime = user.getLockedTime()
                         .plusMinutes(securityProperties.getLogin().getLockDuration());
-                if (LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC)
+                if (LocalDateTime.ofInstant(clock.instant(), clock.getZone())
                         .isBefore(unlockTime)) {
                     return true;
                 } else {
@@ -114,7 +114,7 @@ public class PasswordLoginStrategy implements LoginStrategy {
             user.incrementLoginFailCount();
 
             if (user.getLoginFailCount() >= securityProperties.getLogin().getMaxFailAttempts()) {
-                user.lockAccount(java.time.LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
+                user.lockAccount(java.time.LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
                 LogUtil.warn(PasswordLoginStrategy.class, "用户 {} 因失败次数过多被锁定", user.getUsername());
             }
 

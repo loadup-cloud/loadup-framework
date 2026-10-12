@@ -184,3 +184,7 @@ mvn clean -pl loadup-components/security/loadup-components-signature -am test \
 本地 JCA 调用仍通过 `SignatureService`、`KeyPairService`、`DigestService`、`SignatureUtils`、`DigestUtils`。旧 `loadup.components.signature.default-signature-algorithm`、`default-digest-algorithm`、`key-size` 配置保持其原有职责，不控制新请求协议。MD5/SHA-1 等历史摘要接口不作为请求认证方案。
 
 设计和职责见 [ARCHITECTURE](ARCHITECTURE.md)，生产接入待办见 [ROADMAP](../../../ROADMAP.md)。
+
+## 默认时钟
+
+请求签名复用唯一的（或 Primary）Clock；多个业务 Clock 共存时使用系统本地时区默认 Clock。签名时间戳仍使用 epoch 秒，时区不参与签名载荷。

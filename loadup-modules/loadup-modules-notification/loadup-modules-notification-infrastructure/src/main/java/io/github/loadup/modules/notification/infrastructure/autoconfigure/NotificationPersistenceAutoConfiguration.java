@@ -41,7 +41,7 @@ public class NotificationPersistenceAutoConfiguration {
     @Bean("notificationStorageClock")
     @ConditionalOnMissingBean(name = "notificationStorageClock")
     public java.time.Clock storageClock() {
-        return java.time.Clock.systemUTC();
+        return java.time.Clock.systemDefaultZone();
     }
 
     @Configuration(proxyBeanMethods = false)

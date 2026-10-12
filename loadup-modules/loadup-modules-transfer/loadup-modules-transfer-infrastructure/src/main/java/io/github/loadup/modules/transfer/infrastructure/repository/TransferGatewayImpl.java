@@ -104,7 +104,7 @@ public class TransferGatewayImpl implements TransferGateway {
     public boolean start(String id) {
         var patch = UpdateEntity.of(TransferTaskDO.class);
         patch.setStatus(TransferStatus.RUNNING);
-        patch.setStartedAt(LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
+        patch.setStartedAt(LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
         patch.setErrorMessage(null);
         return tasks.updateByQuery(
                         patch,
@@ -130,7 +130,7 @@ public class TransferGatewayImpl implements TransferGateway {
         var patch = UpdateEntity.of(TransferTaskDO.class);
         patch.setStatus(TransferStatus.SUCCEEDED);
         patch.setResultFileId(file);
-        patch.setFinishedAt(LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
+        patch.setFinishedAt(LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
         patch.setErrorMessage(null);
         if (tasks.updateByQuery(patch, task(id).and(TRANSFER_TASK_DO.STATUS.eq(TransferStatus.RUNNING.name()))) != 1)
             throw new IllegalStateException("transfer task is no longer running");
@@ -141,7 +141,7 @@ public class TransferGatewayImpl implements TransferGateway {
         var patch = UpdateEntity.of(TransferTaskDO.class);
         patch.setStatus(TransferStatus.FAILED);
         patch.setErrorMessage(message);
-        patch.setFinishedAt(LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
+        patch.setFinishedAt(LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
         tasks.updateByQuery(
                 patch,
                 task(id).and(TRANSFER_TASK_DO.STATUS.in(TransferStatus.QUEUED.name(), TransferStatus.RUNNING.name())));

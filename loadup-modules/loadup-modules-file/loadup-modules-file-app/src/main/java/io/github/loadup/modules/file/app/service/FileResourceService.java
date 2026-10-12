@@ -77,7 +77,7 @@ public class FileResourceService implements io.github.loadup.modules.file.client
                 : required(contentType, "contentType", 255);
         FileMetadata stored = dfs.upload(
                 new FileUploadRequest(safeName, content, size, type, "resources/" + UUID.randomUUID(), Map.of()));
-        LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), clock.getZone());
         FileResource file = new FileResource(
                 UUID.randomUUID().toString(),
                 tenant,
@@ -141,7 +141,7 @@ public class FileResourceService implements io.github.loadup.modules.file.client
                 file.id(),
                 key(referenceType, "referenceType"),
                 key(referenceId, "referenceId"),
-                LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
+                LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
         repository.addReference(reference);
         return converter.toDTO(reference);
     }

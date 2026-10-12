@@ -79,6 +79,6 @@ public class UpmsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = "upmsClock")
     public java.time.Clock upmsClock() {
-        return java.time.Clock.systemUTC();
+        return java.time.Clock.systemDefaultZone();
     }
 }

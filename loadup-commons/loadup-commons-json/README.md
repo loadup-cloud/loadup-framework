@@ -63,3 +63,7 @@ LocalDate / LocalDateTime 的显式 `@JsonFormat(pattern = "...")` 仍由 Jackso
 ## 日志与转换约定
 
 JSON 转换失败日志只包含操作名和异常类型，不包含输入 JSON、对象内容及 Jackson 异常链。`ToStringAsJson.reflectionToString` 用于对象日志 JSON，遵循独立于 HTTP JSON 的脱敏规则。
+
+## 默认时区
+
+日期默认使用 JVM 系统本地时区；无偏移日期按本地时区解释，显式偏移和 epoch 时间保持绝对时间语义。

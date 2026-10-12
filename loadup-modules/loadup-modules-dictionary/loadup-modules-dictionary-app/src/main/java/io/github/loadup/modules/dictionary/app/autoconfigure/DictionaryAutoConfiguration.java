@@ -58,6 +58,6 @@ public class DictionaryAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = "dictionaryClock")
     public java.time.Clock dictionaryClock() {
-        return java.time.Clock.systemUTC();
+        return java.time.Clock.systemDefaultZone();
     }
 }

@@ -72,6 +72,6 @@ public class TransferAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = "transferClock")
     public java.time.Clock transferClock() {
-        return java.time.Clock.systemUTC();
+        return java.time.Clock.systemDefaultZone();
     }
 }

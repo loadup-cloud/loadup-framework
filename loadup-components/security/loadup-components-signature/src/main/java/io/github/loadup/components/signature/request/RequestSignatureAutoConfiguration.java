@@ -49,7 +49,7 @@ public class RequestSignatureAutoConfiguration {
     @ConditionalOnMissingBean
     public RequestSigner requestSigner(
             KmsTemplate kms, ObjectProvider<Clock> clock, RequestSignatureProperties properties) {
-        return new RequestSigner(kms, clock.getIfAvailable(Clock::systemUTC), properties);
+        return new RequestSigner(kms, clock.getIfUnique(Clock::systemDefaultZone), properties);
     }
 
     @Bean
@@ -64,7 +64,7 @@ public class RequestSignatureAutoConfiguration {
             RequestNonceStore nonces,
             ObjectProvider<Clock> clock,
             RequestSignatureProperties properties) {
-        return new RequestVerifier(kms, nonces, clock.getIfAvailable(Clock::systemUTC), properties);
+        return new RequestVerifier(kms, nonces, clock.getIfUnique(Clock::systemDefaultZone), properties);
     }
 
     @Configuration(proxyBeanMethods = false)

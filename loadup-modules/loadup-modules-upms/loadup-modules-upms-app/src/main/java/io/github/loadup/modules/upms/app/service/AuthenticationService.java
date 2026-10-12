@@ -161,7 +161,7 @@ public class AuthenticationService implements AuthenticationFacade {
         LoginLog loginLog = new LoginLog();
         loginLog.setUserId(user.getId());
         loginLog.setUsername(user.getUsername());
-        loginLog.setLoginTime(LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
+        loginLog.setLoginTime(LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
         loginLog.setIpAddress(command.getIpAddress());
         loginLog.setLoginStatus((short) 1);
         loginLog.setLoginMessage("登录成功");
@@ -182,7 +182,7 @@ public class AuthenticationService implements AuthenticationFacade {
         if (command.getUsername() != null) {
             userGateway.findByUsername(command.getUsername()).ifPresent(user -> loginLog.setUserId(user.getId()));
         }
-        loginLog.setLoginTime(LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
+        loginLog.setLoginTime(LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
         loginLog.setIpAddress(command.getIpAddress());
         loginLog.setLoginStatus((short) 0);
         loginLog.setLoginMessage(message);

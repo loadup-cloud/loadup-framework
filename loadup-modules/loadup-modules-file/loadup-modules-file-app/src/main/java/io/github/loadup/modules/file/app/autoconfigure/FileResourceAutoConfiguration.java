@@ -58,6 +58,6 @@ public class FileResourceAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = "fileClock")
     public java.time.Clock fileClock() {
-        return java.time.Clock.systemUTC();
+        return java.time.Clock.systemDefaultZone();
     }
 }

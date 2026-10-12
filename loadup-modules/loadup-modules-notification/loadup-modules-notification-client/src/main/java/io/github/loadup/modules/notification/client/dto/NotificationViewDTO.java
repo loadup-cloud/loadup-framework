@@ -31,7 +31,7 @@ public record NotificationViewDTO(
         @Schema(description = "Body") String body,
         @Schema(description = "Action url") String actionUrl,
         @Schema(description = "Read at") LocalDateTime readAt,
-        @Schema(description = "Creation time in UTC") LocalDateTime createdAt) {
+        @Schema(description = "Creation time in the application local time zone") LocalDateTime createdAt) {
     @Override
     public String toString() {
         return ToStringAsJson.reflectionToString(this);

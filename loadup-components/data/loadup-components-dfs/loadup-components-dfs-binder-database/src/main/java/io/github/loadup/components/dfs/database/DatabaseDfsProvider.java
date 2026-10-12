@@ -31,7 +31,6 @@ import io.github.loadup.components.dfs.model.FileUploadRequest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.UUID;
 import tools.jackson.core.JacksonException;
@@ -57,7 +56,7 @@ public class DatabaseDfsProvider implements DfsProvider {
                 throw new DfsStorageException("Uploaded content length mismatch: expected=" + request.contentLength()
                         + ", actual=" + content.length);
             }
-            LocalDateTime uploadedAt = LocalDateTime.now(ZoneOffset.UTC);
+            LocalDateTime uploadedAt = LocalDateTime.now();
             FileStorageDO file = new FileStorageDO();
             file.setId(fileId);
             file.setFilename(request.filename());
@@ -127,6 +126,6 @@ public class DatabaseDfsProvider implements DfsProvider {
                 getBinderType(),
                 file.getId(),
                 metadata,
-                file.getCreatedAt().toInstant(ZoneOffset.UTC));
+                file.getCreatedAt().atZone(java.time.ZoneId.systemDefault()).toInstant());
     }
 }

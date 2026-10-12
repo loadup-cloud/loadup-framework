@@ -113,7 +113,7 @@ public class OAuthLoginStrategy implements LoginStrategy {
 
             user.updateLastLogin(
                     credentials.getIpAddress(),
-                    java.time.LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
+                    java.time.LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
             userGateway.update(user);
 
             return AuthenticatedUserDTO.builder()
@@ -184,10 +184,10 @@ public class OAuthLoginStrategy implements LoginStrategy {
         binding.setRefreshToken(token.getRefreshToken());
         binding.setExpiresAt(
                 token.getExpiresIn() != null
-                        ? LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC)
+                        ? LocalDateTime.ofInstant(clock.instant(), clock.getZone())
                                 .plusSeconds(token.getExpiresIn())
                         : null);
-        binding.setBoundAt(LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC));
+        binding.setBoundAt(LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
 
         bindingGateway.save(binding);
 

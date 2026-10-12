@@ -49,7 +49,7 @@ public class OutboxInbox {
             try {
                 jdbc.update(
                         "INSERT INTO loadup_outbox_inbox (id, tenant_id, created_at, updated_at, consumer_id, event_id) "
-                                + "VALUES (?, ?, UTC_TIMESTAMP(6), UTC_TIMESTAMP(6), ?, ?)",
+                                + "VALUES (?, ?, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), ?, ?)",
                         UUID.randomUUID().toString(),
                         event.message().tenantId(),
                         consumerId,

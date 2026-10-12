@@ -97,7 +97,7 @@ class OutboxIT {
         String id = publish();
         var first = repository.claim().orElseThrow();
         jdbc.update(
-                "UPDATE loadup_outbox_event SET lease_until = TIMESTAMPADD(SECOND, -1, UTC_TIMESTAMP(6)) WHERE id = ?",
+                "UPDATE loadup_outbox_event SET lease_until = TIMESTAMPADD(SECOND, -1, CURRENT_TIMESTAMP(6)) WHERE id = ?",
                 id);
         var recovered = repository.claim().orElseThrow();
         assertThat(recovered.event().id()).isEqualTo(id);
@@ -111,7 +111,7 @@ class OutboxIT {
         String id = publish();
         repository.claim().orElseThrow();
         jdbc.update(
-                "UPDATE loadup_outbox_event SET attempts = ?, lease_until = TIMESTAMPADD(SECOND, -1, UTC_TIMESTAMP(6)) WHERE id = ?",
+                "UPDATE loadup_outbox_event SET attempts = ?, lease_until = TIMESTAMPADD(SECOND, -1, CURRENT_TIMESTAMP(6)) WHERE id = ?",
                 properties.getMaxAttempts(),
                 id);
         assertThat(repository.claim()).isEmpty();
@@ -212,7 +212,7 @@ class OutboxIT {
             TenantUtil.runWithTenant("previous", () -> {
                 var dispatcher = new OutboxDispatcher(repository, properties, List.of(handler), null);
                 assertThat(dispatcher.dispatchBatch()).isEqualTo(1);
-                jdbc.update("UPDATE loadup_outbox_event SET available_at = UTC_TIMESTAMP(6) WHERE id = ?", id);
+                jdbc.update("UPDATE loadup_outbox_event SET available_at = CURRENT_TIMESTAMP(6) WHERE id = ?", id);
                 dispatcher.dispatchBatch();
                 assertThat(dispatcher.dispatchBatch()).isZero();
                 assertThat(calls).hasValue(2);

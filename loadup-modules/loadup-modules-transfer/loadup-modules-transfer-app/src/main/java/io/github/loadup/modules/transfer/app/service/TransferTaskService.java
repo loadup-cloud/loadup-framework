@@ -122,7 +122,7 @@ public class TransferTaskService
                 0,
                 0,
                 null,
-                LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC),
+                LocalDateTime.ofInstant(clock.instant(), clock.getZone()),
                 null,
                 null);
         repository.insert(task, args);

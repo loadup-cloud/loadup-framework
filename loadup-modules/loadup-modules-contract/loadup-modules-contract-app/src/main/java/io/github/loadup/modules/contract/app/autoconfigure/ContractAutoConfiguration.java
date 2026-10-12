@@ -65,6 +65,6 @@ public class ContractAutoConfiguration {
     @org.springframework.context.annotation.Bean
     @ConditionalOnMissingBean(name = "contractClock")
     public java.time.Clock contractClock() {
-        return java.time.Clock.systemUTC();
+        return java.time.Clock.systemDefaultZone();
     }
 }

@@ -53,6 +53,6 @@ public class AuditAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = "auditClock")
     public java.time.Clock auditClock() {
-        return java.time.Clock.systemUTC();
+        return java.time.Clock.systemDefaultZone();
     }
 }

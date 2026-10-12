@@ -23,6 +23,8 @@ LoadUp 是一个**被消费的框架/SDK**，通过 `loadup-dependencies` BOM �
 
 ## 验证与构建
 
+- 构建及 Maven 插件命令统一使用 Maven Daemon（`mvnd`），保留 `clean` 和按模块选择。`mvnd` 不可用时报告环境限制，不自动回退到 `mvn`。
+
 - IDEA MCP 可用时直接使用其代码检查能力，不编写临时手动 check 脚本代替 IDE 检查。
 - 需要验证编译、注解处理或依赖装配时使用 Maven build；不完全禁止构建。优先选择受影响模块及其依赖，用户要求整体构建时执行整体构建。
 - Maven 编译必须带 `clean`，避免 MyBatis-Flex、MapStruct 等注解处理器增量生成时发生 `FilerException`。
@@ -157,7 +159,7 @@ loadup-modules-{mod}/
 
 | #  | 禁止行为                                     | 正确做法                                                                |
 |----|------------------------------------------|---------------------------------------------------------------------|
-| 1  | Java 文件头写 `/*- #%L ... #L% */` License 块 | 标准 Apache-2.0 模板：`mvn license:update-file-header` 后执行 `mvn spotless:apply`（模板空行含尾随空格需对齐），verify 阶段 `check-file-header` + `spotless:check` 双校验 |
+| 1  | Java 文件头写 `/*- #%L ... #L% */` License 块 | 标准 Apache-2.0 模板：`mvnd license:update-file-header` 后执行 `mvnd spotless:apply`（模板空行含尾随空格需对齐），verify 阶段 `check-file-header` + `spotless:check` 双校验 |
 | 2  | 将 HTTP 映射直接写在业务 Service 中 | 在可选 Web 适配模块中使用 Spring MVC Controller 调用 Service |
 | 3  | 集成测试中用 `@MockBean` 替代 DB                 | `@EnableTestContainers(ContainerType.MYSQL)` 启动真实容器                      |
 | 4  | `@Autowired` 字段注入                        | 构造器注入：显式 `public XxxService(XxxGateway gw) { this.gw = gw; }`                               |
@@ -367,7 +369,7 @@ deleted    TINYINT      NOT NULL DEFAULT 0
 
 - New password inputs share UPMS `@ValidPassword` and `PasswordPolicy`: at least 8 Unicode code points and at most 72 UTF-8 bytes, matching BCrypt's byte limit. Create, register, change and reset entry points validate before encoding or persistence; login accepts existing credentials without applying a new-password policy.
 - Public business pagination defaults to page 1 and size 20; explicit invalid values are rejected and size is capped at 100. Sort fields use declared whitelists and generated MyBatis-Flex columns; never pass user input to SQL ordering. Audit Controller and Facade share AuditPageQuery; trusted tenant identity is supplied by the application layer.
-- Database listeners own persistence createdAt/updatedAt. Business event and expiry timestamps use injected Clock and explicit UTC conversion. Each module qualifies its named `<module>Clock`; infrastructure lease clocks are separately qualified. Verification-code createdAt is an in-memory business timestamp and must still be initialized.
+- Database listeners own persistence createdAt/updatedAt. Business event and expiry timestamps use injected Clock with Clock.systemDefaultZone() defaults and convert using clock.getZone(). Each module qualifies its named `<module>Clock`; infrastructure lease clocks are separately qualified. Verification-code createdAt is an in-memory business timestamp and must still be initialized.
 - Expected business failures use CommonException with stable ResultCode (PARAM_ILLEGAL, NOT_FOUND, CONFLICT, INVALID_STATE, RATE_LIMITED or authentication codes). Unexpected infrastructure failures remain system failures. API exception advice preserves result codes and HTTP 200 envelopes; non-API and Spring Security protocols retain their responsible handlers.
 - Logs contain neither raw verification codes, credentials nor raw JSON payloads. Mask email/phone explicitly. Jackson exceptions may contain payload fragments: log operation and exception type without the exception message or chain.
 - License header options are inherited from the root POM, including `license.useJavaNoReformatCommentStartTag=false`; do not override them in child modules. ArchitectureTest checks bytecode dependencies; SourceStandardsTest checks source-retained MapStruct/Lombok annotations. Run focused regression tests when changing these contracts.
@@ -375,3 +377,5 @@ deleted    TINYINT      NOT NULL DEFAULT 0
 - Every loadup-parent declaration includes an explicit relativePath to the root pom.xml; Maven's default ../pom.xml can select an unrelated aggregator and silently fall back to an installed stale parent.
 
 - Commons dependency-cycle gates group classes by Maven artifact ownership, not arbitrary Java package names. Framework WebMVC error adapters are valid HTTP adapters. Container-test naming is also checked from source so optional test modules absent from the launcher classpath are still covered.
+
+- 默认时间契约：JVM、业务 Clock、数据库审计字段及 JSON 无偏移日期使用系统本地时区。Clock 默认 `systemDefaultZone()`，转换使用 `clock.getZone()`；数据库会话时区与应用本地时区保持一致。JWT、请求签名的 epoch 时间戳及显式偏移的协议时间保持绝对时间语义。

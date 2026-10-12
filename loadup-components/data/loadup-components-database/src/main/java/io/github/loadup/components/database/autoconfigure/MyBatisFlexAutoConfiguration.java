@@ -51,7 +51,7 @@ public class MyBatisFlexAutoConfiguration {
 
     @Bean
     public Clock databaseClock() {
-        return Clock.systemUTC();
+        return Clock.systemDefaultZone();
     }
 
     @Bean

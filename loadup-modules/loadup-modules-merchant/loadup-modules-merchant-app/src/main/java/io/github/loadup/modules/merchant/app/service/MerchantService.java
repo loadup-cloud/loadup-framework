@@ -50,7 +50,7 @@ public class MerchantService implements io.github.loadup.modules.merchant.client
     }
 
     private LocalDateTime now() {
-        return LocalDateTime.ofInstant(clock.instant(), ZoneOffset.UTC);
+        return LocalDateTime.ofInstant(clock.instant(), clock.getZone());
     }
 
     @Transactional

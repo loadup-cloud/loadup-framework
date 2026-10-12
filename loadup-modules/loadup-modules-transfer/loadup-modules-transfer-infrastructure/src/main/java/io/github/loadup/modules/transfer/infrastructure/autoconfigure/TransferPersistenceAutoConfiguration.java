@@ -41,7 +41,7 @@ public class TransferPersistenceAutoConfiguration {
     @Bean("transferStorageClock")
     @ConditionalOnMissingBean(name = "transferStorageClock")
     public java.time.Clock storageClock() {
-        return java.time.Clock.systemUTC();
+        return java.time.Clock.systemDefaultZone();
     }
 
     @Configuration(proxyBeanMethods = false)

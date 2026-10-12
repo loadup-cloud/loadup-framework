@@ -58,7 +58,7 @@ public class AuditService implements io.github.loadup.modules.audit.client.facad
                 write.path(),
                 write.outcome(),
                 write.traceId(),
-                LocalDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC)));
+                LocalDateTime.ofInstant(clock.instant(), clock.getZone())));
     }
 
     public PageDTO<AuditEventDTO> search(AuditPageQuery query) {

@@ -53,6 +53,6 @@ public class MerchantAutoConfiguration {
     @org.springframework.context.annotation.Bean
     @ConditionalOnMissingBean(name = "merchantClock")
     public java.time.Clock merchantClock() {
-        return java.time.Clock.systemUTC();
+        return java.time.Clock.systemDefaultZone();
     }
 }

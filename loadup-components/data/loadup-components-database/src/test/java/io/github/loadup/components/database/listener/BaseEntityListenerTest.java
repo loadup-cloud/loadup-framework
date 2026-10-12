@@ -28,6 +28,7 @@ import io.github.loadup.components.database.config.DatabaseProperties;
 import io.github.loadup.components.database.id.IdGenerator;
 import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import org.junit.jupiter.api.Test;
 
@@ -84,6 +85,20 @@ class BaseEntityListenerTest {
 
         assertThat(entity.getUpdatedAt()).isEqualTo(NOW.atZone(ZoneOffset.UTC).toLocalDateTime());
         assertThat(entity.getCreatedAt()).isBefore(entity.getUpdatedAt());
+    }
+
+    @Test
+    void usesClockZoneForAuditFieldsAndDefaultsToSystemLocalZone() {
+        java.time.ZoneId zone = java.time.ZoneId.of("Asia/Shanghai");
+        BaseEntityListener listener = new BaseEntityListener(new DatabaseProperties(), () -> "id", Clock.fixed(NOW, zone));
+        TestEntity entity = new TestEntity();
+        listener.onInsert(entity);
+        assertThat(entity.getCreatedAt()).isEqualTo(LocalDateTime.ofInstant(NOW, zone));
+        assertThat(entity.getUpdatedAt()).isEqualTo(entity.getCreatedAt());
+        listener.onUpdate(entity);
+        assertThat(entity.getUpdatedAt()).isEqualTo(LocalDateTime.ofInstant(NOW, zone));
+        assertThat(new io.github.loadup.components.database.autoconfigure.MyBatisFlexAutoConfiguration(new DatabaseProperties()).databaseClock().getZone())
+            .isEqualTo(java.time.ZoneId.systemDefault());
     }
 
     private static final class TestEntity extends BaseDO {

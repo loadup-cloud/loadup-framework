@@ -104,6 +104,7 @@ public class JsonUtil {
                 .changeDefaultPropertyInclusion(ignored ->
                         com.fasterxml.jackson.annotation.JsonInclude.Value.construct(Include.ALWAYS, Include.ALWAYS))
                 .defaultDateFormat(new SimpleDateFormat(DEFAULT_DATE_TIME_FORMAT))
+                .defaultTimeZone(java.util.TimeZone.getDefault())
                 .addModule(javaTimeModule)
                 .addModule(module);
     }

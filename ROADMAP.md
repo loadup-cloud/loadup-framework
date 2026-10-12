@@ -182,3 +182,9 @@ Command/Query 命名、ID 查询复用、字典 Command 合并、七类重复分
 2026-10-11 已实现敏感日志清理、共享密码策略、UTC Clock 与审计填充分工、合约 Facade、OAuth MapStruct 转换、分页默认值/上限/排序白名单、稳定业务错误码和全局 API 异常响应；统一 DTO/domain/autoconfigure 命名及 Java 注释，更新 AGENTS 和 License 默认配置。52 个受影响模块 clean package 成功。密码、验证码 Clock/日志、JSON 日志及 MVC 响应定向测试已通过。合约/审计/字典/文件/通知/导入导出自动配置、密码写入入口、分页排序、OAuth 绑定映射及令牌 Clock 回归均已执行通过。最终 69 个相关模块 clean test 成功，16 项 ArchUnit 规则和 4 项源码规范检查通过；License/Spotless 全仓校验通过，文档站已同步。子模块统一显式引用当前根 POM，避免本地旧父 POM 配置污染；未运行完整 reactor 测试或真实数据库 IT。
 
 - [ ] 在真实消费工程验证数据库审计填充、租户隔离、密码重置与权限失败 HTTP 响应；单元测试不能代替真实环境验收。
+
+## 本地时区默认值与 Maven Daemon
+
+2026-10-12 按最新约定将业务及数据库 Clock 默认值改为系统本地时区，LocalDateTime 转换使用 Clock 自身时区；JSON 默认时区、DFS 元数据和 Outbox 数据库时间同步调整，OpenAPI 与接入文档同步更新。AGENTS 规定构建使用 mvnd，保留 clean 与定向模块选择。IDEA 检查已修复新增测试源码的 API/构造器调用问题；静态检查未发现生产代码继续强制 UTC 默认值。数据库审计和 JSON 本地时区回归已补充，但本轮未运行构建或测试：当前 PATH 未找到 mvnd。Outbox 的 IDE SQL 检查因未关联数据源提示表不可解析，真实数据库行为仍待 IT 验证。
+
+- [ ] 在消费环境运行本地时区回归及数据库 IT，核对数据库会话/JVM 时区、Outbox 租约和已有时间数据的解释。

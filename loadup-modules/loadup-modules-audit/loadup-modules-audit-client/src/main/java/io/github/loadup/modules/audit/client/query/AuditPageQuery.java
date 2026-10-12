@@ -29,8 +29,8 @@ public record AuditPageQuery(
         @Schema(description = "Actor identifier") String actorId,
         @Schema(description = "Action") String action,
         @Schema(description = "Outcome") String outcome,
-        @Schema(description = "Inclusive start time in UTC") LocalDateTime from,
-        @Schema(description = "Inclusive end time in UTC") LocalDateTime to,
+        @Schema(description = "Inclusive start time in the application local time zone") LocalDateTime from,
+        @Schema(description = "Inclusive end time in the application local time zone") LocalDateTime to,
 
         @Schema(description = "Page number, starting at 1", minimum = "1", defaultValue = "1") @Min(1)
         Integer page,
