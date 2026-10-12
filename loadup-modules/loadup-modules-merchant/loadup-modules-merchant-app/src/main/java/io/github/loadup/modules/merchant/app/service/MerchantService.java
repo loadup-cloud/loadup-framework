@@ -19,12 +19,12 @@
  */
 package io.github.loadup.modules.merchant.app.service;
 
-import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.merchant.app.converter.MerchantConverter;
 import io.github.loadup.modules.merchant.client.command.*;
 import io.github.loadup.modules.merchant.client.dto.*;
+import io.github.loadup.modules.merchant.client.error.MerchantResultCodeEnum;
 import io.github.loadup.modules.merchant.client.query.MerchantPageQuery;
 import io.github.loadup.modules.merchant.domain.gateway.MerchantGateway;
 import io.github.loadup.modules.merchant.domain.model.*;
@@ -71,7 +71,7 @@ public class MerchantService implements io.github.loadup.modules.merchant.client
         try {
             gateway.insert(merchant);
         } catch (DuplicateKeyException e) {
-            throw new CommonException(MerchantError.CONFLICT, "Merchant code already exists", e);
+            throw new CommonException(MerchantResultCodeEnum.CONFLICT, e);
         }
         return converter.toDTO(merchant);
     }
@@ -97,12 +97,12 @@ public class MerchantService implements io.github.loadup.modules.merchant.client
     }
 
     private void expected(Merchant current, long expected) {
-        if (current.rowVersion() != expected) throw new CommonException(MerchantError.CONFLICT);
+        if (current.rowVersion() != expected) throw new CommonException(MerchantResultCodeEnum.CONFLICT);
     }
 
     private Merchant require(String id) {
         return gateway.find(MerchantIdentity.tenant(), id)
-                .orElseThrow(() -> new CommonException(MerchantError.NOT_FOUND));
+                .orElseThrow(() -> new CommonException(MerchantResultCodeEnum.NOT_FOUND));
     }
 
     @Transactional(readOnly = true)
@@ -113,7 +113,7 @@ public class MerchantService implements io.github.loadup.modules.merchant.client
     @Transactional(readOnly = true)
     public PageDTO<MerchantDTO> page(MerchantPageQuery query) {
         if (query.page() < 1 || query.size() < 1 || query.size() > 100)
-            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Invalid page");
+            throw new CommonException(MerchantResultCodeEnum.INVALID_PAGE);
         var result = gateway.page(
                 MerchantIdentity.tenant(),
                 query.merchantCode(),

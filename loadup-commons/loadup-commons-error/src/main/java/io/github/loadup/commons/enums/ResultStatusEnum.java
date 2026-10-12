@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common DTO
+ * LoadUp Common Error
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -27,7 +27,7 @@ public enum ResultStatusEnum {
     FAIL("F"),
     UNKNOWN("U");
 
-    private String code;
+    private final String code;
 
     public static ResultStatusEnum getByCode(String code) {
         return Arrays.stream(ResultStatusEnum.values())

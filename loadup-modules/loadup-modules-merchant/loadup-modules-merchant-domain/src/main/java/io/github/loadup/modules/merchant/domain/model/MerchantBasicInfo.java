@@ -19,7 +19,9 @@
  */
 package io.github.loadup.modules.merchant.domain.model;
 
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
+import io.github.loadup.modules.merchant.client.error.MerchantResultCodeEnum;
 import java.util.Objects;
 
 public record MerchantBasicInfo(
@@ -48,12 +50,13 @@ public record MerchantBasicInfo(
         String contactEmail) {
     public MerchantBasicInfo {
         for (String value : new String[] {merchantCode, name, industry, country})
-            if (value == null || value.isBlank()) throw new IllegalArgumentException("Required merchant field missing");
+            if (value == null || value.isBlank())
+                throw new CommonException(MerchantResultCodeEnum.REQUIRED_MERCHANT_FIELD_MISSING);
         Objects.requireNonNull(type, "Merchant type");
         if (!merchantCode.matches("[A-Za-z0-9][A-Za-z0-9_.-]{0,63}")
                 || !industry.matches("[A-Za-z0-9][A-Za-z0-9_.-]{0,63}")
                 || !country.matches("[A-Z]{2}"))
-            throw new IllegalArgumentException("Invalid merchant code, industry or country");
+            throw new CommonException(MerchantResultCodeEnum.INVALID_MERCHANT_CLASSIFICATION);
         bounded(merchantCode, 64);
         bounded(name, 200);
         bounded(shortName, 100);
@@ -68,14 +71,14 @@ public record MerchantBasicInfo(
         bounded(contactEmail, 200);
 
         if (contactPhone != null && !contactPhone.isEmpty() && !contactPhone.matches("\\+?[0-9]{8,15}"))
-            throw new IllegalArgumentException("Invalid contact phone");
+            throw new CommonException(MerchantResultCodeEnum.INVALID_CONTACT_PHONE);
         if (contactEmail != null && !contactEmail.isEmpty() && !contactEmail.matches("[^\\s@]+@[^\\s@]+\\.[^\\s@.]+"))
-            throw new IllegalArgumentException("Invalid contact email");
+            throw new CommonException(MerchantResultCodeEnum.INVALID_CONTACT_EMAIL);
     }
 
     private static void bounded(String value, int max) {
         if (value != null && (value.length() > max || value.codePoints().anyMatch(Character::isISOControl)))
-            throw new IllegalArgumentException("Invalid merchant field length or control character");
+            throw new CommonException(MerchantResultCodeEnum.INVALID_MERCHANT_FIELD);
     }
 
     @Override

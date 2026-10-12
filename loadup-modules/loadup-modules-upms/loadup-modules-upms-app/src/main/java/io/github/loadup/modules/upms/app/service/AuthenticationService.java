@@ -30,6 +30,7 @@ import io.github.loadup.modules.upms.client.command.UserLoginCommand;
 import io.github.loadup.modules.upms.client.command.UserRegisterCommand;
 import io.github.loadup.modules.upms.client.dto.AuthenticatedUserDTO;
 import io.github.loadup.modules.upms.client.dto.UserDetailDTO;
+import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
 import io.github.loadup.modules.upms.client.facade.AuthenticationFacade;
 import io.github.loadup.modules.upms.client.facade.UserQueryFacade;
 import io.github.loadup.modules.upms.client.validation.PasswordPolicy;
@@ -87,7 +88,7 @@ public class AuthenticationService implements AuthenticationFacade {
 
             User user = userGateway
                     .findById(authenticatedUser.getUserId())
-                    .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "User not found"));
+                    .orElseThrow(() -> new CommonException(UpmsResultCodeEnum.USER_NOT_FOUND));
 
             recordLoginSuccess(user, command, loginType);
 
@@ -117,17 +118,17 @@ public class AuthenticationService implements AuthenticationFacade {
         PasswordPolicy.requireValid(command.getPassword());
         // Check if username exists
         if (userGateway.existsByUsername(command.getUsername())) {
-            throw new CommonException(CommonResultCodeEnum.CONFLICT, "Username already exists");
+            throw new CommonException(UpmsResultCodeEnum.USERNAME_ALREADY_EXISTS);
         }
 
         // Check if email exists
         if (command.getEmail() != null && userGateway.existsByEmail(command.getEmail())) {
-            throw new CommonException(CommonResultCodeEnum.CONFLICT, "Email is already registered");
+            throw new CommonException(UpmsResultCodeEnum.EMAIL_IS_ALREADY_REGISTERED);
         }
 
         // Check if phone exists
         if (command.getMobile() != null && userGateway.existsByMobile(command.getMobile())) {
-            throw new CommonException(CommonResultCodeEnum.CONFLICT, "Phone number is already registered");
+            throw new CommonException(UpmsResultCodeEnum.PHONE_NUMBER_IS_ALREADY_REGISTERED);
         }
 
         // Create user

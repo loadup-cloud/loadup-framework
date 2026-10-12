@@ -21,6 +21,9 @@ package io.github.loadup.modules.contract.app.support;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
+import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import io.github.loadup.modules.contract.domain.model.Condition;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -48,7 +51,7 @@ public class ContractCodec {
     public String write(Object value) {
         String content = mapper.writeValueAsString(value);
         if (content.getBytes(StandardCharsets.UTF_8).length > 131072)
-            throw new IllegalArgumentException("Contract content exceeds limit");
+            throw new CommonException(ContractResultCodeEnum.CONTRACT_CONTENT_EXCEEDS_LIMIT);
         return content;
     }
 
@@ -66,7 +69,7 @@ public class ContractCodec {
                     .formatHex(MessageDigest.getInstance("SHA-256")
                             .digest(write(canonical(value)).getBytes(StandardCharsets.UTF_8)));
         } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("SHA-256 unavailable", e);
+            throw new CommonException(CommonResultCodeEnum.SYS_ERROR, e);
         }
     }
 

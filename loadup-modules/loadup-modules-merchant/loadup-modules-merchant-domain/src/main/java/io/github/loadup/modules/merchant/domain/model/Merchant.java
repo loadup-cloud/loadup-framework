@@ -19,7 +19,9 @@
  */
 package io.github.loadup.modules.merchant.domain.model;
 
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
+import io.github.loadup.modules.merchant.client.error.MerchantResultCodeEnum;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -36,12 +38,12 @@ public record Merchant(
     public Merchant {
         Objects.requireNonNull(info);
         Objects.requireNonNull(status);
-        if (rowVersion < 1) throw new IllegalArgumentException("Invalid merchant version");
+        if (rowVersion < 1) throw new CommonException(MerchantResultCodeEnum.INVALID_MERCHANT_VERSION);
     }
 
     public Merchant update(MerchantBasicInfo changes, String actor, LocalDateTime now) {
         if (!info.merchantCode().equals(changes.merchantCode()))
-            throw new IllegalArgumentException("Merchant code is immutable");
+            throw new CommonException(MerchantResultCodeEnum.MERCHANT_CODE_IS_IMMUTABLE);
         return new Merchant(
                 id, tenantId, changes, status, Math.addExact(rowVersion, 1), createdBy, actor, createdAt, now);
     }

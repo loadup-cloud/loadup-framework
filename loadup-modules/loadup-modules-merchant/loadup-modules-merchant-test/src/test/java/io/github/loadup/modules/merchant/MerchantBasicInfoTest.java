@@ -47,8 +47,9 @@ class MerchantBasicInfoTest {
         var merchant =
                 new Merchant("id", "tenant", info("M001", null), MerchantStatus.ACTIVE, 1, "actor", "actor", at, at);
         assertThatThrownBy(() -> merchant.update(info("M002", null), "actor", at))
-                .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> info("M001", "138****8000")).isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
+        assertThatThrownBy(() -> info("M001", "138****8000"))
+                .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
         assertThat(merchant.changeStatus(MerchantStatus.INACTIVE, "actor", at).rowVersion())
                 .isEqualTo(2);
     }

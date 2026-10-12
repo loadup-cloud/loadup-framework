@@ -19,7 +19,9 @@
  */
 package io.github.loadup.modules.audit.client.query;
 
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
+import io.github.loadup.modules.audit.client.error.AuditResultCodeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -29,8 +31,12 @@ public record AuditPageQuery(
         @Schema(description = "Actor identifier") String actorId,
         @Schema(description = "Action") String action,
         @Schema(description = "Outcome") String outcome,
-        @Schema(description = "Inclusive start time in the application local time zone") LocalDateTime from,
-        @Schema(description = "Inclusive end time in the application local time zone") LocalDateTime to,
+
+        @Schema(description = "Inclusive start time in the application local time zone")
+        LocalDateTime from,
+
+        @Schema(description = "Inclusive end time in the application local time zone")
+        LocalDateTime to,
 
         @Schema(description = "Page number, starting at 1", minimum = "1", defaultValue = "1") @Min(1)
         Integer page,
@@ -47,13 +53,10 @@ public record AuditPageQuery(
         page = page == null ? 1 : page;
         size = size == null ? 20 : size;
         if (from != null && to != null && from.isAfter(to)) {
-            throw new io.github.loadup.commons.error.CommonException(
-                    io.github.loadup.commons.enums.CommonResultCodeEnum.PARAM_ILLEGAL, "from must not be after to");
+            throw new CommonException(AuditResultCodeEnum.INVALID_TIME_RANGE);
         }
         if (page < 1 || size < 1 || size > 100) {
-            throw new io.github.loadup.commons.error.CommonException(
-                    io.github.loadup.commons.enums.CommonResultCodeEnum.PARAM_ILLEGAL,
-                    "Page must be positive and size must be between 1 and 100");
+            throw new CommonException(AuditResultCodeEnum.INVALID_PAGE);
         }
     }
 

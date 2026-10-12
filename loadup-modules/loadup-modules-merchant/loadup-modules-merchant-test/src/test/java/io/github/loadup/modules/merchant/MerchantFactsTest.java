@@ -56,7 +56,8 @@ class MerchantFactsTest {
     void mismatchedTenantOrMerchantIdentityIsRejected() {
         var provider = new MerchantContractFactsProvider((tenant, id) -> Optional.of(
                 new MerchantProfileDTO(id, "other", "M001", "ENTERPRISE", "RETAIL", "CN", null, null, true)));
-        assertThatThrownBy(() -> provider.load("tenant", "id")).isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> provider.load("tenant", "id"))
+                .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
     }
 
     @Test

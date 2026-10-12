@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.file.web;
 
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.request.query.IdQuery;
 import io.github.loadup.commons.result.PageResponse;
 import io.github.loadup.commons.result.SuccessResponse;
@@ -29,6 +30,7 @@ import io.github.loadup.modules.file.client.command.FileDeleteCommand;
 import io.github.loadup.modules.file.client.dto.FileReferenceDTO;
 import io.github.loadup.modules.file.client.dto.FileResourceDTO;
 import io.github.loadup.modules.file.client.dto.FileResourceViewDTO;
+import io.github.loadup.modules.file.client.error.FileResultCodeEnum;
 import io.github.loadup.modules.file.client.facade.FileResourceFacade;
 import io.github.loadup.modules.file.client.query.FilePageQuery;
 import io.swagger.v3.oas.annotations.Operation;
@@ -161,7 +163,7 @@ public class FileResourceController {
                 || !(authentication.getPrincipal() instanceof LoadUpUser user)
                 || user.getUserId() == null
                 || user.getUserId().isBlank()) {
-            throw new IllegalArgumentException("authenticated user is required");
+            throw new CommonException(FileResultCodeEnum.AUTHENTICATED_USER_IS_REQUIRED);
         }
         return user.getUserId();
     }

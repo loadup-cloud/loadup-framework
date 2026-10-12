@@ -19,33 +19,25 @@
  */
 package io.github.loadup.components.signature.exception;
 
+import io.github.loadup.commons.error.CommonException;
+
 /** Unchecked exception thrown by the signature and digest services. */
-public class SignatureException extends RuntimeException {
+public class SignatureException extends CommonException {
 
     private final SignatureErrorCode errorCode;
 
     public SignatureException(SignatureErrorCode errorCode) {
-        super(errorCode.getMessage());
+        super(errorCode);
         this.errorCode = errorCode;
     }
 
     public SignatureException(SignatureErrorCode errorCode, Throwable cause) {
-        super(errorCode.getMessage(), cause);
-        this.errorCode = errorCode;
-    }
-
-    public SignatureException(SignatureErrorCode errorCode, String message) {
-        super(message);
-        this.errorCode = errorCode;
-    }
-
-    public SignatureException(SignatureErrorCode errorCode, String message, Throwable cause) {
-        super(message, cause);
+        super(errorCode, cause);
         this.errorCode = errorCode;
     }
 
     /** Categorized signature errors. */
-    public enum SignatureErrorCode {
+    public enum SignatureErrorCode implements io.github.loadup.commons.result.ResultCode {
         INVALID_KEY("Invalid key"),
         INVALID_ALGORITHM("Unsupported algorithm"),
         SIGN_FAILED("Sign failed"),
@@ -58,6 +50,14 @@ public class SignatureException extends RuntimeException {
 
         SignatureErrorCode(String message) {
             this.message = message;
+        }
+
+        public String getCode() {
+            return "SIGNATURE_" + name();
+        }
+
+        public String getStatus() {
+            return io.github.loadup.commons.enums.ResultStatusEnum.FAIL.getCode();
         }
 
         public String getMessage() {

@@ -362,6 +362,6 @@ public class S3DfsProvider implements DfsProvider {
     }
 
     private static DfsStorageException storageFailure(String operation, String fileId, RuntimeException error) {
-        return new DfsStorageException("S3 DFS " + operation + " failed for " + fileId, error);
+        return new DfsStorageException(DfsStorageException.Code.OPERATION_FAILED, error);
     }
 }

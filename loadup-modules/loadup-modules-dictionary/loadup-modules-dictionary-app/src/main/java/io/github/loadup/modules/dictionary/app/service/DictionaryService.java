@@ -29,6 +29,7 @@ import io.github.loadup.modules.dictionary.client.command.DictionaryTypeCreateCo
 import io.github.loadup.modules.dictionary.client.command.DictionaryTypeUpdateCommand;
 import io.github.loadup.modules.dictionary.client.dto.DictionaryItemDTO;
 import io.github.loadup.modules.dictionary.client.dto.DictionaryTypeDTO;
+import io.github.loadup.modules.dictionary.client.error.DictionaryResultCodeEnum;
 import io.github.loadup.modules.dictionary.domain.gateway.DictionaryGateway;
 import io.github.loadup.modules.dictionary.domain.model.DictionaryItem;
 import io.github.loadup.modules.dictionary.domain.model.DictionaryType;
@@ -57,12 +58,12 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
 
     @Transactional
     public DictionaryTypeDTO createType(String tenantId, DictionaryTypeCreateCommand command) {
-        if (command == null) throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "type is required");
+        if (command == null) throw new CommonException(DictionaryResultCodeEnum.TYPE_IS_REQUIRED);
         String tenant = tenant(tenantId);
         String code = code(command.code());
         String name = required(command.name(), "name", 100);
         if (repository.findTypeByCode(tenant, code).isPresent()) {
-            throw new CommonException(CommonResultCodeEnum.CONFLICT, "dictionary type code already exists");
+            throw new CommonException(DictionaryResultCodeEnum.DICTIONARY_TYPE_CODE_ALREADY_EXISTS);
         }
         LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), clock.getZone());
         DictionaryType type = new DictionaryType(
@@ -77,7 +78,7 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
         try {
             repository.insertType(type);
         } catch (DuplicateKeyException duplicate) {
-            throw new CommonException(CommonResultCodeEnum.CONFLICT, "dictionary type code already exists", duplicate);
+            throw new CommonException(CommonResultCodeEnum.SYS_ERROR, duplicate);
         }
         return converter.toDTO(type);
     }
@@ -85,7 +86,7 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
     @Transactional
     public DictionaryTypeDTO updateType(String tenantId, DictionaryTypeUpdateCommand command) {
         if (command == null || command.enabled() == null) {
-            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "type and enabled are required");
+            throw new CommonException(DictionaryResultCodeEnum.TYPE_AND_ENABLED_ARE_REQUIRED);
         }
         String tenant = tenant(tenantId);
         DictionaryType previous = requireType(tenant, command.id());
@@ -107,8 +108,7 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
         String tenant = tenant(tenantId);
         DictionaryType type = requireType(tenant, id);
         if (repository.countItems(tenant, type.id()) != 0) {
-            throw new CommonException(
-                    CommonResultCodeEnum.INVALID_STATE, "delete dictionary items before deleting their type");
+            throw new CommonException(DictionaryResultCodeEnum.DICTIONARY_TYPE_NOT_EMPTY);
         }
         repository.deleteType(tenant, type.id());
     }
@@ -120,7 +120,7 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
 
     @Transactional
     public DictionaryItemDTO createItem(String tenantId, DictionaryItemCreateCommand command) {
-        if (command == null) throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "item is required");
+        if (command == null) throw new CommonException(DictionaryResultCodeEnum.ITEM_IS_REQUIRED);
         String tenant = tenant(tenantId);
         DictionaryType type = requireTypeByCode(tenant, command.typeCode());
         LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), clock.getZone());
@@ -138,8 +138,7 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
         try {
             repository.insertItem(item);
         } catch (DuplicateKeyException duplicate) {
-            throw new CommonException(
-                    CommonResultCodeEnum.CONFLICT, "dictionary item value already exists in this type", duplicate);
+            throw new CommonException(CommonResultCodeEnum.SYS_ERROR, duplicate);
         }
         return converter.toDTO(item);
     }
@@ -147,7 +146,7 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
     @Transactional
     public DictionaryItemDTO updateItem(String tenantId, DictionaryItemUpdateCommand command) {
         if (command == null || command.enabled() == null || command.sortOrder() == null) {
-            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "item, enabled and sortOrder are required");
+            throw new CommonException(DictionaryResultCodeEnum.ITEM_ENABLED_AND_SORTORDER_ARE_REQUIRED);
         }
         String tenant = tenant(tenantId);
         DictionaryItem previous = requireItem(tenant, command.id());
@@ -188,19 +187,19 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
     private DictionaryType requireType(String tenant, String id) {
         return repository
                 .findTypeById(tenant, required(id, "id", 64))
-                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "dictionary type not found"));
+                .orElseThrow(() -> new CommonException(DictionaryResultCodeEnum.DICTIONARY_TYPE_NOT_FOUND));
     }
 
     private DictionaryType requireTypeByCode(String tenant, String typeCode) {
         return repository
                 .findTypeByCode(tenant, code(typeCode))
-                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "dictionary type not found"));
+                .orElseThrow(() -> new CommonException(DictionaryResultCodeEnum.DICTIONARY_TYPE_NOT_FOUND));
     }
 
     private DictionaryItem requireItem(String tenant, String id) {
         return repository
                 .findItemById(tenant, required(id, "id", 64))
-                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "dictionary item not found"));
+                .orElseThrow(() -> new CommonException(DictionaryResultCodeEnum.DICTIONARY_ITEM_NOT_FOUND));
     }
 
     private static String tenant(String tenantId) {
@@ -210,17 +209,14 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
     private static String code(String code) {
         String normalized = required(code, "code", 64).toLowerCase(Locale.ROOT);
         if (!normalized.matches("[a-z][a-z0-9_.-]*")) {
-            throw new CommonException(
-                    CommonResultCodeEnum.PARAM_ILLEGAL,
-                    "code must start with a letter and contain only letters, digits, _, . or -");
+            throw new CommonException(DictionaryResultCodeEnum.INVALID_DICTIONARY_CODE);
         }
         return normalized;
     }
 
     private static String required(String value, String name, int maxLength) {
         if (value == null || value.isBlank() || value.trim().length() > maxLength) {
-            throw new CommonException(
-                    CommonResultCodeEnum.PARAM_ILLEGAL, name + " must contain 1 to " + maxLength + " characters");
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
         }
         return value.trim();
     }
@@ -228,16 +224,14 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
     private static String optional(String value, int maxLength) {
         if (value == null || value.isBlank()) return null;
         if (value.trim().length() > maxLength) {
-            throw new CommonException(
-                    CommonResultCodeEnum.PARAM_ILLEGAL, "description must be at most " + maxLength + " characters");
+            throw new CommonException(DictionaryResultCodeEnum.DESCRIPTION_MUST_BE_AT_MOST);
         }
         return value.trim();
     }
 
     private static void validatePage(int page, int size) {
         if (page < 1 || size < 1 || size > 100) {
-            throw new CommonException(
-                    CommonResultCodeEnum.PARAM_ILLEGAL, "page must be positive and size must be between 1 and 100");
+            throw new CommonException(DictionaryResultCodeEnum.INVALID_PAGE);
         }
     }
 }

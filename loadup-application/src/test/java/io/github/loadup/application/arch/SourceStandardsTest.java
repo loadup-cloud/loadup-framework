@@ -119,4 +119,21 @@ class SourceStandardsTest {
         }
         assertTrue(failures.isEmpty(), failures::toString);
     }
+
+    @Test
+    void businessCodeDoesNotConstructFreeTextExceptions() throws Exception {
+        List<String> failures = new ArrayList<>();
+        try (var files = Files.walk(root().resolve("loadup-modules"))) {
+            for (Path file : files.filter(p -> p.toString().contains("/src/main/java/"))
+                    .filter(p -> p.toString().endsWith(".java"))
+                    .toList()) {
+                String source = Files.readString(file);
+                if (Pattern.compile(
+                                "new[ \t\r\n]+(RuntimeException|IllegalArgumentException|IllegalStateException|UnsupportedOperationException)[ \t\r\n]*[(]")
+                        .matcher(source)
+                        .find()) failures.add(file.toString());
+            }
+        }
+        assertTrue(failures.isEmpty(), failures::toString);
+    }
 }

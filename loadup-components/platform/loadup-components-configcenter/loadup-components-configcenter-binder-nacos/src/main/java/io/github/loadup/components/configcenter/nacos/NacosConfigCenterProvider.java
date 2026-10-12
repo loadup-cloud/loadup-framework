@@ -23,6 +23,8 @@ import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.components.configcenter.ConfigCenterProvider;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -65,7 +67,7 @@ public class NacosConfigCenterProvider implements ConfigCenterProvider {
         try {
             this.configService = NacosFactory.createConfigService(props);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create Nacos ConfigService", e);
+            throw new CommonException(CommonResultCodeEnum.SYS_ERROR, e);
         }
         this.snapshot = loadSnapshot();
     }
@@ -157,7 +159,7 @@ public class NacosConfigCenterProvider implements ConfigCenterProvider {
                 }
             });
         } catch (Exception e) {
-            throw new RuntimeException("Failed to add Nacos listener", e);
+            throw new CommonException(CommonResultCodeEnum.SYS_ERROR, e);
         }
     }
 

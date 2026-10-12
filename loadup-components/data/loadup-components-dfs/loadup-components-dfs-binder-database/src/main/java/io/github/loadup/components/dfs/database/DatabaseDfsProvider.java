@@ -53,8 +53,7 @@ public class DatabaseDfsProvider implements DfsProvider {
         try {
             byte[] content = request.content().readAllBytes();
             if (content.length != request.contentLength()) {
-                throw new DfsStorageException("Uploaded content length mismatch: expected=" + request.contentLength()
-                        + ", actual=" + content.length);
+                throw new DfsStorageException(DfsStorageException.Code.OPERATION_FAILED);
             }
             LocalDateTime uploadedAt = LocalDateTime.now();
             FileStorageDO file = new FileStorageDO();
@@ -70,7 +69,7 @@ public class DatabaseDfsProvider implements DfsProvider {
             mapper.insert(file);
             return toMetadata(file);
         } catch (IOException | JacksonException e) {
-            throw new DfsStorageException("Database DFS upload failed for " + fileId, e);
+            throw new DfsStorageException(DfsStorageException.Code.OPERATION_FAILED, e);
         }
     }
 
@@ -116,7 +115,7 @@ public class DatabaseDfsProvider implements DfsProvider {
                     ? Map.of()
                     : objectMapper.readValue(file.getMetadataJson(), new TypeReference<>() {});
         } catch (JacksonException e) {
-            throw new DfsStorageException("Failed to parse database DFS metadata for " + file.getId(), e);
+            throw new DfsStorageException(DfsStorageException.Code.OPERATION_FAILED, e);
         }
         return new FileMetadata(
                 file.getId(),

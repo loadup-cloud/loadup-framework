@@ -19,8 +19,8 @@
  */
 package io.github.loadup.modules.upms.client.validation;
 
-import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
+import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
 import java.nio.charset.StandardCharsets;
 
 /** Shared input policy compatible with the configured BCrypt encoder. */
@@ -39,6 +39,6 @@ public final class PasswordPolicy {
     }
 
     public static void requireValid(String value) {
-        if (!isValid(value)) throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, MESSAGE);
+        if (!isValid(value)) throw new CommonException(UpmsResultCodeEnum.INVALID_PASSWORD);
     }
 }

@@ -19,7 +19,9 @@
  */
 package io.github.loadup.modules.contract.domain.model;
 
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
+import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Set;
@@ -39,11 +41,11 @@ public record ParameterDefinition(
         allowedValues = Set.copyOf(allowedValues);
         editableLayers = Set.copyOf(editableLayers);
         if (editableLayers.contains(ConfigurationLayer.PRODUCT)) {
-            throw new IllegalArgumentException("Product defaults are not an override layer");
+            throw new CommonException(ContractResultCodeEnum.PRODUCT_OVERRIDE_FORBIDDEN);
         }
-        if (allowedValues.size() > 100) throw new IllegalArgumentException("Too many allowed values");
+        if (allowedValues.size() > 100) throw new CommonException(ContractResultCodeEnum.TOO_MANY_ALLOWED_VALUES);
         if (allowedValues.stream().anyMatch(v -> v.type() != type)) {
-            throw new IllegalArgumentException("Allowed value type mismatch");
+            throw new CommonException(ContractResultCodeEnum.ALLOWED_VALUE_TYPE_MISMATCH);
         }
         checkBounds(type, minimum, maximum);
         for (TypedValue value : allowedValues) checkValue(type, value, minimum, maximum, Set.of());
@@ -56,7 +58,7 @@ public record ParameterDefinition(
 
     static void checkBounds(ValueType type, BigDecimal minimum, BigDecimal maximum) {
         if ((minimum != null || maximum != null) && type != ValueType.INTEGER && type != ValueType.DECIMAL) {
-            throw new IllegalArgumentException("Bounds require numeric parameters");
+            throw new CommonException(ContractResultCodeEnum.BOUNDS_REQUIRE_NUMERIC_PARAMETERS);
         }
         if (type == ValueType.INTEGER
                 && minimum != null
@@ -64,22 +66,23 @@ public record ParameterDefinition(
                 && minimum.setScale(0, java.math.RoundingMode.CEILING)
                                 .compareTo(maximum.setScale(0, java.math.RoundingMode.FLOOR))
                         > 0) {
-            throw new IllegalArgumentException("Integer range contains no value");
+            throw new CommonException(ContractResultCodeEnum.INTEGER_RANGE_CONTAINS_NO_VALUE);
         }
         if (minimum != null && maximum != null && minimum.compareTo(maximum) > 0) {
-            throw new IllegalArgumentException("Inverted bounds");
+            throw new CommonException(ContractResultCodeEnum.INVERTED_BOUNDS);
         }
     }
 
     static void checkValue(
             ValueType type, TypedValue value, BigDecimal minimum, BigDecimal maximum, Set<TypedValue> allowed) {
         Objects.requireNonNull(value, "parameter value");
-        if (value.type() != type) throw new IllegalArgumentException("Parameter type mismatch");
-        if (!allowed.isEmpty() && !allowed.contains(value)) throw new IllegalArgumentException("Value not allowed");
+        if (value.type() != type) throw new CommonException(ContractResultCodeEnum.PARAMETER_TYPE_MISMATCH);
+        if (!allowed.isEmpty() && !allowed.contains(value))
+            throw new CommonException(ContractResultCodeEnum.VALUE_NOT_ALLOWED);
         if (minimum != null && value.number().compareTo(minimum) < 0)
-            throw new IllegalArgumentException("Below minimum");
+            throw new CommonException(ContractResultCodeEnum.BELOW_MINIMUM);
         if (maximum != null && value.number().compareTo(maximum) > 0)
-            throw new IllegalArgumentException("Above maximum");
+            throw new CommonException(ContractResultCodeEnum.ABOVE_MAXIMUM);
     }
 
     @Override

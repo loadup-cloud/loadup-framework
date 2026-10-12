@@ -19,12 +19,12 @@
  */
 package io.github.loadup.modules.upms.app.service;
 
-import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.upms.app.converter.UpmsDTOConverter;
 import io.github.loadup.modules.upms.client.command.DepartmentCreateCommand;
 import io.github.loadup.modules.upms.client.command.DepartmentUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.DepartmentDTO;
+import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
 import io.github.loadup.modules.upms.domain.gateway.DepartmentGateway;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import io.github.loadup.modules.upms.domain.model.Department;
@@ -54,7 +54,7 @@ public class DepartmentService implements io.github.loadup.modules.upms.client.f
     public DepartmentDTO createDepartment(DepartmentCreateCommand command) {
         // Validate department code uniqueness
         if (departmentGateway.existsByDeptCode(command.getDeptCode())) {
-            throw new CommonException(CommonResultCodeEnum.CONFLICT, "Department code already exists");
+            throw new CommonException(UpmsResultCodeEnum.DEPARTMENT_CODE_ALREADY_EXISTS);
         }
 
         // Validate parent department exists
@@ -62,8 +62,7 @@ public class DepartmentService implements io.github.loadup.modules.upms.client.f
         if (command.getParentId() != null && !"0".equals(command.getParentId())) {
             Department parentDept = departmentGateway
                     .findById(command.getParentId())
-                    .orElseThrow(
-                            () -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Parent department not found"));
+                    .orElseThrow(() -> new CommonException(UpmsResultCodeEnum.PARENT_DEPARTMENT_NOT_FOUND));
             deptLevel = (parentDept.getDeptLevel() != null ? parentDept.getDeptLevel() : 0) + 1;
         }
 
@@ -71,8 +70,7 @@ public class DepartmentService implements io.github.loadup.modules.upms.client.f
         if (command.getLeaderUserId() != null) {
             userGateway
                     .findById(command.getLeaderUserId())
-                    .orElseThrow(
-                            () -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Department leader not found"));
+                    .orElseThrow(() -> new CommonException(UpmsResultCodeEnum.DEPARTMENT_LEADER_NOT_FOUND));
         }
         Department department = new Department();
         // Create department entity
@@ -101,17 +99,16 @@ public class DepartmentService implements io.github.loadup.modules.upms.client.f
     public DepartmentDTO updateDepartment(DepartmentUpdateCommand command) {
         Department department = departmentGateway
                 .findById(command.getId())
-                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Department not found"));
+                .orElseThrow(() -> new CommonException(UpmsResultCodeEnum.DEPARTMENT_NOT_FOUND));
 
         // Validate parent department (prevent circular reference)
         if (command.getParentId() != null && !"0".equals(command.getParentId())) {
             if (command.getParentId().equals(command.getId())) {
-                throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Department cannot be its own parent");
+                throw new CommonException(UpmsResultCodeEnum.DEPARTMENT_CANNOT_BE_ITS_OWN_PARENT);
             }
             Department parentDept = departmentGateway
                     .findById(command.getParentId())
-                    .orElseThrow(
-                            () -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Parent department not found"));
+                    .orElseThrow(() -> new CommonException(UpmsResultCodeEnum.PARENT_DEPARTMENT_NOT_FOUND));
 
             department.setDeptLevel((parentDept.getDeptLevel() != null ? parentDept.getDeptLevel() : 0) + 1);
         }
@@ -120,8 +117,7 @@ public class DepartmentService implements io.github.loadup.modules.upms.client.f
         if (command.getLeaderUserId() != null) {
             userGateway
                     .findById(command.getLeaderUserId())
-                    .orElseThrow(
-                            () -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Department leader not found"));
+                    .orElseThrow(() -> new CommonException(UpmsResultCodeEnum.DEPARTMENT_LEADER_NOT_FOUND));
         }
 
         // Update department fields
@@ -162,18 +158,16 @@ public class DepartmentService implements io.github.loadup.modules.upms.client.f
      */
     @Transactional
     public void deleteDepartment(String id) {
-        departmentGateway
-                .findById(id)
-                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Department not found"));
+        departmentGateway.findById(id).orElseThrow(() -> new CommonException(UpmsResultCodeEnum.DEPARTMENT_NOT_FOUND));
 
         // Check if department has children
         if (departmentGateway.hasChildren(id)) {
-            throw new CommonException(CommonResultCodeEnum.INVALID_STATE, "Department contains child departments");
+            throw new CommonException(UpmsResultCodeEnum.DEPARTMENT_CONTAINS_CHILD_DEPARTMENTS);
         }
 
         // Check if department has users
         if (departmentGateway.hasUsers(id)) {
-            throw new CommonException(CommonResultCodeEnum.INVALID_STATE, "Department contains users");
+            throw new CommonException(UpmsResultCodeEnum.DEPARTMENT_CONTAINS_USERS);
         }
 
         departmentGateway.deleteById(id);
@@ -185,7 +179,7 @@ public class DepartmentService implements io.github.loadup.modules.upms.client.f
     public DepartmentDTO getDepartmentById(String id) {
         Department department = departmentGateway
                 .findById(id)
-                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Department not found"));
+                .orElseThrow(() -> new CommonException(UpmsResultCodeEnum.DEPARTMENT_NOT_FOUND));
         return convertToDTO(department);
     }
 
@@ -203,7 +197,7 @@ public class DepartmentService implements io.github.loadup.modules.upms.client.f
     public DepartmentDTO getDepartmentTreeById(String id) {
         Department department = departmentGateway
                 .findById(id)
-                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Department not found"));
+                .orElseThrow(() -> new CommonException(UpmsResultCodeEnum.DEPARTMENT_NOT_FOUND));
         List<Department> allDepartments = departmentGateway.findAll();
 
         DepartmentDTO dto = convertToDTO(department);
@@ -221,22 +215,20 @@ public class DepartmentService implements io.github.loadup.modules.upms.client.f
     public void moveDepartment(String deptId, String newParentId) {
         Department department = departmentGateway
                 .findById(deptId)
-                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Department not found"));
+                .orElseThrow(() -> new CommonException(UpmsResultCodeEnum.DEPARTMENT_NOT_FOUND));
 
         // Validate new parent exists
         if (newParentId != null && !"0".equals(newParentId)) {
             if (newParentId.equals(deptId)) {
-                throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Department cannot be its own parent");
+                throw new CommonException(UpmsResultCodeEnum.DEPARTMENT_CANNOT_BE_ITS_OWN_PARENT);
             }
             Department newParent = departmentGateway
                     .findById(newParentId)
-                    .orElseThrow(() ->
-                            new CommonException(CommonResultCodeEnum.NOT_FOUND, "New parent department not found"));
+                    .orElseThrow(() -> new CommonException(UpmsResultCodeEnum.NEW_PARENT_DEPARTMENT_NOT_FOUND));
 
             // Check if new parent is a child of current department (prevent circular)
             if (isDescendant(deptId, newParentId)) {
-                throw new CommonException(
-                        CommonResultCodeEnum.INVALID_STATE, "Department cannot be moved below its descendants");
+                throw new CommonException(UpmsResultCodeEnum.DEPARTMENT_CYCLE);
             }
 
             department.setParentId(newParentId);

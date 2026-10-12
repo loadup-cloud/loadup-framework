@@ -73,6 +73,6 @@ class ContractCodecTest {
         assertThatThrownBy(() -> codec.read("{\"items\":[],\"unexpected\":true}", CatalogDefinitions.Bundle.class))
                 .isInstanceOf(RuntimeException.class);
         assertThatThrownBy(() -> codec.write(Map.of("value", "x".repeat(131072))))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
     }
 }

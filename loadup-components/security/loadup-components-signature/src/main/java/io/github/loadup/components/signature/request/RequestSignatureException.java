@@ -19,9 +19,11 @@
  */
 package io.github.loadup.components.signature.request;
 
+import io.github.loadup.commons.error.CommonException;
+
 /** Safe request verification failure without payloads, headers or backend details. */
-public final class RequestSignatureException extends RuntimeException {
-    public enum Code {
+public final class RequestSignatureException extends CommonException {
+    public enum Code implements io.github.loadup.commons.result.ResultCode {
         MALFORMED,
         IDENTITY_MISMATCH,
         EXPIRED,
@@ -29,13 +31,25 @@ public final class RequestSignatureException extends RuntimeException {
         INVALID_SIGNATURE,
         REPLAY,
         REPLAY_STORE_UNAVAILABLE,
-        PAYLOAD_TOO_LARGE
+        PAYLOAD_TOO_LARGE;
+
+        public String getCode() {
+            return "REQUEST_SIGNATURE_" + name();
+        }
+
+        public String getStatus() {
+            return io.github.loadup.commons.enums.ResultStatusEnum.FAIL.getCode();
+        }
+
+        public String getMessage() {
+            return "Request signature rejected: " + name();
+        }
     }
 
     private final Code code;
 
     public RequestSignatureException(Code code) {
-        super("Request signature rejected: " + code);
+        super(code);
         this.code = code;
     }
 

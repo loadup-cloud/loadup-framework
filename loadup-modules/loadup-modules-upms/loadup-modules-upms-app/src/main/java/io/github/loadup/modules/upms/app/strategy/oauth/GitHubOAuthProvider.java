@@ -19,9 +19,11 @@
  */
 package io.github.loadup.modules.upms.app.strategy.oauth;
 
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.modules.upms.app.autoconfigure.UpmsSecurityProperties;
 import io.github.loadup.modules.upms.app.strategy.OAuthProviderCode;
+import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -100,7 +102,7 @@ public class GitHubOAuthProvider implements io.github.loadup.modules.upms.app.st
 
         } catch (Exception e) {
             LogUtil.error(GitHubOAuthProvider.class, "Failed to exchange GitHub token", e);
-            throw new RuntimeException("GitHub 授权失败: " + e.getMessage());
+            throw new CommonException(UpmsResultCodeEnum.OPERATION_FAILED);
         }
     }
 
@@ -134,7 +136,7 @@ public class GitHubOAuthProvider implements io.github.loadup.modules.upms.app.st
 
         } catch (Exception e) {
             LogUtil.error(GitHubOAuthProvider.class, "Failed to get GitHub user info", e);
-            throw new RuntimeException("获取 GitHub 用户信息失败: " + e.getMessage());
+            throw new CommonException(UpmsResultCodeEnum.OPERATION_FAILED);
         }
     }
 

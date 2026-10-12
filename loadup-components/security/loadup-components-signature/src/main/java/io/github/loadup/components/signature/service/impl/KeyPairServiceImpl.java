@@ -68,10 +68,7 @@ public class KeyPairServiceImpl implements KeyPairService {
                     keySize,
                     e.getMessage(),
                     e);
-            throw new SignatureException(
-                    SignatureException.SignatureErrorCode.KEY_GENERATION_FAILED,
-                    "Key pair generation failed: " + e.getMessage(),
-                    e);
+            throw new SignatureException(SignatureException.SignatureErrorCode.KEY_GENERATION_FAILED, e);
         }
     }
 
@@ -95,10 +92,7 @@ public class KeyPairServiceImpl implements KeyPairService {
                     algorithm,
                     e.getMessage(),
                     e);
-            throw new SignatureException(
-                    SignatureException.SignatureErrorCode.INVALID_KEY,
-                    "Private key loading failed: " + e.getMessage(),
-                    e);
+            throw new SignatureException(SignatureException.SignatureErrorCode.INVALID_KEY, e);
         }
     }
 
@@ -116,10 +110,7 @@ public class KeyPairServiceImpl implements KeyPairService {
                     algorithm,
                     e.getMessage(),
                     e);
-            throw new SignatureException(
-                    SignatureException.SignatureErrorCode.INVALID_KEY,
-                    "Public key loading failed: " + e.getMessage(),
-                    e);
+            throw new SignatureException(SignatureException.SignatureErrorCode.INVALID_KEY, e);
         }
     }
 

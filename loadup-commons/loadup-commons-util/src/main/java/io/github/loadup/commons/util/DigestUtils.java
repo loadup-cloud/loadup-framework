@@ -19,6 +19,8 @@
  */
 package io.github.loadup.commons.util;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -60,7 +62,7 @@ public final class DigestUtils {
             MessageDigest md = MessageDigest.getInstance(algorithm);
             return bytesToHex(md.digest(bytes));
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Digest algorithm not available: " + algorithm, e);
+            throw new CommonException(CommonResultCodeEnum.SYS_ERROR, e);
         }
     }
 
@@ -71,7 +73,7 @@ public final class DigestUtils {
             mac.init(keySpec);
             return bytesToHex(mac.doFinal(data.getBytes(StandardCharsets.UTF_8)));
         } catch (Exception e) {
-            throw new RuntimeException("HMAC failed: " + algorithm, e);
+            throw new CommonException(CommonResultCodeEnum.SYS_ERROR, e);
         }
     }
 

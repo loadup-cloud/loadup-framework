@@ -149,7 +149,8 @@ class ContractPersistenceIT {
             String plan = plan();
             var invalid = new ContractSignCommand(
                     "merchant", "store", plan, "invalid", Set.of("missing"), Map.of(), null, null);
-            assertThatThrownBy(() -> contracts.sign(invalid, "operator")).isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> contracts.sign(invalid, "operator"))
+                    .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
             var signed = contracts.sign(command(plan, "valid"), "operator");
             var version = catalog.detail(plan);
             catalog.retire(new CatalogActionCommand(plan, version.rowVersion()), "operator");

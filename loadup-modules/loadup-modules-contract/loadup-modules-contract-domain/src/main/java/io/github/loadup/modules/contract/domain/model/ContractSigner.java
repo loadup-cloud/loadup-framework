@@ -19,6 +19,8 @@
  */
 package io.github.loadup.modules.contract.domain.model;
 
+import io.github.loadup.commons.error.CommonException;
+import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,15 +40,15 @@ public final class ContractSigner {
             Instant signedAt,
             Instant effectiveFrom,
             Instant effectiveTo) {
-        if (!plan.canSellAt(signedAt)) throw new IllegalArgumentException("Plan outside sale window");
+        if (!plan.canSellAt(signedAt)) throw new CommonException(ContractResultCodeEnum.PLAN_OUTSIDE_SALE_WINDOW);
         if (new ConditionEvaluator().evaluate(plan.eligibilityCondition(), trustedMerchantFacts, Map.of())
                 != MatchResult.MATCH) {
-            throw new IllegalArgumentException("Merchant eligibility not established");
+            throw new CommonException(ContractResultCodeEnum.MERCHANT_ELIGIBILITY_NOT_ESTABLISHED);
         }
         Set<String> selected = Set.copyOf(selectedItems);
         SelectionValidator.validate(plan.items(), selected);
         if (!selected.containsAll(merchantValues.keySet()))
-            throw new IllegalArgumentException("Override for unselected product");
+            throw new CommonException(ContractResultCodeEnum.OVERRIDE_FOR_UNSELECTED_PRODUCT);
         var resolvedItems = new HashMap<String, ResolvedContractItem>();
         var resolver = new ConfigurationResolver();
         var origin = new ValueOrigin(ConfigurationLayer.MERCHANT, contractId, revision);

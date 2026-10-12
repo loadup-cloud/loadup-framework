@@ -23,6 +23,7 @@ import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.upms.app.converter.UserSensitiveConverter;
 import io.github.loadup.modules.upms.client.dto.UserSensitiveDTO;
+import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
 import io.github.loadup.modules.upms.client.query.UserSensitiveQuery;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import io.github.loadup.modules.upms.domain.service.AccessDecisionService;
@@ -57,14 +58,14 @@ public class UserSensitiveReadService implements io.github.loadup.modules.upms.c
                 || query.id() == null
                 || !query.id().matches("[A-Za-z0-9_-]{1,64}")
                 || query.purpose() == null) {
-            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Invalid sensitive read request");
+            throw new CommonException(UpmsResultCodeEnum.INVALID_SENSITIVE_READ_REQUEST);
         }
         var subject = users.findById(query.id()).orElseThrow(() -> new AccessDeniedException("Sensitive read denied"));
         var decision =
                 decisions.decide(actorId, PERMISSION, new ResourceAttributes(subject.getId(), subject.getDeptId()));
         if (!decision.allowed()) throw new AccessDeniedException("Sensitive read denied");
         var audit = audits.getIfAvailable();
-        if (audit == null) throw new IllegalStateException("Sensitive read auditing is unavailable");
+        if (audit == null) throw new CommonException(CommonResultCodeEnum.SYS_ERROR);
         audit.record(actorId, subject.getId(), query.purpose());
         return converter.toDTO(subject);
     }

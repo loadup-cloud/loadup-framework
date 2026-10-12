@@ -19,9 +19,27 @@
  */
 package io.github.loadup.components.lock;
 
+import io.github.loadup.commons.error.CommonException;
+
 /** Acquisition ended without a lock; the business callback was not executed. */
-public final class LockUnavailableException extends RuntimeException {
+public final class LockUnavailableException extends CommonException {
+    public enum Code implements io.github.loadup.commons.result.ResultCode {
+        ACQUISITION_TIMEOUT;
+
+        public String getCode() {
+            return "LOCK_ACQUISITION_TIMEOUT";
+        }
+
+        public String getStatus() {
+            return io.github.loadup.commons.enums.ResultStatusEnum.FAIL.getCode();
+        }
+
+        public String getMessage() {
+            return "Lock acquisition wait timeout";
+        }
+    }
+
     public LockUnavailableException() {
-        super("Lock acquisition wait timeout");
+        super(Code.ACQUISITION_TIMEOUT);
     }
 }

@@ -19,12 +19,12 @@
  */
 package io.github.loadup.modules.upms.app.service;
 
-import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.upms.app.converter.UpmsDTOConverter;
 import io.github.loadup.modules.upms.client.command.PermissionCreateCommand;
 import io.github.loadup.modules.upms.client.command.PermissionUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.PermissionDTO;
+import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
 import io.github.loadup.modules.upms.domain.gateway.PermissionGateway;
 import io.github.loadup.modules.upms.domain.model.Permission;
 import io.github.loadup.modules.upms.domain.service.UserPermissionService;
@@ -52,7 +52,7 @@ public class PermissionService implements io.github.loadup.modules.upms.client.f
     @Transactional
     public PermissionDTO createPermission(PermissionCreateCommand command) {
         if (permissionGateway.existsByPermissionCode(command.getPermissionCode())) {
-            throw new CommonException(CommonResultCodeEnum.CONFLICT, "Permission code already exists");
+            throw new CommonException(UpmsResultCodeEnum.PERMISSION_CODE_ALREADY_EXISTS);
         }
 
         validateParent(null, command.getParentId());
@@ -81,7 +81,7 @@ public class PermissionService implements io.github.loadup.modules.upms.client.f
     public PermissionDTO updatePermission(PermissionUpdateCommand command) {
         Permission permission = permissionGateway
                 .findById(command.getId())
-                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Permission not found"));
+                .orElseThrow(() -> new CommonException(UpmsResultCodeEnum.PERMISSION_NOT_FOUND));
 
         if (command.getParentId() != null) validateParent(command.getId(), command.getParentId());
 
@@ -127,13 +127,11 @@ public class PermissionService implements io.github.loadup.modules.upms.client.f
 
     @Transactional
     public void deletePermission(String id) {
-        permissionGateway
-                .findById(id)
-                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Permission not found"));
+        permissionGateway.findById(id).orElseThrow(() -> new CommonException(UpmsResultCodeEnum.PERMISSION_NOT_FOUND));
 
         List<Permission> children = permissionGateway.findByParentId(id);
         if (!children.isEmpty()) {
-            throw new CommonException(CommonResultCodeEnum.INVALID_STATE, "Permission contains child permissions");
+            throw new CommonException(UpmsResultCodeEnum.PERMISSION_CONTAINS_CHILD_PERMISSIONS);
         }
 
         permissionGateway.deleteById(id);
@@ -142,7 +140,7 @@ public class PermissionService implements io.github.loadup.modules.upms.client.f
     public PermissionDTO getPermissionById(String id) {
         Permission permission = permissionGateway
                 .findById(id)
-                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Permission not found"));
+                .orElseThrow(() -> new CommonException(UpmsResultCodeEnum.PERMISSION_NOT_FOUND));
         return convertToDTO(permission);
     }
 
@@ -204,14 +202,12 @@ public class PermissionService implements io.github.loadup.modules.upms.client.f
         String current = parentId;
         while (current != null && !"0".equals(current)) {
             if (current.equals(permissionId) || !visited.add(current)) {
-                throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Permission hierarchy contains a cycle");
+                throw new CommonException(UpmsResultCodeEnum.PERMISSION_HIERARCHY_CONTAINS_A_CYCLE);
             }
             String parentPermissionId = current;
             Permission parent = permissionGateway
                     .findById(parentPermissionId)
-                    .orElseThrow(() -> new CommonException(
-                            CommonResultCodeEnum.PARAM_ILLEGAL,
-                            "Parent permission does not exist: " + parentPermissionId));
+                    .orElseThrow(() -> new CommonException(UpmsResultCodeEnum.PARENT_PERMISSION_DOES_NOT_EXIST));
             current = parent.getParentId();
         }
     }

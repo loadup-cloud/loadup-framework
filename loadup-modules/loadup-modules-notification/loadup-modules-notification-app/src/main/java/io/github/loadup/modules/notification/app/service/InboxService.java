@@ -24,6 +24,7 @@ import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.notification.app.converter.NotificationDTOConverter;
 import io.github.loadup.modules.notification.client.dto.InboxMessageDTO;
+import io.github.loadup.modules.notification.client.error.NotificationResultCodeEnum;
 import io.github.loadup.modules.notification.domain.gateway.InboxGateway;
 import io.github.loadup.modules.notification.domain.model.InboxMessage;
 import java.time.Clock;
@@ -59,7 +60,7 @@ public class InboxService implements io.github.loadup.modules.notification.clien
             String requestKey) {
         String tenant = tenant(tenantId);
         if (recipients == null || recipients.isEmpty() || recipients.size() > 100) {
-            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "recipients must contain 1 to 100 users");
+            throw new CommonException(NotificationResultCodeEnum.RECIPIENTS_MUST_CONTAIN_1_TO_100_USERS);
         }
         String sender = senderId == null || senderId.isBlank() ? null : required(senderId, "senderId", 64);
         String kind = required(category, "category", 64);
@@ -71,8 +72,7 @@ public class InboxService implements io.github.loadup.modules.notification.clien
                         || url.startsWith("//")
                         || url.indexOf('\\') >= 0
                         || url.chars().anyMatch(Character::isISOControl))) {
-            throw new CommonException(
-                    CommonResultCodeEnum.PARAM_ILLEGAL, "actionUrl must be an application-relative path");
+            throw new CommonException(NotificationResultCodeEnum.INVALID_ACTION_URL);
         }
         String key = requestKey == null || requestKey.isBlank() ? null : required(requestKey, "requestKey", 128);
         LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), clock.getZone());
@@ -95,8 +95,7 @@ public class InboxService implements io.github.loadup.modules.notification.clien
     }
 
     public PageDTO<InboxMessageDTO> list(String tenantId, String recipientId, boolean unreadOnly, int page, int size) {
-        if (page < 1 || size < 1 || size > 100)
-            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "invalid page or size");
+        if (page < 1 || size < 1 || size > 100) throw new CommonException(NotificationResultCodeEnum.INVALID_PAGE);
         return converter.toPageDTO(
                 repository.list(tenant(tenantId), required(recipientId, "recipientId", 64), unreadOnly, page, size));
     }
@@ -107,7 +106,7 @@ public class InboxService implements io.github.loadup.modules.notification.clien
 
     public void markRead(String tenantId, String recipientId, String id) {
         if (repository.markRead(tenant(tenantId), required(recipientId, "recipientId", 64), required(id, "id", 64))
-                == 0) throw new CommonException(CommonResultCodeEnum.NOT_FOUND, "notification not found");
+                == 0) throw new CommonException(NotificationResultCodeEnum.NOTIFICATION_NOT_FOUND);
     }
 
     public int markAllRead(String tenantId, String recipientId) {
@@ -116,7 +115,7 @@ public class InboxService implements io.github.loadup.modules.notification.clien
 
     public void archive(String tenantId, String recipientId, String id) {
         if (repository.archive(tenant(tenantId), required(recipientId, "recipientId", 64), required(id, "id", 64)) == 0)
-            throw new CommonException(CommonResultCodeEnum.NOT_FOUND, "notification not found");
+            throw new CommonException(NotificationResultCodeEnum.NOTIFICATION_NOT_FOUND);
     }
 
     private static String tenant(String value) {
@@ -125,8 +124,7 @@ public class InboxService implements io.github.loadup.modules.notification.clien
 
     private static String required(String value, String name, int max) {
         if (value == null || value.isBlank() || value.trim().length() > max) {
-            throw new CommonException(
-                    CommonResultCodeEnum.PARAM_ILLEGAL, name + " must contain 1 to " + max + " characters");
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
         }
         return value.trim();
     }

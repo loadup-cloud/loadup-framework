@@ -36,9 +36,7 @@ public class DigestServiceImpl implements DigestService {
     @Override
     public String digest(byte[] data, DigestAlgorithm algorithm) {
         if (algorithm.isHmac()) {
-            throw new SignatureException(
-                    SignatureException.SignatureErrorCode.INVALID_ALGORITHM,
-                    "HMAC algorithms must use the hmac() method");
+            throw new SignatureException(SignatureException.SignatureErrorCode.INVALID_ALGORITHM);
         }
 
         try {
@@ -48,8 +46,7 @@ public class DigestServiceImpl implements DigestService {
         } catch (Exception e) {
             LogUtil.error(
                     DigestServiceImpl.class, "Digest failed: algorithm={}, error={}", algorithm, e.getMessage(), e);
-            throw new SignatureException(
-                    SignatureException.SignatureErrorCode.DIGEST_FAILED, "Digest failed: " + e.getMessage(), e);
+            throw new SignatureException(SignatureException.SignatureErrorCode.DIGEST_FAILED, e);
         }
     }
 
@@ -62,9 +59,7 @@ public class DigestServiceImpl implements DigestService {
     @Override
     public String hmac(byte[] data, byte[] key, DigestAlgorithm algorithm) {
         if (!algorithm.isHmac()) {
-            throw new SignatureException(
-                    SignatureException.SignatureErrorCode.INVALID_ALGORITHM,
-                    "Non-HMAC algorithms must use the digest() method");
+            throw new SignatureException(SignatureException.SignatureErrorCode.INVALID_ALGORITHM);
         }
 
         try {
@@ -75,8 +70,7 @@ public class DigestServiceImpl implements DigestService {
             return bytesToHex(hashBytes);
         } catch (Exception e) {
             LogUtil.error(DigestServiceImpl.class, "HMAC failed: algorithm={}, error={}", algorithm, e.getMessage(), e);
-            throw new SignatureException(
-                    SignatureException.SignatureErrorCode.DIGEST_FAILED, "HMAC failed: " + e.getMessage(), e);
+            throw new SignatureException(SignatureException.SignatureErrorCode.DIGEST_FAILED, e);
         }
     }
 

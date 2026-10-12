@@ -60,6 +60,18 @@ class ArchitectureTest {
     }
 
     @Test
+    void publicErrorVocabulariesAreEnumsImplementingResultCode() {
+        classes()
+                .that()
+                .resideInAPackage("..client.error..")
+                .should()
+                .beEnums()
+                .andShould()
+                .implement("io.github.loadup.commons.result.ResultCode")
+                .check(MODULE_CLASSES);
+    }
+
+    @Test
     @DisplayName("Enforce documented layer and naming conventions")
     void domainShouldNotDependOnSpring() {
         noClasses()

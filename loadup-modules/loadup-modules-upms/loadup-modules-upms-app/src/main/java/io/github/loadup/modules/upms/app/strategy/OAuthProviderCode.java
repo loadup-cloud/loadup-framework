@@ -19,6 +19,9 @@
  */
 package io.github.loadup.modules.upms.app.strategy;
 
+import io.github.loadup.commons.error.CommonException;
+import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
+
 /**
  *
  * @author LoadUp Framework
@@ -27,7 +30,7 @@ package io.github.loadup.modules.upms.app.strategy;
 public final class OAuthProviderCode {
 
     private OAuthProviderCode() {
-        throw new UnsupportedOperationException("Utility class");
+        throw new CommonException(UpmsResultCodeEnum.UTILITY_CLASS);
     }
 
     /**

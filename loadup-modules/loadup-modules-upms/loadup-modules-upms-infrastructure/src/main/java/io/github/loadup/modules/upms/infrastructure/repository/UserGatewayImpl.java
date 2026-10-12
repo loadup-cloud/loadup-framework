@@ -25,6 +25,8 @@ import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.dto.PageQuery;
+import io.github.loadup.commons.error.CommonException;
+import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import io.github.loadup.modules.upms.domain.model.User;
 import io.github.loadup.modules.upms.infrastructure.converter.UserConverter;
@@ -169,7 +171,7 @@ public class UserGatewayImpl implements UserGateway {
                     case "username" -> USER_DO.USERNAME;
                     case "nickname" -> USER_DO.NICKNAME;
                     case "id" -> USER_DO.ID;
-                    default -> throw new IllegalArgumentException("Unsupported user sort field");
+                    default -> throw new CommonException(UpmsResultCodeEnum.UNSUPPORTED_USER_SORT_FIELD);
                 };
         return query.orderBy("DESC".equalsIgnoreCase(direction) ? column.desc() : column.asc());
     }

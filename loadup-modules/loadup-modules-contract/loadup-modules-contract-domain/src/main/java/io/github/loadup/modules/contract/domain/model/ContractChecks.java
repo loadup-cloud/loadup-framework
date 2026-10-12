@@ -19,6 +19,8 @@
  */
 package io.github.loadup.modules.contract.domain.model;
 
+import io.github.loadup.commons.error.CommonException;
+import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Objects;
@@ -29,24 +31,24 @@ final class ContractChecks {
     static String code(String value) {
         Objects.requireNonNull(value, "code");
         if (!value.matches("[A-Za-z0-9][A-Za-z0-9_.-]{0,127}")) {
-            throw new IllegalArgumentException("Invalid identifier: " + value);
+            throw new CommonException(ContractResultCodeEnum.INVALID_IDENTIFIER);
         }
         return value;
     }
 
     static int version(int value) {
-        if (value < 1) throw new IllegalArgumentException("Version must be positive");
+        if (value < 1) throw new CommonException(ContractResultCodeEnum.VERSION_MUST_BE_POSITIVE);
         return value;
     }
 
     static void interval(Instant from, Instant to) {
         Objects.requireNonNull(from, "interval start");
-        if (to != null && !from.isBefore(to)) throw new IllegalArgumentException("Invalid interval");
+        if (to != null && !from.isBefore(to)) throw new CommonException(ContractResultCodeEnum.INVALID_INTERVAL);
     }
 
     static <T> Map<String, T> map(Map<String, T> values) {
         Objects.requireNonNull(values, "values");
-        if (values.size() > 256) throw new IllegalArgumentException("Too many entries");
+        if (values.size() > 256) throw new CommonException(ContractResultCodeEnum.TOO_MANY_ENTRIES);
         values.keySet().forEach(ContractChecks::code);
         return Map.copyOf(values);
     }

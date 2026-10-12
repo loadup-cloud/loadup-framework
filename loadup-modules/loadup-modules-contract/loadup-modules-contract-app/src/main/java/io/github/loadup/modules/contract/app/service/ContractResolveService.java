@@ -19,11 +19,11 @@
  */
 package io.github.loadup.modules.contract.app.service;
 
-import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.contract.app.converter.ContractConverter;
 import io.github.loadup.modules.contract.app.support.*;
 import io.github.loadup.modules.contract.client.dto.*;
+import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import io.github.loadup.modules.contract.client.query.ContractResolveQuery;
 import io.github.loadup.modules.contract.domain.gateway.MerchantContractGateway;
 import io.github.loadup.modules.contract.domain.model.*;
@@ -59,15 +59,15 @@ public class ContractResolveService implements io.github.loadup.modules.contract
         ContractIdentity.code(query.itemKey(), 256);
         Map<String, TypedValue> values = new HashMap<>(facts.load(tenant, query.merchantId()));
         if (query.transactionFacts() == null || query.transactionFacts().size() > 256)
-            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Invalid facts");
+            throw new CommonException(ContractResultCodeEnum.INVALID_FACTS);
         query.transactionFacts().forEach((key, value) -> {
             if (key == null || value == null || !key.startsWith("transaction."))
-                throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Transaction fact namespace required");
+                throw new CommonException(ContractResultCodeEnum.TRANSACTION_FACT_NAMESPACE_REQUIRED);
             values.put(key, converter.toValue(value));
         });
         // Read authoritative state after external fact loading; do not use asynchronous caches for revocation.
         var header = gateway.findByScope(tenant, query.merchantId(), query.scopeKey())
-                .orElseThrow(() -> new CommonException(ContractError.NOT_FOUND));
+                .orElseThrow(() -> new CommonException(ContractResultCodeEnum.NOT_FOUND));
         var snapshot = contracts.snapshot(header);
         var view = new MerchantContract(
                 tenant,

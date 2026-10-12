@@ -19,7 +19,9 @@
  */
 package io.github.loadup.modules.contract.domain.model;
 
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
+import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import java.math.BigDecimal;
 import java.util.Set;
 
@@ -31,16 +33,16 @@ public record OverridePolicy(BigDecimal minimum, BigDecimal maximum, Set<TypedVa
 
     public void validateDefinition(ParameterDefinition definition) {
         if (!definition.editableLayers().contains(ConfigurationLayer.MERCHANT)) {
-            throw new IllegalArgumentException("Merchant override forbidden: " + definition.key());
+            throw new CommonException(ContractResultCodeEnum.MERCHANT_OVERRIDE_FORBIDDEN);
         }
         ParameterDefinition.checkBounds(definition.type(), minimum, maximum);
         if (definition.minimum() != null && minimum != null && minimum.compareTo(definition.minimum()) < 0) {
-            throw new IllegalArgumentException("Merchant minimum widens product bounds");
+            throw new CommonException(ContractResultCodeEnum.MERCHANT_MINIMUM_WIDENS_PRODUCT_BOUNDS);
         }
         if (definition.maximum() != null && maximum != null && maximum.compareTo(definition.maximum()) > 0) {
-            throw new IllegalArgumentException("Merchant maximum widens product bounds");
+            throw new CommonException(ContractResultCodeEnum.MERCHANT_MAXIMUM_WIDENS_PRODUCT_BOUNDS);
         }
-        if (allowedValues.size() > 100) throw new IllegalArgumentException("Too many allowed values");
+        if (allowedValues.size() > 100) throw new CommonException(ContractResultCodeEnum.TOO_MANY_ALLOWED_VALUES);
         for (TypedValue value : allowedValues) {
             definition.validate(value);
             ParameterDefinition.checkValue(definition.type(), value, minimum, maximum, Set.of());
@@ -53,7 +55,7 @@ public record OverridePolicy(BigDecimal minimum, BigDecimal maximum, Set<TypedVa
                         .noneMatch(v -> (allowedValues.isEmpty() || allowedValues.contains(v))
                                 && (effectiveMin == null || v.number().compareTo(effectiveMin) >= 0)
                                 && (effectiveMax == null || v.number().compareTo(effectiveMax) <= 0))) {
-            throw new IllegalArgumentException("Merchant constraints have no allowed value");
+            throw new CommonException(ContractResultCodeEnum.EMPTY_MERCHANT_CONSTRAINT);
         }
     }
 

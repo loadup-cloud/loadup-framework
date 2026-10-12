@@ -111,7 +111,8 @@ class MerchantContractIT {
         String other = UUID.randomUUID().toString();
         TenantUtil.runWithTenant(other, () -> {
             assertThat(lookup.find(other, id)).isEmpty();
-            assertThatThrownBy(() -> lookup.find(tenant, id)).isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> lookup.find(tenant, id))
+                    .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
             assertThatThrownBy(() -> merchants.detail(id)).isInstanceOf(CommonException.class);
             assertThat(merchants.create(command(), "operator").id()).isNotEqualTo(id);
         });

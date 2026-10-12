@@ -20,6 +20,8 @@
 package io.github.loadup.commons.json;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.log.LogUtil;
 import java.io.File;
 import java.io.InputStream;
@@ -361,7 +363,7 @@ public class JsonUtil {
                     "JSON operation failed; operation={}; failureType={}",
                     "fromJson",
                     e.getClass().getSimpleName());
-            throw new RuntimeException("Failed to parse JSON file: " + file.getAbsolutePath(), e);
+            throw new CommonException(CommonResultCodeEnum.SYS_ERROR, e);
         }
     }
 
@@ -376,7 +378,7 @@ public class JsonUtil {
         File parentDir = file.getParentFile();
         if (parentDir != null && !parentDir.exists()) {
             if (!parentDir.mkdirs()) {
-                throw new RuntimeException("Failed to create parent directory: " + parentDir.getAbsolutePath());
+                throw new CommonException(CommonResultCodeEnum.SYS_ERROR);
             }
         }
         try {
@@ -387,7 +389,7 @@ public class JsonUtil {
                     "JSON operation failed; operation={}; failureType={}",
                     "toFile",
                     e.getClass().getSimpleName());
-            throw new RuntimeException("Failed to write object to JSON file: " + file.getAbsolutePath(), e);
+            throw new CommonException(CommonResultCodeEnum.SYS_ERROR, e);
         }
     }
 

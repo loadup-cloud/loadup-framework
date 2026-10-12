@@ -83,8 +83,7 @@ public final class SignatureUtils {
             return Base64.getEncoder().encodeToString(signatureBytes);
         } catch (Exception e) {
             LogUtil.error(SignatureUtils.class, "Sign failed: algorithm={}, error={}", algorithm, e.getMessage(), e);
-            throw new SignatureException(
-                    SignatureException.SignatureErrorCode.SIGN_FAILED, "Sign failed: " + e.getMessage(), e);
+            throw new SignatureException(SignatureException.SignatureErrorCode.SIGN_FAILED, e);
         }
     }
 
@@ -111,8 +110,7 @@ public final class SignatureUtils {
             return signature.verify(signatureBytes);
         } catch (Exception e) {
             LogUtil.error(SignatureUtils.class, "Verify failed: algorithm={}, error={}", algorithm, e.getMessage(), e);
-            throw new SignatureException(
-                    SignatureException.SignatureErrorCode.VERIFY_FAILED, "Verify failed: " + e.getMessage(), e);
+            throw new SignatureException(SignatureException.SignatureErrorCode.VERIFY_FAILED, e);
         }
     }
 

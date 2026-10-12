@@ -19,6 +19,8 @@
  */
 package io.github.loadup.commons.util;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.security.NoSuchAlgorithmException;
@@ -93,7 +95,7 @@ public class RandomUtil {
         try {
             random = SecureRandom.getInstance("SHA1PRNG");
         } catch (final NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            throw new CommonException(CommonResultCodeEnum.SYS_ERROR, e);
         }
         if (null != seed) {
             random.setSeed(seed);
@@ -109,7 +111,7 @@ public class RandomUtil {
         try {
             return SecureRandom.getInstanceStrong();
         } catch (final NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            throw new CommonException(CommonResultCodeEnum.SYS_ERROR, e);
         }
     }
 

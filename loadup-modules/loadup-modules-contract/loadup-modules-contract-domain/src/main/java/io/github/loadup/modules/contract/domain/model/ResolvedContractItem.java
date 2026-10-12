@@ -19,7 +19,9 @@
  */
 package io.github.loadup.modules.contract.domain.model;
 
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
+import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import java.util.Objects;
 
 public record ResolvedContractItem(
@@ -35,7 +37,7 @@ public record ResolvedContractItem(
         capabilityCode = ContractChecks.code(capabilityCode);
         Objects.requireNonNull(bundleOrigin, "bundle origin");
         if (bundleOrigin.layer() != ConfigurationLayer.BUNDLE)
-            throw new IllegalArgumentException("Invalid bundle origin");
+            throw new CommonException(ContractResultCodeEnum.INVALID_BUNDLE_ORIGIN);
         Objects.requireNonNull(configuration, "configuration");
         new ConditionEvaluator().validate(usageCondition);
     }

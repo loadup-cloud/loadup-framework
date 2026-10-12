@@ -23,7 +23,7 @@ import static io.github.loadup.modules.merchant.infrastructure.dataobject.table.
 
 import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.modules.merchant.client.dto.MerchantError;
+import io.github.loadup.modules.merchant.client.error.MerchantResultCodeEnum;
 import io.github.loadup.modules.merchant.domain.gateway.MerchantGateway;
 import io.github.loadup.modules.merchant.domain.model.*;
 import io.github.loadup.modules.merchant.infrastructure.converter.MerchantStorageConverter;
@@ -43,7 +43,7 @@ public class MerchantGatewayImpl implements MerchantGateway {
     }
 
     private static String required(String value) {
-        if (value == null || value.isBlank()) throw new IllegalArgumentException("Tenant and id required");
+        if (value == null || value.isBlank()) throw new CommonException(MerchantResultCodeEnum.TENANT_AND_ID_REQUIRED);
         return value;
     }
 
@@ -74,7 +74,7 @@ public class MerchantGatewayImpl implements MerchantGateway {
                         .eq(required(merchant.id()))
                         .and(MerchantDO::getRowVersion)
                         .eq(expected));
-        if (changed != 1) throw new CommonException(MerchantError.CONFLICT);
+        if (changed != 1) throw new CommonException(MerchantResultCodeEnum.CONFLICT);
     }
 
     public MerchantPage page(String tenant, String code, String name, MerchantStatus status, int page, int size) {

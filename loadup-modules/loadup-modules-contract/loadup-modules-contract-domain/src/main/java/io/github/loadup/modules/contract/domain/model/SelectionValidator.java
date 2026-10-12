@@ -19,6 +19,8 @@
  */
 package io.github.loadup.modules.contract.domain.model;
 
+import io.github.loadup.commons.error.CommonException;
+import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -28,9 +30,9 @@ final class SelectionValidator {
 
     static void validate(Map<String, SalesPlanVersion.Item> items, Set<String> selected) {
         if (selected.isEmpty() || !items.keySet().containsAll(selected))
-            throw new IllegalArgumentException("Invalid product selection");
+            throw new CommonException(ContractResultCodeEnum.INVALID_PRODUCT_SELECTION);
         if (items.entrySet().stream().anyMatch(e -> e.getValue().required() && !selected.contains(e.getKey()))) {
-            throw new IllegalArgumentException("Required product omitted");
+            throw new CommonException(ContractResultCodeEnum.REQUIRED_PRODUCT_OMITTED);
         }
         Set<String> productCodes = selected.stream()
                 .map(key -> items.get(key).product().productCode())
@@ -38,9 +40,9 @@ final class SelectionValidator {
         for (String key : selected) {
             ProductVersion product = items.get(key).product();
             if (!productCodes.containsAll(product.dependencies()))
-                throw new IllegalArgumentException("Missing product dependency");
+                throw new CommonException(ContractResultCodeEnum.MISSING_PRODUCT_DEPENDENCY);
             if (product.exclusions().stream().anyMatch(productCodes::contains))
-                throw new IllegalArgumentException("Mutually exclusive products");
+                throw new CommonException(ContractResultCodeEnum.MUTUALLY_EXCLUSIVE_PRODUCTS);
         }
     }
 }

@@ -19,21 +19,35 @@
  */
 package io.github.loadup.components.http;
 
+import io.github.loadup.commons.error.CommonException;
+
 /** Safe diagnostic error: deliberately omits URLs, bodies and transport exception messages. */
-public class HttpCallException extends RuntimeException {
-    public enum Kind {
+public class HttpCallException extends CommonException {
+    public enum Kind implements io.github.loadup.commons.result.ResultCode {
         CONNECTION,
         TIMEOUT,
         TRANSPORT,
         SIZE_LIMIT,
         SERIALIZATION,
-        RESPONSE_DECODING
+        RESPONSE_DECODING;
+
+        public String getCode() {
+            return "HTTP_" + name();
+        }
+
+        public String getStatus() {
+            return io.github.loadup.commons.enums.ResultStatusEnum.FAIL.getCode();
+        }
+
+        public String getMessage() {
+            return "HTTP call failed: " + name();
+        }
     }
 
     private final Kind kind;
 
     public HttpCallException(Kind kind) {
-        super("HTTP call failed: " + kind);
+        super(kind);
         this.kind = kind;
     }
 

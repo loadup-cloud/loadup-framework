@@ -19,7 +19,9 @@
  */
 package io.github.loadup.modules.contract.domain.model;
 
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
+import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,7 +41,7 @@ public record ProductVersion(
         parameters = ContractChecks.map(parameters);
         for (var entry : parameters.entrySet()) {
             if (!entry.getKey().equals(entry.getValue().key()))
-                throw new IllegalArgumentException("Parameter key mismatch");
+                throw new CommonException(ContractResultCodeEnum.PARAMETER_KEY_MISMATCH);
         }
         dependencies = Set.copyOf(dependencies);
         exclusions = Set.copyOf(exclusions);
@@ -48,7 +50,7 @@ public record ProductVersion(
         if (dependencies.contains(productCode)
                 || exclusions.contains(productCode)
                 || dependencies.stream().anyMatch(exclusions::contains))
-            throw new IllegalArgumentException("Conflicting product relationships");
+            throw new CommonException(ContractResultCodeEnum.CONFLICTING_PRODUCT_RELATIONSHIPS);
         new ConditionEvaluator().validateConfigurationReferences(usageCondition, parameters.keySet());
     }
 

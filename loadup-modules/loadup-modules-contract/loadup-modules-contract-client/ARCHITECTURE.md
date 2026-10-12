@@ -10,7 +10,7 @@
 
 ## 关键契约
 
-CatalogDefinitions、Command/Query/DTO 为不可变 record。所有 JSON 值与数值配置通过显式类型和字符串表达，不依赖领域模型或 ORM。ContractError 复用全局 ResultCode。
+CatalogDefinitions、Command/Query/DTO 为不可变 record。所有 JSON 值与数值配置通过显式类型和字符串表达，不依赖领域模型或 ORM。ContractResultCodeEnum 复用全局 ResultCode。
 
 ## 依赖和扩展
 

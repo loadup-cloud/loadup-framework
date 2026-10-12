@@ -19,22 +19,36 @@
  */
 package io.github.loadup.components.kms;
 
+import io.github.loadup.commons.error.CommonException;
+
 /** A safe error classification without remote messages, credentials, plaintext or signatures. */
-public class KmsException extends RuntimeException {
-    public enum Code {
+public class KmsException extends CommonException {
+    public enum Code implements io.github.loadup.commons.result.ResultCode {
         AUTHENTICATION,
         ACCESS_DENIED,
         NOT_FOUND,
         INVALID_REQUEST,
         UNAVAILABLE,
         TRANSPORT,
-        INVALID_RESPONSE
+        INVALID_RESPONSE;
+
+        public String getCode() {
+            return "KMS_" + name();
+        }
+
+        public String getStatus() {
+            return io.github.loadup.commons.enums.ResultStatusEnum.FAIL.getCode();
+        }
+
+        public String getMessage() {
+            return "KMS operation failed: " + name();
+        }
     }
 
     private final Code code;
 
     public KmsException(Code code) {
-        super("KMS operation failed: " + code);
+        super(code);
         this.code = code;
     }
 

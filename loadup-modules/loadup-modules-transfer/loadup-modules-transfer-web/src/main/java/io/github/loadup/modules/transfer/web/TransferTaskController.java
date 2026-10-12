@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.transfer.web;
 
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.request.query.IdQuery;
 import io.github.loadup.commons.result.PageResponse;
 import io.github.loadup.commons.result.SuccessResponse;
@@ -31,6 +32,7 @@ import io.github.loadup.modules.transfer.client.dto.TransferTaskDTO;
 import io.github.loadup.modules.transfer.client.dto.TransferViewDTO;
 import io.github.loadup.modules.transfer.client.enums.TransferKind;
 import io.github.loadup.modules.transfer.client.enums.TransferStatus;
+import io.github.loadup.modules.transfer.client.error.TransferResultCodeEnum;
 import io.github.loadup.modules.transfer.client.facade.TransferTaskFacade;
 import io.github.loadup.modules.transfer.client.query.TransferTaskPageQuery;
 import io.swagger.v3.oas.annotations.Operation;
@@ -60,7 +62,7 @@ public class TransferTaskController {
     @PreAuthorize("isAuthenticated()")
     public SuccessResponse<TransferViewDTO> submitImport(
             @RequestBody TransferTaskSubmitCommand request, Authentication authentication) {
-        if (request == null) throw new IllegalArgumentException("request is required");
+        if (request == null) throw new CommonException(TransferResultCodeEnum.REQUEST_IS_REQUIRED);
         return SuccessResponse.of(converter.toView(service.submit(
                 TenantUtil.getTenantId(),
                 actor(authentication),
@@ -75,7 +77,7 @@ public class TransferTaskController {
     @PreAuthorize("isAuthenticated()")
     public SuccessResponse<TransferViewDTO> submitExport(
             @RequestBody TransferTaskSubmitCommand request, Authentication authentication) {
-        if (request == null) throw new IllegalArgumentException("request is required");
+        if (request == null) throw new CommonException(TransferResultCodeEnum.REQUEST_IS_REQUIRED);
         return SuccessResponse.of(converter.toView(service.submit(
                 TenantUtil.getTenantId(),
                 actor(authentication),
@@ -115,7 +117,7 @@ public class TransferTaskController {
         TransferTaskDTO task =
                 service.get(TenantUtil.getTenantId(), request.id(), actor(authentication), admin(authentication));
         if (task.status() != TransferStatus.SUCCEEDED || task.resultFileId() == null) {
-            throw new IllegalStateException("task has no result file");
+            throw new CommonException(TransferResultCodeEnum.TASK_HAS_NO_RESULT_FILE);
         }
         return SuccessResponse.of(
                 new ResultFileDTO(task.resultFileId(), "/api/files/" + task.resultFileId() + "/content"));
@@ -136,7 +138,7 @@ public class TransferTaskController {
                 || !(authentication.getPrincipal() instanceof LoadUpUser user)
                 || user.getUserId() == null
                 || user.getUserId().isBlank()) {
-            throw new IllegalArgumentException("authenticated user is required");
+            throw new CommonException(TransferResultCodeEnum.AUTHENTICATED_USER_IS_REQUIRED);
         }
         return user.getUserId();
     }

@@ -19,10 +19,10 @@
  */
 package io.github.loadup.modules.merchant.app.service;
 
-import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.merchant.app.converter.MerchantConverter;
 import io.github.loadup.modules.merchant.client.dto.MerchantProfileDTO;
+import io.github.loadup.modules.merchant.client.error.MerchantResultCodeEnum;
 import io.github.loadup.modules.merchant.client.facade.MerchantQueryFacade;
 import io.github.loadup.modules.merchant.domain.gateway.MerchantGateway;
 import java.util.Optional;
@@ -41,7 +41,7 @@ public class MerchantQueryService implements MerchantQueryFacade {
 
     public Optional<MerchantProfileDTO> find(String tenant, String id) {
         if (!MerchantIdentity.tenant().equals(tenant))
-            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Merchant lookup tenant mismatch");
+            throw new CommonException(MerchantResultCodeEnum.MERCHANT_LOOKUP_TENANT_MISMATCH);
         return gateway.find(tenant, id).map(converter::toProfile);
     }
 }

@@ -20,6 +20,8 @@
 package io.github.loadup.components.database.flyway;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import java.sql.Connection;
 import java.sql.Statement;
 import org.flywaydb.core.api.callback.Callback;
@@ -64,7 +66,7 @@ public class StatementInitCallback implements Callback {
         try (Statement statement = connection.createStatement()) {
             statement.execute(sql);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to execute init SQL: " + sql, e);
+            throw new CommonException(CommonResultCodeEnum.SYS_ERROR, e);
         }
     }
 

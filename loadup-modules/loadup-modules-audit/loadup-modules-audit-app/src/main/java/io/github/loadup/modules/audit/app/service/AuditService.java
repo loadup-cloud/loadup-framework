@@ -19,12 +19,12 @@
  */
 package io.github.loadup.modules.audit.app.service;
 
-import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.audit.app.converter.AuditDTOConverter;
 import io.github.loadup.modules.audit.client.command.AuditRecordCommand;
 import io.github.loadup.modules.audit.client.dto.AuditEventDTO;
+import io.github.loadup.modules.audit.client.error.AuditResultCodeEnum;
 import io.github.loadup.modules.audit.client.query.AuditPageQuery;
 import io.github.loadup.modules.audit.domain.gateway.AuditGateway;
 import io.github.loadup.modules.audit.domain.model.AuditEvent;
@@ -47,7 +47,7 @@ public class AuditService implements io.github.loadup.modules.audit.client.facad
 
     public void record(AuditRecordCommand write) {
         if (write == null || write.action() == null || write.action().isBlank()) {
-            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "audit action is required");
+            throw new CommonException(AuditResultCodeEnum.AUDIT_ACTION_IS_REQUIRED);
         }
         repository.insert(new AuditEvent(
                 UUID.randomUUID().toString(),

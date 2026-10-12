@@ -71,7 +71,8 @@ class UserSensitiveReadServiceTest {
     void requiresAuditAndPropagatesFailure() {
         when(decisions.decide(anyString(), anyString(), any())).thenReturn(AccessDecision.permit("SUPPORT"));
         var unavailable = service(false);
-        assertThatIllegalStateException().isThrownBy(() -> unavailable.read("actor", query));
+        assertThatExceptionOfType(io.github.loadup.commons.error.CommonException.class)
+                .isThrownBy(() -> unavailable.read("actor", query));
         var available = service(true);
         doThrow(new IllegalStateException("audit unavailable")).when(audit).record("actor", "subject", query.purpose());
         assertThatIllegalStateException().isThrownBy(() -> available.read("actor", query));

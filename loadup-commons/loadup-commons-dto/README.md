@@ -22,7 +22,7 @@
 
 - [`DTO`](src/main/java/io/github/loadup/commons/dto/DTO.java)
 - [`LoadUpMapStructConfig`](src/main/java/io/github/loadup/commons/mapping/LoadUpMapStructConfig.java)
-- [`ResultCode`](src/main/java/io/github/loadup/commons/result/ResultCode.java)
+- [`ResultCode`](../loadup-commons-error/src/main/java/io/github/loadup/commons/result/ResultCode.java)
 - [`IEnum`](src/main/java/io/github/loadup/commons/enums/IEnum.java)
 - [`CommonConstants`](src/main/java/io/github/loadup/commons/constant/CommonConstants.java)
 - [`AssertionCallback`](src/main/java/io/github/loadup/commons/error/AssertionCallback.java)
@@ -64,3 +64,7 @@ PageResponse<FileResourceDTO> response = PageResponse.of(page);
 ```
 
 `PageDTO.map(converter::toView)` 支持展示 DTO 转换并保留分页元数据。PageResponse 实现 IResponse，WebMVC 不重复包裹，仍支持统一展示脱敏。非分页成功响应使用 SuccessResponse，错误响应使用 FailureResponse。
+
+## 错误契约
+
+ResultCode 与 CommonException 由 [commons-error](../loadup-commons-error/README.md) 提供。Result 是不可变响应元数据，失败工厂只接收枚举 ResultCode。FailureResponse.of(code) 或 of(code, traceId) 不接收字符串错误码/文案；读取外部报文仍支持 Jackson creator。

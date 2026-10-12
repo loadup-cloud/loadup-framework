@@ -19,6 +19,8 @@
  */
 package io.github.loadup.modules.contract.domain.model;
 
+import io.github.loadup.commons.error.CommonException;
+import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -38,7 +40,7 @@ public final class ConditionEvaluator {
             case Condition.Not not -> validateConfigurationReferences(not.child(), parameterKeys);
             case Condition.Compare rule -> {
                 if (rule.configurationKey() != null && !parameterKeys.contains(rule.configurationKey())) {
-                    throw new IllegalArgumentException("Unknown rule configuration reference");
+                    throw new CommonException(ContractResultCodeEnum.UNKNOWN_RULE_CONFIGURATION_REFERENCE);
                 }
             }
             default -> {}
@@ -46,7 +48,7 @@ public final class ConditionEvaluator {
     }
 
     private void count(Condition condition, int depth, int[] nodes) {
-        if (depth > 8 || ++nodes[0] > 128) throw new IllegalArgumentException("Rule tree exceeds budget");
+        if (depth > 8 || ++nodes[0] > 128) throw new CommonException(ContractResultCodeEnum.RULE_TREE_EXCEEDS_BUDGET);
         switch (condition) {
             case Condition.All all -> all.children().forEach(child -> count(child, depth + 1, nodes));
             case Condition.Any any -> any.children().forEach(child -> count(child, depth + 1, nodes));

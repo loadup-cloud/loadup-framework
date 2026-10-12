@@ -19,7 +19,9 @@
  */
 package io.github.loadup.modules.contract.domain.model;
 
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
+import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Objects;
@@ -47,9 +49,10 @@ public record MerchantContractRevision(
         planVersion = ContractChecks.version(planVersion);
         Objects.requireNonNull(signedAt, "signedAt");
         ContractChecks.interval(effectiveFrom, effectiveTo);
-        if (effectiveFrom.isBefore(signedAt)) throw new IllegalArgumentException("Backdated activation unsupported");
+        if (effectiveFrom.isBefore(signedAt))
+            throw new CommonException(ContractResultCodeEnum.BACKDATED_ACTIVATION_UNSUPPORTED);
         items = ContractChecks.map(items);
-        if (items.isEmpty()) throw new IllegalArgumentException("Empty signed contract");
+        if (items.isEmpty()) throw new CommonException(ContractResultCodeEnum.EMPTY_SIGNED_CONTRACT);
     }
 
     public boolean effectiveAt(Instant time) {

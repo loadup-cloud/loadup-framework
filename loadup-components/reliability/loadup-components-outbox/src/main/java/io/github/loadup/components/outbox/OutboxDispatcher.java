@@ -19,6 +19,8 @@
  */
 package io.github.loadup.components.outbox;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.commons.util.TenantUtil;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -121,11 +123,11 @@ public class OutboxDispatcher {
         return count;
     }
 
-    private static final class HandlerFailure extends RuntimeException {
+    private static final class HandlerFailure extends CommonException {
         private final Exception failure;
 
         HandlerFailure(Exception failure) {
-            super("Outbox handler failed");
+            super(CommonResultCodeEnum.SYS_ERROR, failure);
             this.failure = failure;
         }
     }

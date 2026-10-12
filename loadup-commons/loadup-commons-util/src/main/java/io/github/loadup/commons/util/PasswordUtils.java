@@ -19,6 +19,8 @@
  */
 package io.github.loadup.commons.util;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.log.LogUtil;
 import java.security.SecureRandom;
 import java.util.Base64;
@@ -62,7 +64,7 @@ public class PasswordUtils {
             return encrypted;
         } catch (Exception e) {
             LogUtil.error(PasswordUtils.class, "Failed to encrypt text", e);
-            throw new RuntimeException("Encryption failed", e);
+            throw new CommonException(CommonResultCodeEnum.SYS_ERROR, e);
         }
     }
 

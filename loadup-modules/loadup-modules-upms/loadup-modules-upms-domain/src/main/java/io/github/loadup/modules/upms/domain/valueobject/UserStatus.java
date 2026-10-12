@@ -19,7 +19,9 @@
  */
 package io.github.loadup.modules.upms.domain.valueobject;
 
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
+import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
 
 /**
  * User Status Value Object
@@ -54,7 +56,7 @@ public class UserStatus {
             case NORMAL -> normal();
             case DISABLED -> disabled();
             case LOCKED -> locked();
-            default -> throw new IllegalArgumentException("Invalid user status: " + status);
+            default -> throw new CommonException(UpmsResultCodeEnum.INVALID_USER_STATUS);
         };
     }
 

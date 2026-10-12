@@ -19,9 +19,9 @@
  */
 package io.github.loadup.modules.upms.app.strategy;
 
-import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.log.LogUtil;
+import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +70,7 @@ public class LoginStrategyManager {
     public LoginStrategy getStrategy(String loginType) {
         LoginStrategy strategy = strategyMap.get(loginType);
         if (strategy == null) {
-            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Unsupported login type");
+            throw new CommonException(UpmsResultCodeEnum.UNSUPPORTED_LOGIN_TYPE);
         }
         return strategy;
     }

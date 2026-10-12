@@ -57,7 +57,7 @@ public class LocalDfsProvider implements DfsProvider {
             Files.createDirectories(objectRoot);
             Files.createDirectories(metadataRoot);
         } catch (IOException e) {
-            throw new DfsStorageException("Failed to initialize local DFS at " + basePath, e);
+            throw new DfsStorageException(DfsStorageException.Code.OPERATION_FAILED, e);
         }
     }
 
@@ -72,8 +72,7 @@ public class LocalDfsProvider implements DfsProvider {
             Files.copy(request.content(), temporary, StandardCopyOption.REPLACE_EXISTING);
             long actualSize = Files.size(temporary);
             if (actualSize != request.contentLength()) {
-                throw new DfsStorageException("Uploaded content length mismatch: expected=" + request.contentLength()
-                        + ", actual=" + actualSize);
+                throw new DfsStorageException(DfsStorageException.Code.OPERATION_FAILED);
             }
             try {
                 Files.move(temporary, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
@@ -97,7 +96,7 @@ public class LocalDfsProvider implements DfsProvider {
             if (e instanceof DfsStorageException storageException) {
                 throw storageException;
             }
-            throw new DfsStorageException("Local DFS upload failed for " + fileId, e);
+            throw new DfsStorageException(DfsStorageException.Code.OPERATION_FAILED, e);
         }
     }
 
@@ -112,7 +111,7 @@ public class LocalDfsProvider implements DfsProvider {
             InputStream content = Files.newInputStream(object);
             return new FileDownloadResponse(metadata, content, Files.size(object));
         } catch (IOException e) {
-            throw new DfsStorageException("Local DFS download failed for " + fileId, e);
+            throw new DfsStorageException(DfsStorageException.Code.OPERATION_FAILED, e);
         }
     }
 
@@ -125,7 +124,7 @@ public class LocalDfsProvider implements DfsProvider {
             Files.deleteIfExists(metadata);
             return existed;
         } catch (IOException e) {
-            throw new DfsStorageException("Local DFS delete failed for " + fileId, e);
+            throw new DfsStorageException(DfsStorageException.Code.OPERATION_FAILED, e);
         }
     }
 
@@ -144,7 +143,7 @@ public class LocalDfsProvider implements DfsProvider {
         try (InputStream input = Files.newInputStream(metadataFile)) {
             values.load(input);
         } catch (IOException e) {
-            throw new DfsStorageException("Failed to read local DFS metadata for " + fileId, e);
+            throw new DfsStorageException(DfsStorageException.Code.OPERATION_FAILED, e);
         }
         Map<String, String> customMetadata = new HashMap<>();
         values.stringPropertyNames().stream()

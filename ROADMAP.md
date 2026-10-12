@@ -185,6 +185,12 @@ Command/Query 命名、ID 查询复用、字典 Command 合并、七类重复分
 
 ## 本地时区默认值与 Maven Daemon
 
-2026-10-12 按最新约定将业务及数据库 Clock 默认值改为系统本地时区，LocalDateTime 转换使用 Clock 自身时区；JSON 默认时区、DFS 元数据和 Outbox 数据库时间同步调整，OpenAPI 与接入文档同步更新。AGENTS 规定构建使用 mvnd，保留 clean 与定向模块选择。IDEA 检查已修复新增测试源码的 API/构造器调用问题；静态检查未发现生产代码继续强制 UTC 默认值。数据库审计和 JSON 本地时区回归已补充，但本轮未运行构建或测试：当前 PATH 未找到 mvnd。Outbox 的 IDE SQL 检查因未关联数据源提示表不可解析，真实数据库行为仍待 IT 验证。
+2026-10-12 按最新约定将业务及数据库 Clock 默认值改为系统本地时区，LocalDateTime 转换使用 Clock 自身时区；JSON 默认时区、DFS 元数据和 Outbox 数据库时间同步调整，OpenAPI 与接入文档同步更新。AGENTS 规定构建使用 mvnd，保留 clean 与定向模块选择。IDEA 检查已修复新增测试源码的 API/构造器调用问题；静态检查未发现生产代码继续强制 UTC 默认值。数据库审计和 JSON 本地时区回归已补充，但本轮未运行构建或测试：此前 PATH 未找到 mvnd；本轮已确认 mvnd 可用，并在错误码改造验证中执行通过 31 项日期解析和 5 项数据库监听器测试。Outbox 的 IDE SQL 检查因未关联数据源提示表不可解析，真实数据库行为仍待 IT 验证。
 
 - [ ] 在消费环境运行本地时区回归及数据库 IT，核对数据库会话/JVM 时区、Outbox 租约和已有时间数据的解释。
+
+## ResultCode 与错误码统一
+
+2026-10-12 新增 JDK-only commons-error，统一错误枚举和 CommonException；八个业务模块错误位于 client.error，删除裸业务异常及字符串失败工厂。KMS/HTTP/DFS/Signature/Lock 等分类异常接入 ResultCode；响应只使用固定枚举文案，诊断保留 cause。已通过主要消费模块 mvnd clean package；最终各组定向回归累计 148 个用例通过（包含 23 项架构/源码/枚举门禁），覆盖错误原因不外泄、报文可读、HTTP 200 result/data、业务模型以及 HTTP/KMS/Signature/Lock。License 与 Spotless 校验通过，文档站已同步；未执行真实数据库和外部渠道 IT。
+
+- [ ] 验证真实消费工程的错误响应、数据库冲突及外部渠道失败，核对前端对新增模块错误码的处理。

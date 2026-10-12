@@ -86,11 +86,12 @@ class ConditionEvaluatorTest {
         for (int i = 0; i < 9; i++) deep = new Condition.Not(deep);
         Condition overBudget = deep;
         assertThatThrownBy(() -> evaluator.evaluate(overBudget, Map.of(), Map.of()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
         var wide = new Condition.All(java.util.stream.IntStream.range(0, 128)
                 .mapToObj(i -> equal("answer"))
                 .toList());
-        assertThatThrownBy(() -> evaluator.validate(wide)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> evaluator.validate(wide))
+                .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
     }
 
     @Test
@@ -100,19 +101,20 @@ class ConditionEvaluatorTest {
                         ComparisonOperator.BETWEEN,
                         List.of(TypedValue.integer(10), TypedValue.integer(1)),
                         null))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
         assertThatThrownBy(() ->
                         new Condition.Compare("enabled", ComparisonOperator.GT, List.of(TypedValue.bool(true)), null))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
         assertThatThrownBy(() -> evaluator.validateConfigurationReferences(
                         new Condition.Compare("amount", ComparisonOperator.LE, List.of(), "unknown"),
                         java.util.Set.of()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
     }
 
     @Test
     void refusesHugeExponentBeforeCanonicalExpansion() {
-        assertThatThrownBy(() -> TypedValue.decimal("1E+100000000")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> TypedValue.decimal("1E+100000000"))
+                .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
         assertThat(TypedValue.decimal("0.0045000")).isEqualTo(TypedValue.decimal("0.0045"));
     }
 }

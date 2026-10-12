@@ -19,7 +19,9 @@
  */
 package io.github.loadup.modules.contract.domain.model;
 
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
+import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Objects;
@@ -29,20 +31,20 @@ public record TypedValue(ValueType type, String value) {
     public TypedValue {
         Objects.requireNonNull(type, "value type");
         Objects.requireNonNull(value, "value");
-        if (value.length() > 1024) throw new IllegalArgumentException("Value exceeds size limit");
+        if (value.length() > 1024) throw new CommonException(ContractResultCodeEnum.VALUE_EXCEEDS_SIZE_LIMIT);
         value = switch (type) {
             case STRING -> value;
             case INTEGER -> new BigInteger(value).toString();
             case DECIMAL -> {
                 BigDecimal decimal = new BigDecimal(value);
                 if (Math.abs((long) decimal.scale()) > 128 || decimal.precision() > 128) {
-                    throw new IllegalArgumentException("Decimal exceeds precision limit");
+                    throw new CommonException(ContractResultCodeEnum.DECIMAL_EXCEEDS_PRECISION_LIMIT);
                 }
                 yield decimal.stripTrailingZeros().toPlainString();
             }
             case BOOLEAN -> {
                 if (!value.equals("true") && !value.equals("false")) {
-                    throw new IllegalArgumentException("Boolean must be true or false");
+                    throw new CommonException(ContractResultCodeEnum.BOOLEAN_MUST_BE_TRUE_OR_FALSE);
                 }
                 yield value;
             }
@@ -70,7 +72,7 @@ public record TypedValue(ValueType type, String value) {
     }
 
     public BigDecimal number() {
-        if (!numeric()) throw new IllegalArgumentException("Not a numeric value");
+        if (!numeric()) throw new CommonException(ContractResultCodeEnum.NOT_A_NUMERIC_VALUE);
         return new BigDecimal(value);
     }
 

@@ -23,7 +23,7 @@ import static io.github.loadup.modules.contract.infrastructure.dataobject.table.
 
 import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.modules.contract.client.dto.ContractError;
+import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import io.github.loadup.modules.contract.domain.gateway.CatalogGateway;
 import io.github.loadup.modules.contract.domain.model.*;
 import io.github.loadup.modules.contract.infrastructure.converter.ContractStorageConverter;
@@ -44,7 +44,7 @@ public class CatalogGatewayImpl implements CatalogGateway {
 
     private static String required(String value) {
         if (value == null || value.isBlank())
-            throw new IllegalArgumentException("Tenant and lookup identifiers are required");
+            throw new CommonException(ContractResultCodeEnum.MERCHANT_LOOKUP_ID_REQUIRED);
         return value;
     }
 
@@ -82,7 +82,7 @@ public class CatalogGatewayImpl implements CatalogGateway {
                         .eq(entry.id())
                         .and(CatalogVersionDO::getRowVersion)
                         .eq(expected));
-        if (changed != 1) throw new CommonException(ContractError.CONFLICT, "Catalog version changed");
+        if (changed != 1) throw new CommonException(ContractResultCodeEnum.CATALOG_VERSION_CHANGED);
     }
 
     public ContractPage<CatalogEntry> page(

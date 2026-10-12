@@ -4,6 +4,8 @@
 
 ## 子模块
 
+- [`loadup-commons-error`](loadup-commons-error/README.md)：JDK-only ResultCode 枚举与异常基础。
+
 - [`loadup-commons-dto`](loadup-commons-dto/README.md)
 - [`loadup-commons-util`](loadup-commons-util/README.md)
 - [`loadup-commons-log`](loadup-commons-log/README.md)

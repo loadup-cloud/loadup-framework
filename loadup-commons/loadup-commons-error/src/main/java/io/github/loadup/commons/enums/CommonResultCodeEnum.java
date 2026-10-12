@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common DTO
+ * LoadUp Common Error
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,7 +21,6 @@ package io.github.loadup.commons.enums;
 
 import io.github.loadup.commons.result.ResultCode;
 import java.util.Arrays;
-import org.apache.commons.lang3.Strings;
 
 public enum CommonResultCodeEnum implements ResultCode {
     SUCCESS(ResultStatusEnum.SUCCESS, "Success."),
@@ -48,7 +47,7 @@ public enum CommonResultCodeEnum implements ResultCode {
 
     public static CommonResultCodeEnum getByResultCode(String resultCode) {
         return Arrays.stream(CommonResultCodeEnum.values())
-                .filter(value -> Strings.CI.equals(value.getCode(), resultCode))
+                .filter(value -> value.getCode().equalsIgnoreCase(resultCode))
                 .findFirst()
                 .orElse(CommonResultCodeEnum.SYS_ERROR);
     }

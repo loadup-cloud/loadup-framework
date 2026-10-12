@@ -81,13 +81,15 @@ class RequestSignatureTest {
             jca.update((byte[]) invocation.getArgument(2));
             return new KmsSignature(key.name(), key.version(), algorithm, jca.sign());
         });
-        when(kms.verify(any(), any(), any())).thenAnswer(invocation -> {
-            KmsSignature signed = invocation.getArgument(1);
-            var jca = signature(signed.algorithm());
-            jca.initVerify(pair.getPublic());
-            jca.update((byte[]) invocation.getArgument(2));
-            return jca.verify(signed.bytes());
-        });
+        org.mockito.Mockito.doAnswer(invocation -> {
+                    KmsSignature signed = invocation.getArgument(1);
+                    var jca = signature(signed.algorithm());
+                    jca.initVerify(pair.getPublic());
+                    jca.update((byte[]) invocation.getArgument(2));
+                    return jca.verify(signed.bytes());
+                })
+                .when(kms)
+                .verify(any(), any(), any());
         signer = new RequestSigner(kms, clock, properties);
         verifier = new RequestVerifier(kms, store, clock, properties);
     }
@@ -208,10 +210,12 @@ class RequestSignatureTest {
         assertThatThrownBy(() -> verifier.verify(identity, content, signed))
                 .hasMessage("Request signature rejected: REPLAY");
         claims.clear();
-        when(kms.verify(any(), any(), any())).thenAnswer(invocation -> {
-            clock.now = Instant.ofEpochSecond(signed.parameters().timestamp() + 300);
-            return true;
-        });
+        org.mockito.Mockito.doAnswer(invocation -> {
+                    clock.now = Instant.ofEpochSecond(signed.parameters().timestamp() + 300);
+                    return true;
+                })
+                .when(kms)
+                .verify(any(), any(), any());
         assertThatThrownBy(() -> verifier.verify(identity, content, signed))
                 .hasMessage("Request signature rejected: EXPIRED");
         assertThat(claims).isEmpty();
@@ -230,9 +234,10 @@ class RequestSignatureTest {
         assertThatThrownBy(() -> failing.verify(identity, content, signed))
                 .hasMessage("Request signature rejected: REPLAY_STORE_UNAVAILABLE")
                 .hasNoCause();
-        when(kms.verify(any(), any(), any()))
-                .thenThrow(new io.github.loadup.components.kms.KmsException(
-                        io.github.loadup.components.kms.KmsException.Code.UNAVAILABLE));
+        org.mockito.Mockito.doThrow(new io.github.loadup.components.kms.KmsException(
+                        io.github.loadup.components.kms.KmsException.Code.UNAVAILABLE))
+                .when(kms)
+                .verify(any(), any(), any());
         assertThatThrownBy(() -> verifier.verify(identity, content, signed))
                 .hasMessage("KMS operation failed: UNAVAILABLE");
         assertThat(claims).isEmpty();

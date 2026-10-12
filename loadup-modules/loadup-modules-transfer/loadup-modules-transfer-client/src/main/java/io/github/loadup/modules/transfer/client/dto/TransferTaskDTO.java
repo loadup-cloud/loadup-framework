@@ -46,7 +46,10 @@ public record TransferTaskDTO(
         @Schema(description = "Number of entries processed") long processedCount,
         @Schema(description = "Total entries to process") long totalCount,
         @Schema(description = "Error message") String errorMessage,
-        @Schema(description = "Creation time in the application local time zone") LocalDateTime createdAt,
+
+        @Schema(description = "Creation time in the application local time zone")
+        LocalDateTime createdAt,
+
         @Schema(description = "Started at") LocalDateTime startedAt,
         @Schema(description = "Finished at") LocalDateTime finishedAt) {
     @Override

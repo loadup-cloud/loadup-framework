@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Merchant Client
+ * LoadUp Notification Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -17,17 +17,23 @@
  * limitations under the License.
  * #L%
  */
-package io.github.loadup.modules.merchant.client.dto;
+package io.github.loadup.modules.notification.client.error;
 
+import io.github.loadup.commons.enums.ResultStatusEnum;
 import io.github.loadup.commons.result.ResultCode;
 
-public enum MerchantError implements ResultCode {
-    NOT_FOUND("MERCHANT_NOT_FOUND", "Merchant not found"),
-    CONFLICT("MERCHANT_CONFLICT", "Merchant code exists or version changed");
+/** Stable public error codes for the notification module. */
+public enum NotificationResultCodeEnum implements ResultCode {
+    INVALID_PAGE("NOTIFICATION_INVALID_PAGE", "Page must be positive and size must be between 1 and 100"),
+    RECIPIENTS_MUST_CONTAIN_1_TO_100_USERS(
+            "NOTIFICATION_RECIPIENTS_MUST_CONTAIN_1_TO_100_USERS", "recipients must contain 1 to 100 users"),
+    INVALID_ACTION_URL("NOTIFICATION_INVALID_ACTION_URL", "actionUrl must be an application-relative path"),
+    NOTIFICATION_NOT_FOUND("NOTIFICATION_NOTIFICATION_NOT_FOUND", "notification not found"),
+    AUTHENTICATED_USER_IS_REQUIRED("NOTIFICATION_AUTHENTICATED_USER_IS_REQUIRED", "authenticated user is required");
     private final String code;
     private final String message;
 
-    MerchantError(String code, String message) {
+    NotificationResultCodeEnum(String code, String message) {
         this.code = code;
         this.message = message;
     }
@@ -41,6 +47,6 @@ public enum MerchantError implements ResultCode {
     }
 
     public String getStatus() {
-        return "F";
+        return ResultStatusEnum.FAIL.getCode();
     }
 }

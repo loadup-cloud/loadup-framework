@@ -19,12 +19,14 @@
  */
 package io.github.loadup.modules.upms.web;
 
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.PageResponse;
 import io.github.loadup.commons.result.SuccessResponse;
 import io.github.loadup.components.authorization.model.LoadUpUser;
 import io.github.loadup.modules.upms.client.command.AccountPasswordChangeCommand;
 import io.github.loadup.modules.upms.client.dto.LoginEntryDTO;
 import io.github.loadup.modules.upms.client.dto.SecurityOverviewDTO;
+import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
 import io.github.loadup.modules.upms.client.facade.AccountSecurityFacade;
 import io.github.loadup.modules.upms.client.query.AccountLoginPageQuery;
 import io.github.loadup.modules.upms.client.query.AccountSecurityQuery;
@@ -73,7 +75,7 @@ public class AccountSecurityController {
     @PreAuthorize("isAuthenticated()")
     public SuccessResponse<Void> changePassword(
             @RequestBody AccountPasswordChangeCommand request, Authentication authentication) {
-        if (request == null) throw new IllegalArgumentException("password change request is required");
+        if (request == null) throw new CommonException(UpmsResultCodeEnum.PASSWORD_CHANGE_REQUEST_IS_REQUIRED);
         service.changePassword(
                 actor(authentication), request.oldPassword(), request.newPassword(), request.confirmPassword());
         return SuccessResponse.success();
@@ -85,7 +87,7 @@ public class AccountSecurityController {
                 || !(authentication.getPrincipal() instanceof LoadUpUser user)
                 || user.getUserId() == null
                 || user.getUserId().isBlank()) {
-            throw new IllegalArgumentException("authenticated user is required");
+            throw new CommonException(UpmsResultCodeEnum.AUTHENTICATED_USER_IS_REQUIRED);
         }
         return user.getUserId();
     }

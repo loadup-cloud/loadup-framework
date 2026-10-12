@@ -19,9 +19,11 @@
  */
 package io.github.loadup.modules.merchant.contract;
 
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.contract.client.dto.MerchantProfileDTO;
 import io.github.loadup.modules.contract.client.dto.ValueDTO;
 import io.github.loadup.modules.contract.client.spi.MerchantFactsProvider;
+import io.github.loadup.modules.merchant.client.error.MerchantResultCodeEnum;
 import io.github.loadup.modules.merchant.client.facade.MerchantQueryFacade;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +41,7 @@ public class MerchantContractFactsProvider implements MerchantFactsProvider {
         if (found.isEmpty()) return null;
         var merchant = found.get();
         if (!tenant.equals(merchant.tenantId()) || !id.equals(merchant.id()))
-            throw new IllegalStateException("Merchant identity mismatch");
+            throw new CommonException(MerchantResultCodeEnum.MERCHANT_IDENTITY_MISMATCH);
         Map<String, ValueDTO> facts = new HashMap<>();
         put(facts, "merchant.code", merchant.merchantCode());
         put(facts, "merchant.type", merchant.type());

@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
@@ -46,21 +46,17 @@ public class AssertUtil {
 
     public static void isTrue(
             boolean expValue,
-            BiFunction<ResultCode, String, ? extends RuntimeException> exceptionFactory,
+            Function<ResultCode, ? extends CommonException> exceptionFactory,
             ResultCode resultCode,
             Object... objs) {
         if (!expValue) {
-            String logString = getLogString(objs);
-            String resultMsg = StringUtils.isBlank(logString) ? resultCode.getMessage() : logString;
-            throw exceptionFactory.apply(resultCode, resultMsg);
+            throw exceptionFactory.apply(resultCode);
         }
     }
 
     public static void isTrue(boolean expValue, ResultCode resultCode, Object... objs) {
         if (!expValue) {
-            String logString = getLogString(objs);
-            String resultMsg = StringUtils.isBlank(logString) ? resultCode.getMessage() : logString;
-            throw new CommonException(resultCode, resultMsg);
+            throw new CommonException(resultCode);
         }
     }
 
@@ -117,7 +113,7 @@ public class AssertUtil {
 
     public static void notBlank(
             String str,
-            BiFunction<ResultCode, String, ? extends RuntimeException> exceptionFactory,
+            Function<ResultCode, ? extends CommonException> exceptionFactory,
             ResultCode resultCode,
             Object... objs) {
         isTrue(StringUtils.isNotBlank(str), exceptionFactory, resultCode, objs);
@@ -133,7 +129,7 @@ public class AssertUtil {
 
     public static void notNull(
             Object object,
-            BiFunction<ResultCode, String, ? extends RuntimeException> exceptionFactory,
+            Function<ResultCode, ? extends CommonException> exceptionFactory,
             ResultCode resultCode,
             Object... objs) {
         isTrue(object != null, exceptionFactory, resultCode, objs);
@@ -145,7 +141,7 @@ public class AssertUtil {
 
     public static void notEmpty(
             Collection<?> collection,
-            BiFunction<ResultCode, String, ? extends RuntimeException> exceptionFactory,
+            Function<ResultCode, ? extends CommonException> exceptionFactory,
             ResultCode resultCode,
             Object... objs) {
         isTrue(!CollectionUtils.isEmpty(collection), exceptionFactory, resultCode, objs);
@@ -161,7 +157,7 @@ public class AssertUtil {
 
     public static void notEmpty(
             Map<?, ?> map,
-            BiFunction<ResultCode, String, ? extends RuntimeException> exceptionFactory,
+            Function<ResultCode, ? extends CommonException> exceptionFactory,
             ResultCode resultCode,
             Object... objs) {
         isTrue(!MapUtils.isEmpty(map), exceptionFactory, resultCode, objs);

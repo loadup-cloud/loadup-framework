@@ -22,7 +22,7 @@ package io.github.loadup.modules.contract.app.support;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.contract.app.converter.ContractConverter;
 import io.github.loadup.modules.contract.client.dto.CatalogDefinitions;
-import io.github.loadup.modules.contract.client.dto.ContractError;
+import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import io.github.loadup.modules.contract.domain.gateway.CatalogGateway;
 import io.github.loadup.modules.contract.domain.model.*;
 import java.util.*;
@@ -52,12 +52,11 @@ public class CatalogAssembler {
 
     private CatalogEntry reference(String tenant, String id, CatalogKind kind, boolean publishing) {
         CatalogEntry entry = (publishing ? gateway.lock(tenant, id) : gateway.find(tenant, id))
-                .orElseThrow(() -> new CommonException(ContractError.NOT_FOUND));
+                .orElseThrow(() -> new CommonException(ContractResultCodeEnum.NOT_FOUND));
         if (entry.kind() != kind
                 || entry.status() == CatalogStatus.DRAFT
                 || publishing && entry.status() != CatalogStatus.PUBLISHED)
-            throw new CommonException(
-                    ContractError.INVALID_STATE, "Reference must be a published version of the expected kind");
+            throw new CommonException(ContractResultCodeEnum.INVALID_CATALOG_REFERENCE);
         return entry;
     }
 
@@ -70,11 +69,11 @@ public class CatalogAssembler {
     public Condition condition(CatalogEntry entry) {
         var definition = codec.read(entry.content(), CatalogDefinitions.ConditionDefinition.class);
         if (definition.clauses() == null || definition.clauses().size() > 100)
-            throw new IllegalArgumentException("Invalid condition clauses");
+            throw new CommonException(ContractResultCodeEnum.INVALID_CONDITION_CLAUSES);
         List<Condition> clauses = new ArrayList<>();
         for (var clause : definition.clauses()) {
             if (!clause.field().startsWith("merchant.") && !clause.field().startsWith("transaction."))
-                throw new IllegalArgumentException("Unsupported fact namespace");
+                throw new CommonException(ContractResultCodeEnum.UNSUPPORTED_FACT_NAMESPACE);
             Condition node;
             if ("EXISTS".equals(clause.kind())) node = new Condition.Exists(clause.field());
             else if ("COMPARE".equals(clause.kind())) {
@@ -89,14 +88,14 @@ public class CatalogAssembler {
                         : clause.configurationKey();
                 node = new Condition.Compare(
                         clause.field(), ComparisonOperator.valueOf(clause.operator()), expected, key);
-            } else throw new IllegalArgumentException("Unknown clause kind");
+            } else throw new CommonException(ContractResultCodeEnum.UNKNOWN_CLAUSE_KIND);
             clauses.add(clause.negated() ? new Condition.Not(node) : node);
         }
         Condition condition =
                 switch (definition.mode()) {
                     case "ALL" -> new Condition.All(clauses);
                     case "ANY" -> new Condition.Any(clauses);
-                    default -> throw new IllegalArgumentException("Unknown condition mode");
+                    default -> throw new CommonException(ContractResultCodeEnum.UNKNOWN_CONDITION_MODE);
                 };
         new ConditionEvaluator().validate(condition);
         return condition;
@@ -105,12 +104,12 @@ public class CatalogAssembler {
     public ProductVersion product(CatalogEntry entry, boolean publishing) {
         var d = codec.read(entry.content(), CatalogDefinitions.Product.class);
         if (d.parameters() == null || d.parameters().size() > 256)
-            throw new IllegalArgumentException("Invalid parameter count");
+            throw new CommonException(ContractResultCodeEnum.INVALID_PARAMETER_COUNT);
         var parameters = new HashMap<String, ParameterDefinition>();
         for (var parameter : d.parameters()) {
             ParameterDefinition mapped = converter.toParameter(parameter);
             if (parameters.putIfAbsent(mapped.key(), mapped) != null)
-                throw new IllegalArgumentException("Duplicate parameter");
+                throw new CommonException(ContractResultCodeEnum.DUPLICATE_PARAMETER);
         }
         return new ProductVersion(
                 entry.code(),
@@ -125,7 +124,7 @@ public class CatalogAssembler {
     public BundleVersion bundle(CatalogEntry entry, boolean publishing) {
         var d = codec.read(entry.content(), CatalogDefinitions.Bundle.class);
         if (d.items() == null || d.items().isEmpty() || d.items().size() > 128)
-            throw new IllegalArgumentException("Invalid bundle items");
+            throw new CommonException(ContractResultCodeEnum.INVALID_BUNDLE_ITEMS);
         List<BundleVersion.Item> items = new ArrayList<>();
         for (var item : d.items()) {
             ProductVersion product =
@@ -152,7 +151,7 @@ public class CatalogAssembler {
     public SalesPlanVersion plan(CatalogEntry entry, boolean publishing) {
         var d = codec.read(entry.content(), CatalogDefinitions.Plan.class);
         if (d.bundles() == null || d.bundles().isEmpty() || d.bundles().size() > 128)
-            throw new IllegalArgumentException("Invalid plan bundles");
+            throw new CommonException(ContractResultCodeEnum.INVALID_PLAN_BUNDLES);
         List<SalesPlanDraft.BundleSelection> bundles = new ArrayList<>();
         Map<String, ProductVersion> products = new HashMap<>();
         for (var selected : d.bundles()) {
@@ -161,7 +160,7 @@ public class CatalogAssembler {
             bundles.add(new SalesPlanDraft.BundleSelection(selected.alias(), bundle));
             for (var item : bundle.items()) {
                 if (products.putIfAbsent(selected.alias() + "." + item.itemKey(), item.product()) != null)
-                    throw new IllegalArgumentException("Duplicate plan item");
+                    throw new CommonException(ContractResultCodeEnum.DUPLICATE_PLAN_ITEM);
             }
         }
         Map<String, Map<String, TypedValue>> values = new HashMap<>();
@@ -176,7 +175,7 @@ public class CatalogAssembler {
                 Map<String, OverridePolicy> mapped = new HashMap<>();
                 fields.forEach((field, policy) -> {
                     ParameterDefinition parameter = product.parameters().get(field);
-                    if (parameter == null) throw new IllegalArgumentException("Unknown policy field");
+                    if (parameter == null) throw new CommonException(ContractResultCodeEnum.UNKNOWN_POLICY_FIELD);
                     mapped.put(
                             field,
                             new OverridePolicy(
@@ -209,18 +208,18 @@ public class CatalogAssembler {
             case Condition.Not not -> merchantOnly(not.child());
             case Condition.Exists exists -> {
                 if (!exists.field().startsWith("merchant."))
-                    throw new IllegalArgumentException("Eligibility requires merchant facts");
+                    throw new CommonException(ContractResultCodeEnum.ELIGIBILITY_REQUIRES_MERCHANT_FACTS);
             }
             case Condition.Compare compare -> {
                 if (!compare.field().startsWith("merchant."))
-                    throw new IllegalArgumentException("Eligibility requires merchant facts");
+                    throw new CommonException(ContractResultCodeEnum.ELIGIBILITY_REQUIRES_MERCHANT_FACTS);
             }
         }
     }
 
     private static ProductVersion requireProduct(Map<String, ProductVersion> products, String key) {
         ProductVersion product = products.get(key);
-        if (product == null) throw new IllegalArgumentException("Unknown plan item");
+        if (product == null) throw new CommonException(ContractResultCodeEnum.UNKNOWN_PLAN_ITEM);
         return product;
     }
 
@@ -229,7 +228,8 @@ public class CatalogAssembler {
         if (input == null) return Map.of();
         input.forEach((field, value) -> {
             ParameterDefinition parameter = product.parameters().get(field);
-            if (parameter == null || value == null) throw new IllegalArgumentException("Unknown or null parameter");
+            if (parameter == null || value == null)
+                throw new CommonException(ContractResultCodeEnum.UNKNOWN_OR_NULL_PARAMETER);
             result.put(field, ContractMappingSupport.value(parameter.type().name(), value));
         });
         return Map.copyOf(result);
@@ -237,11 +237,11 @@ public class CatalogAssembler {
 
     public Map<String, Map<String, TypedValue>> merchantValues(
             SalesPlanVersion plan, Map<String, Map<String, String>> input) {
-        if (input == null) throw new IllegalArgumentException("Values required");
+        if (input == null) throw new CommonException(ContractResultCodeEnum.VALUES_REQUIRED);
         var mapped = new HashMap<String, Map<String, TypedValue>>();
         input.forEach((key, value) -> {
             var item = plan.items().get(key);
-            if (item == null) throw new IllegalArgumentException("Unknown signed item");
+            if (item == null) throw new CommonException(ContractResultCodeEnum.UNKNOWN_SIGNED_ITEM);
             mapped.put(key, typedValues(item.product(), value));
         });
         return mapped;

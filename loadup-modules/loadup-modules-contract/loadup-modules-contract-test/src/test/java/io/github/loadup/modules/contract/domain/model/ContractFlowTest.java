@@ -120,13 +120,13 @@ class ContractFlowTest {
     void rejectsOutOfRangeAndUnauthorizedMerchantValues() {
         var plan = plan(product(), Map.of(), Map.of(), Map.of("fee.rate", policy()));
         assertThatThrownBy(() -> sign(plan, Map.of("fee.rate", TypedValue.decimal("0.003")), START, END))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
         var locked = plan(product(), Map.of(), Map.of(), Map.of());
         assertThatThrownBy(() -> sign(locked, Map.of("fee.rate", TypedValue.decimal("0.0045")), START, END))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(io.github.loadup.commons.error.CommonException.class)
                 .hasMessageContaining("permission");
         assertThatThrownBy(() -> sign(plan, Map.of("unknown", TypedValue.text("x")), START, END))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(io.github.loadup.commons.error.CommonException.class)
                 .hasMessageContaining("Unknown parameter");
     }
 
@@ -137,14 +137,14 @@ class ContractFlowTest {
                         Map.of(),
                         Map.of(),
                         Map.of("fee.rate", new OverridePolicy(new BigDecimal("0.002"), null, Set.of()))))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(io.github.loadup.commons.error.CommonException.class)
                 .hasMessageContaining("widens");
         assertThatThrownBy(() -> plan(
                         product(),
                         Map.of(),
                         Map.of(),
                         Map.of("fee.rate", new OverridePolicy(new BigDecimal("0.02"), null, Set.of()))))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(io.github.loadup.commons.error.CommonException.class)
                 .hasMessageContaining("Inverted");
     }
 
@@ -155,10 +155,10 @@ class ContractFlowTest {
         var product = new ProductVersion(
                 "WECHAT", 1, "payment.collect", Map.of("fee.rate", locked), Condition.always(), Set.of(), Set.of());
         assertThatThrownBy(() -> plan(product, Map.of("fee.rate", TypedValue.decimal("0.005")), Map.of(), Map.of()))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(io.github.loadup.commons.error.CommonException.class)
                 .hasMessageContaining("forbidden");
         assertThatThrownBy(() -> plan(product, Map.of(), Map.of("fee.rate", TypedValue.decimal("0.005")), Map.of()))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(io.github.loadup.commons.error.CommonException.class)
                 .hasMessageContaining("forbidden");
     }
 
@@ -221,11 +221,11 @@ class ContractFlowTest {
         var product = new ProductVersion(
                 "WECHAT", 1, "payment.collect", Map.of("account", required), Condition.always(), Set.of(), Set.of());
         assertThatThrownBy(() -> plan(product, Map.of(), Map.of(), Map.of()))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(io.github.loadup.commons.error.CommonException.class)
                 .hasMessageContaining("cannot be filled");
         var plan = plan(product, Map.of(), Map.of(), Map.of("account", new OverridePolicy(null, null, Set.of())));
         assertThatThrownBy(() -> sign(plan, Map.of(), START, END))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(io.github.loadup.commons.error.CommonException.class)
                 .hasMessageContaining("Missing required");
         assertThat(sign(plan, Map.of("account", TypedValue.text("trusted-account-ref")), START, END)
                         .items())
@@ -237,11 +237,11 @@ class ContractFlowTest {
         var required = plan(product(), Map.of(), Map.of(), Map.of());
         assertThatThrownBy(() -> new ContractSigner()
                         .sign("T1", "M1", "STORE1", "C1", 1, required, Set.of(), Map.of(), Map.of(), START, START, END))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
         var dependent = new ProductVersion(
                 "WECHAT", 1, "payment.collect", Map.of(), Condition.always(), Set.of("ALIPAY"), Set.of());
         assertThatThrownBy(() -> plan(dependent, Map.of(), Map.of(), Map.of()))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(io.github.loadup.commons.error.CommonException.class)
                 .hasMessageContaining("dependency");
         var excluded = new ProductVersion(
                 "ALIPAY", 1, "payment.collect", Map.of(), Condition.always(), Set.of(), Set.of("WECHAT"));
@@ -276,7 +276,7 @@ class ContractFlowTest {
                                 START,
                                 START,
                                 END))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(io.github.loadup.commons.error.CommonException.class)
                 .hasMessageContaining("exclusive");
     }
 
@@ -300,7 +300,7 @@ class ContractFlowTest {
                         START,
                         END));
         assertThatThrownBy(() -> sign(plan, Map.of(), START, END))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(io.github.loadup.commons.error.CommonException.class)
                 .hasMessageContaining("eligibility");
         assertThatThrownBy(() -> new ContractSigner()
                         .sign(
@@ -316,7 +316,7 @@ class ContractFlowTest {
                                 END,
                                 END,
                                 null))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(io.github.loadup.commons.error.CommonException.class)
                 .hasMessageContaining("sale window");
     }
 
@@ -385,11 +385,11 @@ class ContractFlowTest {
                 first.items());
         assertThatThrownBy(() -> new MerchantContract(
                         "T1", "M1", "STORE1", "C1", ContractStatus.NORMAL, 2, List.of(first, overlap)))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(io.github.loadup.commons.error.CommonException.class)
                 .hasMessageContaining("Overlapping");
         assertThatThrownBy(() ->
                         new MerchantContract("T2", "M1", "STORE1", "C1", ContractStatus.NORMAL, 1, List.of(first)))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(io.github.loadup.commons.error.CommonException.class)
                 .hasMessageContaining("identity");
         var adjacent = new MerchantContractRevision(
                 "T1", "M1", "STORE1", "C1", 2, first.planCode(), first.planVersion(), START, END, null, first.items());

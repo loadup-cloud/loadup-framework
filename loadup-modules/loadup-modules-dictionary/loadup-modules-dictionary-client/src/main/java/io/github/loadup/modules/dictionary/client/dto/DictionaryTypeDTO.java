@@ -37,8 +37,11 @@ public record DictionaryTypeDTO(
         @Schema(description = "Whether the resource is enabled")
         boolean enabled,
 
-        @Schema(description = "Creation time in the application local time zone") LocalDateTime createdAt,
-        @Schema(description = "Last update time in the application local time zone") LocalDateTime updatedAt) {
+        @Schema(description = "Creation time in the application local time zone")
+        LocalDateTime createdAt,
+
+        @Schema(description = "Last update time in the application local time zone")
+        LocalDateTime updatedAt) {
     @Override
     public String toString() {
         return ToStringAsJson.reflectionToString(this);

@@ -19,7 +19,9 @@
  */
 package io.github.loadup.modules.contract.domain.model;
 
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
+import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -40,11 +42,12 @@ public record MerchantContract(
         scopeKey = ContractChecks.code(scopeKey);
         contractId = ContractChecks.code(contractId);
         Objects.requireNonNull(status, "status");
-        if (generation < 1) throw new IllegalArgumentException("Generation must be positive");
+        if (generation < 1) throw new CommonException(ContractResultCodeEnum.GENERATION_MUST_BE_POSITIVE);
         revisions = revisions.stream()
                 .sorted(Comparator.comparing(MerchantContractRevision::effectiveFrom))
                 .toList();
-        if (revisions.isEmpty() || revisions.size() > 256) throw new IllegalArgumentException("Invalid revision count");
+        if (revisions.isEmpty() || revisions.size() > 256)
+            throw new CommonException(ContractResultCodeEnum.INVALID_REVISION_COUNT);
         var versions = new HashSet<Integer>();
         MerchantContractRevision previous = null;
         for (var revision : revisions) {
@@ -52,13 +55,14 @@ public record MerchantContract(
                     || !revision.merchantId().equals(merchantId)
                     || !revision.scopeKey().equals(scopeKey)
                     || !revision.contractId().equals(contractId)) {
-                throw new IllegalArgumentException("Contract identity mismatch");
+                throw new CommonException(ContractResultCodeEnum.CONTRACT_IDENTITY_MISMATCH);
             }
-            if (!versions.add(revision.revision())) throw new IllegalArgumentException("Duplicate revision");
+            if (!versions.add(revision.revision()))
+                throw new CommonException(ContractResultCodeEnum.DUPLICATE_REVISION);
             if (previous != null
                     && (previous.effectiveTo() == null
                             || revision.effectiveFrom().isBefore(previous.effectiveTo()))) {
-                throw new IllegalArgumentException("Overlapping revisions");
+                throw new CommonException(ContractResultCodeEnum.OVERLAPPING_REVISIONS);
             }
             previous = revision;
         }

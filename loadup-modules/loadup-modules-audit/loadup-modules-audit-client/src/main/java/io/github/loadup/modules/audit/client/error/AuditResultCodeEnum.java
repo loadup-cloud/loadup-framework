@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Contract Client
+ * LoadUp Audit Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -17,19 +17,20 @@
  * limitations under the License.
  * #L%
  */
-package io.github.loadup.modules.contract.client.dto;
+package io.github.loadup.modules.audit.client.error;
 
+import io.github.loadup.commons.enums.ResultStatusEnum;
 import io.github.loadup.commons.result.ResultCode;
 
-public enum ContractError implements ResultCode {
-    NOT_FOUND("CONTRACT_NOT_FOUND", "Contract resource not found"),
-    CONFLICT("CONTRACT_CONFLICT", "Contract resource changed or already exists"),
-    INVALID_STATE("CONTRACT_INVALID_STATE", "Operation not allowed in current state"),
-    MERCHANT_UNVERIFIED("CONTRACT_MERCHANT_UNVERIFIED", "Verified active merchant is required");
+/** Stable public error codes for the audit module. */
+public enum AuditResultCodeEnum implements ResultCode {
+    INVALID_TIME_RANGE("AUDIT_INVALID_TIME_RANGE", "from must not be after to"),
+    INVALID_PAGE("AUDIT_INVALID_PAGE", "Page must be positive and size must be between 1 and 100"),
+    AUDIT_ACTION_IS_REQUIRED("AUDIT_AUDIT_ACTION_IS_REQUIRED", "audit action is required");
     private final String code;
     private final String message;
 
-    ContractError(String code, String message) {
+    AuditResultCodeEnum(String code, String message) {
         this.code = code;
         this.message = message;
     }
@@ -43,6 +44,6 @@ public enum ContractError implements ResultCode {
     }
 
     public String getStatus() {
-        return "F";
+        return ResultStatusEnum.FAIL.getCode();
     }
 }

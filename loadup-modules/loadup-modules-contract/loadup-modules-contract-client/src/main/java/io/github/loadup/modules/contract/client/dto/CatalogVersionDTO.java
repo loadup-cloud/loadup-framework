@@ -36,8 +36,12 @@ public record CatalogVersionDTO(
 
         @Schema(description = "Definition") Map<String, Object> definition,
         @Schema(description = "Updated by") String updatedBy,
-        @Schema(description = "Creation time in the application local time zone") LocalDateTime createdAt,
-        @Schema(description = "Last update time in the application local time zone") LocalDateTime updatedAt) {
+
+        @Schema(description = "Creation time in the application local time zone")
+        LocalDateTime createdAt,
+
+        @Schema(description = "Last update time in the application local time zone")
+        LocalDateTime updatedAt) {
     @Override
     public String toString() {
         return ToStringAsJson.reflectionToString(this);

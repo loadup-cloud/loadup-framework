@@ -24,6 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
+import io.github.loadup.commons.result.FailureResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -41,7 +42,7 @@ class ApiExceptionHandlerTest {
     static class Controller {
         @PostMapping("/api/business")
         Object business() {
-            throw new CommonException(CommonResultCodeEnum.CONFLICT);
+            throw new CommonException(CommonResultCodeEnum.CONFLICT, new IllegalStateException("private-secret"));
         }
 
         @PostMapping("/api/unknown")
@@ -85,6 +86,8 @@ class ApiExceptionHandlerTest {
                     .andReturn()
                     .getResponse();
             assertThat(response.getStatus()).isEqualTo(200);
+            var decoded = JsonMapper.builder().build().readValue(response.getContentAsString(), FailureResponse.class);
+            assertThat(decoded.getResult().getCode()).isEqualTo(entry.getValue());
             assertThat(response.getContentAsString())
                     .contains("\"result\"", "\"data\"", entry.getValue())
                     .doesNotContain("private-secret");

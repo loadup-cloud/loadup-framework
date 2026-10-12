@@ -31,6 +31,7 @@ import io.github.loadup.modules.upms.client.command.UserPasswordChangeCommand;
 import io.github.loadup.modules.upms.client.command.UserUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.RoleDTO;
 import io.github.loadup.modules.upms.client.dto.UserDetailDTO;
+import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
 import io.github.loadup.modules.upms.client.query.UserPageQuery;
 import io.github.loadup.modules.upms.client.validation.PasswordPolicy;
 import io.github.loadup.modules.upms.domain.gateway.DepartmentGateway;
@@ -74,17 +75,17 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
         rejectMaskedValues(command.getRealName(), command.getEmail(), command.getMobile());
         // Validate username uniqueness
         if (userGateway.existsByUsername(command.getUsername())) {
-            throw new CommonException(CommonResultCodeEnum.CONFLICT, "Username already exists");
+            throw new CommonException(UpmsResultCodeEnum.USERNAME_ALREADY_EXISTS);
         }
 
         // Validate email uniqueness
         if (command.getEmail() != null && userGateway.existsByEmail(command.getEmail())) {
-            throw new CommonException(CommonResultCodeEnum.CONFLICT, "Email is already registered");
+            throw new CommonException(UpmsResultCodeEnum.EMAIL_IS_ALREADY_REGISTERED);
         }
 
         // Validate phone uniqueness
         if (command.getMobile() != null && userGateway.existsByMobile(command.getMobile())) {
-            throw new CommonException(CommonResultCodeEnum.CONFLICT, "Phone number is already registered");
+            throw new CommonException(UpmsResultCodeEnum.PHONE_NUMBER_IS_ALREADY_REGISTERED);
         }
         validateDepartment(command.getDeptId());
         validateRoles(command.getRoleIds());
@@ -132,14 +133,14 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
         rejectMaskedValues(command.getRealName(), command.getEmail(), command.getMobile());
         User user = userGateway
                 .findById(command.getId())
-                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new CommonException(UpmsResultCodeEnum.USER_NOT_FOUND));
 
         // Validate email uniqueness (if changed)
         if (command.getEmail() != null
                 && !command.getEmail().isBlank()
                 && !command.getEmail().equals(user.getEmail())
                 && userGateway.existsByEmail(command.getEmail())) {
-            throw new CommonException(CommonResultCodeEnum.CONFLICT, "Email is already registered");
+            throw new CommonException(UpmsResultCodeEnum.EMAIL_IS_ALREADY_REGISTERED);
         }
 
         // Validate phone uniqueness (if changed)
@@ -147,7 +148,7 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
                 && !command.getMobile().isBlank()
                 && !command.getMobile().equals(user.getMobile())
                 && userGateway.existsByMobile(command.getMobile())) {
-            throw new CommonException(CommonResultCodeEnum.CONFLICT, "Phone number is already registered");
+            throw new CommonException(UpmsResultCodeEnum.PHONE_NUMBER_IS_ALREADY_REGISTERED);
         }
 
         // Update user fields
@@ -211,9 +212,7 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
      */
     @Transactional
     public void deleteUser(String id) {
-        userGateway
-                .findById(id)
-                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "User not found"));
+        userGateway.findById(id).orElseThrow(() -> new CommonException(UpmsResultCodeEnum.USER_NOT_FOUND));
         for (Role role : roleGateway.findByUserId(id)) {
             roleGateway.removeRoleFromUser(id, role.getId());
         }
@@ -223,7 +222,7 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
     private static void rejectMaskedValues(String... values) {
         for (String value : values) {
             if (value != null && value.contains("*"))
-                throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Masked values cannot be saved");
+                throw new CommonException(UpmsResultCodeEnum.MASKED_VALUES_CANNOT_BE_SAVED);
         }
     }
 
@@ -233,8 +232,7 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
                         .findById(deptId)
                         .filter(Department::isEnabled)
                         .isEmpty()) {
-            throw new CommonException(
-                    CommonResultCodeEnum.PARAM_ILLEGAL, "Department does not exist or is disabled: " + deptId);
+            throw new CommonException(UpmsResultCodeEnum.DEPARTMENT_DOES_NOT_EXIST_OR_IS_DISABLED);
         }
     }
 
@@ -242,8 +240,7 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
         if (roleIds == null) return;
         for (String roleId : roleIds) {
             if (roleGateway.findById(roleId).filter(Role::isEnabled).isEmpty()) {
-                throw new CommonException(
-                        CommonResultCodeEnum.PARAM_ILLEGAL, "Role does not exist or is disabled: " + roleId);
+                throw new CommonException(UpmsResultCodeEnum.ROLE_DOES_NOT_EXIST_OR_IS_DISABLED);
             }
         }
     }
@@ -254,7 +251,7 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
     public UserDetailDTO getUserById(IdQuery idQuery) {
         User user = userGateway
                 .findById(idQuery.id())
-                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new CommonException(UpmsResultCodeEnum.USER_NOT_FOUND));
         return convertToDetailDTO(user);
     }
 
@@ -269,7 +266,7 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
         String sortOrder = query.getSortOrder() == null ? "DESC" : query.getSortOrder();
         if (!java.util.Set.of("createdAt", "username", "nickname", "id").contains(sortBy)
                 || !java.util.Set.of("ASC", "DESC").contains(sortOrder.toUpperCase(java.util.Locale.ROOT))) {
-            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Unsupported user sort field or direction");
+            throw new CommonException(UpmsResultCodeEnum.UNSUPPORTED_USER_SORT_FIELD_OR_DIRECTION);
         }
         PageQuery pageQuery = PageQuery.of(page, size);
 
@@ -303,26 +300,26 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
                 || command.getOldPassword().isBlank()
                 || command.getNewPassword() == null
                 || command.getConfirmPassword() == null) {
-            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "invalid password change request");
+            throw new CommonException(UpmsResultCodeEnum.INVALID_PASSWORD_CHANGE_REQUEST);
         }
         PasswordPolicy.requireValid(command.getNewPassword());
         User user = userGateway
                 .findById(command.getUserId())
-                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new CommonException(UpmsResultCodeEnum.USER_NOT_FOUND));
 
-        if (!user.isActive()) throw new CommonException(CommonResultCodeEnum.INVALID_STATE, "account is not active");
+        if (!user.isActive()) throw new CommonException(UpmsResultCodeEnum.ACCOUNT_IS_NOT_ACTIVE);
 
         // Verify old password
         if (!passwordEncoder.matches(command.getOldPassword(), user.getPassword())) {
-            throw new CommonException(CommonResultCodeEnum.UNAUTHENTICATED, "Current password is incorrect");
+            throw new CommonException(UpmsResultCodeEnum.CURRENT_PASSWORD_IS_INCORRECT);
         }
 
         // Check new password confirmation
         if (!command.getNewPassword().equals(command.getConfirmPassword())) {
-            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Password confirmation does not match");
+            throw new CommonException(UpmsResultCodeEnum.PASSWORD_CONFIRMATION_DOES_NOT_MATCH);
         }
         if (passwordEncoder.matches(command.getNewPassword(), user.getPassword())) {
-            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "new password must differ from old password");
+            throw new CommonException(UpmsResultCodeEnum.PASSWORD_REUSE_FORBIDDEN);
         }
 
         // Update password
@@ -337,9 +334,7 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
      */
     @Transactional
     public void lockUser(String id) {
-        User user = userGateway
-                .findById(id)
-                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "User not found"));
+        User user = userGateway.findById(id).orElseThrow(() -> new CommonException(UpmsResultCodeEnum.USER_NOT_FOUND));
         user.setAccountNonLocked(false);
         user.setLockedTime(LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
         userGateway.update(user);
@@ -350,9 +345,7 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
      */
     @Transactional
     public void unlockUser(String id) {
-        User user = userGateway
-                .findById(id)
-                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "User not found"));
+        User user = userGateway.findById(id).orElseThrow(() -> new CommonException(UpmsResultCodeEnum.USER_NOT_FOUND));
         user.setAccountNonLocked(true);
         user.setLoginFailCount(0);
         user.setLockedTime(null);

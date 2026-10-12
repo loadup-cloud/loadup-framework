@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.notification.web;
 
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.PageResponse;
 import io.github.loadup.commons.result.SuccessResponse;
 import io.github.loadup.commons.util.TenantUtil;
@@ -31,6 +32,7 @@ import io.github.loadup.modules.notification.client.dto.NotificationViewDTO;
 import io.github.loadup.modules.notification.client.dto.ReadResultDTO;
 import io.github.loadup.modules.notification.client.dto.SendResultDTO;
 import io.github.loadup.modules.notification.client.dto.UnreadCountDTO;
+import io.github.loadup.modules.notification.client.error.NotificationResultCodeEnum;
 import io.github.loadup.modules.notification.client.facade.InboxFacade;
 import io.github.loadup.modules.notification.client.query.NotificationPageQuery;
 import io.github.loadup.modules.notification.client.query.NotificationUnreadCountQuery;
@@ -128,7 +130,7 @@ public class NotificationController {
                 || !(authentication.getPrincipal() instanceof LoadUpUser user)
                 || user.getUserId() == null
                 || user.getUserId().isBlank()) {
-            throw new IllegalArgumentException("authenticated user is required");
+            throw new CommonException(NotificationResultCodeEnum.AUTHENTICATED_USER_IS_REQUIRED);
         }
         return user.getUserId();
     }

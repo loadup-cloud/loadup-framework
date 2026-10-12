@@ -19,13 +19,13 @@
  */
 package io.github.loadup.modules.upms.app.strategy;
 
-import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.modules.upms.app.strategy.oauth.OAuthProvider;
 import io.github.loadup.modules.upms.app.strategy.oauth.OAuthToken;
 import io.github.loadup.modules.upms.app.strategy.oauth.OAuthUserInfo;
 import io.github.loadup.modules.upms.client.dto.AuthenticatedUserDTO;
+import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import io.github.loadup.modules.upms.domain.gateway.UserOAuthBindingGateway;
 import io.github.loadup.modules.upms.domain.model.User;
@@ -84,15 +84,15 @@ public class OAuthLoginStrategy implements LoginStrategy {
     public AuthenticatedUserDTO authenticate(LoginCredentials credentials) {
 
         if (StringUtils.isBlank(credentials.getProvider())) {
-            throw new RuntimeException("OAuth 提供商不能为空");
+            throw new CommonException(UpmsResultCodeEnum.OPERATION_FAILED);
         }
         if (StringUtils.isBlank(credentials.getCode())) {
-            throw new RuntimeException("授权码不能为空");
+            throw new CommonException(UpmsResultCodeEnum.OPERATION_FAILED);
         }
 
         OAuthProvider provider = providerMap.get(credentials.getProvider());
         if (provider == null) {
-            throw new UnsupportedOperationException("不支持的 OAuth 提供商: " + credentials.getProvider());
+            throw new CommonException(UpmsResultCodeEnum.OPERATION_NOT_ALLOWED);
         }
 
         OAuthToken token = provider.exchangeToken(credentials.getCode(), credentials.getRedirectUri());
@@ -104,16 +104,16 @@ public class OAuthLoginStrategy implements LoginStrategy {
 
         if (binding.isPresent()) {
 
-            User user =
-                    userGateway.findById(binding.get().getUserId()).orElseThrow(() -> new RuntimeException("关联用户不存在"));
+            User user = userGateway
+                    .findById(binding.get().getUserId())
+                    .orElseThrow(() -> new CommonException(UpmsResultCodeEnum.OPERATION_FAILED));
 
             if (!user.isActive()) {
-                throw new CommonException(CommonResultCodeEnum.INVALID_STATE, "Account is locked or disabled");
+                throw new CommonException(UpmsResultCodeEnum.ACCOUNT_IS_LOCKED_OR_DISABLED);
             }
 
             user.updateLastLogin(
-                    credentials.getIpAddress(),
-                    java.time.LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
+                    credentials.getIpAddress(), java.time.LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
             userGateway.update(user);
 
             return AuthenticatedUserDTO.builder()

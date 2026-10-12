@@ -29,6 +29,7 @@ import io.github.loadup.components.dfs.model.FileUploadRequest;
 import io.github.loadup.modules.file.app.converter.FileDTOConverter;
 import io.github.loadup.modules.file.client.dto.FileReferenceDTO;
 import io.github.loadup.modules.file.client.dto.FileResourceDTO;
+import io.github.loadup.modules.file.client.error.FileResultCodeEnum;
 import io.github.loadup.modules.file.domain.gateway.FileResourceGateway;
 import io.github.loadup.modules.file.domain.model.FileReference;
 import io.github.loadup.modules.file.domain.model.FileResource;
@@ -68,10 +69,9 @@ public class FileResourceService implements io.github.loadup.modules.file.client
         if (safeName.contains("/")
                 || safeName.contains("\\")
                 || safeName.chars().anyMatch(Character::isISOControl)) {
-            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "filename contains invalid characters");
+            throw new CommonException(FileResultCodeEnum.FILENAME_CONTAINS_INVALID_CHARACTERS);
         }
-        if (content == null || size < 0)
-            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "content and nonnegative size are required");
+        if (content == null || size < 0) throw new CommonException(FileResultCodeEnum.INVALID_FILE_CONTENT);
         String type = contentType == null || contentType.isBlank()
                 ? "application/octet-stream"
                 : required(contentType, "contentType", 255);
@@ -111,7 +111,7 @@ public class FileResourceService implements io.github.loadup.modules.file.client
         FileResource file = repository
                 .find(tenant(tenantId), required(id, "id", 64))
                 .filter(item -> "ACTIVE".equals(item.state()))
-                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "file not found"));
+                .orElseThrow(() -> new CommonException(FileResultCodeEnum.FILE_NOT_FOUND));
         authorize(file, actorId, admin);
         return file;
     }
@@ -122,8 +122,7 @@ public class FileResourceService implements io.github.loadup.modules.file.client
 
     public PageDTO<FileResourceDTO> list(
             String tenantId, String actorId, boolean admin, String ownerId, int page, int size) {
-        if (page < 1 || size < 1 || size > 100)
-            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "invalid page or size");
+        if (page < 1 || size < 1 || size > 100) throw new CommonException(FileResultCodeEnum.INVALID_PAGE);
         String owner = admin && ownerId != null && !ownerId.isBlank()
                 ? required(ownerId, "ownerId", 64)
                 : required(actorId, "actorId", 64);
@@ -165,15 +164,14 @@ public class FileResourceService implements io.github.loadup.modules.file.client
         String tenant = tenant(tenantId);
         FileResource file = lockActive(tenant, id, actorId, admin);
         if (repository.countReferences(tenant, file.id()) > 0) {
-            throw new CommonException(CommonResultCodeEnum.INVALID_STATE, "file is referenced by a business object");
+            throw new CommonException(FileResultCodeEnum.FILE_IS_REFERENCED_BY_A_BUSINESS_OBJECT);
         }
         repository.markPending(tenant, file.id());
     }
 
     /** Idempotent cleanup entry point for operators or a scheduler. */
     public int cleanupPending(int limit) {
-        if (limit < 1 || limit > 1000)
-            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "limit must be between 1 and 1000");
+        if (limit < 1 || limit > 1000) throw new CommonException(FileResultCodeEnum.LIMIT_MUST_BE_BETWEEN_1_AND_1000);
         int cleaned = 0;
         RuntimeException failure = null;
         for (FileResource file : repository.pending(limit)) {
@@ -184,7 +182,8 @@ public class FileResourceService implements io.github.loadup.modules.file.client
                 });
                 cleaned++;
             } catch (RuntimeException ex) {
-                if (failure == null) failure = new IllegalStateException("some pending file deletions failed");
+                if (failure == null)
+                    failure = new CommonException(FileResultCodeEnum.SOME_PENDING_FILE_DELETIONS_FAILED);
                 failure.addSuppressed(ex);
             }
         }
@@ -196,8 +195,7 @@ public class FileResourceService implements io.github.loadup.modules.file.client
         FileResource file = repository
                 .find(tenant(tenantId), required(id, "id", 64))
                 .filter(item -> "PENDING_DELETE".equals(item.state()))
-                .orElseThrow(
-                        () -> new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "file is not pending deletion"));
+                .orElseThrow(() -> new CommonException(FileResultCodeEnum.FILE_IS_NOT_PENDING_DELETION));
         dfs.delete(file.storageId());
         repository.markDeleted(file.tenantId(), file.id());
     }
@@ -206,14 +204,13 @@ public class FileResourceService implements io.github.loadup.modules.file.client
         FileResource file = repository
                 .lock(tenant, required(id, "id", 64))
                 .filter(item -> "ACTIVE".equals(item.state()))
-                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "file not found"));
+                .orElseThrow(() -> new CommonException(FileResultCodeEnum.FILE_NOT_FOUND));
         authorize(file, actorId, admin);
         return file;
     }
 
     private static void authorize(FileResource file, String actorId, boolean admin) {
-        if (!admin && !file.ownerId().equals(actorId))
-            throw new CommonException(CommonResultCodeEnum.NOT_FOUND, "file not found");
+        if (!admin && !file.ownerId().equals(actorId)) throw new CommonException(FileResultCodeEnum.FILE_NOT_FOUND);
     }
 
     private static String tenant(String tenantId) {
@@ -222,15 +219,13 @@ public class FileResourceService implements io.github.loadup.modules.file.client
 
     private static String key(String value, String name) {
         String result = required(value, name, 128);
-        if (!result.matches("[A-Za-z0-9_.:-]+"))
-            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, name + " contains invalid characters");
+        if (!result.matches("[A-Za-z0-9_.:-]+")) throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
         return result;
     }
 
     private static String required(String value, String name, int max) {
         if (value == null || value.isBlank() || value.trim().length() > max) {
-            throw new CommonException(
-                    CommonResultCodeEnum.PARAM_ILLEGAL, name + " must contain 1 to " + max + " characters");
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
         }
         return value.trim();
     }

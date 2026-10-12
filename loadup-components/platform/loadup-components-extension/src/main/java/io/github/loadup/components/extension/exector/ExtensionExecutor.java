@@ -19,6 +19,8 @@
  */
 package io.github.loadup.components.extension.exector;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.extension.annotation.Extension;
 import io.github.loadup.components.extension.api.IExtensionPoint;
@@ -135,10 +137,7 @@ public class ExtensionExecutor {
         List<ExtensionCoordinate> candidates = extensionRegistry.getExtensionCoordinates(extensionPointClass);
 
         if (CollectionUtils.isEmpty(candidates)) {
-            throw new ExtensionNotFoundException("No extension found for interface: "
-                    + extensionPointClass.getName()
-                    + ",scenario: "
-                    + scenario.getUniqueIdentity());
+            throw new ExtensionNotFoundException();
         }
 
         Optional<ExtensionCoordinate> bestMatch = findMatch(candidates, scenario, true, true);
@@ -155,12 +154,7 @@ public class ExtensionExecutor {
             bestMatch = findDefaultMatch(candidates, scenario.bizCode());
         }
 
-        return (E) bestMatch
-                .orElseThrow(() -> new ExtensionNotFoundException("No suitable extension found for "
-                        + extensionPointClass.getSimpleName()
-                        + " with scenario: "
-                        + scenario.getUniqueIdentity()))
-                .extensionInstance();
+        return (E) bestMatch.orElseThrow(() -> new ExtensionNotFoundException()).extensionInstance();
     }
 
     @SuppressWarnings("unchecked")
@@ -225,9 +219,9 @@ public class ExtensionExecutor {
         return scenario;
     }
 
-    public static class ExtensionNotFoundException extends RuntimeException {
-        public ExtensionNotFoundException(String message) {
-            super(message);
+    public static class ExtensionNotFoundException extends CommonException {
+        public ExtensionNotFoundException() {
+            super(CommonResultCodeEnum.NOT_FOUND);
         }
     }
 }

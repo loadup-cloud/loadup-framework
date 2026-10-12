@@ -47,16 +47,8 @@ public record FailureResponse<T>(
         return new FailureResponse<>(Result.buildFailure(code), null, null);
     }
 
-    public static <T> FailureResponse<T> of(String errCode, String errMessage) {
-        return new FailureResponse<>(Result.buildFailure(errCode, errMessage), null, null);
-    }
-
-    public static <T> FailureResponse<T> of(String errCode, String errMessage, String traceId) {
-        return new FailureResponse<>(Result.buildFailure(errCode, errMessage), null, traceId);
-    }
-
-    public static <T> FailureResponse<T> of(ResultCode code, String errMessage, String traceId) {
-        return new FailureResponse<>(Result.buildFailure(code, errMessage), null, traceId);
+    public static <T> FailureResponse<T> of(ResultCode code, String traceId) {
+        return new FailureResponse<>(Result.buildFailure(code), null, traceId);
     }
 
     @Override

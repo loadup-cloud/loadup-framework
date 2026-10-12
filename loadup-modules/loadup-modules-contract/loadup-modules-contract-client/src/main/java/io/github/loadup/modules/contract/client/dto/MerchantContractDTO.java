@@ -32,8 +32,13 @@ public record MerchantContractDTO(
         @Schema(description = "Plan version id") String planVersionId,
         @Schema(description = "Current lifecycle status") String status,
         @Schema(description = "Generation") long generation,
-        @Schema(description = "Creation time in the application local time zone") LocalDateTime createdAt,
-        @Schema(description = "Last update time in the application local time zone") LocalDateTime updatedAt,
+
+        @Schema(description = "Creation time in the application local time zone")
+        LocalDateTime createdAt,
+
+        @Schema(description = "Last update time in the application local time zone")
+        LocalDateTime updatedAt,
+
         @Schema(description = "Revision") int revision,
         @Schema(description = "Effective from") Instant effectiveFrom,
         @Schema(description = "Effective to") Instant effectiveTo,

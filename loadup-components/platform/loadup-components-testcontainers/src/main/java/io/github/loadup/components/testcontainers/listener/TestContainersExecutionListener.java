@@ -19,6 +19,8 @@
  */
 package io.github.loadup.components.testcontainers.listener;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.testcontainers.annotation.ContainerType;
 import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
@@ -154,8 +156,7 @@ public class TestContainersExecutionListener extends AbstractTestExecutionListen
                         type,
                         e.getMessage(),
                         e);
-                throw new RuntimeException(
-                        "Failed to start " + type + " container for test class " + testClass.getName(), e);
+                throw new CommonException(CommonResultCodeEnum.SYS_ERROR, e);
             }
         }
 

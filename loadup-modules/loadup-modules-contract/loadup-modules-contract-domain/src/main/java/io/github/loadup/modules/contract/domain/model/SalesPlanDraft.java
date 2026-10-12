@@ -19,7 +19,9 @@
  */
 package io.github.loadup.modules.contract.domain.model;
 
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
+import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +42,8 @@ public record SalesPlanDraft(
         planCode = ContractChecks.code(planCode);
         version = ContractChecks.version(version);
         bundles = List.copyOf(bundles);
-        if (bundles.isEmpty() || bundles.size() > 128) throw new IllegalArgumentException("Invalid bundle count");
+        if (bundles.isEmpty() || bundles.size() > 128)
+            throw new CommonException(ContractResultCodeEnum.INVALID_BUNDLE_COUNT);
         values = copyNested(values);
         merchantPolicies = copyNested(merchantPolicies);
         new ConditionEvaluator().validate(eligibilityCondition);

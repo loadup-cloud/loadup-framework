@@ -23,7 +23,7 @@ import static io.github.loadup.modules.contract.infrastructure.dataobject.table.
 
 import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.modules.contract.client.dto.ContractError;
+import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import io.github.loadup.modules.contract.domain.gateway.MerchantContractGateway;
 import io.github.loadup.modules.contract.domain.model.*;
 import io.github.loadup.modules.contract.infrastructure.converter.ContractStorageConverter;
@@ -49,7 +49,7 @@ public class MerchantContractGatewayImpl implements MerchantContractGateway {
 
     private static String required(String value) {
         if (value == null || value.isBlank())
-            throw new IllegalArgumentException("Tenant and lookup identifiers are required");
+            throw new CommonException(ContractResultCodeEnum.MERCHANT_LOOKUP_ID_REQUIRED);
         return value;
     }
 
@@ -115,7 +115,7 @@ public class MerchantContractGatewayImpl implements MerchantContractGateway {
                         .eq(generation)
                         .and(MerchantContractDO::getStatus)
                         .ne(ContractStatus.TERMINATED.name()));
-        if (changed != 1) throw new CommonException(ContractError.CONFLICT, "Contract state changed or terminated");
+        if (changed != 1) throw new CommonException(ContractResultCodeEnum.CONTRACT_STATE_CHANGED_OR_TERMINATED);
     }
 
     public ContractPage<ContractRecord> page(String tenant, String merchant, int page, int size) {

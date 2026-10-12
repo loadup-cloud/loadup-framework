@@ -26,6 +26,7 @@ import io.github.loadup.modules.contract.app.converter.ContractConverter;
 import io.github.loadup.modules.contract.app.support.*;
 import io.github.loadup.modules.contract.client.command.*;
 import io.github.loadup.modules.contract.client.dto.*;
+import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import io.github.loadup.modules.contract.client.query.MerchantContractPageQuery;
 import io.github.loadup.modules.contract.domain.gateway.*;
 import io.github.loadup.modules.contract.domain.model.*;
@@ -74,7 +75,7 @@ public class MerchantContractService implements io.github.loadup.modules.contrac
         validate(command, actor);
         var profile = facts.load(tenant, command.merchantId());
         var entry = catalog.find(tenant, command.planVersionId())
-                .orElseThrow(() -> new CommonException(ContractError.NOT_FOUND));
+                .orElseThrow(() -> new CommonException(ContractResultCodeEnum.NOT_FOUND));
         requirePlan(entry);
         Instant now = clock.instant();
         String id = UUID.randomUUID().toString();
@@ -94,7 +95,7 @@ public class MerchantContractService implements io.github.loadup.modules.contrac
             var replay = gateway.findByRequest(tenant, command.requestKey());
             if (replay.isPresent()) return replay(replay.get(), digest);
             var entry = catalog.lock(tenant, command.planVersionId())
-                    .orElseThrow(() -> new CommonException(ContractError.NOT_FOUND));
+                    .orElseThrow(() -> new CommonException(ContractResultCodeEnum.NOT_FOUND));
             requirePlan(entry);
             Instant now = clock.instant();
             String id = UUID.randomUUID().toString();
@@ -114,7 +115,7 @@ public class MerchantContractService implements io.github.loadup.modules.contrac
             } catch (DuplicateKeyException e) {
                 var winner = gateway.findByRequest(tenant, command.requestKey());
                 if (winner.isPresent()) return replay(winner.get(), digest);
-                throw new CommonException(ContractError.CONFLICT, "Merchant scope already has a contract", e);
+                throw new CommonException(ContractResultCodeEnum.CONFLICT, e);
             }
             return converter.toContract(header, snapshot);
         }));
@@ -126,12 +127,12 @@ public class MerchantContractService implements io.github.loadup.modules.contrac
         ContractIdentity.code(command.scopeKey(), 128);
         ContractIdentity.code(command.requestKey(), 128);
         if (command.selectedItems() == null || command.values() == null)
-            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Selection and values required");
+            throw new CommonException(ContractResultCodeEnum.SELECTION_AND_VALUES_REQUIRED);
     }
 
     private void requirePlan(CatalogEntry entry) {
         if (entry.kind() != CatalogKind.SALES_PLAN || entry.status() != CatalogStatus.PUBLISHED)
-            throw new CommonException(ContractError.INVALID_STATE, "Plan must be published and on sale");
+            throw new CommonException(ContractResultCodeEnum.PLAN_MUST_BE_PUBLISHED_AND_ON_SALE);
     }
 
     private MerchantContractRevision sign(
@@ -194,13 +195,13 @@ public class MerchantContractService implements io.github.loadup.modules.contrac
 
     private MerchantContractDTO replay(ContractRecord existing, String digest) {
         if (!existing.requestDigest().equals(digest))
-            throw new CommonException(ContractError.CONFLICT, "Request key reused with different payload");
+            throw new CommonException(ContractResultCodeEnum.IDEMPOTENCY_CONFLICT);
         return toDTO(existing);
     }
 
     public MerchantContractRevision snapshot(ContractRecord header) {
         var stored = gateway.revision(header.tenantId(), header.id(), 1)
-                .orElseThrow(() -> new CommonException(ContractError.NOT_FOUND));
+                .orElseThrow(() -> new CommonException(ContractResultCodeEnum.NOT_FOUND));
         var snapshot = codec.read(stored.snapshot(), MerchantContractRevision.class);
         if (!snapshot.snapshotHash().equals(stored.snapshotHash())
                 || !snapshot.tenantId().equals(header.tenantId())
@@ -208,7 +209,7 @@ public class MerchantContractService implements io.github.loadup.modules.contrac
                 || !snapshot.scopeKey().equals(header.scopeKey())
                 || !snapshot.contractId().equals(header.id())
                 || snapshot.revision() != 1) {
-            throw new IllegalStateException("Stored contract snapshot integrity failure");
+            throw new CommonException(CommonResultCodeEnum.SYS_ERROR);
         }
         return snapshot;
     }
@@ -220,7 +221,7 @@ public class MerchantContractService implements io.github.loadup.modules.contrac
     @Transactional(readOnly = true)
     public MerchantContractDTO detail(String id) {
         return toDTO(gateway.find(ContractIdentity.tenant(), id)
-                .orElseThrow(() -> new CommonException(ContractError.NOT_FOUND)));
+                .orElseThrow(() -> new CommonException(ContractResultCodeEnum.NOT_FOUND)));
     }
 
     @Transactional(readOnly = true)
@@ -235,9 +236,12 @@ public class MerchantContractService implements io.github.loadup.modules.contrac
         ContractIdentity.actor(actor);
         String tenant = ContractIdentity.tenant();
         ContractStatus target = ContractStatus.valueOf(command.status());
-        var header = gateway.find(tenant, command.id()).orElseThrow(() -> new CommonException(ContractError.NOT_FOUND));
-        if (header.status() == ContractStatus.TERMINATED) throw new CommonException(ContractError.INVALID_STATE);
-        if (header.generation() != command.expectedGeneration()) throw new CommonException(ContractError.CONFLICT);
+        var header = gateway.find(tenant, command.id())
+                .orElseThrow(() -> new CommonException(ContractResultCodeEnum.NOT_FOUND));
+        if (header.status() == ContractStatus.TERMINATED)
+            throw new CommonException(ContractResultCodeEnum.INVALID_STATE);
+        if (header.generation() != command.expectedGeneration())
+            throw new CommonException(ContractResultCodeEnum.CONFLICT);
         if (header.status() != target) gateway.updateStatus(tenant, header.id(), header.generation(), target);
         return detail(command.id());
     }

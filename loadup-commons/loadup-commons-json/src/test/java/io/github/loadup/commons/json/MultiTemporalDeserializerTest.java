@@ -45,10 +45,10 @@ class MultiTemporalDeserializerTest {
         java.time.ZoneId zone = TimeZone.getDefault().toZoneId();
         LocalDateTime local = LocalDateTime.of(2026, 10, 12, 9, 30);
         Date expected = Date.from(local.atZone(zone).toInstant());
-        assertThat(localMapper.readValue(quote("2026-10-12 09:30:00"), Date.class)).isEqualTo(expected);
+        assertThat(localMapper.readValue(quote("2026-10-12 09:30:00"), Date.class))
+                .isEqualTo(expected);
         assertThat(localMapper.writeValueAsString(expected)).isEqualTo(quote("2026-10-12 09:30:00"));
     }
-
 
     @ParameterizedTest
     @ValueSource(strings = {"2024-02-29", "2024/02/29", "2024.02.29", "20240229", " 2024-02-29 "})

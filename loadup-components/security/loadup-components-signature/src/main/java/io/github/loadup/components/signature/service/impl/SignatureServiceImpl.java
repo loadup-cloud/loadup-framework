@@ -49,8 +49,7 @@ public class SignatureServiceImpl implements SignatureService {
         } catch (Exception e) {
             LogUtil.error(
                     SignatureServiceImpl.class, "Sign failed: algorithm={}, error={}", algorithm, e.getMessage(), e);
-            throw new SignatureException(
-                    SignatureException.SignatureErrorCode.SIGN_FAILED, "Sign failed: " + e.getMessage(), e);
+            throw new SignatureException(SignatureException.SignatureErrorCode.SIGN_FAILED, e);
         }
     }
 
@@ -66,8 +65,7 @@ public class SignatureServiceImpl implements SignatureService {
         } catch (Exception e) {
             LogUtil.error(
                     SignatureServiceImpl.class, "Sign failed: algorithm={}, error={}", algorithm, e.getMessage(), e);
-            throw new SignatureException(
-                    SignatureException.SignatureErrorCode.SIGN_FAILED, "Sign failed: " + e.getMessage(), e);
+            throw new SignatureException(SignatureException.SignatureErrorCode.SIGN_FAILED, e);
         }
     }
 
@@ -82,8 +80,7 @@ public class SignatureServiceImpl implements SignatureService {
         } catch (Exception e) {
             LogUtil.error(
                     SignatureServiceImpl.class, "Verify failed: algorithm={}, error={}", algorithm, e.getMessage(), e);
-            throw new SignatureException(
-                    SignatureException.SignatureErrorCode.VERIFY_FAILED, "Verify failed: " + e.getMessage(), e);
+            throw new SignatureException(SignatureException.SignatureErrorCode.VERIFY_FAILED, e);
         }
     }
 
@@ -99,8 +96,7 @@ public class SignatureServiceImpl implements SignatureService {
         } catch (Exception e) {
             LogUtil.error(
                     SignatureServiceImpl.class, "Verify failed: algorithm={}, error={}", algorithm, e.getMessage(), e);
-            throw new SignatureException(
-                    SignatureException.SignatureErrorCode.VERIFY_FAILED, "Verify failed: " + e.getMessage(), e);
+            throw new SignatureException(SignatureException.SignatureErrorCode.VERIFY_FAILED, e);
         }
     }
 

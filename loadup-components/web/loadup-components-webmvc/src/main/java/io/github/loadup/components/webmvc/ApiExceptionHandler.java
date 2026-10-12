@@ -45,6 +45,15 @@ public final class ApiExceptionHandler {
     public ResponseEntity<FailureResponse<Void>> business(CommonException failure, HttpServletRequest request)
             throws Exception {
         requireApi(request, failure);
+        if (failure.getCause() != null || failure.getResultCode() == CommonResultCodeEnum.SYS_ERROR) {
+            LogUtil.error(
+                    ApiExceptionHandler.class,
+                    "Coded API failure; code={}; causeType={}",
+                    failure.getResultCode().getCode(),
+                    failure.getCause() == null
+                            ? "none"
+                            : failure.getCause().getClass().getName());
+        }
         return ResponseEntity.ok(FailureResponse.of(failure.getResultCode()));
     }
 

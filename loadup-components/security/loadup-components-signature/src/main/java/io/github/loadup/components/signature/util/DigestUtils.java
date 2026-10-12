@@ -95,9 +95,7 @@ public final class DigestUtils {
      */
     public static String digest(String data, DigestAlgorithm algorithm) {
         if (algorithm.isHmac()) {
-            throw new SignatureException(
-                    SignatureException.SignatureErrorCode.INVALID_ALGORITHM,
-                    "HMAC algorithms must use the hmac() method");
+            throw new SignatureException(SignatureException.SignatureErrorCode.INVALID_ALGORITHM);
         }
         try {
             byte[] dataBytes = data.getBytes(StandardCharsets.UTF_8);
@@ -105,16 +103,13 @@ public final class DigestUtils {
             return bytesToHex(md.digest(dataBytes));
         } catch (Exception e) {
             LogUtil.error(DigestUtils.class, "Digest failed: algorithm={}", algorithm, e);
-            throw new SignatureException(
-                    SignatureException.SignatureErrorCode.DIGEST_FAILED, "Digest failed: " + e.getMessage(), e);
+            throw new SignatureException(SignatureException.SignatureErrorCode.DIGEST_FAILED, e);
         }
     }
 
     public static String hmac(String data, String key, DigestAlgorithm algorithm) {
         if (!algorithm.isHmac()) {
-            throw new SignatureException(
-                    SignatureException.SignatureErrorCode.INVALID_ALGORITHM,
-                    "Non-HMAC algorithms must use the digest() method");
+            throw new SignatureException(SignatureException.SignatureErrorCode.INVALID_ALGORITHM);
         }
         try {
             SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), algorithm.getJcaName());
@@ -123,8 +118,7 @@ public final class DigestUtils {
             return bytesToHex(mac.doFinal(data.getBytes(StandardCharsets.UTF_8)));
         } catch (Exception e) {
             LogUtil.error(DigestUtils.class, "HMAC failed: algorithm={}", algorithm, e);
-            throw new SignatureException(
-                    SignatureException.SignatureErrorCode.DIGEST_FAILED, "HMAC failed: " + e.getMessage(), e);
+            throw new SignatureException(SignatureException.SignatureErrorCode.DIGEST_FAILED, e);
         }
     }
 

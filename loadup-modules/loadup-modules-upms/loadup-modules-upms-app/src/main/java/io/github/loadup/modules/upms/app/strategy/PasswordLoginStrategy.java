@@ -19,11 +19,11 @@
  */
 package io.github.loadup.modules.upms.app.strategy;
 
-import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.modules.upms.app.autoconfigure.UpmsSecurityProperties;
 import io.github.loadup.modules.upms.client.dto.AuthenticatedUserDTO;
+import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import io.github.loadup.modules.upms.domain.model.User;
 import java.time.Clock;
@@ -55,26 +55,24 @@ public class PasswordLoginStrategy implements LoginStrategy {
 
         User user = userGateway
                 .findByUsername(credentials.getUsername())
-                .orElseThrow(
-                        () -> new CommonException(CommonResultCodeEnum.UNAUTHENTICATED, "Invalid login credentials"));
+                .orElseThrow(() -> new CommonException(UpmsResultCodeEnum.INVALID_LOGIN_CREDENTIALS));
 
         // Resolve an expired temporary lock before evaluating account activity.
         if (isAccountLocked(user)) {
-            throw new CommonException(CommonResultCodeEnum.INVALID_STATE, "Account is locked");
+            throw new CommonException(UpmsResultCodeEnum.ACCOUNT_IS_LOCKED);
         }
         if (!user.isActive()) {
-            throw new CommonException(CommonResultCodeEnum.INVALID_STATE, "Account is locked or disabled");
+            throw new CommonException(UpmsResultCodeEnum.ACCOUNT_IS_LOCKED_OR_DISABLED);
         }
 
         if (!passwordEncoder.matches(credentials.getPassword(), user.getPassword())) {
 
             handleLoginFailure(user);
-            throw new CommonException(CommonResultCodeEnum.UNAUTHENTICATED, "Invalid login credentials");
+            throw new CommonException(UpmsResultCodeEnum.INVALID_LOGIN_CREDENTIALS);
         }
 
         user.updateLastLogin(
-                credentials.getIpAddress(),
-                java.time.LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
+                credentials.getIpAddress(), java.time.LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
         user.resetLoginFailCount();
         userGateway.update(user);
 
@@ -94,8 +92,7 @@ public class PasswordLoginStrategy implements LoginStrategy {
             if (Short.valueOf((short) 2).equals(user.getStatus()) && user.getLockedTime() != null) {
                 LocalDateTime unlockTime = user.getLockedTime()
                         .plusMinutes(securityProperties.getLogin().getLockDuration());
-                if (LocalDateTime.ofInstant(clock.instant(), clock.getZone())
-                        .isBefore(unlockTime)) {
+                if (LocalDateTime.ofInstant(clock.instant(), clock.getZone()).isBefore(unlockTime)) {
                     return true;
                 } else {
 

@@ -19,13 +19,13 @@
  */
 package io.github.loadup.modules.contract.app.service;
 
-import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.contract.app.converter.ContractConverter;
 import io.github.loadup.modules.contract.app.support.*;
 import io.github.loadup.modules.contract.client.command.*;
 import io.github.loadup.modules.contract.client.dto.*;
+import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import io.github.loadup.modules.contract.client.query.CatalogPageQuery;
 import io.github.loadup.modules.contract.domain.gateway.CatalogGateway;
 import io.github.loadup.modules.contract.domain.model.*;
@@ -62,11 +62,12 @@ public class CatalogService implements io.github.loadup.modules.contract.client.
         String code = ContractIdentity.code(command.code(), 128);
         CatalogKind kind = CatalogKind.valueOf(command.kind());
         if (command.version() < 1 || command.definition() == null)
-            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Invalid catalog definition");
+            throw new CommonException(ContractResultCodeEnum.INVALID_CATALOG_DEFINITION);
         LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), clock.getZone());
         CatalogEntry previous = command.id() == null
                 ? null
-                : gateway.lock(tenant, command.id()).orElseThrow(() -> new CommonException(ContractError.NOT_FOUND));
+                : gateway.lock(tenant, command.id())
+                        .orElseThrow(() -> new CommonException(ContractResultCodeEnum.NOT_FOUND));
         if (previous != null
                 && (previous.status() != CatalogStatus.DRAFT
                         || command.expectedRowVersion() == null
@@ -74,9 +75,7 @@ public class CatalogService implements io.github.loadup.modules.contract.client.
                         || previous.kind() != kind
                         || !previous.code().equals(code)
                         || previous.version() != command.version())) {
-            throw new CommonException(
-                    ContractError.CONFLICT,
-                    "Only the expected draft can be edited; copy to a new version to change identity");
+            throw new CommonException(ContractResultCodeEnum.DRAFT_NOT_EDITABLE);
         }
         CatalogEntry entry = new CatalogEntry(
                 previous == null ? UUID.randomUUID().toString() : previous.id(),
@@ -95,7 +94,7 @@ public class CatalogService implements io.github.loadup.modules.contract.client.
             try {
                 gateway.insert(entry);
             } catch (org.springframework.dao.DuplicateKeyException e) {
-                throw new CommonException(ContractError.CONFLICT, "Catalog code and version already exist", e);
+                throw new CommonException(ContractResultCodeEnum.CONFLICT, e);
             }
         } else gateway.update(entry, previous.rowVersion());
         return converter.toCatalog(entry);
@@ -115,10 +114,11 @@ public class CatalogService implements io.github.loadup.modules.contract.client.
             CatalogActionCommand command, String actor, CatalogStatus from, CatalogStatus to) {
         String tenant = ContractIdentity.tenant();
         ContractIdentity.actor(actor);
-        CatalogEntry entry =
-                gateway.lock(tenant, command.id()).orElseThrow(() -> new CommonException(ContractError.NOT_FOUND));
-        if (entry.rowVersion() != command.expectedRowVersion()) throw new CommonException(ContractError.CONFLICT);
-        if (entry.status() != from) throw new CommonException(ContractError.INVALID_STATE);
+        CatalogEntry entry = gateway.lock(tenant, command.id())
+                .orElseThrow(() -> new CommonException(ContractResultCodeEnum.NOT_FOUND));
+        if (entry.rowVersion() != command.expectedRowVersion())
+            throw new CommonException(ContractResultCodeEnum.CONFLICT);
+        if (entry.status() != from) throw new CommonException(ContractResultCodeEnum.INVALID_STATE);
         if (to == CatalogStatus.PUBLISHED) assembler.validate(entry, true);
         var updated = new CatalogEntry(
                 entry.id(),
@@ -139,7 +139,7 @@ public class CatalogService implements io.github.loadup.modules.contract.client.
     @Transactional(readOnly = true)
     public CatalogVersionDTO detail(String id) {
         return converter.toCatalog(gateway.find(ContractIdentity.tenant(), id)
-                .orElseThrow(() -> new CommonException(ContractError.NOT_FOUND)));
+                .orElseThrow(() -> new CommonException(ContractResultCodeEnum.NOT_FOUND)));
     }
 
     @Transactional(readOnly = true)

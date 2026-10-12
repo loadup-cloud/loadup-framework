@@ -29,6 +29,7 @@ import io.github.loadup.modules.file.client.facade.FileResourceFacade;
 import io.github.loadup.modules.transfer.app.config.TransferTaskProperties;
 import io.github.loadup.modules.transfer.app.converter.TransferDTOConverter;
 import io.github.loadup.modules.transfer.client.dto.TransferTaskDTO;
+import io.github.loadup.modules.transfer.client.error.TransferResultCodeEnum;
 import io.github.loadup.modules.transfer.client.spi.TransferContext;
 import io.github.loadup.modules.transfer.client.spi.TransferHandler;
 import io.github.loadup.modules.transfer.domain.gateway.TransferGateway;
@@ -104,10 +105,10 @@ public class TransferTaskService
         if (kind == io.github.loadup.modules.transfer.client.enums.TransferKind.IMPORT) {
             FileResourceDTO source = files.get(tenant, required(sourceFileId, "sourceFileId", 64), owner, false);
             if (source.size() > properties.getMaxInputBytes()) {
-                throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "source file exceeds import limit");
+                throw new CommonException(TransferResultCodeEnum.SOURCE_FILE_EXCEEDS_IMPORT_LIMIT);
             }
         } else if (sourceFileId != null) {
-            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "export task must not specify sourceFileId");
+            throw new CommonException(TransferResultCodeEnum.EXPORT_SOURCE_FORBIDDEN);
         }
         String id = UUID.randomUUID().toString();
         TransferTask task = new TransferTask(
@@ -145,16 +146,14 @@ public class TransferTaskService
         TransferTask task = repository
                 .find(required(id, "id", 64))
                 .filter(item -> item.tenantId().equals(tenant(tenantId)))
-                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "task not found"));
-        if (!admin && !task.ownerId().equals(actorId))
-            throw new CommonException(CommonResultCodeEnum.NOT_FOUND, "task not found");
+                .orElseThrow(() -> new CommonException(TransferResultCodeEnum.TASK_NOT_FOUND));
+        if (!admin && !task.ownerId().equals(actorId)) throw new CommonException(TransferResultCodeEnum.TASK_NOT_FOUND);
         return task;
     }
 
     public PageDTO<TransferTaskDTO> list(
             String tenantId, String actorId, boolean admin, String ownerId, int page, int size) {
-        if (page < 1 || size < 1 || size > 100)
-            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "invalid page or size");
+        if (page < 1 || size < 1 || size > 100) throw new CommonException(TransferResultCodeEnum.INVALID_PAGE);
         String owner = admin && ownerId != null && !ownerId.isBlank()
                 ? required(ownerId, "ownerId", 64)
                 : required(actorId, "actorId", 64);
@@ -165,21 +164,20 @@ public class TransferTaskService
     public TransferTaskDTO retry(String tenantId, String id, String actorId, boolean admin) {
         TransferTask task = requireTask(tenantId, id, actorId, admin);
         if (task.status() != TransferStatus.FAILED && task.status() != TransferStatus.QUEUED) {
-            throw new CommonException(
-                    CommonResultCodeEnum.INVALID_STATE, "only queued or failed tasks can be dispatched");
+            throw new CommonException(TransferResultCodeEnum.TASK_NOT_DISPATCHABLE);
         }
         if (task.status() == TransferStatus.FAILED
                 && retryTasks
                         .getStatus(BIZ_TYPE, task.id())
                         .filter(status -> status == RetryTaskStatus.PENDING || status == RetryTaskStatus.PROCESSING)
                         .isPresent()) {
-            throw new CommonException(CommonResultCodeEnum.INVALID_STATE, "task worker has not finished");
+            throw new CommonException(TransferResultCodeEnum.TASK_WORKER_HAS_NOT_FINISHED);
         }
         if (task.sourceFileId() != null) {
             files.get(task.tenantId(), task.sourceFileId(), task.ownerId(), false);
         }
         if (task.status() == TransferStatus.FAILED && !repository.requeue(task.id())) {
-            throw new CommonException(CommonResultCodeEnum.INVALID_STATE, "task status changed");
+            throw new CommonException(TransferResultCodeEnum.TASK_STATUS_CHANGED);
         }
         try {
             protectSource(task);
@@ -203,9 +201,8 @@ public class TransferTaskService
     }
 
     private void execute(String id) throws Exception {
-        TransferTask task = repository
-                .find(id)
-                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "task not found"));
+        TransferTask task =
+                repository.find(id).orElseThrow(() -> new CommonException(TransferResultCodeEnum.TASK_NOT_FOUND));
         io.github.loadup.commons.util.TenantUtil.callWithTenant(task.tenantId(), () -> {
             executeForTenant(task);
             return null;
@@ -274,8 +271,7 @@ public class TransferTaskService
     }
 
     private void report(String id, long processed, long total) {
-        if (processed < 0 || total < processed)
-            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "invalid task progress");
+        if (processed < 0 || total < processed) throw new CommonException(TransferResultCodeEnum.INVALID_TASK_PROGRESS);
         repository.progress(id, processed, total);
     }
 
@@ -320,21 +316,21 @@ public class TransferTaskService
     }
 
     private TransferHandler handler(TransferKind kind, String key) {
-        if (kind == null) throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "kind is required");
+        if (kind == null) throw new CommonException(TransferResultCodeEnum.KIND_IS_REQUIRED);
         TransferHandler handler = handlers.get(kind.name() + ":" + required(key, "handlerKey", 64));
-        if (handler == null) throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "unknown transfer handler");
+        if (handler == null) throw new CommonException(TransferResultCodeEnum.UNKNOWN_TRANSFER_HANDLER);
         return handler;
     }
 
     private static Map<String, String> options(Map<String, String> options) {
         if (options == null) return Map.of();
-        if (options.size() > 30) throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "too many task options");
+        if (options.size() > 30) throw new CommonException(TransferResultCodeEnum.TOO_MANY_TASK_OPTIONS);
         options.forEach((key, value) -> {
             required(key, "option name", 64);
             if (!key.matches("[A-Za-z][A-Za-z0-9_.-]*"))
-                throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "invalid option name");
+                throw new CommonException(TransferResultCodeEnum.INVALID_OPTION_NAME);
             if (value == null || value.length() > 1000)
-                throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "invalid option value");
+                throw new CommonException(TransferResultCodeEnum.INVALID_OPTION_VALUE);
         });
         return Map.copyOf(options);
     }
@@ -345,8 +341,7 @@ public class TransferTaskService
 
     private static String required(String value, String name, int max) {
         if (value == null || value.isBlank() || value.trim().length() > max) {
-            throw new CommonException(
-                    CommonResultCodeEnum.PARAM_ILLEGAL, name + " must contain 1 to " + max + " characters");
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
         }
         return value.trim();
     }

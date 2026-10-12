@@ -19,7 +19,9 @@
  */
 package io.github.loadup.modules.contract.domain.model;
 
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
+import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -30,10 +32,11 @@ public record BundleVersion(String bundleCode, int version, List<Item> items) {
         bundleCode = ContractChecks.code(bundleCode);
         version = ContractChecks.version(version);
         items = List.copyOf(items);
-        if (items.isEmpty() || items.size() > 128) throw new IllegalArgumentException("Invalid bundle size");
+        if (items.isEmpty() || items.size() > 128)
+            throw new CommonException(ContractResultCodeEnum.INVALID_BUNDLE_SIZE);
         var keys = new HashSet<String>();
         for (Item item : items)
-            if (!keys.add(item.itemKey())) throw new IllegalArgumentException("Duplicate bundle item");
+            if (!keys.add(item.itemKey())) throw new CommonException(ContractResultCodeEnum.DUPLICATE_BUNDLE_ITEM);
     }
 
     public record Item(
@@ -47,7 +50,7 @@ public record BundleVersion(String bundleCode, int version, List<Item> items) {
             itemKey = ContractChecks.code(itemKey);
             Objects.requireNonNull(product, "product");
             if (required && !defaultSelected)
-                throw new IllegalArgumentException("Required item must be selected by default");
+                throw new CommonException(ContractResultCodeEnum.REQUIRED_ITEM_NOT_SELECTED);
             values = ContractChecks.map(values);
             new ConditionEvaluator().validate(usageCondition);
         }

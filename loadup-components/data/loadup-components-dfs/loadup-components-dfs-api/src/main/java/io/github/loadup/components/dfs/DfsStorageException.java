@@ -19,15 +19,36 @@
  */
 package io.github.loadup.components.dfs;
 
-/** Raised when the selected storage backend cannot complete an operation. */
-public class DfsStorageException extends RuntimeException {
+import io.github.loadup.commons.enums.ResultStatusEnum;
+import io.github.loadup.commons.error.CommonException;
+import io.github.loadup.commons.result.ResultCode;
+
+/** Coded storage failure with a safe message and optional diagnostic cause. */
+public class DfsStorageException extends CommonException {
     private static final long serialVersionUID = 1L;
 
-    public DfsStorageException(String message) {
-        super(message);
+    public enum Code implements ResultCode {
+        OPERATION_FAILED,
+        OBJECT_NOT_FOUND;
+
+        public String getCode() {
+            return "DFS_" + name();
+        }
+
+        public String getStatus() {
+            return ResultStatusEnum.FAIL.getCode();
+        }
+
+        public String getMessage() {
+            return this == OBJECT_NOT_FOUND ? "Storage object not found" : "Storage operation failed";
+        }
     }
 
-    public DfsStorageException(String message, Throwable cause) {
-        super(message, cause);
+    public DfsStorageException(Code code) {
+        super(code);
+    }
+
+    public DfsStorageException(Code code, Throwable cause) {
+        super(code, cause);
     }
 }

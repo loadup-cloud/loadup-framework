@@ -25,6 +25,7 @@ import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.commons.masking.MaskType;
 import io.github.loadup.commons.masking.Masking;
 import io.github.loadup.modules.upms.client.command.UserPasswordResetCommand;
+import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
 import io.github.loadup.modules.upms.client.validation.PasswordPolicy;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import io.github.loadup.modules.upms.domain.model.User;
@@ -56,11 +57,11 @@ public class PasswordResetService implements io.github.loadup.modules.upms.clien
         // Validate email exists
         userGateway
                 .findByEmail(email)
-                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Email is not registered"));
+                .orElseThrow(() -> new CommonException(UpmsResultCodeEnum.EMAIL_IS_NOT_REGISTERED));
 
         // Check rate limiting
         if (!verificationCodeService.canSendCode(email, "EMAIL")) {
-            throw new CommonException(CommonResultCodeEnum.RATE_LIMITED, "Verification requests are rate limited");
+            throw new CommonException(UpmsResultCodeEnum.VERIFICATION_REQUESTS_ARE_RATE_LIMITED);
         }
 
         // Generate code
@@ -80,12 +81,11 @@ public class PasswordResetService implements io.github.loadup.modules.upms.clien
         // Validate mobile exists
         userGateway
                 .findByMobile(mobile)
-                .orElseThrow(
-                        () -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "Phone number is not registered"));
+                .orElseThrow(() -> new CommonException(UpmsResultCodeEnum.PHONE_NUMBER_IS_NOT_REGISTERED));
 
         // Check rate limiting
         if (!verificationCodeService.canSendCode(mobile, "SMS")) {
-            throw new CommonException(CommonResultCodeEnum.RATE_LIMITED, "Verification requests are rate limited");
+            throw new CommonException(UpmsResultCodeEnum.VERIFICATION_REQUESTS_ARE_RATE_LIMITED);
         }
 
         // Generate code
@@ -107,13 +107,13 @@ public class PasswordResetService implements io.github.loadup.modules.upms.clien
         PasswordPolicy.requireValid(command.getNewPassword());
         // Check new password confirmation
         if (!command.getNewPassword().equals(command.getConfirmPassword())) {
-            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Password confirmation does not match");
+            throw new CommonException(UpmsResultCodeEnum.PASSWORD_CONFIRMATION_DOES_NOT_MATCH);
         }
 
         // Find user
         User user = userGateway
                 .findByUsername(command.getUsername())
-                .orElseThrow(() -> new CommonException(CommonResultCodeEnum.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new CommonException(UpmsResultCodeEnum.USER_NOT_FOUND));
 
         // Determine verification target (email or phone)
         String target;
@@ -121,21 +121,21 @@ public class PasswordResetService implements io.github.loadup.modules.upms.clien
 
         if ("EMAIL".equalsIgnoreCase(type)) {
             if (user.getEmail() == null) {
-                throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Email is not bound to the user");
+                throw new CommonException(UpmsResultCodeEnum.EMAIL_IS_NOT_BOUND_TO_THE_USER);
             }
             target = user.getEmail();
         } else if ("SMS".equalsIgnoreCase(type)) {
             if (user.getMobile() == null) {
-                throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Phone number is not bound to the user");
+                throw new CommonException(UpmsResultCodeEnum.PHONE_NUMBER_IS_NOT_BOUND_TO_THE_USER);
             }
             target = user.getMobile();
         } else {
-            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL, "Unsupported verification method");
+            throw new CommonException(UpmsResultCodeEnum.UNSUPPORTED_VERIFICATION_METHOD);
         }
 
         // Validate verification code
         if (!verificationCodeService.validateCode(target, type, command.getVerificationCode())) {
-            throw new CommonException(CommonResultCodeEnum.UNAUTHENTICATED, "Verification code is invalid or expired");
+            throw new CommonException(UpmsResultCodeEnum.VERIFICATION_CODE_IS_INVALID_OR_EXPIRED);
         }
 
         // Reset password

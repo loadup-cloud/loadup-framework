@@ -379,3 +379,13 @@ deleted    TINYINT      NOT NULL DEFAULT 0
 - Commons dependency-cycle gates group classes by Maven artifact ownership, not arbitrary Java package names. Framework WebMVC error adapters are valid HTTP adapters. Container-test naming is also checked from source so optional test modules absent from the launcher classpath are still covered.
 
 - 默认时间契约：JVM、业务 Clock、数据库审计字段及 JSON 无偏移日期使用系统本地时区。Clock 默认 `systemDefaultZone()`，转换使用 `clock.getZone()`；数据库会话时区与应用本地时区保持一致。JWT、请求签名的 epoch 时间戳及显式偏移的协议时间保持绝对时间语义。
+
+## ResultCode 与错误码规范
+
+- 基础契约由 loadup-commons-error 提供，生产代码仅依赖 JDK；需要抛出规范错误的模块直接声明该依赖。ResultCode/CommonException 包名保持 commons.result/commons.error。
+- 业务错误统一在 client.error.XxxResultCodeEnum 声明，枚举实现 ResultCode；码为 `<MODULE>_<REASON>`，大写字母/数字/下划线，最长 64。固定英文文案最长 256，字段名或异常消息不作为动态错误码。已发布码保持稳定，文案调整不重命名码。
+- 使用 CommonException(resultCode) 或 CommonException(resultCode, cause)；业务生产代码不构造裸 RuntimeException/IllegalArgumentException/IllegalStateException/UnsupportedOperationException。CommonException 作为唯一 unchecked 基础类保留事务回滚语义。技术组件可保留其识别类型，分类枚举必须实现 ResultCode。
+- Result 是不可变报文快照，不实现 ResultCode。FailureResponse/Result 的失败工厂仅接收枚举，文案不由 String/exception.getMessage 覆盖。SDK/JDK 前置条件和启动校验、第三方协议异常保留标准负责层语义；外部 JSON API 映射为规范码。
+- domain 可引用本模块 client.error 的纯错误枚举；client 不依赖 domain。其他表示转换仍遵循 MapStruct 分层。
+- 只将固定枚举码及文案放入失败响应。cause 保留用于诊断；日志遵循敏感信息策略，异常链不进入响应。CommonException 的 JSON toString 是底层无 JSON 依赖的限定例外，仅输出 code/message。
+- 新增错误枚举后运行 ErrorCodeContractTest、架构/源码门禁及相关 MVC 回归。真实数据库和外部系统验收单独记录。

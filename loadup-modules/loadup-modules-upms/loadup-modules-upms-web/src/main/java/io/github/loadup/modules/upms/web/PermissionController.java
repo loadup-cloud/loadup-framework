@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.upms.web;
 
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.request.query.IdQuery;
 import io.github.loadup.commons.result.SuccessResponse;
 import io.github.loadup.components.authorization.context.UserContext;
@@ -26,6 +27,7 @@ import io.github.loadup.modules.upms.client.command.PermissionCreateCommand;
 import io.github.loadup.modules.upms.client.command.PermissionDeleteCommand;
 import io.github.loadup.modules.upms.client.command.PermissionUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.PermissionDTO;
+import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
 import io.github.loadup.modules.upms.client.facade.PermissionFacade;
 import io.github.loadup.modules.upms.client.query.PermissionMenuQuery;
 import io.github.loadup.modules.upms.client.query.PermissionTreeQuery;
@@ -90,7 +92,7 @@ public class PermissionController {
     @PreAuthorize("isAuthenticated()")
     public SuccessResponse<List<PermissionDTO>> userMenu(@Valid @RequestBody PermissionMenuQuery request) {
         String userId = UserContext.getUserId();
-        if (userId == null) throw new IllegalStateException("Authenticated user is required");
+        if (userId == null) throw new CommonException(UpmsResultCodeEnum.AUTHENTICATED_USER_IS_REQUIRED_74D75F);
         return SuccessResponse.of(service.getUserMenuTree(userId));
     }
 }

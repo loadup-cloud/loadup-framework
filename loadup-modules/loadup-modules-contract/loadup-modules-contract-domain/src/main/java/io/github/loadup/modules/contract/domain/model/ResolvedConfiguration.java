@@ -19,14 +19,17 @@
  */
 package io.github.loadup.modules.contract.domain.model;
 
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
+import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import java.util.Map;
 
 public record ResolvedConfiguration(Map<String, TypedValue> values, Map<String, ValueOrigin> origins) {
     public ResolvedConfiguration {
         values = ContractChecks.map(values);
         origins = ContractChecks.map(origins);
-        if (!values.keySet().equals(origins.keySet())) throw new IllegalArgumentException("Missing value provenance");
+        if (!values.keySet().equals(origins.keySet()))
+            throw new CommonException(ContractResultCodeEnum.MISSING_VALUE_PROVENANCE);
     }
 
     @Override

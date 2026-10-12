@@ -19,7 +19,9 @@
  */
 package io.github.loadup.modules.merchant.client.query;
 
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
+import io.github.loadup.modules.merchant.client.error.MerchantResultCodeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import jakarta.validation.constraints.Max;
@@ -49,9 +51,7 @@ public record MerchantPageQuery(
         page = page == null ? 1 : page;
         size = size == null ? 20 : size;
         if (page < 1 || size < 1 || size > 100) {
-            throw new io.github.loadup.commons.error.CommonException(
-                    io.github.loadup.commons.enums.CommonResultCodeEnum.PARAM_ILLEGAL,
-                    "Page must be positive and size must be between 1 and 100");
+            throw new CommonException(MerchantResultCodeEnum.INVALID_PAGE);
         }
     }
 

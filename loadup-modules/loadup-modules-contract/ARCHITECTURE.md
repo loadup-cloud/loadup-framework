@@ -209,3 +209,7 @@ client.command 表达业务写动作，client.query 表达只读条件；Control
 ## 公开接口与时间
 
 Web Controller 依赖 client.facade 中的 CatalogFacade、MerchantContractFacade、ContractResolveFacade。服务编排与 MapStruct 转换由 app 负责；数据库 Gateway 使用生成的 Mapper 与 Tables。业务 Clock 以 `contractClock` 具名注入，避免多个模块同时装配产生歧义。
+
+## 错误码契约
+
+公开错误枚举位于 `io.github.loadup.modules.contract.client.error.ContractResultCodeEnum`，错误码以 `CONTRACT_` 开头。服务/领域/仓储使用 `CommonException(enum)`；系统原因可作为 cause 保留，响应文案仅来自枚举。WebMVC 统一返回 HTTP 200 的 result/data。枚举码按稳定公开契约维护，不用字符串消息覆盖。

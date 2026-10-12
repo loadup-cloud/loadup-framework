@@ -19,6 +19,8 @@
  */
 package io.github.loadup.modules.transfer.app.config;
 
+import io.github.loadup.commons.error.CommonException;
+import io.github.loadup.modules.transfer.client.error.TransferResultCodeEnum;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "loadup.modules.transfer")
@@ -31,7 +33,7 @@ public class TransferTaskProperties {
     }
 
     public void setMaxInputBytes(long maxInputBytes) {
-        if (maxInputBytes < 1) throw new IllegalArgumentException("maxInputBytes must be positive");
+        if (maxInputBytes < 1) throw new CommonException(TransferResultCodeEnum.MAXINPUTBYTES_MUST_BE_POSITIVE);
         this.maxInputBytes = maxInputBytes;
     }
 
@@ -40,7 +42,7 @@ public class TransferTaskProperties {
     }
 
     public void setMaxOutputBytes(long maxOutputBytes) {
-        if (maxOutputBytes < 1) throw new IllegalArgumentException("maxOutputBytes must be positive");
+        if (maxOutputBytes < 1) throw new CommonException(TransferResultCodeEnum.MAXOUTPUTBYTES_MUST_BE_POSITIVE);
         this.maxOutputBytes = maxOutputBytes;
     }
 }

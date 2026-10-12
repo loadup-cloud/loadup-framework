@@ -24,6 +24,8 @@ import static io.github.loadup.modules.transfer.infrastructure.dataobject.table.
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.tenant.TenantManager;
 import com.mybatisflex.core.util.UpdateEntity;
+import io.github.loadup.commons.error.CommonException;
+import io.github.loadup.modules.transfer.client.error.TransferResultCodeEnum;
 import io.github.loadup.modules.transfer.domain.gateway.TransferGateway;
 import io.github.loadup.modules.transfer.domain.model.*;
 import io.github.loadup.modules.transfer.infrastructure.converter.TransferStorageConverter;
@@ -133,7 +135,7 @@ public class TransferGatewayImpl implements TransferGateway {
         patch.setFinishedAt(LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
         patch.setErrorMessage(null);
         if (tasks.updateByQuery(patch, task(id).and(TRANSFER_TASK_DO.STATUS.eq(TransferStatus.RUNNING.name()))) != 1)
-            throw new IllegalStateException("transfer task is no longer running");
+            throw new CommonException(TransferResultCodeEnum.TRANSFER_TASK_IS_NO_LONGER_RUNNING);
     }
 
     @Override

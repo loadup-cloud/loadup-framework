@@ -21,7 +21,7 @@ package io.github.loadup.modules.contract.app.support;
 
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.contract.app.converter.ContractConverter;
-import io.github.loadup.modules.contract.client.dto.ContractError;
+import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import io.github.loadup.modules.contract.client.spi.MerchantFactsProvider;
 import io.github.loadup.modules.contract.domain.model.TypedValue;
 import java.util.HashMap;
@@ -41,16 +41,15 @@ public class MerchantFacts {
 
     public Map<String, TypedValue> load(String tenant, String merchant) {
         MerchantFactsProvider provider = providers.getIfAvailable();
-        if (provider == null)
-            throw new CommonException(ContractError.MERCHANT_UNVERIFIED, "Configure a trusted MerchantFactsProvider");
+        if (provider == null) throw new CommonException(ContractResultCodeEnum.MERCHANT_PROVIDER_UNAVAILABLE);
         var profile = provider.load(tenant, merchant);
         if (profile == null || !merchant.equals(profile.merchantId()) || !profile.active() || profile.facts() == null)
-            throw new CommonException(ContractError.MERCHANT_UNVERIFIED);
-        if (profile.facts().size() > 256) throw new IllegalArgumentException("Too many merchant facts");
+            throw new CommonException(ContractResultCodeEnum.MERCHANT_UNVERIFIED);
+        if (profile.facts().size() > 256) throw new CommonException(ContractResultCodeEnum.TOO_MANY_MERCHANT_FACTS);
         Map<String, TypedValue> values = new HashMap<>();
         profile.facts().forEach((key, value) -> {
             if (key == null || value == null || !key.startsWith("merchant."))
-                throw new IllegalArgumentException("Untrusted fact namespace");
+                throw new CommonException(ContractResultCodeEnum.UNTRUSTED_FACT_NAMESPACE);
             values.put(key, converter.toValue(value));
         });
         return Map.copyOf(values);
