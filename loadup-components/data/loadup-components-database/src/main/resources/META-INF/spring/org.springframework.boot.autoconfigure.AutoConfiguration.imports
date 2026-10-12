@@ -2,3 +2,4 @@ io.github.loadup.components.database.autoconfigure.MultiTenantAutoConfiguration
 io.github.loadup.components.database.autoconfigure.MyBatisFlexAutoConfiguration
 io.github.loadup.components.database.flyway.LoadUpFlywayAutoConfiguration
 io.github.loadup.components.database.autoconfigure.SequenceAutoConfiguration
+io.github.loadup.components.database.autoconfigure.IdGeneratorAutoConfiguration

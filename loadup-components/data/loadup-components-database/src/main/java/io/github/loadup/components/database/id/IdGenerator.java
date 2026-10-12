@@ -21,7 +21,8 @@ package io.github.loadup.components.database.id;
 
 /** Generates string identifiers for persistent entities. */
 @FunctionalInterface
-public interface IdGenerator {
+public interface IdGenerator extends com.mybatisflex.core.keygen.IKeyGenerator {
+    String KEY = "loadupId";
 
     /**
      * Generates a new identifier.
@@ -29,4 +30,9 @@ public interface IdGenerator {
      * @return a non-blank identifier
      */
     String generate();
+
+    @Override
+    default Object generate(Object entity, String keyColumn) {
+        return generate();
+    }
 }

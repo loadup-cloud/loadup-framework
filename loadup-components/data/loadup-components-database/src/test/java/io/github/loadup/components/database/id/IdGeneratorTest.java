@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 class IdGeneratorTest {
     @Test
     void generatesUuidIdentifiers() {
-        var generator = new DatabaseIdGenerator();
+        var generator = new UuidV4IdGenerator(true);
         var first = generator.generate();
         assertThat(java.util.UUID.fromString(first).version()).isEqualTo(4);
         assertThat(generator.generate()).isNotEqualTo(first);

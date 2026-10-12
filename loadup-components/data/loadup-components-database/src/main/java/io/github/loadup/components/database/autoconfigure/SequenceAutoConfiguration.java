@@ -19,11 +19,8 @@
  */
 package io.github.loadup.components.database.autoconfigure;
 
-import io.github.loadup.components.database.id.BusinessIdFormatter;
-import io.github.loadup.components.database.id.BusinessIdGenerator;
 import io.github.loadup.components.database.sequence.DatabaseSequenceRangeAllocator;
 import io.github.loadup.components.database.sequence.SegmentSequence;
-import io.github.loadup.components.database.sequence.Sequence;
 import io.github.loadup.components.database.sequence.SequenceProperties;
 import io.github.loadup.components.database.sequence.SequenceRangeAllocator;
 import io.github.loadup.components.database.sequence.mapper.SequenceAllocationDOMapper;
@@ -37,7 +34,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @AutoConfiguration(after = MyBatisFlexAutoConfiguration.class)
-@ConditionalOnProperty(prefix = "loadup.database.sequence", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(
+        prefix = "loadup.database.sequence",
+        name = "enabled",
+        havingValue = "true",
+        matchIfMissing = true)
 @EnableConfigurationProperties(SequenceProperties.class)
 @MapperScan("io.github.loadup.components.database.sequence.mapper")
 public class SequenceAutoConfiguration {
@@ -54,16 +55,5 @@ public class SequenceAutoConfiguration {
             @Qualifier("databaseClock") Clock clock,
             org.springframework.beans.factory.ObjectProvider<io.micrometer.core.instrument.MeterRegistry> registry) {
         return new SegmentSequence(allocator, properties, clock, registry.getIfAvailable());
-    }
-
-    @Bean
-    public BusinessIdFormatter businessIdFormatter() {
-        return new BusinessIdFormatter();
-    }
-
-    @Bean
-    public BusinessIdGenerator businessIdGenerator(
-            Sequence sequence, @Qualifier("databaseClock") Clock clock, BusinessIdFormatter formatter) {
-        return new BusinessIdGenerator(sequence, clock, formatter);
     }
 }

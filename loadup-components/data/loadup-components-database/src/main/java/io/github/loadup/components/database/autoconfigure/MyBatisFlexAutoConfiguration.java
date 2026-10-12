@@ -30,7 +30,6 @@ import io.github.loadup.commons.dataobject.BaseDO;
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.database.config.DatabaseProperties;
-import io.github.loadup.components.database.id.DatabaseIdGenerator;
 import io.github.loadup.components.database.id.IdGenerator;
 import io.github.loadup.components.database.listener.BaseEntityListener;
 import io.github.loadup.components.database.listener.TenantContextMissingException;
@@ -55,15 +54,22 @@ public class MyBatisFlexAutoConfiguration {
     }
 
     @Bean
-    public DatabaseIdGenerator databaseIdGenerator() {
-        return new DatabaseIdGenerator();
-    }
-
-    @Bean
     public MyBatisFlexCustomizer myBatisFlexCustomizer(
-            DatabaseIdGenerator idGenerator,
+            org.springframework.beans.factory.ObjectProvider<IdGenerator> generators,
             @org.springframework.beans.factory.annotation.Qualifier("databaseClock") Clock clock) {
         return globalConfig -> {
+            var strategy = org.springframework.util.function.SingletonSupplier.of(generators::getObject);
+            IdGenerator idGenerator = new IdGenerator() {
+                @Override
+                public String generate() {
+                    return strategy.obtain().generate();
+                }
+
+                @Override
+                public Object generate(Object entity, String keyColumn) {
+                    return strategy.obtain().generate(entity, keyColumn);
+                }
+            };
             configureIdGeneration(globalConfig, idGenerator);
             configureLogicalDelete(globalConfig);
             configureMultiTenant(globalConfig);
@@ -110,10 +116,10 @@ public class MyBatisFlexAutoConfiguration {
     private void configureIdGeneration(FlexGlobalConfig globalConfig, IdGenerator idGenerator) {
         FlexGlobalConfig.KeyConfig keyConfig = new FlexGlobalConfig.KeyConfig();
         keyConfig.setKeyType(KeyType.Generator);
-        keyConfig.setValue(DatabaseIdGenerator.KEY);
+        keyConfig.setValue(IdGenerator.KEY);
         keyConfig.setBefore(true);
         globalConfig.setKeyConfig(keyConfig);
-        KeyGeneratorFactory.register(DatabaseIdGenerator.KEY, (entity, keyColumn) -> idGenerator.generate());
+        KeyGeneratorFactory.register(IdGenerator.KEY, idGenerator);
     }
 
     private void configureLogicalDelete(FlexGlobalConfig globalConfig) {

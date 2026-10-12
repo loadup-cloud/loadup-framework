@@ -167,7 +167,7 @@ loadup-modules-{mod}/
 | 6  | `@Table` 放在 domain 层                     | DO（`XxxDO extends BaseDO`）只放在 `infrastructure.dataobject`                   |
 | 7  | 子模块 `<parent>` 指向模块自身 pom                | 所有子模块 `<parent>` 统一指向根 `loadup-parent`                                    |
 | 8  | 子模块内写 `<version>` 引用同项目模块                | 版本由 `loadup-dependencies` BOM 统一管理                                       |
-| 9  | 表主键 `BIGINT AUTO_INCREMENT`              | 主键 `VARCHAR(64)`，业务层用 `UUID.randomUUID()` 赋值                               |
+| 9  | 表主键 `BIGINT AUTO_INCREMENT`              | 主键 `VARCHAR(64)`，默认由 database 的 `IdGenerator` 生成业务 ID；序列表元数据显式使用 UUID 防止递归                               |
 | 10 | 无必要的业务模块横向依赖                         | 保持清晰依赖方向，跨模块能力优先通过公开接口集成                                       |
 | 11 | Java 文件中写中文注释或 Javadoc                   | 注释/Javadoc 统一使用英文；中文只允许出现在 `*.md` 文档文件中                                     |
 | 12 | `BOOLEAN`/`BOOL` 类型                       | 统一使用 `TINYINT`（0/1）                                                    |
@@ -352,7 +352,7 @@ deleted    TINYINT      NOT NULL DEFAULT 0
 - Facades return client DTOs or JDK values. HTTP envelopes belong to Controllers. Keep domain Gateway ports separate from public Facades.
 - Business infrastructure depends on `loadup-components-database`. GatewayImpl uses MyBatis-Flex BaseMapper and QueryWrapper with generated Tables/TableDef constants. Business repositories contain no JdbcTemplate, NamedParameterJdbcTemplate, handwritten SQL, string columns or SQL sort fragments.
 - DOs extend BaseDO. The database processor automatically generates `XxxDOMapper extends BaseMapper<XxxDO>` with MyBatis `@Mapper`, plus Tables/TableDef. Do not hand-write empty persistence Mappers. MapStruct Converter interfaces remain separate Spring components. Generated sources stay in target and are not committed.
-- database owns fixed framework defaults for audit fields, UUID keys and logical deletion. Business modules and consumers must not replace FlexGlobalConfig, framework listeners, or MyBatisFlexCustomizer. Deployment DataSource settings and trusted tenant resolution remain integration responsibilities. Validate conflicting persistence conventions at startup.
+- database owns fixed framework defaults for audit fields and logical deletion. Flex keys and BaseDO insert listeners use the shared IdGenerator SPI, defaulting to BusinessIdGenerator; a single explicit IdGenerator bean may replace it. The default requires database Sequence migrations; allocation metadata receives an explicit UUID to prevent recursive generation. Business modules and consumers must not replace FlexGlobalConfig, framework listeners, or MyBatisFlexCustomizer. Deployment DataSource settings and trusted tenant resolution remain integration responsibilities. Validate conflicting persistence conventions at startup.
 - Database `DatabaseAptConfiguration` Java code owns fixed APT options; do not add project `mybatis-flex.config` files. DO-owning modules use the optional/provided `loadup-components-database-processor` and explicitly select its wrapper (alongside MapStruct/Boot); never run upstream Flex independently at the same time. Each infrastructure generates Tables in its DO package's `.table` subpackage and persistence interfaces in the sibling `.mapper` package.
 
 ## Mapping, HTTP Contracts and Utilities

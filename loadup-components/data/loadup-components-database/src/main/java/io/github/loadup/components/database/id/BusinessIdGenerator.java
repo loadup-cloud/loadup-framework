@@ -27,15 +27,28 @@ import java.time.Clock;
 import java.time.LocalDate;
 
 /** Generates unique business IDs using a single captured local date per call. */
-public final class BusinessIdGenerator {
+public final class BusinessIdGenerator implements IdGenerator {
+    private final BusinessIdCommand defaults;
     private final Sequence sequence;
     private final Clock clock;
     private final BusinessIdFormatter formatter;
 
     public BusinessIdGenerator(Sequence sequence, Clock clock, BusinessIdFormatter formatter) {
+        this(sequence, clock, formatter, new BusinessIdCommand(0, 1, "00000000", "", 0, 0));
+    }
+
+    public BusinessIdGenerator(
+            Sequence sequence, Clock clock, BusinessIdFormatter formatter, BusinessIdCommand defaults) {
+        if (defaults == null) throw new CommonException(DatabaseResultCodeEnum.INVALID_INPUT);
+        this.defaults = defaults;
         this.sequence = sequence;
         this.clock = clock;
         this.formatter = formatter;
+    }
+
+    @Override
+    public String generate() {
+        return generate(defaults);
     }
 
     public String generate(BusinessIdCommand command) {

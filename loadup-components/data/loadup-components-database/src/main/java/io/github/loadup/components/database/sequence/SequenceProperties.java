@@ -25,7 +25,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("loadup.database.sequence")
 public class SequenceProperties {
-    private boolean enabled;
+    private boolean enabled = true;
     private int step = 10_000, maxScopes = 1024, prefetchThreads = 2, queueCapacity = 256;
     private Duration waitTimeout = Duration.ofSeconds(3);
 

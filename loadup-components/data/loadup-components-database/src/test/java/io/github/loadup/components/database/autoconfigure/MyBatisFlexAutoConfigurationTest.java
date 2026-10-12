@@ -25,7 +25,8 @@ import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.core.FlexGlobalConfig;
 import com.mybatisflex.core.keygen.KeyGeneratorFactory;
 import io.github.loadup.components.database.config.DatabaseProperties;
-import io.github.loadup.components.database.id.DatabaseIdGenerator;
+import io.github.loadup.components.database.id.IdGenerator;
+import io.github.loadup.components.database.id.UuidV7IdGenerator;
 import java.time.Clock;
 import org.junit.jupiter.api.Test;
 
@@ -37,16 +38,42 @@ class MyBatisFlexAutoConfigurationTest {
         FlexGlobalConfig globalConfig = new FlexGlobalConfig();
 
         autoConfiguration
-                .myBatisFlexCustomizer(new DatabaseIdGenerator(), Clock.systemUTC())
+                .myBatisFlexCustomizer(provider(new UuidV7IdGenerator(false)), Clock.systemUTC())
                 .customize(globalConfig);
 
         assertThat(globalConfig.getKeyConfig().getKeyType()).isEqualTo(KeyType.Generator);
-        assertThat(globalConfig.getKeyConfig().getValue()).isEqualTo(DatabaseIdGenerator.KEY);
-        assertThat(KeyGeneratorFactory.getKeyGenerator(DatabaseIdGenerator.KEY).generate(new Object(), "id"))
+        assertThat(globalConfig.getKeyConfig().getValue()).isEqualTo(IdGenerator.KEY);
+        assertThat(KeyGeneratorFactory.getKeyGenerator(IdGenerator.KEY).generate(new Object(), "id"))
                 .asString()
-                .matches("[0-9a-f-]{36}");
+                .matches("[0-9a-f]{32}");
         assertThat(globalConfig.getLogicDeleteColumn()).isEqualTo("deleted");
         assertThat(globalConfig.getNormalValueOfLogicDelete()).isEqualTo(0);
         assertThat(globalConfig.getDeletedValueOfLogicDelete()).isEqualTo(1);
+    }
+
+    private org.springframework.beans.factory.ObjectProvider<IdGenerator> provider(IdGenerator generator) {
+        org.springframework.beans.factory.support.DefaultListableBeanFactory factory =
+                new org.springframework.beans.factory.support.DefaultListableBeanFactory();
+        factory.registerSingleton("idGenerator", generator);
+        return factory.getBeanProvider(IdGenerator.class);
+    }
+
+    @Test
+    void resolvesStrategyOnlyWhenGeneratingKeys() {
+        var initialized = new java.util.concurrent.atomic.AtomicInteger();
+        var factory = new org.springframework.beans.factory.support.DefaultListableBeanFactory();
+        var definition = new org.springframework.beans.factory.support.RootBeanDefinition(IdGenerator.class, () -> {
+            initialized.incrementAndGet();
+            return (IdGenerator) () -> "deferred-id";
+        });
+        factory.registerBeanDefinition("idGenerator", definition);
+        var configuration = new MyBatisFlexAutoConfiguration(new DatabaseProperties());
+        configuration
+                .myBatisFlexCustomizer(factory.getBeanProvider(IdGenerator.class), Clock.systemDefaultZone())
+                .customize(new FlexGlobalConfig());
+        assertThat(initialized.get()).isZero();
+        assertThat(KeyGeneratorFactory.getKeyGenerator(IdGenerator.KEY).generate(new Object(), "id"))
+                .isEqualTo("deferred-id");
+        assertThat(initialized.get()).isEqualTo(1);
     }
 }

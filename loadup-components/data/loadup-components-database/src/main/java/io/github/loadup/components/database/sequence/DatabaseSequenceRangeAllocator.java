@@ -78,6 +78,8 @@ public final class DatabaseSequenceRangeAllocator implements SequenceRangeAlloca
                 .forUpdate());
         if (row == null) {
             row = new SequenceAllocationDO();
+            // Allocation metadata must not recursively invoke the business sequence.
+            row.setId(java.util.UUID.randomUUID().toString());
             row.setScopeKey(scope.key());
             row.setMaxAllocated(0L);
             row.setMaxValue(scope.maximum());

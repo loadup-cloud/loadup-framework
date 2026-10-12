@@ -9,7 +9,7 @@ The component is a single-jar, thin MyBatis-Flex integration. It owns persistenc
 ```text
 DO extends BaseDO
       │
-      ├─ MyBatis-Flex key generator ── fixed UUID v4
+      ├─ MyBatis-Flex key generator ── IdGenerator (default BusinessIdGenerator)
       ├─ BaseEntityListener ─────────── createdAt / updatedAt / tenantId / deleted
       ├─ logic-delete metadata ──────── deleted = 0 / 1
       └─ tenant metadata ────────────── tenant_id predicate + insert value
@@ -31,11 +31,15 @@ Timestamps use the framework clock using the JVM system default time zone. Unit 
 
 ## ID generation
 
-`DatabaseIdGenerator` implements LoadUp and MyBatis-Flex generator contracts with UUID v4. Missing identifiers are filled before insertion; explicit business identifiers are preserved.
+`IdGenerator` extends MyBatis-Flex's IKeyGenerator and supplies its entity-aware callback with a default bridge to generate(). It is registered under IdGenerator.KEY and shared with BaseEntityListener. BusinessIdGenerator is the default Spring bean; one application-supplied IdGenerator replaces it. Missing identifiers are filled before insertion; explicit identifiers are preserved.
+
+Flex configuration resolves the strategy through ObjectProvider only when generating the first key, then caches the singleton strategy with SingletonSupplier. This avoids the SqlSessionFactory → BusinessIdGenerator → Sequence → generated Mapper → SqlSessionFactory cycle. Sequence allocation rows explicitly receive UUIDs before insertion, so neither the key callback nor listener recursively invokes the business generator.
+
+Automatic generation uses validated loadup.database.business-id metadata (default 0/1 versions, event 00000000, empty extension, site/shard 000). Generic event 00000000 shares capacity across all automatic entity IDs. Explicit command-based generation remains available. Audit/deletion defaults remain framework-owned; choosing an IdGenerator bean does not authorize custom Flex globals.
 
 ## Business IDs and database sequences
 
-Implemented 2026-10-12 using MyBatis-Flex and independent Spring transactions. The automatic primary-key generator remains UUID v4. Sequence auto-configuration is opt-in via loadup.database.sequence.enabled; deployment migrations and site/routing policies remain integration responsibilities.
+Implemented 2026-10-12 using MyBatis-Flex and independent Spring transactions. The automatic primary-key generator is now BusinessIdGenerator. Sequence auto-configuration is enabled by default via loadup.database.sequence.enabled; deployment migrations and site/routing policies remain integration responsibilities.
 
 ### Existing implementations
 
@@ -53,7 +57,7 @@ Leaf is not assumed to be a verified Java 25 / Spring Boot 4 dependency. Its [co
 - `Sequence.next(scope)` supplies a positive numeric value unique within a documented scope. `nextBatch(scope, count)` returns a bounded primitive `long[]` of unique numbers from local committed ranges, with a maximum batch count of 10,000. A batch may cross ranges and need not be numerically contiguous; a failed call returns no partial batch and may consume numbers. The internal allocator reserves committed database ranges independently of the public batch count. A scope contains a registered name and optional business date. Different scopes may issue the same number.
 - `BusinessIdGenerator.generate(command)` owns validation, local-date selection, sequence scope, routing buckets and formatting. Callers supply business metadata, not a raw sequence value.
 - A pure formatter/parser supports fixed vectors and decoding, but does not promise uniqueness when callers supply arbitrary numbers.
-- Existing entities without event/customer metadata continue to use the generic ID generator. Business numbers may be explicitly assigned as IDs where the schema and lifecycle permit, or stored in a separately indexed business-number column. A global replacement requires a separate entity-to-event policy.
+- Entities without explicit event/customer metadata use the configured automatic BusinessIdGenerator defaults. Command-based business numbers may also be assigned explicitly or stored separately. Previously supplied entity IDs are retained.
 
 ### Encoding contract
 
@@ -86,7 +90,7 @@ The allocation table includes the standard BaseDO fields plus a unique `scope_ke
 4. Cap the final range at the configured maximum. Reject exhaustion with a database ResultCode; never issue a value beyond the eight-digit space.
 5. Create a new scope for a new date. Never reset an old row. Old dates revisited after clock changes continue from their persisted maximum, subject to bounded cache admission.
 
-Repositories use MyBatis-Flex BaseMapper, generated Tables and QueryWrapper. No JdbcTemplate or handwritten SQL is introduced. The allocation table's operational metadata ID must use the generic generator to avoid sequence recursion. A REQUIRES_NEW allocator needs connection-pool headroom when called inside existing business transactions.
+Repositories use MyBatis-Flex BaseMapper, generated Tables and QueryWrapper. No JdbcTemplate or handwritten SQL is introduced. The allocation table's operational metadata ID must be explicitly assigned a UUID to avoid sequence recursion. A REQUIRES_NEW allocator needs connection-pool headroom when called inside existing business transactions.
 
 The guarantee is scope uniqueness, with gaps permitted. Business rollback and process death do not reclaim issued or reserved numbers. Parallel segments do not provide global chronological ordering or gapless accounting numbers. Cached ranges remain usable during a database outage until exhausted; then allocation fails explicitly. Cache eviction, restarts and unused reservations also consume capacity. At scope admission capacity, past-date states are removed; old references only consume their previously committed ranges and cannot be republished into the new state. If no past-date entry is available, admission fails. Bound active scopes and observe waste before choosing the default segment size.
 
@@ -110,7 +114,7 @@ The implementation uses generated `SequenceAllocationDOMapper` and Tables from t
 
 Unit tests cover fixed encoding vectors, maximum length, leading zeros, invalid dates and values, local-zone batch dates, virtual-thread single/batch concurrency, restart waste, range boundaries, cache admission, timeouts, prefetch failure and metrics. Real MySQL tests cover concurrent first creation, committed disjoint ranges, tenant independence, caller rollback, final-range truncation and maximum conflicts. Leaf dependencies were not introduced; source-compatible upstream reuse was not required.
 
-2026-10-12 verification passed 36 focused tests: 16 new unit tests, four real MySQL ITs and 16 existing database regressions. The final monotonic-clock cooldown adjustment was followed by another passing run of the 16 new unit tests. License and Spotless checks passed. This is correctness evidence, not a production throughput benchmark.
+2026-10-12 verification passed 41 focused tests, including five real MySQL ITs. Coverage includes default strategy selection, metadata binding, custom strategy backoff, lazy initialization, automatic business IDs on real inserts, explicit ID preservation and sequence bootstrap without recursion. License and Spotless checks passed. This is correctness evidence, not a production throughput benchmark.
 
 Consumer acceptance still requires representative multi-JVM P95/P99 and capacity measurements, executor/pool sizing, event registry and routing policy integration, site ownership, and database failover/restore rehearsals. Eight-digit scope capacity includes prefetch/restart waste and is separate from throughput.
 

@@ -1,6 +1,6 @@
 # LoadUp Components Database
 
-MyBatis-Flex integration for common persistent fields, audit timestamps, UUID identifiers, logical deletion, and tenant isolation.
+MyBatis-Flex integration for common persistent fields, audit timestamps, business identifiers, logical deletion, and tenant isolation.
 
 ## Maven
 
@@ -82,7 +82,7 @@ Use `TenantUtil.runWithTenant(...)` or `callWithTenant(...)` for non-HTTP jobs t
 | Capability | MyBatis-Flex |
 |---|---|
 | CRUD, QueryWrapper, generated MyBatis Mapper, Tables and TableDef | ✓ |
-| Audit timestamps and UUID primary keys | ✓ |
+| Audit timestamps and default business primary keys | ✓ |
 | Business IDs up to 64 characters, formatting and parsing | ✓ |
 | Scope-based database segments, local batches and asynchronous prefetch | ✓ |
 | Integer logical deletion | ✓ |
@@ -90,13 +90,15 @@ Use `TenantUtil.runWithTenant(...)` or `callWithTenant(...)` for non-HTTP jobs t
 
 ## Fixed framework conventions
 
-UUID v4 IDs, local-time audit timestamps, `deleted = 0/1` and the `tenant_id` column are framework-owned defaults. They cannot be switched off or renamed through application properties. Extra `MyBatisFlexCustomizer` beans fail startup. DataSource settings, tenant activation and trusted tenant resolution remain deployment concerns. All mapped business tables must contain the five BaseDO fields; apply the module migrations before enabling the adapters.
+Local-time audit timestamps, `deleted = 0/1` and the `tenant_id` column are framework-owned defaults. These audit/deletion conventions cannot be switched off or renamed through application properties. The ID strategy is selected through a single IdGenerator bean and defaults to BusinessIdGenerator. Extra `MyBatisFlexCustomizer` beans fail startup. DataSource settings, tenant activation and trusted tenant resolution remain deployment concerns. All mapped business tables must contain the five BaseDO fields; apply the module migrations before enabling the adapters.
 
 Use generated `Tables` constants in repositories; do not concatenate SQL or sort expressions. MapStruct converters use the shared Spring configuration and constructor injection. `UpdateEntity.of` expresses partial updates, including intentional null assignments.
 
 ## Business IDs and database sequences
 
-This capability is opt-in. Ordinary missing primary keys continue to receive UUID v4. Supply a generated business ID explicitly when the entity's lifecycle requires one.
+`BusinessIdGenerator` is the default `IdGenerator` for MyBatis-Flex and BaseDO insert listeners. Missing IDs automatically receive a business ID; explicit IDs remain unchanged. Sequence is enabled by default. Apply the sequence migration before any insert that relies on automatic ID generation. Allocation metadata explicitly uses UUID to avoid recursively requesting a sequence.
+
+Default automatic metadata uses data version 0, system version 1, event code `00000000`, no extension, site 000 and shard 000. Reserve `00000000` for generic persistence IDs; explicit business generation may use registered event codes. All entities using the same default scope share its eight-digit daily capacity. Configure stable site ownership when independent databases issue IDs.
 
 ```yaml
 loadup:
@@ -108,9 +110,20 @@ loadup:
       prefetch-threads: 2
       queue-capacity: 256
       wait-timeout: 3s
+    business-id:
+      data-version: 0
+      system-version: 1
+      event-code: "00000000"
+      extension-code: ""
+      site-id: 1
+      shard: 0
 ```
 
 Apply `classpath:db/migration/loadup-sequence/V2026101201__sequence_allocation.sql` before enabling traffic. Use the integrating application's migration procedure or add `classpath:db/migration/loadup-sequence` to its existing Flyway locations, retaining all other module locations. The component does not create tables on the request path. Use one authoritative allocation database for each encoded site, preserve committed allocation maxima during failover/restoration, and restrict deletion/reset of allocation rows. The migration uses MySQL syntax.
+
+Inject `IdGenerator` for the configured automatic strategy. `IdGenerator` also implements MyBatis-Flex's generator contract; `generate(entity, keyColumn)` defaults to `generate()`. Flex registers it under `IdGenerator.KEY` through a lazy provider to avoid a SqlSessionFactory → generator → Sequence → Mapper initialization cycle. No ID is generated while constructing the SqlSessionFactory.
+
+An application may supply one `IdGenerator` bean (for example `UuidV7IdGenerator`) to replace the default; do not replace the global Flex customizer. `loadup.database.sequence.enabled=false` requires such an alternative because the default generator depends on Sequence. Existing explicitly supplied IDs, including UUIDs assigned by application services, are preserved.
 
 Inject `BusinessIdGenerator` and reuse immutable metadata where practical:
 

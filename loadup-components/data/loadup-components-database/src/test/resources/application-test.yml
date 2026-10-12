@@ -4,8 +4,6 @@ spring:
       maximum-pool-size: 24
 loadup:
   database:
-    sequence:
-      enabled: true
     multi-tenant:
       enabled: true
       required: true

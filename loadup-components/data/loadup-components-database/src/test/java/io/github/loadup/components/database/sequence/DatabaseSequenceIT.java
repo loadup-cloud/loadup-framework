@@ -47,11 +47,19 @@ class DatabaseSequenceIT {
 
     private final SequenceRangeAllocator allocator;
     private final PlatformTransactionManager manager;
+    private final io.github.loadup.components.database.id.IdGenerator idGenerator;
+    private final io.github.loadup.components.database.sequence.mapper.SequenceAllocationDOMapper mapper;
 
     @Autowired
-    DatabaseSequenceIT(SequenceRangeAllocator allocator, PlatformTransactionManager manager) {
+    DatabaseSequenceIT(
+            SequenceRangeAllocator allocator,
+            PlatformTransactionManager manager,
+            io.github.loadup.components.database.id.IdGenerator idGenerator,
+            io.github.loadup.components.database.sequence.mapper.SequenceAllocationDOMapper mapper) {
         this.allocator = allocator;
         this.manager = manager;
+        this.idGenerator = idGenerator;
+        this.mapper = mapper;
     }
 
     private SequenceScope scope(long maximum) {
@@ -126,5 +134,29 @@ class DatabaseSequenceIT {
             for (Future<?> task : tasks) task.get(20, TimeUnit.SECONDS);
             assertThat(seen).hasSize(5920);
         }
+    }
+
+    @Test
+    void flexUsesDefaultBusinessIdsAndPreservesExplicitIdsWithoutRecursion() {
+        assertThat(idGenerator).isInstanceOf(io.github.loadup.components.database.id.BusinessIdGenerator.class);
+        var formatter = new io.github.loadup.components.database.id.BusinessIdFormatter();
+        var row = new io.github.loadup.components.database.sequence.dataobject.SequenceAllocationDO();
+        row.setScopeKey("auto-test-" + UUID.randomUUID());
+        row.setMaxAllocated(0L);
+        row.setMaxValue(100L);
+        TenantUtil.runWithTenant("merchant-auto", () -> mapper.insert(row));
+        assertThat(row.getId()).hasSize(32);
+        assertThat(formatter.parse(row.getId()).command().eventCode()).isEqualTo("00000000");
+        assertThat(TenantUtil.callWithTenant("merchant-auto", () -> mapper.selectOneById(row.getId()))
+                        .getId())
+                .isEqualTo(row.getId());
+        var explicit = new io.github.loadup.components.database.sequence.dataobject.SequenceAllocationDO();
+        explicit.setId("supplied-id-" + UUID.randomUUID());
+        explicit.setScopeKey("explicit-test-" + UUID.randomUUID());
+        explicit.setMaxAllocated(0L);
+        explicit.setMaxValue(100L);
+        String expected = explicit.getId();
+        TenantUtil.runWithTenant("merchant-auto", () -> mapper.insert(explicit));
+        assertThat(explicit.getId()).isEqualTo(expected);
     }
 }
