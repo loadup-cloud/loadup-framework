@@ -25,6 +25,7 @@ import com.mybatisflex.core.logicdelete.LogicDeleteManager;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.tenant.TenantManager;
 import com.mybatisflex.core.util.UpdateEntity;
+import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.modules.file.domain.gateway.FileResourceGateway;
 import io.github.loadup.modules.file.domain.model.*;
 import io.github.loadup.modules.file.infrastructure.converter.FileStorageConverter;
@@ -76,7 +77,7 @@ public class FileResourceGatewayImpl implements FileResourceGateway {
     }
 
     @Override
-    public FilePage<FileResource> list(String tenant, String owner, int page, int size) {
+    public PageResult<FileResource> list(String tenant, String owner, int page, int size) {
         var q = QueryWrapper.create()
                 .from(FILE_RESOURCE_DO)
                 .where(FILE_RESOURCE_DO.TENANT_ID.eq(tenant))
@@ -86,7 +87,7 @@ public class FileResourceGatewayImpl implements FileResourceGateway {
         q.orderBy(FILE_RESOURCE_DO.CREATED_AT.desc(), FILE_RESOURCE_DO.ID.desc())
                 .limit(size)
                 .offset((long) (page - 1) * size);
-        return new FilePage<>(
+        return new PageResult<>(
                 files.selectListByQuery(q).stream().map(converter::toDomain).toList(), total, page, size);
     }
 

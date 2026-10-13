@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.contract.domain.gateway;
 
+import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.modules.contract.domain.model.*;
 import java.util.Optional;
 
@@ -31,6 +32,6 @@ public interface CatalogGateway {
 
     void update(CatalogEntry entry, long expectedRowVersion);
 
-    ContractPage<CatalogEntry> page(
+    PageResult<CatalogEntry> page(
             String tenantId, CatalogKind kind, CatalogStatus status, String code, int page, int size);
 }

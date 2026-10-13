@@ -19,8 +19,8 @@
  */
 package io.github.loadup.modules.dictionary.domain.gateway;
 
+import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.modules.dictionary.domain.model.DictionaryItem;
-import io.github.loadup.modules.dictionary.domain.model.DictionaryPage;
 import io.github.loadup.modules.dictionary.domain.model.DictionaryType;
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +37,7 @@ public interface DictionaryGateway {
 
     void deleteType(String tenantId, String id);
 
-    DictionaryPage<DictionaryType> listTypes(String tenantId, int page, int size);
+    PageResult<DictionaryType> listTypes(String tenantId, int page, int size);
 
     Optional<DictionaryItem> findItemById(String tenantId, String id);
 
@@ -49,7 +49,7 @@ public interface DictionaryGateway {
 
     long countItems(String tenantId, String typeId);
 
-    DictionaryPage<DictionaryItem> listItems(String tenantId, String typeId, int page, int size);
+    PageResult<DictionaryItem> listItems(String tenantId, String typeId, int page, int size);
 
     List<DictionaryItem> listEnabledItems(String tenantId, String typeId);
 }

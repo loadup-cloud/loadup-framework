@@ -22,6 +22,7 @@ package io.github.loadup.modules.contract.infrastructure.repository;
 import static io.github.loadup.modules.contract.infrastructure.dataobject.table.Tables.MERCHANT_CONTRACT_DO;
 
 import com.mybatisflex.core.query.QueryWrapper;
+import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import io.github.loadup.modules.contract.domain.gateway.MerchantContractGateway;
@@ -118,17 +119,19 @@ public class MerchantContractGatewayImpl implements MerchantContractGateway {
         if (changed != 1) throw new CommonException(ContractResultCodeEnum.CONTRACT_STATE_CHANGED_OR_TERMINATED);
     }
 
-    public ContractPage<ContractRecord> page(String tenant, String merchant, int page, int size) {
+    public PageResult<ContractRecord> page(String tenant, String merchant, int page, int size) {
         QueryWrapper query = scope(tenant);
         if (merchant != null && !merchant.isBlank())
             query.and(MerchantContractDO::getMerchantId).eq(required(merchant));
         long total = contracts.selectCountByQuery(query);
         query.orderBy(MERCHANT_CONTRACT_DO.CREATED_AT.desc(), MERCHANT_CONTRACT_DO.ID.asc())
                 .limit((long) (page - 1) * size, size);
-        return new ContractPage<>(
+        return new PageResult<>(
                 contracts.selectListByQuery(query).stream()
                         .map(converter::toContract)
                         .toList(),
-                total);
+                total,
+                page,
+                size);
     }
 }

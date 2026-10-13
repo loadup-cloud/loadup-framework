@@ -19,7 +19,7 @@
  */
 package io.github.loadup.modules.transfer.domain.gateway;
 
-import io.github.loadup.modules.transfer.domain.model.TransferPage;
+import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.modules.transfer.domain.model.TransferTask;
 import java.util.Map;
 import java.util.Optional;
@@ -29,7 +29,7 @@ public interface TransferGateway {
 
     Optional<TransferTask> find(String id);
 
-    TransferPage<TransferTask> list(String tenantId, String ownerId, int page, int size);
+    PageResult<TransferTask> list(String tenantId, String ownerId, int page, int size);
 
     Map<String, String> options(String id);
 

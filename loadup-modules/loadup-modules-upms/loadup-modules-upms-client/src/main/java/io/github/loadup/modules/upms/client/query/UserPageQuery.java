@@ -203,6 +203,11 @@ public class UserPageQuery {
         this.sortOrder = sortOrder;
     }
 
+    public io.github.loadup.commons.dto.PageQuery pagination() {
+        return io.github.loadup.commons.dto.PageQuery.normalized(
+                page, size, io.github.loadup.commons.enums.CommonResultCodeEnum.PARAM_ILLEGAL);
+    }
+
     public static Builder builder() {
         return new Builder();
     }

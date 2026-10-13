@@ -22,6 +22,7 @@ package io.github.loadup.modules.contract.infrastructure.repository;
 import static io.github.loadup.modules.contract.infrastructure.dataobject.table.Tables.CATALOG_VERSION_DO;
 
 import com.mybatisflex.core.query.QueryWrapper;
+import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import io.github.loadup.modules.contract.domain.gateway.CatalogGateway;
@@ -85,7 +86,7 @@ public class CatalogGatewayImpl implements CatalogGateway {
         if (changed != 1) throw new CommonException(ContractResultCodeEnum.CATALOG_VERSION_CHANGED);
     }
 
-    public ContractPage<CatalogEntry> page(
+    public PageResult<CatalogEntry> page(
             String tenant, CatalogKind kind, CatalogStatus status, String code, int page, int size) {
         QueryWrapper query = scope(tenant).and(CatalogVersionDO::getKind).eq(kind.name());
         if (status != null) query.and(CatalogVersionDO::getStatus).eq(status.name());
@@ -94,10 +95,12 @@ public class CatalogGatewayImpl implements CatalogGateway {
         long total = mapper.selectCountByQuery(query);
         query.orderBy(CATALOG_VERSION_DO.UPDATED_AT.desc(), CATALOG_VERSION_DO.ID.asc())
                 .limit((long) (page - 1) * size, size);
-        return new ContractPage<>(
+        return new PageResult<>(
                 mapper.selectListByQuery(query).stream()
                         .map(converter::toCatalog)
                         .toList(),
-                total);
+                total,
+                page,
+                size);
     }
 }

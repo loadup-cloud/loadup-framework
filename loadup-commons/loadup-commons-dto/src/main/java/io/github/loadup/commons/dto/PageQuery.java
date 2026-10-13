@@ -19,32 +19,55 @@
  */
 package io.github.loadup.commons.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
+import io.github.loadup.commons.result.ResultCode;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-/**
- * Framework-neutral pagination query parameters.
- *
- * <p>Used by domain gateway APIs instead of Spring Data {@code Pageable} so the domain layer
- * stays free of framework dependencies. Page numbers are 1-based.
- *
- * @param pageNum 1-based page number, defaults to 1
- * @param pageSize page size, defaults to 20
- */
-public record PageQuery(int pageNum, int pageSize) {
+/** Shared pagination bounds; HTTP field names remain page and size. */
+public record PageQuery(
+        @jakarta.validation.constraints.Min(1)
+        @JsonProperty("page")
+        @Schema(description = "Page number, starting at 1", minimum = "1", defaultValue = "1")
+        Integer pageNum,
 
+        @jakarta.validation.constraints.Min(1)
+        @jakarta.validation.constraints.Max(100)
+        @JsonProperty("size")
+        @Schema(description = "Page size", minimum = "1", maximum = "100", defaultValue = "20")
+        Integer pageSize) {
     public static final int DEFAULT_PAGE_SIZE = 20;
+    public static final int MAX_PAGE_SIZE = 100;
 
     public PageQuery {
-        if (pageNum < 1) {
-            pageNum = 1;
-        }
-        if (pageSize < 1) {
-            pageSize = DEFAULT_PAGE_SIZE;
-        }
+        pageNum = pageNum == null ? 1 : pageNum;
+        pageSize = pageSize == null ? DEFAULT_PAGE_SIZE : pageSize;
+        validate(pageNum, pageSize, CommonResultCodeEnum.PARAM_ILLEGAL);
     }
 
-    public static PageQuery of(int pageNum, int pageSize) {
-        return new PageQuery(pageNum, pageSize);
+    public static PageQuery of(Integer page, Integer size) {
+        return new PageQuery(page, size);
+    }
+    /** Preserves the calling module's published error code while sharing all bounds. */
+    public static PageQuery normalized(Integer page, Integer size, ResultCode code) {
+        int index = page == null ? 1 : page;
+        int count = size == null ? DEFAULT_PAGE_SIZE : size;
+        validate(index, count, code);
+        return new PageQuery(index, count);
+    }
+
+    private static void validate(int page, int size, ResultCode code) {
+        if (page < 1 || size < 1 || size > MAX_PAGE_SIZE) throw new CommonException(code);
+    }
+
+    public int page() {
+        return pageNum;
+    }
+
+    public int size() {
+        return pageSize;
     }
 
     @Override

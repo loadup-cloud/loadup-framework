@@ -24,20 +24,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.Collection;
 
 @Schema(description = "Successful response envelope")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({"result", "data", "pageInfo"})
+@JsonPropertyOrder({"result", "data"})
 public record SuccessResponse<T>(
         @Schema(description = "Result metadata") @JsonProperty("result")
         Result result,
 
         @Schema(description = "Business data") @JsonProperty("data") @JsonInclude(JsonInclude.Include.ALWAYS)
-        T data,
-
-        @Schema(description = "Pagination metadata") @JsonProperty("pageInfo")
-        PageInfo pageInfo)
+        T data)
         implements IResponse<T> {
 
     @Override
@@ -46,25 +42,11 @@ public record SuccessResponse<T>(
     }
 
     public static <T> SuccessResponse<T> of(T data) {
-        return new SuccessResponse<>(Result.buildSuccess(), data, null);
+        return new SuccessResponse<>(Result.buildSuccess(), data);
     }
 
     public static SuccessResponse<Void> success() {
-        return new SuccessResponse<>(Result.buildSuccess(), null, null);
-    }
-
-    public static <T> SuccessResponse<Collection<T>> ofPage(Collection<T> data, Long total, Long size, Long index) {
-        return new SuccessResponse<>(Result.buildSuccess(), data, new PageInfo(total, size, index));
-    }
-
-    public static <T> SuccessResponse<Collection<T>> ofPage(PageDTO<T> dto) {
-        return new SuccessResponse<>(
-                Result.buildSuccess(),
-                dto.getData(),
-                new PageInfo(
-                        dto.getPageInfo().totalCount(),
-                        dto.getPageInfo().pageSize(),
-                        dto.getPageInfo().pageIndex()));
+        return new SuccessResponse<>(Result.buildSuccess(), null);
     }
 
     @Override

@@ -39,7 +39,7 @@ public final class ContractIdentity {
     }
 
     public static void page(int page, int size) {
-        if (page < 1 || size < 1 || size > 100) throw new CommonException(ContractResultCodeEnum.INVALID_PAGE);
+        io.github.loadup.commons.dto.PageQuery.normalized(page, size, ContractResultCodeEnum.INVALID_PAGE);
     }
 
     public static String code(String value, int max) {

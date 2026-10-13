@@ -35,9 +35,7 @@ public record AuditQuery(
         int page,
         int size) {
     public AuditQuery {
-        if (page < 1 || size < 1 || size > 100) {
-            throw new CommonException(AuditResultCodeEnum.INVALID_PAGE);
-        }
+        io.github.loadup.commons.dto.PageQuery.normalized(page, size, AuditResultCodeEnum.INVALID_PAGE);
         if (from != null && to != null && from.isAfter(to)) {
             throw new CommonException(AuditResultCodeEnum.INVALID_TIME_RANGE);
         }

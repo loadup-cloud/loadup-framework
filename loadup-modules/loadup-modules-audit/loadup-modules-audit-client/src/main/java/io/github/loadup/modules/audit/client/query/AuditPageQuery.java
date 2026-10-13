@@ -50,14 +50,13 @@ public record AuditPageQuery(
         @Max(100)
         Integer size) {
     public AuditPageQuery {
-        page = page == null ? 1 : page;
-        size = size == null ? 20 : size;
         if (from != null && to != null && from.isAfter(to)) {
             throw new CommonException(AuditResultCodeEnum.INVALID_TIME_RANGE);
         }
-        if (page < 1 || size < 1 || size > 100) {
-            throw new CommonException(AuditResultCodeEnum.INVALID_PAGE);
-        }
+        var pagination =
+                io.github.loadup.commons.dto.PageQuery.normalized(page, size, AuditResultCodeEnum.INVALID_PAGE);
+        page = pagination.page();
+        size = pagination.size();
     }
 
     @Override

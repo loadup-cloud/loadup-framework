@@ -19,13 +19,13 @@
  */
 package io.github.loadup.modules.notification.domain.gateway;
 
+import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.modules.notification.domain.model.InboxMessage;
-import io.github.loadup.modules.notification.domain.model.InboxPage;
 
 public interface InboxGateway {
     int insert(InboxMessage message, String requestKey);
 
-    InboxPage list(String tenantId, String recipientId, boolean unreadOnly, int page, int size);
+    PageResult<InboxMessage> list(String tenantId, String recipientId, boolean unreadOnly, int page, int size);
 
     long unreadCount(String tenantId, String recipientId);
 

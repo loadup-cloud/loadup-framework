@@ -19,7 +19,7 @@
  */
 package io.github.loadup.modules.file.domain.gateway;
 
-import io.github.loadup.modules.file.domain.model.FilePage;
+import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.modules.file.domain.model.FileReference;
 import io.github.loadup.modules.file.domain.model.FileResource;
 import java.util.List;
@@ -32,7 +32,7 @@ public interface FileResourceGateway {
 
     Optional<FileResource> lock(String tenantId, String id);
 
-    FilePage<FileResource> list(String tenantId, String ownerId, int page, int size);
+    PageResult<FileResource> list(String tenantId, String ownerId, int page, int size);
 
     void markPending(String tenantId, String id);
 

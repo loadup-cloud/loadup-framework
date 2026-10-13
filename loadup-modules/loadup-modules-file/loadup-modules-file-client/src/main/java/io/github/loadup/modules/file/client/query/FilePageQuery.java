@@ -19,7 +19,6 @@
  */
 package io.github.loadup.modules.file.client.query;
 
-import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.modules.file.client.error.FileResultCodeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -41,11 +40,9 @@ public record FilePageQuery(
         @Max(100)
         Integer size) {
     public FilePageQuery {
-        page = page == null ? 1 : page;
-        size = size == null ? 20 : size;
-        if (page < 1 || size < 1 || size > 100) {
-            throw new CommonException(FileResultCodeEnum.INVALID_PAGE);
-        }
+        var pagination = io.github.loadup.commons.dto.PageQuery.normalized(page, size, FileResultCodeEnum.INVALID_PAGE);
+        page = pagination.page();
+        size = pagination.size();
     }
 
     @Override

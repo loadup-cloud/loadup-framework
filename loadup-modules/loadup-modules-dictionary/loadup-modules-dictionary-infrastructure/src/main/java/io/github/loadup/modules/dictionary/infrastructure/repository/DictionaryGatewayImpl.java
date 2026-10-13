@@ -24,6 +24,7 @@ import static io.github.loadup.modules.dictionary.infrastructure.dataobject.tabl
 import com.mybatisflex.core.logicdelete.LogicDeleteManager;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.util.UpdateEntity;
+import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.modules.dictionary.domain.gateway.DictionaryGateway;
 import io.github.loadup.modules.dictionary.domain.model.*;
 import io.github.loadup.modules.dictionary.infrastructure.converter.DictionaryStorageConverter;
@@ -85,11 +86,11 @@ public class DictionaryGatewayImpl implements DictionaryGateway {
     }
 
     @Override
-    public DictionaryPage<DictionaryType> listTypes(String tenant, int page, int size) {
+    public PageResult<DictionaryType> listTypes(String tenant, int page, int size) {
         var q = typeScope(tenant);
         long total = types.selectCountByQuery(q);
         q.orderBy(DICTIONARY_TYPE_DO.CODE.asc()).limit(size).offset((long) (page - 1) * size);
-        return new DictionaryPage<>(
+        return new PageResult<>(
                 types.selectListByQuery(q).stream().map(converter::toDomain).toList(), total, page, size);
     }
 
@@ -135,10 +136,10 @@ public class DictionaryGatewayImpl implements DictionaryGateway {
     }
 
     @Override
-    public DictionaryPage<DictionaryItem> listItems(String tenant, String type, int page, int size) {
+    public PageResult<DictionaryItem> listItems(String tenant, String type, int page, int size) {
         long total = countItems(tenant, type);
         var q = orderedItems(tenant, type).limit(size).offset((long) (page - 1) * size);
-        return new DictionaryPage<>(
+        return new PageResult<>(
                 items.selectListByQuery(q).stream().map(converter::toDomain).toList(), total, page, size);
     }
 

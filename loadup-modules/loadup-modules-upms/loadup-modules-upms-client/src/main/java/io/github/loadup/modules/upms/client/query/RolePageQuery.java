@@ -164,6 +164,11 @@ public class RolePageQuery {
         this.sortOrder = sortOrder;
     }
 
+    public io.github.loadup.commons.dto.PageQuery pagination() {
+        return io.github.loadup.commons.dto.PageQuery.normalized(
+                page, size, io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum.INVALID_PAGE);
+    }
+
     public static Builder builder() {
         return new Builder();
     }

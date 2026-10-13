@@ -259,16 +259,16 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
      * Query users with pagination
      */
     public PageDTO<UserDetailDTO> queryUsers(UserPageQuery query) {
-        int page = query.getPage() == null ? 1 : query.getPage();
-        int size = query.getSize() == null ? 20 : query.getSize();
-        if (page < 1 || size < 1 || size > 100) throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
+        var pagination = query.pagination();
+        int page = pagination.page();
+        int size = pagination.size();
         String sortBy = query.getSortBy() == null ? "createdAt" : query.getSortBy();
         String sortOrder = query.getSortOrder() == null ? "DESC" : query.getSortOrder();
         if (!java.util.Set.of("createdAt", "username", "nickname", "id").contains(sortBy)
                 || !java.util.Set.of("ASC", "DESC").contains(sortOrder.toUpperCase(java.util.Locale.ROOT))) {
             throw new CommonException(UpmsResultCodeEnum.UNSUPPORTED_USER_SORT_FIELD_OR_DIRECTION);
         }
-        PageQuery pageQuery = PageQuery.of(page, size);
+        PageQuery pageQuery = pagination;
 
         PageResult<User> userPage;
         if (query.getUsername() != null || query.getEmail() != null || query.getMobile() != null) {

@@ -232,7 +232,7 @@ deleted    TINYINT      NOT NULL DEFAULT 0
 - Controller 与 Facade 复用同一份业务入参。Command 直接包含 id、关联编码和业务字段，不创建仅包裹 command 的 Request，也不把 Command 已包含的 id/typeCode 再作为独立参数传入。业务验证、权限及可信租户解析仍在各自负责层执行。
 - Facade 分页统一返回 `io.github.loadup.commons.result.PageDTO<T>`；Controller 通过 `PageResponse.of(page)` 返回 `io.github.loadup.commons.result.PageResponse<T>`。不新增 FilePageDTO、MerchantPageDTO 等重复分页类型，不在 Facade 返回 HTTP envelope。
 - HTTP 分页结构固定为 `{result, data: [...], pageInfo: {...}}`；pageInfo 使用 totalCount、pageIndex、pageSize，页码从 1 开始。data 为当前页数组，不嵌套 items/records、total、page、size。前端同步消费顶层 pageInfo。
-- 领域 Gateway 可保留不依赖 HTTP 的分页对象；app 的 Spring MapStruct Converter 映射记录及元数据到公共 PageDTO。展示 DTO 转换使用 `page.map(converter::toView)`，保留元数据，再交给 PageResponse.of。
+- 领域 Gateway 统一返回 commons.domain.PageResult<T>；不再新增 DictionaryPage、ContractPage 等业务分页容器。app 使用 PageResult.map(converter::toDTO) 和 PageDTO.of(result) 保留元数据，转换项由 Spring MapStruct Converter 负责。展示 DTO 转换使用 `page.map(converter::toView)`，保留元数据，再交给 PageResponse.of。纯分页入参直接复用 commons.dto.PageQuery；带筛选字段的业务 Query 保留扁平 page/size，并委托 PageQuery.normalized 校验，不重复实现默认值和上限。普通 SuccessResponse 不含分页字段或 ofPage 工厂。
 - 入参、DTO 与分页响应遵循 OpenAPI 和 JSON toString 规范；非分页成功响应使用 SuccessResponse，无数据使用 SuccessResponse.success，失败使用 FailureResponse。
 
 ---

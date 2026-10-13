@@ -58,8 +58,7 @@ public class AccountSecurityService implements io.github.loadup.modules.upms.cli
     }
 
     public PageDTO<LoginEntryDTO> loginHistory(String userId, int page, int size) {
-        if (page < 1 || size < 1 || size > 100)
-            throw new CommonException(UpmsResultCodeEnum.INVALID_PAGE_OR_SIZE_0ED1C1);
+        io.github.loadup.commons.dto.PageQuery.normalized(page, size, UpmsResultCodeEnum.INVALID_PAGE_OR_SIZE_0ED1C1);
         PageResult<LoginLog> result = logins.findByUserId(requiredUser(userId), PageQuery.of(page, size));
         List<LoginEntryDTO> entries =
                 result.records().stream().map(dtoConverter::toLoginEntry).toList();

@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.upms.web;
 
+import io.github.loadup.commons.dto.PageQuery;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.PageResponse;
 import io.github.loadup.commons.result.SuccessResponse;
@@ -28,7 +29,6 @@ import io.github.loadup.modules.upms.client.dto.LoginEntryDTO;
 import io.github.loadup.modules.upms.client.dto.SecurityOverviewDTO;
 import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
 import io.github.loadup.modules.upms.client.facade.AccountSecurityFacade;
-import io.github.loadup.modules.upms.client.query.AccountLoginPageQuery;
 import io.github.loadup.modules.upms.client.query.AccountSecurityQuery;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -61,12 +61,8 @@ public class AccountSecurityController {
     @PostMapping("/logins")
     @Operation(summary = "Get my recent login attempts")
     @PreAuthorize("isAuthenticated()")
-    public PageResponse<LoginEntryDTO> logins(
-            @RequestBody AccountLoginPageQuery request, Authentication authentication) {
-        var result = service.loginHistory(
-                actor(authentication),
-                request.page() == null ? 1 : request.page(),
-                request.size() == null ? 20 : request.size());
+    public PageResponse<LoginEntryDTO> logins(@RequestBody PageQuery request, Authentication authentication) {
+        var result = service.loginHistory(actor(authentication), request.page(), request.size());
         return PageResponse.of(result);
     }
 

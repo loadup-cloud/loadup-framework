@@ -213,9 +213,9 @@ public class RoleService implements io.github.loadup.modules.upms.client.facade.
                 && !query.getSortOrder().equalsIgnoreCase("DESC")) {
             throw new CommonException(UpmsResultCodeEnum.UNSUPPORTED_SORT_DIRECTION);
         }
-        int page = query.getPage() == null ? 1 : query.getPage();
-        int size = query.getSize() == null ? 20 : query.getSize();
-        if (page < 1 || size < 1 || size > 100) throw new CommonException(UpmsResultCodeEnum.INVALID_PAGE);
+        var pagination = query.pagination();
+        int page = pagination.page();
+        int size = pagination.size();
         Comparator<Role> order =
                 switch (query.getSortBy() == null ? "sortOrder" : query.getSortBy()) {
                     case "roleName" -> Comparator.comparing(Role::getRoleName, Comparator.nullsLast(String::compareTo));

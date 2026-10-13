@@ -75,7 +75,7 @@ class ApiMaskingJsonTest {
                 .doesNotContain("13812345678", "alice@example.com");
         assertThat(masking.write(new GetterContact())).contains("138****5678");
         assertThat(masking.write(new FieldContact())).contains("138****5678");
-        assertThat(masking.write(SuccessResponse.ofPage(PageDTO.of(List.of(contact), 1L, 1, 20))))
+        assertThat(masking.write(PageResponse.of(PageDTO.of(List.of(contact), 1L, 1, 20))))
                 .contains("138****5678", "\"pageInfo\"")
                 .doesNotContain("13812345678");
         assertThat(original.writeValueAsString(contact)).contains("13812345678", "alice@example.com");

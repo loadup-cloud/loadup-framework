@@ -19,11 +19,11 @@
  */
 package io.github.loadup.modules.audit.app.converter;
 
+import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.mapping.LoadUpMapStructConfig;
 import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.audit.client.dto.AuditEventDTO;
 import io.github.loadup.modules.audit.domain.model.AuditEvent;
-import io.github.loadup.modules.audit.domain.model.AuditPage;
 import io.github.loadup.modules.audit.domain.model.AuditQuery;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -33,11 +33,9 @@ import org.mapstruct.Mapping;
 public interface AuditDTOConverter {
     AuditEventDTO toDTO(AuditEvent value);
 
-    @Mapping(target = "data", source = "events")
-    @Mapping(target = "pageInfo.totalCount", source = "total")
-    @Mapping(target = "pageInfo.pageIndex", source = "page")
-    @Mapping(target = "pageInfo.pageSize", source = "size")
-    PageDTO<AuditEventDTO> toPageDTO(AuditPage value);
+    default PageDTO<AuditEventDTO> toPageDTO(PageResult<AuditEvent> value) {
+        return PageDTO.of(value.map(this::toDTO));
+    }
 
     @Mapping(target = "tenantId", source = "tenantId")
     AuditQuery toDomain(io.github.loadup.modules.audit.client.query.AuditPageQuery value, String tenantId);

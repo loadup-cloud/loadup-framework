@@ -202,3 +202,9 @@ Command/Query 命名、ID 查询复用、字典 Command 合并、七类重复分
 2026-10-12 新增 JDK-only commons-error，统一错误枚举和 CommonException；八个业务模块错误位于 client.error，删除裸业务异常及字符串失败工厂。KMS/HTTP/DFS/Signature/Lock 等分类异常接入 ResultCode；响应只使用固定枚举文案，诊断保留 cause。已通过主要消费模块 mvnd clean package；最终各组定向回归累计 148 个用例通过（包含 23 项架构/源码/枚举门禁），覆盖错误原因不外泄、报文可读、HTTP 200 result/data、业务模型以及 HTTP/KMS/Signature/Lock。License 与 Spotless 校验通过，文档站已同步；未执行真实数据库和外部渠道 IT。
 
 - [ ] 验证真实消费工程的错误响应、数据库冲突及外部渠道失败，核对前端对新增模块错误码的处理。
+
+## 分页契约去重后续验收
+
+2026-10-13 已删除七个领域 Page 包装和两个纯分页业务 Query，领域统一 PageResult，纯查询复用 PageQuery，带筛选的 Query 复用公共边界校验。Facade/PageResponse 的 HTTP 字段保持不变；SuccessResponse 移除重复分页能力。mvnd clean test 相关模块及依赖编译通过，31 项定向测试通过，覆盖公共分页 JSON、默认/非法入参、元数据保留、脱敏分页、UPMS 筛选排序与七类业务装配；License/Spotless 校验及文档站同步完成。未执行真实数据库分页 IT 或前端联调。
+
+- [ ] 在实际消费工程联调分页筛选、排序与前端表格，确认 OpenAPI 的公共 PageQuery 字段及空数组响应；更新外部代码对已删除 Page 类/纯分页 Query/ofPage 工厂的引用。

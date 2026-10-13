@@ -230,8 +230,6 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
     }
 
     private static void validatePage(int page, int size) {
-        if (page < 1 || size < 1 || size > 100) {
-            throw new CommonException(DictionaryResultCodeEnum.INVALID_PAGE);
-        }
+        io.github.loadup.commons.dto.PageQuery.normalized(page, size, DictionaryResultCodeEnum.INVALID_PAGE);
     }
 }

@@ -153,6 +153,6 @@ public class CatalogService implements io.github.loadup.modules.contract.client.
                 query.page(),
                 query.size());
         return PageDTO.of(
-                page.items().stream().map(converter::toCatalog).toList(), page.total(), query.page(), query.size());
+                page.records().stream().map(converter::toCatalog).toList(), page.total(), query.page(), query.size());
     }
 }

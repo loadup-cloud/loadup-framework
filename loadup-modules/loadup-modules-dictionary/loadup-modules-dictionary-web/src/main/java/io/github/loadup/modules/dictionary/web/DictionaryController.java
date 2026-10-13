@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.dictionary.web;
 
+import io.github.loadup.commons.dto.PageQuery;
 import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.commons.result.PageResponse;
 import io.github.loadup.commons.result.SuccessResponse;
@@ -34,7 +35,6 @@ import io.github.loadup.modules.dictionary.client.dto.DictionaryTypeDTO;
 import io.github.loadup.modules.dictionary.client.facade.DictionaryFacade;
 import io.github.loadup.modules.dictionary.client.query.DictionaryItemPageQuery;
 import io.github.loadup.modules.dictionary.client.query.DictionaryTypeCodeQuery;
-import io.github.loadup.modules.dictionary.client.query.DictionaryTypePageQuery;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -82,11 +82,8 @@ public class DictionaryController {
     @PostMapping("/types/list")
     @Operation(summary = "List dictionary types, including disabled types")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
-    public PageResponse<DictionaryTypeDTO> listTypes(@RequestBody DictionaryTypePageQuery request) {
-        PageDTO<DictionaryTypeDTO> result = service.listTypes(
-                TenantUtil.getTenantId(),
-                request.page() == null ? 1 : request.page(),
-                request.size() == null ? 20 : request.size());
+    public PageResponse<DictionaryTypeDTO> listTypes(@RequestBody PageQuery request) {
+        PageDTO<DictionaryTypeDTO> result = service.listTypes(TenantUtil.getTenantId(), request.page(), request.size());
         return PageResponse.of(result);
     }
 
@@ -116,11 +113,8 @@ public class DictionaryController {
     @Operation(summary = "List dictionary items, including disabled items")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
     public PageResponse<DictionaryItemDTO> listItems(@RequestBody DictionaryItemPageQuery request) {
-        PageDTO<DictionaryItemDTO> result = service.listItems(
-                TenantUtil.getTenantId(),
-                request.typeCode(),
-                request.page() == null ? 1 : request.page(),
-                request.size() == null ? 20 : request.size());
+        PageDTO<DictionaryItemDTO> result =
+                service.listItems(TenantUtil.getTenantId(), request.typeCode(), request.page(), request.size());
         return PageResponse.of(result);
     }
 

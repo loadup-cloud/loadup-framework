@@ -19,7 +19,6 @@
  */
 package io.github.loadup.modules.notification.client.query;
 
-import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.modules.notification.client.error.NotificationResultCodeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -41,11 +40,10 @@ public record NotificationPageQuery(
         @Max(100)
         Integer size) {
     public NotificationPageQuery {
-        page = page == null ? 1 : page;
-        size = size == null ? 20 : size;
-        if (page < 1 || size < 1 || size > 100) {
-            throw new CommonException(NotificationResultCodeEnum.INVALID_PAGE);
-        }
+        var pagination =
+                io.github.loadup.commons.dto.PageQuery.normalized(page, size, NotificationResultCodeEnum.INVALID_PAGE);
+        page = pagination.page();
+        size = pagination.size();
     }
 
     @Override

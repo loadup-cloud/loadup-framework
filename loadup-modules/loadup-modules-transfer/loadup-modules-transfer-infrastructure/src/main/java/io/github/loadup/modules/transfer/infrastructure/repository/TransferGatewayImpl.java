@@ -24,6 +24,7 @@ import static io.github.loadup.modules.transfer.infrastructure.dataobject.table.
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.tenant.TenantManager;
 import com.mybatisflex.core.util.UpdateEntity;
+import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.transfer.client.error.TransferResultCodeEnum;
 import io.github.loadup.modules.transfer.domain.gateway.TransferGateway;
@@ -78,7 +79,7 @@ public class TransferGatewayImpl implements TransferGateway {
     }
 
     @Override
-    public TransferPage<TransferTask> list(String tenant, String owner, int page, int size) {
+    public PageResult<TransferTask> list(String tenant, String owner, int page, int size) {
         var q = QueryWrapper.create()
                 .from(TRANSFER_TASK_DO)
                 .where(TRANSFER_TASK_DO.TENANT_ID.eq(tenant))
@@ -87,7 +88,7 @@ public class TransferGatewayImpl implements TransferGateway {
         q.orderBy(TRANSFER_TASK_DO.CREATED_AT.desc(), TRANSFER_TASK_DO.ID.desc())
                 .limit(size)
                 .offset((long) (page - 1) * size);
-        return new TransferPage<>(
+        return new PageResult<>(
                 tasks.selectListByQuery(q).stream().map(converter::toDomain).toList(), total, page, size);
     }
 

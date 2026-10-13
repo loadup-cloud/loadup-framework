@@ -26,12 +26,22 @@ public record PageResult<T>(List<T> records, long total, int page, int size) {
 
     public PageResult {
         records = records == null ? List.of() : List.copyOf(records);
-        page = Math.max(page, 1);
-        size = Math.max(size, 1);
-        total = Math.max(total, 0);
+        io.github.loadup.commons.dto.PageQuery.of(page, size);
+        if (total < 0)
+            throw new io.github.loadup.commons.error.CommonException(
+                    io.github.loadup.commons.enums.CommonResultCodeEnum.PARAM_ILLEGAL);
     }
 
     public static <T> PageResult<T> of(List<T> records, long total, int page, int size) {
         return new PageResult<>(records, total, page, size);
+    }
+    /** Maps entries without changing pagination metadata. */
+    public <R> PageResult<R> map(java.util.function.Function<? super T, ? extends R> converter) {
+        return new PageResult<>(records.stream().<R>map(converter).toList(), total, page, size);
+    }
+
+    @Override
+    public String toString() {
+        return io.github.loadup.commons.json.ToStringAsJson.reflectionToString(this);
     }
 }

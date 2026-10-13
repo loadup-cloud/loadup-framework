@@ -19,7 +19,6 @@
  */
 package io.github.loadup.modules.contract.client.query;
 
-import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -42,11 +41,10 @@ public record MerchantContractPageQuery(
         @Max(100)
         Integer size) {
     public MerchantContractPageQuery {
-        page = page == null ? 1 : page;
-        size = size == null ? 20 : size;
-        if (page < 1 || size < 1 || size > 100) {
-            throw new CommonException(ContractResultCodeEnum.INVALID_PAGE);
-        }
+        var pagination =
+                io.github.loadup.commons.dto.PageQuery.normalized(page, size, ContractResultCodeEnum.INVALID_PAGE);
+        page = pagination.page();
+        size = pagination.size();
     }
 
     @Override

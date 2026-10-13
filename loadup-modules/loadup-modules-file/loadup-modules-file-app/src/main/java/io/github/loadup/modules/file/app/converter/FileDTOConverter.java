@@ -19,16 +19,15 @@
  */
 package io.github.loadup.modules.file.app.converter;
 
+import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.mapping.LoadUpMapStructConfig;
 import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.file.client.dto.FileReferenceDTO;
 import io.github.loadup.modules.file.client.dto.FileResourceDTO;
-import io.github.loadup.modules.file.domain.model.FilePage;
 import io.github.loadup.modules.file.domain.model.FileReference;
 import io.github.loadup.modules.file.domain.model.FileResource;
 import java.util.List;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 /** Maps application results without exposing persistence or domain models. */
 @Mapper(config = LoadUpMapStructConfig.class)
@@ -39,9 +38,7 @@ public interface FileDTOConverter {
 
     List<FileReferenceDTO> toReferenceDTOs(List<FileReference> values);
 
-    @Mapping(target = "data", source = "records")
-    @Mapping(target = "pageInfo.totalCount", source = "total")
-    @Mapping(target = "pageInfo.pageIndex", source = "page")
-    @Mapping(target = "pageInfo.pageSize", source = "size")
-    PageDTO<FileResourceDTO> toPageDTO(FilePage<FileResource> value);
+    default PageDTO<FileResourceDTO> toPageDTO(PageResult<FileResource> value) {
+        return PageDTO.of(value.map(this::toDTO));
+    }
 }

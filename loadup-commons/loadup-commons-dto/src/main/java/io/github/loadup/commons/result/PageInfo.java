@@ -27,10 +27,21 @@ public record PageInfo(
         @Schema(description = "Total record count") Long totalCount,
         @Schema(description = "Page size") Long pageSize,
         @Schema(description = "Page number, starting at 1") Long pageIndex) {
+    public PageInfo {
+        if (totalCount == null
+                || totalCount < 0
+                || pageSize == null
+                || pageSize < 1
+                || pageIndex == null
+                || pageIndex < 1)
+            throw new io.github.loadup.commons.error.CommonException(
+                    io.github.loadup.commons.enums.CommonResultCodeEnum.PARAM_ILLEGAL);
+    }
+
     @Schema(description = "Total page count")
     public Long getTotalPages() {
         if (pageSize == null || pageSize <= 0) return 0L;
-        return (totalCount + pageSize - 1) / pageSize;
+        return totalCount == 0 ? 0L : 1 + (totalCount - 1) / pageSize;
     }
 
     @Override

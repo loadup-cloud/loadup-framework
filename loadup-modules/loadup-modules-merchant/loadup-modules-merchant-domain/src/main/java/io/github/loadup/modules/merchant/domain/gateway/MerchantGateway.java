@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.merchant.domain.gateway;
 
+import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.modules.merchant.domain.model.*;
 import java.util.Optional;
 
@@ -29,5 +30,6 @@ public interface MerchantGateway {
 
     void update(Merchant merchant, long expectedRowVersion);
 
-    MerchantPage page(String tenantId, String merchantCode, String name, MerchantStatus status, int page, int size);
+    PageResult<Merchant> page(
+            String tenantId, String merchantCode, String name, MerchantStatus status, int page, int size);
 }

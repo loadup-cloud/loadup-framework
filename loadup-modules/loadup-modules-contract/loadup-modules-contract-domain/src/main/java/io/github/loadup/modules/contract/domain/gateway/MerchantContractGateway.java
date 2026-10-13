@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.contract.domain.gateway;
 
+import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.modules.contract.domain.model.*;
 import java.util.Optional;
 
@@ -35,5 +36,5 @@ public interface MerchantContractGateway {
 
     void updateStatus(String tenantId, String id, long expectedGeneration, ContractStatus status);
 
-    ContractPage<ContractRecord> page(String tenantId, String merchantId, int page, int size);
+    PageResult<ContractRecord> page(String tenantId, String merchantId, int page, int size);
 }

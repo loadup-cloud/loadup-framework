@@ -122,7 +122,7 @@ public class FileResourceService implements io.github.loadup.modules.file.client
 
     public PageDTO<FileResourceDTO> list(
             String tenantId, String actorId, boolean admin, String ownerId, int page, int size) {
-        if (page < 1 || size < 1 || size > 100) throw new CommonException(FileResultCodeEnum.INVALID_PAGE);
+        io.github.loadup.commons.dto.PageQuery.normalized(page, size, FileResultCodeEnum.INVALID_PAGE);
         String owner = admin && ownerId != null && !ownerId.isBlank()
                 ? required(ownerId, "ownerId", 64)
                 : required(actorId, "actorId", 64);

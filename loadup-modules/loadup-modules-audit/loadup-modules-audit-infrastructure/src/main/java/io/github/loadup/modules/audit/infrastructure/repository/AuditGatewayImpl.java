@@ -22,6 +22,7 @@ package io.github.loadup.modules.audit.infrastructure.repository;
 import static io.github.loadup.modules.audit.infrastructure.dataobject.table.Tables.*;
 
 import com.mybatisflex.core.query.QueryWrapper;
+import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.modules.audit.domain.gateway.AuditGateway;
 import io.github.loadup.modules.audit.domain.model.*;
 import io.github.loadup.modules.audit.infrastructure.converter.AuditStorageConverter;
@@ -45,7 +46,7 @@ public class AuditGatewayImpl implements AuditGateway {
     }
 
     @Override
-    public AuditPage search(AuditQuery query) {
+    public PageResult<AuditEvent> search(AuditQuery query) {
         var q = QueryWrapper.create()
                 .from(AUDIT_EVENT_DO)
                 .where(
@@ -61,7 +62,7 @@ public class AuditGatewayImpl implements AuditGateway {
         q.orderBy(AUDIT_EVENT_DO.OCCURRED_AT.desc(), AUDIT_EVENT_DO.ID.desc())
                 .limit(query.size())
                 .offset((long) (query.page() - 1) * query.size());
-        return new AuditPage(
+        return new PageResult<>(
                 mapper.selectListByQuery(q).stream().map(converter::toDomain).toList(),
                 total,
                 query.page(),

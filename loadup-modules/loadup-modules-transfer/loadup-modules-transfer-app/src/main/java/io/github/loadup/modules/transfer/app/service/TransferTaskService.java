@@ -153,7 +153,7 @@ public class TransferTaskService
 
     public PageDTO<TransferTaskDTO> list(
             String tenantId, String actorId, boolean admin, String ownerId, int page, int size) {
-        if (page < 1 || size < 1 || size > 100) throw new CommonException(TransferResultCodeEnum.INVALID_PAGE);
+        io.github.loadup.commons.dto.PageQuery.normalized(page, size, TransferResultCodeEnum.INVALID_PAGE);
         String owner = admin && ownerId != null && !ownerId.isBlank()
                 ? required(ownerId, "ownerId", 64)
                 : required(actorId, "actorId", 64);

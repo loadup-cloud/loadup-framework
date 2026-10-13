@@ -23,6 +23,7 @@ import static io.github.loadup.modules.notification.infrastructure.dataobject.ta
 
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.util.UpdateEntity;
+import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.modules.notification.domain.gateway.InboxGateway;
 import io.github.loadup.modules.notification.domain.model.*;
 import io.github.loadup.modules.notification.infrastructure.converter.NotificationStorageConverter;
@@ -72,14 +73,14 @@ public class InboxGatewayImpl implements InboxGateway {
     }
 
     @Override
-    public InboxPage list(String tenant, String recipient, boolean unread, int page, int size) {
+    public PageResult<InboxMessage> list(String tenant, String recipient, boolean unread, int page, int size) {
         var q = active(tenant, recipient);
         if (unread) q.and(INBOX_MESSAGE_DO.READ_AT.isNull());
         long total = mapper.selectCountByQuery(q);
         q.orderBy(INBOX_MESSAGE_DO.CREATED_AT.desc(), INBOX_MESSAGE_DO.ID.desc())
                 .limit(size)
                 .offset((long) (page - 1) * size);
-        return new InboxPage(
+        return new PageResult<>(
                 mapper.selectListByQuery(q).stream().map(converter::toDomain).toList(), total, page, size);
     }
 

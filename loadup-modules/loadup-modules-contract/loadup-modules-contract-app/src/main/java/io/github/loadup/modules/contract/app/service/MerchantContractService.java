@@ -228,7 +228,7 @@ public class MerchantContractService implements io.github.loadup.modules.contrac
     public PageDTO<MerchantContractDTO> page(MerchantContractPageQuery query) {
         ContractIdentity.page(query.page(), query.size());
         var page = gateway.page(ContractIdentity.tenant(), query.merchantId(), query.page(), query.size());
-        return PageDTO.of(page.items().stream().map(this::toDTO).toList(), page.total(), query.page(), query.size());
+        return PageDTO.of(page.records().stream().map(this::toDTO).toList(), page.total(), query.page(), query.size());
     }
 
     @Transactional

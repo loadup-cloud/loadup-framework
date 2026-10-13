@@ -95,7 +95,7 @@ public class InboxService implements io.github.loadup.modules.notification.clien
     }
 
     public PageDTO<InboxMessageDTO> list(String tenantId, String recipientId, boolean unreadOnly, int page, int size) {
-        if (page < 1 || size < 1 || size > 100) throw new CommonException(NotificationResultCodeEnum.INVALID_PAGE);
+        io.github.loadup.commons.dto.PageQuery.normalized(page, size, NotificationResultCodeEnum.INVALID_PAGE);
         return converter.toPageDTO(
                 repository.list(tenant(tenantId), required(recipientId, "recipientId", 64), unreadOnly, page, size));
     }

@@ -22,6 +22,7 @@ package io.github.loadup.modules.merchant.infrastructure.repository;
 import static io.github.loadup.modules.merchant.infrastructure.dataobject.table.Tables.MERCHANT_DO;
 
 import com.mybatisflex.core.query.QueryWrapper;
+import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.merchant.client.error.MerchantResultCodeEnum;
 import io.github.loadup.modules.merchant.domain.gateway.MerchantGateway;
@@ -77,7 +78,8 @@ public class MerchantGatewayImpl implements MerchantGateway {
         if (changed != 1) throw new CommonException(MerchantResultCodeEnum.CONFLICT);
     }
 
-    public MerchantPage page(String tenant, String code, String name, MerchantStatus status, int page, int size) {
+    public PageResult<Merchant> page(
+            String tenant, String code, String name, MerchantStatus status, int page, int size) {
         QueryWrapper query = scope(tenant);
         if (code != null && !code.isBlank())
             query.and(MerchantDO::getMerchantCode).eq(code);
@@ -85,10 +87,12 @@ public class MerchantGatewayImpl implements MerchantGateway {
         if (status != null) query.and(MerchantDO::getStatus).eq(status.name());
         long total = mapper.selectCountByQuery(query);
         query.orderBy(MERCHANT_DO.CREATED_AT.desc(), MERCHANT_DO.ID.asc()).limit((long) (page - 1) * size, size);
-        return new MerchantPage(
+        return new PageResult<>(
                 mapper.selectListByQuery(query).stream()
                         .map(converter::toMerchant)
                         .toList(),
-                total);
+                total,
+                page,
+                size);
     }
 }

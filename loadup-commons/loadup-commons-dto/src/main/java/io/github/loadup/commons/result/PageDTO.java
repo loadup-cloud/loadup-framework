@@ -41,6 +41,11 @@ public class PageDTO<T> implements DTO {
                 .build();
     }
 
+    /** Adapts neutral pagination metadata; entry conversion belongs to the caller's MapStruct converter. */
+    public static <T> PageDTO<T> of(io.github.loadup.commons.domain.PageResult<T> page) {
+        return of(page.records(), page.total(), page.page(), page.size());
+    }
+
     /** Maps entries while preserving pagination metadata. */
     public <R> PageDTO<R> map(Function<? super T, ? extends R> mapper) {
         List<R> entries = data.stream().<R>map(mapper).toList();
@@ -52,7 +57,9 @@ public class PageDTO<T> implements DTO {
         this.pageInfo = pageInfo;
     }
 
-    public PageDTO() {}
+    public PageDTO() {
+        this(java.util.List.of(), new PageInfo(0L, 20L, 1L));
+    }
 
     public Collection<T> getData() {
         return this.data;

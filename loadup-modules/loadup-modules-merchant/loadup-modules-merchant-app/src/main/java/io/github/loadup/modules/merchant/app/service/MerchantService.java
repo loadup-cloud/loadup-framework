@@ -122,6 +122,6 @@ public class MerchantService implements io.github.loadup.modules.merchant.client
                 query.page(),
                 query.size());
         return PageDTO.of(
-                result.items().stream().map(converter::toDTO).toList(), result.total(), query.page(), query.size());
+                result.records().stream().map(converter::toDTO).toList(), result.total(), query.page(), query.size());
     }
 }

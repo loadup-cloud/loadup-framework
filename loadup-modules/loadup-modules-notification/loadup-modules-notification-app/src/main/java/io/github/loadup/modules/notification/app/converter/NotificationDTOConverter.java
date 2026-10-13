@@ -19,22 +19,19 @@
  */
 package io.github.loadup.modules.notification.app.converter;
 
+import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.mapping.LoadUpMapStructConfig;
 import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.notification.client.dto.InboxMessageDTO;
 import io.github.loadup.modules.notification.domain.model.InboxMessage;
-import io.github.loadup.modules.notification.domain.model.InboxPage;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 /** Maps application results without exposing persistence or domain models. */
 @Mapper(config = LoadUpMapStructConfig.class)
 public interface NotificationDTOConverter {
     InboxMessageDTO toDTO(InboxMessage value);
 
-    @Mapping(target = "data", source = "records")
-    @Mapping(target = "pageInfo.totalCount", source = "total")
-    @Mapping(target = "pageInfo.pageIndex", source = "page")
-    @Mapping(target = "pageInfo.pageSize", source = "size")
-    PageDTO<InboxMessageDTO> toPageDTO(InboxPage value);
+    default PageDTO<InboxMessageDTO> toPageDTO(PageResult<InboxMessage> value) {
+        return PageDTO.of(value.map(this::toDTO));
+    }
 }
