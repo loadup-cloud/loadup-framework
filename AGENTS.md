@@ -295,7 +295,7 @@ deleted    TINYINT      NOT NULL DEFAULT 0
 - Java **25** | Spring Boot **4.1.1** | MyBatis-Flex **1.11.8**（版本以 BOM 为准）
 - MySQL 8.0+ | Caffeine（本地）| Redis/Redisson（分布式）
 - Resilience4j **2.3.0**（容错；版本由 loadup-dependencies BOM 统一，跟随 Spring Cloud 2025.1.x）
-- JUnit 5 + `loadup-testify-spring-boot-starter` + Testcontainers
+- JUnit **6.0.3**（由 Spring Boot BOM 管理）+ `loadup-testify-spring-boot-starter` + Testcontainers
 - SpringDoc + Scalar | Spotless (Palantir Java Format) | Maven
 - License: **Apache-2.0**（Java 文件头由 license-maven-plugin 自动维护）
 

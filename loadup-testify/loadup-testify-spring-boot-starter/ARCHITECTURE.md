@@ -37,7 +37,11 @@ Spring Boot 测试上下文 → Testify 自动配置 → 数据引擎/断言引�
 
 - [`TestifyAutoConfiguration`](src/main/java/io/github/loadup/testify/starter/config/TestifyAutoConfiguration.java) 是自动配置入口。
   - `@ConditionalOnClass(JdbcTemplate.class)`
-  - `@ConditionalOnBean(JdbcTemplate.class)`
+  - `TestScenario` 与 `DbAssertEngine` 使用 `@ConditionalOnBean(JdbcTemplate.class)`。
+  - 变量引擎、响应/异常断言不要求 `JdbcTemplate` Bean；`ScenarioAssert` 通过 `ObjectProvider` 获取可选数据库断言引擎。
+  - 未装配数据库断言引擎时，`verifyDb` 抛出明确的 `AssertionError`，其他断言保持可用。
+  - JDBC starter 仍会触发 Boot 数据源自动配置；无数据库消费工程应排除 `DataSourceAutoConfiguration`。
+  - JUnit 与 Spring Boot Test 由消费工程的 `spring-boot-starter-test`（test scope）提供。
 
 ## 设计取舍
 

@@ -19,6 +19,7 @@
  */
 package io.github.loadup.commons.dataobject;
 
+import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
 import io.github.loadup.commons.json.ToStringAsJson;
@@ -38,6 +39,7 @@ public abstract class BaseDO implements Serializable {
 
     private String tenantId;
 
+    @Column(isLogicDelete = true)
     private Integer deleted;
 
     @Override

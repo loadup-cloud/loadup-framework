@@ -23,7 +23,7 @@ import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.core.FlexGlobalConfig;
 import com.mybatisflex.core.keygen.KeyGeneratorFactory;
 import com.mybatisflex.core.logicdelete.LogicDeleteManager;
-import com.mybatisflex.core.logicdelete.impl.DefaultLogicDeleteProcessor;
+import com.mybatisflex.core.logicdelete.impl.IntegerLogicDeleteProcessor;
 import com.mybatisflex.core.tenant.TenantManager;
 import com.mybatisflex.spring.boot.MyBatisFlexCustomizer;
 import io.github.loadup.commons.dataobject.BaseDO;
@@ -126,7 +126,7 @@ public class MyBatisFlexAutoConfiguration {
         globalConfig.setLogicDeleteColumn("deleted");
         globalConfig.setNormalValueOfLogicDelete(0);
         globalConfig.setDeletedValueOfLogicDelete(1);
-        LogicDeleteManager.setProcessor(new DefaultLogicDeleteProcessor());
+        LogicDeleteManager.setProcessor(new IntegerLogicDeleteProcessor());
     }
 
     private void configureMultiTenant(FlexGlobalConfig globalConfig) {

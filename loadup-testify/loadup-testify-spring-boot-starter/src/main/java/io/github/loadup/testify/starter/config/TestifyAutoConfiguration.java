@@ -28,6 +28,7 @@ import io.github.loadup.testify.data.engine.variable.VariableEngine;
 import io.github.loadup.testify.starter.scenario.ScenarioAssert;
 import io.github.loadup.testify.starter.scenario.TestScenario;
 import java.util.List;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -62,6 +63,7 @@ public class TestifyAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    @ConditionalOnBean(JdbcTemplate.class)
     public DbAssertEngine dbAssertEngine(JdbcTemplate jdbcTemplate, VariableEngine variableEngine) {
         return new DbAssertEngine(jdbcTemplate, variableEngine);
     }
@@ -76,8 +78,8 @@ public class TestifyAutoConfiguration {
     @ConditionalOnMissingBean
     public ScenarioAssert scenarioAssert(
             ResponseAssertEngine responseAssertEngine,
-            DbAssertEngine dbAssertEngine,
+            ObjectProvider<DbAssertEngine> dbAssertEngine,
             ExceptionAssertEngine exceptionAssertEngine) {
-        return new ScenarioAssert(responseAssertEngine, dbAssertEngine, exceptionAssertEngine);
+        return new ScenarioAssert(responseAssertEngine, dbAssertEngine.getIfAvailable(), exceptionAssertEngine);
     }
 }

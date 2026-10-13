@@ -12,6 +12,9 @@
 
 ## 当前建设目标与实施顺序
 
+- [ ] JUnit 6.0.3 定向运行验收：版本由 Boot 4.1.1 BOM 统一管理，Testify/AGENTS 文档已对齐，launcher 架构测试已改用 ArchUnit 核心库；见 [分析记录](loadup-testify/JUNIT6-ANALYSIS.md)。用户验收普通/参数化/Spring 测试、架构与源码/错误码门禁及真实 MySQL IT，核对测试发现数量；本次未执行构建或测试。
+- [ ] Testify 修复运行验收：无 JdbcTemplate 时保留响应/异常断言，数据库引擎按 Bean 条件装配，缺少引擎时 verifyDb 抛出明确 AssertionError；消费方测试依赖文档已补齐，archunit-junit5 管理项已移除。新增 TestifyAutoConfigurationTest，用户连同 ScenarioAssertTest、UserServiceIT、UserServiceBatchIT 定向运行（当前预期 19 次执行），此次未运行构建、测试或 Maven 格式门禁。
+
 面向支付宝、微信支付、银联的商户聚合收单应用，优先补齐通用技术能力。收单业务放在独立消费工程中；支付状态机、渠道协议、退款、商户通知任务、费用与对账规则由业务工程负责。当前范围不包含用户余额钱包、充值、内部转账及提现。
 
 首批交付顺序为 **Outbox → HTTP → 两者组合验证**；随后完善开放接口安全、外部协议隔离和生产运行能力。下面列出的验收条件为后续实现的完成标准，不代表已经执行验证。
@@ -208,3 +211,9 @@ Command/Query 命名、ID 查询复用、字典 Command 合并、七类重复分
 2026-10-13 已删除七个领域 Page 包装和两个纯分页业务 Query，领域统一 PageResult，纯查询复用 PageQuery，带筛选的 Query 复用公共边界校验。Facade/PageResponse 的 HTTP 字段保持不变；SuccessResponse 移除重复分页能力。mvnd clean test 相关模块及依赖编译通过，31 项定向测试通过，覆盖公共分页 JSON、默认/非法入参、元数据保留、脱敏分页、UPMS 筛选排序与七类业务装配；License/Spotless 校验及文档站同步完成。未执行真实数据库分页 IT 或前端联调。
 
 - [ ] 在实际消费工程联调分页筛选、排序与前端表格，确认 OpenAPI 的公共 PageQuery 字段及空数组响应；更新外部代码对已删除 Page 类/纯分页 Query/ofPage 工厂的引用。
+
+## 逻辑删除契约后续验收
+
+2026-10-13 BaseDO.deleted 已显式添加逻辑删除注解，database 使用 IntegerLogicDeleteProcessor；Java Integer、数据库 TINYINT、正常/删除值 0/1 保持一致，无需表迁移。mvnd clean test 定向 8 项回归通过，包含关闭全局列名时继承逻辑删除元数据的验证；格式化与 License 校验通过，文档站已同步。实际删除 SQL 与数据库行为未在本轮执行。
+
+- [ ] 在实际消费工程验证 BaseMapper 删除转换为 UPDATE deleted=1，普通查询及更新过滤删除记录，并核对显式物理删除调用的业务边界。

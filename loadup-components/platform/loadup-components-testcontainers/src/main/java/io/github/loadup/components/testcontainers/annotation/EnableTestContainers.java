@@ -33,7 +33,7 @@ import org.springframework.test.context.ContextConfiguration;
  * <p>This annotation is automatically detected by {@link io.github.loadup.components.testcontainers.listener.TestContainersExecutionListener}
  * which is registered via spring.factories. No additional configuration is needed.
  *
- * <p>Works with JUnit 5 tests.
+ * <p>Works with JUnit Jupiter tests.
  *
  * <p>Usage example:
  * <pre>

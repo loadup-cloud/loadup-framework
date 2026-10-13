@@ -1,6 +1,6 @@
 # LoadUp Testify Spring Boot Starter
 
-JUnit 5 集成测试辅助组件，自动装配以下能力：
+JUnit 6.0.3 集成测试辅助组件，版本由 LoadUp BOM 统一管理；自动装配以下能力：
 
 - 数据清理与准备：`clean` / `insert`
 - 数据库异步断言：`assertDb(...).where(...).exists() / has(...)`
@@ -12,6 +12,11 @@ JUnit 5 集成测试辅助组件，自动装配以下能力：
 
 ```xml
 <dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-test</artifactId>
+    <scope>test</scope>
+</dependency>
+<dependency>
     <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-testify-spring-boot-starter</artifactId>
     <scope>test</scope>
@@ -20,6 +25,12 @@ JUnit 5 集成测试辅助组件，自动装配以下能力：
 
 需要容器时，自行引入 `loadup-components-testcontainers`，并在测试类上使用
 `@EnableTestContainers(ContainerType.MYSQL)`。
+
+Testify starter 不传递 JUnit 或 Spring Boot Test；上面的测试 starter 提供测试注解、引擎和 Mockito。
+没有 `JdbcTemplate` Bean 时，变量引擎、响应/异常断言及 `ScenarioAssert` 仍可装配，
+`TestScenario` 和 `DbAssertEngine` 不装配；此时调用 `verifyDb` 会抛出明确的 `AssertionError`。
+无数据库测试可通过 `spring.autoconfigure.exclude=org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration`
+排除 Boot 数据源自动配置；配置数据库后，数据库测试能力自动恢复。
 
 ## 示例
 

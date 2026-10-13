@@ -164,3 +164,9 @@ mvnd clean test -pl loadup-components/data/loadup-components-database -am \
 ```
 
 The IT requires Docker and uses real MySQL through the framework Testcontainers annotation. Consumer failover/restore rehearsals and P95/P99 capacity measurements are separate production acceptance work.
+
+## Explicit integer logical deletion
+
+`BaseDO.deleted` is an `Integer` annotated with `@Column(isLogicDelete = true)`, inherited by each mapped DO. The database component installs `IntegerLogicDeleteProcessor` and retains the fixed global column `deleted`, normal value 0 and deleted value 1. MySQL storage stays `TINYINT NOT NULL DEFAULT 0`; no schema migration is required. The processor expresses Java integer 0/1 semantics and does not require a four-byte SQL INT column. Do not mix a Boolean field or BooleanLogicDeleteProcessor into this contract.
+
+Generated BaseMapper delete operations follow logical deletion, and ordinary mapped queries filter deleted rows. Explicit `LogicDeleteManager.execWithoutLogicDelete` remains an intentional bypass for approved physical lifecycle operations. The sequence allocation table continues to prohibit deletion and resetting its counters.

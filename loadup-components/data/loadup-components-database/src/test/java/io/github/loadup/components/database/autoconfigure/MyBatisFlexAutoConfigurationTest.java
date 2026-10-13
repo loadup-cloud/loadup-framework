@@ -32,6 +32,20 @@ import org.junit.jupiter.api.Test;
 
 class MyBatisFlexAutoConfigurationTest {
     @Test
+    void inheritsLogicalDeleteMetadataWithoutGlobalColumnName() {
+        FlexGlobalConfig config = FlexGlobalConfig.getDefaultConfig();
+        String previous = config.getLogicDeleteColumn();
+        try {
+            config.setLogicDeleteColumn(null);
+            var table = com.mybatisflex.core.table.TableInfoFactory.ofEntityClass(
+                    io.github.loadup.components.database.sequence.dataobject.SequenceAllocationDO.class);
+            assertThat(table.getLogicDeleteColumn()).isEqualTo("deleted");
+        } finally {
+            config.setLogicDeleteColumn(previous);
+        }
+    }
+
+    @Test
     void usesFixedPersistenceConventions() {
         DatabaseProperties properties = new DatabaseProperties();
         MyBatisFlexAutoConfiguration autoConfiguration = new MyBatisFlexAutoConfiguration(properties);
@@ -49,6 +63,8 @@ class MyBatisFlexAutoConfigurationTest {
         assertThat(globalConfig.getLogicDeleteColumn()).isEqualTo("deleted");
         assertThat(globalConfig.getNormalValueOfLogicDelete()).isEqualTo(0);
         assertThat(globalConfig.getDeletedValueOfLogicDelete()).isEqualTo(1);
+        assertThat(com.mybatisflex.core.logicdelete.LogicDeleteManager.getProcessor())
+                .isInstanceOf(com.mybatisflex.core.logicdelete.impl.IntegerLogicDeleteProcessor.class);
     }
 
     private org.springframework.beans.factory.ObjectProvider<IdGenerator> provider(IdGenerator generator) {

@@ -97,6 +97,9 @@ public class ScenarioAssert {
      * Verify database state, e.g. {@code {table: users, mode: strict, rows: [...]}}.
      */
     public ScenarioAssert verifyDb(Object expected, Map<String, Object> variables) {
+        if (dbAssertEngine == null) {
+            throw new AssertionError("Database assertions require a DbAssertEngine backed by a JdbcTemplate bean");
+        }
         dbAssertEngine.compare(toNode(expected), null, variables == null ? Map.of() : variables);
         return this;
     }

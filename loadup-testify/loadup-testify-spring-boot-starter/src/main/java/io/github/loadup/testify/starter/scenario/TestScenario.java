@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
- * Small DSL for JUnit 5 integration tests: data cleanup, data setup, and async DB assertions.
+ * Small DSL for JUnit Jupiter integration tests: data cleanup, data setup, and async DB assertions.
  */
 public class TestScenario {
 
