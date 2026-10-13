@@ -1,50 +1,27 @@
-# Testify Spring Boot Starter 架构
+# Starter 架构
 
-## 职责与边界
+## 所有权
 
-Testify 与 Spring Boot 的自动装配入口。
+Starter 负责 Spring 集成与易用入口，依赖 core、data-engine 和 assert-engine。依赖 spring-boot-starter-jdbc 与 Jackson YAML；消费工程自行提供 Spring Boot Test、JUnit、容器和数据源配置。
 
-## Maven 依赖边界
+## 装配顺序
 
-直接依赖的框架模块：
+AutoConfiguration.imports 注册 TestifyAutoConfiguration；它在 Boot DataSourceAutoConfiguration 和 JdbcTemplateAutoConfiguration 后运行，并要求 JdbcTemplate 类可见。
 
-- `loadup-testify-core`
-- `loadup-testify-data-engine`
-- `loadup-testify-assert-engine`
+TestScenario 和 DbAssertEngine 额外要求 JdbcTemplate Bean。VariableEngine、ResponseAssertEngine、ExceptionAssertEngine 始终按缺失 Bean 装配；ScenarioAssert 取得可选 DB 引擎。因此“JDBC 类在 classpath”与“已有可用 DataSource/JdbcTemplate Bean”是不同条件。
 
-直接依赖的外部坐标（不含测试与 provided scope）：
+## 门面与执行
 
-- `org.springframework.boot:spring-boot-starter`
-- `org.springframework.boot:spring-boot-starter-jdbc`
-- `tools.jackson.dataformat:jackson-dataformat-yaml`
-- `org.slf4j:slf4j-api`
+ScenarioAssert 统一接收 Map、JsonNode、对象或 JSON 文本期望；对象级期望委托 ResponseAssertEngine，叶值走 OperatorProcessor。verifyJson 先解析实际 JSON；verifyDb 要求可选引擎存在；verifyException 接收测试显式捕获的 Throwable。
 
-## 实现入口
+TestScenario 用受限制标识符和参数化值实现 JDBC 清理/插入。DbAssert 每次由 assertDb 创建，持有 criteria 和 timeout；where 累积相等条件，exists/notExists/has 独立轮询。单步成功不会重置或回滚业务数据。
 
-主要入口文件：
+## 文件层
 
-- [`TestifyAutoConfiguration`](src/main/java/io/github/loadup/testify/starter/config/TestifyAutoConfiguration.java)
+CaseFiles 为 YAML、JSON 各持有一个私有 Mapper，读取 ClassPathResource 并规范化 TestifyCase。TestifyCase 保存原始 JsonNode，不自动变成业务 Command。JUnit MethodSource 负责枚举和执行，变量解析和业务绑定由测试显式调用。
 
-## 分层与调用路径
+## 设计边界
 
-Starter 装配测试环境；数据引擎准备和清理样本；断言引擎验证结果。
+没有全局 AOP Mock、运行计划、HTTP transport、数据源创建或表迁移。默认函数列表固定，Bean 替换是当前扩展入口。两套 DB 断言的超时、错误重试与字段比较不同；只在准确记录契约后组合使用。
 
-```text
-Spring Boot 测试上下文 → Testify 自动配置 → 数据引擎/断言引擎
-```
-
-## 装配规则
-
-- [`TestifyAutoConfiguration`](src/main/java/io/github/loadup/testify/starter/config/TestifyAutoConfiguration.java) 是自动配置入口。
-  - `@ConditionalOnClass(JdbcTemplate.class)`
-  - `TestScenario` 与 `DbAssertEngine` 使用 `@ConditionalOnBean(JdbcTemplate.class)`。
-  - 变量引擎、响应/异常断言不要求 `JdbcTemplate` Bean；`ScenarioAssert` 通过 `ObjectProvider` 获取可选数据库断言引擎。
-  - 未装配数据库断言引擎时，`verifyDb` 抛出明确的 `AssertionError`，其他断言保持可用。
-  - JDBC starter 仍会触发 Boot 数据源自动配置；无数据库消费工程应排除 `DataSourceAutoConfiguration`。
-  - JUnit 与 Spring Boot Test 由消费工程的 `spring-boot-starter-test`（test scope）提供。
-
-## 设计取舍
-
-保持组件职责独立：业务调用依赖公开契约，自动配置处理框架装配，基础设施细节留在实现层。
-
-集成方式与配置示例见 [README.md](README.md)。
+详细装配矩阵在 [总架构文档](../ARCHITECTURE.md)，接入示例在 [README](README.md)。

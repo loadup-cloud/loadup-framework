@@ -217,3 +217,9 @@ Command/Query 命名、ID 查询复用、字典 Command 合并、七类重复分
 2026-10-13 BaseDO.deleted 已显式添加逻辑删除注解，database 使用 IntegerLogicDeleteProcessor；Java Integer、数据库 TINYINT、正常/删除值 0/1 保持一致，无需表迁移。mvnd clean test 定向 8 项回归通过，包含关闭全局列名时继承逻辑删除元数据的验证；格式化与 License 校验通过，文档站已同步。实际删除 SQL 与数据库行为未在本轮执行。
 
 - [ ] 在实际消费工程验证 BaseMapper 删除转换为 UPDATE deleted=1，普通查询及更新过滤删除记录，并核对显式物理删除调用的业务边界。
+
+## Testify 文档后续验收
+
+2026-10-14 已重写 Testify 聚合及五个子模块的 README/ARCHITECTURE，共12份文档。基于实际源码补齐 Maven/条件装配、数据库隔离、两套轮询规则、参数化 YAML、变量/函数、操作符、根因异常、diff 和排错；修正反引号表名、自动函数收集等错误描述。此次仅文档修改，未执行 Maven、Docker 或示例测试；文档站同步完成。
+
+- [ ] 在最小消费工程按 Testify 手册验证有/无数据库接入及案例执行，并将运行结果与环境单独记录。

@@ -1,35 +1,21 @@
-# Testify Demo 架构
+# 示例与回归模块架构
 
-## 职责与边界
+## 职责
 
-Testify 测试框架的测试模块，承载模块行为和集成验证；不作为生产运行时依赖。
+test 模块位于依赖图最上层，组合 Testify starter、Spring Boot Test、Testcontainers、MySQL driver 和示例服务。它验证组件行为，不是框架对外发布的业务 API。
 
-## Maven 依赖边界
+## 分层
 
-直接依赖的外部坐标（不含测试与 provided scope）：
+src/main 下的 Application/UserService/OrderService/User/Order 是测试夹具；src/test 下的 TestApplication、JUnit 用例和资源建立验证环境。schema.sql 使用 JDBC 示例字段而非完整 COLA 业务模块模型，不能据此放宽生产表约束。
 
-- `org.springframework.boot:spring-boot-starter`
-- `org.springframework.boot:spring-boot-starter-jdbc`
-- `com.mysql:mysql-connector-j`
+## 验证边界
 
-## 实现入口
+ScenarioAssertTest 验证声明式比较；TestifyAutoConfigurationTest 验证条件装配；两个 IT 覆盖 Spring、真实 JDBC、用例输入和数据库副作用。它们不证明所有数据库方言、HTTP 序列化、并行隔离或生产容量正确。
 
-主要入口文件：
+## 数据生命周期
 
-- [`OrderService`](src/main/java/io/github/loadup/testify/test/service/OrderService.java)
-- [`UserService`](src/main/java/io/github/loadup/testify/test/service/UserService.java)
+初始化脚本重建示例表，测试清理后准备数据并调用业务。批量案例在测试中逐条解析，JUnit 负责展示 case 名称。共享容器复用与整表清理是不同层面的策略，CI 应串行执行该示例或隔离数据库。
 
-## 分层与调用路径
+## 维护要求
 
-Starter 装配测试环境；数据引擎准备和清理样本；断言引擎验证结果。
-
-```text
-测试用例 → 测试配置/容器 → 被测 API 与实现 → 契约断言
-```
-测试模块处于依赖链末端，用真实装配验证调用路径；不向业务代码暴露新契约。
-
-## 设计取舍
-
-以公开契约验证组件接入；环境相关的启动与数据准备留在测试模块。
-
-集成方式与配置示例见 [README.md](README.md)。
+变化按风险选择单测或 IT；使用 mvnd clean 和明确的 -Dtest 列表，不默认全量 reactor。新增案例应覆盖真实边界而非复制实现。此轮只改文档，运行状态不能从源码存在推断。执行说明见 [README.md](README.md)。

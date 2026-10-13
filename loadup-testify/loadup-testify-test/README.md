@@ -1,29 +1,42 @@
-# Testify Demo
+# Testify 可执行示例
 
-演示 `loadup-testify-spring-boot-starter` 与 `loadup-components-testcontainers`
-的组合用法。
+本模块演示 Testify 的真实使用并提供回归源码，不是消费工程应该引入的生产能力。包含 users/orders 示例表与服务；其 schema 和应用启动类只服务于测试，不能作为业务模块建模模板。
 
-## 运行
+## 用例矩阵
 
-```bash
-mvn test -pl loadup-testify/loadup-testify-test
+| 类 | 内容 | 环境 |
+|---|---|---|
+| ScenarioAssertTest | 对象/JsonPath/操作符和失败报告 | 无真实数据库 |
+| TestifyAutoConfigurationTest | JDBC 有/无时的条件装配 | 无真实数据库 |
+| UserServiceIT | 数据准备、Service 调用与数据库断言 | Docker + MySQL |
+| UserServiceBatchIT | YAML 用例、变量、输入绑定、响应断言 | Docker + MySQL |
+
+## 资源目录
+
+- application.yml：默认 profile。
+- application-test.yml / application-ci.yml：本地/CI 测试环境。
+- schema.sql：示例表初始化；包含重建操作，仅限独占测试库。
+- testcases/UserServiceIT/batch-create.yaml：三条批量创建案例，展示 regex、approx、contains 和 JsonPath。
+
+UserServiceBatchIT 的执行顺序是 loadYaml → resolveVariables → resolveValue(input) → JsonUtil 类型绑定 → 清理样本 → 调用服务 → verify。当前示例源码保留了字段注入，消费工程新增测试应遵循项目规则使用构造器注入。
+
+## 运行命令
+
+```shell
+mvnd clean test -pl loadup-testify/loadup-testify-test -am   -Dtest=ScenarioAssertTest,TestifyAutoConfigurationTest   -Dsurefire.failIfNoSpecifiedTests=false
+
+mvnd clean test -pl loadup-testify/loadup-testify-test -am   -Dtest=UserServiceIT,UserServiceBatchIT   -Dsurefire.failIfNoSpecifiedTests=false
 ```
 
-需要 Docker；MySQL 容器由 `@EnableTestContainers(ContainerType.MYSQL)` 启动。
+第二条使用 Surefire 显式选取 IT，要求可用 Docker，可能拉取 MySQL 镜像。容器复用不保证表数据隔离。已有示例整表清理与 schema 重建不适合共享库并行执行。
 
-## 演示点
+## 消费工程迁移步骤
 
-- `UserServiceIT.createUser_shouldPersistUserAndUseMockedOrderService`：
-  `TestScenario` 数据清理、`@MockitoBean` 替换 `OrderService`、`assertDb` 异步断言。
-- `UserServiceIT.getUserById_shouldReturnUserInsertedByScenario`：
-  `TestScenario.insert` 预置数据后查询。
-- `UserServiceBatchIT`：`CaseFiles` 从 YAML 批量加载入参/出参用例，
-  `@ParameterizedTest` 逐条执行，`ScenarioAssert` 按操作符（regex / approx / contains / JsonPath）断言。
-- `ScenarioAssertTest`：声明式断言操作符的单元测试。
+1. 引入 starter 和 Spring Boot Test，均使用 test scope。
+2. 用自己的 TestApplication、业务 Facade/Service 和表迁移替换 Demo。
+3. 声明 test/ci profile，选择真实容器或专用测试环境。
+4. 按业务 ID/租户范围清理，补齐必填审计字段。
+5. 固定需要重放的变量，明确同步/异步提交边界。
+6. 使用实际 HTTP 输出验证响应序列化，用数据库查询验证持久化副作用。
 
-## 接入步骤
-
-此模块用于验证组件契约，通常只在本项目的测试构建中使用；应用接入请选同级 API 与实现模块。
-需要单独执行时，可在仓库根目录使用 `mvn clean test -pl loadup-testify/loadup-testify-test -am`；外部服务和容器要求以测试类及测试配置为准。
-
-设计边界与装配路径见 [ARCHITECTURE.md](ARCHITECTURE.md)。
+本轮文档更新没有执行上述命令；源码覆盖范围不代表运行通过。完整入门见 [Testify README](../README.md)。

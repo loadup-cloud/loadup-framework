@@ -1,21 +1,10 @@
-# LoadUp Testify Spring Boot Starter
+# Testify Spring Boot Starter
 
-JUnit 6.0.3 集成测试辅助组件，版本由 LoadUp BOM 统一管理；自动装配以下能力：
-
-- 数据清理与准备：`clean` / `insert`
-- 数据库异步断言：`assertDb(...).where(...).exists() / has(...)`
-- 唯一值生成：`uuid()`
-- 声明式断言：`ScenarioAssert.verify(...)` / `verifyJson(...)` / `verifyDb(...)`
-- 批量用例：`CaseFiles` 从 YAML/JSON 加载用例，配合 `@ParameterizedTest` 逐条执行
+Testify 的主要消费入口，提供 ScenarioAssert、TestScenario、CaseFiles，以及数据/断言引擎的 Spring 自动配置。完整首次接入步骤和案例文件示例见 [总体接入手册](../README.md)。
 
 ## 引入
 
 ```xml
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-test</artifactId>
-    <scope>test</scope>
-</dependency>
 <dependency>
     <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-testify-spring-boot-starter</artifactId>
@@ -23,92 +12,45 @@ JUnit 6.0.3 集成测试辅助组件，版本由 LoadUp BOM 统一管理；自�
 </dependency>
 ```
 
-需要容器时，自行引入 `loadup-components-testcontainers`，并在测试类上使用
-`@EnableTestContainers(ContainerType.MYSQL)`。
+另外显式声明 spring-boot-starter-test；需要真实数据库容器时添加 loadup-components-testcontainers 和 JDBC driver。Testify 不携带 JUnit/Boot Test，也不自动启动容器或创建表。
 
-Testify starter 不传递 JUnit 或 Spring Boot Test；上面的测试 starter 提供测试注解、引擎和 Mockito。
-没有 `JdbcTemplate` Bean 时，变量引擎、响应/异常断言及 `ScenarioAssert` 仍可装配，
-`TestScenario` 和 `DbAssertEngine` 不装配；此时调用 `verifyDb` 会抛出明确的 `AssertionError`。
-无数据库测试可通过 `spring.autoconfigure.exclude=org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration`
-排除 Boot 数据源自动配置；配置数据库后，数据库测试能力自动恢复。
+## 能力矩阵
 
-## 示例
+| 类型 | 使用 | 数据库要求 |
+|---|---|---|
+| ScenarioAssert | verify、verifyJson、verifyException | 无需 DataSource Bean |
+| ScenarioAssert.verifyDb | 多行/操作符/计数断言 | JdbcTemplate / DbAssertEngine |
+| TestScenario | uuid、clean、insert、assertDb | JdbcTemplate |
+| CaseFiles | loadYaml / loadJson | 无，读取 classpath |
+| VariableEngine | 变量展开 | 无 |
 
-```java
-@SpringBootTest
-@EnableTestContainers(ContainerType.MYSQL)
-class UserIT {
+默认没有 loadup.testify.* 配置项。容器属性属于 Testcontainers；等待属性在 DbAssert.withTimeout 或数据库断言定义中。无数据库测试要排除 Boot DataSourceAutoConfiguration，因为 starter 的 JDBC 依赖仍可能触发数据源创建。
 
-    @Autowired
-    private TestScenario scenario;
+## 注入与使用
 
-    @Test
-    void userShouldBePersisted() {
-        String userId = scenario.uuid();
-        scenario.clean("users", "user_id", userId);
-        scenario.insert("users", Map.of("user_id", userId, "status", "ACTIVE"));
-
-        scenario.assertDb("users")
-                .where("user_id", userId)
-                .exists()
-                .has("status", "ACTIVE");
-    }
-}
-```
-
-Mock 请直接使用 Spring Boot Test 的 `@MockitoBean` / `@MockitoSpyBean` 与 Mockito。
-
-## 声明式断言（复杂规则）
-
-期望值写在用例文件或代码中，支持操作符配置 `{op: ..., val: ...}`：
-
-| 操作符 | 用途 | 示例 |
-|--------|------|------|
-| 默认（eq） | 等值，数字类型自动兼容 | `id: 123` |
-| `approx` | 时间近似，`threshold` 默认 3000ms | `{op: approx, val: "${time.now()}"}` |
-| `contains` | 子串包含 | `{op: contains, val: "Hopper"}` |
-| `regex` | 正则匹配 | `{op: regex, val: "^.+@example\\.com$"}` |
-| `json` | JSON 比对，`mode: full` 为严格模式 | `{op: json, val: '{"a":1}'}` |
-| `size` | 集合长度 | `{op: size, val: 2}` |
-| `gt`/`ge`/`lt`/`le` | 数值比较 | `{op: gt, val: 18}` |
-
-期望 map 的 key 以 `$` 开头时按 JsonPath 从实际结果提取，如 `"$.order.orderName"`；
-值中的 `${var}` 占位符会先用 `VariableEngine` 解析。
+通过测试类构造器注入，不要字段注入。变量引擎和断言引擎为普通 Bean；CaseFiles 为静态 classpath 加载器。链式 DbAssert 每次新建，不跨用例共享。
 
 ```java
-scenarioAssert.verify(actual, Map.of(
-        "userId", "${userId}",
-        "email", Map.of("op", "regex", "val", "^.+@example\\.com$"),
-        "createdAt", Map.of("op", "approx", "val", nowTime)));
+assertions.verifyJson(actualJson, Map.of("$.data.status", "CREATED"));
+scenario.assertDb("payment_order").where("id", id).exists().has("status", "CREATED");
 ```
 
-## 批量用例（文件录入入参/出参）
+两个片段的 actualJson、id 与已创建的表来自消费测试。标识符不支持反引号；默认异步断言5秒、100ms间隔。清理为真实 DELETE，不执行逻辑删除。
 
-用例文件（`cases:` 列表，每个 case 含 `name` / `variables` / `input` / `expect`）：
+## 替换 Bean
 
-```yaml
-cases:
-  - name: "valid user"
-    variables: { userId: "${fn.uuid()}" }
-    input: { userId: "${userId}", userName: "Ada", email: "ada@example.com" }
-    expect:
-      userId: "${userId}"
-      email: { op: regex, val: ".+@example\\.com" }
-```
+自动配置使用 ConditionalOnMissingBean。替换 VariableEngine 时显式注册内置与自定义 TestifyFunction；仅创建函数 Bean 不会被收集。DbAssertEngine 可选，ScenarioAssert 使用 ObjectProvider 取得它；缺失时 verifyDb 抛出明确 AssertionError。
 
-测试代码用 `@ParameterizedTest` + `@MethodSource` 加载，每个 case 独立执行：
+## 案例文件格式
 
-```java
-static Stream<TestifyCase> cases() {
-    return CaseFiles.loadYaml("testcases/UserServiceIT/batch-create.yaml").stream();
-}
+支持 cases 数组、根数组、单个对象；name/id、input/params、expect/expected 为兼容别名。缺省名字为 case，variables 缺省为空。无 input/expect 的对象仍可加载，具体测试必须自行检查必需节点。
 
-@ParameterizedTest(name = "{0}")
-@MethodSource("cases")
-void batchCreate(TestifyCase testCase) {
-    Map<String, Object> vars = variableEngine.resolveVariables(testCase.variables());
-    Object input = variableEngine.resolveValue(testCase.input(), vars);
-    User actual = userService.createUser((User) JsonUtil.convertValue(input, User.class));
-    scenarioAssert.verify(actual, testCase.expect(), vars);
-}
-```
+loadYaml/loadJson 路径是资源相对路径，例如 testcases/order/create.yaml，不加 classpath: 前缀。文件加载错误包装为 IllegalStateException。加载器不解析变量、不执行流程、不自动清理；调用过程见总手册的参数化测试示例。
+
+## 验证参考
+
+- TestifyAutoConfigurationTest：有/无 JDBC 条件装配。
+- ScenarioAssertTest：声明式比较及失败报告。
+- UserServiceIT / UserServiceBatchIT：真实数据库与批量案例。
+
+相关命令和 Docker 条件见 [测试模块](../loadup-testify-test/README.md)。
