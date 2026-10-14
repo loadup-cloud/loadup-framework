@@ -43,7 +43,7 @@ import org.springframework.test.context.ActiveProfiles;
         properties = "spring.autoconfigure.exclude="
                 + "org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration,"
                 + "io.github.loadup.components.scheduler.quartz.autoconfigure.QuartzSchedulerAutoConfiguration")
-@EnableTestContainers(ContainerType.MYSQL)
+@EnableTestContainers(value = ContainerType.MYSQL, reuse = false)
 @ActiveProfiles("test")
 class SchedulerTemplateIT {
 

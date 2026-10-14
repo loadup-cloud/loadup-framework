@@ -49,7 +49,7 @@ import org.springframework.test.context.ActiveProfiles;
  * scheduling, retries, delete and reset, all backed by a real MySQL container.
  */
 @SpringBootTest(classes = TestRetryTaskApplication.class)
-@EnableTestContainers(ContainerType.MYSQL)
+@EnableTestContainers(value = ContainerType.MYSQL, reuse = false)
 @ActiveProfiles("test")
 class RetryTaskFacadeIT {
 

@@ -98,6 +98,8 @@ Use generated `Tables` constants in repositories; do not concatenate SQL or sort
 
 `BusinessIdGenerator` is the default `IdGenerator` for MyBatis-Flex and BaseDO insert listeners. Missing IDs automatically receive a business ID; explicit IDs remain unchanged. Sequence is enabled by default. Apply the sequence migration before any insert that relies on automatic ID generation. Allocation metadata explicitly uses UUID to avoid recursively requesting a sequence.
 
+Sequence persistence is assembled only after MyBatis-Flex supplies a `SqlSessionFactory`. A transitive database jar in a non-database application does not create sequence mappers or require a DataSource. The default BusinessIdGenerator is assembled when Sequence is available; a consumer-provided IdGenerator still takes precedence.
+
 Default automatic metadata uses data version 0, system version 1, event code `00000000`, no extension, site 000 and shard 000. Reserve `00000000` for generic persistence IDs; explicit business generation may use registered event codes. All entities using the same default scope share its eight-digit daily capacity. Configure stable site ownership when independent databases issue IDs.
 
 ```yaml

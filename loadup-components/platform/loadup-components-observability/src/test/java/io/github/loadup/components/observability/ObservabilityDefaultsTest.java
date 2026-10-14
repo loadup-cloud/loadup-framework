@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.SpringApplication;
+import org.springframework.core.Ordered;
 import org.springframework.mock.env.MockEnvironment;
 
 class ObservabilityDefaultsTest {
@@ -41,11 +42,17 @@ class ObservabilityDefaultsTest {
 
     @Test
     void explicitManagementTagWins() {
+        assertThat(processor.getOrder()).isEqualTo(Ordered.LOWEST_PRECEDENCE);
         var environment = new MockEnvironment()
                 .withProperty("spring.application.name", "merchant")
                 .withProperty("management.metrics.tags.application", "billing");
         processor.postProcessEnvironment(environment, new SpringApplication());
         assertThat(environment.getProperty("management.metrics.tags.application"))
                 .isEqualTo("billing");
+        assertThat(environment.getPropertySources().stream()
+                        .reduce((first, last) -> last)
+                        .orElseThrow()
+                        .getName())
+                .isEqualTo("loadupObservabilityDefaults");
     }
 }

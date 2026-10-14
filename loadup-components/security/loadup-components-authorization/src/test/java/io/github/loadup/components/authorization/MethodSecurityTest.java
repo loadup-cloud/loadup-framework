@@ -26,6 +26,11 @@ import io.github.loadup.components.authorization.config.AuthorizationAutoConfigu
 import io.github.loadup.components.authorization.context.UserContext;
 import io.github.loadup.components.authorization.model.LoadUpUser;
 import java.util.List;
+import java.util.Map;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.parameters.P;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +45,12 @@ import org.springframework.security.core.AuthenticationException;
 @SpringBootTest(classes = MethodSecurityTest.TestConfig.class)
 class MethodSecurityTest {
 
+    private final ProtectedService service;
+
     @Autowired
-    private ProtectedService service;
+    MethodSecurityTest(ProtectedService service) {
+        this.service = service;
+    }
 
     @AfterEach
     void tearDown() {
@@ -88,6 +97,40 @@ class MethodSecurityTest {
         assertThat(service.canWrite()).isEqualTo("ok");
     }
 
+    @Test
+    void prefixedRoleWorksAndRawRoleAuthorityIsNotInvented() {
+        UserContext.set(LoadUpUser.builder().roles(List.of("ROLE_ADMIN")).build());
+        assertThat(service.adminOnly()).isEqualTo("ok");
+        assertThatThrownBy(() -> service.canWrite()).isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    void principalAttributesEnforceTenantAuthorization() {
+        UserContext.set(LoadUpUser.builder().userId("merchant-user").roles(List.of("USER"))
+                .attributes(Map.of("tenant", "merchant-a")).build());
+        assertThat(service.tenantOnly("merchant-a")).isEqualTo("ok");
+        assertThatThrownBy(() -> service.tenantOnly("merchant-b")).isInstanceOf(AccessDeniedException.class);
+    }
+
+    @Test
+    void disableSwitchAllowsApplicationToOwnMethodSecurity() {
+        new ApplicationContextRunner().withUserConfiguration(DisabledConfig.class)
+                .withPropertyValues("loadup.security.method-security.enabled=false")
+                .run(application -> {
+                    assertThat(application).hasNotFailed();
+                    assertThat(application.getBean(AuthorizationProperties.class).isEnabled()).isFalse();
+                    UserContext.clear();
+                    assertThat(application.getBean(ProtectedService.class).adminOnly()).isEqualTo("ok");
+                });
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    @ImportAutoConfiguration(AuthorizationAutoConfiguration.class)
+    @EnableConfigurationProperties(AuthorizationProperties.class)
+    static class DisabledConfig {
+        @Bean ProtectedService protectedService() { return new ProtectedService(); }
+    }
+
     @SpringBootConfiguration
     @ImportAutoConfiguration(AuthorizationAutoConfiguration.class)
     static class TestConfig {
@@ -102,6 +145,11 @@ class MethodSecurityTest {
 
         @PreAuthorize("hasRole('ADMIN')")
         public String adminOnly() {
+            return "ok";
+        }
+
+        @PreAuthorize("principal.attributes['tenant'] == #tenant")
+        public String tenantOnly(@P("tenant") String tenant) {
             return "ok";
         }
 

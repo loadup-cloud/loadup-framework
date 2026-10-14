@@ -33,6 +33,7 @@ import java.security.Signature;
 import java.security.spec.MGF1ParameterSpec;
 import java.security.spec.PSSParameterSpec;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -56,6 +57,9 @@ class OpenBaoKmsTest {
     private int latestVersion = 1;
     private int errorStatus;
     private boolean malformedVerification;
+    private String forcedPath;
+    private Object forcedResponse;
+    private String rawResponse;
 
     @BeforeEach
     void start() throws Exception {
@@ -200,6 +204,225 @@ class OpenBaoKmsTest {
         assertThat(manager.wrappingPublicKey()).contains("BEGIN PUBLIC KEY");
     }
 
+    @Test
+    void classifiesRemoteStatusesWithoutLeakingErrorBodiesOrRetrying() {
+        Map<Integer, KmsException.Code> classifications = Map.of(
+                401,
+                KmsException.Code.AUTHENTICATION,
+                403,
+                KmsException.Code.ACCESS_DENIED,
+                404,
+                KmsException.Code.NOT_FOUND,
+                429,
+                KmsException.Code.UNAVAILABLE,
+                500,
+                KmsException.Code.UNAVAILABLE,
+                502,
+                KmsException.Code.UNAVAILABLE,
+                503,
+                KmsException.Code.UNAVAILABLE,
+                504,
+                KmsException.Code.UNAVAILABLE,
+                400,
+                KmsException.Code.INVALID_REQUEST);
+        classifications.forEach((status, code) -> {
+            errorStatus = status;
+            int before = requests.size();
+            assertThatThrownBy(() -> kms.metadata("merchant")).isInstanceOfSatisfying(KmsException.class, failure -> {
+                assertThat(failure.getCode()).isEqualTo(code);
+                assertThat(failure.getMessage()).doesNotContain("secret-plaintext-token");
+                assertThat(failure.getCause()).isNull();
+            });
+            assertThat(requests).hasSize(before + 1);
+        });
+    }
+
+    @Test
+    void malformedJsonOrMissingDataIsAnInvalidResponse() {
+        rawResponse = "not-json-secret";
+        assertThatThrownBy(() -> kms.metadata("merchant")).hasMessage("KMS operation failed: INVALID_RESPONSE");
+        rawResponse = null;
+        forcedPath = "/keys/";
+        for (Object response : List.of(Map.of(), Map.of("data", "not-an-object"), Map.of("data", List.of()))) {
+            forcedResponse = response;
+            assertThatThrownBy(() -> kms.metadata("merchant")).hasMessage("KMS operation failed: INVALID_RESPONSE");
+        }
+    }
+
+    @Test
+    void rejectsInvalidMetadataNameVersionsTypesAndPublicKeyIndexes() {
+        forcedPath = "/keys/";
+        for (Map.Entry<String, Object> invalid : Map.<String, Object>of(
+                        "name", "other-key", "latest_version", "1", "keys", "not-an-object", "type", "")
+                .entrySet()) {
+            Map<String, Object> data = metadataData();
+            data.put(invalid.getKey(), invalid.getValue());
+            forcedResponse = Map.of("data", data);
+            assertThatThrownBy(() -> kms.metadata("merchant")).hasMessage("KMS operation failed: INVALID_RESPONSE");
+        }
+        for (Object version : List.of(0, -1, 2147483648L)) {
+            Map<String, Object> data = metadataData();
+            data.put("latest_version", version);
+            forcedResponse = Map.of("data", data);
+            assertThatThrownBy(() -> kms.metadata("merchant")).hasMessage("KMS operation failed: INVALID_RESPONSE");
+        }
+        Map<String, Object> data = metadataData();
+        data.put("keys", Map.of("not-a-version", Map.of("public_key", "synthetic PEM")));
+        forcedResponse = Map.of("data", data);
+        assertThatThrownBy(() -> kms.metadata("merchant")).hasMessage("KMS operation failed: INVALID_RESPONSE");
+    }
+
+    @Test
+    void decryptionRejectsMissingNonTextInvalidBase64AndOversizedPlaintext() {
+        forcedPath = "/decrypt/";
+        KmsCiphertext ciphertext = new KmsCiphertext("merchant", 1, "vault:v1:AA==");
+        for (Object plaintext : List.of(123, "not-base64!", Base64.getEncoder().encodeToString(new byte[1025]))) {
+            forcedResponse = Map.of("data", Map.of("plaintext", plaintext));
+            assertThatThrownBy(() -> kms.decrypt(KmsKeyRef.latest("merchant"), ciphertext))
+                    .hasMessage("KMS operation failed: INVALID_RESPONSE");
+        }
+        forcedResponse = Map.of("data", Map.of());
+        assertThatThrownBy(() -> kms.decrypt(KmsKeyRef.latest("merchant"), ciphertext))
+                .hasMessage("KMS operation failed: INVALID_RESPONSE");
+    }
+
+    @Test
+    void signatureRejectsBadEnvelopeBase64AndUnexpectedVersion() {
+        forcedPath = "/sign/";
+        for (String signature :
+                List.of("", "not-an-envelope", "vault:v2:AA==", "vault:v2147483648:AA==", "vault:v1:AA=")) {
+            forcedResponse = Map.of("data", Map.of("signature", signature));
+            assertThatThrownBy(() -> kms.sign(
+                            KmsKeyRef.latest("merchant"), KmsSignatureAlgorithm.RSA_SHA256_PKCS1, new byte[] {1}))
+                    .hasMessage("KMS operation failed: INVALID_RESPONSE");
+        }
+        forcedResponse = Map.of("data", Map.of("signature", 123));
+        assertThatThrownBy(() ->
+                        kms.sign(KmsKeyRef.latest("merchant"), KmsSignatureAlgorithm.RSA_SHA256_PKCS1, new byte[] {1}))
+                .hasMessage("KMS operation failed: INVALID_RESPONSE");
+    }
+
+    @Test
+    void encryptionRequiresExpectedEnvelopeAndKeyCapabilities() {
+        forcedPath = "/encrypt/";
+        forcedResponse = Map.of("data", Map.of("ciphertext", "vault:v2:AA=="));
+        assertThatThrownBy(() -> kms.encrypt(KmsKeyRef.latest("merchant"), new byte[] {1}))
+                .hasMessage("KMS operation failed: INVALID_RESPONSE");
+        forcedPath = "/keys/";
+        Map<String, Object> data = metadataData();
+        data.put("supports_encryption", false);
+        forcedResponse = Map.of("data", data);
+        assertThatThrownBy(() -> kms.encrypt(KmsKeyRef.latest("merchant"), new byte[] {1}))
+                .isInstanceOf(IllegalArgumentException.class);
+        data.put("supports_signing", false);
+        assertThatThrownBy(() ->
+                        kms.sign(KmsKeyRef.latest("merchant"), KmsSignatureAlgorithm.RSA_SHA256_PKCS1, new byte[] {1}))
+                .isInstanceOf(IllegalArgumentException.class);
+        data.put("type", "aes256-gcm96");
+        data.put("supports_signing", true);
+        assertThatThrownBy(() ->
+                        kms.sign(KmsKeyRef.latest("merchant"), KmsSignatureAlgorithm.RSA_SHA256_PKCS1, new byte[] {1}))
+                .isInstanceOf(IllegalArgumentException.class);
+        data.put("keys", Map.of("1", Map.of()));
+        assertThatThrownBy(() -> kms.publicKey(KmsKeyRef.latest("merchant")))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void rejectsNullInputsMissingAlgorithmAndUnavailableVersions() {
+        assertThatThrownBy(() -> kms.encrypt(null, new byte[0])).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> kms.encrypt(KmsKeyRef.latest("merchant"), null))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> kms.decrypt(KmsKeyRef.latest("merchant"), null))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> kms.verify(KmsKeyRef.latest("merchant"), null, new byte[0]))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> kms.sign(KmsKeyRef.latest("merchant"), null, new byte[0]))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> kms.publicKey(new KmsKeyRef("merchant", 2)))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void invalidCredentialsAreRejectedBeforeAnyHttpRequest() {
+        for (String invalid : List.of("", " ", "token\r", "token\n", "t".repeat(8193))) {
+            token.set(invalid);
+            assertThatThrownBy(() -> kms.metadata("merchant")).hasMessage("KMS operation failed: AUTHENTICATION");
+        }
+        token.set(null);
+        assertThatThrownBy(() -> kms.metadata("merchant")).hasMessage("KMS operation failed: AUTHENTICATION");
+        assertThat(requests).isEmpty();
+    }
+
+    @Test
+    void tokenProviderFailureIsSanitizedWithoutOpeningAConnection() {
+        KmsProperties configuration = new KmsProperties(
+                URI.create("http://127.0.0.1:" + server.getAddress().getPort()),
+                "payments/transit",
+                null,
+                null,
+                null,
+                true,
+                null,
+                null,
+                null,
+                1024);
+        try (OpenBaoKmsTemplate failing = new OpenBaoKmsTemplate(new OpenBaoTransitClient(
+                configuration,
+                () -> {
+                    throw new IllegalStateException("synthetic secret token failure");
+                },
+                false,
+                RestClient::builder,
+                mapper,
+                null,
+                null))) {
+            assertThatThrownBy(() -> failing.metadata("merchant"))
+                    .hasMessage("KMS operation failed: AUTHENTICATION")
+                    .hasNoCause();
+        }
+        assertThat(requests).isEmpty();
+    }
+
+    @Test
+    void managementValidatesImportsAndMinimumVersionsBeforeNetworkCalls() {
+        assertThatThrownBy(() -> manager.create("merchant", null)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> manager.setMinimumVersions("merchant", -1, 1))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> manager.setMinimumVersions("merchant", 0, 0))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> manager.importWrappedKey("merchant", KmsKeyType.RSA_2048, new byte[0]))
+                .isInstanceOf(IllegalArgumentException.class);
+        for (String pem : List.of("not PEM", "-----BEGIN PUBLIC KEY-----" + "a".repeat(16384))) {
+            assertThatThrownBy(() -> manager.importPublicKey("merchant", KmsKeyType.RSA_2048, pem))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+        assertThatThrownBy(() -> manager.importPublicKey("merchant", KmsKeyType.RSA_2048, null))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> manager.importPublicKey("merchant", KmsKeyType.AES_256_GCM, publicPem()))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThat(requests).isEmpty();
+        manager.importPublicKey("merchant", KmsKeyType.RSA_2048, publicPem());
+        assertThat(requests.getLast().body().path("public_key").asString()).isEqualTo(publicPem());
+        assertThat(requests.getLast().body().path("allow_rotation").asBoolean()).isFalse();
+    }
+
+    private Map<String, Object> metadataData() {
+        return new HashMap<>(Map.of(
+                "name",
+                "merchant",
+                "type",
+                "rsa-2048",
+                "latest_version",
+                1,
+                "supports_encryption",
+                true,
+                "supports_signing",
+                true,
+                "keys",
+                Map.of("1", Map.of("public_key", publicPem()))));
+    }
+
     private void respond(HttpExchange exchange) {
         try {
             String path = exchange.getRequestURI().getPath();
@@ -212,6 +435,18 @@ class OpenBaoKmsTest {
                     request));
             if (errorStatus != 0) {
                 send(exchange, errorStatus, Map.of("errors", List.of("secret-plaintext-token")));
+                return;
+            }
+            if (rawResponse != null) {
+                byte[] response = rawResponse.getBytes(StandardCharsets.UTF_8);
+                exchange.getResponseHeaders().set("Content-Type", "application/json");
+                exchange.sendResponseHeaders(200, response.length);
+                exchange.getResponseBody().write(response);
+                exchange.close();
+                return;
+            }
+            if (forcedPath != null && path.contains(forcedPath)) {
+                send(exchange, 200, forcedResponse);
                 return;
             }
             if (path.contains("/sign/")) {

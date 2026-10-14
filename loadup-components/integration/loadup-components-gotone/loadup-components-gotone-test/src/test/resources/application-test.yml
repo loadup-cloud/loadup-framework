@@ -3,9 +3,6 @@ spring:
     name: gotone-test
 
 loadup:
-  database:
-    logical-delete:
-      enabled: true
   flyway:
     enabled: true
     table: flyway_schema_history_gotone

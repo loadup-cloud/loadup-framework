@@ -171,4 +171,47 @@ class LockTemplateTest {
                 .hasMessageContaining("before starting the transaction");
         verifyNoInteractions(client);
     }
+
+    @Test
+    void defaultRunnableRunsAndReleasesWithoutOptionalMeterRegistry() throws Exception {
+        when(client.getLock(anyString())).thenReturn(lock);
+        when(lock.tryLock(1000, TimeUnit.MILLISECONDS)).thenReturn(true);
+        var called = new AtomicBoolean();
+        var withoutMetrics = new RedissonLockTemplate(client, "payments", defaults, null);
+        withoutMetrics.run(key, () -> called.set(true));
+        assertThat(called).isTrue();
+        verify(lock).unlock();
+    }
+
+    @Test
+    void releaseFailureWithoutMetricsStillPropagatesAfterSuccess() throws Exception {
+        when(client.getLock(anyString())).thenReturn(lock);
+        when(lock.tryLock(1000, TimeUnit.MILLISECONDS)).thenReturn(true);
+        var failure = new IllegalMonitorStateException("expired");
+        doThrow(failure).when(lock).unlock();
+        var withoutMetrics = new RedissonLockTemplate(client, "payments", defaults, null);
+        assertThatThrownBy(() -> withoutMetrics.execute(key, () -> "done")).isSameAs(failure);
+    }
+
+    @Test
+    void nullInputsFailBeforeAnyRemoteOperation() {
+        assertThatThrownBy(() -> template.run(key, (Runnable) null)).isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> template.run(key, defaults, null)).isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> template.execute(null, () -> "unused")).isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> template.execute(key, null, () -> "unused")).isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> template.execute(key, defaults, null)).isInstanceOf(NullPointerException.class);
+        verifyNoInteractions(client);
+    }
+
+    @Test
+    void keyRejectsInvalidUnicodeControlCharactersAndOversizedFields() {
+        for (String invalid : new String[] {"\uD800", "order\u0001", " order", "order ", "x".repeat(513)}) {
+            assertThatThrownBy(() -> LockKey.global("payment", invalid)).isInstanceOf(IllegalArgumentException.class);
+        }
+        assertThatThrownBy(() -> LockKey.global("payment", "order").redisName("x".repeat(129)))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThat(LockKey.global("payment", "private-order").toString())
+                .contains("global")
+                .doesNotContain("private-order");
+    }
 }

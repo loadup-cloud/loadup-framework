@@ -30,6 +30,11 @@ import io.micrometer.tracing.Span;
 import io.micrometer.tracing.TraceContext;
 import io.micrometer.tracing.Tracer;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.core.Ordered;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -80,5 +85,50 @@ class ObservabilityIntegrationTest {
                         .counter()
                         .count())
                 .isEqualTo(2.0);
+    }
+
+    @Test
+    void servletAssemblyRegistersFilterAfterObservationAndBeforeSecurity() {
+        var tracer = mock(Tracer.class);
+        var span = mock(Span.class);
+        var trace = mock(TraceContext.class);
+        when(tracer.currentSpan()).thenReturn(span);
+        when(span.context()).thenReturn(trace);
+        when(trace.traceId()).thenReturn("0123456789abcdef0123456789abcdef");
+        new WebApplicationContextRunner()
+                .withConfiguration(AutoConfigurations.of(ObservabilityWebAutoConfiguration.class))
+                .withBean(Tracer.class, () -> tracer)
+                .run(application -> {
+                    assertThat(application).hasNotFailed().hasSingleBean(FilterRegistrationBean.class);
+                    var registration = application.getBean(FilterRegistrationBean.class);
+                    assertThat(registration.getOrder()).isEqualTo(Ordered.HIGHEST_PRECEDENCE + 2);
+                    assertThat(registration.getFilter()).isInstanceOf(TraceResponseHeaderFilter.class);
+                    var request = new MockHttpServletRequest();
+                    var response = new MockHttpServletResponse();
+                    var invoked = new java.util.concurrent.atomic.AtomicBoolean();
+                    registration.getFilter().doFilter(request, response, (incoming, outgoing) -> {
+                        assertThat(((MockHttpServletResponse) outgoing).getHeader("traceId"))
+                                .isEqualTo("0123456789abcdef0123456789abcdef");
+                        invoked.set(true);
+                    });
+                    assertThat(invoked).isTrue();
+                    verify(tracer).currentSpan();
+                    verifyNoMoreInteractions(tracer);
+                });
+    }
+
+    @Test
+    void nonWebApplicationDoesNotRegisterServletTraceFilter() {
+        new ApplicationContextRunner()
+                .withConfiguration(AutoConfigurations.of(ObservabilityWebAutoConfiguration.class))
+                .run(application ->
+                        assertThat(application).hasNotFailed().doesNotHaveBean(FilterRegistrationBean.class));
+    }
+
+    @Test
+    void servletTraceIntegrationRequiresApplicationTracer() {
+        new WebApplicationContextRunner()
+                .withConfiguration(AutoConfigurations.of(ObservabilityWebAutoConfiguration.class))
+                .run(application -> assertThat(application).hasFailed());
     }
 }

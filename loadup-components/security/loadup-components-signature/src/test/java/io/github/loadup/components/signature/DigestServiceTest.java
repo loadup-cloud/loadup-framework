@@ -153,7 +153,8 @@ class DigestServiceTest {
         // when & then
         assertThatThrownBy(() -> digestService.digest("data", DigestAlgorithm.HMAC_SHA256))
                 .isInstanceOf(SignatureException.class)
-                .hasMessageContaining("must use the hmac() method");
+                .satisfies(error -> assertThat(((SignatureException) error).getResultCode())
+                        .isEqualTo(SignatureException.SignatureErrorCode.INVALID_ALGORITHM));
     }
 
     @Test
@@ -162,7 +163,8 @@ class DigestServiceTest {
         // when & then
         assertThatThrownBy(() -> digestService.hmac("data".getBytes(), "key".getBytes(), DigestAlgorithm.SHA256))
                 .isInstanceOf(SignatureException.class)
-                .hasMessageContaining("must use the digest() method");
+                .satisfies(error -> assertThat(((SignatureException) error).getResultCode())
+                        .isEqualTo(SignatureException.SignatureErrorCode.INVALID_ALGORITHM));
     }
 
     @Test

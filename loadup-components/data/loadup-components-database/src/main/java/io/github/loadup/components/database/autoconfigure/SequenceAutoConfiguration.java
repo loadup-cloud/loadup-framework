@@ -25,15 +25,20 @@ import io.github.loadup.components.database.sequence.SequenceProperties;
 import io.github.loadup.components.database.sequence.SequenceRangeAllocator;
 import io.github.loadup.components.database.sequence.mapper.SequenceAllocationDOMapper;
 import java.time.Clock;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.transaction.PlatformTransactionManager;
 
-@AutoConfiguration(after = MyBatisFlexAutoConfiguration.class)
+@AutoConfiguration(
+        after = MyBatisFlexAutoConfiguration.class,
+        afterName = "com.mybatisflex.spring.boot.MybatisFlexAutoConfiguration")
+@ConditionalOnBean(SqlSessionFactory.class)
 @ConditionalOnProperty(
         prefix = "loadup.database.sequence",
         name = "enabled",

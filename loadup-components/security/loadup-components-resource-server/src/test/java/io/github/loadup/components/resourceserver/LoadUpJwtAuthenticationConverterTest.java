@@ -47,4 +47,60 @@ class LoadUpJwtAuthenticationConverterTest {
                 .extracting(GrantedAuthority::getAuthority)
                 .containsExactlyInAnyOrder("ROLE_ADMIN", "ADMIN", "user:read", "user:delete", "audit:read");
     }
+
+    @Test
+    void missingOptionalClaimsGiveAuthenticatedPrincipalWithoutInventedAuthorities() {
+        Jwt jwt =
+                Jwt.withTokenValue("test").header("alg", "RS256").subject("u-2").build();
+        var authentication = new LoadUpJwtAuthenticationConverter().convert(jwt);
+        assertThat(authentication.isAuthenticated()).isTrue();
+        assertThat(authentication.getCredentials()).isSameAs(jwt);
+        assertThat(authentication.getAuthorities()).isEmpty();
+        var user = (LoadUpUser) authentication.getPrincipal();
+        assertThat(user.getUsername()).isNull();
+        assertThat(user.hasRole("ADMIN")).isFalse();
+        assertThat(user.hasPermission("user:write")).isFalse();
+    }
+
+    @Test
+    void commaSeparatedClaimsSupportPrefixedRolesAndIgnoreBlankAuthorities() {
+        Jwt jwt = Jwt.withTokenValue("test")
+                .header("alg", "RS256")
+                .subject("u-3")
+                .claim("username", 123)
+                .claim("roles", "ROLE_AUDITOR,,ADMIN")
+                .claim("permissions", "audit:read,,user:read")
+                .build();
+        var authentication = new LoadUpJwtAuthenticationConverter().convert(jwt);
+        assertThat(((LoadUpUser) authentication.getPrincipal()).getUsername()).isEqualTo("123");
+        assertThat(authentication.getAuthorities())
+                .extracting(GrantedAuthority::getAuthority)
+                .containsExactlyInAnyOrder("ROLE_AUDITOR", "ROLE_ADMIN", "ADMIN", "audit:read", "user:read");
+    }
+
+    @Test
+    void collectionClaimsSkipNullAndBlankElementsAndConvertScalarValues() {
+        Jwt jwt = Jwt.withTokenValue("test")
+                .header("alg", "RS256")
+                .subject("u-4")
+                .claim("roles", java.util.Arrays.asList(null, "", " ", "ROLE_AUDITOR", 7))
+                .claim("permissions", java.util.Arrays.asList(null, "", " ", "audit:read", 8))
+                .build();
+        var authentication = new LoadUpJwtAuthenticationConverter().convert(jwt);
+        assertThat(authentication.getAuthorities())
+                .extracting(GrantedAuthority::getAuthority)
+                .containsExactlyInAnyOrder("ROLE_AUDITOR", "ROLE_7", "7", "audit:read", "8");
+    }
+
+    @Test
+    void blankStringClaimsDoNotGrantAuthorities() {
+        Jwt jwt = Jwt.withTokenValue("test")
+                .header("alg", "RS256")
+                .subject("u-5")
+                .claim("roles", " ")
+                .claim("permissions", "")
+                .build();
+        var authentication = new LoadUpJwtAuthenticationConverter().convert(jwt);
+        assertThat(authentication.getAuthorities()).isEmpty();
+    }
 }

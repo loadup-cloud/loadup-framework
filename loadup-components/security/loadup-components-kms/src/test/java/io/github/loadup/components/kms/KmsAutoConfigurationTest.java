@@ -21,8 +21,10 @@ package io.github.loadup.components.kms;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 
 import java.net.URI;
+import java.time.Duration;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -66,6 +68,120 @@ class KmsAutoConfigurationTest {
                 .run(application -> {
                     assertThat(application).hasSingleBean(KmsTemplate.class).hasSingleBean(KmsKeyManager.class);
                 });
+    }
+
+    @Test
+    void consumerRuntimeAndManagerBeansTakePrecedence() {
+        KmsTemplate runtime = mock(KmsTemplate.class);
+        KmsKeyManager manager = mock(KmsKeyManager.class);
+        context.withPropertyValues(
+                        "loadup.kms.enabled=true",
+                        "loadup.kms.management-enabled=true",
+                        "loadup.kms.endpoint=https://bao.example.test")
+                .withBean(KmsTemplate.class, () -> runtime)
+                .withBean(KmsKeyManager.class, () -> manager)
+                .run(application -> {
+                    assertThat(application)
+                            .hasNotFailed()
+                            .hasSingleBean(KmsTemplate.class)
+                            .hasSingleBean(KmsKeyManager.class);
+                    assertThat(application.getBean(KmsTemplate.class)).isSameAs(runtime);
+                    assertThat(application.getBean(KmsKeyManager.class)).isSameAs(manager);
+                });
+    }
+
+    @Test
+    void explicitDisableDoesNotAssembleManagementEvenWhenRequested() {
+        context.withPropertyValues("loadup.kms.enabled=false", "loadup.kms.management-enabled=true")
+                .run(application -> assertThat(application)
+                        .hasNotFailed()
+                        .doesNotHaveBean(KmsTemplate.class)
+                        .doesNotHaveBean(KmsKeyManager.class));
+    }
+
+    @Test
+    void environmentCredentialsFallbackCanBeAssembledWithoutReadingSecretsOrConnecting() {
+        context.withPropertyValues(
+                        "loadup.kms.enabled=true",
+                        "loadup.kms.management-enabled=true",
+                        "loadup.kms.endpoint=https://bao.example.test",
+                        "loadup.kms.token-env=LOADUP_TEST_RUNTIME_TOKEN",
+                        "loadup.kms.management-token-env=LOADUP_TEST_ADMIN_TOKEN")
+                .run(application -> assertThat(application)
+                        .hasNotFailed()
+                        .hasSingleBean(KmsTemplate.class)
+                        .hasSingleBean(KmsKeyManager.class));
+    }
+
+    @Test
+    void constructorRejectsInvalidMountCredentialNamesNamespaceAndSize() {
+        URI endpoint = URI.create("https://bao.example.test");
+        for (String mount : new String[] {"", "../transit", "/transit", "transit/", "m".repeat(129)}) {
+            assertThatThrownBy(() -> settings(endpoint, mount, null, null, null, 1))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+        for (String name : new String[] {"", "1TOKEN", "TOKEN-NAME"}) {
+            assertThatThrownBy(() -> settings(endpoint, "transit", null, name, null, 1))
+                    .isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> settings(endpoint, "transit", null, null, name, 1))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+        for (String namespace : new String[] {"", " ", "tenant\r", "tenant\n"}) {
+            assertThatThrownBy(() -> settings(endpoint, "transit", namespace, null, null, 1))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+        for (int size : new int[] {0, -1, 1024 * 1024 + 1}) {
+            assertThatThrownBy(() -> settings(endpoint, "transit", null, null, null, size))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+        assertThatThrownBy(() -> settings(null, null, null, null, null, null))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> settings(URI.create("https:/relative"), null, null, null, null, null))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> settings(URI.create("https://bao.example#fragment"), null, null, null, null, null))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void validExplicitPropertiesBindThroughTheRuntimeConfiguration() {
+        context.withPropertyValues(
+                        "loadup.kms.enabled=true",
+                        "loadup.kms.endpoint=https://bao.example.test",
+                        "loadup.kms.mount=payments/transit",
+                        "loadup.kms.namespace=merchant",
+                        "loadup.kms.max-input-bytes=1048576",
+                        "loadup.kms.connect-timeout=1ms",
+                        "loadup.kms.read-timeout=24h")
+                .withBean(KmsTokenProvider.class, () -> () -> "runtime")
+                .run(application -> {
+                    assertThat(application).hasNotFailed().hasSingleBean(KmsTemplate.class);
+                    KmsProperties properties = application.getBean(KmsProperties.class);
+                    assertThat(properties.mount()).isEqualTo("payments/transit");
+                    assertThat(properties.namespace()).isEqualTo("merchant");
+                    assertThat(properties.maxInputBytes()).isEqualTo(1024 * 1024);
+                    assertThat(properties.connectTimeout()).isEqualTo(Duration.ofMillis(1));
+                    assertThat(properties.readTimeout()).isEqualTo(Duration.ofDays(1));
+                });
+    }
+
+    @Test
+    void invalidTransportTimeoutFailsRuntimeAssembly() {
+        context.withPropertyValues(
+                        "loadup.kms.enabled=true",
+                        "loadup.kms.endpoint=https://bao.example.test",
+                        "loadup.kms.read-timeout=0ms")
+                .run(application -> assertThat(application).hasFailed());
+    }
+
+    private static KmsProperties settings(
+            URI endpoint,
+            String mount,
+            String namespace,
+            String tokenEnv,
+            String managementTokenEnv,
+            Integer maxInput) {
+        return new KmsProperties(
+                endpoint, mount, namespace, tokenEnv, managementTokenEnv, false, null, null, null, maxInput);
     }
 
     @Test

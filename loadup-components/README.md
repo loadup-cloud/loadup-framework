@@ -41,3 +41,20 @@ loadup-components/
 从仓库根目录做定向开发时，推荐用 Maven artifact 选择器，如 `-pl :loadup-components-webmvc`，避免命令绑定目录深度。需要构建或测试时遵循根 AGENTS 的构建纪律，不默认运行全 reactor。
 
 能力边界与目录决策见 [ARCHITECTURE.md](ARCHITECTURE.md)。
+
+## 测试与覆盖率
+
+单元测试使用 `*Test`；集成测试使用 `*IT`，数据库及 Redis 等后端使用真实 Testcontainers。运行全部组件测试需要 Docker，执行范围包括组件的独立测试模块及构建依赖：
+
+```bash
+mvnd clean verify -pl "$(python3 tools/component-coverage.py --list-modules)" -am --fail-at-end \
+  -Dskip.spotless=true -Dskip.spotbugs=true
+mvnd -N dependency:get -Dartifact=org.jacoco:org.jacoco.cli:0.8.15:jar:nodeps -Dtransitive=false
+python3 tools/component-coverage.py --jacoco-cli /absolute/path/to/org.jacoco.cli-0.8.15-nodeps.jar
+```
+
+上述命令从仓库根目录执行。CLI jar 位于本机 Maven 仓库中；使用 Maven 输出的实际路径。只有 `verify` 成功后才执行覆盖率门禁。跳过格式与静态分析用于收集测试结果，不能替代发布检查。
+
+验收要求是每个组件行、分支覆盖率均 ≥90%。工具进一步逐运行时 jar 检查：合并所有组件的单测与 IT 执行数据，解决测试位于兄弟 `*-test` 模块时报告漏计的问题。手写 DTO、配置及异常全部计入，只排除不在 `src/main/java` 的生成代码。无分支的 jar 分支指标视为不适用；缺失编译产物、陈旧执行数据或未达标时返回非零状态。`--report-only` 仅供诊断，不能用作验收门禁。
+
+报告写入 `loadup-components/target/coverage/summary.md` 和 `summary.json`，各 jar 的 `html/index.html` 列出未覆盖源码。**90% 是验收目标，当前未全部达标**；实施与运行进度见根 ROADMAP。

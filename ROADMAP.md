@@ -12,6 +12,15 @@
 
 ## 当前建设目标与实施顺序
 
+### 组件测试与覆盖率（2026-10-14）
+
+验收要求为每个组件的行覆盖率、分支覆盖率分别 ≥90%。报告进一步按运行时 Maven jar 检查，API、binder、engine 与 store 不通过总体平均值抵消缺口。手写 DTO、配置与异常类型计入；仅排除 APT/MapStruct 自动生成代码。
+
+首轮仅单元测试基线：48 个运行时 jar，1 个达到双指标要求。已提供跨测试模块的 JaCoCo 数据合并与逐 jar 报告工具。SpringDoc 新增 7 项单测、3 项真实 HTTP IT，Pipeline 新增 17 项单测、3 项真实 MySQL 事务 IT，签名旧错误文案断言已改为 ResultCode 契约；首批定向 clean verify 通过。此记录不代表所有组件已达到覆盖率要求。
+
+- [ ] 完成所有组件的单元及集成测试缺口，运行完整组件测试集合并使每个运行时 jar 行、分支均 ≥90%；缓存、锁与处理器新增边界测试需运行验证。
+- [ ] 接入跨模块覆盖率发布门禁，验证报告缺失、陈旧字节码和低覆盖率均不能通过；外部服务不可用或跳过的 IT 单独报告。
+
 - [ ] JUnit 6.0.3 定向运行验收：版本由 Boot 4.1.1 BOM 统一管理，Testify/AGENTS 文档已对齐，launcher 架构测试已改用 ArchUnit 核心库；见 [分析记录](loadup-testify/JUNIT6-ANALYSIS.md)。用户验收普通/参数化/Spring 测试、架构与源码/错误码门禁及真实 MySQL IT，核对测试发现数量；本次未执行构建或测试。
 - [ ] Testify 修复运行验收：无 JdbcTemplate 时保留响应/异常断言，数据库引擎按 Bean 条件装配，缺少引擎时 verifyDb 抛出明确 AssertionError；消费方测试依赖文档已补齐，archunit-junit5 管理项已移除。新增 TestifyAutoConfigurationTest，用户连同 ScenarioAssertTest、UserServiceIT、UserServiceBatchIT 定向运行（当前预期 19 次执行），此次未运行构建、测试或 Maven 格式门禁。
 

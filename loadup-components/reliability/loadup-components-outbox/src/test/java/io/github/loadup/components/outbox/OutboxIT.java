@@ -54,7 +54,7 @@ import tools.jackson.databind.json.JsonMapper;
 
 @SpringBootTest(classes = OutboxIT.Application.class)
 @ActiveProfiles("test")
-@EnableTestContainers(ContainerType.MYSQL)
+@EnableTestContainers(value = ContainerType.MYSQL, reuse = false)
 class OutboxIT {
     private final JdbcOutboxRepository repository;
     private final OutboxInbox inbox;

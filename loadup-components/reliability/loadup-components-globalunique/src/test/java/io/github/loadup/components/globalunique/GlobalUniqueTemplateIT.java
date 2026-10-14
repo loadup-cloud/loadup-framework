@@ -43,7 +43,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@EnableTestContainers(ContainerType.MYSQL)
+@EnableTestContainers(value = ContainerType.MYSQL, reuse = false)
 @DisplayName("GlobalUniqueTemplate integration tests")
 class GlobalUniqueTemplateIT {
     private final GlobalUniqueTemplate template;

@@ -52,7 +52,7 @@ import org.springframework.test.context.ActiveProfiles;
  * Full-stack integration test: JDBC store + engine + webhook binder + Flyway schema.
  */
 @SpringBootTest(classes = TestGotoneApplication.class)
-@EnableTestContainers(ContainerType.MYSQL)
+@EnableTestContainers(value = ContainerType.MYSQL, reuse = false)
 @ActiveProfiles("test")
 class JdbcStoreIT {
 

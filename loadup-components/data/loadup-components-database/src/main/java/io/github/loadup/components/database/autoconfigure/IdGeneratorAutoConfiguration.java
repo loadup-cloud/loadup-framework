@@ -28,6 +28,7 @@ import io.github.loadup.components.database.sequence.Sequence;
 import java.time.Clock;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +38,7 @@ import org.springframework.context.annotation.Bean;
 @EnableConfigurationProperties(BusinessIdProperties.class)
 public class IdGeneratorAutoConfiguration {
     @Bean
+    @ConditionalOnBean(Sequence.class)
     @ConditionalOnMissingBean(IdGenerator.class)
     public BusinessIdGenerator businessIdGenerator(
             Sequence sequence,

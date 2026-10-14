@@ -22,8 +22,13 @@ package io.github.loadup.components.lock;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
@@ -73,5 +78,61 @@ class LockAutoConfigurationTest {
                     assertThat(context.getBean(LockTemplate.class)).isSameAs(custom);
                     assertThat(context).doesNotHaveBean(RedissonClient.class);
                 });
+    }
+
+    @Test
+    void applicationWithoutClientOrNativeConfigFailsClearly() {
+        runner.withPropertyValues("loadup.lock.enabled=true", "loadup.lock.namespace=payments")
+                .run(context -> assertThat(context).hasFailed());
+    }
+
+    @Test
+    void explicitLeaseSettingsAreBoundAndSharedClientRemainsApplicationOwned() {
+        var client = mock(RedissonClient.class);
+        runner.withBean(RedissonClient.class, () -> client)
+                .withPropertyValues(
+                        "loadup.lock.enabled=true",
+                        "loadup.lock.namespace=payments",
+                        "loadup.lock.lease-mode=fixed",
+                        "loadup.lock.wait-timeout=250ms",
+                        "loadup.lock.lease-time=5s")
+                .run(context -> {
+                    assertThat(context).hasNotFailed();
+                    var options = context.getBean(LockProperties.class).options();
+                    assertThat(options.leaseMode()).isEqualTo(LockOptions.LeaseMode.FIXED);
+                    assertThat(options.waitTimeout()).isEqualTo(java.time.Duration.ofMillis(250));
+                    assertThat(options.leaseTime()).isEqualTo(java.time.Duration.ofSeconds(5));
+                });
+        verify(client, never()).shutdown();
+    }
+
+    @Test
+    void nativeConfigurationCreatesAndClosesFrameworkOwnedClient(@TempDir Path directory) throws Exception {
+        Path config = directory.resolve("redisson.yaml");
+        Files.writeString(config, "singleServerConfig:\n  address: \"redis://127.0.0.1:6379\"\n");
+        var client = mock(RedissonClient.class);
+        try (var factory = mockStatic(Redisson.class)) {
+            factory.when(() -> Redisson.create(any(Config.class))).thenReturn(client);
+            runner.withPropertyValues(
+                            "loadup.lock.enabled=true",
+                            "loadup.lock.namespace=payments",
+                            "loadup.lock.redisson-config=" + config.toUri())
+                    .run(context -> {
+                        assertThat(context).hasNotFailed().hasSingleBean(RedissonClient.class);
+                        assertThat(context.getBean(RedissonClient.class)).isSameAs(client);
+                        factory.verify(() -> Redisson.create(any(Config.class)));
+                        verify(client, never()).shutdown();
+                    });
+        }
+        verify(client).shutdown();
+    }
+
+    @Test
+    void missingNativeConfigurationResourceFailsBeforeClientCreation() {
+        runner.withPropertyValues(
+                        "loadup.lock.enabled=true",
+                        "loadup.lock.namespace=payments",
+                        "loadup.lock.redisson-config=classpath:no-such-redisson-file.yaml")
+                .run(context -> assertThat(context).hasFailed());
     }
 }

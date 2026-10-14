@@ -21,12 +21,15 @@ package io.github.loadup.components.resilience4j.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.loadup.components.resilience4j.Resilience4jProperties;
 import io.github.loadup.components.resilience4j.ResilienceRegistries;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.github.resilience4j.retry.RetryRegistry;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Configuration;
 
 class Resilience4jCoreAutoConfigurationTest {
 
@@ -39,6 +42,10 @@ class Resilience4jCoreAutoConfigurationTest {
             assertThat(context).hasSingleBean(ResilienceRegistries.class);
             assertThat(context).hasSingleBean(CircuitBreakerRegistry.class);
             assertThat(context).hasSingleBean(RetryRegistry.class);
+            assertThat(context.getBean(Resilience4jProperties.class).isEnabled())
+                    .isTrue();
+            assertThat(context.getBean(Resilience4jProperties.class).getBinderType())
+                    .isEqualTo("core");
             assertThat(context.getBean(ResilienceRegistries.class).circuitBreakerRegistry())
                     .isSameAs(context.getBean(CircuitBreakerRegistry.class));
         });
@@ -50,6 +57,24 @@ class Resilience4jCoreAutoConfigurationTest {
             assertThat(context).doesNotHaveBean(ResilienceRegistries.class);
         });
     }
+
+    @Test
+    void consumerCanBindDisabledSettingsWhileRegistryAssemblyIsSkipped() {
+        contextRunner
+                .withUserConfiguration(ConsumerSettings.class)
+                .withPropertyValues("loadup.resilience4j.enabled=false", "loadup.resilience4j.binder-type=core")
+                .run(context -> {
+                    assertThat(context).hasNotFailed().doesNotHaveBean(ResilienceRegistries.class);
+                    assertThat(context.getBean(Resilience4jProperties.class).isEnabled())
+                            .isFalse();
+                    assertThat(context.getBean(Resilience4jProperties.class).getBinderType())
+                            .isEqualTo("core");
+                });
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    @EnableConfigurationProperties(Resilience4jProperties.class)
+    static class ConsumerSettings {}
 
     @Test
     void createsConfiguredCircuitBreakerInstance() {

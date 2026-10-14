@@ -20,10 +20,18 @@
 package io.github.loadup.components.database.processor;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import javax.annotation.processing.Filer;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaFileObject;
 import javax.tools.ToolProvider;
@@ -33,6 +41,20 @@ import org.junit.jupiter.api.io.TempDir;
 class LoadUpMyBatisFlexProcessorTest {
     @TempDir
     Path project;
+
+    @Test
+    void refusesToGenerateWithoutItsFixedConfigurationAndPreservesTheIoCause() throws Exception {
+        ProcessingEnvironment environment = mock(ProcessingEnvironment.class);
+        Filer filer = mock(Filer.class);
+        IOException failure = new IOException("output directory is not writable");
+        when(environment.getFiler()).thenReturn(filer);
+        when(filer.createResource(any(), anyString(), anyString())).thenThrow(failure);
+
+        assertThatThrownBy(() -> new LoadUpMyBatisFlexProcessor().init(environment))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Cannot configure MyBatis-Flex annotation processing")
+                .hasCause(failure);
+    }
 
     @Test
     void generatesCompilablePersistenceSourcesWithFixedDefaults() throws Exception {

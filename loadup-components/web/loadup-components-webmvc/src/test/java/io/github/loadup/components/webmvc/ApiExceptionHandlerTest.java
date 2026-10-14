@@ -25,6 +25,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.FailureResponse;
+import jakarta.servlet.RequestDispatcher;
+import org.springframework.boot.webmvc.error.ErrorAttributes;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -44,6 +49,21 @@ class ApiExceptionHandlerTest {
         Object business() {
             throw new CommonException(CommonResultCodeEnum.CONFLICT, new IllegalStateException("private-secret"));
         }
+
+        @PostMapping("/api/system-code")
+        Object systemCode() { throw new CommonException(CommonResultCodeEnum.SYS_ERROR); }
+
+        @PostMapping("/api/not-found")
+        Object notFound() { throw new CommonException(CommonResultCodeEnum.NOT_FOUND); }
+
+        @PostMapping("/api/invalid")
+        Object invalid() { throw new IllegalArgumentException("private-secret"); }
+
+        @PostMapping("/api/constraint")
+        Object constraint() { throw new jakarta.validation.ConstraintViolationException(java.util.Set.of()); }
+
+        @PostMapping("/api/nested")
+        Object nested() { throw new IllegalArgumentException("binding failed", new CommonException(CommonResultCodeEnum.CONFLICT)); }
 
         @PostMapping("/api/unknown")
         Object unknown() {
@@ -98,4 +118,60 @@ class ApiExceptionHandlerTest {
                 .hasCauseInstanceOf(org.springframework.security.core.AuthenticationException.class);
         assertThatThrownBy(() -> mvc.perform(post("/protocol"))).hasCauseInstanceOf(CommonException.class);
     }
+    @Test
+    void malformedInputAndDeclaredFailuresRemainJsonAndPreserveStableCodes() throws Exception {
+        var mvc = MockMvcBuilders.standaloneSetup(new Controller())
+                .setControllerAdvice(new ApiExceptionHandler(new ApiPathMatcher()))
+                .setMessageConverters(new JacksonJsonHttpMessageConverter(JsonMapper.builder().build())).build();
+        for (var entry : java.util.Map.of("/api/system-code", "SYS_ERROR", "/api/not-found", "NOT_FOUND",
+                "/api/invalid", "PARAM_ILLEGAL", "/api/constraint", "PARAM_ILLEGAL", "/api/nested", "CONFLICT").entrySet()) {
+            var response = mvc.perform(post(entry.getKey())).andReturn().getResponse();
+            assertThat(response.getStatus()).isEqualTo(200);
+            assertThat(response.getContentAsString()).contains(entry.getValue(), "\"data\"").doesNotContain("private-secret");
+        }
+        var malformed = mvc.perform(post("/api/input").contentType("application/json").content("{broken"))
+                .andReturn().getResponse();
+        assertThat(malformed.getStatus()).isEqualTo(200);
+        assertThat(malformed.getContentAsString()).contains("PARAM_ILLEGAL").doesNotContain("broken");
+    }
+
+    @Test
+    void errorDispatchMapsApiStatusesButPreservesProtocolStatus() throws Exception {
+        var attributes = mock(ErrorAttributes.class);
+        when(attributes.getErrorAttributes(any(), any())).thenReturn(java.util.Map.of("error", "protocol-error"));
+        var mvc = MockMvcBuilders.standaloneSetup(new ApiErrorController(new ApiPathMatcher(), attributes))
+                .addPlaceholderValue("spring.web.error.path", "/error")
+                .setMessageConverters(new JacksonJsonHttpMessageConverter(JsonMapper.builder().build())).build();
+        for (var entry : java.util.Map.of(400, "PARAM_ILLEGAL", 405, "PARAM_ILLEGAL", 415, "PARAM_ILLEGAL",
+                401, "UNAUTHENTICATED", 403, "ACCESS_DENIED", 404, "NOT_FOUND", 500, "SYS_ERROR").entrySet()) {
+            var response = mvc.perform(post("/error").requestAttr(RequestDispatcher.ERROR_STATUS_CODE, entry.getKey())
+                            .requestAttr(RequestDispatcher.ERROR_REQUEST_URI, "/api/missing"))
+                    .andReturn().getResponse();
+            assertThat(response.getStatus()).isEqualTo(200);
+            assertThat(response.getContentAsString()).contains(entry.getValue(), "\"result\"", "\"data\"");
+        }
+        var protocol = mvc.perform(post("/error").requestAttr(RequestDispatcher.ERROR_STATUS_CODE, 404)
+                        .requestAttr(RequestDispatcher.ERROR_REQUEST_URI, "/protocol/missing"))
+                .andReturn().getResponse();
+        assertThat(protocol.getStatus()).isEqualTo(404);
+        assertThat(protocol.getContentAsString()).contains("protocol-error").doesNotContain("\"result\"");
+        var noOriginalUri = mvc.perform(post("/error")).andReturn().getResponse();
+        assertThat(noOriginalUri.getStatus()).isEqualTo(500);
+    }
+
+    @Test
+    void errorDispatchHonorsContextPathAndLogsOnlyFailureType() throws Exception {
+        var attributes = mock(ErrorAttributes.class);
+        when(attributes.getError(any())).thenReturn(new IllegalStateException("private-secret"));
+        var mvc = MockMvcBuilders.standaloneSetup(new ApiErrorController(new ApiPathMatcher(), attributes))
+                .addPlaceholderValue("spring.web.error.path", "/error")
+                .setMessageConverters(new JacksonJsonHttpMessageConverter(JsonMapper.builder().build())).build();
+        var response = mvc.perform(post("/app/error").contextPath("/app")
+                        .requestAttr(RequestDispatcher.ERROR_REQUEST_URI, "/app/api")
+                        .requestAttr(RequestDispatcher.ERROR_STATUS_CODE, 500))
+                .andReturn().getResponse();
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(response.getContentAsString()).contains("SYS_ERROR").doesNotContain("private-secret");
+    }
+
 }

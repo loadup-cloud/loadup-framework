@@ -89,4 +89,15 @@ class IdGeneratorAutoConfigurationTest {
             assertThat(context.getBean(IdGenerator.class).generate()).matches("[0-9a-f]{32}");
         });
     }
+
+    @Test
+    void transitiveDatabaseJarDoesNotRequirePersistenceWhenNoSessionFactoryExists() {
+        runner.withConfiguration(AutoConfigurations.of(SequenceAutoConfiguration.class))
+                .run(context -> assertThat(context)
+                        .hasNotFailed()
+                        .doesNotHaveBean(Sequence.class)
+                        .doesNotHaveBean(IdGenerator.class)
+                        .doesNotHaveBean("sequenceAllocationDOMapper")
+                        .hasSingleBean(BusinessIdFormatter.class));
+    }
 }
