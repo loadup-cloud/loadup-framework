@@ -2,10 +2,6 @@
 
 本文只记录尚未完成的工作。每完成一项任务立即更新：移除已完成的实现项，未执行的运行验证单独保留。已实现的能力、接入方式和设计边界以各 Maven 模块的 `README.md`、`ARCHITECTURE.md` 为准。LoadUp 是通过 BOM 按需引入的框架；`loadup-application` 用于本地集成验证。
 
-## Digest log
-
-service  方法统一 生成 digest log ， 使用 stopwatch
-
 ## P1 · Database 业务 ID 与 Sequence
 
 2026-10-12 已实现最大 64 位业务 ID、格式化/解析、作用域数据库号段、原子批量发号及异步双缓冲。使用 MyBatis-Flex 生成 Mapper/Tables，数据库独立事务提交后发号；首次初始化/死锁有界退避重试、八位上限、预取队列及作用域容量保护已提供，Micrometer 使用共享注册表。默认主键策略已改为 BusinessIdGenerator，通过 IdGenerator 同时接入 Flex 和插入监听器；仅序列表元数据显式使用 UUID 防递归。移除 DatabaseIdGenerator 后，mvnd clean test 定向验证 41 项通过，包含 5 项真实 MySQL IT；覆盖默认策略、配置绑定、自定义策略回退、延迟解析、普通 DO 自动业务 ID、显式 ID 保留及序列表防递归。License 与 Spotless 校验通过，文档站同步完成；未执行全 reactor 或生产容量压测。
@@ -15,6 +11,8 @@ service  方法统一 生成 digest log ， 使用 stopwatch
 - [ ] 在消费环境演练数据库故障转移/备份恢复，保证已提交分配最大值不回退；八位每日容量及恢复策略单独验收。
 
 ## 当前建设目标与实施顺序
+
+2026-10-16 已实现注解驱动的 Service digest log：commons-log 提供 `@ServiceDigest`，Observability 对标记类或 public 方法注册统一 Advisor；Guava Stopwatch 按调用计时，LogUtil 输出固定摘要，不采集入参、返回值或异常文字。未标记 Service 不自动拦截。IDEA 批量检查无错误；一次定向 `mvnd clean spotless:apply verify -pl :loadup-components-observability -am -Dskip.spotbugs=true` 成功，Observability 14 项单测、7 项 IT 全部通过，无失败/错误/跳过，模块行/分支覆盖率均 100%；License/Spotless 校验通过，SpotBugs 未执行。集成测试验证 Boot 自动发现、Micrometer MDC 和事务提交失败的代理顺序，未以测试事务管理器替代真实数据库验收。此次仅定向验证，以下 48 个 jar 的整批报告仍指此前完整运行。
 
 ### 组件测试与覆盖率（2026-10-16 验收）
 

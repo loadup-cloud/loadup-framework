@@ -1,2 +1,3 @@
 io.github.loadup.components.observability.ObservabilityAutoConfiguration
 io.github.loadup.components.observability.ObservabilityWebAutoConfiguration
+io.github.loadup.components.observability.digest.ServiceDigestAutoConfiguration

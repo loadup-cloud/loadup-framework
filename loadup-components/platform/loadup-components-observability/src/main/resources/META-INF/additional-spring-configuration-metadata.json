@@ -1,0 +1,10 @@
+{
+  "properties": [
+    {
+      "name": "loadup.observability.service-digest.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Whether to log invocation summaries for managed service methods."
+    }
+  ]
+}

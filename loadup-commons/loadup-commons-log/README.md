@@ -47,6 +47,7 @@ Logger adapterLogger = LogUtil.getLogger(OrderService.class);
 | 应用配置覆盖默认 pattern | ✓ |
 | traceId / spanId MDC 约定 | ✓ |
 | requestId MDC 辅助 API | ✓ |
+| `@ServiceDigest` 标记类或方法 | 注解由本模块提供，运行需 Observability |
 | JSON 编码器绑定 | ✗（由集成方日志后端配置） |
 
 该模块不绑定具体日志实现；日志后端仍由 Spring Boot / 集成方选择。
@@ -74,3 +75,18 @@ logging:
 ```
 
 消费工程按需启用。启动器的 `json` profile 使用同样配置；默认使用统一文本格式。该组件不打包 Logback XML 或创建独立日志后端。文件输出仍需配置 `logging.file.name` 或 `logging.file.path`，本组件不会自动创建文件。应用自定义 `logging.config` 时须自行保持日志字段和编码器契约。
+
+## Service 摘要标记
+
+本模块提供纯注解 `io.github.loadup.commons.log.annotation.ServiceDigest`。标记类可选择其 public 方法，标记方法可单独选择；由 Spring 管理的对象通过代理调用时才生效。
+
+```java
+@ServiceDigest
+public class OrderService {
+    public void confirm() {
+        // Execute business logic.
+    }
+}
+```
+
+消费应用引入 `loadup-components-observability` 后启用执行逻辑：使用 Guava Stopwatch 和 LogUtil 记录方法、结果码、耗时及异常类型，traceId/spanId 复用 MDC。入参、返回值和异常消息不进入摘要。commons-log 自身不创建 AOP 代理或引入 Guava；关闭配置、代理及异步边界见 [Observability 接入手册](../../loadup-components/platform/loadup-components-observability/README.md#service-摘要日志)。

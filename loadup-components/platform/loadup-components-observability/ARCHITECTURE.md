@@ -41,3 +41,22 @@ HTTP、KMS、Outbox 和 Resilience4j 使用容器中的共享 Micrometer 实例�
 业务上下文由 commons-context 的私有 ScopedValue 管理，`LoadUpContextTaskDecorator` 捕获不可变 ExecutionContext 并包裹任务动态执行。自动配置提供同类型缺失时的默认 Bean，Boot 4.1 原生收集并组合多个 TaskDecorator；不会因用户已有其他装饰器跳过业务传播。标准 `spring.task.execution.propagate-context` 控制 Boot Micrometer 装饰器，独立负责 Observation/Trace/MDC，框架不重复捕获它们。
 
 移除旧 ThreadLocalAccessor/ServiceLoader 注册：set/reset 协议不能安全安装 ScopedValue 动态作用域。自定义执行器要显式配置组合；第三方直接调用 Micrometer snapshot 不会传播 LoadUp 业务数据。身份和 Trace 权威来源不变。测试覆盖异常恢复、空绑定、虚拟线程和 Boot 原生装饰器组合，未执行运行验证。
+
+## 显式 Service 摘要
+
+`@ServiceDigest` 是 commons-log 中的 JDK 元注解契约，运行逻辑位于本组件的 `digest` 包。未标记的 Bean 不生成代理摘要；不通过类名、包名或 Spring `@Service` 自动匹配业务。
+
+```text
+Spring proxy
+  → ServiceDigestInterceptor（Guava Stopwatch，局部变量）
+    → 方法授权 / TransactionInterceptor（默认顺序）
+      → 目标方法
+    → 提交或抛出异常
+  → LogUtil.info（固定元数据与耗时，复用当前 MDC）
+```
+
+`ServiceDigestPointcut` 复用 Spring AnnotationClassFilter/AnnotationMethodMatcher 识别类、方法、继承与组合注解，只拦截 public 实例业务方法。Boot 标准 AOP 自动配置拥有代理创建，组件仅注册 infrastructure Advisor，不新增 BeanPostProcessor 或第二套代理创建器。依赖 `spring-boot-starter-aspectj` 兼容 Boot 标准 JDK/CGLIB 选择，版本由 Boot BOM 管理；Guava 版本由框架 BOM 管理。
+
+Stopwatch 按每次调用创建与停止，使用单调时钟测量耗时，不使用共享计时器或 ThreadLocal。finally 生成一条摘要，返回值及异常对象保持原样；日志不访问参数或返回对象，避免序列化副作用与敏感信息披露。摘要记录失败类型和规范 ResultCode，不附带异常消息或堆栈；日志 RuntimeException 被隔离。
+
+该摘要是调用完成日志，不额外创建 Span、Timer 或注册表。同步业务调用、线程传播、事务最终结果和异步完成分别遵循其负责层契约；自调用、final 方法及异步返回值边界见 README。
