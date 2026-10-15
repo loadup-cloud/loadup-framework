@@ -19,6 +19,8 @@
  */
 package io.github.loadup.components.gotone.channel.sms;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.gotone.NotificationChannelProvider;
 import io.github.loadup.components.gotone.model.ChannelSendRequest;
@@ -105,7 +107,7 @@ public class AliyunSmsProvider implements NotificationChannelProvider {
      */
     protected void sendMessage(String receiver, String templateId, String signName, String content) throws Exception {
         if (accessKeyId == null || accessKeyId.isBlank() || accessKeySecret == null || accessKeySecret.isBlank()) {
-            throw new IllegalStateException("Aliyun SMS credentials are not configured");
+            throw new CommonException(CommonResultCodeEnum.INVALID_STATE);
         }
         LogUtil.debug(
                 AliyunSmsProvider.class,
@@ -114,6 +116,7 @@ public class AliyunSmsProvider implements NotificationChannelProvider {
                 templateId,
                 signName,
                 content.length());
+        throw new CommonException(CommonResultCodeEnum.INVALID_STATE);
     }
 
     @Override
@@ -122,19 +125,18 @@ public class AliyunSmsProvider implements NotificationChannelProvider {
     }
 
     private static String configValue(Map<String, Object> config, String key, String defaultValue) {
-        if (config == null || !config.containsKey(key)) {
+        if (!config.containsKey(key)) {
             return defaultValue;
         }
-        Object value = config.get(key);
-        return value != null ? value.toString() : defaultValue;
+        return config.get(key).toString();
     }
 
     private static boolean isPhoneNumber(String receiver) {
-        return receiver != null && receiver.matches("^\\+?[0-9]{5,20}$");
+        return receiver.matches("^\\+?[0-9]{5,20}$");
     }
 
     private static String maskPhone(String phone) {
-        if (phone == null || phone.length() < 7) {
+        if (phone.length() < 7) {
             return "***";
         }
         return phone.substring(0, 3) + "****" + phone.substring(phone.length() - 4);

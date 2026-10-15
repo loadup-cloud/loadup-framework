@@ -96,7 +96,10 @@ public class TianaiCaptchaProvider implements CaptchaProvider {
             }
             return false;
         } catch (Exception e) {
-            LogUtil.debug(TianaiCaptchaProvider.class, "Captcha verification failed for id={}", captchaId, e);
+            LogUtil.debug(
+                    TianaiCaptchaProvider.class,
+                    "Captcha verification failed: exceptionType={}",
+                    e.getClass().getSimpleName());
             return false;
         }
     }

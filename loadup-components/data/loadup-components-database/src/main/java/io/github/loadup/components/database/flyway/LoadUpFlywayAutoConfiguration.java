@@ -20,9 +20,11 @@
 package io.github.loadup.components.database.flyway;
 
 import io.github.loadup.commons.log.LogUtil;
+import java.util.ArrayList;
 import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
+import org.flywaydb.core.api.callback.Callback;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -131,11 +133,13 @@ public class LoadUpFlywayAutoConfiguration {
 
         // Init SQLs — applied via statement-scoped callback on connect
         if (properties.getInitSqls() != null && properties.getInitSqls().length > 0) {
+            var callbacks = new ArrayList<Callback>();
             for (String sql : properties.getInitSqls()) {
                 if (sql != null && !sql.isBlank()) {
-                    config.callbacks(new StatementInitCallback(sql));
+                    callbacks.add(new StatementInitCallback(sql));
                 }
             }
+            config.callbacks(callbacks.toArray(Callback[]::new));
         }
 
         // Target version

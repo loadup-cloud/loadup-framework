@@ -88,4 +88,35 @@ class Resilience4jCoreAutoConfigurationTest {
                             .anyMatch(circuitBreaker -> circuitBreaker.getName().equals("demo"));
                 });
     }
+
+    @Test
+    void standaloneDefaultsProvideIndependentUsablePolicies() throws Exception {
+        var policies = ResilienceRegistries.ofDefaults();
+        var other = ResilienceRegistries.ofDefaults();
+        var breaker = policies.circuitBreakerRegistry().circuitBreaker("payments");
+        assertThat(breaker.executeSupplier(() -> "accepted")).isEqualTo("accepted");
+        breaker.transitionToOpenState();
+        assertThat(other.circuitBreakerRegistry().circuitBreaker("payments").getState())
+                .isEqualTo(io.github.resilience4j.circuitbreaker.CircuitBreaker.State.CLOSED);
+
+        var attempts = new java.util.concurrent.atomic.AtomicInteger();
+        assertThat(policies.retryRegistry().retry("notifications").executeSupplier(() -> {
+                    if (attempts.incrementAndGet() == 1) throw new IllegalStateException("synthetic transient failure");
+                    return "delivered";
+                }))
+                .isEqualTo("delivered");
+        assertThat(attempts.get()).isEqualTo(2);
+        var bulkhead = policies.bulkheadRegistry().bulkhead("exports");
+        int permits = bulkhead.getMetrics().getAvailableConcurrentCalls();
+        assertThat(bulkhead.executeSupplier(() -> bulkhead.getMetrics().getAvailableConcurrentCalls()))
+                .isEqualTo(permits - 1);
+        assertThat(bulkhead.getMetrics().getAvailableConcurrentCalls()).isEqualTo(permits);
+        var limiter = policies.rateLimiterRegistry().rateLimiter("callbacks");
+        assertThat(limiter.acquirePermission()).isTrue();
+        assertThat(policies.timeLimiterRegistry()
+                        .timeLimiter("channel")
+                        .executeFutureSupplier(
+                                () -> java.util.concurrent.CompletableFuture.completedFuture("completed")))
+                .isEqualTo("completed");
+    }
 }

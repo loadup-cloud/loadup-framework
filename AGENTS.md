@@ -2,6 +2,15 @@
 
 本文件从 Git 历史中的原版恢复，并以当前仓库结构和约定更新。具体组件契约以对应模块的 `README.md` 和 `ARCHITECTURE.md` 为准；`docs/` 是面向读者的 Hextra 文档站，不作为代码实现的依据。
 
+## Selected-model lead and Luna delegation policy
+
+- Keep the lead agent on the model and reasoning effort selected for this thread. Architecture, ambiguous diagnosis, cross-module semantics, security, production operations, deployment, database writes, Git push, and final acceptance remain with the lead.
+- Delegate separable, bounded, low-risk execution only to the custom `luna_worker` agent, with at most two workers running concurrently. Allowed work: independent code search, focused test execution, mechanical localized edits, and evidence collection.
+- Before dispatch, specify allowed scope, affected files, acceptance checks, explicit non-goals, and exact commands or required evidence. Spawn with `agent_type = "luna_worker"` and independent, self-contained context; use no default or built-in worker role for execution.
+- If `luna_worker` or the required agent-type selection is unavailable, keep the work with the lead and report the limitation. Do not substitute another agent or model.
+- A blocked worker reports the blocker and stops. It must not broaden scope or make external or destructive changes.
+- The lead reviews returned diffs and completes required verification before reporting completion.
+
 <!-- CODEGRAPH_START -->
 ## CodeGraph
 
@@ -26,6 +35,7 @@ LoadUp 是一个**被消费的框架/SDK**，通过 `loadup-dependencies` BOM �
 - 构建及 Maven 插件命令统一使用 Maven Daemon（`mvnd`），保留 `clean` 和按模块选择。`mvnd` 不可用时报告环境限制，不自动回退到 `mvn`。
 
 - IDEA MCP 可用时直接使用其代码检查能力，不编写临时手动 check 脚本代替 IDE 检查。
+- 测试补齐按批次集中编写与审查，先使用 IDEA MCP 批量检查，再合并受影响模块执行必要的 `mvnd clean` 验证；避免每新增一个用例就单独运行 Maven。
 - 需要验证编译、注解处理或依赖装配时使用 Maven build；不完全禁止构建。优先选择受影响模块及其依赖，用户要求整体构建时执行整体构建。
 - Maven 编译必须带 `clean`，避免 MyBatis-Flex、MapStruct 等注解处理器增量生成时发生 `FilerException`。
 - 明确区分格式化、编译、单测与真实环境集成测试；未运行的验证不得标为通过。根据任务需要选择测试和检查跳过参数，避免无收益的重复全量执行。

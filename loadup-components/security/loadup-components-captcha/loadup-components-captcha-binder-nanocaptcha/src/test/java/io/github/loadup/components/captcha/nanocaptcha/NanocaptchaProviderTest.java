@@ -19,61 +19,97 @@
  */
 package io.github.loadup.components.captcha.nanocaptcha;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-import io.github.loadup.components.captcha.CaptchaResponse;
-import java.lang.reflect.Field;
-import java.util.Map;
+import io.github.loadup.components.captcha.CaptchaType;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.util.Base64;
+import javax.imageio.ImageIO;
+import net.logicsquad.nanocaptcha.image.ImageCaptcha;
 import org.junit.jupiter.api.Test;
+import org.mockito.Answers;
+import org.mockito.MockedConstruction;
 
 class NanocaptchaProviderTest {
-
     @Test
-    void verify_correctAnswer_succeedsOnce() throws Exception {
-        NanocaptchaProvider provider = new NanocaptchaProvider(new NanocaptchaProperties());
-        CaptchaResponse response = provider.generate(null);
-
-        String answer = answerOf(provider, response.captchaId());
-
-        assertThat(answer).isNotBlank();
-        assertThat(provider.verify(response.captchaId(), answer)).isTrue();
-        assertThat(provider.verify(response.captchaId(), answer)).isFalse();
+    void successfulAndFailedAttemptsAreBothSingleUse() {
+        var properties = new NanocaptchaProperties();
+        var provider = new NanocaptchaProvider(properties);
+        try (var ignored = images(new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB))) {
+            var correct = provider.generate(null);
+            assertThat(provider.verify(correct.captchaId(), "  aB12  ")).isTrue();
+            assertThat(provider.verify(correct.captchaId(), "Ab12")).isFalse();
+            var wrong = provider.generate(CaptchaType.WORD);
+            assertThat(provider.verify(wrong.captchaId(), "wrong")).isFalse();
+            assertThat(provider.verify(wrong.captchaId(), "Ab12")).isFalse();
+            assertThat(provider.verify("unknown", "Ab12")).isFalse();
+            var invalid = provider.generate(null);
+            assertThat(provider.verify(invalid.captchaId(), 12)).isFalse();
+            assertThat(provider.verify(invalid.captchaId(), null)).isFalse();
+            assertThat(provider.verify(null, "Ab12")).isFalse();
+            assertThat(provider.verify(invalid.captchaId(), "Ab12")).isTrue();
+            properties.setExpirationSeconds(-1);
+            assertThat(provider.verify(provider.generate(null).captchaId(), "Ab12"))
+                    .isFalse();
+        }
+        assertThat(provider.getBinderType()).isEqualTo("nanocaptcha");
+        assertThatThrownBy(() -> provider.generate(CaptchaType.SLIDER)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    void verify_ignoresCaseAndWhitespace() throws Exception {
-        NanocaptchaProvider provider = new NanocaptchaProvider(new NanocaptchaProperties());
-        CaptchaResponse response = provider.generate(null);
-
-        String answer = answerOf(provider, response.captchaId());
-
-        assertThat(provider.verify(response.captchaId(), "  " + answer.toUpperCase() + " "))
-                .isTrue();
+    void rendersActualPngForEachConfiguredCharacterSet() throws Exception {
+        for (String charset : new String[] {"numbers", "latin", "chinese"}) {
+            var properties = new NanocaptchaProperties();
+            properties.setContent(charset);
+            properties.setWidth(180);
+            properties.setHeight(60);
+            properties.setLength(5);
+            var response = new NanocaptchaProvider(properties).generate(CaptchaType.WORD);
+            assertThat(response.type()).isEqualTo(CaptchaType.WORD);
+            assertThat(response.backgroundImageTag()).isEqualTo("image/png");
+            byte[] png = Base64.getDecoder().decode(response.backgroundImage().split(",", 2)[1]);
+            var image = ImageIO.read(new ByteArrayInputStream(png));
+            assertThat(image.getWidth()).isEqualTo(180);
+            assertThat(image.getHeight()).isEqualTo(60);
+            assertThat(response.backgroundImageWidth()).isEqualTo(image.getWidth());
+            assertThat(response.backgroundImageHeight()).isEqualTo(image.getHeight());
+        }
     }
 
     @Test
-    void verify_wrongAnswer_rejects() throws Exception {
-        NanocaptchaProvider provider = new NanocaptchaProvider(new NanocaptchaProperties());
-        CaptchaResponse response = provider.generate(null);
-
-        assertThat(provider.verify(response.captchaId(), "wrong")).isFalse();
+    void expiredEntriesArePurgedWithoutDiscardingFreshChallenges() {
+        var properties = new NanocaptchaProperties();
+        var provider = new NanocaptchaProvider(properties);
+        try (var ignored = images(new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB))) {
+            properties.setExpirationSeconds(-1);
+            String expired = provider.generate(null).captchaId();
+            for (int i = 1; i < 2500; i++) provider.generate(null);
+            properties.setExpirationSeconds(300);
+            for (int i = 0; i < 2499; i++) provider.generate(null);
+            String fresh = provider.generate(null).captchaId();
+            assertThat(provider.verify(expired, "Ab12")).isFalse();
+            assertThat(provider.verify(fresh, "Ab12")).isTrue();
+        }
     }
 
     @Test
-    void generate_unsupportedType_rejects() {
-        NanocaptchaProvider provider = new NanocaptchaProvider(new NanocaptchaProperties());
-
-        org.assertj.core.api.Assertions.assertThatThrownBy(() -> provider.generate("SLIDER"))
-                .isInstanceOf(IllegalArgumentException.class);
+    void imageEncodingFailureIsReported() {
+        try (var ignored = images(null)) {
+            assertThatThrownBy(() -> new NanocaptchaProvider(new NanocaptchaProperties()).generate(null))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("Failed to encode captcha image");
+        }
     }
 
-    private static String answerOf(NanocaptchaProvider provider, String captchaId) throws Exception {
-        Field pendingField = NanocaptchaProvider.class.getDeclaredField("pending");
-        pendingField.setAccessible(true);
-        Map<?, ?> pending = (Map<?, ?>) pendingField.get(provider);
-        Object entry = pending.get(captchaId);
-        Field answerField = entry.getClass().getDeclaredField("answer");
-        answerField.setAccessible(true);
-        return (String) answerField.get(entry);
+    private static MockedConstruction<ImageCaptcha.Builder> images(BufferedImage image) {
+        ImageCaptcha captcha = mock(ImageCaptcha.class);
+        when(captcha.getContent()).thenReturn("Ab12");
+        when(captcha.getImage()).thenReturn(image);
+        return mockConstruction(
+                ImageCaptcha.Builder.class,
+                withSettings().defaultAnswer(Answers.RETURNS_SELF),
+                (builder, context) -> when(builder.build()).thenReturn(captcha));
     }
 }

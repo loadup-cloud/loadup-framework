@@ -139,18 +139,19 @@ public class JobRunrSchedulerTemplate implements SchedulerTemplate {
             while (true) {
                 Page<Job> page =
                         storageProvider.getJobs(state, new OffsetBasedPageRequest("updatedAt:ASC", offset, 1000));
-                page.getItems().stream()
+                List<Job> matching = page.getItems().stream()
                         .filter(job -> job.getRecurringJobId()
                                 .map(id -> id.equals(recurringJobId))
                                 .orElse(false))
-                        .forEach(job -> {
-                            scheduler.delete(job.getId(), "Schedule changed or recurring task removed");
-                            storageProvider.deletePermanently(job.getId());
-                        });
+                        .toList();
+                matching.forEach(job -> {
+                    scheduler.delete(job.getId(), "Schedule changed or recurring task removed");
+                    storageProvider.deletePermanently(job.getId());
+                });
                 if (page.getItems().size() < 1000) {
                     break;
                 }
-                offset += 1000;
+                offset += page.getItems().size() - matching.size();
             }
         }
     }

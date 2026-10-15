@@ -19,13 +19,14 @@
  */
 package io.github.loadup.components.dfs.test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.github.loadup.components.dfs.DefaultDfsService;
+import io.github.loadup.components.dfs.DfsObjectNotFoundException;
 import io.github.loadup.components.dfs.DfsService;
 import io.github.loadup.components.dfs.DfsStorageException;
 import io.github.loadup.components.dfs.local.LocalDfsProperties;
@@ -36,13 +37,12 @@ import io.github.loadup.components.dfs.model.FileUploadRequest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.atomic.AtomicBoolean;
-import io.github.loadup.components.dfs.DfsObjectNotFoundException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -106,8 +106,8 @@ class LocalDfsProviderTest {
 
     @Test
     void defaultTypeBlankPathAndEmptyObjectsRemainRetrievableAndDeletable() {
-        FileMetadata metadata = service.upload(new FileUploadRequest("empty", new ByteArrayInputStream(new byte[0]),
-                0, " ", " ", null));
+        FileMetadata metadata = service.upload(
+                new FileUploadRequest("empty", new ByteArrayInputStream(new byte[0]), 0, " ", " ", null));
         assertThat(metadata.fileId()).doesNotContain("/");
         assertThat(metadata.contentType()).isEqualTo("application/octet-stream");
         assertThat(metadata.metadata()).isEmpty();
@@ -120,12 +120,15 @@ class LocalDfsProviderTest {
 
     @Test
     void traversalAndAbsolutePathsCannotAccessStorageOutsideRoot() {
-        for (String unsafe : new String[] {"../escape", tempDirectory.getParent().resolve("escape").toString()}) {
+        for (String unsafe : new String[] {
+            "../escape", tempDirectory.getParent().resolve("escape").toString()
+        }) {
             assertThatThrownBy(() -> service.exists(unsafe)).isInstanceOf(IllegalArgumentException.class);
             assertThatThrownBy(() -> service.delete(unsafe)).isInstanceOf(IllegalArgumentException.class);
             assertThatThrownBy(() -> service.getMetadata(unsafe)).isInstanceOf(IllegalArgumentException.class);
-            assertThatThrownBy(() -> service.upload(new FileUploadRequest("file", new ByteArrayInputStream(new byte[0]),
-                    0, null, unsafe, null))).isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> service.upload(new FileUploadRequest(
+                            "file", new ByteArrayInputStream(new byte[0]), 0, null, unsafe, null)))
+                    .isInstanceOf(IllegalArgumentException.class);
         }
     }
 
@@ -133,19 +136,26 @@ class LocalDfsProviderTest {
     void uploadStreamOwnershipStaysWithCallerAndReadFailureCleansTemporaryObjects() throws Exception {
         AtomicBoolean closed = new AtomicBoolean();
         InputStream source = new ByteArrayInputStream(new byte[] {1}) {
-            @Override public void close() { closed.set(true); }
+            @Override
+            public void close() {
+                closed.set(true);
+            }
         };
         service.upload(FileUploadRequest.of("file", source, 1, null));
         assertThat(closed).isFalse();
         source.close();
         assertThat(closed).isTrue();
         InputStream failing = new InputStream() {
-            @Override public int read() throws IOException { throw new IOException("synthetic read failure"); }
+            @Override
+            public int read() throws IOException {
+                throw new IOException("synthetic read failure");
+            }
         };
         assertThatThrownBy(() -> service.upload(FileUploadRequest.of("broken", failing, 1, null)))
                 .isInstanceOf(DfsStorageException.class);
         try (var files = Files.walk(tempDirectory.resolve("objects"))) {
-            assertThat(files.filter(path -> path.getFileName().toString().endsWith(".uploading"))).isEmpty();
+            assertThat(files.filter(path -> path.getFileName().toString().endsWith(".uploading")))
+                    .isEmpty();
         }
     }
 
@@ -154,8 +164,9 @@ class LocalDfsProviderTest {
         Path metadataRoot = tempDirectory.resolve("metadata");
         Files.delete(metadataRoot);
         Files.writeString(metadataRoot, "blocked metadata directory");
-        assertThatThrownBy(() -> service.upload(FileUploadRequest.of("broken", new ByteArrayInputStream(new byte[] {1}),
-                1, null))).isInstanceOf(DfsStorageException.class);
+        assertThatThrownBy(() -> service.upload(
+                        FileUploadRequest.of("broken", new ByteArrayInputStream(new byte[] {1}), 1, null)))
+                .isInstanceOf(DfsStorageException.class);
         try (var files = Files.list(tempDirectory.resolve("objects"))) {
             assertThat(files).isEmpty();
         }
@@ -163,7 +174,8 @@ class LocalDfsProviderTest {
 
     @Test
     void missingContentAndNonemptyDirectoryDeletionProduceStorageFailure() throws Exception {
-        FileMetadata metadata = service.upload(FileUploadRequest.of("file", new ByteArrayInputStream(new byte[] {1}), 1, null));
+        FileMetadata metadata =
+                service.upload(FileUploadRequest.of("file", new ByteArrayInputStream(new byte[] {1}), 1, null));
         Files.delete(tempDirectory.resolve("objects").resolve(metadata.fileId()));
         assertThatThrownBy(() -> service.download(metadata.fileId())).isInstanceOf(DfsStorageException.class);
         Path directory = tempDirectory.resolve("objects/nonempty");

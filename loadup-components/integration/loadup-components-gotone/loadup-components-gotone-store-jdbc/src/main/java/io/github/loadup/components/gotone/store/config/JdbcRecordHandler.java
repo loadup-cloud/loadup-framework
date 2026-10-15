@@ -53,8 +53,10 @@ public class JdbcRecordHandler implements RecordHandler {
             record.setProvider(result.actualProvider());
             record.setReceiver(receiver);
             record.setContent(result.content());
-            record.setStatus(
-                    Boolean.TRUE.equals(result.receiverStatus().get(receiver)) ? STATUS_SUCCESS : STATUS_FAILED);
+            boolean delivered = "WEBHOOK".equals(config.channel())
+                    ? result.success()
+                    : Boolean.TRUE.equals(result.receiverStatus().get(receiver));
+            record.setStatus(delivered ? STATUS_SUCCESS : STATUS_FAILED);
             record.setErrorMessage(result.receiverErrors().get(receiver));
             record.setSendTime(now);
             mapper.insert(record);

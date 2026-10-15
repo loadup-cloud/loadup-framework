@@ -22,12 +22,26 @@ package io.github.loadup.components.resourceserver;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.crypto.RSASSASigner;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
+import com.sun.net.httpserver.HttpServer;
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.components.observability.ApiResultMetrics;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import jakarta.servlet.Filter;
+import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
+import java.security.KeyPairGenerator;
+import java.security.interfaces.RSAPublicKey;
 import java.time.Instant;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -171,6 +185,95 @@ class ResourceServerSecurityTest {
         properties.setAudience("merchant-api");
         properties.setJwkSetUri("https://issuer.test/jwks");
         assertThat(configuration.resourceServerJwtDecoder(properties)).isNotNull();
+    }
+
+    @Test
+    void discoversIssuerMetadataAndVerifiesSignatureUsingLocalJwks() throws Exception {
+        KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
+        generator.initialize(2048);
+        var keyPair = generator.generateKeyPair();
+        RSAKey key = new RSAKey.Builder((RSAPublicKey) keyPair.getPublic())
+                .privateKey(keyPair.getPrivate())
+                .keyID("test-rsa")
+                .algorithm(JWSAlgorithm.RS256)
+                .build();
+        HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        String issuer = "http://127.0.0.1:" + server.getAddress().getPort();
+        AtomicInteger metadataRequests = new AtomicInteger();
+        AtomicInteger jwksRequests = new AtomicInteger();
+        server.createContext("/.well-known/openid-configuration", exchange -> {
+            metadataRequests.incrementAndGet();
+            byte[] body = ("{\"issuer\":\"" + issuer + "\",\"jwks_uri\":\"" + issuer
+                            + "/jwks\",\"id_token_signing_alg_values_supported\":[\"RS256\"]}")
+                    .getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().set("Content-Type", "application/json");
+            exchange.sendResponseHeaders(200, body.length);
+            try (var response = exchange.getResponseBody()) {
+                response.write(body);
+            }
+            exchange.close();
+        });
+        server.createContext("/jwks", exchange -> {
+            jwksRequests.incrementAndGet();
+            byte[] body = new JWKSet(key.toPublicJWK()).toString().getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().set("Content-Type", "application/json");
+            exchange.sendResponseHeaders(200, body.length);
+            try (var response = exchange.getResponseBody()) {
+                response.write(body);
+            }
+            exchange.close();
+        });
+        server.start();
+        try {
+            var properties = new ResourceServerProperties();
+            properties.setIssuerUri(issuer);
+            properties.setAudience("merchant-api");
+            var decoder = new ResourceServerAutoConfiguration().resourceServerJwtDecoder(properties);
+            var claims = new JWTClaimsSet.Builder()
+                    .issuer(issuer)
+                    .audience("merchant-api")
+                    .subject("merchant-user")
+                    .issueTime(Date.from(Instant.now().minusSeconds(5)))
+                    .expirationTime(Date.from(Instant.now().plusSeconds(300)))
+                    .claim("token_use", "access")
+                    .build();
+            var token = new SignedJWT(
+                    new JWSHeader.Builder(JWSAlgorithm.RS256).keyID("test-rsa").build(), claims);
+            token.sign(new RSASSASigner(key));
+            Jwt verified = decoder.decode(token.serialize());
+            assertThat(verified.getSubject()).isEqualTo("merchant-user");
+            assertThat(verified.getIssuer().toString()).isEqualTo(issuer);
+            assertThat(verified.getAudience()).containsExactly("merchant-api");
+            assertThat(metadataRequests.get()).isPositive();
+            assertThat(jwksRequests.get()).isPositive();
+        } finally {
+            server.stop(0);
+        }
+    }
+
+    @Test
+    void nullPublicPathsDoNotDisableAuthenticationForApiRequests() {
+        ResourceServerProperties properties = new ResourceServerProperties();
+        properties.setPermitAll(null);
+        String beanName = "loadup.security.resource-server-" + ResourceServerProperties.class.getName();
+        runner.withBean(beanName, ResourceServerProperties.class, () -> properties)
+                .run(application -> {
+                    assertThat(application).hasNotFailed();
+                    assertThat(application
+                                    .getBean(ResourceServerProperties.class)
+                                    .getPermitAll())
+                            .isNull();
+                    AtomicInteger calls = new AtomicInteger();
+                    Filter filter = application.getBean("springSecurityFilterChain", Filter.class);
+                    assertFailure(
+                            request(filter, "/api/public", null, calls::incrementAndGet),
+                            CommonResultCodeEnum.UNAUTHENTICATED);
+                    assertThat(calls).hasValue(0);
+                    assertThat(request(filter, "/api/private", "valid", calls::incrementAndGet)
+                                    .getStatus())
+                            .isEqualTo(200);
+                    assertThat(calls).hasValue(1);
+                });
     }
 
     private static MockHttpServletResponse request(Filter filter, String path, String token, Runnable endpoint)

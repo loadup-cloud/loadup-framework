@@ -40,7 +40,7 @@ import net.logicsquad.nanocaptcha.image.noise.CurvedLineNoiseProducer;
 /**
  * nanocaptcha backed {@link CaptchaProvider} for classic character image captchas.
  *
- * <p>Answers are kept in a bounded in-memory store keyed by captcha id; each verification is
+ * <p>Answers are kept in an in-memory store with periodic expiry cleanup; each verification is
  * single-use (the entry is removed on the first attempt, whether it succeeds or not).
  */
 public class NanocaptchaProvider implements CaptchaProvider {
@@ -87,7 +87,7 @@ public class NanocaptchaProvider implements CaptchaProvider {
 
     @Override
     public boolean verify(String captchaId, Object userInput) {
-        if (!(userInput instanceof String input)) {
+        if (captchaId == null || !(userInput instanceof String input)) {
             return false;
         }
         AnswerEntry entry = pending.remove(captchaId);

@@ -20,6 +20,8 @@
 package io.github.loadup.components.testcontainers.initializer;
 
 import io.github.loadup.commons.log.LogUtil;
+import io.github.loadup.components.testcontainers.cache.SharedRedisContainer;
+import io.github.loadup.components.testcontainers.cloud.SharedLocalStackContainer;
 import io.github.loadup.components.testcontainers.config.TestContainersProperties;
 import io.github.loadup.components.testcontainers.database.SharedMongoDBContainer;
 import io.github.loadup.components.testcontainers.database.SharedMySQLContainer;
@@ -176,6 +178,14 @@ public class TestContainersPropertyInitializer
             allProperties.putAll(SharedElasticsearchContainer.getProperties());
         }
 
+        if (config.getRedis() != null && config.getRedis().isEnabled()) {
+            SharedRedisContainer.startContainer(config.getRedis());
+            allProperties.putAll(SharedRedisContainer.getProperties());
+        }
+        if (config.getLocalstack() != null && config.getLocalstack().isEnabled()) {
+            SharedLocalStackContainer.startContainer(config.getLocalstack());
+            allProperties.putAll(SharedLocalStackContainer.getProperties());
+        }
         return allProperties;
     }
 

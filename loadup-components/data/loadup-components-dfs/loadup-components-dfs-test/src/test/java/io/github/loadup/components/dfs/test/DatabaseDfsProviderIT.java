@@ -43,10 +43,13 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(properties = "loadup.dfs.binder-type=database")
 class DatabaseDfsProviderIT {
     private final DfsService service;
+    private final io.github.loadup.components.dfs.database.mapper.FileStorageDOMapper mapper;
 
     @Autowired
-    DatabaseDfsProviderIT(DfsService service) {
+    DatabaseDfsProviderIT(
+            DfsService service, io.github.loadup.components.dfs.database.mapper.FileStorageDOMapper mapper) {
         this.service = service;
+        this.mapper = mapper;
     }
 
     @Test
@@ -67,5 +70,55 @@ class DatabaseDfsProviderIT {
             assertEquals("database-contract", new String(response.content().readAllBytes(), StandardCharsets.UTF_8));
         }
         assertTrue(service.delete(metadata.fileId()));
+    }
+
+    @Test
+    void missingAndRepeatedDeletePreserveObjectNotFoundContract() {
+        String missing = java.util.UUID.randomUUID().toString();
+        org.assertj.core.api.Assertions.assertThat(service.exists(missing)).isFalse();
+        org.assertj.core.api.Assertions.assertThat(service.delete(missing)).isFalse();
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> service.download(missing))
+                .isInstanceOf(io.github.loadup.components.dfs.DfsObjectNotFoundException.class);
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> service.getMetadata(missing))
+                .isInstanceOf(io.github.loadup.components.dfs.DfsObjectNotFoundException.class);
+    }
+
+    @Test
+    void legacyNullMetadataRemainsReadableAndCorruptedJsonFailsExplicitly() throws Exception {
+        var file = new io.github.loadup.components.dfs.database.dataobject.FileStorageDO();
+        file.setId(java.util.UUID.randomUUID().toString());
+        file.setFilename("legacy.txt");
+        file.setFileSize(0L);
+        file.setContentType("text/plain");
+        file.setContent(new byte[0]);
+        mapper.insert(file);
+        try {
+            org.assertj.core.api.Assertions.assertThat(
+                            service.getMetadata(file.getId()).metadata())
+                    .isEmpty();
+            file.setMetadataJson("not valid json");
+            mapper.update(file);
+            org.assertj.core.api.Assertions.assertThatThrownBy(() -> service.getMetadata(file.getId()))
+                    .isInstanceOf(io.github.loadup.components.dfs.DfsStorageException.class);
+        } finally {
+            service.delete(file.getId());
+        }
+    }
+
+    @Test
+    void inputLengthMismatchAndStreamFailureDoNotProduceSuccessfulUploads() {
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> service.upload(
+                        FileUploadRequest.of("bad.txt", new ByteArrayInputStream(new byte[] {1}), 2, "text/plain")))
+                .isInstanceOf(io.github.loadup.components.dfs.DfsStorageException.class);
+        var failure = new java.io.IOException("synthetic read failure");
+        java.io.InputStream broken = new java.io.InputStream() {
+            public int read() throws java.io.IOException {
+                throw failure;
+            }
+        };
+        org.assertj.core.api.Assertions.assertThatThrownBy(
+                        () -> service.upload(FileUploadRequest.of("bad.txt", broken, 1, "text/plain")))
+                .isInstanceOf(io.github.loadup.components.dfs.DfsStorageException.class)
+                .hasCause(failure);
     }
 }

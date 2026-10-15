@@ -107,4 +107,101 @@ class BusinessIdTest {
                 sequence, Clock.fixed(Instant.parse("2026-10-12T00:00:00Z"), ZoneOffset.UTC), formatter);
         assertThat(generator.generate(command(""))).hasSize(32).endsWith("00000007");
     }
+
+    @Test
+    void rejectsEveryOutOfBoundsMetadataFieldWithStableCode() {
+        BusinessIdCommand[] valid = {
+            new BusinessIdCommand(0, 0, "00000000", null, 0, 0),
+            new BusinessIdCommand(9, 9, "99999999", "aB09", 999, 999)
+        };
+        for (BusinessIdCommand c : valid) {
+            var parts = new BusinessIdParts(LocalDate.of(2024, 2, 29), c, 1);
+            assertThat(formatter.parse(formatter.format(parts))).isEqualTo(parts);
+        }
+        assertThat(valid[0].extensionCode()).isEmpty();
+        java.util.List<java.util.function.Supplier<BusinessIdCommand>> invalid = java.util.List.of(
+                () -> new BusinessIdCommand(-1, 1, "11000000", "", 1, 1),
+                () -> new BusinessIdCommand(10, 1, "11000000", "", 1, 1),
+                () -> new BusinessIdCommand(1, -1, "11000000", "", 1, 1),
+                () -> new BusinessIdCommand(1, 10, "11000000", "", 1, 1),
+                () -> new BusinessIdCommand(1, 1, null, "", 1, 1),
+                () -> new BusinessIdCommand(1, 1, "1234567", "", 1, 1),
+                () -> new BusinessIdCommand(1, 1, "123456789", "", 1, 1),
+                () -> new BusinessIdCommand(1, 1, "abcdefgh", "", 1, 1),
+                () -> new BusinessIdCommand(1, 1, "11000000", "bad-value", 1, 1),
+                () -> new BusinessIdCommand(1, 1, "11000000", "", -1, 1),
+                () -> new BusinessIdCommand(1, 1, "11000000", "", 1000, 1),
+                () -> new BusinessIdCommand(1, 1, "11000000", "", 1, -1),
+                () -> new BusinessIdCommand(1, 1, "11000000", "", 1, 1000));
+        for (var factory : invalid) {
+            assertThatThrownBy(factory::get)
+                    .isInstanceOfSatisfying(
+                            CommonException.class,
+                            error -> assertThat(error.getResultCode()).isEqualTo(DatabaseResultCodeEnum.INVALID_INPUT));
+        }
+    }
+
+    @Test
+    void rejectsIncompletePartsAndYearsOutsideFourDigitPositiveRange() {
+        for (BusinessIdParts parts : new BusinessIdParts[] {
+            null,
+            new BusinessIdParts(null, command(""), 1),
+            new BusinessIdParts(LocalDate.now(), null, 1),
+            new BusinessIdParts(LocalDate.of(0, 1, 1), command(""), 1),
+            new BusinessIdParts(LocalDate.of(10000, 1, 1), command(""), 1)
+        }) {
+            assertThatThrownBy(() -> formatter.format(parts))
+                    .isInstanceOfSatisfying(
+                            CommonException.class,
+                            error -> assertThat(error.getResultCode()).isEqualTo(DatabaseResultCodeEnum.INVALID_INPUT));
+        }
+        for (LocalDate date : java.util.List.of(LocalDate.of(1, 1, 1), LocalDate.of(9999, 12, 31))) {
+            var parts = new BusinessIdParts(date, command(""), BusinessIdFormatter.MAX_SEQUENCE);
+            assertThat(formatter.parse(formatter.format(parts))).isEqualTo(parts);
+        }
+    }
+
+    @Test
+    void rejectsMalformedEncodedPrefixExtensionAndTail() {
+        String valid = formatter.format(new BusinessIdParts(LocalDate.of(2026, 10, 12), command(""), 1));
+        for (String malformed : new String[] {
+            null,
+            "0".repeat(31),
+            "0".repeat(65),
+            "x" + valid.substring(1),
+            valid.substring(0, 18) + "_" + valid.substring(18),
+            valid.substring(0, valid.length() - 1) + "x",
+            "00000000" + valid.substring(8),
+            "20230229" + valid.substring(8)
+        }) {
+            assertThatThrownBy(() -> formatter.parse(malformed))
+                    .isInstanceOfSatisfying(
+                            CommonException.class,
+                            error -> assertThat(error.getResultCode()).isEqualTo(DatabaseResultCodeEnum.INVALID_INPUT));
+        }
+    }
+
+    @Test
+    void invalidGeneratorMetadataNeverReservesSequenceNumbers() {
+        Sequence sequence = new Sequence() {
+            public long next(SequenceScope scope) {
+                throw new AssertionError("Invalid metadata must not allocate");
+            }
+
+            public long[] nextBatch(SequenceScope scope, int count) {
+                throw new AssertionError("Invalid metadata must not allocate");
+            }
+        };
+        Clock ordinary = Clock.fixed(Instant.parse("2026-10-12T00:00:00Z"), ZoneOffset.UTC);
+        assertThatThrownBy(() -> new BusinessIdGenerator(sequence, ordinary, formatter, null))
+                .isInstanceOf(CommonException.class);
+        BusinessIdGenerator generator = new BusinessIdGenerator(sequence, ordinary, formatter);
+        assertThatThrownBy(() -> generator.generate(null)).isInstanceOf(CommonException.class);
+        assertThatThrownBy(() -> generator.generateBatch(null, 2)).isInstanceOf(CommonException.class);
+        for (String instant : new String[] {"0000-01-01T00:00:00Z", "+10000-01-01T00:00:00Z"}) {
+            var invalidDateGenerator =
+                    new BusinessIdGenerator(sequence, Clock.fixed(Instant.parse(instant), ZoneOffset.UTC), formatter);
+            assertThatThrownBy(() -> invalidDateGenerator.generate(command(""))).isInstanceOf(CommonException.class);
+        }
+    }
 }

@@ -94,6 +94,10 @@ Local-time audit timestamps, `deleted = 0/1` and the `tenant_id` column are fram
 
 Use generated `Tables` constants in repositories; do not concatenate SQL or sort expressions. MapStruct converters use the shared Spring configuration and constructor injection. `UpdateEntity.of` expresses partial updates, including intentional null assignments.
 
+## Flyway connection initialization
+
+Flyway `loadup.flyway.init-sqls` preserves all nonblank statements in configured order. The component registers the complete callback array once; blank/null entries are ignored. Initialization statements execute after connection acquisition and close their Statement without closing the Flyway-owned connection.
+
 ## Business IDs and database sequences
 
 `BusinessIdGenerator` is the default `IdGenerator` for MyBatis-Flex and BaseDO insert listeners. Missing IDs automatically receive a business ID; explicit IDs remain unchanged. Sequence is enabled by default. Apply the sequence migration before any insert that relies on automatic ID generation. Allocation metadata explicitly uses UUID to avoid recursively requesting a sequence.

@@ -79,8 +79,11 @@ public class WechatWebhookProvider implements NotificationChannelProvider {
             LogUtil.info(WechatWebhookProvider.class, "WeChat webhook sent to {}", maskUrl(webhookUrl));
             return success(request);
         } catch (Exception e) {
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
             LogUtil.warn(WechatWebhookProvider.class, "WeChat webhook failed for {}", maskUrl(webhookUrl), e);
-            return failure(request, e.getMessage());
+            return failure(request, "webhook request failed");
         }
     }
 

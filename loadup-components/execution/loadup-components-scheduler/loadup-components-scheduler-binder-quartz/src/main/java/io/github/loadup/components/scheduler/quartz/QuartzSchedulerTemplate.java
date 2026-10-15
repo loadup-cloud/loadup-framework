@@ -112,9 +112,14 @@ public class QuartzSchedulerTemplate implements SchedulerTemplate {
                 LogUtil.debug(QuartzSchedulerTemplate.class, "No recurring task to update for taskName={}", taskName);
                 return;
             }
+            var previous = scheduler.getTrigger(triggerKey);
+            var schedule = CronScheduleBuilder.cronSchedule(cron);
+            if (previous instanceof CronTrigger previousCron) {
+                schedule.inTimeZone(previousCron.getTimeZone());
+            }
             CronTrigger trigger = TriggerBuilder.newTrigger()
                     .withIdentity(triggerKey)
-                    .withSchedule(CronScheduleBuilder.cronSchedule(cron))
+                    .withSchedule(schedule)
                     .build();
             scheduler.rescheduleJob(triggerKey, trigger);
             LogUtil.debug(

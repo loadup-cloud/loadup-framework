@@ -263,4 +263,271 @@ class SegmentSequenceTest {
             sequence.close();
         }
     }
+
+    @Test
+    void scopeKeysAndEqualityPreserveDateAndMaximumIdentity() {
+        SequenceScope first = scope("identity", 100);
+        SequenceScope same = scope("identity", 100);
+        assertThat(first).isEqualTo(same).hasSameHashCodeAs(same);
+        assertThat(first.equals(null)).isFalse();
+        assertThat(first.equals("identity")).isFalse();
+        assertThat(first).isNotEqualTo(scope("other", 100)).isNotEqualTo(scope("identity", 101));
+        SequenceScope persistent = new SequenceScope("identity", null, 100);
+        assertThat(persistent.key()).isEqualTo("identity:persistent");
+        assertThat(persistent).isNotEqualTo(first);
+        assertThat(new HashSet<>(List.of(first, same, persistent))).hasSize(2);
+        assertThat(first.toString()).contains("\"name\":\"identity\"", "\"maximum\":100");
+        for (String name : new String[] {null, "", "space name", "a".repeat(121)}) {
+            assertThatThrownBy(() -> new SequenceScope(name, null, 1)).isInstanceOf(CommonException.class);
+        }
+        for (long maximum : new long[] {0, -1, Long.MAX_VALUE}) {
+            assertThatThrownBy(() -> new SequenceScope("valid", null, maximum)).isInstanceOf(CommonException.class);
+        }
+        assertThat(new SequenceScope("a".repeat(120), null, Long.MAX_VALUE - 1).maximum())
+                .isEqualTo(Long.MAX_VALUE - 1);
+    }
+
+    @Test
+    void allocationRangesRejectCorruptionAndSupportLargestSafeEndpoint() {
+        for (long[] bounds : new long[][] {{0, 1}, {2, 1}, {1, Long.MAX_VALUE}}) {
+            assertThatThrownBy(() -> new SequenceRange(bounds[0], bounds[1]))
+                    .isInstanceOfSatisfying(
+                            CommonException.class,
+                            error -> assertThat(error.getResultCode()).isEqualTo(DatabaseResultCodeEnum.CORRUPT_STATE));
+        }
+        assertThat(new SequenceRange(Long.MAX_VALUE - 1, Long.MAX_VALUE - 1).toString())
+                .contains("\"first\":" + (Long.MAX_VALUE - 1), "\"last\":" + (Long.MAX_VALUE - 1));
+    }
+
+    @Test
+    void validatesEveryCapacityAndWaitBoundaryBeforeCreatingWorkers() {
+        List<java.util.function.Consumer<SequenceProperties>> invalid = List.of(
+                p -> p.setStep(0),
+                p -> p.setStep(1_000_001),
+                p -> p.setMaxScopes(0),
+                p -> p.setPrefetchThreads(0),
+                p -> p.setQueueCapacity(0),
+                p -> p.setWaitTimeout(null),
+                p -> p.setWaitTimeout(Duration.ofMillis(-1)),
+                p -> p.setWaitTimeout(Duration.ZERO),
+                p -> p.setWaitTimeout(Duration.ofMinutes(1).plusNanos(1)));
+        for (var mutation : invalid) {
+            SequenceProperties p = properties(10);
+            mutation.accept(p);
+            assertThatThrownBy(() -> new SegmentSequence(new Store(), p, clock))
+                    .isInstanceOfSatisfying(
+                            CommonException.class,
+                            error -> assertThat(error.getResultCode()).isEqualTo(DatabaseResultCodeEnum.INVALID_INPUT));
+        }
+        SequenceProperties maximum = properties(1_000_000);
+        maximum.setWaitTimeout(Duration.ofMinutes(1));
+        assertThatCode(maximum::validate).doesNotThrowAnyException();
+        SequenceProperties minimum = properties(1);
+        minimum.setMaxScopes(1);
+        minimum.setPrefetchThreads(1);
+        minimum.setQueueCapacity(1);
+        minimum.setWaitTimeout(Duration.ofNanos(1));
+        assertThatCode(minimum::validate).doesNotThrowAnyException();
+    }
+
+    @Test
+    void invalidCallsCannotAllocateAndClosedBatchesFailConsistently() {
+        Store store = new Store();
+        SegmentSequence sequence = new SegmentSequence(store, properties(10), clock);
+        try {
+            assertThatThrownBy(() -> sequence.next(null)).isInstanceOf(CommonException.class);
+            assertThatThrownBy(() -> sequence.nextBatch(null, 1)).isInstanceOf(CommonException.class);
+            assertThatThrownBy(() -> sequence.nextBatch(scope("invalid", 100), 10001))
+                    .isInstanceOf(CommonException.class);
+            assertThat(store.calls).hasValue(0);
+        } finally {
+            sequence.close();
+        }
+        assertThatThrownBy(() -> sequence.nextBatch(scope("closed", 100), 1))
+                .isInstanceOfSatisfying(
+                        CommonException.class,
+                        error -> assertThat(error.getResultCode()).isEqualTo(DatabaseResultCodeEnum.CLOSED));
+        assertThat(store.calls).hasValue(0);
+    }
+
+    @Test
+    void concurrentExhaustionNeverReturnsDuplicateOrOutOfRangeValues() throws Exception {
+        SequenceScope scope = scope("exhaust-concurrent", 37);
+        Set<Long> issued = ConcurrentHashMap.newKeySet();
+        AtomicInteger exhausted = new AtomicInteger();
+        CountDownLatch start = new CountDownLatch(1);
+        try (SegmentSequence sequence = new SegmentSequence(new Store(), properties(10), clock);
+                ExecutorService workers = Executors.newVirtualThreadPerTaskExecutor()) {
+            List<Future<?>> tasks = new ArrayList<>();
+            for (int i = 0; i < 64; i++)
+                tasks.add(workers.submit(() -> {
+                    start.await();
+                    try {
+                        assertThat(issued.add(sequence.next(scope))).isTrue();
+                    } catch (CommonException failure) {
+                        assertThat(failure.getResultCode()).isEqualTo(DatabaseResultCodeEnum.EXHAUSTED);
+                        exhausted.incrementAndGet();
+                    }
+                    return null;
+                }));
+            start.countDown();
+            for (Future<?> task : tasks) task.get(5, TimeUnit.SECONDS);
+            assertThat(issued)
+                    .containsExactlyInAnyOrderElementsOf(java.util.stream.LongStream.rangeClosed(1, 37)
+                            .boxed()
+                            .toList());
+            assertThat(exhausted).hasValue(27);
+        }
+    }
+
+    @Test
+    void corruptReservationNeverIssuesNumbersAndRecordsSpecificFailure() {
+        SimpleMeterRegistry registry = new SimpleMeterRegistry();
+        try (SegmentSequence sequence =
+                new SegmentSequence((scope, step) -> new SequenceRange(1, 101), properties(10), clock, registry)) {
+            assertThatThrownBy(() -> sequence.next(scope("corrupt", 100)))
+                    .isInstanceOfSatisfying(
+                            CommonException.class,
+                            error -> assertThat(error.getResultCode()).isEqualTo(DatabaseResultCodeEnum.CORRUPT_STATE));
+            assertThat(registry.get("loadup.database.sequence.issued").counter().count())
+                    .isZero();
+            assertThat(registry.get("loadup.database.sequence.failures")
+                            .tag("reason", "CORRUPT_STATE")
+                            .counter()
+                            .count())
+                    .isEqualTo(1);
+            org.awaitility.Awaitility.await()
+                    .atMost(Duration.ofSeconds(2))
+                    .untilAsserted(() -> assertThat(registry.get("loadup.database.sequence.refill")
+                                    .timer()
+                                    .count())
+                            .isEqualTo(1));
+        } finally {
+            registry.close();
+        }
+    }
+
+    @Test
+    void allocatorFailuresPreserveBusinessCodesAndWrapUnexpectedFailures() {
+        RuntimeException[] failures = {
+            new IllegalArgumentException("synthetic transport failure"),
+            new CommonException(io.github.loadup.commons.enums.CommonResultCodeEnum.SYS_ERROR),
+            new CommonException(DatabaseResultCodeEnum.EXHAUSTED)
+        };
+        for (RuntimeException failure : failures) {
+            SimpleMeterRegistry registry = new SimpleMeterRegistry();
+            try (SegmentSequence sequence = new SegmentSequence(
+                    (scope, step) -> {
+                        throw failure;
+                    },
+                    properties(10),
+                    clock,
+                    registry)) {
+                assertThatThrownBy(() -> sequence.next(scope("failure", 100)))
+                        .isInstanceOfSatisfying(CommonException.class, error -> {
+                            if (failure instanceof CommonException)
+                                assertThat(error).isSameAs(failure);
+                            else {
+                                assertThat(error.getResultCode()).isEqualTo(DatabaseResultCodeEnum.UNAVAILABLE);
+                                assertThat(error.getCause()).isSameAs(failure);
+                            }
+                        });
+                String reason = failure instanceof CommonException common
+                                && common.getResultCode() == DatabaseResultCodeEnum.EXHAUSTED
+                        ? "EXHAUSTED"
+                        : "UNAVAILABLE";
+                assertThat(registry.get("loadup.database.sequence.failures")
+                                .tag("reason", reason)
+                                .counter()
+                                .count())
+                        .isEqualTo(1);
+                assertThat(registry.get("loadup.database.sequence.issued")
+                                .counter()
+                                .count())
+                        .isZero();
+            } finally {
+                registry.close();
+            }
+        }
+    }
+
+    @Test
+    void interruptingCallerPreservesItsInterruptAndLeavesAllocationReusable() throws Exception {
+        CountDownLatch entered = new CountDownLatch(1), release = new CountDownLatch(1);
+        Store store = new Store();
+        try (SegmentSequence sequence = new SegmentSequence(
+                (scope, step) -> {
+                    entered.countDown();
+                    try {
+                        release.await();
+                    } catch (InterruptedException failure) {
+                        Thread.currentThread().interrupt();
+                        throw new CommonException(DatabaseResultCodeEnum.UNAVAILABLE, failure);
+                    }
+                    return store.reserve(scope, step);
+                },
+                properties(10),
+                clock)) {
+            AtomicReference<Throwable> unexpected = new AtomicReference<>();
+            Thread caller = Thread.ofVirtual().start(() -> {
+                try {
+                    sequence.next(scope("interrupted", 100));
+                    unexpected.set(new AssertionError("Expected interruption"));
+                } catch (CommonException failure) {
+                    try {
+                        assertThat(failure.getResultCode()).isEqualTo(DatabaseResultCodeEnum.UNAVAILABLE);
+                        assertThat(failure.getCause()).isInstanceOf(InterruptedException.class);
+                        assertThat(Thread.currentThread().isInterrupted()).isTrue();
+                    } catch (Throwable assertion) {
+                        unexpected.set(assertion);
+                    }
+                }
+            });
+            try {
+                assertThat(entered.await(1, TimeUnit.SECONDS)).isTrue();
+                caller.interrupt();
+                caller.join(2000);
+                assertThat(caller.isAlive()).isFalse();
+                assertThat(unexpected.get()).isNull();
+                release.countDown();
+                assertThat(sequence.next(scope("interrupted", 100))).isEqualTo(1);
+            } finally {
+                release.countDown();
+                caller.interrupt();
+            }
+        }
+    }
+
+    @Test
+    void persistentScopesAreNotEvictedWhenDatedScopesExpire() {
+        SequenceProperties p = properties(10);
+        p.setMaxScopes(2);
+        SequenceScope persistent = new SequenceScope("persistent", null, 1000);
+        try (SegmentSequence sequence = new SegmentSequence(new Store(), p, clock)) {
+            assertThat(sequence.next(persistent)).isEqualTo(1);
+            assertThat(sequence.next(new SequenceScope("old", LocalDate.of(2026, 10, 11), 1000)))
+                    .isEqualTo(1);
+            assertThat(sequence.next(scope("today", 1000))).isEqualTo(1);
+            assertThat(sequence.next(persistent)).isEqualTo(2);
+            assertThatThrownBy(() -> sequence.next(scope("another", 1000)))
+                    .isInstanceOfSatisfying(
+                            CommonException.class,
+                            error -> assertThat(error.getResultCode()).isEqualTo(DatabaseResultCodeEnum.SCOPE_LIMIT));
+        }
+    }
+
+    @Test
+    void largestSequenceEndpointDoesNotOverflowAtomicCursor() {
+        long maximum = Long.MAX_VALUE - 1;
+        SequenceScope scope = new SequenceScope("long-endpoint", null, maximum);
+        try (SegmentSequence sequence = new SegmentSequence(
+                (requested, step) -> new SequenceRange(maximum - 1, maximum), properties(10), clock)) {
+            assertThat(sequence.next(scope)).isEqualTo(maximum - 1);
+            assertThat(sequence.next(scope)).isEqualTo(maximum);
+            assertThatThrownBy(() -> sequence.next(scope))
+                    .isInstanceOfSatisfying(
+                            CommonException.class,
+                            error -> assertThat(error.getResultCode()).isEqualTo(DatabaseResultCodeEnum.EXHAUSTED));
+        }
+    }
 }

@@ -2,6 +2,10 @@
 
 本文只记录尚未完成的工作。每完成一项任务立即更新：移除已完成的实现项，未执行的运行验证单独保留。已实现的能力、接入方式和设计边界以各 Maven 模块的 `README.md`、`ARCHITECTURE.md` 为准。LoadUp 是通过 BOM 按需引入的框架；`loadup-application` 用于本地集成验证。
 
+## Digest log
+
+service  方法统一 生成 digest log ， 使用 stopwatch
+
 ## P1 · Database 业务 ID 与 Sequence
 
 2026-10-12 已实现最大 64 位业务 ID、格式化/解析、作用域数据库号段、原子批量发号及异步双缓冲。使用 MyBatis-Flex 生成 Mapper/Tables，数据库独立事务提交后发号；首次初始化/死锁有界退避重试、八位上限、预取队列及作用域容量保护已提供，Micrometer 使用共享注册表。默认主键策略已改为 BusinessIdGenerator，通过 IdGenerator 同时接入 Flex 和插入监听器；仅序列表元数据显式使用 UUID 防递归。移除 DatabaseIdGenerator 后，mvnd clean test 定向验证 41 项通过，包含 5 项真实 MySQL IT；覆盖默认策略、配置绑定、自定义策略回退、延迟解析、普通 DO 自动业务 ID、显式 ID 保留及序列表防递归。License 与 Spotless 校验通过，文档站同步完成；未执行全 reactor 或生产容量压测。
@@ -12,14 +16,19 @@
 
 ## 当前建设目标与实施顺序
 
-### 组件测试与覆盖率（2026-10-14）
+### 组件测试与覆盖率（2026-10-16 验收）
 
-验收要求为每个组件的行覆盖率、分支覆盖率分别 ≥90%。报告进一步按运行时 Maven jar 检查，API、binder、engine 与 store 不通过总体平均值抵消缺口。手写 DTO、配置与异常类型计入；仅排除 APT/MapStruct 自动生成代码。
+已完成本地组件测试及双 90% 覆盖率目标。一次完整的 `mvnd clean spotless:apply verify -pl <全部组件 jar 及兄弟测试模块> -am --fail-at-end -Dskip.spotbugs=true` 成功：653 项组件单测、148 项组件 IT，失败、错误、跳过均为 0；同时执行的 commons 依赖有 74 项单测通过。License 与 Spotless 校验通过，`git diff --check` 通过，SpotBugs 未执行。
 
-首轮仅单元测试基线：48 个运行时 jar，1 个达到双指标要求。已提供跨测试模块的 JaCoCo 数据合并与逐 jar 报告工具。SpringDoc 新增 7 项单测、3 项真实 HTTP IT，Pipeline 新增 17 项单测、3 项真实 MySQL 事务 IT，签名旧错误文案断言已改为 ResultCode 契约；首批定向 clean verify 通过。此记录不代表所有组件已达到覆盖率要求。
+随后对同一次完整运行执行 `tools/component-coverage.py` 正式门禁（未使用 `--report-only`），48/48 个运行时 jar 的行、分支均 ≥90%，返回码 0。报告逐 jar 计算，手写 DTO/配置/错误类型全部计入，仅排除 APT/MapStruct 生成代码；数据缺失或陈旧字节码不会通过。报告与重现命令见 components README。此结论仅覆盖本地执行环境，不代表 CI 或供应商生产环境验收。
 
-- [ ] 完成所有组件的单元及集成测试缺口，运行完整组件测试集合并使每个运行时 jar 行、分支均 ≥90%；缓存、锁与处理器新增边界测试需运行验证。
-- [ ] 接入跨模块覆盖率发布门禁，验证报告缺失、陈旧字节码和低覆盖率均不能通过；外部服务不可用或跳过的 IT 单独报告。
+收尾补齐 AuthServer 的实际 RSA 签名验签、claim 与配置边界，NanoCaptcha 的过期/单次消费/字符集，Tianai 的轨迹 JSON 及失败边界，Testcontainers 七种类型的配置注入/生命周期和真实 Elasticsearch 读写。修复配置模式遗漏 Redis/LocalStack、LocalStack 忽略 reusable、NanoCaptcha 空 ID 异常；移除验证码解析异常和 LocalStack 密钥日志。此前批次的调度分页删除、时区保留、缓存异常转换、Flyway 回调以及 Gotone 记录状态/表字段回归均在此次整批运行中通过。
+
+- [ ] 将逐 jar 覆盖率门禁接入 CI/发布流程，并保存 summary、HTML 及单测/IT 报告；本地门禁已通过，远端流水线尚未验收。
+- [ ] 执行 SpotBugs 及消费应用的架构/源码/错误码门禁；此次完整组件运行未包含这些验收。
+- [ ] 在已有 Gotone 消费数据库验收 `V2__add_notification_record_trace_id.sql` 升级；本次真实 MySQL 验证覆盖从空库应用 V1/V2，未覆盖存量升级。
+- [ ] 为 Gotone FCM 及 Aliyun/Huawei/Yunpian SMS 接入真实传输并验收；当前占位路径显式失败，边界测试达标不代表具备实际发送能力。Webhook 后续补充厂商响应体业务错误码判定，当前只按 HTTP 状态判断。
+- [ ] 在真实 Nacos/Apollo、邮件、推送和短信供应商环境单独验收连接、权限及协议错误；SDK 模拟和本地协议服务器测试不替代外部系统验收。
 
 - [ ] JUnit 6.0.3 定向运行验收：版本由 Boot 4.1.1 BOM 统一管理，Testify/AGENTS 文档已对齐，launcher 架构测试已改用 ArchUnit 核心库；见 [分析记录](loadup-testify/JUNIT6-ANALYSIS.md)。用户验收普通/参数化/Spring 测试、架构与源码/错误码门禁及真实 MySQL IT，核对测试发现数量；本次未执行构建或测试。
 - [ ] Testify 修复运行验收：无 JdbcTemplate 时保留响应/异常断言，数据库引擎按 Bean 条件装配，缺少引擎时 verifyDb 抛出明确 AssertionError；消费方测试依赖文档已补齐，archunit-junit5 管理项已移除。新增 TestifyAutoConfigurationTest，用户连同 ScenarioAssertTest、UserServiceIT、UserServiceBatchIT 定向运行（当前预期 19 次执行），此次未运行构建、测试或 Maven 格式门禁。

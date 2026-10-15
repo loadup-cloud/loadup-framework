@@ -73,7 +73,10 @@ public class JdbcChannelConfigProvider implements ChannelConfigProvider {
             return objectMapper.readValue(
                     json, objectMapper.getTypeFactory().constructMapType(Map.class, String.class, Object.class));
         } catch (JacksonException e) {
-            LogUtil.warn(JdbcChannelConfigProvider.class, "Failed to parse channelConfig JSON, using empty config", e);
+            LogUtil.warn(
+                    JdbcChannelConfigProvider.class,
+                    "Failed to parse channelConfig JSON: exceptionType={}",
+                    e.getClass().getSimpleName());
             return Map.of();
         }
     }
@@ -87,7 +90,9 @@ public class JdbcChannelConfigProvider implements ChannelConfigProvider {
                     json, objectMapper.getTypeFactory().constructCollectionType(List.class, String.class));
         } catch (JacksonException e) {
             LogUtil.warn(
-                    JdbcChannelConfigProvider.class, "Failed to parse fallbackProviders JSON, using empty list", e);
+                    JdbcChannelConfigProvider.class,
+                    "Failed to parse fallbackProviders JSON: exceptionType={}",
+                    e.getClass().getSimpleName());
             return List.of();
         }
     }

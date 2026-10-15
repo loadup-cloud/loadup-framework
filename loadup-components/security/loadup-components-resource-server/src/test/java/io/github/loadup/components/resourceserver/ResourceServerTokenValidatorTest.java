@@ -56,6 +56,43 @@ class ResourceServerTokenValidatorTest {
                 .isFalse();
     }
 
+    @Test
+    void configuredUseClaimWithoutExpectedValueRejectsOtherwiseValidTokens() {
+        var properties = new ResourceServerProperties();
+        properties.setIssuerUri("https://issuer.example");
+        properties.setAudience("loadup-api");
+        for (String value : new String[] {null, "", " "}) {
+            properties.setAccessTokenUseValue(value);
+            var result = ResourceServerAutoConfiguration.accessTokenValidator(properties)
+                    .validate(token("access", "loadup-api", "https://issuer.example"));
+            assertThat(result.hasErrors()).isTrue();
+            assertThat(result.getErrors())
+                    .extracting(error -> error.getErrorCode())
+                    .containsExactly("invalid_token");
+        }
+    }
+
+    @Test
+    void missingAudienceIsRejectedEvenWhenIssuerAndTokenUseAreValid() {
+        var properties = new ResourceServerProperties();
+        properties.setIssuerUri("https://issuer.example");
+        properties.setAudience("loadup-api");
+        Jwt token = Jwt.withTokenValue("test")
+                .header("alg", "RS256")
+                .issuer("https://issuer.example")
+                .issuedAt(Instant.now())
+                .expiresAt(Instant.now().plusSeconds(300))
+                .claim("token_use", "access")
+                .build();
+        assertThat(token.getAudience()).isNull();
+        var result =
+                ResourceServerAutoConfiguration.accessTokenValidator(properties).validate(token);
+        assertThat(result.hasErrors()).isTrue();
+        assertThat(result.getErrors())
+                .extracting(error -> error.getDescription())
+                .containsExactly("Invalid token use or audience");
+    }
+
     private static Jwt token(String use, String audience, String issuer) {
         return Jwt.withTokenValue("test")
                 .header("alg", "RS256")

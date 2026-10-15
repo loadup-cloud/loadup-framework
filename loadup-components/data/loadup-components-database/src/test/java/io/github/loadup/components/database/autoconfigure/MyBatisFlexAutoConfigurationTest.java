@@ -92,4 +92,50 @@ class MyBatisFlexAutoConfigurationTest {
                 .isEqualTo("deferred-id");
         assertThat(initialized.get()).isEqualTo(1);
     }
+
+    @Test
+    @SuppressWarnings("deprecation")
+    void tenantFactoryNormalizesIgnoredTablesAndRequiresTrustedContext() {
+        var previous = com.mybatisflex.core.tenant.TenantManager.getTenantFactory();
+        try {
+            var properties = new DatabaseProperties();
+            properties.getMultiTenant().setEnabled(true);
+            properties.getMultiTenant().setIgnoreTables(java.util.Arrays.asList(null, " ", "  PUBLIC_CATALOG "));
+            new MyBatisFlexAutoConfiguration(properties)
+                    .myBatisFlexCustomizer(provider(() -> "id"), Clock.systemDefaultZone())
+                    .customize(new FlexGlobalConfig());
+            var factory = com.mybatisflex.core.tenant.TenantManager.getTenantFactory();
+            assertThat(factory.getTenantIds("PUBLIC_CATALOG")).isNull();
+            org.assertj.core.api.Assertions.assertThatThrownBy(() -> factory.getTenantIds("orders"))
+                    .isInstanceOf(io.github.loadup.components.database.listener.TenantContextMissingException.class);
+            io.github.loadup.commons.util.TenantUtil.runWithTenant("tenant-a", () -> {
+                assertThat(factory.getTenantIds("orders")).containsExactly("tenant-a");
+                assertThat(factory.getTenantIds()).containsExactly("tenant-a");
+                assertThat(factory.getTenantIds("public_catalog")).isNull();
+            });
+            properties.getMultiTenant().setRequired(false);
+            assertThat(factory.getTenantIds("orders")).isNull();
+            assertThat(factory.getTenantIds(null)).isNull();
+        } finally {
+            com.mybatisflex.core.tenant.TenantManager.setTenantFactory(previous);
+        }
+    }
+
+    @Test
+    void disablingMultiTenancyClearsAnEarlierGlobalFactory() {
+        var previous = com.mybatisflex.core.tenant.TenantManager.getTenantFactory();
+        try {
+            com.mybatisflex.core.tenant.TenantManager.setTenantFactory(() -> new Object[] {"stale"});
+            var globalConfig = new FlexGlobalConfig();
+            globalConfig.setTenantColumn("stale_column");
+            new MyBatisFlexAutoConfiguration(new DatabaseProperties())
+                    .myBatisFlexCustomizer(provider(() -> "id"), Clock.systemDefaultZone())
+                    .customize(globalConfig);
+            assertThat(globalConfig.getTenantColumn()).isNull();
+            assertThat(com.mybatisflex.core.tenant.TenantManager.getTenantFactory())
+                    .isNull();
+        } finally {
+            com.mybatisflex.core.tenant.TenantManager.setTenantFactory(previous);
+        }
+    }
 }

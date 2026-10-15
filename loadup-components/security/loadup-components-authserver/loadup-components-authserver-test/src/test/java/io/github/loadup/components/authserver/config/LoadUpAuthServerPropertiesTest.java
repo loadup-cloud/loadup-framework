@@ -39,11 +39,22 @@ class LoadUpAuthServerPropertiesTest {
         contextRunner
                 .withPropertyValues(
                         "loadup.security.auth-server.issuer=https://sso.example.com/realms/loadup",
-                        "loadup.security.auth-server.audience=loadup-api")
+                        "loadup.security.auth-server.audience=loadup-api",
+                        "loadup.security.auth-server.protocol-endpoints-enabled=false",
+                        "loadup.security.auth-server.user-access-token-ttl=12m",
+                        "loadup.security.auth-server.clients[0].client-id=portal",
+                        "loadup.security.auth-server.clients[0].client-secret=synthetic-secret",
+                        "loadup.security.auth-server.clients[0].redirect-uris[0]=https://example.test/callback",
+                        "loadup.security.auth-server.clients[0].scopes[0]=openid")
                 .run(context -> {
                     LoadUpAuthServerProperties properties = context.getBean(LoadUpAuthServerProperties.class);
                     assertThat(properties.getIssuer()).isEqualTo("https://sso.example.com/realms/loadup");
                     assertThat(properties.getAudience()).isEqualTo("loadup-api");
+                    assertThat(properties.isProtocolEndpointsEnabled()).isFalse();
+                    assertThat(properties.getUserAccessTokenTtl()).isEqualTo(java.time.Duration.ofMinutes(12));
+                    assertThat(properties.getClients().getFirst().getRedirectUris())
+                            .containsExactly("https://example.test/callback");
+                    assertThat(properties.getClients().getFirst().getScopes()).containsExactly("openid");
                 });
     }
 

@@ -51,16 +51,19 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 class DfsServiceContractTest {
-    @TempDir Path directory;
+    @TempDir
+    Path directory;
 
     @Test
     void uploadAndMultipartInputsValidateAndSnapshotMetadata() {
         ByteArrayInputStream content = new ByteArrayInputStream(new byte[0]);
         assertThatThrownBy(() -> new FileUploadRequest(null, content, 0, null, null, null))
                 .isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> FileUploadRequest.of(" ", content, 0, null)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> FileUploadRequest.of(" ", content, 0, null))
+                .isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> FileUploadRequest.of("file", null, 0, null)).isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> FileUploadRequest.of("file", content, -1, null)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> FileUploadRequest.of("file", content, -1, null))
+                .isInstanceOf(IllegalArgumentException.class);
         Map<String, String> labels = new HashMap<>(Map.of("owner", "original"));
         FileUploadRequest request = new FileUploadRequest("file", content, 0, null, null, labels);
         MultipartUploadRequest multipart = new MultipartUploadRequest("file", " ", null, labels);
@@ -69,9 +72,12 @@ class DfsServiceContractTest {
         assertThat(multipart.metadata()).containsEntry("owner", "original");
         assertThat(request.contentType()).isEqualTo("application/octet-stream");
         assertThat(multipart.contentType()).isEqualTo("application/octet-stream");
-        assertThat(new MultipartUploadRequest("file", "text/plain", null, null).metadata()).isEmpty();
-        assertThatThrownBy(() -> new MultipartUploadRequest(null, null, null, null)).isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> new MultipartUploadRequest(" ", null, null, null)).isInstanceOf(IllegalArgumentException.class);
+        assertThat(new MultipartUploadRequest("file", "text/plain", null, null).metadata())
+                .isEmpty();
+        assertThatThrownBy(() -> new MultipartUploadRequest(null, null, null, null))
+                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> new MultipartUploadRequest(" ", null, null, null))
+                .isInstanceOf(IllegalArgumentException.class);
         assertThat(new MultipartPart(1, "etag").partNumber()).isEqualTo(1);
         assertThat(new MultipartPart(10_000, "etag").partNumber()).isEqualTo(10_000);
         assertThatThrownBy(() -> new MultipartPart(0, "etag")).isInstanceOf(IllegalArgumentException.class);
@@ -85,11 +91,18 @@ class DfsServiceContractTest {
         ByteArrayInputStream stream = new ByteArrayInputStream(new byte[0]);
         assertThatThrownBy(() -> new FileDownloadResponse(null, stream, 0)).isInstanceOf(NullPointerException.class);
         assertThatThrownBy(() -> new FileDownloadResponse(metadata, null, 0)).isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> new FileDownloadResponse(metadata, stream, -1)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new FileDownloadResponse(metadata, stream, -1))
+                .isInstanceOf(IllegalArgumentException.class);
         AtomicBoolean closed = new AtomicBoolean();
-        try (FileDownloadResponse response = new FileDownloadResponse(metadata, new ByteArrayInputStream(new byte[0]) {
-            @Override public void close() { closed.set(true); }
-        }, 0)) {
+        try (FileDownloadResponse response = new FileDownloadResponse(
+                metadata,
+                new ByteArrayInputStream(new byte[0]) {
+                    @Override
+                    public void close() {
+                        closed.set(true);
+                    }
+                },
+                0)) {
             assertThat(response.metadata()).isSameAs(metadata);
             assertThat(closed).isFalse();
         }
@@ -102,7 +115,8 @@ class DfsServiceContractTest {
         when(provider.getBinderType()).thenReturn("minimal");
         DfsService service = new DefaultDfsService(provider);
         assertThatThrownBy(() -> service.generatePresignedDownloadUrl("id", Duration.ofMinutes(1)))
-                .isInstanceOf(UnsupportedOperationException.class).hasMessageContaining("minimal");
+                .isInstanceOf(UnsupportedOperationException.class)
+                .hasMessageContaining("minimal");
         assertThatThrownBy(() -> service.initiateMultipartUpload(new MultipartUploadRequest("file", null, null, null)))
                 .isInstanceOf(UnsupportedOperationException.class);
         ByteArrayInputStream content = new ByteArrayInputStream(new byte[] {1});
@@ -118,14 +132,15 @@ class DfsServiceContractTest {
 
     @Test
     void facadeRequiresASingleProviderAndPreservesCustomServices() {
-        ApplicationContextRunner api = new ApplicationContextRunner()
-                .withConfiguration(AutoConfigurations.of(DfsAutoConfiguration.class));
+        ApplicationContextRunner api =
+                new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(DfsAutoConfiguration.class));
         api.run(context -> assertThat(context).hasNotFailed().doesNotHaveBean(DfsService.class));
         api.withBean("first", DfsProvider.class, () -> mock(DfsProvider.class))
                 .withBean("second", DfsProvider.class, () -> mock(DfsProvider.class))
                 .run(context -> assertThat(context).hasNotFailed().doesNotHaveBean(DfsService.class));
         DfsService custom = mock(DfsService.class);
-        api.withBean(DfsProvider.class, () -> mock(DfsProvider.class)).withBean(DfsService.class, () -> custom)
+        api.withBean(DfsProvider.class, () -> mock(DfsProvider.class))
+                .withBean(DfsService.class, () -> custom)
                 .run(context -> {
                     assertThat(context).hasNotFailed().hasSingleBean(DfsService.class);
                     assertThat(context.getBean(DfsService.class)).isSameAs(custom);

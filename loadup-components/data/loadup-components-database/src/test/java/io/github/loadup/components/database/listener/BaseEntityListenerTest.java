@@ -105,6 +105,54 @@ class BaseEntityListenerTest {
                 .isEqualTo(java.time.ZoneId.systemDefault());
     }
 
+    @Test
+    void ignoresUnrelatedObjectsAndNullValuesWithoutAllocatingIds() {
+        BaseEntityListener listener = new BaseEntityListener(
+                new DatabaseProperties(),
+                () -> {
+                    throw new AssertionError("No ID should be allocated");
+                },
+                Clock.fixed(NOW, ZoneOffset.UTC));
+        listener.onInsert(null);
+        listener.onInsert(new Object());
+        listener.onUpdate(null);
+        listener.onUpdate(new Object());
+    }
+
+    @Test
+    void preservesExplicitIdAndCreationTimeButResetsDeleteMarker() {
+        BaseEntityListener listener = new BaseEntityListener(
+                new DatabaseProperties(),
+                () -> {
+                    throw new AssertionError("Explicit IDs must be preserved");
+                },
+                Clock.fixed(NOW, ZoneOffset.UTC));
+        TestEntity entity = new TestEntity();
+        entity.setId("explicit-id");
+        LocalDateTime createdAt = LocalDateTime.ofInstant(NOW.minusSeconds(60), ZoneOffset.UTC);
+        entity.setCreatedAt(createdAt);
+        entity.setDeleted(1);
+        listener.onInsert(entity);
+        assertThat(entity.getId()).isEqualTo("explicit-id");
+        assertThat(entity.getCreatedAt()).isEqualTo(createdAt);
+        assertThat(entity.getUpdatedAt()).isEqualTo(LocalDateTime.ofInstant(NOW, ZoneOffset.UTC));
+        assertThat(entity.getDeleted()).isZero();
+    }
+
+    @Test
+    void optionalTenantUsesTrustedContextWhenPresentAndRetainsExplicitValueOtherwise() {
+        DatabaseProperties properties = new DatabaseProperties();
+        properties.getMultiTenant().setEnabled(true);
+        properties.getMultiTenant().setRequired(false);
+        BaseEntityListener listener = new BaseEntityListener(properties, () -> "id", Clock.fixed(NOW, ZoneOffset.UTC));
+        TestEntity entity = new TestEntity();
+        entity.setTenantId("explicit-tenant");
+        listener.onInsert(entity);
+        assertThat(entity.getTenantId()).isEqualTo("explicit-tenant");
+        TenantUtil.runWithTenant("trusted-tenant", () -> listener.onInsert(entity));
+        assertThat(entity.getTenantId()).isEqualTo("trusted-tenant");
+    }
+
     private static final class TestEntity extends BaseDO {
         private static final long serialVersionUID = 1L;
     }

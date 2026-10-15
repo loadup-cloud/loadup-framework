@@ -31,6 +31,7 @@ import io.github.loadup.components.testcontainers.annotation.ContainerType;
 import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
 import java.net.InetSocketAddress;
 import java.net.URI;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -40,6 +41,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -223,6 +225,128 @@ class OutboxIT {
         } finally {
             server.stop(0);
         }
+    }
+
+    @Test
+    void readOnlyTransactionsAndMissingArgumentsCannotPublishOrConsume() {
+        transactions.setReadOnly(true);
+        try {
+            assertThatThrownBy(() -> transactions.execute(status -> repository.publish(message())))
+                    .isInstanceOf(IllegalStateException.class);
+        } finally {
+            transactions.setReadOnly(false);
+        }
+        assertThatThrownBy(() -> transactions.execute(status -> repository.publish(null)))
+                .isInstanceOf(IllegalArgumentException.class);
+        OutboxEvent event = new OutboxEvent("event", message(), Instant.now(), null);
+        assertThatThrownBy(() -> inbox.consume("consumer", event, () -> {})).isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> inbox.consume(" ", event, () -> {})).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> inbox.consume("consumer", null, () -> {}))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> inbox.consume("consumer", event, null)).isInstanceOf(IllegalArgumentException.class);
+        assertThat(repository.pendingCount()).isZero();
+    }
+
+    @Test
+    void traceIdentifiersAreValidatedBeforePersistence() {
+        String previous = MDC.get("traceId");
+        try {
+            MDC.put("traceId", "0123456789abcdef0123456789abcdef");
+            String traced = publish();
+            assertThat(jdbc.queryForObject(
+                            "SELECT trace_id FROM loadup_outbox_event WHERE id = ?", String.class, traced))
+                    .isEqualTo("0123456789abcdef0123456789abcdef");
+            MDC.put("traceId", "invalid-request-controlled-value");
+            String invalid = publish();
+            assertThat(jdbc.queryForObject(
+                            "SELECT trace_id FROM loadup_outbox_event WHERE id = ?", String.class, invalid))
+                    .isNull();
+            MDC.remove("traceId");
+            String absent = publish();
+            assertThat(jdbc.queryForObject(
+                            "SELECT trace_id FROM loadup_outbox_event WHERE id = ?", String.class, absent))
+                    .isNull();
+        } finally {
+            if (previous == null) MDC.remove("traceId");
+            else MDC.put("traceId", previous);
+        }
+    }
+
+    @Test
+    void administrativeQueriesEnforceBoundsAndReplayOnlyFailedTenantEvents() {
+        assertThat(repository.failedCount()).isZero();
+        assertThat(repository.oldestPendingSeconds()).isZero();
+        assertThat(repository.find("tenant", "missing")).isEmpty();
+        assertThatThrownBy(() -> repository.failures("tenant", 0)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> repository.failures("tenant", 1001)).isInstanceOf(IllegalArgumentException.class);
+        String pending = publish();
+        assertThat(repository.replay("tenant", pending, "operator", "reviewed")).isFalse();
+        var claim = repository.claim().orElseThrow();
+        assertThat(repository.complete(claim)).isTrue();
+        assertThat(repository.replay("tenant", pending, "operator", "reviewed")).isFalse();
+        String failed = publish();
+        jdbc.update(
+                "UPDATE loadup_outbox_event SET status = 'FAILED', attempts = ? WHERE id = ?",
+                properties.getMaxAttempts(),
+                failed);
+        assertThat(repository.failedCount()).isEqualTo(1);
+        assertThat(repository.failures("tenant", 1))
+                .extracting(OutboxRecord::id)
+                .containsExactly(failed);
+        assertThat(repository.failures("other", 1000)).isEmpty();
+        assertThat(repository.replay("tenant", failed, "operator", "approved retry"))
+                .isTrue();
+        assertThat(repository.find("tenant", failed).orElseThrow().attempts()).isZero();
+        assertThat(repository.failedCount()).isZero();
+        assertThat(repository.pendingCount()).isEqualTo(1);
+        jdbc.update(
+                "UPDATE loadup_outbox_event SET created_at = TIMESTAMPADD(SECOND, -30, CURRENT_TIMESTAMP(6)) WHERE id = ?",
+                failed);
+        assertThat(repository.oldestPendingSeconds()).isGreaterThanOrEqualTo(30);
+        jdbc.update(
+                "UPDATE loadup_outbox_event SET created_at = TIMESTAMPADD(SECOND, 30, CURRENT_TIMESTAMP(6)) WHERE id = ?",
+                failed);
+        assertThat(repository.oldestPendingSeconds()).isZero();
+    }
+
+    @Test
+    void inboxDeduplicationIsScopedToBothTenantAndConsumer() {
+        String eventId = "shared-event-id";
+        OutboxEvent first = new OutboxEvent(eventId, message(), Instant.now(), null);
+        OutboxEvent other = new OutboxEvent(
+                eventId, new OutboxMessage("other", "test.created", 1, "business", "{}"), Instant.now(), null);
+        AtomicInteger calls = new AtomicInteger();
+        Boolean consumed = transactions.execute(status -> inbox.consume("consumer", first, calls::incrementAndGet));
+        Boolean secondConsumer =
+                transactions.execute(status -> inbox.consume("other-consumer", first, calls::incrementAndGet));
+        Boolean secondTenant = transactions.execute(status -> inbox.consume("consumer", other, calls::incrementAndGet));
+        Boolean duplicate = transactions.execute(status -> inbox.consume("consumer", first, calls::incrementAndGet));
+        assertThat(consumed).isTrue();
+        assertThat(secondConsumer).isTrue();
+        assertThat(secondTenant).isTrue();
+        assertThat(duplicate).isFalse();
+        assertThat(calls).hasValue(3);
+    }
+
+    @Test
+    void handlerFailuresScheduleRetriesThenExhaustTheAttemptBudget() {
+        String id = publish();
+        var first = repository.claim().orElseThrow();
+        repository.fail(first, new IllegalStateException("sensitive detail"));
+        OutboxRecord retry = repository.find("tenant", id).orElseThrow();
+        assertThat(retry.status()).isEqualTo("PENDING");
+        assertThat(retry.attempts()).isEqualTo(1);
+        assertThat(retry.lastError()).isEqualTo("IllegalStateException");
+        assertThat(repository.claim()).isEmpty();
+        jdbc.update(
+                "UPDATE loadup_outbox_event SET attempts = ?, available_at = CURRENT_TIMESTAMP(6) WHERE id = ?",
+                properties.getMaxAttempts() - 1,
+                id);
+        var last = repository.claim().orElseThrow();
+        repository.fail(last, new IllegalArgumentException("sensitive detail"));
+        assertThat(repository.find("tenant", id).orElseThrow().status()).isEqualTo("FAILED");
+        assertThat(repository.failedCount()).isEqualTo(1);
+        assertThat(repository.pendingCount()).isZero();
     }
 
     private String publish() {

@@ -57,4 +57,4 @@ python3 tools/component-coverage.py --jacoco-cli /absolute/path/to/org.jacoco.cl
 
 验收要求是每个组件行、分支覆盖率均 ≥90%。工具进一步逐运行时 jar 检查：合并所有组件的单测与 IT 执行数据，解决测试位于兄弟 `*-test` 模块时报告漏计的问题。手写 DTO、配置及异常全部计入，只排除不在 `src/main/java` 的生成代码。无分支的 jar 分支指标视为不适用；缺失编译产物、陈旧执行数据或未达标时返回非零状态。`--report-only` 仅供诊断，不能用作验收门禁。
 
-报告写入 `loadup-components/target/coverage/summary.md` 和 `summary.json`，各 jar 的 `html/index.html` 列出未覆盖源码。**90% 是验收目标，当前未全部达标**；实施与运行进度见根 ROADMAP。
+报告写入 `loadup-components/target/coverage/summary.md` 和 `summary.json`，各 jar 的 `html/index.html` 列出未覆盖源码。2026-10-16 本地完整组件运行及正式覆盖率门禁已通过：**48/48 个运行时 jar 行、分支均 ≥90%**，653 项单测、148 项 IT 全部通过，无失败、错误或跳过。该结果来自同一次完整运行，不使用分批历史报告替代验收。License 与 Spotless 检查通过；SpotBugs、远端 CI 和真实供应商环境验收仍见根 ROADMAP。

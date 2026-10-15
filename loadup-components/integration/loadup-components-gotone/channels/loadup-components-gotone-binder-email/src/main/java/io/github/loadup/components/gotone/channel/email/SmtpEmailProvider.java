@@ -97,15 +97,14 @@ public class SmtpEmailProvider implements NotificationChannelProvider {
     }
 
     private static String configValue(Map<String, Object> config, String key, String defaultValue) {
-        if (config == null || !config.containsKey(key)) {
+        if (!config.containsKey(key)) {
             return defaultValue;
         }
-        Object value = config.get(key);
-        return value != null ? value.toString() : defaultValue;
+        return config.get(key).toString();
     }
 
     private static String maskEmail(String email) {
-        if (email == null || email.length() < 4) {
+        if (email.length() < 4) {
             return "***";
         }
         int at = email.indexOf('@');

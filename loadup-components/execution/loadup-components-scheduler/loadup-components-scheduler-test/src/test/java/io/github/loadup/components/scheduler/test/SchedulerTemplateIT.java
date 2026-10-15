@@ -44,6 +44,8 @@ import org.springframework.test.context.ActiveProfiles;
                 + "org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration,"
                 + "io.github.loadup.components.scheduler.quartz.autoconfigure.QuartzSchedulerAutoConfiguration")
 @EnableTestContainers(value = ContainerType.MYSQL, reuse = false)
+@org.springframework.test.annotation.DirtiesContext(
+        classMode = org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_CLASS)
 @ActiveProfiles("test")
 class SchedulerTemplateIT {
 

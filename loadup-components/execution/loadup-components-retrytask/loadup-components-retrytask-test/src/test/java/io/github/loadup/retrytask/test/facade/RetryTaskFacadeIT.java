@@ -50,6 +50,8 @@ import org.springframework.test.context.ActiveProfiles;
  */
 @SpringBootTest(classes = TestRetryTaskApplication.class)
 @EnableTestContainers(value = ContainerType.MYSQL, reuse = false)
+@org.springframework.test.annotation.DirtiesContext(
+        classMode = org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_CLASS)
 @ActiveProfiles("test")
 class RetryTaskFacadeIT {
 

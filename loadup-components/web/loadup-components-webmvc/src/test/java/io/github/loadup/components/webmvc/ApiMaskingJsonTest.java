@@ -28,7 +28,11 @@ import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.commons.result.PageResponse;
 import io.github.loadup.commons.result.SuccessResponse;
 import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
 class ApiMaskingJsonTest {
@@ -37,6 +41,28 @@ class ApiMaskingJsonTest {
             @Masked(MaskType.EMAIL) String email) {}
 
     public record Invalid(@Masked(MaskType.PHONE) int phone) {}
+
+    public record NegativePrefix(
+            @Masked(value = MaskType.CUSTOM, prefix = -1) String value) {}
+
+    public record NegativeSuffix(
+            @Masked(value = MaskType.CUSTOM, suffix = -1) String value) {}
+
+    public record OversizedPrefix(
+            @Masked(value = MaskType.CUSTOM, prefix = 33) String value) {}
+
+    public record OversizedSuffix(
+            @Masked(value = MaskType.CUSTOM, suffix = 33) String value) {}
+
+    public record NonCustomPrefix(
+            @Masked(value = MaskType.PHONE, prefix = 1) String value) {}
+
+    public record NonCustomSuffix(
+            @Masked(value = MaskType.PHONE, suffix = 1) String value) {}
+
+    public record CustomBoundary(
+            @Masked(value = MaskType.CUSTOM, prefix = 32, suffix = 32)
+            String value) {}
 
     public static class PublicView {}
 
@@ -114,5 +140,43 @@ class ApiMaskingJsonTest {
     void failsClosedForWrongAnnotationType() {
         var masking = new ApiMaskingJson(JsonMapper.builder().build());
         assertThatThrownBy(() -> masking.write(new Invalid(123))).isInstanceOf(RuntimeException.class);
+    }
+
+    static Stream<Object> invalidDeclarations() {
+        return Stream.of(
+                new NegativePrefix("synthetic"),
+                new NegativeSuffix("synthetic"),
+                new OversizedPrefix("synthetic"),
+                new OversizedSuffix("synthetic"),
+                new NonCustomPrefix("13812345678"),
+                new NonCustomSuffix("13812345678"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidDeclarations")
+    void rejectsInvalidMaskLengthsAndNonCustomOverridesWithoutReturningPlaintext(Object model) {
+        var masking = new ApiMaskingJson(JsonMapper.builder().build());
+        assertThatThrownBy(() -> masking.write(model)).isInstanceOf(RuntimeException.class);
+    }
+
+    @Test
+    void acceptsMaximumCustomLengthsAndPreservesNullFields() {
+        var original = JsonMapper.builder().build();
+        var masking = new ApiMaskingJson(original);
+        var value = new CustomBoundary("a".repeat(70));
+        assertThat(original.readTree(masking.write(value)).get("value").asString())
+                .isEqualTo("a".repeat(32) + "*".repeat(6) + "a".repeat(32));
+        assertThat(original.readTree(masking.write(new CustomBoundary(null)))
+                        .get("value")
+                        .isNull())
+                .isTrue();
+        assertThat(value.value()).isEqualTo("a".repeat(70));
+    }
+
+    @Test
+    void requiresAJsonMapperToKeepTheApplicationMapperIndependent() {
+        assertThatThrownBy(() -> new ApiMaskingJson(new ObjectMapper()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("API masking requires a Jackson 3 JsonMapper");
     }
 }

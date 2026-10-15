@@ -27,20 +27,20 @@ import io.github.loadup.components.authorization.context.UserContext;
 import io.github.loadup.components.authorization.model.LoadUpUser;
 import java.util.List;
 import java.util.Map;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.core.parameters.P;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.parameters.P;
 
 @SpringBootTest(classes = MethodSecurityTest.TestConfig.class)
 class MethodSecurityTest {
@@ -106,21 +106,29 @@ class MethodSecurityTest {
 
     @Test
     void principalAttributesEnforceTenantAuthorization() {
-        UserContext.set(LoadUpUser.builder().userId("merchant-user").roles(List.of("USER"))
-                .attributes(Map.of("tenant", "merchant-a")).build());
+        UserContext.set(LoadUpUser.builder()
+                .userId("merchant-user")
+                .roles(List.of("USER"))
+                .attributes(Map.of("tenant", "merchant-a"))
+                .build());
         assertThat(service.tenantOnly("merchant-a")).isEqualTo("ok");
         assertThatThrownBy(() -> service.tenantOnly("merchant-b")).isInstanceOf(AccessDeniedException.class);
     }
 
     @Test
     void disableSwitchAllowsApplicationToOwnMethodSecurity() {
-        new ApplicationContextRunner().withUserConfiguration(DisabledConfig.class)
+        new ApplicationContextRunner()
+                .withUserConfiguration(DisabledConfig.class)
                 .withPropertyValues("loadup.security.method-security.enabled=false")
                 .run(application -> {
                     assertThat(application).hasNotFailed();
-                    assertThat(application.getBean(AuthorizationProperties.class).isEnabled()).isFalse();
+                    assertThat(application
+                                    .getBean(AuthorizationProperties.class)
+                                    .isEnabled())
+                            .isFalse();
                     UserContext.clear();
-                    assertThat(application.getBean(ProtectedService.class).adminOnly()).isEqualTo("ok");
+                    assertThat(application.getBean(ProtectedService.class).adminOnly())
+                            .isEqualTo("ok");
                 });
     }
 
@@ -128,7 +136,10 @@ class MethodSecurityTest {
     @ImportAutoConfiguration(AuthorizationAutoConfiguration.class)
     @EnableConfigurationProperties(AuthorizationProperties.class)
     static class DisabledConfig {
-        @Bean ProtectedService protectedService() { return new ProtectedService(); }
+        @Bean
+        ProtectedService protectedService() {
+            return new ProtectedService();
+        }
     }
 
     @SpringBootConfiguration

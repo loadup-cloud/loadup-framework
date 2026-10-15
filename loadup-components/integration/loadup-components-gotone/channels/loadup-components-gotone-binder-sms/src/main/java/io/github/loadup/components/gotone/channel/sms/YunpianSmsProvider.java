@@ -19,6 +19,8 @@
  */
 package io.github.loadup.components.gotone.channel.sms;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.gotone.NotificationChannelProvider;
 import io.github.loadup.components.gotone.model.ChannelSendRequest;
@@ -99,7 +101,7 @@ public class YunpianSmsProvider implements NotificationChannelProvider {
      */
     protected void sendMessage(String receiver, String templateId, String content) throws Exception {
         if (apiKey == null || apiKey.isBlank()) {
-            throw new IllegalStateException("Yunpian API key is not configured");
+            throw new CommonException(CommonResultCodeEnum.INVALID_STATE);
         }
         LogUtil.debug(
                 YunpianSmsProvider.class,
@@ -107,6 +109,7 @@ public class YunpianSmsProvider implements NotificationChannelProvider {
                 apiUrl,
                 templateId,
                 content.length());
+        throw new CommonException(CommonResultCodeEnum.INVALID_STATE);
     }
 
     @Override
@@ -115,19 +118,18 @@ public class YunpianSmsProvider implements NotificationChannelProvider {
     }
 
     private static String configValue(Map<String, Object> config, String key, String defaultValue) {
-        if (config == null || !config.containsKey(key)) {
+        if (!config.containsKey(key)) {
             return defaultValue;
         }
-        Object value = config.get(key);
-        return value != null ? value.toString() : defaultValue;
+        return config.get(key).toString();
     }
 
     private static boolean isPhoneNumber(String receiver) {
-        return receiver != null && receiver.matches("^\\+?[0-9]{5,20}$");
+        return receiver.matches("^\\+?[0-9]{5,20}$");
     }
 
     private static String maskPhone(String phone) {
-        if (phone == null || phone.length() < 7) {
+        if (phone.length() < 7) {
             return "***";
         }
         return phone.substring(0, 3) + "****" + phone.substring(phone.length() - 4);

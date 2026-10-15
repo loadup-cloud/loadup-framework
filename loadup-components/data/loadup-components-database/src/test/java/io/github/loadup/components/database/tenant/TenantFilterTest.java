@@ -105,4 +105,97 @@ class TenantFilterTest {
                         (request, response) ->
                                 assertThat(TenantUtil.getTenantId()).isNull());
     }
+
+    @Test
+    void headerThenParameterThenSubdomainAreResolvedInPriorityOrder() throws Exception {
+        var properties = new DatabaseProperties.MultiTenant();
+        properties.setEnabled(true);
+        properties.getRequest().setParameterName("tenant");
+        properties.getRequest().setSubdomainEnabled(true);
+        var filter = new TenantFilter(properties);
+        var request = new MockHttpServletRequest();
+        request.setServerName("host.example.com");
+        request.addHeader("X-Tenant-Id", " header ");
+        request.setParameter("tenant", " parameter ");
+        filter.doFilter(
+                request,
+                new MockHttpServletResponse(),
+                (r, response) -> assertThat(TenantUtil.getTenantId()).isEqualTo("header"));
+        request.removeHeader("X-Tenant-Id");
+        filter.doFilter(
+                request,
+                new MockHttpServletResponse(),
+                (r, response) -> assertThat(TenantUtil.getTenantId()).isEqualTo("parameter"));
+        request.setParameter("tenant", " ");
+        filter.doFilter(
+                request,
+                new MockHttpServletResponse(),
+                (r, response) -> assertThat(TenantUtil.getTenantId()).isEqualTo("host"));
+        assertThat(ContextHolder.isBound()).isFalse();
+    }
+
+    @Test
+    void blankHeaderNameAndUnusableHostsDoNotInventTenantIdentity() throws Exception {
+        var properties = new DatabaseProperties.MultiTenant();
+        properties.setEnabled(true);
+        properties.getRequest().setHeaderName(" ");
+        properties.getRequest().setParameterName("tenant");
+        properties.getRequest().setSubdomainEnabled(true);
+        for (String host : new String[] {"", "localhost", "API.example.com", ".example.com"}) {
+            var request = new MockHttpServletRequest();
+            request.setServerName(host);
+            new TenantFilter(properties)
+                    .doFilter(
+                            request,
+                            new MockHttpServletResponse(),
+                            (r, response) ->
+                                    assertThat(TenantUtil.getTenantId()).isNull());
+        }
+        properties.getRequest().setHeaderName(null);
+        properties.getRequest().setParameterName(null);
+        var request = new MockHttpServletRequest();
+        request.setServerName("merchant.example.com");
+        new TenantFilter(properties)
+                .doFilter(
+                        request,
+                        new MockHttpServletResponse(),
+                        (r, response) -> assertThat(TenantUtil.getTenantId()).isEqualTo("merchant"));
+    }
+
+    @Test
+    void errorRedispatchRetainsSavedExecutionMetadata() throws Exception {
+        var properties = new DatabaseProperties.MultiTenant();
+        properties.setEnabled(true);
+        var request = new MockHttpServletRequest();
+        request.setDispatcherType(DispatcherType.ERROR);
+        request.setAttribute(org.springframework.web.util.WebUtils.ERROR_REQUEST_URI_ATTRIBUTE, "/api/orders");
+        request.setAttribute(
+                ExecutionContext.class.getName(),
+                ExecutionContext.empty().with(io.github.loadup.commons.context.ContextKeys.TENANT_ID, "saved"));
+        new TenantFilter(properties)
+                .doFilter(
+                        request,
+                        new MockHttpServletResponse(),
+                        (r, response) -> assertThat(TenantUtil.getTenantId()).isEqualTo("saved"));
+        assertThat(ContextHolder.isBound()).isFalse();
+    }
+
+    @Test
+    void ioAndRuntimeFailuresPropagateWithoutLeakingContext() {
+        var properties = new DatabaseProperties.MultiTenant();
+        var filter = new TenantFilter(properties);
+        var io = new java.io.IOException("synthetic IO failure");
+        assertThatThrownBy(
+                        () -> filter.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(), (r, s) -> {
+                            throw io;
+                        }))
+                .isSameAs(io);
+        var runtime = new IllegalStateException("synthetic runtime failure");
+        assertThatThrownBy(
+                        () -> filter.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(), (r, s) -> {
+                            throw runtime;
+                        }))
+                .isSameAs(runtime);
+        assertThat(ContextHolder.isBound()).isFalse();
+    }
 }

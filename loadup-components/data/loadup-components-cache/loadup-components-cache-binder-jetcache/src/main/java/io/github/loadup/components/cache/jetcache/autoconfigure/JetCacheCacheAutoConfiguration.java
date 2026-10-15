@@ -104,7 +104,6 @@ public class JetCacheCacheAutoConfiguration {
                 codec::deserialize,
                 connectionFactoryProvider.getIfAvailable(),
                 binderProperties.getRemoteKeyPrefix());
-        manager.preloadConfiguredCaches();
         return new CacheManagerCustomizers(customizers.orderedStream().toList()).customize(manager);
     }
 }

@@ -86,8 +86,11 @@ public class DingtalkWebhookProvider implements NotificationChannelProvider {
             LogUtil.info(DingtalkWebhookProvider.class, "DingTalk webhook sent to {}", maskUrl(webhookUrl));
             return success(request);
         } catch (Exception e) {
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
             LogUtil.warn(DingtalkWebhookProvider.class, "DingTalk webhook failed for {}", maskUrl(webhookUrl), e);
-            return failure(request, e.getMessage());
+            return failure(request, "webhook request failed");
         }
     }
 

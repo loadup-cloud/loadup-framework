@@ -21,6 +21,7 @@ package io.github.loadup.components.cache.jetcache;
 
 import com.alicp.jetcache.Cache;
 import com.alicp.jetcache.CacheGetResult;
+import com.alicp.jetcache.CacheInvokeException;
 import com.alicp.jetcache.CacheResult;
 import com.alicp.jetcache.MultiLevelCache;
 import com.alicp.jetcache.embedded.CaffeineCache;
@@ -100,11 +101,20 @@ public class JetCacheSpringCache extends AbstractValueAdaptingCache {
     public <T> T get(Object key, Callable<T> valueLoader) {
         Duration effective = RandomExpiration.apply(ttl, jitter);
         Object loaded;
-        if (effective == null) {
-            loaded = delegate.computeIfAbsent(key, k -> load(k, valueLoader), isAllowNullValues());
-        } else {
-            loaded = delegate.computeIfAbsent(
-                    key, k -> load(k, valueLoader), isAllowNullValues(), effective.toMillis(), TimeUnit.MILLISECONDS);
+        try {
+            if (effective == null) {
+                loaded = delegate.computeIfAbsent(key, k -> load(k, valueLoader), isAllowNullValues());
+            } else {
+                loaded = delegate.computeIfAbsent(
+                        key,
+                        k -> load(k, valueLoader),
+                        isAllowNullValues(),
+                        effective.toMillis(),
+                        TimeUnit.MILLISECONDS);
+            }
+        } catch (CacheInvokeException failure) {
+            if (failure.getCause() instanceof ValueRetrievalException retrieval) throw retrieval;
+            throw failure;
         }
         return (T) fromStoreValue(loaded);
     }

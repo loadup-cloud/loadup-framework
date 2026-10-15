@@ -19,6 +19,8 @@
  */
 package io.github.loadup.components.gotone.channel.push;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.gotone.NotificationChannelProvider;
 import io.github.loadup.components.gotone.model.ChannelSendRequest;
@@ -106,12 +108,7 @@ public class FcmPushProvider implements NotificationChannelProvider {
         if (serverKey == null || serverKey.isBlank()) {
             throw new IllegalStateException("FCM server key is not configured");
         }
-        LogUtil.debug(
-                FcmPushProvider.class,
-                "FCM send placeholder: projectId={} contentLength={} extras={}",
-                projectId,
-                content.length(),
-                extras);
+        throw new CommonException(CommonResultCodeEnum.INVALID_STATE);
     }
 
     @Override
@@ -119,17 +116,9 @@ public class FcmPushProvider implements NotificationChannelProvider {
         return serverKey != null && !serverKey.isBlank();
     }
 
-    private static String configValue(Map<String, Object> config, String key, String defaultValue) {
-        if (config == null || !config.containsKey(key)) {
-            return defaultValue;
-        }
-        Object value = config.get(key);
-        return value != null ? value.toString() : defaultValue;
-    }
-
     @SuppressWarnings("unchecked")
     private static Map<String, Object> configMap(Map<String, Object> config, String key) {
-        if (config == null || !config.containsKey(key)) {
+        if (!config.containsKey(key)) {
             return Map.of();
         }
         Object value = config.get(key);
@@ -137,7 +126,7 @@ public class FcmPushProvider implements NotificationChannelProvider {
     }
 
     private static String maskToken(String token) {
-        if (token == null || token.length() < 8) {
+        if (token.length() < 8) {
             return "***";
         }
         return token.substring(0, 4) + "***" + token.substring(token.length() - 4);

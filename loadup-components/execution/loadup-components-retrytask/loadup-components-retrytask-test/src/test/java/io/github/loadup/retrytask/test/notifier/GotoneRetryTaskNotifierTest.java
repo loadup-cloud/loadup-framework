@@ -80,6 +80,65 @@ class GotoneRetryTaskNotifierTest {
         assertThat(notificationService.captured).isNull();
     }
 
+    @Test
+    void blankServiceCodesAndNullOrEmptyReceiversDoNotSend() {
+        var service = org.mockito.Mockito.mock(NotificationService.class);
+        var properties = new RetryTaskNotifyProperties();
+        var notifier = new GotoneRetryTaskNotifier(service, properties);
+        var failure = new RetryTaskFailure("order", "id", UUID.randomUUID(), 3, "failed");
+        properties.setServiceCode(" ");
+        notifier.notifyFailed(failure);
+        properties.setServiceCode("ALERT");
+        properties.setReceivers(null);
+        notifier.notifyFailed(failure);
+        properties.setReceivers(List.of());
+        notifier.notifyFailed(failure);
+        org.mockito.Mockito.verifyNoInteractions(service);
+    }
+
+    @Test
+    void notificationTransportFailureDoesNotEscapeTheFailureCallback() {
+        var service = org.mockito.Mockito.mock(NotificationService.class);
+        org.mockito.Mockito.when(service.send(org.mockito.ArgumentMatchers.any()))
+                .thenThrow(new IllegalStateException("synthetic notification outage"));
+        var properties = new RetryTaskNotifyProperties();
+        properties.setServiceCode("ALERT");
+        properties.setReceivers(List.of("ops@example.com"));
+        var failure = new RetryTaskFailure("order", "id", UUID.randomUUID(), 3, "failed");
+        org.assertj.core.api.Assertions.assertThatCode(
+                        () -> new GotoneRetryTaskNotifier(service, properties).notifyFailed(failure))
+                .doesNotThrowAnyException();
+        org.mockito.Mockito.verify(service).send(org.mockito.ArgumentMatchers.any());
+    }
+
+    @Test
+    void autoConfigurationRequiresNotificationServiceAndHonorsNamedOverride() {
+        var contexts = new org.springframework.boot.test.context.runner.ApplicationContextRunner()
+                .withConfiguration(org.springframework.boot.autoconfigure.AutoConfigurations.of(
+                        io.github.loadup.retrytask.notifier.gotone.RetryTaskGotoneNotifierAutoConfiguration.class));
+        contexts.run(context -> assertThat(context).doesNotHaveBean(GotoneRetryTaskNotifier.class));
+        contexts.withBean(NotificationService.class, CapturingNotificationService::new)
+                .withPropertyValues(
+                        "loadup.retrytask.notify.enabled=false",
+                        "loadup.retrytask.notify.service-code=ALERT",
+                        "loadup.retrytask.notify.receivers[0]=ops@example.com")
+                .run(context -> {
+                    assertThat(context).hasSingleBean(io.github.loadup.retrytask.facade.RetryTaskNotifier.class);
+                    var properties = context.getBean(RetryTaskNotifyProperties.class);
+                    assertThat(properties.isEnabled()).isFalse();
+                    assertThat(properties.getServiceCode()).isEqualTo("ALERT");
+                    assertThat(properties.getReceivers()).containsExactly("ops@example.com");
+                });
+        var custom = org.mockito.Mockito.mock(io.github.loadup.retrytask.facade.RetryTaskNotifier.class);
+        contexts.withBean(NotificationService.class, CapturingNotificationService::new)
+                .withBean(
+                        "gotoneRetryTaskNotifier",
+                        io.github.loadup.retrytask.facade.RetryTaskNotifier.class,
+                        () -> custom)
+                .run(context -> assertThat(context.getBean(io.github.loadup.retrytask.facade.RetryTaskNotifier.class))
+                        .isSameAs(custom));
+    }
+
     private static final class CapturingNotificationService implements NotificationService {
         private NotificationRequest captured;
 

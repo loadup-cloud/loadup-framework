@@ -56,20 +56,28 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 class JdbcStoreIT {
 
-    @Autowired
-    private NotificationService notificationService;
+    private final NotificationService notificationService;
+    private final ChannelConfigProvider channelConfigProvider;
+    private final ServiceConfigProvider serviceConfigProvider;
+    private final NotificationServiceDOMapper serviceMapper;
+    private final ServiceChannelDOMapper channelMapper;
+    private final io.github.loadup.components.gotone.store.mapper.NotificationRecordDOMapper recordMapper;
 
     @Autowired
-    private ChannelConfigProvider channelConfigProvider;
-
-    @Autowired
-    private ServiceConfigProvider serviceConfigProvider;
-
-    @Autowired
-    private NotificationServiceDOMapper serviceMapper;
-
-    @Autowired
-    private ServiceChannelDOMapper channelMapper;
+    JdbcStoreIT(
+            NotificationService notificationService,
+            ChannelConfigProvider channelConfigProvider,
+            ServiceConfigProvider serviceConfigProvider,
+            NotificationServiceDOMapper serviceMapper,
+            ServiceChannelDOMapper channelMapper,
+            io.github.loadup.components.gotone.store.mapper.NotificationRecordDOMapper recordMapper) {
+        this.notificationService = notificationService;
+        this.channelConfigProvider = channelConfigProvider;
+        this.serviceConfigProvider = serviceConfigProvider;
+        this.serviceMapper = serviceMapper;
+        this.channelMapper = channelMapper;
+        this.recordMapper = recordMapper;
+    }
 
     private HttpServer server;
 
@@ -105,6 +113,50 @@ class JdbcStoreIT {
 
         assertThat(response.success()).isTrue();
         assertThat(response.channelResults().get(0).provider()).isEqualTo("dingtalk");
+        var rows = recordMapper.selectListByQuery(com.mybatisflex.core.query.QueryWrapper.create()
+                .where(io.github.loadup.components.gotone.store.dataobject.NotificationRecordDO::getServiceCode)
+                .eq(serviceCode));
+        assertThat(rows).singleElement().satisfies(row -> {
+            assertThat(row.getReceiver()).isEqualTo("ops@example.com");
+            assertThat(row.getStatus()).isEqualTo("SUCCESS");
+            assertThat(row.getContent()).isEqualTo("Alert: db is down");
+        });
+    }
+
+    @Test
+    void missingConfigurationAndPerReceiverFailuresRemainVisibleInTheDatabase() {
+        String code = "PARTIAL_" + UUID.randomUUID();
+        assertThat(serviceConfigProvider.findByServiceCode(code)).isEmpty();
+        assertThat(channelConfigProvider.findEnabledByServiceCode(code)).isEmpty();
+        insertService(code);
+        var request = NotificationRequest.of(code, List.of("ok", "failed"), Map.of());
+        var config = new ChannelConfigProvider.ChannelConfig("EMAIL", "smtp", List.of(), null, Map.of());
+        var result = new io.github.loadup.components.gotone.record.RecordHandler.SendAttemptResult(
+                "smtp",
+                true,
+                1,
+                1,
+                "rendered",
+                Map.of("ok", true, "failed", false),
+                Map.of("failed", "synthetic transport failure"),
+                List.of());
+        new io.github.loadup.components.gotone.store.config.JdbcRecordHandler(recordMapper)
+                .onResult(request, config, result);
+        var rows = recordMapper.selectListByQuery(com.mybatisflex.core.query.QueryWrapper.create()
+                .where(io.github.loadup.components.gotone.store.dataobject.NotificationRecordDO::getServiceCode)
+                .eq(code));
+        assertThat(rows).hasSize(2);
+        assertThat(rows)
+                .filteredOn(row -> row.getReceiver().equals("ok"))
+                .singleElement()
+                .satisfies(row -> assertThat(row.getStatus()).isEqualTo("SUCCESS"));
+        assertThat(rows)
+                .filteredOn(row -> row.getReceiver().equals("failed"))
+                .singleElement()
+                .satisfies(row -> {
+                    assertThat(row.getStatus()).isEqualTo("FAILED");
+                    assertThat(row.getErrorMessage()).isEqualTo("synthetic transport failure");
+                });
     }
 
     private void insertService(String serviceCode) {

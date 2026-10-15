@@ -25,13 +25,13 @@ import io.github.loadup.components.authorization.context.UserContext;
 import io.github.loadup.components.authorization.model.LoadUpUser;
 import java.util.List;
 import java.util.Map;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 class UserContextTest {
@@ -92,10 +92,14 @@ class UserContextTest {
 
         assertThat(UserContext.isPresent()).isFalse();
     }
+
     @Test
     void rolePredicatesSupportRawAndPrefixedRolesAndAnyAllSemantics() {
-        var user = LoadUpUser.builder().roles(List.of("ADMIN", "ROLE_AUDITOR"))
-                .permissions(List.of("user:read")).attributes(Map.of("tenant", "merchant-a")).build();
+        var user = LoadUpUser.builder()
+                .roles(List.of("ADMIN", "ROLE_AUDITOR"))
+                .permissions(List.of("user:read"))
+                .attributes(Map.of("tenant", "merchant-a"))
+                .build();
         assertThat(user.hasRole("ADMIN")).isTrue();
         assertThat(user.hasRole("AUDITOR")).isTrue();
         assertThat(user.hasRole("ROLE_AUDITOR")).isTrue();
@@ -125,7 +129,8 @@ class UserContextTest {
         assertThat(user.hasAllRoles((String[]) null)).isFalse();
         assertThat(user.hasPermission(null)).isFalse();
         UserContext.set(user);
-        assertThat(SecurityContextHolder.getContext().getAuthentication().getAuthorities()).isEmpty();
+        assertThat(SecurityContextHolder.getContext().getAuthentication().getAuthorities())
+                .isEmpty();
     }
 
     @Test
@@ -139,7 +144,8 @@ class UserContextTest {
         UserContext.set(user);
         assertThat(user.hasAllRoles("AUDITOR")).isTrue();
         assertThat(user.hasPermission("audit:read")).isTrue();
-        assertThat(SecurityContextHolder.getContext().getAuthentication().getName()).isEqualTo("merchant-user");
+        assertThat(SecurityContextHolder.getContext().getAuthentication().getName())
+                .isEqualTo("merchant-user");
         assertThat(UserContext.getUsername()).isEqualTo("auditor");
         assertThat(UserContext.get().getAttributes()).containsEntry("tenant", "merchant-a");
         assertThat(user.toString()).startsWith("{").contains("merchant-user");
@@ -148,18 +154,18 @@ class UserContextTest {
     @Test
     void foreignAndAnonymousPrincipalsAreNotPresentedAsLoadUpUsers() {
         java.security.Principal principal = () -> "external-user";
-        SecurityContextHolder.getContext().setAuthentication(
-                UsernamePasswordAuthenticationToken.authenticated(principal, null, List.of()));
+        SecurityContextHolder.getContext()
+                .setAuthentication(UsernamePasswordAuthenticationToken.authenticated(principal, null, List.of()));
         assertThat(UserContext.get()).isNull();
         assertThat(UserContext.isPresent()).isFalse();
         assertThat(UserContext.getUserId()).isNull();
         assertThat(UserContext.getUsername()).isNull();
-        SecurityContextHolder.getContext().setAuthentication(new AnonymousAuthenticationToken("key", "anonymousUser",
-                List.of(new SimpleGrantedAuthority("ROLE_ANONYMOUS"))));
+        SecurityContextHolder.getContext()
+                .setAuthentication(new AnonymousAuthenticationToken(
+                        "key", "anonymousUser", List.of(new SimpleGrantedAuthority("ROLE_ANONYMOUS"))));
         assertThat(UserContext.get()).isNull();
         UserContext.clear();
         assertThat(UserContext.getUserId()).isNull();
         assertThat(UserContext.getUsername()).isNull();
     }
-
 }

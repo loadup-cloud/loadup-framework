@@ -84,4 +84,42 @@ class NacosConfigContentTest {
         assertThat(NacosConfigContent.parse(null, "properties")).isEmpty();
         assertThat(NacosConfigContent.parse("  ", "yaml")).isEmpty();
     }
+
+    @Test
+    void yamlBinaryNullCollectionsAndScalarDocumentsHaveDefinedRepresentations() {
+        assertThat(NacosConfigContent.parse("scalar", "YML")).isEmpty();
+        assertThat(NacosConfigContent.parse("- one\n- two", "yaml")).isEmpty();
+        assertThat(NacosConfigContent.parse("empty: null\nbytes: !!binary YWJj\nitems: [1, true]", "YML"))
+                .containsEntry("empty", "")
+                .containsEntry("bytes", "\"YWJj\"")
+                .containsEntry("items", "[1,true]");
+    }
+
+    @Test
+    void yamlRenderingPreservesMalformedJsonAndNestedObjects() {
+        Map<String, String> configs = new LinkedHashMap<>();
+        configs.put("app.label", "[not-json]");
+        configs.put("app.object", "{\"enabled\":true}");
+        configs.put("app.literal", "[unfinished");
+        configs.put("app.nullable", null);
+        Map<String, String> parsed = NacosConfigContent.parse(NacosConfigContent.render(configs, "YML"), "YML");
+        assertThat(parsed)
+                .containsEntry("app.label", "[not-json]")
+                .containsEntry("app.object.enabled", "true")
+                .containsEntry("app.literal", "[unfinished")
+                .containsEntry("app.nullable", "");
+    }
+
+    @Test
+    void propertiesEscapingAndFallbackFormatsPreserveValues() {
+        Map<String, String> values = new LinkedHashMap<>();
+        values.put("path", "C:\\tmp\r\nline");
+        values.put("empty", null);
+        assertThat(NacosConfigContent.parse(NacosConfigContent.render(values, null), null))
+                .containsEntry("path", "C:\\tmp\r\nline")
+                .containsEntry("empty", "");
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> NacosConfigContent.parse("bad=\\uXXXX", "properties"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasCauseInstanceOf(IllegalArgumentException.class);
+    }
 }

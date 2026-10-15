@@ -45,6 +45,7 @@ public class BizScenarioInterceptor implements MethodInterceptor {
 
         io.github.loadup.components.extension.core.BizScenario scenario =
                 resolveScenario(ann, invocation.getArguments());
+        var previous = BizContextHolder.get();
         boolean contextSet = false;
 
         if (scenario != null) {
@@ -61,7 +62,11 @@ public class BizScenarioInterceptor implements MethodInterceptor {
             return invocation.proceed();
         } finally {
             if (contextSet) {
-                BizContextHolder.clear();
+                if (previous == null) {
+                    BizContextHolder.clear();
+                } else {
+                    BizContextHolder.set(previous);
+                }
             }
         }
     }

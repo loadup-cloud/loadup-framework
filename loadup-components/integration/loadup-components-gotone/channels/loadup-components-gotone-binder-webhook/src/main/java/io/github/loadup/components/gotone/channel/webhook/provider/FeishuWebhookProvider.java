@@ -71,8 +71,11 @@ public class FeishuWebhookProvider implements NotificationChannelProvider {
             LogUtil.info(FeishuWebhookProvider.class, "Feishu webhook sent to {}", maskUrl(webhookUrl));
             return success(request);
         } catch (Exception e) {
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
             LogUtil.warn(FeishuWebhookProvider.class, "Feishu webhook failed for {}", maskUrl(webhookUrl), e);
-            return failure(request, e.getMessage());
+            return failure(request, "webhook request failed");
         }
     }
 

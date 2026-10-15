@@ -24,7 +24,6 @@ import com.alicp.jetcache.template.QuickConfig;
 import io.github.loadup.components.cache.LoadupCacheProperties;
 import java.time.Duration;
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Function;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.support.AbstractCacheManager;
@@ -67,7 +66,9 @@ public class JetCacheSpringCacheManager extends AbstractCacheManager {
 
     @Override
     protected Collection<org.springframework.cache.Cache> loadCaches() {
-        return List.of();
+        return properties.getCaches().keySet().stream()
+                .map(this::createSpringCache)
+                .toList();
     }
 
     @Override

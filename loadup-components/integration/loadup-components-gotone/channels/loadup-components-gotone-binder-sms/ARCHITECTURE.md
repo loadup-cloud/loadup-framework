@@ -52,3 +52,7 @@ binder 实现框架契约，把实现库及其配置隔离在业务 API 之外�
 选择独立 binder，使通知发送实现的依赖留在集成应用；替换底层实现时，业务侧仍使用 `NotificationService` 契约。
 
 集成方式与配置示例见 [README.md](README.md)。
+
+## 未实现传输的失败语义
+
+内置厂商调用仍为占位实现，凭证缺失或传输尚未实现时使用 `CommonException(INVALID_STATE)`；`send` 捕获单个收件人的错误并汇总失败，不产生虚假的成功计数。业务调用 `NotificationService` 无需处理厂商 SDK 类型。`isAvailable` 目前只检查凭证配置，与实际发送成功分开。凭证管理接入不等于传输验收，后续应以真实厂商沙箱或受控账户验证。

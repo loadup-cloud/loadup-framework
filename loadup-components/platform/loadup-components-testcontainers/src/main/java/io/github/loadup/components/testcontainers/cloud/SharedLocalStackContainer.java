@@ -181,7 +181,7 @@ public final class SharedLocalStackContainer {
                 return;
             }
             String image = (config.getImage() != null) ? config.getImage() : DEFAULT_LOCALSTACK_VERSION;
-            localstackContainer = new LocalStackContainer(DockerImageName.parse(image)).withReuse(true);
+            localstackContainer = new LocalStackContainer(DockerImageName.parse(image)).withReuse(config.isReusable());
 
             localstackContainer.start();
             STARTED.set(true);
@@ -192,8 +192,6 @@ public final class SharedLocalStackContainer {
             region = localstackContainer.getRegion();
 
             LogUtil.info(SharedLocalStackContainer.class, "S3 Endpoint: {}", s3Endpoint);
-            LogUtil.info(SharedLocalStackContainer.class, "Access Key: {}", accessKey);
-            LogUtil.info(SharedLocalStackContainer.class, "Secret Key: {}", secretKey);
             LogUtil.info(SharedLocalStackContainer.class, "Region: {}", region);
             if (config.isReusable()) {
                 LogUtil.info(
