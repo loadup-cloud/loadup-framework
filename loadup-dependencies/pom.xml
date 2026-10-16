@@ -68,6 +68,7 @@
         <commons-crypto.version>1.2.0</commons-crypto.version>
 
         <!-- Serialization and Utilities -->
+        <jackson-2-bom.version>2.21.7</jackson-2-bom.version>
         <jackson-bom.version>3.2.3</jackson-bom.version>
         <jackson-annotations.version>2.22</jackson-annotations.version>
         <fastjson.version>2.0.65</fastjson.version>

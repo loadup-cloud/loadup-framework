@@ -2,6 +2,12 @@
 
 本文只记录尚未完成的工作。每完成一项任务立即更新：移除已完成的实现项，未执行的运行验证单独保留。已实现的能力、接入方式和设计边界以各 Maven 模块的 `README.md`、`ARCHITECTURE.md` 为准。LoadUp 是通过 BOM 按需引入的框架；`loadup-application` 用于本地集成验证。
 
+## SpringDoc 与 Jackson 版本后续验收
+
+2026-10-16 已确认 SpringDoc 3.1.1 / Swagger Core 2.2.55 与 Boot 4 的 Jackson 3 共存，Swagger 内部仍依赖 Jackson 2。BOM 新增 jackson-2-bom.version=2.21.7，同步升级旧链路的 core/databind/YAML/JSR310；业务 Jackson 3.2.3 与共享 annotations 2.22 保持不变。包含 BOM 的 4 模块 `mvnd clean verify dependency:tree` 成功：18 项单测、3 项真实 HTTP IT 全部通过，覆盖 OpenAPI 元数据/Schema/安全描述、业务 JSON 收发与未知分组 404；依赖树确认两代 Jackson 版本。此次跳过 Spotless/SpotBugs，IDEA BOM 检查与 git diff 空白检查通过；README/ARCHITECTURE 和文档站已同步，未运行完整 reactor。
+
+- [ ] 在消费工程回归自定义 Jackson 3 Module/序列化器与 OpenAPI Schema 的一致性；Swagger 内部 Jackson 2 不会自动继承业务 mapper 配置。跟进上游原生 Jackson 3 迁移，届时再评估移除旧链路。
+
 ## Tomcat 升级后续验收
 
 2026-10-16 BOM 将 Tomcat 从 Boot 默认 11.0.24 统一固定到 11.0.27，满足 ≥11.0.25；通过继承的 tomcat.version 同步覆盖嵌入式 core/EL/WebSocket/Jasper 和其他 Tomcat 受管模块，未使用无上界版本区间。mvnd help:effective-pom 已确认全部受管 Tomcat 坐标解析为 11.0.27，IDEA 检查与 git diff 空白检查通过，README 和文档站已同步；未运行编译或容器启动测试。

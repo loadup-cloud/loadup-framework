@@ -23,3 +23,11 @@ Controller / OpenAPI 注解 → SpringDoc → OpenAPI JSON → Scalar 页面
 应用可提供自己的 `OpenAPI` Bean 或 SpringDoc 定制器。文档页面与 JSON 端点是否公开由集成方 SecurityFilterChain 决定，组件不放行路径。SpringDoc 按 Controller 声明推导响应模型，而 `loadup-components-webmvc` 在运行时包装 `/api/**` 响应；如需精确的报文模型，集成方可使用 SpringDoc 定制器描述 `result`、`data`。
 
 接入方式见 [README.md](README.md)。
+
+## Jackson 职责边界
+
+SpringDoc 3.1.1 通过 Swagger Core 2.2.55 使用 `com.fasterxml.jackson` 的 Jackson 2 模型解析器和序列化器。Boot 4 的 HTTP 消息转换及 LoadUp 业务 JSON 使用 `tools.jackson` 的 Jackson 3；LoadUp 不创建第二套业务 ObjectMapper，也不让 Swagger 的 mapper 接管 MVC。
+
+BOM 独立管理两代依赖：Jackson 3 为 3.2.3，Jackson 2 BOM 为 2.21.7；共享 annotations 显式固定为 2.22。保留上游 Jackson 2 依赖，统一升级其 core/databind/dataformat/datatype，避免单独替换 core 或排除依赖引起文档生成失败。上游迁移到 Jackson 3 后再评估移除旧依赖，不通过强制替换包名实现迁移。
+
+`SpringDocHttpIT` 使用真实嵌入式服务器验证 `/v3/api-docs` 元数据、Schema、安全配置和业务 JSON 请求/响应；它验证两代依赖共存，不等同于所有业务自定义序列化规则都能被 OpenAPI 自动推导。
