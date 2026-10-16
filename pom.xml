@@ -91,7 +91,7 @@
 
         <!-- Flyway plugin support -->
         <mysql.version>9.7.0</mysql.version>
-        <flyway.version>12.11.0</flyway.version>
+        <flyway.version>13.10.0</flyway.version>
 
         <!-- Skip flags -->
         <skip.deploy>false</skip.deploy>
