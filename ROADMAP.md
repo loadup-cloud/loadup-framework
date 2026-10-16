@@ -2,6 +2,12 @@
 
 本文只记录尚未完成的工作。每完成一项任务立即更新：移除已完成的实现项，未执行的运行验证单独保留。已实现的能力、接入方式和设计边界以各 Maven 模块的 `README.md`、`ARCHITECTURE.md` 为准。LoadUp 是通过 BOM 按需引入的框架；`loadup-application` 用于本地集成验证。
 
+## Tomcat 升级后续验收
+
+2026-10-16 BOM 将 Tomcat 从 Boot 默认 11.0.24 统一固定到 11.0.27，满足 ≥11.0.25；通过继承的 tomcat.version 同步覆盖嵌入式 core/EL/WebSocket/Jasper 和其他 Tomcat 受管模块，未使用无上界版本区间。mvnd help:effective-pom 已确认全部受管 Tomcat 坐标解析为 11.0.27，IDEA 检查与 git diff 空白检查通过，README 和文档站已同步；未运行编译或容器启动测试。
+
+- [ ] 在消费应用或远程 CI 验收 Tomcat 11.0.27 的启动、HTTP/API 错误响应和 WebSocket（若使用），核对消费工程未通过其他 BOM 或直接依赖覆盖版本。
+
 ## 依赖升级后续验收
 
 2026-10-16 已更新 actions/cache 6.1.0（固定 SHA）、JobRunr 9.0.0、Groovy / Groovy JSON 6.0.0、Axios 1.20.0 及 Central Publishing Plugin 0.11.0。setup-java 6、checkout 7、commons-text 1.15.0 原已到位；UPMS 移除 Awaitility 4.2.0 的局部版本，使用 Boot BOM 的 4.3.0。前端锁文件只保留 Axios 与其依赖变更。包含 BOM 的 14 模块定向 `mvnd clean test` 成功，JobRunr 9 的 scheduler/retrytask 共 8 项测试通过；请求客户端回归及类型检查、actionlint、根 POM release profile 的 validate（含插件加载、Spotless、Enforcer）、git diff 检查通过。接入文档和文档站已同步；未合并/关闭 Dependabot PR，未执行发布。
