@@ -2,6 +2,15 @@
 
 本文只记录尚未完成的工作。每完成一项任务立即更新：移除已完成的实现项，未执行的运行验证单独保留。已实现的能力、接入方式和设计边界以各 Maven 模块的 `README.md`、`ARCHITECTURE.md` 为准。LoadUp 是通过 BOM 按需引入的框架；`loadup-application` 用于本地集成验证。
 
+## 前端依赖安全与部署清理后续验收
+
+2026-10-16 已读取 GitHub 的 24 条 open Dependabot 告警（12 个包，全部来自 frontend/pnpm-lock.yaml），并处理对应依赖：移除 Wrangler/Cloudflare 部署依赖及 miniflare/workerd/sharp/undici 链路；保留文档源码、本地预览和构建命令。删除本地文档中的模板 Cloudflare 发布说明。Vue 全链统一 3.5.42；source-map-js 1.2.2、postcss-selector-parser 7.1.6、probe-image-size 7.4.0、brace-expansion 5.0.12、js-yaml 4.3.2、fast-uri 3.1.8 及 colord 2.9.4 通过受限 overrides 管理；VitePress 内部 Vite 升至 6.4.3，移除旧 Vite/esbuild。MockJS 无修复版本，已替换旧插件为 vite-plugin-mock-dev-server 2.5.0，并适配现有静态演示数据，日志设为 warn 避免输出登录请求体。Dependabot 已增加 frontend npm 工作区维护。
+
+frozen-lockfile 安装、管理端生产构建、本地 VitePress 文档构建、请求与 hooks 回归、IDEA 修改文件检查、Prettier 和 git diff 空白检查通过；真实 Vite 开发服务器的 analysis/login/role 三个 Mock POST 接口检查通过。整体 vue-tsc 仍报既有业务页面 DefaultRow 泛型错误，本次修改的 Mock 文件已无类型错误。官方 npm audit 现在剩 1 项新增发现的 braces 告警；原 24 条 GitHub 告警对应的漏洞未在当前审计中出现。未忽略/关闭告警，未提交推送或触发远程扫描，不能据此声称 GitHub 告警已经关闭。
+
+- [ ] 跟进 braces@3.0.3 的 GHSA-vfj7-8cjw-p6xm：micromatch 经 stylelint/fast-glob 引入，当前无修复版本；后续升级上游或评估替换工具链，不以 audit 忽略项绕过。
+- [ ] 提交并推送后等待 Dependabot 重新扫描，确认原 24 条告警自动关闭；按需检查新增的 braces 告警。管理端历史 DefaultRow 类型错误仍需单独修复。
+
 ## LZ4 升级后续验收
 
 2026-10-16 BOM 新增 at.yawk.lz4:lz4-java 统一版本 1.11.4，覆盖 Kafka 4.2.1 传递依赖的 1.10.1；Redisson 可选 LZ4 依赖仍由消费方按需引入。定向 mvnd dependency:tree 已确认 Testcontainers 的 spring-kafka → kafka-clients → lz4-java 解析为 1.11.4，IDEA BOM 检查与 git diff 空白检查通过，README 和文档站已同步；未编译或执行运行时测试。

@@ -1,9 +1,9 @@
-import type { MockMethod } from 'vite-plugin-mock'
 import analysisMocks from './analysis/index.mock'
 import roleMocks from './role/index.mock'
 import userMocks from './user/index.mock'
 
-const mockList = [...analysisMocks, ...roleMocks, ...userMocks] as MockMethod[]
+const mockList = [...analysisMocks, ...roleMocks, ...userMocks]
+type BrowserMock = (typeof mockList)[number]
 const originalFetch = window.fetch.bind(window)
 
 const wait = (timeout = 0, signal?: AbortSignal | null) => {
@@ -37,23 +37,14 @@ const parseBody = async (request: Request) => {
   }
 }
 
-const handleMockRequest = async (request: Request, mock: MockMethod, url: URL) => {
-  await wait(mock.timeout, request.signal)
+const handleMockRequest = async (request: Request, mock: BrowserMock) => {
+  await wait('delay' in mock ? mock.delay : 0, request.signal)
 
-  const query = Object.fromEntries(url.searchParams)
   const body = await parseBody(request)
-  const data =
-    typeof mock.response === 'function'
-      ? mock.response({
-          url: { path: url.pathname },
-          body,
-          query,
-          headers: Object.fromEntries(request.headers)
-        })
-      : mock.response
+  const data = typeof mock.body === 'function' ? await mock.body({ body }) : mock.body
 
   return new Response(JSON.stringify(data), {
-    status: mock.statusCode ?? 200,
+    status: 200,
     headers: { 'Content-Type': 'application/json' }
   })
 }
@@ -62,11 +53,11 @@ export const setupProdMockServer = () => {
   window.fetch = async (input, init) => {
     const request = new Request(input, init)
     const url = new URL(request.url)
-    const method = request.method.toLowerCase()
+    const method = request.method.toUpperCase()
     const mock = mockList.find(
-      (item) => item.url === url.pathname && (item.method ?? 'get') === method
+      (item) => item.url === url.pathname && (item.method ?? 'GET') === method
     )
 
-    return mock ? handleMockRequest(request, mock, url) : originalFetch(request)
+    return mock ? handleMockRequest(request, mock) : originalFetch(request)
   }
 }

@@ -1,15 +1,15 @@
 import { SUCCESS_CODE } from '@/constants'
-import type { MockMethod } from 'vite-plugin-mock'
+import type { MockHttpItem } from 'vite-plugin-mock-dev-server'
 
-const timeout = 1000
+const delay = 1000
 
 export default [
   // 分析页统计接口
   {
     url: '/mock/analysis/total',
-    method: 'post',
-    timeout,
-    response: () => {
+    method: 'POST',
+    delay,
+    body: () => {
       return {
         code: SUCCESS_CODE,
         data: {
@@ -24,9 +24,9 @@ export default [
   // 用户来源
   {
     url: '/mock/analysis/userAccessSource',
-    method: 'post',
-    timeout,
-    response: () => {
+    method: 'POST',
+    delay,
+    body: () => {
       return {
         code: SUCCESS_CODE,
         data: [
@@ -42,9 +42,9 @@ export default [
   // 每周用户活跃量
   {
     url: '/mock/analysis/weeklyUserActivity',
-    method: 'post',
-    timeout,
-    response: () => {
+    method: 'POST',
+    delay,
+    body: () => {
       return {
         code: SUCCESS_CODE,
         data: [
@@ -62,9 +62,9 @@ export default [
   // 每月销售额
   {
     url: '/mock/analysis/monthlySales',
-    method: 'post',
-    timeout,
-    response: () => {
+    method: 'POST',
+    delay,
+    body: () => {
       return {
         code: SUCCESS_CODE,
         data: [
@@ -84,4 +84,4 @@ export default [
       }
     }
   }
-] as MockMethod[]
+] satisfies MockHttpItem[]

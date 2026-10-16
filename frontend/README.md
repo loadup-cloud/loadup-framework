@@ -25,7 +25,7 @@ VITE_BACKEND_URL=http://127.0.0.1:8081
 - `POST /api/auth/login`：使用用户名和密码获取访问令牌，后续请求携带 `Bearer` 令牌。
 - `POST /api/upms/permission/user-menu`：将 UPMS 菜单树转换成 ElementAdmin 动态路由。
 - 首页和工作台为静态入口；系统管理页面来自 UPMS 菜单。没有对应组件的菜单显示占位页。
-- Mock 功能仍保留于模板源码，但所有环境默认关闭。仅供独立查看上游演示，不代表真实接口。
+- Mock 演示数据仍保留，但所有环境默认关闭。开发环境通过 `vite-plugin-mock-dev-server` 提供 `/mock` 接口，已移除存在未修复漏洞的 MockJS 及旧插件；Mock 日志级别设为 warn，避免记录登录请求体。演示接口不代表真实业务接口。
 
 UPMS 的用户、角色、部门、权限页面已提供查询、创建、编辑和删除操作。用户编辑支持角色分配，角色编辑支持权限与数据范围配置。新增审计中心、数据字典、文件资源、站内通知、导入导出任务与账号安全页面。审计和字典菜单由 UPMS `schema.sql` 授予超级管理员；已有数据库需要补入这两个菜单和角色关联后才能在导航中看到。
 
@@ -38,3 +38,24 @@ Controller 的 JSON 接口统一使用 POST + JSON body；ID 请求使用 `{ "id
 ## 商户信息管理
 
 `/merchants/list` 提供资料新增/编辑/启停/分页，使用 `/api/merchants/**`。登记号、详细地址和联系方式由 WebMVC 脱敏；编辑不回写掩码，敏感字段留空默认保留，可显式选择清空。签约页从启用商户列表选择服务端 id，基本行业资料供合约事实判断。源码已提供，未做类型检查、构建或端到端验证。
+
+## 本地文档
+
+文档源码位于 `apps/docs`，使用 `pnpm dev:docs` 本地预览、`pnpm build:docs` 构建静态文件。本仓库不再提供 Cloudflare 部署依赖或发布流程，托管方式由消费项目自行决定。
+
+## 依赖安全维护
+
+前端依赖以 `pnpm-lock.yaml` 为准。`pnpm.overrides` 对上游尚未更新的传递依赖设置限定范围的修复版本；Vue 统一使用 catalog 的 3.5.42，VitePress 内部 Vite 固定为 6.4.3。移除 Wrangler 后，不再引入 Cloudflare 的 miniflare、workerd、sharp 或 undici 工具链。
+
+从 `frontend` 目录执行：
+
+```sh
+pnpm install --frozen-lockfile
+pnpm audit --registry=https://registry.npmjs.org
+pnpm --filter @vea/request test
+pnpm --filter @vea/hooks test
+pnpm build:admin
+pnpm build:docs
+```
+
+显式指定官方 registry，因为当前配置的 npm 镜像不提供 audit API。2026-10-16 的 npm 审计仍有一项 `braces@3.0.3` 高危告警（[GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm)），来源为 stylelint / fast-glob 的 micromatch，尚无上游修复版本；未设置忽略规则或将其视为已修复。处理进展见根 ROADMAP。管理端整体类型检查仍受既有表格 DefaultRow 泛型错误阻塞，不能以打包成功代替类型检查通过。

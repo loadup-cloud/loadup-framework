@@ -1,7 +1,7 @@
 import { SUCCESS_CODE } from '@/constants'
-import type { MockMethod, Recordable } from 'vite-plugin-mock'
+import type { MockHttpItem } from 'vite-plugin-mock-dev-server'
 
-const timeout = 1000
+const delay = 1000
 
 const List: {
   username: string
@@ -26,9 +26,9 @@ export default [
   // 登录接口
   {
     url: '/mock/user/login',
-    method: 'post',
-    timeout,
-    response: ({ body }: { body: Recordable }) => {
+    method: 'POST',
+    delay,
+    body: ({ body }: { body: Record<string, unknown> }) => {
       const data = body
       let hasUser = false
       for (const user of List) {
@@ -54,13 +54,13 @@ export default [
   // 退出接口
   {
     url: '/mock/user/loginOut',
-    method: 'post',
-    timeout,
-    response: () => {
+    method: 'POST',
+    delay,
+    body: () => {
       return {
         code: SUCCESS_CODE,
         data: null
       }
     }
   }
-] satisfies MockMethod[]
+] satisfies MockHttpItem[]

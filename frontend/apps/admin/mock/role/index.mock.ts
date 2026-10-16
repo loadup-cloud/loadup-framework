@@ -1,3 +1,4 @@
+import type { MockHttpItem } from 'vite-plugin-mock-dev-server'
 import { SUCCESS_CODE } from '@/constants'
 
 const routes: AppCustomRouteRecordRaw[] = [
@@ -93,10 +94,10 @@ const routes: AppCustomRouteRecordRaw[] = [
 export default [
   {
     url: '/mock/role/list',
-    method: 'post',
-    response: () => ({
+    method: 'POST',
+    body: () => ({
       code: SUCCESS_CODE,
       data: routes
     })
   }
-]
+] satisfies MockHttpItem[]

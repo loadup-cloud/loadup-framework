@@ -3,7 +3,7 @@ import { loadEnv } from 'vite'
 import type { UserConfig, ConfigEnv } from 'vite'
 import Vue from '@vitejs/plugin-vue'
 import VueJsx from '@vitejs/plugin-vue-jsx'
-import { viteMockServe } from 'vite-plugin-mock'
+import { mockDevServerPlugin } from 'vite-plugin-mock-dev-server'
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
 import UnoCSS from 'unocss/vite'
 import ElementPlus from 'unplugin-element-plus/vite'
@@ -27,12 +27,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
         compositionOnly: true,
         include: [resolve(import.meta.dirname, 'src/locales/**')]
       }),
-      env.VITE_USE_MOCK === 'true'
-        ? viteMockServe({
-            ignore: /^_/,
-            mockPath: 'mock'
-          })
-        : undefined,
+      env.VITE_USE_MOCK === 'true' ? mockDevServerPlugin({ prefix: '/mock', log: 'warn' }) : undefined,
       UnoCSS()
     ],
 
