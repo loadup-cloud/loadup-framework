@@ -122,6 +122,10 @@
 
     <dependencyManagement>
         <dependencies>
+<dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-components-async-result-api</artifactId><version>${loadup.framework.version}</version></dependency>
+<dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-components-async-result-binder-local</artifactId><version>${loadup.framework.version}</version></dependency>
+<dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-components-async-result-binder-redis</artifactId><version>${loadup.framework.version}</version></dependency>
+<dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-components-async-result-test</artifactId><version>${loadup.framework.version}</version></dependency>
             <dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-commons-json</artifactId><version>${loadup.framework.version}</version></dependency>
             <dependency>
                 <groupId>org.redisson</groupId>

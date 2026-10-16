@@ -150,6 +150,12 @@
             <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- Include the public contract in launcher architecture and error-code validation. -->
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-components-async-result-api</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

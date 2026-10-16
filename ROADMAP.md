@@ -10,6 +10,11 @@
 - [ ] 按实际热点作用域及多实例/虚拟线程负载压测吞吐、P95/P99、数据库补号次数及预取浪费，调整号段、队列、缓存和连接池容量。
 - [ ] 在消费环境演练数据库故障转移/备份恢复，保证已提交分配最大值不回退；八位每日容量及恢复策略单独验收。
 
+## P1 · AsyncResult 异步结果等待
+
+2026-10-16 已实现 API、Local/Redis binder、同步/异步等待、超时/容量/事务保护、上下文传播和重复/冲突分类。独立限制等待数量与仍执行的发送回调，避免等待超时后阻塞回调无限累积。BOM 与 components 聚合已接入，应用仅 test scope 引入 API 供架构和错误码检查。定向 `mvnd clean ... verify pmd:check checkstyle:check` 成功：21 项单测、4 项真实 Redis/Kafka/MySQL IT 全部通过，无失败/错误/跳过；SpotBugs、PMD、Checkstyle、License、Spotless 与 Enforcer 通过。测试模块 JaCoCo report-aggregate 不排除手写类型，API 行/分支 96.85%/93.55%，Local 98.04%/96.15%，Redis 90.70%/91.67%，三个运行时 jar 均达到双 90%。另一次定向 `mvnd clean ... test` 的 23 项架构/源码/错误码门禁通过；该次跳过 SpotBugs，以上静态分析结论来自前一次 verify。IDEA Java 批量检查无错误。接入文档、设计文档及文档站已同步；此次没有重新运行其他组件的全量测试。
+- [ ] 按消费应用流量压测等待容量、Redis 查询与通知开销；在 K8s 演练实例退出、连接中断及 Redis 故障转移，并验收业务订单查询兜底。
+
 ## 当前建设目标与实施顺序
 
 2026-10-16 Maven 质量治理已完成：统一 Checkstyle 的 Java 25 引擎与项目结构规则、PMD 生成源码范围，取消 SpotBugs 对 commons 的整包排除；修复数字转换递归、场景缓存键、JWT 空值、随机数边界、null 占位符与正则校验等问题，清理冗余代码。全仓 143 模块执行 `mvnd clean ... package ...:check`，141 模块成功，两处测试失败分别为 Testify 装配用例缺少 DataSource、源码门禁误判嵌套容器夹具；修复后对 76 模块及依赖定向补验成功，37 项测试无失败/错误/跳过。首轮 228 项定向回归中的其余 226 项通过，最终两处失败均已复验修复。SpotBugs、PMD、Checkstyle、License、Spotless 和 Enforcer 门禁通过；最终保存 103 份 SpotBugs、119 份 PMD、143 份 Checkstyle 报告，报告项均为零。IDEA Java 批量检查及文档同步检查通过；Outbox SQL 检查提示缺少 IDE 数据库元数据，未将其记为数据库验证通过。真实数据库/外部系统、全量 IT 和覆盖率没有重新验收。
