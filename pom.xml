@@ -70,6 +70,7 @@
         <maven-surefire-plugin.version>3.6.0</maven-surefire-plugin.version>
         <maven-war-plugin.version>3.5.1</maven-war-plugin.version>
         <maven-pmd-plugin.version>3.28.0</maven-pmd-plugin.version>
+        <dependency-check-plugin.version>13.0.0</dependency-check-plugin.version>
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
 
         <jacoco-plugin.version>0.8.15</jacoco-plugin.version>
@@ -100,6 +101,7 @@
         <skip.integration.tests>false</skip.integration.tests>
         <skip.spotbugs>false</skip.spotbugs>
         <skip.enforcer>false</skip.enforcer>
+        <testcontainers.reuse.enable>true</testcontainers.reuse.enable>
 
         <!-- Appended by JaCoCo, which appends its agent to this property; silences the JDK
              "Java agent has been loaded dynamically" warning raised by Mockito/Byte Buddy. -->
@@ -283,7 +285,7 @@
                         </excludes>
                         <skipTests>${skip.unit.tests}</skipTests>
                         <systemPropertyVariables>
-                            <testcontainers.reuse.enable>true</testcontainers.reuse.enable>
+                            <testcontainers.reuse.enable>${testcontainers.reuse.enable}</testcontainers.reuse.enable>
                         </systemPropertyVariables>
                         <forkCount>1</forkCount>
                         <reuseForks>false</reuseForks>
@@ -300,7 +302,7 @@
                         </includes>
                         <skipITs>${skip.integration.tests}</skipITs>
                         <systemPropertyVariables>
-                            <testcontainers.reuse.enable>true</testcontainers.reuse.enable>
+                            <testcontainers.reuse.enable>${testcontainers.reuse.enable}</testcontainers.reuse.enable>
                         </systemPropertyVariables>
                     </configuration>
                     <executions>
@@ -490,6 +492,11 @@
                             </configuration>
                         </execution>
                     </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.owasp</groupId>
+                    <artifactId>dependency-check-maven</artifactId>
+                    <version>${dependency-check-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

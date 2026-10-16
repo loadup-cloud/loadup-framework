@@ -2,350 +2,147 @@ name: Build and Test
 
 on:
   push:
-    branches:
-      - main
-      - develop
-      - dev
+    branches: [main, develop, dev]
   pull_request:
-    branches:
-      - main
-      - develop
-      - dev
+    branches: [main, develop, dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  MAVEN_OPTS: -Xmx2048m -Djava.awt.headless=true
+  TZ: Asia/Shanghai
 
 jobs:
-  # Job 1: 代码检查（最快，优先失败）
-  code-quality:
-    name: Code Quality Check
-    runs-on: ubuntu-latest
+  dependency-review:
+    name: Dependency Review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 25
-        uses: actions/setup-java@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          java-version: '25'
-          distribution: 'temurin'
-          cache: 'maven'
+          persist-credentials: false
+      - uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          fail-on-severity: high
+          comment-summary-in-pr: never
 
-      - name: Check Code Formatting (Spotless)
-        run: mvn com.diffplug.spotless:spotless-maven-plugin:check -B -P github
-        env:
-          GITHUB_ACTOR: ${{ secrets.OSSRH_USERNAME }}
-          GITHUB_TOKEN: ${{ secrets.OSSRH_TOKEN }}
-
-  # Job 2: 静态代码分析（SpotBugs + PMD + Checkstyle）
-  static-analysis:
-    name: Static Code Analysis
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    needs: code-quality
-
+  verify:
+    name: Tests, Quality and Coverage
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
     env:
-      MAVEN_OPTS: >-
-        -Xmx2048m
-        -Dorg.slf4j.simpleLogger.defaultLogLevel=warn
-        -Djava.awt.headless=true
-
+      TESTCONTAINERS_RYUK_DISABLED: 'false'
+      TESTCONTAINERS_CHECKS_DISABLE: 'false'
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 25
-        uses: actions/setup-java@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          java-version: '25'
-          distribution: 'temurin'
-          cache: 'maven'
-
-      - name: Compile
-        run: mvn compile -B -P github -DskipTests
-        env:
-          GITHUB_ACTOR: ${{ secrets.OSSRH_USERNAME }}
-          GITHUB_TOKEN: ${{ secrets.OSSRH_TOKEN }}
-
-      - name: Run SpotBugs
-        run: |
-          mvn spotbugs:check -B -P github \
-            -DskipTests \
-            -Dskip.spotbugs=false
-        env:
-          GITHUB_ACTOR: ${{ secrets.OSSRH_USERNAME }}
-          GITHUB_TOKEN: ${{ secrets.OSSRH_TOKEN }}
-
-      - name: Run PMD
-        run: |
-          mvn pmd:check -B -P github \
-            -DskipTests \
-            -Dskip.pmd=false
-        env:
-          GITHUB_ACTOR: ${{ secrets.OSSRH_USERNAME }}
-          GITHUB_TOKEN: ${{ secrets.OSSRH_TOKEN }}
-
-      - name: Run Checkstyle
-        run: |
-          mvn checkstyle:check -B -P github \
-            -DskipTests \
-            -Dskip.checkstyle=false
-        env:
-          GITHUB_ACTOR: ${{ secrets.OSSRH_USERNAME }}
-          GITHUB_TOKEN: ${{ secrets.OSSRH_TOKEN }}
-
-      - name: Upload SpotBugs Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: spotbugs-report
-          path: '**/target/spotbugsXml.xml'
-          retention-days: 7
-
-      - name: Upload PMD Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: pmd-report
-          path: '**/target/pmd.xml'
-          retention-days: 7
-
-  # Job 3: 编译和单元测试（快速反馈）
-  unit-tests:
-    name: Unit Tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    needs: code-quality
-
-    env:
-      MAVEN_OPTS: >-
-        -Xmx2048m
-        -XX:+UseG1GC
-        -XX:MaxGCPauseMillis=100
-        -Dorg.slf4j.simpleLogger.defaultLogLevel=warn
-        -Djava.awt.headless=true
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 25
-        uses: actions/setup-java@v4
-        with:
-          java-version: '25'
-          distribution: 'temurin'
-          cache: 'maven'
-
-      - name: Compile and Run Unit Tests
-        run: |
-          mvn clean test -B -P github \
-            -DskipITs=true \
-            -Dspring.profiles.active=ci \
-            -Dlogging.level.root=warn
-        env:
-          GITHUB_ACTOR: ${{ secrets.OSSRH_USERNAME }}
-          GITHUB_TOKEN: ${{ secrets.OSSRH_TOKEN }}
-
-      - name: Upload Test Reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: unit-test-reports
-          path: '**/target/surefire-reports/'
-          retention-days: 7
-
-  # Job 4: 集成测试（需要Testcontainers，最慢）
-  integration-tests:
-    name: Integration Tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    needs: code-quality
-
-    env:
-      MAVEN_OPTS: >-
-        -Xmx2048m
-        -XX:+UseG1GC
-        -XX:MaxGCPauseMillis=100
-        -Dorg.slf4j.simpleLogger.defaultLogLevel=warn
-        -Djava.awt.headless=true
-      TESTCONTAINERS_RYUK_DISABLED: false
-      TESTCONTAINERS_CHECKS_DISABLE: false
-      DOCKER_BUILDKIT: 1
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 25
-        uses: actions/setup-java@v4
-        with:
-          java-version: '25'
-          distribution: 'temurin'
-          cache: 'maven'
-
-      - name: Clean Docker Environment
-        run: |
-          docker system prune -af --volumes || true
-          docker network prune -f || true
-
-      - name: Setup Docker
-        run: |
-          docker --version
-          docker info
-          docker pull mysql:8.0 || true
-          docker pull redis:7-alpine || true
-
+          persist-credentials: false
+      - uses: ./.github/actions/setup-build
+      - name: Test repository tooling
+        run: python3 -m unittest discover -s tools -p 'test_*.py'
       - name: Configure Testcontainers
         run: |
-          mkdir -p ~/.testcontainers
-          cat > ~/.testcontainers.properties << EOF
-          testcontainers.reuse.enable=true
-          testcontainers.ryuk.container.timeout=120
-          docker.client.strategy=org.testcontainers.dockerclient.UnixSocketClientProviderStrategy
-          checks.disable=false
-          EOF
-
-      - name: Run Integration Tests
+          cp .github/testcontainers.properties "$HOME/.testcontainers.properties"
+          docker info
+      - name: Build once, run unit and integration tests, enforce quality gates
         run: |
-          mvn verify -B -P github \
-              -Dskip.unit.tests=true \
-              -Dspring.profiles.active=ci \
-              -Dlogging.level.root=warn \
-              -Dtestcontainers.reuse.enable=false \
-              -Dfailsafe.rerunFailingTestsCount=2
-        env:
-          GITHUB_ACTOR: ${{ secrets.OSSRH_USERNAME }}
-          GITHUB_TOKEN: ${{ secrets.OSSRH_TOKEN }}
-
-      - name: Docker Logs on Failure
-        if: failure()
+          mvnd -B -ntp -T 1 clean install pmd:check checkstyle:check \
+            -DskipTests=false -Dskip.unit.tests=false -Dskip.integration.tests=false \
+            -Dskip.spotbugs=false -Dskip.spotless=false -Dlicense.skip=false \
+            -Dskip.enforcer=false -Dskip.pmd=false -Dskip.checkstyle=false \
+            -Dtestcontainers.reuse.enable=false -Dspring.profiles.active=ci
+      - name: Enforce 90 percent line and branch coverage per component jar
         run: |
-          echo "=== Docker Containers ==="
-          docker ps -a
-          echo "=== Docker Logs ==="
-          docker ps -a --format '{{.Names}}' | xargs -I {} sh -c 'echo "=== Logs for {} ===" && docker logs {} 2>&1 | tail -100' || true
-
-      - name: Upload Integration Test Reports
+          jacoco_version=$(python3 -c 'import xml.etree.ElementTree as E; print(E.parse("pom.xml").findtext("{*}properties/{*}jacoco-plugin.version"))')
+          mvnd -B -ntp -N org.apache.maven.plugins:maven-dependency-plugin:3.11.0:copy \
+            "-Dartifact=org.jacoco:org.jacoco.cli:${jacoco_version}:jar:nodeps" \
+            "-DoutputDirectory=$RUNNER_TEMP/jacoco"
+          python3 tools/component-coverage.py \
+            --jacoco-cli "$RUNNER_TEMP/jacoco/org.jacoco.cli-${jacoco_version}-nodeps.jar" \
+            --minimum 0.90
+      - name: Add coverage summary
         if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: integration-test-reports
-          path: '**/target/failsafe-reports/'
-          retention-days: 7
-
-  # Job 5: 代码覆盖率（依赖测试完成）
-  coverage:
-    name: Code Coverage
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    needs: [ unit-tests, integration-tests ]
-    # Only generate coverage when tests pass; empty reports on failure are noise
-
-    env:
-      MAVEN_OPTS: -Xmx2048m -Djava.awt.headless=true
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 25
-        uses: actions/setup-java@v4
-        with:
-          java-version: '25'
-          distribution: 'temurin'
-          cache: 'maven'
-
-      - name: Generate Coverage Report
-        # Run verify to collect both Surefire (*Test) and Failsafe (*IT) coverage,
-        # then merge via jacoco:merge bound to verify phase.
-        run: mvn verify -B -P github -Dspring.profiles.active=ci
-        env:
-          GITHUB_ACTOR: ${{ secrets.OSSRH_USERNAME }}
-          GITHUB_TOKEN: ${{ secrets.OSSRH_TOKEN }}
-          TESTCONTAINERS_RYUK_DISABLED: false
-        env:
-          GITHUB_ACTOR: ${{ secrets.OSSRH_USERNAME }}
-          GITHUB_TOKEN: ${{ secrets.OSSRH_TOKEN }}
-
-      - name: Upload Coverage Reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-reports
-          path: '**/target/site/jacoco/'
-          retention-days: 7
-
-  # Job 6: 安全漏洞扫描（仅 main/develop 分支，避免频繁下载 NVD 数据库）
-  security-scan:
-    name: Security Vulnerability Scan (OWASP)
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    needs: unit-tests
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
-
-    env:
-      MAVEN_OPTS: -Xmx2048m -Djava.awt.headless=true
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 25
-        uses: actions/setup-java@v4
-        with:
-          java-version: '25'
-          distribution: 'temurin'
-          cache: 'maven'
-
-      - name: Run OWASP Dependency-Check
         run: |
-          mvn dependency-check:check -B -P github \
-            -DskipTests \
-            -Dskip.dependency.check=false \
-            -DfailBuildOnCVSS=7 \
-            -Dformat=HTML,JSON
+          if [[ -f loadup-components/target/coverage/summary.md ]]; then
+            cat loadup-components/target/coverage/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Cache vulnerability database
+        if: github.event_name != 'pull_request'
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: ~/.cache/dependency-check
+          key: dependency-check-13-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: dependency-check-13-${{ runner.os }}-
+      - name: Scan dependencies with OWASP
+        if: github.event_name != 'pull_request'
+        timeout-minutes: 30
         env:
-          GITHUB_ACTOR: ${{ secrets.OSSRH_USERNAME }}
-          GITHUB_TOKEN: ${{ secrets.OSSRH_TOKEN }}
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-
-      - name: Upload Security Report
+        run: |
+          dependency_check_version=$(python3 -c 'import xml.etree.ElementTree as E; print(E.parse("pom.xml").findtext("{*}properties/{*}dependency-check-plugin.version"))')
+          mvnd -B -ntp "org.owasp:dependency-check-maven:${dependency_check_version}:aggregate" \
+            -DnvdApiKeyEnvironmentVariable=NVD_API_KEY \
+            "-DdataDirectory=$HOME/.cache/dependency-check" \
+            -DfailBuildOnCVSS=7 -DfailOnError=true -Dformat=ALL \
+            -DossIndexAnalyzerEnabled=false
+      - name: Show container state on failure
+        if: failure()
+        run: docker ps -a
+      - name: Upload test, quality, coverage and security reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
-          name: owasp-dependency-check-report
-          path: '**/target/dependency-check/**'
-          retention-days: 30
+          name: verification-reports
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            **/target/surefire-reports/**
+            **/target/failsafe-reports/**
+            **/target/spotbugsXml.xml
+            **/target/pmd.xml
+            **/target/checkstyle-result.xml
+            **/target/site/jacoco/**
+            **/target/site/jacoco-aggregate/**
+            loadup-components/target/coverage/**
+            **/target/dependency-check-report.*
 
-  # Job 7: 部署（仅在所有检查通过后）
-  deploy:
-    name: Deploy to GitHub Packages
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    needs: [ static-analysis, unit-tests, integration-tests ]
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
-
+  publish:
+    name: Publish GitHub Packages
+    needs: verify
+    if: >-
+      github.event_name == 'push' && vars.PUBLISH_PACKAGES == 'true' &&
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
     permissions:
       contents: read
       packages: write
-
-    env:
-      MAVEN_OPTS: -Xmx2048m -Djava.awt.headless=true
-
+    concurrency:
+      group: github-packages
+      cancel-in-progress: false
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 25
-        uses: actions/setup-java@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          java-version: '25'
-          distribution: 'temurin'
-          cache: 'maven'
-          server-id: 'github'
-          server-username: GITHUB_ACTOR
-          server-password: GITHUB_TOKEN
-
-      - name: Deploy to GitHub Packages
-        run: mvn deploy -B -P github -DskipTests
+          persist-credentials: false
+      - uses: ./.github/actions/setup-build
+      - name: Publish to the existing cross-repository package registry
         env:
-          GITHUB_ACTOR: ${{ secrets.OSSRH_USERNAME }}
-          GITHUB_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+          PACKAGES_USERNAME: ${{ vars.PACKAGES_USERNAME }}
+          PACKAGES_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
+        run: |
+          : "${PACKAGES_USERNAME:?Set the PACKAGES_USERNAME repository variable}"
+          : "${PACKAGES_TOKEN:?Set PACKAGES_TOKEN with access to loadup-cloud/loadup-packages}"
+          mvnd -B -ntp -T 1 clean deploy -P github \
+            -DaltDeploymentRepository=github::https://maven.pkg.github.com/loadup-cloud/loadup-packages \
+            -DdeployAtEnd=true -DskipTests -Dskip.spotbugs=true

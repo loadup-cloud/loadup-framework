@@ -98,3 +98,14 @@ mvnd clean package \
 ```
 
 上述命令执行静态门禁，不运行单测或真实环境集成测试。需要修复格式时先执行 `spotless:apply`。报告位于各模块 `target/spotbugsXml.xml`、`target/pmd.xml` 和 `target/checkstyle-result.xml`；执行报告目标不等于对应 `check` 门禁通过。SpotBugs 排除项集中在 `config/quality/spotbugs-exclude.xml`，已知误报应限定到具体规则和责任边界，并说明理由；commons 手写代码参与扫描。
+
+## GitHub CI
+
+[Build and Test](.github/workflows/ci.yml) 在 `main`、`develop`、`dev` 的 push / PR 及手动触发时运行。Linux runner 使用 Temurin 25、经 SHA-256 校验的 mvnd 1.0.6 和 Maven 依赖缓存；PR 更新取消同分支的旧运行。
+
+- **Tests, Quality and Coverage**：先运行 Python 工具回归，再执行一次 `mvnd clean install pmd:check checkstyle:check`。Surefire 单测、Failsafe 真实 Docker IT、Spotless、License、Enforcer、SpotBugs、PMD 和 Checkstyle 均为阻断门禁。CI 禁用容器复用，保留 Ryuk 清理；本地默认配置不变。
+- **覆盖率**：复用同次构建的 classes 和执行数据，通过 `tools/component-coverage.py` 检查每个运行时组件 jar 的行、分支覆盖率均 ≥90%；缺少编译产物或执行数据不匹配也会失败。结果写入 Actions Summary，测试及质量报告无论成功失败都归档 14 天。
+- **依赖安全**：PR 的 Dependency Review 阻止新增 high / critical 漏洞；push 和手动运行执行 OWASP 聚合扫描，CVSS ≥7 或扫描错误阻断后续发布。配置仓库 secret `NVD_API_KEY` 可减少 NVD 限流。OWASP 数据单独缓存；未接入需要额外凭证的 Sonatype OSS Index。PR 检查需要启用 GitHub Dependency Graph，私有仓库还需具备 Dependency Review 权限。参见 [GitHub 配置说明](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/manage-your-dependency-security/configure-dependency-review-action) 和 [OWASP 参数说明](https://dependency-check.github.io/DependencyCheck/dependency-check-maven/configuration.html)。
+- **发布**：默认关闭。设置仓库变量 `PUBLISH_PACKAGES=true`、`PACKAGES_USERNAME` 以及具有目标仓库访问和 `write:packages` 权限的 secret `PACKAGES_TOKEN` 后，仅 `main` / `develop` push 且上述验证全部通过才发布至既有 `loadup-cloud/loadup-packages`。跨仓库发布凭证仅在发布步骤注入，PR 不接收此凭证；不再复用 OSSRH 凭证。发布重新 clean 编译并跳过已执行的测试，不复用其他 job 的 target。
+
+仓库维护者应将 **Tests, Quality and Coverage** 与 **Dependency Review** 设为 PR 合并必需检查。`docs/` 为独立且未纳入本仓库跟踪的站点，当前工作流不构建文档站或前端。

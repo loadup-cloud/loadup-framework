@@ -1,0 +1,32 @@
+name: Set up LoadUp build
+description: Install Temurin 25 and checksum-verified Maven Daemon on Linux x64.
+runs:
+  using: composite
+  steps:
+    - name: Set up Java and Maven dependency cache
+      uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6
+      with:
+        distribution: temurin
+        java-version: '25'
+        cache: maven
+        cache-dependency-path: '**/pom.xml'
+        server-id: github
+        server-username: PACKAGES_USERNAME
+        server-password: PACKAGES_TOKEN
+    - name: Install Maven Daemon
+      shell: bash
+      env:
+        MVND_VERSION: 1.0.6
+        MVND_SHA256: 88fd474fd3f21b33ec1e6a75950f6abbe493d63a5e2b429475f5230b3ee6cb24
+      run: |
+        set -euo pipefail
+        archive="maven-mvnd-${MVND_VERSION}-linux-amd64.tar.gz"
+        curl --fail --location --retry 3 \
+          "https://github.com/apache/maven-mvnd/releases/download/${MVND_VERSION}/${archive}" \
+          --output "$RUNNER_TEMP/$archive"
+        echo "$MVND_SHA256  $RUNNER_TEMP/$archive" | sha256sum --check --strict
+        tar -xzf "$RUNNER_TEMP/$archive" -C "$RUNNER_TEMP"
+        echo "$RUNNER_TEMP/maven-mvnd-${MVND_VERSION}-linux-amd64/bin" >> "$GITHUB_PATH"
+    - name: Show toolchain
+      shell: bash
+      run: mvnd --version

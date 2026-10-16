@@ -2,6 +2,13 @@
 
 本文只记录尚未完成的工作。每完成一项任务立即更新：移除已完成的实现项，未执行的运行验证单独保留。已实现的能力、接入方式和设计边界以各 Maven 模块的 `README.md`、`ARCHITECTURE.md` 为准。LoadUp 是通过 BOM 按需引入的框架；`loadup-application` 用于本地集成验证。
 
+## GitHub CI 后续验收
+
+2026-10-16 已重整 GitHub Actions：统一 JDK 25/mvnd、修复重复 env、单次 clean install 完成单测/真实 IT/质量门禁，同次产物执行逐组件 jar 行/分支双 90% 覆盖率门禁；增加 PR Dependency Review、修复 OWASP 聚合扫描与缓存、失败报告归档、最小凭证范围及显式发布开关。Testcontainers 复用开关改为可被 CI 覆盖，保留本地默认；删除失效配置与全局 Docker prune。actionlint 1.7.12 工作流检查、14 项 Python 工具回归、根 POM 的 `mvnd -N spotless:check` 和 git diff 空白检查通过，实际下载的 mvnd Linux 安装包 SHA-256 与固定值一致。IDEA 检查仍报告原有 surefire-report-plugin 3.6.0 无法解析，本次未修改其版本；没有运行完整 reactor 或触发远程工作流。
+
+- [ ] 推送后验收一次 PR 和主分支 CI，确认 GitHub Dependency Graph/Dependency Review 可用、真实容器测试、逐 jar 覆盖率与 OWASP 报告全部通过；按需配置 NVD_API_KEY，并将新的两个 PR 检查加入分支保护。
+- [ ] 需要发布时配置 PUBLISH_PACKAGES、PACKAGES_USERNAME、PACKAGES_TOKEN，验收对 loadup-cloud/loadup-packages 的跨仓库权限与 deployAtEnd；当前未执行发布。配置步骤见根 README 的 GitHub CI 章节。
+
 ## P1 · Database 业务 ID 与 Sequence
 
 2026-10-12 已实现最大 64 位业务 ID、格式化/解析、作用域数据库号段、原子批量发号及异步双缓冲。使用 MyBatis-Flex 生成 Mapper/Tables，数据库独立事务提交后发号；首次初始化/死锁有界退避重试、八位上限、预取队列及作用域容量保护已提供，Micrometer 使用共享注册表。默认主键策略已改为 BusinessIdGenerator，通过 IdGenerator 同时接入 Flex 和插入监听器；仅序列表元数据显式使用 UUID 防递归。移除 DatabaseIdGenerator 后，mvnd clean test 定向验证 41 项通过，包含 5 项真实 MySQL IT；覆盖默认策略、配置绑定、自定义策略回退、延迟解析、普通 DO 自动业务 ID、显式 ID 保留及序列表防递归。License 与 Spotless 校验通过，文档站同步完成；未执行全 reactor 或生产容量压测。
