@@ -110,14 +110,11 @@ public class S3DfsProvider implements DfsProvider {
                     request.metadata(),
                     uploadedAt);
         } catch (RuntimeException e) {
-            throw storageFailure("upload", fileId, e);
+            throw storageFailure(e);
         }
     }
 
     @Override
-    @SuppressFBWarnings(
-            value = "OBL_UNSATISFIED_OBLIGATION",
-            justification = "The response transfers the AWS response stream to the DfsService caller.")
     public FileDownloadResponse download(String fileId) {
         try {
             ResponseInputStream<GetObjectResponse> content = s3Client.getObject(
@@ -131,7 +128,7 @@ public class S3DfsProvider implements DfsProvider {
                     response.lastModified());
             return new FileDownloadResponse(metadata, content, response.contentLength());
         } catch (RuntimeException e) {
-            throw translate("download", fileId, e);
+            throw translate(fileId, e);
         }
     }
 
@@ -145,7 +142,7 @@ public class S3DfsProvider implements DfsProvider {
                     DeleteObjectRequest.builder().bucket(bucket).key(fileId).build());
             return true;
         } catch (RuntimeException e) {
-            throw storageFailure("delete", fileId, e);
+            throw storageFailure(e);
         }
     }
 
@@ -159,7 +156,7 @@ public class S3DfsProvider implements DfsProvider {
             if (e.statusCode() == 404) {
                 return false;
             }
-            throw storageFailure("exists", fileId, e);
+            throw storageFailure(e);
         }
     }
 
@@ -175,7 +172,7 @@ public class S3DfsProvider implements DfsProvider {
                     response.metadata(),
                     response.lastModified());
         } catch (RuntimeException e) {
-            throw translate("metadata", fileId, e);
+            throw translate(fileId, e);
         }
     }
 
@@ -215,7 +212,7 @@ public class S3DfsProvider implements DfsProvider {
             CreateMultipartUploadResponse response = s3Client.createMultipartUpload(createRequest);
             return new MultipartUpload(fileId, response.uploadId());
         } catch (RuntimeException e) {
-            throw storageFailure("initiate multipart upload", fileId, e);
+            throw storageFailure(e);
         }
     }
 
@@ -237,7 +234,7 @@ public class S3DfsProvider implements DfsProvider {
                     s3Client.uploadPart(uploadRequest, RequestBody.fromInputStream(content, contentLength));
             return new MultipartPart(partNumber, response.eTag());
         } catch (RuntimeException e) {
-            throw storageFailure("upload multipart part", fileId, e);
+            throw storageFailure(e);
         }
     }
 
@@ -264,7 +261,7 @@ public class S3DfsProvider implements DfsProvider {
             s3Client.completeMultipartUpload(completeRequest);
             return getMetadata(fileId);
         } catch (RuntimeException e) {
-            throw storageFailure("complete multipart upload", fileId, e);
+            throw storageFailure(e);
         }
     }
 
@@ -277,7 +274,7 @@ public class S3DfsProvider implements DfsProvider {
                     .uploadId(uploadId)
                     .build());
         } catch (RuntimeException e) {
-            throw storageFailure("abort multipart upload", fileId, e);
+            throw storageFailure(e);
         }
     }
 
@@ -291,7 +288,7 @@ public class S3DfsProvider implements DfsProvider {
             s3Client.headBucket(HeadBucketRequest.builder().bucket(bucket).build());
         } catch (S3Exception e) {
             if (e.statusCode() != 404) {
-                throw storageFailure("check bucket", bucket, e);
+                throw storageFailure(e);
             }
             s3Client.createBucket(CreateBucketRequest.builder().bucket(bucket).build());
         }
@@ -354,14 +351,14 @@ public class S3DfsProvider implements DfsProvider {
         return value;
     }
 
-    private static RuntimeException translate(String operation, String fileId, RuntimeException error) {
+    private static RuntimeException translate(String fileId, RuntimeException error) {
         if (error instanceof S3Exception s3Exception && s3Exception.statusCode() == 404) {
             return new DfsObjectNotFoundException(fileId);
         }
-        return storageFailure(operation, fileId, error);
+        return storageFailure(error);
     }
 
-    private static DfsStorageException storageFailure(String operation, String fileId, RuntimeException error) {
+    private static DfsStorageException storageFailure(RuntimeException error) {
         return new DfsStorageException(DfsStorageException.Code.OPERATION_FAILED, error);
     }
 }

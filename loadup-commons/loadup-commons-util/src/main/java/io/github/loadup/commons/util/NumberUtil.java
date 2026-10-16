@@ -381,7 +381,6 @@ public class NumberUtil {
      * @since 5.6.5
      */
     public static String format(final String pattern, final Object value, final RoundingMode roundingMode) {
-        if (value instanceof Number) {}
         final DecimalFormat decimalFormat = new DecimalFormat(pattern);
         if (null != roundingMode) {
             decimalFormat.setRoundingMode(roundingMode);
@@ -537,14 +536,12 @@ public class NumberUtil {
         }
 
         String string = number.toString();
-        if (isStripTrailingZeros) {
-            if (string.indexOf('.') > 0 && string.indexOf('e') < 0 && string.indexOf('E') < 0) {
-                while (string.endsWith("0")) {
-                    string = string.substring(0, string.length() - 1);
-                }
-                if (string.endsWith(".")) {
-                    string = string.substring(0, string.length() - 1);
-                }
+        if (isStripTrailingZeros && string.indexOf('.') > 0 && string.indexOf('e') < 0 && string.indexOf('E') < 0) {
+            while (string.endsWith("0")) {
+                string = string.substring(0, string.length() - 1);
+            }
+            if (string.endsWith(".")) {
+                string = string.substring(0, string.length() - 1);
             }
         }
         return string;
@@ -594,14 +591,7 @@ public class NumberUtil {
     }
 
     public static BigDecimal toBigDecimal(final String numberStr) throws IllegalArgumentException {
-
-        try {
-            return new BigDecimal(numberStr);
-        } catch (final Exception ignore) {
-
-        }
-
-        return toBigDecimal(numberStr);
+        return new BigDecimal(numberStr);
     }
 
     /**
@@ -616,7 +606,7 @@ public class NumberUtil {
             return BigInteger.valueOf((Long) number);
         }
 
-        return toBigInteger(number.longValue());
+        return BigInteger.valueOf(number.longValue());
     }
 
     /**
@@ -624,13 +614,6 @@ public class NumberUtil {
      * @since 5.4.5
      */
     public static BigInteger toBigInteger(final String numberStr) {
-
-        try {
-            return new BigInteger(numberStr);
-        } catch (final Exception ignore) {
-
-        }
-
         return new BigInteger(numberStr);
     }
 

@@ -41,7 +41,7 @@ public enum BooleanEnum implements IEnum {
         return IEnum.EnumLookup.fromCode(BooleanEnum.class, code);
     }
 
-    private BooleanEnum(String code, String description) {
+    BooleanEnum(String code, String description) {
         this.code = code;
         this.description = description;
     }

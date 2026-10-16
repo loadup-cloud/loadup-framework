@@ -21,6 +21,7 @@ package io.github.loadup.testify.test.asserts;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 
 import io.github.loadup.testify.asserts.engine.DbAssertEngine;
 import io.github.loadup.testify.asserts.engine.ExceptionAssertEngine;
@@ -30,6 +31,7 @@ import io.github.loadup.testify.starter.config.TestifyAutoConfiguration;
 import io.github.loadup.testify.starter.scenario.ScenarioAssert;
 import io.github.loadup.testify.starter.scenario.TestScenario;
 import java.util.Map;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -64,12 +66,15 @@ class TestifyAutoConfigurationTest {
 
     @Test
     void databaseCapabilitiesAreRegisteredWithJdbcTemplate() {
-        contextRunner.withBean(JdbcTemplate.class, JdbcTemplate::new).run(context -> {
-            assertThat(context).hasNotFailed();
-            assertThat(context).hasSingleBean(TestScenario.class);
-            assertThat(context).hasSingleBean(DbAssertEngine.class);
-            assertThat(context).hasSingleBean(ScenarioAssert.class);
-            context.getBean(ScenarioAssert.class).verify(Map.of("id", "u-1"), Map.of("id", "u-1"));
-        });
+        // This unit test checks bean wiring only; database execution belongs to container ITs.
+        contextRunner
+                .withBean(JdbcTemplate.class, () -> new JdbcTemplate(mock(DataSource.class)))
+                .run(context -> {
+                    assertThat(context).hasNotFailed();
+                    assertThat(context).hasSingleBean(TestScenario.class);
+                    assertThat(context).hasSingleBean(DbAssertEngine.class);
+                    assertThat(context).hasSingleBean(ScenarioAssert.class);
+                    context.getBean(ScenarioAssert.class).verify(Map.of("id", "u-1"), Map.of("id", "u-1"));
+                });
     }
 }

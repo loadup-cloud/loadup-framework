@@ -47,7 +47,7 @@ public class ObjectUtil {
     }
 
     public static <T> T defaultIfNull(T obj, Supplier<T> defaultSupplier) {
-        return obj != null ? obj : (defaultSupplier != null ? defaultSupplier.get() : null);
+        return obj != null ? obj : defaultSupplier != null ? defaultSupplier.get() : null;
     }
 
     public static boolean equals(Object obj1, Object obj2) {

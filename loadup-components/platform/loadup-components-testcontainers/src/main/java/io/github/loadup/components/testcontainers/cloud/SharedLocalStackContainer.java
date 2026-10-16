@@ -215,20 +215,20 @@ public final class SharedLocalStackContainer {
 
         return Map.of(
                 "aws.s3.endpoint",
-                SharedLocalStackContainer.getS3Endpoint(),
+                getS3Endpoint(),
                 "aws.access-key-id",
-                SharedLocalStackContainer.getAccessKey(),
+                getAccessKey(),
                 "aws.secret-access-key",
-                SharedLocalStackContainer.getSecretKey(),
+                getSecretKey(),
                 "aws.region",
-                SharedLocalStackContainer.getRegion(),
+                getRegion(),
                 "spring.cloud.aws.credentials.access-key",
-                SharedLocalStackContainer.getAccessKey(),
+                getAccessKey(),
                 "spring.cloud.aws.credentials.secret-key",
-                SharedLocalStackContainer.getSecretKey(),
+                getSecretKey(),
                 "spring.cloud.aws.s3.endpoint",
-                SharedLocalStackContainer.getS3Endpoint(),
+                getS3Endpoint(),
                 "spring.cloud.aws.region.static",
-                SharedLocalStackContainer.getRegion());
+                getRegion());
     }
 }

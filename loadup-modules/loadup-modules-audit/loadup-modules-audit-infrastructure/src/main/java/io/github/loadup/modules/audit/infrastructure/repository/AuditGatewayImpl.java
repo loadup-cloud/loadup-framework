@@ -26,9 +26,7 @@ import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.modules.audit.domain.gateway.AuditGateway;
 import io.github.loadup.modules.audit.domain.model.*;
 import io.github.loadup.modules.audit.infrastructure.converter.AuditStorageConverter;
-import io.github.loadup.modules.audit.infrastructure.dataobject.*;
 import io.github.loadup.modules.audit.infrastructure.mapper.*;
-import java.util.*;
 
 public class AuditGatewayImpl implements AuditGateway {
 

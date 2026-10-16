@@ -58,7 +58,7 @@ public class PageDTO<T> implements DTO {
     }
 
     public PageDTO() {
-        this(java.util.List.of(), new PageInfo(0L, 20L, 1L));
+        this(List.of(), new PageInfo(0L, 20L, 1L));
     }
 
     public Collection<T> getData() {

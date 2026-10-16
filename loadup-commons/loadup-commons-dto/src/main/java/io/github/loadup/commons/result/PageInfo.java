@@ -26,7 +26,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record PageInfo(
         @Schema(description = "Total record count") Long totalCount,
         @Schema(description = "Page size") Long pageSize,
-        @Schema(description = "Page number, starting at 1") Long pageIndex) {
+        @Schema(description = "Page number, starting at 1") Long pageIndex)
+        implements java.io.Serializable {
     public PageInfo {
         if (totalCount == null
                 || totalCount < 0

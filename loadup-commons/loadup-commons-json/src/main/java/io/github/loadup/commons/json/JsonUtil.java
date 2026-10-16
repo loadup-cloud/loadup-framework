@@ -156,7 +156,7 @@ public class JsonUtil {
     }
 
     public static <T> T fromJson(String jsonString, Class<T> valueType) {
-        if ((jsonString == null || jsonString.isEmpty())) {
+        if (jsonString == null || jsonString.isEmpty()) {
             LogUtil.debug(JsonUtil.class, "JSON string is null or empty, returning null");
             return null;
         }
@@ -177,7 +177,7 @@ public class JsonUtil {
     }
 
     public static <T> T fromJson(String str, TypeReference<T> typeReference) {
-        if ((str == null || str.isEmpty())) {
+        if (str == null || str.isEmpty()) {
             LogUtil.debug(JsonUtil.class, "JSON string is null or empty, returning null");
             return null;
         }
@@ -202,7 +202,7 @@ public class JsonUtil {
     }
 
     public static <T> T fromJson(String str, Class<?> collectionClass, Class<?>... elementClasses) {
-        if ((str == null || str.isEmpty())) {
+        if (str == null || str.isEmpty()) {
             LogUtil.debug(JsonUtil.class, "JSON string is null or empty, returning null");
             return null;
         }
@@ -259,7 +259,7 @@ public class JsonUtil {
     }
 
     public static <T> T mapToObject(Map<String, ?> map, Class<T> valueType) {
-        if ((map == null || map.isEmpty()) || valueType == null) {
+        if (map == null || map.isEmpty() || valueType == null) {
             LogUtil.warn(JsonUtil.class, "Map or valueType is null/empty, returning null");
             return null;
         }
@@ -272,7 +272,7 @@ public class JsonUtil {
     }
 
     public static <T> T mapToObject(Map<String, ?> map, Class<?> collectionClass, Class<?>... elementClasses) {
-        if ((map == null || map.isEmpty()) || collectionClass == null) {
+        if (map == null || map.isEmpty() || collectionClass == null) {
             LogUtil.warn(JsonUtil.class, "Map or collectionClass is null/empty, returning null");
             return null;
         }
@@ -289,7 +289,7 @@ public class JsonUtil {
     }
 
     public static <T> T mapToObject(Map<String, ?> map, JavaType javaType) {
-        if ((map == null || map.isEmpty()) || javaType == null) {
+        if (map == null || map.isEmpty() || javaType == null) {
             LogUtil.warn(JsonUtil.class, "Map or javaType is null/empty, returning null");
             return null;
         }
@@ -311,7 +311,7 @@ public class JsonUtil {
     }
 
     public static Map<String, Object> toJsonMap(String jsonString) {
-        if ((jsonString == null || jsonString.isBlank())) {
+        if (jsonString == null || jsonString.isBlank()) {
             return new HashMap<>();
         }
         try {
@@ -327,7 +327,7 @@ public class JsonUtil {
     }
 
     public static Map<String, String> toStringMap(String jsonString) {
-        if ((jsonString == null || jsonString.isBlank())) {
+        if (jsonString == null || jsonString.isBlank()) {
             return new HashMap<>();
         }
         try {
@@ -376,10 +376,8 @@ public class JsonUtil {
         }
 
         File parentDir = file.getParentFile();
-        if (parentDir != null && !parentDir.exists()) {
-            if (!parentDir.mkdirs()) {
-                throw new CommonException(CommonResultCodeEnum.SYS_ERROR);
-            }
+        if (parentDir != null && !parentDir.exists() && !parentDir.mkdirs()) {
+            throw new CommonException(CommonResultCodeEnum.SYS_ERROR);
         }
         try {
             objectMapper.writeValue(file, object);
@@ -394,11 +392,11 @@ public class JsonUtil {
     }
 
     public static JsonNode getSubNode(String jsonString, String path) {
-        if ((jsonString == null || jsonString.isEmpty())) {
+        if (jsonString == null || jsonString.isEmpty()) {
             LogUtil.debug(JsonUtil.class, "JSON string is null or empty, returning null");
             return null;
         }
-        if ((path == null || path.isEmpty())) {
+        if (path == null || path.isEmpty()) {
             LogUtil.warn(JsonUtil.class, "Path is null or empty, returning null");
             return null;
         }
@@ -416,7 +414,7 @@ public class JsonUtil {
     }
 
     public static JsonNode toJsonNodeTree(String jsonString) {
-        if ((jsonString == null || jsonString.isEmpty())) {
+        if (jsonString == null || jsonString.isEmpty()) {
             LogUtil.debug(JsonUtil.class, "JSON string is null or empty, returning null");
             return null;
         }
@@ -552,6 +550,6 @@ public class JsonUtil {
     }
 
     public static boolean equals(Object expected, Object actual) {
-        return JsonUtil.toJson(expected).equals(JsonUtil.toJson(actual));
+        return toJson(expected).equals(toJson(actual));
     }
 }

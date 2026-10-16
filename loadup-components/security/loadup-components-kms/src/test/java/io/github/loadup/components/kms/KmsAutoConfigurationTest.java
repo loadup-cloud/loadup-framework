@@ -116,7 +116,7 @@ class KmsAutoConfigurationTest {
     @Test
     void constructorRejectsInvalidMountCredentialNamesNamespaceAndSize() {
         URI endpoint = URI.create("https://bao.example.test");
-        for (String mount : new String[] {"", "../transit", "/transit", "transit/", "m".repeat(129)}) {
+        for (String mount : new String[] {"", "../transit", "/transit", "transit/", "transit//keys", "m".repeat(129)}) {
             assertThatThrownBy(() -> settings(endpoint, mount, null, null, null, 1))
                     .isInstanceOf(IllegalArgumentException.class);
         }

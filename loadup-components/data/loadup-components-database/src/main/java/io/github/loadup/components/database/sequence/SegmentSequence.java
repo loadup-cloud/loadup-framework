@@ -40,6 +40,7 @@ public final class SegmentSequence implements Sequence, AutoCloseable {
     private final ConcurrentHashMap<String, State> states = new ConcurrentHashMap<>();
     private final java.util.Set<CompletableFuture<Void>> pending = ConcurrentHashMap.newKeySet();
     private final ThreadPoolExecutor executor;
+    private final Object scopeMonitor = new Object();
     private volatile boolean closed;
     private final io.micrometer.core.instrument.Counter issued;
     private final io.micrometer.core.instrument.Timer refill;
@@ -149,7 +150,7 @@ public final class SegmentSequence implements Sequence, AutoCloseable {
             check(existing, scope);
             return existing;
         }
-        synchronized (states) {
+        synchronized (scopeMonitor) {
             if (closed) throw new CommonException(DatabaseResultCodeEnum.CLOSED);
             existing = states.get(scope.key());
             if (existing != null) {

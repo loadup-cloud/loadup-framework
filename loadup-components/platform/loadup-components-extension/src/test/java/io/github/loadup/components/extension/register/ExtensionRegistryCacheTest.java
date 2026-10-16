@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.github.loadup.components.extension.annotation.Extension;
@@ -88,7 +89,9 @@ class ExtensionRegistryCacheTest {
         assertFalse(extensions1.isEmpty());
 
         // Second call - should use cached result
-        List<ExtensionCoordinate> extensions2 = registry.getExtensionsByScenario(TestExtension.class, scenario);
+        List<ExtensionCoordinate> extensions2 = registry.getExtensionsByScenario(
+                TestExtension.class, BizScenario.valueOf("test", "default", "default"));
+        assertSame(extensions1, extensions2, "Equivalent scenario values must reuse the cached result");
         assertNotNull(extensions2);
         assertEquals(extensions1.size(), extensions2.size());
     }

@@ -99,11 +99,11 @@ public class TransferTaskService
             String sourceFileId,
             Map<String, String> options) {
         String tenant = tenant(tenantId);
-        String owner = required(ownerId, "ownerId", 64);
+        String owner = required(ownerId, 64);
         TransferHandler handler = handler(TransferKind.valueOf(kind.name()), handlerKey);
         Map<String, String> args = options(options);
         if (kind == io.github.loadup.modules.transfer.client.enums.TransferKind.IMPORT) {
-            FileResourceDTO source = files.get(tenant, required(sourceFileId, "sourceFileId", 64), owner, false);
+            FileResourceDTO source = files.get(tenant, required(sourceFileId, 64), owner, false);
             if (source.size() > properties.getMaxInputBytes()) {
                 throw new CommonException(TransferResultCodeEnum.SOURCE_FILE_EXCEEDS_IMPORT_LIMIT);
             }
@@ -144,7 +144,7 @@ public class TransferTaskService
 
     private TransferTask requireTask(String tenantId, String id, String actorId, boolean admin) {
         TransferTask task = repository
-                .find(required(id, "id", 64))
+                .find(required(id, 64))
                 .filter(item -> item.tenantId().equals(tenant(tenantId)))
                 .orElseThrow(() -> new CommonException(TransferResultCodeEnum.TASK_NOT_FOUND));
         if (!admin && !task.ownerId().equals(actorId)) throw new CommonException(TransferResultCodeEnum.TASK_NOT_FOUND);
@@ -154,9 +154,7 @@ public class TransferTaskService
     public PageDTO<TransferTaskDTO> list(
             String tenantId, String actorId, boolean admin, String ownerId, int page, int size) {
         io.github.loadup.commons.dto.PageQuery.normalized(page, size, TransferResultCodeEnum.INVALID_PAGE);
-        String owner = admin && ownerId != null && !ownerId.isBlank()
-                ? required(ownerId, "ownerId", 64)
-                : required(actorId, "actorId", 64);
+        String owner = admin && ownerId != null && !ownerId.isBlank() ? required(ownerId, 64) : required(actorId, 64);
         return converter.toPageDTO(repository.list(tenant(tenantId), owner, page, size));
     }
 
@@ -317,7 +315,7 @@ public class TransferTaskService
 
     private TransferHandler handler(TransferKind kind, String key) {
         if (kind == null) throw new CommonException(TransferResultCodeEnum.KIND_IS_REQUIRED);
-        TransferHandler handler = handlers.get(kind.name() + ":" + required(key, "handlerKey", 64));
+        TransferHandler handler = handlers.get(kind.name() + ":" + required(key, 64));
         if (handler == null) throw new CommonException(TransferResultCodeEnum.UNKNOWN_TRANSFER_HANDLER);
         return handler;
     }
@@ -326,7 +324,7 @@ public class TransferTaskService
         if (options == null) return Map.of();
         if (options.size() > 30) throw new CommonException(TransferResultCodeEnum.TOO_MANY_TASK_OPTIONS);
         options.forEach((key, value) -> {
-            required(key, "option name", 64);
+            required(key, 64);
             if (!key.matches("[A-Za-z][A-Za-z0-9_.-]*"))
                 throw new CommonException(TransferResultCodeEnum.INVALID_OPTION_NAME);
             if (value == null || value.length() > 1000)
@@ -336,10 +334,10 @@ public class TransferTaskService
     }
 
     private static String tenant(String value) {
-        return value == null || value.isBlank() ? DEFAULT_TENANT : required(value, "tenantId", 64);
+        return value == null || value.isBlank() ? DEFAULT_TENANT : required(value, 64);
     }
 
-    private static String required(String value, String name, int max) {
+    private static String required(String value, int max) {
         if (value == null || value.isBlank() || value.trim().length() > max) {
             throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
         }

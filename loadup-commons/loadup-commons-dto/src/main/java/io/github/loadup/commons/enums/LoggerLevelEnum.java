@@ -53,7 +53,7 @@ public enum LoggerLevelEnum implements IEnum {
         return IEnum.EnumLookup.fromCode(LoggerLevelEnum.class, code);
     }
 
-    private LoggerLevelEnum(String code, String description) {
+    LoggerLevelEnum(String code, String description) {
         this.code = code;
         this.description = description;
     }

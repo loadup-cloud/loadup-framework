@@ -57,13 +57,13 @@ public class DbAssertEngine implements TestifyAssertEngine {
         JsonNode resolvedExpect = JsonUtil.valueToTree(resolved);
 
         if (resolvedExpect.isArray()) {
-            resolvedExpect.forEach(tableNode -> processTableAssertion(tableNode, context));
+            resolvedExpect.forEach(tableNode -> processTableAssertion(tableNode));
         } else {
-            processTableAssertion(resolvedExpect, context);
+            processTableAssertion(resolvedExpect);
         }
     }
 
-    private void processTableAssertion(JsonNode tableNode, Map<String, Object> context) {
+    private void processTableAssertion(JsonNode tableNode) {
         String tableName = identifier(tableNode.get("table").asString());
         String mode = tableNode.has("mode") ? tableNode.get("mode").asString() : "lenient";
         JsonNode rowsNode = tableNode.get("rows");

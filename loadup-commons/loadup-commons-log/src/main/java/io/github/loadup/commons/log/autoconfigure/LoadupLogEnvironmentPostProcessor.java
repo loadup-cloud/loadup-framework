@@ -58,6 +58,6 @@ public class LoadupLogEnvironmentPostProcessor implements EnvironmentPostProcess
 
     @Override
     public int getOrder() {
-        return Ordered.LOWEST_PRECEDENCE;
+        return LOWEST_PRECEDENCE;
     }
 }

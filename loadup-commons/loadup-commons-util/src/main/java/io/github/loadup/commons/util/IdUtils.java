@@ -36,7 +36,7 @@ public class IdUtils {
     }
 
     public static long randomLong() {
-        return Math.abs(random.nextLong());
+        return random.nextLong() & Long.MAX_VALUE;
     }
 
     /**
@@ -44,7 +44,7 @@ public class IdUtils {
      * @return {@link SecureRandom}
      */
     public static SecureRandom getSecureRandom() {
-        return random;
+        return new SecureRandom();
     }
 
     /**

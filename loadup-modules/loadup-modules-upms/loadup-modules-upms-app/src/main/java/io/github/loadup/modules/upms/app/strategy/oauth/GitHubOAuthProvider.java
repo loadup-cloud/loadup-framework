@@ -47,7 +47,7 @@ import tools.jackson.databind.ObjectMapper;
  */
 @Component
 @ConditionalOnProperty(prefix = "loadup.modules.upms.security.oauth.github", name = "enabled", havingValue = "true")
-public class GitHubOAuthProvider implements io.github.loadup.modules.upms.app.strategy.oauth.OAuthProvider {
+public class GitHubOAuthProvider implements OAuthProvider {
 
     private final UpmsSecurityProperties securityProperties;
     private final RestTemplate restTemplate = new RestTemplate();

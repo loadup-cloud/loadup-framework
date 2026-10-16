@@ -62,8 +62,9 @@ public class LoadUpJwtTokenCustomizer implements OAuth2TokenCustomizer<JwtEncodi
             context.getClaims().audience(java.util.List.of(audience));
         }
         Authentication principal = context.getPrincipal();
-        if (context.getAuthorization() != null) {
-            Authentication authorizedUser = context.getAuthorization().getAttribute(Principal.class.getName());
+        var authorization = context.getAuthorization();
+        if (authorization != null) {
+            Authentication authorizedUser = authorization.getAttribute(Principal.class.getName());
             if (authorizedUser != null) {
                 principal = authorizedUser;
             }

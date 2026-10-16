@@ -61,7 +61,7 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
         if (command == null) throw new CommonException(DictionaryResultCodeEnum.TYPE_IS_REQUIRED);
         String tenant = tenant(tenantId);
         String code = code(command.code());
-        String name = required(command.name(), "name", 100);
+        String name = required(command.name(), 100);
         if (repository.findTypeByCode(tenant, code).isPresent()) {
             throw new CommonException(DictionaryResultCodeEnum.DICTIONARY_TYPE_CODE_ALREADY_EXISTS);
         }
@@ -94,7 +94,7 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
                 previous.id(),
                 tenant,
                 previous.code(),
-                required(command.name(), "name", 100),
+                required(command.name(), 100),
                 optional(command.description(), 500),
                 command.enabled(),
                 previous.createdAt(),
@@ -128,8 +128,8 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
                 UUID.randomUUID().toString(),
                 tenant,
                 type.id(),
-                required(command.value(), "value", 128),
-                required(command.label(), "label", 200),
+                required(command.value(), 128),
+                required(command.label(), 200),
                 optional(command.description(), 500),
                 command.sortOrder() == null ? 0 : command.sortOrder(),
                 command.enabled() == null || command.enabled(),
@@ -155,7 +155,7 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
                 tenant,
                 previous.typeId(),
                 previous.value(),
-                required(command.label(), "label", 200),
+                required(command.label(), 200),
                 optional(command.description(), 500),
                 command.sortOrder(),
                 command.enabled(),
@@ -186,7 +186,7 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
 
     private DictionaryType requireType(String tenant, String id) {
         return repository
-                .findTypeById(tenant, required(id, "id", 64))
+                .findTypeById(tenant, required(id, 64))
                 .orElseThrow(() -> new CommonException(DictionaryResultCodeEnum.DICTIONARY_TYPE_NOT_FOUND));
     }
 
@@ -198,23 +198,23 @@ public class DictionaryService implements io.github.loadup.modules.dictionary.cl
 
     private DictionaryItem requireItem(String tenant, String id) {
         return repository
-                .findItemById(tenant, required(id, "id", 64))
+                .findItemById(tenant, required(id, 64))
                 .orElseThrow(() -> new CommonException(DictionaryResultCodeEnum.DICTIONARY_ITEM_NOT_FOUND));
     }
 
     private static String tenant(String tenantId) {
-        return tenantId == null || tenantId.isBlank() ? DEFAULT_TENANT : required(tenantId, "tenantId", 64);
+        return tenantId == null || tenantId.isBlank() ? DEFAULT_TENANT : required(tenantId, 64);
     }
 
     private static String code(String code) {
-        String normalized = required(code, "code", 64).toLowerCase(Locale.ROOT);
+        String normalized = required(code, 64).toLowerCase(Locale.ROOT);
         if (!normalized.matches("[a-z][a-z0-9_.-]*")) {
             throw new CommonException(DictionaryResultCodeEnum.INVALID_DICTIONARY_CODE);
         }
         return normalized;
     }
 
-    private static String required(String value, String name, int maxLength) {
+    private static String required(String value, int maxLength) {
         if (value == null || value.isBlank() || value.trim().length() > maxLength) {
             throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
         }

@@ -88,7 +88,13 @@ public class FileResourceGatewayImpl implements FileResourceGateway {
                 .limit(size)
                 .offset((long) (page - 1) * size);
         return new PageResult<>(
-                files.selectListByQuery(q).stream().map(converter::toDomain).toList(), total, page, size);
+                Objects.requireNonNull(files.selectListByQuery(q), "Mapper must return an empty list instead of null")
+                        .stream()
+                        .map(converter::toDomain)
+                        .toList(),
+                total,
+                page,
+                size);
     }
 
     @Override
@@ -107,12 +113,13 @@ public class FileResourceGatewayImpl implements FileResourceGateway {
     /** System maintenance operation across tenant boundaries. */
     @Override
     public List<FileResource> pending(int limit) {
-        return TenantManager.withoutTenantCondition(() -> files
-                .selectListByQuery(QueryWrapper.create()
-                        .from(FILE_RESOURCE_DO)
-                        .where(FILE_RESOURCE_DO.STATE.eq("PENDING_DELETE"))
-                        .orderBy(FILE_RESOURCE_DO.UPDATED_AT.asc(), FILE_RESOURCE_DO.ID.asc())
-                        .limit(limit))
+        return TenantManager.withoutTenantCondition(() -> Objects.requireNonNull(
+                        files.selectListByQuery(QueryWrapper.create()
+                                .from(FILE_RESOURCE_DO)
+                                .where(FILE_RESOURCE_DO.STATE.eq("PENDING_DELETE"))
+                                .orderBy(FILE_RESOURCE_DO.UPDATED_AT.asc(), FILE_RESOURCE_DO.ID.asc())
+                                .limit(limit)),
+                        "Mapper must return an empty list instead of null")
                 .stream()
                 .map(converter::toDomain)
                 .toList());
@@ -137,9 +144,10 @@ public class FileResourceGatewayImpl implements FileResourceGateway {
 
     @Override
     public List<FileReference> references(String tenant, String file) {
-        return refs
-                .selectListByQuery(
-                        refScope(tenant, file).orderBy(FILE_REFERENCE_DO.CREATED_AT.asc(), FILE_REFERENCE_DO.ID.asc()))
+        return Objects.requireNonNull(
+                        refs.selectListByQuery(refScope(tenant, file)
+                                .orderBy(FILE_REFERENCE_DO.CREATED_AT.asc(), FILE_REFERENCE_DO.ID.asc())),
+                        "Mapper must return an empty list instead of null")
                 .stream()
                 .map(converter::toDomain)
                 .toList();

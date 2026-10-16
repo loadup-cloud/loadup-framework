@@ -103,7 +103,9 @@ public class RoleGatewayImpl implements RoleGateway {
     public List<Role> findByUserId(String userId) {
         List<String> roleIds = getUserRoleIds(userId);
         if (roleIds.isEmpty()) return List.of();
-        return roleDOMapper.selectListByIds(roleIds).stream()
+        return java.util.Objects.requireNonNull(
+                        roleDOMapper.selectListByIds(roleIds), "Mapper must return an empty list instead of null")
+                .stream()
                 .map(roleConverter::toEntity)
                 .toList();
     }
@@ -111,7 +113,8 @@ public class RoleGatewayImpl implements RoleGateway {
     @Override
     public List<Role> findByParentId(String parentId) {
         QueryWrapper query = QueryWrapper.create().where(ROLE_DO.PARENT_ID.eq(parentId));
-        List<RoleDO> roleDOs = roleDOMapper.selectListByQuery(query);
+        List<RoleDO> roleDOs = java.util.Objects.requireNonNull(
+                roleDOMapper.selectListByQuery(query), "Mapper must return an empty list instead of null");
         return roleDOs.stream().map(roleConverter::toEntity).collect(Collectors.toList());
     }
 
@@ -124,7 +127,8 @@ public class RoleGatewayImpl implements RoleGateway {
     @Override
     public List<Role> findAllEnabled() {
         QueryWrapper query = QueryWrapper.create().where(ROLE_DO.STATUS.eq((short) 1));
-        List<RoleDO> roleDOs = roleDOMapper.selectListByQuery(query);
+        List<RoleDO> roleDOs = java.util.Objects.requireNonNull(
+                roleDOMapper.selectListByQuery(query), "Mapper must return an empty list instead of null");
         return roleDOs.stream().map(roleConverter::toEntity).collect(Collectors.toList());
     }
 
@@ -156,7 +160,10 @@ public class RoleGatewayImpl implements RoleGateway {
 
     @Override
     public List<String> getUserRoleIds(String userId) {
-        return userRoleMapper.selectListByQuery(QueryWrapper.create().where(USER_ROLE_DO.USER_ID.eq(userId))).stream()
+        return java.util.Objects.requireNonNull(
+                        userRoleMapper.selectListByQuery(QueryWrapper.create().where(USER_ROLE_DO.USER_ID.eq(userId))),
+                        "Mapper must return an empty list instead of null")
+                .stream()
                 .map(UserRoleDO::getRoleId)
                 .toList();
     }
@@ -209,8 +216,10 @@ public class RoleGatewayImpl implements RoleGateway {
 
     @Override
     public List<String> findDepartmentIdsByRoleId(String roleId) {
-        return roleDepartmentMapper
-                .selectListByQuery(QueryWrapper.create().where(ROLE_DEPARTMENT_DO.ROLE_ID.eq(roleId)))
+        return java.util.Objects.requireNonNull(
+                        roleDepartmentMapper.selectListByQuery(
+                                QueryWrapper.create().where(ROLE_DEPARTMENT_DO.ROLE_ID.eq(roleId))),
+                        "Mapper must return an empty list instead of null")
                 .stream()
                 .map(RoleDepartmentDO::getDeptId)
                 .toList();

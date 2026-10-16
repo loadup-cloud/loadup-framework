@@ -31,10 +31,9 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.datafaker.Faker;
-import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.MapAccessor;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import tools.jackson.databind.JsonNode;
 
@@ -47,7 +46,6 @@ public class VariableEngine {
 
     private final ExpressionParser spelParser = new SpelExpressionParser();
     private final Map<String, TestifyFunction> functionRegistry = new HashMap<>();
-    private final ParserContext templateContext = ParserContext.TEMPLATE_EXPRESSION;
 
     public VariableEngine(List<TestifyFunction> customFunctions) {
 
@@ -147,11 +145,6 @@ public class VariableEngine {
             context.forEach(ctx::setVariable);
         }
         return ctx;
-    }
-
-    private String ensureHashPrefix(String text) {
-
-        return text.replaceAll("#\\{(?![#0-9'\"\\-])", "#{#");
     }
 
     private int countOccurrences(String str, String sub) {

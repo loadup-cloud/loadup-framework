@@ -42,8 +42,8 @@ public record PageQuery(
     public static final int MAX_PAGE_SIZE = 100;
 
     public PageQuery {
-        pageNum = pageNum == null ? 1 : pageNum;
-        pageSize = pageSize == null ? DEFAULT_PAGE_SIZE : pageSize;
+        pageNum = pageNum == null ? Integer.valueOf(1) : pageNum;
+        pageSize = pageSize == null ? Integer.valueOf(DEFAULT_PAGE_SIZE) : pageSize;
         validate(pageNum, pageSize, CommonResultCodeEnum.PARAM_ILLEGAL);
     }
 

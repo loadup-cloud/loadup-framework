@@ -127,7 +127,9 @@ public class MerchantContractGatewayImpl implements MerchantContractGateway {
         query.orderBy(MERCHANT_CONTRACT_DO.CREATED_AT.desc(), MERCHANT_CONTRACT_DO.ID.asc())
                 .limit((long) (page - 1) * size, size);
         return new PageResult<>(
-                contracts.selectListByQuery(query).stream()
+                java.util.Objects.requireNonNull(
+                                contracts.selectListByQuery(query), "Mapper must return an empty list instead of null")
+                        .stream()
                         .map(converter::toContract)
                         .toList(),
                 total,

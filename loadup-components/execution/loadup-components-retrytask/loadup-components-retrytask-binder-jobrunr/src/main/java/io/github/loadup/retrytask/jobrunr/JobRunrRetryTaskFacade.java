@@ -20,12 +20,8 @@
 package io.github.loadup.retrytask.jobrunr;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.jobrunr.jobs.states.StateName.AWAITING;
 import static org.jobrunr.jobs.states.StateName.DELETED;
-import static org.jobrunr.jobs.states.StateName.ENQUEUED;
 import static org.jobrunr.jobs.states.StateName.FAILED;
-import static org.jobrunr.jobs.states.StateName.PROCESSING;
-import static org.jobrunr.jobs.states.StateName.SCHEDULED;
 import static org.jobrunr.jobs.states.StateName.SUCCEEDED;
 
 import io.github.loadup.commons.log.LogUtil;
@@ -167,7 +163,7 @@ public class JobRunrRetryTaskFacade implements RetryTaskFacade {
                 }
             }
         } catch (JobNotFoundException e) {
-            // fall through
+            return null;
         }
         return null;
     }

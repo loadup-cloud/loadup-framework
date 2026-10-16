@@ -34,7 +34,6 @@ import io.github.loadup.components.testcontainers.messaging.SharedKafkaContainer
 import io.github.loadup.components.testcontainers.search.SharedElasticsearchContainer;
 import java.util.HashMap;
 import java.util.Map;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
@@ -77,7 +76,7 @@ public class TestContainersExecutionListener extends AbstractTestExecutionListen
     @Override
     public int getOrder() {
         // Highest precedence to ensure containers start before any other listeners
-        return Ordered.HIGHEST_PRECEDENCE;
+        return HIGHEST_PRECEDENCE;
     }
 
     @Override

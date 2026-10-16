@@ -88,7 +88,9 @@ public class MerchantGatewayImpl implements MerchantGateway {
         long total = mapper.selectCountByQuery(query);
         query.orderBy(MERCHANT_DO.CREATED_AT.desc(), MERCHANT_DO.ID.asc()).limit((long) (page - 1) * size, size);
         return new PageResult<>(
-                mapper.selectListByQuery(query).stream()
+                java.util.Objects.requireNonNull(
+                                mapper.selectListByQuery(query), "Mapper must return an empty list instead of null")
+                        .stream()
                         .map(converter::toMerchant)
                         .toList(),
                 total,

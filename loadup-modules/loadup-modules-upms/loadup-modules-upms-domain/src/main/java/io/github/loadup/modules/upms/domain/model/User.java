@@ -57,7 +57,7 @@ public class User extends BaseEntity {
      */
     private Short gender;
 
-    private java.time.LocalDate birthday;
+    private LocalDate birthday;
 
     /**
      * Status: 1-Normal, 0-Disabled, 2-Locked

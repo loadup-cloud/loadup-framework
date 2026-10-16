@@ -138,10 +138,11 @@ public class StringUtils {
         String template2 = template.toString();
         String value;
         for (Map.Entry<?, ?> entry : map.entrySet()) {
-            value = String.valueOf(entry.getValue());
-            if (null == value && ignoreNull) {
+            Object rawValue = entry.getValue();
+            if (rawValue == null && ignoreNull) {
                 continue;
             }
+            value = String.valueOf(rawValue);
             template2 = template2.replace("{" + entry.getKey() + "}", value);
         }
         return template2;

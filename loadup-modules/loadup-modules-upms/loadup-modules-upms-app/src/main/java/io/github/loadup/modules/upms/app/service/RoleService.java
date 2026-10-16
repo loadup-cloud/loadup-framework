@@ -24,7 +24,6 @@ import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.upms.app.converter.UpmsDTOConverter;
 import io.github.loadup.modules.upms.client.command.RoleCreateCommand;
 import io.github.loadup.modules.upms.client.command.RoleUpdateCommand;
-import io.github.loadup.modules.upms.client.dto.PermissionDTO;
 import io.github.loadup.modules.upms.client.dto.RoleDTO;
 import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
 import io.github.loadup.modules.upms.client.query.RolePageQuery;
@@ -317,13 +316,6 @@ public class RoleService implements io.github.loadup.modules.upms.client.facade.
                         .map(Role::getRoleName)
                         .orElse(null);
         return dtoConverter.toRole(role, parentName, permissions, departments);
-    }
-
-    /**
-     * Convert Permission to PermissionDTO
-     */
-    private PermissionDTO convertPermissionToDTO(Permission permission) {
-        return dtoConverter.toPermissionSummary(permission);
     }
 
     public RoleService(

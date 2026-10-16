@@ -30,13 +30,13 @@ public enum ResultStatusEnum {
     private final String code;
 
     public static ResultStatusEnum getByCode(String code) {
-        return Arrays.stream(ResultStatusEnum.values())
+        return Arrays.stream(values())
                 .filter(resultStatusEnum -> Objects.equals(resultStatusEnum.getCode(), code))
                 .findFirst()
                 .orElse(null);
     }
 
-    private ResultStatusEnum(String code) {
+    ResultStatusEnum(String code) {
         this.code = code;
     }
 

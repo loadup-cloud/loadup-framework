@@ -89,16 +89,24 @@ public class TransferGatewayImpl implements TransferGateway {
                 .limit(size)
                 .offset((long) (page - 1) * size);
         return new PageResult<>(
-                tasks.selectListByQuery(q).stream().map(converter::toDomain).toList(), total, page, size);
+                Objects.requireNonNull(tasks.selectListByQuery(q), "Mapper must return an empty list instead of null")
+                        .stream()
+                        .map(converter::toDomain)
+                        .toList(),
+                total,
+                page,
+                size);
     }
 
     @Override
     public Map<String, String> options(String id) {
         Map<String, String> result = new LinkedHashMap<>();
-        options.selectListByQuery(QueryWrapper.create()
-                        .from(TRANSFER_TASK_OPTION_DO)
-                        .where(TRANSFER_TASK_OPTION_DO.TASK_ID.eq(id))
-                        .orderBy(TRANSFER_TASK_OPTION_DO.OPTION_NAME.asc()))
+        Objects.requireNonNull(
+                        options.selectListByQuery(QueryWrapper.create()
+                                .from(TRANSFER_TASK_OPTION_DO)
+                                .where(TRANSFER_TASK_OPTION_DO.TASK_ID.eq(id))
+                                .orderBy(TRANSFER_TASK_OPTION_DO.OPTION_NAME.asc())),
+                        "Mapper must return an empty list instead of null")
                 .forEach(entity -> result.put(entity.getOptionName(), entity.getOptionValue()));
         return Map.copyOf(result);
     }

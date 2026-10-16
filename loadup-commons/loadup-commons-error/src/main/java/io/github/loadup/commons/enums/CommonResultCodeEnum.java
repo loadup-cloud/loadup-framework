@@ -46,10 +46,10 @@ public enum CommonResultCodeEnum implements ResultCode {
     }
 
     public static CommonResultCodeEnum getByResultCode(String resultCode) {
-        return Arrays.stream(CommonResultCodeEnum.values())
+        return Arrays.stream(values())
                 .filter(value -> value.getCode().equalsIgnoreCase(resultCode))
                 .findFirst()
-                .orElse(CommonResultCodeEnum.SYS_ERROR);
+                .orElse(SYS_ERROR);
     }
 
     @Override

@@ -67,7 +67,7 @@ public enum OSTypeEnum implements IEnum {
         return IEnum.EnumLookup.fromCode(OSTypeEnum.class, code);
     }
 
-    private OSTypeEnum(String code, String description) {
+    OSTypeEnum(String code, String description) {
         this.code = code;
         this.description = description;
     }

@@ -58,10 +58,8 @@ public class ApplicationContextUtils implements ApplicationContextAware {
      */
     public static Object getBean(String name) throws BeansException {
         Object bean = applicationContext.getBean(name);
-        if (Objects.isNull(bean)) {
-            if (!name.endsWith("Impl")) {
-                bean = applicationContext.getBean(name + "Impl");
-            }
+        if (Objects.isNull(bean) && !name.endsWith("Impl")) {
+            bean = applicationContext.getBean(name + "Impl");
         }
         return bean;
     }
@@ -76,10 +74,8 @@ public class ApplicationContextUtils implements ApplicationContextAware {
      */
     public static <T> T getBean(String name, Class<T> requiredType) throws BeansException {
         T bean = applicationContext.getBean(name, requiredType);
-        if (Objects.isNull(bean)) {
-            if (!name.endsWith("Impl")) {
-                bean = applicationContext.getBean(name + "Impl", requiredType);
-            }
+        if (Objects.isNull(bean) && !name.endsWith("Impl")) {
+            bean = applicationContext.getBean(name + "Impl", requiredType);
         }
         return bean;
     }

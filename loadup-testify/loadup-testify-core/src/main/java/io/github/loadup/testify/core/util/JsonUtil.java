@@ -86,6 +86,6 @@ public class JsonUtil {
     }
 
     public static boolean equals(Object expected, Object actual) {
-        return JsonUtil.toJson(expected).equals(JsonUtil.toJson(actual));
+        return toJson(expected).equals(toJson(actual));
     }
 }

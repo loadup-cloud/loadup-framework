@@ -32,7 +32,7 @@ import java.util.Map;
 import org.slf4j.MDC;
 
 /** Runs handlers outside claim transactions and restores all per-thread context. */
-public class OutboxDispatcher {
+public final class OutboxDispatcher {
 
     private final JdbcOutboxRepository repository;
     private final OutboxProperties properties;
@@ -82,7 +82,7 @@ public class OutboxDispatcher {
                 if (claim.event().traceId() != null)
                     MDC.put("originTraceId", claim.event().traceId());
                 observation.start();
-                try (Observation.Scope scope = observation.openScope()) {
+                try (Observation.Scope unusedScope = observation.openScope()) {
                     OutboxHandler handler = handlers.get(claim.event().message().type());
                     if (handler == null) throw new IllegalStateException("No handler registered");
                     TenantUtil.runWithTenant(claim.event().message().tenantId(), () -> {

@@ -219,17 +219,9 @@ public class ExtensionRegistry implements ApplicationListener<ContextRefreshedEv
                 && extension.scenario().equals(scenario.scenario());
     }
 
-    private static class ScenarioKey {
-        private final Class<?> extensionType;
-        private final String bizCode;
-        private final String useCase;
-        private final String scenario;
-
+    private record ScenarioKey(Class<?> extensionType, String bizCode, String useCase, String scenario) {
         ScenarioKey(Class<?> extensionType, BizScenario bizScenario) {
-            this.extensionType = extensionType;
-            this.bizCode = bizScenario.bizCode();
-            this.useCase = bizScenario.useCase();
-            this.scenario = bizScenario.scenario();
+            this(extensionType, bizScenario.bizCode(), bizScenario.useCase(), bizScenario.scenario());
         }
     }
 

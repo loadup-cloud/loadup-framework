@@ -52,7 +52,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import tools.jackson.databind.ObjectMapper;
 
 /** Named synchronous operations with bounded bodies, explicit credentials and atomic configuration. */
-public class HttpTemplate implements AutoCloseable {
+public final class HttpTemplate implements AutoCloseable {
     private final Supplier<RestClient.Builder> builders;
     private final ObjectMapper mapper;
     private final HttpCredentialProvider credentials;

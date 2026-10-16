@@ -30,7 +30,6 @@ import io.github.loadup.modules.notification.infrastructure.converter.Notificati
 import io.github.loadup.modules.notification.infrastructure.dataobject.*;
 import io.github.loadup.modules.notification.infrastructure.mapper.*;
 import java.time.LocalDateTime;
-import java.util.*;
 import org.springframework.dao.DuplicateKeyException;
 
 public class InboxGatewayImpl implements InboxGateway {

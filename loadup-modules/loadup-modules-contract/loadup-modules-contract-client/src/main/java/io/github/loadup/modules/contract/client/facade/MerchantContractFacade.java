@@ -23,8 +23,6 @@ import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.contract.client.command.*;
 import io.github.loadup.modules.contract.client.dto.*;
 import io.github.loadup.modules.contract.client.query.MerchantContractPageQuery;
-import java.time.*;
-import java.util.*;
 
 /** Public business contract for MerchantContractService. */
 public interface MerchantContractFacade {

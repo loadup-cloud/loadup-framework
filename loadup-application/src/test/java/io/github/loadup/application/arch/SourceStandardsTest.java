@@ -107,17 +107,39 @@ class SourceStandardsTest {
     @Test
     void containerTestsUseFailsafeNamesEvenOutsideApplicationClasspath() throws Exception {
         List<String> failures = new ArrayList<>();
-        try (var files = Files.walk(root())) {
-            for (Path file : files.filter(p -> p.toString().contains("/src/test/java/"))
+        var compiler = javax.tools.ToolProvider.getSystemJavaCompiler();
+        try (var files = Files.walk(root());
+                var manager = compiler.getStandardFileManager(null, null, java.nio.charset.StandardCharsets.UTF_8)) {
+            var sources = files.filter(p -> p.toString().contains("/src/test/java/"))
                     .filter(p -> p.toString().endsWith(".java"))
-                    .toList()) {
-                if (Pattern.compile("(?m)^[ \t]*@EnableTestContainers[(]")
-                                .matcher(Files.readString(file))
-                                .find()
-                        && !file.getFileName().toString().endsWith("IT.java")) failures.add(file.toString());
+                    .toList();
+            var task = (com.sun.source.util.JavacTask) compiler.getTask(
+                    null, manager, null, List.of("-proc:none"), null, manager.getJavaFileObjectsFromPaths(sources));
+            for (var unit : task.parse()) {
+                if (unit.getSourceFile().getName().endsWith("IT.java")) continue;
+                new com.sun.source.util.TreePathScanner<Void, Void>() {
+                    @Override
+                    public Void visitClass(com.sun.source.tree.ClassTree node, Void unused) {
+                        var annotations = node.getModifiers().getAnnotations();
+                        boolean testClass = getCurrentPath().getParentPath().getLeaf()
+                                        instanceof com.sun.source.tree.CompilationUnitTree
+                                || annotations.stream().anyMatch(a -> annotationNamed(a, "Nested"));
+                        // Nested annotation-only fixtures are data for unit tests, not executable container tests.
+                        if (testClass
+                                && annotations.stream().anyMatch(a -> annotationNamed(a, "EnableTestContainers"))) {
+                            failures.add(unit.getSourceFile().getName() + ": " + node.getSimpleName());
+                        }
+                        return super.visitClass(node, unused);
+                    }
+                }.scan(unit, null);
             }
         }
         assertTrue(failures.isEmpty(), failures::toString);
+    }
+
+    private static boolean annotationNamed(com.sun.source.tree.AnnotationTree annotation, String simpleName) {
+        String name = annotation.getAnnotationType().toString();
+        return name.equals(simpleName) || name.endsWith("." + simpleName);
     }
 
     @Test

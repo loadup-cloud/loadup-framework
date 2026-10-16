@@ -91,7 +91,13 @@ public class DictionaryGatewayImpl implements DictionaryGateway {
         long total = types.selectCountByQuery(q);
         q.orderBy(DICTIONARY_TYPE_DO.CODE.asc()).limit(size).offset((long) (page - 1) * size);
         return new PageResult<>(
-                types.selectListByQuery(q).stream().map(converter::toDomain).toList(), total, page, size);
+                Objects.requireNonNull(types.selectListByQuery(q), "Mapper must return an empty list instead of null")
+                        .stream()
+                        .map(converter::toDomain)
+                        .toList(),
+                total,
+                page,
+                size);
     }
 
     @Override
@@ -140,12 +146,21 @@ public class DictionaryGatewayImpl implements DictionaryGateway {
         long total = countItems(tenant, type);
         var q = orderedItems(tenant, type).limit(size).offset((long) (page - 1) * size);
         return new PageResult<>(
-                items.selectListByQuery(q).stream().map(converter::toDomain).toList(), total, page, size);
+                Objects.requireNonNull(items.selectListByQuery(q), "Mapper must return an empty list instead of null")
+                        .stream()
+                        .map(converter::toDomain)
+                        .toList(),
+                total,
+                page,
+                size);
     }
 
     @Override
     public List<DictionaryItem> listEnabledItems(String tenant, String type) {
-        return items.selectListByQuery(orderedItems(tenant, type).and(DICTIONARY_ITEM_DO.ENABLED.eq(true))).stream()
+        return Objects.requireNonNull(
+                        items.selectListByQuery(orderedItems(tenant, type).and(DICTIONARY_ITEM_DO.ENABLED.eq(true))),
+                        "Mapper must return an empty list instead of null")
+                .stream()
                 .map(converter::toDomain)
                 .toList();
     }

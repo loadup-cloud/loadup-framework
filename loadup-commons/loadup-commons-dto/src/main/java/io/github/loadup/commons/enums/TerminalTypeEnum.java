@@ -58,7 +58,7 @@ public enum TerminalTypeEnum implements IEnum {
         return IEnum.EnumLookup.fromCode(TerminalTypeEnum.class, code);
     }
 
-    private TerminalTypeEnum(String code, String description) {
+    TerminalTypeEnum(String code, String description) {
         this.code = code;
         this.description = description;
     }

@@ -36,7 +36,7 @@ public enum GenderEnum implements IEnum {
         return IEnum.EnumLookup.fromCode(GenderEnum.class, code);
     }
 
-    private GenderEnum(String code, String description) {
+    GenderEnum(String code, String description) {
         this.code = code;
         this.description = description;
     }

@@ -64,17 +64,16 @@ public class FileResourceService implements io.github.loadup.modules.file.client
     public FileResourceDTO upload(
             String tenantId, String ownerId, String filename, String contentType, long size, InputStream content) {
         String tenant = tenant(tenantId);
-        String owner = required(ownerId, "ownerId", 64);
-        String safeName = required(filename, "filename", 255);
+        String owner = required(ownerId, 64);
+        String safeName = required(filename, 255);
         if (safeName.contains("/")
                 || safeName.contains("\\")
                 || safeName.chars().anyMatch(Character::isISOControl)) {
             throw new CommonException(FileResultCodeEnum.FILENAME_CONTAINS_INVALID_CHARACTERS);
         }
         if (content == null || size < 0) throw new CommonException(FileResultCodeEnum.INVALID_FILE_CONTENT);
-        String type = contentType == null || contentType.isBlank()
-                ? "application/octet-stream"
-                : required(contentType, "contentType", 255);
+        String type =
+                contentType == null || contentType.isBlank() ? "application/octet-stream" : required(contentType, 255);
         FileMetadata stored = dfs.upload(
                 new FileUploadRequest(safeName, content, size, type, "resources/" + UUID.randomUUID(), Map.of()));
         LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), clock.getZone());
@@ -109,7 +108,7 @@ public class FileResourceService implements io.github.loadup.modules.file.client
 
     private FileResource requireFile(String tenantId, String id, String actorId, boolean admin) {
         FileResource file = repository
-                .find(tenant(tenantId), required(id, "id", 64))
+                .find(tenant(tenantId), required(id, 64))
                 .filter(item -> "ACTIVE".equals(item.state()))
                 .orElseThrow(() -> new CommonException(FileResultCodeEnum.FILE_NOT_FOUND));
         authorize(file, actorId, admin);
@@ -123,9 +122,7 @@ public class FileResourceService implements io.github.loadup.modules.file.client
     public PageDTO<FileResourceDTO> list(
             String tenantId, String actorId, boolean admin, String ownerId, int page, int size) {
         io.github.loadup.commons.dto.PageQuery.normalized(page, size, FileResultCodeEnum.INVALID_PAGE);
-        String owner = admin && ownerId != null && !ownerId.isBlank()
-                ? required(ownerId, "ownerId", 64)
-                : required(actorId, "actorId", 64);
+        String owner = admin && ownerId != null && !ownerId.isBlank() ? required(ownerId, 64) : required(actorId, 64);
         return converter.toPageDTO(repository.list(tenant(tenantId), owner, page, size));
     }
 
@@ -138,8 +135,8 @@ public class FileResourceService implements io.github.loadup.modules.file.client
                 UUID.randomUUID().toString(),
                 tenant,
                 file.id(),
-                key(referenceType, "referenceType"),
-                key(referenceId, "referenceId"),
+                key(referenceType),
+                key(referenceId),
                 LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
         repository.addReference(reference);
         return converter.toDTO(reference);
@@ -150,7 +147,7 @@ public class FileResourceService implements io.github.loadup.modules.file.client
             String tenantId, String id, String actorId, boolean admin, String referenceType, String referenceId) {
         String tenant = tenant(tenantId);
         lockActive(tenant, id, actorId, admin);
-        repository.removeReference(tenant, id, key(referenceType, "referenceType"), key(referenceId, "referenceId"));
+        repository.removeReference(tenant, id, key(referenceType), key(referenceId));
     }
 
     public List<FileReferenceDTO> references(String tenantId, String id, String actorId, boolean admin) {
@@ -193,7 +190,7 @@ public class FileResourceService implements io.github.loadup.modules.file.client
 
     public void cleanup(String tenantId, String id) {
         FileResource file = repository
-                .find(tenant(tenantId), required(id, "id", 64))
+                .find(tenant(tenantId), required(id, 64))
                 .filter(item -> "PENDING_DELETE".equals(item.state()))
                 .orElseThrow(() -> new CommonException(FileResultCodeEnum.FILE_IS_NOT_PENDING_DELETION));
         dfs.delete(file.storageId());
@@ -202,7 +199,7 @@ public class FileResourceService implements io.github.loadup.modules.file.client
 
     private FileResource lockActive(String tenant, String id, String actorId, boolean admin) {
         FileResource file = repository
-                .lock(tenant, required(id, "id", 64))
+                .lock(tenant, required(id, 64))
                 .filter(item -> "ACTIVE".equals(item.state()))
                 .orElseThrow(() -> new CommonException(FileResultCodeEnum.FILE_NOT_FOUND));
         authorize(file, actorId, admin);
@@ -214,16 +211,16 @@ public class FileResourceService implements io.github.loadup.modules.file.client
     }
 
     private static String tenant(String tenantId) {
-        return tenantId == null || tenantId.isBlank() ? DEFAULT_TENANT : required(tenantId, "tenantId", 64);
+        return tenantId == null || tenantId.isBlank() ? DEFAULT_TENANT : required(tenantId, 64);
     }
 
-    private static String key(String value, String name) {
-        String result = required(value, name, 128);
+    private static String key(String value) {
+        String result = required(value, 128);
         if (!result.matches("[A-Za-z0-9_.:-]+")) throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
         return result;
     }
 
-    private static String required(String value, String name, int max) {
+    private static String required(String value, int max) {
         if (value == null || value.isBlank() || value.trim().length() > max) {
             throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
         }

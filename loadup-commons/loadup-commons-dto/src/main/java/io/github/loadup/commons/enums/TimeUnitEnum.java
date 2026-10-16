@@ -56,7 +56,7 @@ public enum TimeUnitEnum implements IEnum {
         return IEnum.EnumLookup.fromCode(TimeUnitEnum.class, code);
     }
 
-    private TimeUnitEnum(String code, String description) {
+    TimeUnitEnum(String code, String description) {
         this.code = code;
         this.description = description;
     }

@@ -67,7 +67,7 @@ public class PermissionService implements io.github.loadup.modules.upms.client.f
         permission.setIcon(command.getIcon());
         permission.setComponentPath(command.getComponentPath());
         permission.setSortOrder(command.getSortOrder());
-        permission.setVisible(command.isVisible() != null ? command.isVisible() : true);
+        permission.setVisible(command.isVisible() == null || command.isVisible());
         permission.setStatus(command.getStatus() != null ? command.getStatus() : (short) 1);
         permission.setDeleted(false);
         permission.setRemark(command.getRemark());

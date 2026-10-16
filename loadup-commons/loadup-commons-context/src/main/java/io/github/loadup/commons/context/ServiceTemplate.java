@@ -48,7 +48,7 @@ public final class ServiceTemplate {
         Objects.requireNonNull(lifecycle, "lifecycle");
         Objects.requireNonNull(action, "action");
         return ContextHolder.callWith(context, () -> {
-            try (Cleanup cleanup = new Cleanup(lifecycle)) {
+            try (Cleanup unusedCleanup = new Cleanup(lifecycle)) {
                 lifecycle.init();
                 return action.call();
             }

@@ -43,7 +43,7 @@ public enum DbType {
         if (value == null) {
             return MYSQL;
         }
-        for (DbType type : DbType.values()) {
+        for (DbType type : values()) {
             if (type.value.equalsIgnoreCase(value)) {
                 return type;
             }

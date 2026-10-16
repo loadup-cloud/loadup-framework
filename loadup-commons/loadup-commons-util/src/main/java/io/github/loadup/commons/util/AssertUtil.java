@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IteratorUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -187,10 +186,6 @@ public class AssertUtil {
         if (condition) {
             isTrue(expValue, resultCode, objs);
         }
-    }
-
-    private static String getLogString(Object... objs) {
-        return Arrays.stream(objs).map(String::valueOf).collect(Collectors.joining());
     }
 
     /**
@@ -472,7 +467,7 @@ public class AssertUtil {
      *  });
      * </pre>
      *
-     * @see StringUtils#contains(CharSequence, CharSequence)
+     * @see String#contains(CharSequence)
      * @since 5.4.5
      */
     public static <T extends CharSequence, X extends Throwable> T notContain(

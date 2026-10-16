@@ -71,8 +71,7 @@ public class PasswordLoginStrategy implements LoginStrategy {
             throw new CommonException(UpmsResultCodeEnum.INVALID_LOGIN_CREDENTIALS);
         }
 
-        user.updateLastLogin(
-                credentials.getIpAddress(), java.time.LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
+        user.updateLastLogin(credentials.getIpAddress(), LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
         user.resetLoginFailCount();
         userGateway.update(user);
 
@@ -111,7 +110,7 @@ public class PasswordLoginStrategy implements LoginStrategy {
             user.incrementLoginFailCount();
 
             if (user.getLoginFailCount() >= securityProperties.getLogin().getMaxFailAttempts()) {
-                user.lockAccount(java.time.LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
+                user.lockAccount(LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
                 LogUtil.warn(PasswordLoginStrategy.class, "用户 {} 因失败次数过多被锁定", user.getUsername());
             }
 

@@ -52,7 +52,7 @@ public enum PlatFormEnum implements IEnum {
         return IEnum.EnumLookup.fromCode(PlatFormEnum.class, code);
     }
 
-    private PlatFormEnum(String code, String description) {
+    PlatFormEnum(String code, String description) {
         this.code = code;
         this.description = description;
     }

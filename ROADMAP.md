@@ -12,6 +12,8 @@
 
 ## 当前建设目标与实施顺序
 
+2026-10-16 Maven 质量治理已完成：统一 Checkstyle 的 Java 25 引擎与项目结构规则、PMD 生成源码范围，取消 SpotBugs 对 commons 的整包排除；修复数字转换递归、场景缓存键、JWT 空值、随机数边界、null 占位符与正则校验等问题，清理冗余代码。全仓 143 模块执行 `mvnd clean ... package ...:check`，141 模块成功，两处测试失败分别为 Testify 装配用例缺少 DataSource、源码门禁误判嵌套容器夹具；修复后对 76 模块及依赖定向补验成功，37 项测试无失败/错误/跳过。首轮 228 项定向回归中的其余 226 项通过，最终两处失败均已复验修复。SpotBugs、PMD、Checkstyle、License、Spotless 和 Enforcer 门禁通过；最终保存 103 份 SpotBugs、119 份 PMD、143 份 Checkstyle 报告，报告项均为零。IDEA Java 批量检查及文档同步检查通过；Outbox SQL 检查提示缺少 IDE 数据库元数据，未将其记为数据库验证通过。真实数据库/外部系统、全量 IT 和覆盖率没有重新验收。
+
 2026-10-16 已补齐并统一全部 143 个 POM 的英文 description，简述实际模块职责，区分 API/binder、COLA 各层与测试模块，修正 AuthServer、Testify 及通知占位传输的能力描述。修改范围仅为项目 description，保留已统一的 name 与其余 XML 元数据；XML 解析、代表性 POM 的 IDEA 检查及差异检查通过，文档同步检查无差异，未运行 Maven 构建。
 
 2026-10-16 POM 显示名已统一：143 个 POM 保持唯一英文 name，调整其中 133 个，采用 LoadUp + 模块族 + 能力 + 职责/实现的顺序，规范缩写及三方名称。仅修改顶层 name；artifactId、坐标、依赖、模块路径及其余 XML 元数据保持原样，命名规则已写入 AGENTS。XML 解析和差异检查通过，未运行 Maven 构建；License 插件默认 canUpdateDescription=false，现有 Java 文件头描述无需随显示名重写。
@@ -29,13 +31,12 @@
 收尾补齐 AuthServer 的实际 RSA 签名验签、claim 与配置边界，NanoCaptcha 的过期/单次消费/字符集，Tianai 的轨迹 JSON 及失败边界，Testcontainers 七种类型的配置注入/生命周期和真实 Elasticsearch 读写。修复配置模式遗漏 Redis/LocalStack、LocalStack 忽略 reusable、NanoCaptcha 空 ID 异常；移除验证码解析异常和 LocalStack 密钥日志。此前批次的调度分页删除、时区保留、缓存异常转换、Flyway 回调以及 Gotone 记录状态/表字段回归均在此次整批运行中通过。
 
 - [ ] 将逐 jar 覆盖率门禁接入 CI/发布流程，并保存 summary、HTML 及单测/IT 报告；本地门禁已通过，远端流水线尚未验收。
-- [ ] 执行 SpotBugs 及消费应用的架构/源码/错误码门禁；此次完整组件运行未包含这些验收。
 - [ ] 在已有 Gotone 消费数据库验收 `V2__add_notification_record_trace_id.sql` 升级；本次真实 MySQL 验证覆盖从空库应用 V1/V2，未覆盖存量升级。
 - [ ] 为 Gotone FCM 及 Aliyun/Huawei/Yunpian SMS 接入真实传输并验收；当前占位路径显式失败，边界测试达标不代表具备实际发送能力。Webhook 后续补充厂商响应体业务错误码判定，当前只按 HTTP 状态判断。
 - [ ] 在真实 Nacos/Apollo、邮件、推送和短信供应商环境单独验收连接、权限及协议错误；SDK 模拟和本地协议服务器测试不替代外部系统验收。
 
 - [ ] JUnit 6.0.3 定向运行验收：版本由 Boot 4.1.1 BOM 统一管理，Testify/AGENTS 文档已对齐，launcher 架构测试已改用 ArchUnit 核心库；见 [分析记录](loadup-testify/JUNIT6-ANALYSIS.md)。用户验收普通/参数化/Spring 测试、架构与源码/错误码门禁及真实 MySQL IT，核对测试发现数量；本次未执行构建或测试。
-- [ ] Testify 修复运行验收：无 JdbcTemplate 时保留响应/异常断言，数据库引擎按 Bean 条件装配，缺少引擎时 verifyDb 抛出明确 AssertionError；消费方测试依赖文档已补齐，archunit-junit5 管理项已移除。新增 TestifyAutoConfigurationTest，用户连同 ScenarioAssertTest、UserServiceIT、UserServiceBatchIT 定向运行（当前预期 19 次执行），此次未运行构建、测试或 Maven 格式门禁。
+- [ ] Testify 真实数据库回归：运行 UserServiceIT、UserServiceBatchIT。TestifyAutoConfigurationTest 与 ScenarioAssertTest 已在本次质量治理中完成 14 项测试，Bean 装配、非数据库断言及缺少数据库引擎的错误契约通过；未以装配测试替代真实数据库验收。
 
 面向支付宝、微信支付、银联的商户聚合收单应用，优先补齐通用技术能力。收单业务放在独立消费工程中；支付状态机、渠道协议、退款、商户通知任务、费用与对账规则由业务工程负责。当前范围不包含用户余额钱包、充值、内部转账及提现。
 

@@ -21,7 +21,6 @@ package io.github.loadup.modules.contract.client.facade;
 
 import io.github.loadup.modules.contract.client.dto.*;
 import io.github.loadup.modules.contract.client.query.ContractResolveQuery;
-import java.util.*;
 
 /** Public business contract for ContractResolveService. */
 public interface ContractResolveFacade {

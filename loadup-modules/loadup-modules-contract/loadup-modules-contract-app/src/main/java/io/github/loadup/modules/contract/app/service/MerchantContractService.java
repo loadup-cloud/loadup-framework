@@ -194,7 +194,9 @@ public class MerchantContractService implements io.github.loadup.modules.contrac
     }
 
     private MerchantContractDTO replay(ContractRecord existing, String digest) {
-        if (!existing.requestDigest().equals(digest))
+        if (!java.security.MessageDigest.isEqual(
+                existing.requestDigest().getBytes(java.nio.charset.StandardCharsets.UTF_8),
+                digest.getBytes(java.nio.charset.StandardCharsets.UTF_8)))
             throw new CommonException(ContractResultCodeEnum.IDEMPOTENCY_CONFLICT);
         return toDTO(existing);
     }

@@ -83,11 +83,14 @@ public class UpmsTokenController {
             Authentication authentication = authenticationProvider.authenticate(
                     UsernamePasswordAuthenticationToken.unauthenticated(request.username(), request.password()),
                     httpRequest.getRemoteAddr());
-            UpmsPrincipal principal = (UpmsPrincipal) authentication.getPrincipal();
+            if (!(authentication.getPrincipal() instanceof UpmsPrincipal principal)) {
+                return FailureResponse.of(CommonResultCodeEnum.UNAUTHENTICATED);
+            }
             Set<String> roles = new LinkedHashSet<>();
             Set<String> permissions = new LinkedHashSet<>();
             for (GrantedAuthority authority : authentication.getAuthorities()) {
                 String name = authority.getAuthority();
+                if (name == null || name.isBlank()) continue;
                 if (name.startsWith("ROLE_")) {
                     roles.add(name.substring("ROLE_".length()));
                 } else {

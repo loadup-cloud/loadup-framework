@@ -35,11 +35,8 @@ import java.time.temporal.TemporalAccessor;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
@@ -130,10 +127,6 @@ public class TimeParser {
         "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     };
 
-    private static final Pattern TIMESTAMP_PATTERN = Pattern.compile("^\\d{1,13}$");
-    private static final Pattern MICROSECOND_PATTERN = Pattern.compile("^\\d{16}$");
-    private static final Pattern NANOSECOND_PATTERN = Pattern.compile("^\\d{19}$");
-
     public long toMillis(Object value) {
         if (value == null) {
             throw new IllegalArgumentException("时间值不能为空");
@@ -143,11 +136,11 @@ public class TimeParser {
             return handleNumericTimestamp(n.longValue());
         }
 
-        if (value instanceof java.time.temporal.TemporalAccessor ta) {
+        if (value instanceof TemporalAccessor ta) {
             return handleTemporalAccessor(ta);
         }
 
-        if (value instanceof java.util.Date d) {
+        if (value instanceof Date d) {
             return d.getTime();
         }
 
@@ -243,7 +236,7 @@ public class TimeParser {
             try {
                 long timestamp = Long.parseLong(str);
                 return handleNumericTimestamp(timestamp);
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException ignored) {
 
             }
         }
@@ -252,7 +245,7 @@ public class TimeParser {
             try {
                 TemporalAccessor temporal = formatter.parse(str);
                 return handleTemporalAccessor(temporal);
-            } catch (DateTimeParseException e) {
+            } catch (DateTimeParseException ignored) {
 
             }
         }
@@ -260,7 +253,7 @@ public class TimeParser {
         try {
             Date date = DateUtils.parseDate(str, COMMON_DATE_PATTERNS);
             return date.getTime();
-        } catch (ParseException e) {
+        } catch (ParseException ignored) {
 
         }
 
@@ -276,7 +269,7 @@ public class TimeParser {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd");
                 return sdf.parse(str).getTime();
             }
-        } catch (ParseException e) {
+        } catch (ParseException ignored) {
 
         }
 
@@ -284,7 +277,7 @@ public class TimeParser {
         if (!cleanedStr.equals(str)) {
             try {
                 return parseStringToMillis(cleanedStr);
-            } catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException ignored) {
 
             }
         }
@@ -298,7 +291,7 @@ public class TimeParser {
             } else {
                 return java.sql.Timestamp.valueOf(str).getTime();
             }
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException ignored) {
 
             try {
 
@@ -356,7 +349,7 @@ public class TimeParser {
         if (result.matches("\\d{4}-\\d{1,2}-\\d{1,2}$")) {
             result += " 00:00:00";
         } else if (result.matches("\\d{4}-\\d{1,2}-\\d{1,2} \\d{1,2}$")) {
-            result += ":00:00";
+            result += ":00:00"; // NOPMD AvoidUsingHardCodedIP - time padding, not a network address.
         } else if (result.matches("\\d{4}-\\d{1,2}-\\d{1,2} \\d{1,2}:\\d{1,2}$")) {
             result += ":00";
         }
@@ -404,18 +397,5 @@ public class TimeParser {
         long min = 978307200000L; // 2001-01-01
         long max = 2145916800000L; // 2038-01-19
         return timestamp >= min && timestamp <= max;
-    }
-
-    private final Map<String, DateTimeFormatter> formatterCache = new HashMap<>();
-
-    private long parseWithCachedFormatter(String str, String pattern) {
-        DateTimeFormatter formatter = formatterCache.computeIfAbsent(pattern, p -> DateTimeFormatter.ofPattern(p));
-
-        try {
-            TemporalAccessor temporal = formatter.parse(str);
-            return handleTemporalAccessor(temporal);
-        } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException(String.format("字符串 '%s' 不匹配格式 '%s'", str, pattern), e);
-        }
     }
 }

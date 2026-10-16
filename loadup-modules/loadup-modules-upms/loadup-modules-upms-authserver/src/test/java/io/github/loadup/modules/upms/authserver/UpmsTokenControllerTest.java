@@ -59,4 +59,18 @@ class UpmsTokenControllerTest {
         assertThat(new UpmsTokenController.TokenData("private-token", "Bearer", 30).toString())
                 .doesNotContain("private-token");
     }
+
+    @Test
+    void rejectsAnUnexpectedPrincipalWithoutIssuingAToken() {
+        var provider = mock(UpmsAuthenticationProvider.class);
+        var encoder = mock(JwtEncoder.class);
+        when(provider.authenticate(any(), anyString()))
+                .thenReturn(UsernamePasswordAuthenticationToken.authenticated("wrong-principal", null, List.of()));
+        var controller =
+                new UpmsTokenController(provider, encoder, new LoadUpAuthServerProperties(), Clock.systemDefaultZone());
+        var response = controller.login(
+                new UpmsTokenController.LoginRequest("example", "password"), new MockHttpServletRequest());
+        assertThat(response.getResult().getCode()).isEqualTo("UNAUTHENTICATED");
+        verifyNoInteractions(encoder);
+    }
 }

@@ -68,7 +68,7 @@ public class LocalDfsProvider implements DfsProvider {
         Path temporary = target.resolveSibling(target.getFileName() + ".uploading");
         Instant uploadedAt = Instant.now();
         try {
-            Files.createDirectories(target.getParent());
+            Files.createDirectories(java.util.Objects.requireNonNull(target.getParent()));
             Files.copy(request.content(), temporary, StandardCopyOption.REPLACE_EXISTING);
             long actualSize = Files.size(temporary);
             if (actualSize != request.contentLength()) {
@@ -101,9 +101,6 @@ public class LocalDfsProvider implements DfsProvider {
     }
 
     @Override
-    @SuppressFBWarnings(
-            value = "OBL_UNSATISFIED_OBLIGATION",
-            justification = "The response transfers stream ownership to the DfsService caller.")
     public FileDownloadResponse download(String fileId) {
         FileMetadata metadata = getMetadata(fileId);
         Path object = resolve(objectRoot, fileId);
@@ -174,7 +171,7 @@ public class LocalDfsProvider implements DfsProvider {
         values.setProperty("uploadedAt", metadata.uploadedAt().toString());
         metadata.metadata().forEach((key, value) -> values.setProperty(METADATA_PREFIX + key, value));
         Path metadataFile = metadataPath(metadata.fileId());
-        Files.createDirectories(metadataFile.getParent());
+        Files.createDirectories(java.util.Objects.requireNonNull(metadataFile.getParent()));
         try (OutputStream output = Files.newOutputStream(metadataFile)) {
             values.store(output, null);
         }

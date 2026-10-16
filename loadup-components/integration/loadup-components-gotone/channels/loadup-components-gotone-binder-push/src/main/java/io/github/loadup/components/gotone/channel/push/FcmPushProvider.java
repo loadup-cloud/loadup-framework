@@ -41,11 +41,9 @@ public class FcmPushProvider implements NotificationChannelProvider {
     private static final Pattern DEVICE_TOKEN = Pattern.compile("^[A-Za-z0-9_\\-]{20,}$");
 
     private final String serverKey;
-    private final String projectId;
 
     public FcmPushProvider(String serverKey, String projectId) {
         this.serverKey = serverKey;
-        this.projectId = projectId;
     }
 
     @Override

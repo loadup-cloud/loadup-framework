@@ -21,7 +21,6 @@ package io.github.loadup.modules.file.infrastructure.dataobject;
 
 import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
-import io.github.loadup.modules.file.domain.model.*;
 
 @Table("file_resource_reference")
 public class FileReferenceDO extends BaseDO {

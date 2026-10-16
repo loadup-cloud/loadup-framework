@@ -108,14 +108,6 @@
         <Class name="~io\.github\.loadup\.framework\.api\..*"/>
     </Match>
 
-    <!--
-      排除 loadup-commons-dto 模块的所有类：
-      DTO/Query/Response 是数据传输对象，设计上就是可变的，
-      EI_EXPOSE_REP 对 DTO 是误报（防御性复制对传输对象是过度工程）。
-    -->
-    <Match>
-        <Class name="~io\.github\.loadup\.commons\..*"/>
-    </Match>
 
     <!--
       RandomExpiration 使用 ThreadLocalRandom 做缓存过期时间抖动（防止缓存雪崩），
@@ -261,4 +253,51 @@
         <Bug pattern="PREDICTABLE_RANDOM"/>
     </Match>
 
+    <!-- Backoff jitter controls contention, not secrets or security tokens. -->
+    <Match>
+        <Class name="io.github.loadup.components.database.sequence.DatabaseSequenceRangeAllocator"/>
+        <Method name="reserve"/>
+        <Bug pattern="PREDICTABLE_RANDOM"/>
+    </Match>
+    <!-- All client accesses use the read/write lock; synchronized serializes refresh construction and close. -->
+    <Match>
+        <Class name="io.github.loadup.components.http.HttpTemplate"/>
+        <Field name="clients"/>
+        <Bug pattern="IS2_INCONSISTENT_SYNC"/>
+    </Match>
+    <!-- Servlet error dispatch must accept the original HTTP method, including POST and DELETE. -->
+    <Match>
+        <Class name="io.github.loadup.components.webmvc.ApiErrorController"/>
+        <Method name="error"/>
+        <Bug pattern="SPRING_CSRF_UNRESTRICTED_REQUEST_MAPPING"/>
+    </Match>
+    <!-- Handler SPI declares checked exceptions; cleanup and failure persistence must cover every handler failure. -->
+    <Match>
+        <Class name="io.github.loadup.modules.transfer.app.service.TransferTaskService"/>
+        <Method name="executeForTenant"/>
+        <Bug pattern="REC_CATCH_EXCEPTION"/>
+    </Match>
+    <!-- General random data utilities expose ThreadLocalRandom; callers needing secrets use getSecureRandom. -->
+    <Match>
+        <Class name="io.github.loadup.commons.util.RandomUtil"/>
+        <Method name="getRandom"/>
+        <Bug pattern="PREDICTABLE_RANDOM"/>
+    </Match>
+    <!-- Spring initializes the compatibility static context bridge via ApplicationContextAware. -->
+    <Match>
+        <Class name="io.github.loadup.commons.util.context.ApplicationContextUtils"/>
+        <Method name="setApplicationContext"/>
+        <Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"/>
+    </Match>
+    <!-- JsonMapper is immutable in Jackson 3; this bridge shares the application-configured mapper. -->
+    <Match>
+        <Class name="io.github.loadup.commons.json.JsonUtil"/>
+        <Method name="setObjectMapper"/>
+        <Bug pattern="EI_EXPOSE_STATIC_REP2"/>
+    </Match>
+    <Match>
+        <Class name="io.github.loadup.commons.json.JsonUtil"/>
+        <Method name="getObjectMapper"/>
+        <Bug pattern="MS_EXPOSE_REP"/>
+    </Match>
 </FindBugsFilter>

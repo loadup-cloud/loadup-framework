@@ -50,9 +50,9 @@ final class ServiceDigestInterceptor implements MethodInterceptor {
             Class<?> serviceClass = ClassUtils.getUserClass(invocation.getThis());
             String code = failure instanceof CommonException business
                     ? business.getResultCode().getCode()
-                    : (failure == null
+                    : failure == null
                             ? CommonResultCodeEnum.SUCCESS.getCode()
-                            : CommonResultCodeEnum.SYS_ERROR.getCode());
+                            : CommonResultCodeEnum.SYS_ERROR.getCode();
             LogUtil.info(
                     ServiceDigestInterceptor.class,
                     "service_digest service={} method={} outcome={} code={} elapsedMs={} exceptionType={}",

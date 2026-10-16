@@ -45,7 +45,7 @@ public class RandomUtil {
 
     /**
      *
-     * href="https://www.jianshu.com/p/89dfe990295c">https://www.jianshu.com/p/89dfe990295c</a>
+     * <a href="https://www.jianshu.com/p/89dfe990295c">https://www.jianshu.com/p/89dfe990295c</a>
      *
      * @since 3.1.2
      */
@@ -63,7 +63,7 @@ public class RandomUtil {
 
     /**
      *
-     * href="https://stackoverflow.com/questions/137212/how-to-solve-slow-java-securerandom">how-to-solve-slow-java-securerandom</a>
+     * <a href="https://stackoverflow.com/questions/137212/how-to-solve-slow-java-securerandom">how-to-solve-slow-java-securerandom</a>
      *
      * @since 3.1.2
      */
@@ -73,7 +73,7 @@ public class RandomUtil {
 
     /**
      *
-     * href="https://stackoverflow.com/questions/137212/how-to-solve-slow-java-securerandom">how-to-solve-slow-java-securerandom</a>
+     * <a href="https://stackoverflow.com/questions/137212/how-to-solve-slow-java-securerandom">how-to-solve-slow-java-securerandom</a>
      *
      * @see #createSecureRandom(byte[])
      * @since 5.5.2
@@ -86,7 +86,7 @@ public class RandomUtil {
      * see: <a
      * href="http://ifeve.com/jvm-random-and-entropy-source/">http://ifeve.com/jvm-random-and-entropy-source/</a>
      *
-     * href="https://stackoverflow.com/questions/137212/how-to-solve-slow-java-securerandom">how-to-solve-slow-java-securerandom</a>
+     * <a href="https://stackoverflow.com/questions/137212/how-to-solve-slow-java-securerandom">how-to-solve-slow-java-securerandom</a>
      *
      * @since 5.5.8
      */
@@ -412,7 +412,7 @@ public class RandomUtil {
 
         for (int i = 0; i < size; i++) {
 
-            final int j = RandomUtil.randomInt(seed.length - i);
+            final int j = randomInt(seed.length - i);
 
             ranArr[i] = seed[j];
 

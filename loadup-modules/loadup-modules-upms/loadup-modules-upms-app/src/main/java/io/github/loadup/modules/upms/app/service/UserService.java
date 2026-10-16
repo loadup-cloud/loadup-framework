@@ -260,8 +260,6 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
      */
     public PageDTO<UserDetailDTO> queryUsers(UserPageQuery query) {
         var pagination = query.pagination();
-        int page = pagination.page();
-        int size = pagination.size();
         String sortBy = query.getSortBy() == null ? "createdAt" : query.getSortBy();
         String sortOrder = query.getSortOrder() == null ? "DESC" : query.getSortOrder();
         if (!java.util.Set.of("createdAt", "username", "nickname", "id").contains(sortBy)
@@ -368,13 +366,6 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
         return dtoConverter.toUser(user, departmentName, roles);
     }
 
-    /**
-     * Convert Role to RoleDTO
-     */
-    private RoleDTO convertRoleToDTO(Role role) {
-        return dtoConverter.toRoleSummary(role);
-    }
-
     public UserService(
             UserGateway userGateway,
             RoleGateway roleGateway,
@@ -392,6 +383,6 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
 
     @Override
     public UserDetailDTO getUserById(String userId) {
-        return getUserById(new io.github.loadup.commons.request.query.IdQuery(userId));
+        return getUserById(new IdQuery(userId));
     }
 }

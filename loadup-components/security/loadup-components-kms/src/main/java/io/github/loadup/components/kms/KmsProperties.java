@@ -42,7 +42,7 @@ public record KmsProperties(
         managementTokenEnv = managementTokenEnv == null ? "OPENBAO_MANAGEMENT_TOKEN" : managementTokenEnv;
         connectTimeout = connectTimeout == null ? Duration.ofSeconds(3) : connectTimeout;
         readTimeout = readTimeout == null ? Duration.ofSeconds(10) : readTimeout;
-        maxInputBytes = maxInputBytes == null ? 65536 : maxInputBytes;
+        maxInputBytes = maxInputBytes == null ? Integer.valueOf(65536) : maxInputBytes;
         if (endpoint == null
                 || endpoint.getHost() == null
                 || endpoint.getUserInfo() != null
@@ -56,8 +56,12 @@ public record KmsProperties(
         if ("/".equals(endpoint.getPath()))
             endpoint = URI.create(
                     endpoint.toString().substring(0, endpoint.toString().length() - 1));
-        if (!mount.matches("[A-Za-z0-9_-]+(/[A-Za-z0-9_-]+)*")
-                || mount.length() > 128
+        if (mount.length() > 128
+                || mount.isEmpty()
+                || mount.startsWith("/")
+                || mount.endsWith("/")
+                || mount.contains("//")
+                || !mount.matches("[A-Za-z0-9_/-]+")
                 || !tokenEnv.matches("[A-Za-z_][A-Za-z0-9_]*")
                 || !managementTokenEnv.matches("[A-Za-z_][A-Za-z0-9_]*")
                 || maxInputBytes < 1

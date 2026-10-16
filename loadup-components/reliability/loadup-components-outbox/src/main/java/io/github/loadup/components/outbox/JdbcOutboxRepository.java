@@ -229,7 +229,7 @@ public class JdbcOutboxRepository implements OutboxTemplate {
                 rs.getString("trace_id"));
     }
 
-    private static OutboxRecord record(ResultSet rs, int row) throws SQLException {
+    private static OutboxRecord record(ResultSet rs, int ignoredRow) throws SQLException {
         return new OutboxRecord(
                 rs.getString("id"),
                 rs.getString("tenant_id"),

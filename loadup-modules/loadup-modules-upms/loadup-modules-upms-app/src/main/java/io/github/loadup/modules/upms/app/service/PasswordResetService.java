@@ -65,7 +65,7 @@ public class PasswordResetService implements io.github.loadup.modules.upms.clien
         }
 
         // Generate code
-        String code = verificationCodeService.generateCode(email, "EMAIL");
+        verificationCodeService.generateCode(email, "EMAIL");
 
         // TODO: Send email using loadup-components-gotone
         LogUtil.info(
@@ -89,7 +89,7 @@ public class PasswordResetService implements io.github.loadup.modules.upms.clien
         }
 
         // Generate code
-        String code = verificationCodeService.generateCode(mobile, "SMS");
+        verificationCodeService.generateCode(mobile, "SMS");
 
         // TODO: Send SMS using loadup-components-gotone
         LogUtil.info(

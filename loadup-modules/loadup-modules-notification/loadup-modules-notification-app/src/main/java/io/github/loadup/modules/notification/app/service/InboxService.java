@@ -62,11 +62,11 @@ public class InboxService implements io.github.loadup.modules.notification.clien
         if (recipients == null || recipients.isEmpty() || recipients.size() > 100) {
             throw new CommonException(NotificationResultCodeEnum.RECIPIENTS_MUST_CONTAIN_1_TO_100_USERS);
         }
-        String sender = senderId == null || senderId.isBlank() ? null : required(senderId, "senderId", 64);
-        String kind = required(category, "category", 64);
-        String heading = required(title, "title", 200);
-        String text = required(body, "body", 4000);
-        String url = actionUrl == null || actionUrl.isBlank() ? null : required(actionUrl, "actionUrl", 500);
+        String sender = senderId == null || senderId.isBlank() ? null : required(senderId, 64);
+        String kind = required(category, 64);
+        String heading = required(title, 200);
+        String text = required(body, 4000);
+        String url = actionUrl == null || actionUrl.isBlank() ? null : required(actionUrl, 500);
         if (url != null
                 && (!url.startsWith("/")
                         || url.startsWith("//")
@@ -74,14 +74,14 @@ public class InboxService implements io.github.loadup.modules.notification.clien
                         || url.chars().anyMatch(Character::isISOControl))) {
             throw new CommonException(NotificationResultCodeEnum.INVALID_ACTION_URL);
         }
-        String key = requestKey == null || requestKey.isBlank() ? null : required(requestKey, "requestKey", 128);
+        String key = requestKey == null || requestKey.isBlank() ? null : required(requestKey, 128);
         LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), clock.getZone());
         int inserted = 0;
         for (String recipient : recipients.stream().distinct().toList()) {
             InboxMessage message = new InboxMessage(
                     UUID.randomUUID().toString(),
                     tenant,
-                    required(recipient, "recipientId", 64),
+                    required(recipient, 64),
                     sender,
                     kind,
                     heading,
@@ -97,32 +97,32 @@ public class InboxService implements io.github.loadup.modules.notification.clien
     public PageDTO<InboxMessageDTO> list(String tenantId, String recipientId, boolean unreadOnly, int page, int size) {
         io.github.loadup.commons.dto.PageQuery.normalized(page, size, NotificationResultCodeEnum.INVALID_PAGE);
         return converter.toPageDTO(
-                repository.list(tenant(tenantId), required(recipientId, "recipientId", 64), unreadOnly, page, size));
+                repository.list(tenant(tenantId), required(recipientId, 64), unreadOnly, page, size));
     }
 
     public long unreadCount(String tenantId, String recipientId) {
-        return repository.unreadCount(tenant(tenantId), required(recipientId, "recipientId", 64));
+        return repository.unreadCount(tenant(tenantId), required(recipientId, 64));
     }
 
     public void markRead(String tenantId, String recipientId, String id) {
-        if (repository.markRead(tenant(tenantId), required(recipientId, "recipientId", 64), required(id, "id", 64))
-                == 0) throw new CommonException(NotificationResultCodeEnum.NOTIFICATION_NOT_FOUND);
+        if (repository.markRead(tenant(tenantId), required(recipientId, 64), required(id, 64)) == 0)
+            throw new CommonException(NotificationResultCodeEnum.NOTIFICATION_NOT_FOUND);
     }
 
     public int markAllRead(String tenantId, String recipientId) {
-        return repository.markAllRead(tenant(tenantId), required(recipientId, "recipientId", 64));
+        return repository.markAllRead(tenant(tenantId), required(recipientId, 64));
     }
 
     public void archive(String tenantId, String recipientId, String id) {
-        if (repository.archive(tenant(tenantId), required(recipientId, "recipientId", 64), required(id, "id", 64)) == 0)
+        if (repository.archive(tenant(tenantId), required(recipientId, 64), required(id, 64)) == 0)
             throw new CommonException(NotificationResultCodeEnum.NOTIFICATION_NOT_FOUND);
     }
 
     private static String tenant(String value) {
-        return value == null || value.isBlank() ? DEFAULT_TENANT : required(value, "tenantId", 64);
+        return value == null || value.isBlank() ? DEFAULT_TENANT : required(value, 64);
     }
 
-    private static String required(String value, String name, int max) {
+    private static String required(String value, int max) {
         if (value == null || value.isBlank() || value.trim().length() > max) {
             throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
         }

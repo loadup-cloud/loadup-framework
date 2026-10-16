@@ -89,14 +89,18 @@ public class PermissionGatewayImpl implements PermissionGateway {
 
     @Override
     public List<Permission> findByRoleId(String roleId) {
-        List<String> permissionIds =
-                rolePermissionMapper
-                        .selectListByQuery(QueryWrapper.create().where(ROLE_PERMISSION_DO.ROLE_ID.eq(roleId)))
-                        .stream()
-                        .map(RolePermissionDO::getPermissionId)
-                        .toList();
+        List<String> permissionIds = java.util.Objects.requireNonNull(
+                        rolePermissionMapper.selectListByQuery(
+                                QueryWrapper.create().where(ROLE_PERMISSION_DO.ROLE_ID.eq(roleId))),
+                        "Mapper must return an empty list instead of null")
+                .stream()
+                .map(RolePermissionDO::getPermissionId)
+                .toList();
         if (permissionIds.isEmpty()) return List.of();
-        return permissionDOMapper.selectListByIds(permissionIds).stream()
+        return java.util.Objects.requireNonNull(
+                        permissionDOMapper.selectListByIds(permissionIds),
+                        "Mapper must return an empty list instead of null")
+                .stream()
                 .map(permissionConverter::toEntity)
                 .toList();
     }
@@ -104,14 +108,16 @@ public class PermissionGatewayImpl implements PermissionGateway {
     @Override
     public List<Permission> findByParentId(String parentId) {
         QueryWrapper query = QueryWrapper.create().where(PERMISSION_DO.PARENT_ID.eq(parentId));
-        List<PermissionDO> permissionDOs = permissionDOMapper.selectListByQuery(query);
+        List<PermissionDO> permissionDOs = java.util.Objects.requireNonNull(
+                permissionDOMapper.selectListByQuery(query), "Mapper must return an empty list instead of null");
         return permissionDOs.stream().map(permissionConverter::toEntity).collect(Collectors.toList());
     }
 
     @Override
     public List<Permission> findByPermissionType(Short permissionType) {
         QueryWrapper query = QueryWrapper.create().where(PERMISSION_DO.PERMISSION_TYPE.eq(permissionType));
-        List<PermissionDO> permissionDOs = permissionDOMapper.selectListByQuery(query);
+        List<PermissionDO> permissionDOs = java.util.Objects.requireNonNull(
+                permissionDOMapper.selectListByQuery(query), "Mapper must return an empty list instead of null");
         return permissionDOs.stream().map(permissionConverter::toEntity).collect(Collectors.toList());
     }
 
@@ -124,7 +130,8 @@ public class PermissionGatewayImpl implements PermissionGateway {
     @Override
     public List<Permission> findAllEnabled() {
         QueryWrapper query = QueryWrapper.create().where(PERMISSION_DO.STATUS.eq((short) 1));
-        List<PermissionDO> permissionDOs = permissionDOMapper.selectListByQuery(query);
+        List<PermissionDO> permissionDOs = java.util.Objects.requireNonNull(
+                permissionDOMapper.selectListByQuery(query), "Mapper must return an empty list instead of null");
         return permissionDOs.stream().map(permissionConverter::toEntity).collect(Collectors.toList());
     }
 
@@ -134,7 +141,8 @@ public class PermissionGatewayImpl implements PermissionGateway {
                 .where(PERMISSION_DO.PERMISSION_TYPE.in((short) 1, (short) 2))
                 .and(PERMISSION_DO.STATUS.eq((short) 1))
                 .orderBy(PERMISSION_DO.SORT_ORDER.asc());
-        List<PermissionDO> permissionDOs = permissionDOMapper.selectListByQuery(query);
+        List<PermissionDO> permissionDOs = java.util.Objects.requireNonNull(
+                permissionDOMapper.selectListByQuery(query), "Mapper must return an empty list instead of null");
         return permissionDOs.stream().map(permissionConverter::toEntity).collect(Collectors.toList());
     }
 

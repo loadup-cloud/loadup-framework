@@ -51,10 +51,10 @@ public record HttpProperties(Map<String, Client> clients) {
             connectTimeout = connectTimeout == null ? Duration.ofSeconds(3) : connectTimeout;
             readTimeout = readTimeout == null ? Duration.ofSeconds(10) : readTimeout;
             acquireTimeout = acquireTimeout == null ? Duration.ofSeconds(3) : acquireTimeout;
-            maxConnections = maxConnections == null ? 50 : maxConnections;
-            maxConnectionsPerRoute = maxConnectionsPerRoute == null ? 20 : maxConnectionsPerRoute;
-            maxRequestBytes = maxRequestBytes == null ? 1024 * 1024 : maxRequestBytes;
-            maxResponseBytes = maxResponseBytes == null ? 10L * 1024 * 1024 : maxResponseBytes;
+            maxConnections = maxConnections == null ? Integer.valueOf(50) : maxConnections;
+            maxConnectionsPerRoute = maxConnectionsPerRoute == null ? Integer.valueOf(20) : maxConnectionsPerRoute;
+            maxRequestBytes = maxRequestBytes == null ? Integer.valueOf(1024 * 1024) : maxRequestBytes;
+            maxResponseBytes = maxResponseBytes == null ? Long.valueOf(10L * 1024 * 1024) : maxResponseBytes;
             headers = headers == null ? Map.of() : Map.copyOf(headers);
             operations = operations == null ? Map.of() : Map.copyOf(operations);
             if (baseUrl == null

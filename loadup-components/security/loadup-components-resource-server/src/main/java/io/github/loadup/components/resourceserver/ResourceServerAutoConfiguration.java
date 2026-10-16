@@ -86,7 +86,8 @@ public class ResourceServerAutoConfiguration {
                             && properties
                                     .getAccessTokenUseValue()
                                     .equals(jwt.getClaimAsString(properties.getAccessTokenUseClaim())));
-            return validUse && jwt.getAudience() != null && jwt.getAudience().contains(properties.getAudience())
+            var audience = jwt.getAudience();
+            return validUse && audience != null && audience.contains(properties.getAudience())
                     ? OAuth2TokenValidatorResult.success()
                     : OAuth2TokenValidatorResult.failure(
                             new OAuth2Error("invalid_token", "Invalid token use or audience", null));

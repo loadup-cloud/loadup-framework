@@ -28,7 +28,7 @@ public record RequestSignatureProperties(Duration maxAge, Duration futureSkew, I
     public RequestSignatureProperties {
         maxAge = maxAge == null ? Duration.ofMinutes(5) : maxAge;
         futureSkew = futureSkew == null ? Duration.ofSeconds(30) : futureSkew;
-        maxPayloadBytes = maxPayloadBytes == null ? 1024 * 1024 : maxPayloadBytes;
+        maxPayloadBytes = maxPayloadBytes == null ? Integer.valueOf(1024 * 1024) : maxPayloadBytes;
         if (maxAge.compareTo(Duration.ofSeconds(1)) < 0
                 || maxAge.compareTo(Duration.ofDays(1)) > 0
                 || futureSkew.isNegative()

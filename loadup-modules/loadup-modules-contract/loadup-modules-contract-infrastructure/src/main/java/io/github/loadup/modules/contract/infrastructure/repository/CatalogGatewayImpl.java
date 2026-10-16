@@ -96,7 +96,9 @@ public class CatalogGatewayImpl implements CatalogGateway {
         query.orderBy(CATALOG_VERSION_DO.UPDATED_AT.desc(), CATALOG_VERSION_DO.ID.asc())
                 .limit((long) (page - 1) * size, size);
         return new PageResult<>(
-                mapper.selectListByQuery(query).stream()
+                java.util.Objects.requireNonNull(
+                                mapper.selectListByQuery(query), "Mapper must return an empty list instead of null")
+                        .stream()
                         .map(converter::toCatalog)
                         .toList(),
                 total,

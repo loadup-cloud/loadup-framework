@@ -112,8 +112,7 @@ public class OAuthLoginStrategy implements LoginStrategy {
                 throw new CommonException(UpmsResultCodeEnum.ACCOUNT_IS_LOCKED_OR_DISABLED);
             }
 
-            user.updateLastLogin(
-                    credentials.getIpAddress(), java.time.LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
+            user.updateLastLogin(credentials.getIpAddress(), LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
             userGateway.update(user);
 
             return AuthenticatedUserDTO.builder()

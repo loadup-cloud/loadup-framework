@@ -22,7 +22,6 @@ package io.github.loadup.modules.contract.client.query;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 

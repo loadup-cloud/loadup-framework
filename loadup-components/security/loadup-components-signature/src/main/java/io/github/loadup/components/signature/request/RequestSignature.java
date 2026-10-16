@@ -103,6 +103,6 @@ public record RequestSignature(RequestSignatureParameters parameters, String sig
     @Override
     public String toString() {
         return ToStringAsJson.reflectionToString(
-                java.util.Map.of("appId", parameters.appId(), "keyVersion", parameters.keyVersion()));
+                Map.of("appId", parameters.appId(), "keyVersion", parameters.keyVersion()));
     }
 }
