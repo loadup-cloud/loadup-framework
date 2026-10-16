@@ -19,7 +19,7 @@
     "typecheck": "vue-tsc --noEmit --skipLibCheck -p tsconfig.json"
   },
   "dependencies": {
-    "@iconify/vue": "^5.0.1"
+    "@iconify/vue": "^5.0.3"
   },
   "peerDependencies": {
     "element-plus": ">=2.8.0",
@@ -29,7 +29,7 @@
     "element-plus": "catalog:",
     "typescript": "catalog:",
     "vue": "catalog:",
-    "vue-tsc": "^3.3.9"
+    "vue-tsc": "^3.3.13"
   },
   "license": "MIT"
 }
