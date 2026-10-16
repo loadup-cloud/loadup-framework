@@ -103,7 +103,7 @@
         <testcontainers.version>2.0.5</testcontainers.version>
         <datafaker.version>2.7.0</datafaker.version>
         <mockito.version>5.23.0</mockito.version>
-        <javers.version>7.11.8</javers.version>
+        <javers.version>7.11.9</javers.version>
         <jsonassert.version>1.5.3</jsonassert.version>
         <archunit.version>1.5.0</archunit.version>
         <spotbugs.version>4.10.4</spotbugs.version>
