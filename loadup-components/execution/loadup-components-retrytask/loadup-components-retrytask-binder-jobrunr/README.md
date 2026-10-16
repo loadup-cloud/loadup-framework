@@ -1,5 +1,7 @@
 # Loadup Components Retrytask Binder JobRunr
 
+基于 BOM 管理的 JobRunr 9.0.0，和 scheduler binder 共用同一引擎。8.x 升级参考[官方迁移指南](https://www.jobrunr.io/en/guides/migration/v9/)。
+
 后台重试任务的具体后端适配模块；由集成方按需引入。
 
 ## 引入

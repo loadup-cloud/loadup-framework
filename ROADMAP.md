@@ -2,6 +2,13 @@
 
 本文只记录尚未完成的工作。每完成一项任务立即更新：移除已完成的实现项，未执行的运行验证单独保留。已实现的能力、接入方式和设计边界以各 Maven 模块的 `README.md`、`ARCHITECTURE.md` 为准。LoadUp 是通过 BOM 按需引入的框架；`loadup-application` 用于本地集成验证。
 
+## 依赖升级后续验收
+
+2026-10-16 已更新 actions/cache 6.1.0（固定 SHA）、JobRunr 9.0.0、Groovy / Groovy JSON 6.0.0、Axios 1.20.0 及 Central Publishing Plugin 0.11.0。setup-java 6、checkout 7、commons-text 1.15.0 原已到位；UPMS 移除 Awaitility 4.2.0 的局部版本，使用 Boot BOM 的 4.3.0。前端锁文件只保留 Axios 与其依赖变更。包含 BOM 的 14 模块定向 `mvnd clean test` 成功，JobRunr 9 的 scheduler/retrytask 共 8 项测试通过；请求客户端回归及类型检查、actionlint、根 POM release profile 的 validate（含插件加载、Spotless、Enforcer）、git diff 检查通过。接入文档和文档站已同步；未合并/关闭 Dependabot PR，未执行发布。
+
+- [ ] 在真实数据库上验收 JobRunr 8.x → 9 的迁移、存量任务序列化与 scheduler/retrytask 共用引擎；本轮仅运行定向单元测试。
+- [ ] 验收远程 CI 的 cache 6.1.0 与 Central 发布；消费工程若使用 Groovy 自定义脚本，按 Groovy 6 变更说明回归实际脚本，仓库当前没有直接使用 Groovy 的代码。
+
 ## GitHub CI 后续验收
 
 2026-10-16 已重整 GitHub Actions：统一 JDK 25/mvnd、修复重复 env、单次 clean install 完成单测/真实 IT/质量门禁，同次产物执行逐组件 jar 行/分支双 90% 覆盖率门禁；增加 PR Dependency Review、修复 OWASP 聚合扫描与缓存、失败报告归档、最小凭证范围及显式发布开关。Testcontainers 复用开关改为可被 CI 覆盖，保留本地默认；删除失效配置与全局 Docker prune。actionlint 1.7.12 工作流检查、14 项 Python 工具回归、根 POM 的 `mvnd -N spotless:check` 和 git diff 空白检查通过，实际下载的 mvnd Linux 安装包 SHA-256 与固定值一致。IDEA 检查仍报告原有 surefire-report-plugin 3.6.0 无法解析，本次未修改其版本；没有运行完整 reactor 或触发远程工作流。
