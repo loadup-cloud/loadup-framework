@@ -106,7 +106,7 @@
         <javers.version>7.11.8</javers.version>
         <jsonassert.version>1.5.3</jsonassert.version>
         <archunit.version>1.5.0</archunit.version>
-        <spotbugs.version>4.10.4</spotbugs.version>
+        <spotbugs.version>4.10.5</spotbugs.version>
         <spotless.version>3.10.3</spotless.version>
 
     </properties>
