@@ -10,8 +10,8 @@
     </parent>
 
     <artifactId>loadup-components-cache-test</artifactId>
-    <name>Loadup Cache Test</name>
-    <description>Integration and unit tests for the Spring Cache facade and its binders</description>
+    <name>LoadUp Components Cache Test</name>
+    <description>Unit and integration tests for cache policies and backends.</description>
 
     <properties>
         <java.version>25</java.version>

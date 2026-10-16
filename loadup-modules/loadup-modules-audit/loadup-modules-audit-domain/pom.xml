@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-audit-domain</artifactId>
-    <name>LoadUp Audit Domain</name>
+    <name>LoadUp Modules Audit Domain</name>
+    <description>Domain models, rules and gateway contracts for audit events.</description>
     <properties/>
     <dependencies>
         <dependency>

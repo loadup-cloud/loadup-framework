@@ -10,8 +10,8 @@
 
     <artifactId>loadup-components-resilience4j</artifactId>
     <packaging>pom</packaging>
-    <name>Loadup Resilience4j Component</name>
-    <description>LoadUp Resilience4j — standard resilience API with swappable binders</description>
+    <name>LoadUp Components Resilience4j</name>
+    <description>Resilience4j integration for application fault tolerance.</description>
 
     <modules>
         <module>loadup-components-resilience4j-api</module>

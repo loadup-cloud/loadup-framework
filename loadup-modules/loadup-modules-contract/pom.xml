@@ -9,7 +9,8 @@
     </parent>
     <artifactId>loadup-modules-contract</artifactId>
     <packaging>pom</packaging>
-    <name>LoadUp Contract</name>
+    <name>LoadUp Modules Contract</name>
+    <description>Product catalogs, sales plans and merchant contract configuration.</description>
     <modules>
         <module>loadup-modules-contract-client</module>
         <module>loadup-modules-contract-infrastructure</module>

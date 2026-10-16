@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-merchant-contract</artifactId>
-    <name>LoadUp Merchant Contract</name>
+    <name>LoadUp Modules Merchant Contract</name>
+    <description>Merchant profile facts adapter for contract evaluation.</description>
     <properties/>
     <dependencies>
         <dependency>

@@ -8,8 +8,8 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-retrytask-notifier-gotone</artifactId>
-    <name>Loadup Components Retrytask Notifier Gotone</name>
-    <description>Gotone-backed failure notifier for the retry task component</description>
+    <name>LoadUp Components RetryTask Notifier Gotone</name>
+    <description>Gotone notification adapter for retry task failures.</description>
 
     <properties>
         <java.version>25</java.version>

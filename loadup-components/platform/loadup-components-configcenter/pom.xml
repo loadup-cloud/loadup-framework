@@ -10,8 +10,8 @@
 
     <artifactId>loadup-components-configcenter</artifactId>
     <packaging>pom</packaging>
-    <name>Loadup ConfigCenter Component</name>
-    <description>Loadup ConfigCenter — API + local/nacos/apollo binders</description>
+    <name>LoadUp Components ConfigCenter</name>
+    <description>Dynamic configuration access with local, Nacos and Apollo backends.</description>
 
     <modules>
         <module>loadup-components-configcenter-api</module>

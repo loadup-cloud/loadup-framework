@@ -8,8 +8,8 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-cache-binder-caffeine</artifactId>
-    <name>Loadup Cache Binder Caffeine</name>
-    <description>Caffeine binder for Loadup Cache component</description>
+    <name>LoadUp Components Cache Binder Caffeine</name>
+    <description>Caffeine backend for local Spring Cache storage.</description>
 
     <properties>
         <java.version>25</java.version>

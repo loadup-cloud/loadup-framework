@@ -10,8 +10,8 @@
 
     <artifactId>loadup-components-dfs</artifactId>
     <packaging>pom</packaging>
-    <name>Loadup DFS Component</name>
-    <description>Loadup Distributed File Storage — API + local/s3/database binders</description>
+    <name>LoadUp Components DFS</name>
+    <description>File storage integration with local, database and S3 backends.</description>
 
     <modules>
         <module>loadup-components-dfs-api</module>

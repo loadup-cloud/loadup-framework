@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-dictionary-infrastructure</artifactId>
-    <name>LoadUp Dictionary Infrastructure</name>
+    <name>LoadUp Modules Dictionary Infrastructure</name>
+    <description>MyBatis-Flex persistence and infrastructure adapters for data dictionaries.</description>
     <properties/>
     <dependencies>
         <dependency>

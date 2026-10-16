@@ -9,7 +9,8 @@
     </parent>
     <artifactId>loadup-modules-notification</artifactId>
     <packaging>pom</packaging>
-    <name>LoadUp Notification</name>
+    <name>LoadUp Modules Notification</name>
+    <description>User inbox notifications, read status and message publishing.</description>
     <modules>
         <module>loadup-modules-notification-client</module>
         <module>loadup-modules-notification-domain</module>

@@ -37,8 +37,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 class TestifyAutoConfigurationTest {
 
-    private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-            .withConfiguration(AutoConfigurations.of(TestifyAutoConfiguration.class));
+    private final ApplicationContextRunner contextRunner =
+            new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(TestifyAutoConfiguration.class));
 
     @Test
     void nonDatabaseAssertionsRemainAvailableWithoutJdbcTemplate() {
@@ -53,8 +53,9 @@ class TestifyAutoConfigurationTest {
 
             ScenarioAssert assertions = context.getBean(ScenarioAssert.class);
             assertions.verify(Map.of("id", "u-1"), Map.of("id", "u-1"));
-            assertions.verifyException(new IllegalArgumentException("invalid"), Map.of(
-                    "type", "IllegalArgumentException", "message", "invalid"));
+            assertions.verifyException(
+                    new IllegalArgumentException("invalid"),
+                    Map.of("type", "IllegalArgumentException", "message", "invalid"));
             assertThatThrownBy(() -> assertions.verifyDb(Map.of("table", "users")))
                     .isInstanceOf(AssertionError.class)
                     .hasMessageContaining("JdbcTemplate bean");

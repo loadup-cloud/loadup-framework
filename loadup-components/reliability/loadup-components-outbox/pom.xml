@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-outbox</artifactId>
-    <name>LoadUp Outbox</name>
+    <name>LoadUp Components Outbox</name>
+    <description>Transactional outbox delivery, inbox deduplication and retry handling.</description>
     <properties/>
     <dependencies>
         <dependency>

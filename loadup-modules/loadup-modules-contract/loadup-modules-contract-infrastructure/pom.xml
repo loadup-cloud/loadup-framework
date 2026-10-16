@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-contract-infrastructure</artifactId>
-    <name>LoadUp Contract Infrastructure</name>
+    <name>LoadUp Modules Contract Infrastructure</name>
+    <description>MyBatis-Flex persistence and infrastructure adapters for product catalogs and merchant contracts.</description>
     <properties/>
     <dependencies>
         <dependency>

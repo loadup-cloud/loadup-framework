@@ -9,8 +9,8 @@
     </parent>
 
     <artifactId>loadup-commons-log</artifactId>
-    <name>Loadup Common Log</name>
-    <description>Unified logging defaults and trace context correlation</description>
+    <name>LoadUp Commons Log</name>
+    <description>Logging defaults, trace MDC conventions and service digest annotations.</description>
 
     <dependencies>
         <dependency>

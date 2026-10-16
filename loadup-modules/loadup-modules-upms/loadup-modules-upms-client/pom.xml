@@ -10,8 +10,8 @@
     </parent>
 
     <artifactId>loadup-modules-upms-client</artifactId>
-    <name>Loadup Modules UPMS Client Layer</name>
-    <description>Client utilities and SDK for interacting with the UPMS module</description>
+    <name>LoadUp Modules UPMS Client</name>
+    <description>Public facades, commands, queries and DTOs for identity and access management.</description>
     <properties>
         <java.version>25</java.version>
         <project.encoding>UTF-8</project.encoding>

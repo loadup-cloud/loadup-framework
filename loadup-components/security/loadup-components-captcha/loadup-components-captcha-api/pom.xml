@@ -9,8 +9,8 @@
     </parent>
 
     <artifactId>loadup-components-captcha-api</artifactId>
-    <name>LoadUp Captcha Components API</name>
-    <description>Public API for LoadUp Captcha component</description>
+    <name>LoadUp Components Captcha API</name>
+    <description>Captcha generation, verification and provider contracts.</description>
 
     <dependencies>
         <dependency>

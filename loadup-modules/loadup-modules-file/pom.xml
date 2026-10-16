@@ -9,7 +9,8 @@
     </parent>
     <artifactId>loadup-modules-file</artifactId>
     <packaging>pom</packaging>
-    <name>LoadUp File</name>
+    <name>LoadUp Modules File</name>
+    <description>File metadata, storage references and resource lifecycle management.</description>
     <modules>
         <module>loadup-modules-file-client</module>
         <module>loadup-modules-file-domain</module>

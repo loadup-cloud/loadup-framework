@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-transfer-client</artifactId>
-    <name>LoadUp Transfer Client</name>
+    <name>LoadUp Modules Transfer Client</name>
+    <description>Public facades, commands, queries and DTOs for import and export tasks.</description>
     <properties/>
     <dependencies>
         <dependency>

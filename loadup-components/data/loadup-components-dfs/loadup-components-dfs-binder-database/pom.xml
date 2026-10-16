@@ -8,7 +8,8 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-dfs-binder-database</artifactId>
-    <name>Loadup Dfs Binder Database</name>
+    <name>LoadUp Components DFS Binder Database</name>
+    <description>Database-backed file content storage.</description>
 
     <properties>
         <java.version>25</java.version>

@@ -9,8 +9,8 @@
     </parent>
 
     <artifactId>loadup-components-retrytask-binder-jobrunr</artifactId>
-    <name>Loadup Components Retrytask Binder JobRunr</name>
-    <description>JobRunr binder (distributed retry engine + dashboard) for the retry task facade</description>
+    <name>LoadUp Components RetryTask Binder JobRunr</name>
+    <description>JobRunr-backed persistence and execution for retry tasks.</description>
 
     <dependencies>
         <dependency>

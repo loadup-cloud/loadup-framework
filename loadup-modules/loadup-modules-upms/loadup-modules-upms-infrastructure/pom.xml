@@ -10,8 +10,8 @@
     </parent>
 
     <artifactId>loadup-modules-upms-infrastructure</artifactId>
-    <name>Loadup Modules UPMS Infrastructure Layer</name>
-    <description>UPMS Infrastructure Layer - Repository Implementation and Component Integration</description>
+    <name>LoadUp Modules UPMS Infrastructure</name>
+    <description>MyBatis-Flex persistence and infrastructure adapters for identity and access management.</description>
     <properties>
         <java.version>25</java.version>
         <project.encoding>UTF-8</project.encoding>

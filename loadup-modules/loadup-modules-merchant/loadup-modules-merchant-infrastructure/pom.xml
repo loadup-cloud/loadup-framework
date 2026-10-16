@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-merchant-infrastructure</artifactId>
-    <name>LoadUp Merchant Infrastructure</name>
+    <name>LoadUp Modules Merchant Infrastructure</name>
+    <description>MyBatis-Flex persistence and infrastructure adapters for merchant profiles.</description>
     <properties/>
     <dependencies>
         <dependency>

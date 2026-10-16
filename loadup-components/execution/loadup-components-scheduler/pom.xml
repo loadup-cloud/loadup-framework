@@ -10,8 +10,8 @@
 
     <artifactId>loadup-components-scheduler</artifactId>
     <packaging>pom</packaging>
-    <name>Loadup Scheduler Component</name>
-    <description>Loadup Scheduler — API + binder-jobrunr/binder-quartz</description>
+    <name>LoadUp Components Scheduler</name>
+    <description>Recurring job scheduling with selectable JobRunr and Quartz backends.</description>
 
     <modules>
         <module>loadup-components-scheduler-api</module>

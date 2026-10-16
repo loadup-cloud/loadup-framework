@@ -9,8 +9,8 @@
     </parent>
 
     <artifactId>loadup-components-globalunique</artifactId>
-    <name>LoadUp Components Global Unique</name>
-    <description>Global uniqueness control component based on database unique key constraint</description>
+    <name>LoadUp Components GlobalUnique</name>
+    <description>Database unique-constraint guards for business keys.</description>
 
     <dependencies>
         <dependency>

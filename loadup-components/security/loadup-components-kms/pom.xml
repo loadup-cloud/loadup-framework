@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-kms</artifactId>
-    <name>LoadUp Kms</name>
+    <name>LoadUp Components KMS</name>
+    <description>OpenBao Transit key management, encryption and digital signatures.</description>
     <properties/>
     <dependencies>
         <dependency>

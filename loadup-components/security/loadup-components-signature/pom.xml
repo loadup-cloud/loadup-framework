@@ -10,7 +10,7 @@
 
     <artifactId>loadup-components-signature</artifactId>
     <name>LoadUp Components Signature</name>
-    <description>KMS-backed request signatures, replay protection and JCA cryptographic primitives</description>
+    <description>KMS-backed request signing, verification and replay protection.</description>
 
     <properties/>
     <dependencies>

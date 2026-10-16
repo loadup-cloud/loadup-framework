@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-transfer-domain</artifactId>
-    <name>LoadUp Transfer Domain</name>
+    <name>LoadUp Modules Transfer Domain</name>
+    <description>Domain models, rules and gateway contracts for import and export tasks.</description>
     <properties/>
     <dependencies>
         <dependency>

@@ -9,8 +9,8 @@
     </parent>
 
     <artifactId>loadup-components-pipeline</artifactId>
-    <name>Loadup Components Pipeline</name>
-    <description>LoadUp Pipeline Orchestration Component — verify → prepare → process → assemble</description>
+    <name>LoadUp Components Pipeline</name>
+    <description>Ordered processing pipelines with validation, preparation and result assembly.</description>
 
     <properties>
         <java.version>25</java.version>

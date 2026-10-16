@@ -8,8 +8,8 @@
         <relativePath>../../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-gotone-binder-webhook</artifactId>
-    <name>Loadup Gotone Binder Webhook</name>
-    <description>Webhook binders (DingTalk / WeChat Work / Feishu) for Loadup Gotone</description>
+    <name>LoadUp Components Gotone Binder Webhook</name>
+    <description>Webhook notification delivery for DingTalk, WeCom and Feishu.</description>
 
     <properties>
         <java.version>25</java.version>

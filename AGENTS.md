@@ -208,6 +208,8 @@ deleted    TINYINT      NOT NULL DEFAULT 0
 
 ## 命名约定
 
+POM 的 `<name>` 统一采用 `LoadUp <模块族> <能力> [职责/实现]`，按 artifactId 的词序展示：模块族使用 Commons、Components、Modules、Testify，例如 `LoadUp Commons JSON`、`LoadUp Components Cache Binder Redis`、`LoadUp Modules UPMS App`。API/DTO/JSON/HTTP/KMS/JDBC/SMS/DFS/UPMS/SAS/S3 保持大写，JetCache、JobRunr、ConfigCenter、AuthServer、RetryTask、GlobalUnique、WebMVC、SpringDoc、Testcontainers、Resilience4j、NanoCaptcha 保持约定拼写。根项目、应用、BOM 分别使用 `LoadUp Framework`、`LoadUp Application`、`LoadUp Dependencies`；Gotone channels 聚合为 `LoadUp Components Gotone Channels`。详细用途写入 description，名称保持空格分隔的统一结构。 每个 POM 均显式声明简短英文 `<description>`，说明实际职责；client/domain/app/infrastructure/web/test 分别描述公开契约、领域模型、业务编排、持久化适配、HTTP 入口和测试范围，未实现的传输能力如实标明状态。
+
 | 类型            | 规则                                 | 示例                              |
 |----------------|--------------------------------------|---------------------------------|
 | 数据库映射对象     | `XxxDO extends BaseDO`              | `ConfigItemDO`                  |

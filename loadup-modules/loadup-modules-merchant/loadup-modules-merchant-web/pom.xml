@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-merchant-web</artifactId>
-    <name>LoadUp Merchant Web</name>
+    <name>LoadUp Modules Merchant Web</name>
+    <description>Spring MVC endpoints for merchant profiles.</description>
     <properties/>
     <dependencies>
         <dependency>

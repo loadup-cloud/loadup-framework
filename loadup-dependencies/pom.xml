@@ -13,8 +13,8 @@
     <artifactId>loadup-dependencies</artifactId>
     <version>0.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>Loadup Dependencies Management</name>
-    <description>Loadup Dependencies Management</description>
+    <name>LoadUp Dependencies</name>
+    <description>BOM for framework modules and third-party dependency versions.</description>
     <url>https://github.com/loadup-cloud</url>
     <inceptionYear>2025</inceptionYear>
     <organization>

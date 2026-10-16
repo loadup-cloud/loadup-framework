@@ -8,8 +8,8 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-cache-api</artifactId>
-    <name>Loadup Cache Components API</name>
-    <description>Spring Cache facade + LoadUp per-cache TTL/null/anti-avalanche configuration</description>
+    <name>LoadUp Components Cache API</name>
+    <description>Spring Cache integration contracts and cache policy configuration.</description>
 
     <properties>
         <java.version>25</java.version>

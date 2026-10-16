@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-file-domain</artifactId>
-    <name>LoadUp File Domain</name>
+    <name>LoadUp Modules File Domain</name>
+    <description>Domain models, rules and gateway contracts for file resources.</description>
     <properties/>
     <dependencies>
         <dependency>

@@ -10,8 +10,8 @@
 
     <artifactId>loadup-components-cache</artifactId>
     <packaging>pom</packaging>
-    <name>Loadup Cache Component</name>
-    <description>Loadup Cache — Spring Cache facade + caffeine/redis/jetcache binders</description>
+    <name>LoadUp Components Cache</name>
+    <description>Spring Cache integration with selectable Caffeine, Redis and JetCache backends.</description>
 
     <modules>
         <module>loadup-components-cache-api</module>

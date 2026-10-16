@@ -10,8 +10,8 @@
     </parent>
 
     <artifactId>loadup-components-scheduler-test</artifactId>
-    <name>Loadup Components Scheduler Test</name>
-    <description>Integration and unit tests for the scheduler facade and its JobRunr / Quartz binders</description>
+    <name>LoadUp Components Scheduler Test</name>
+    <description>Unit and integration tests for scheduler providers.</description>
 
     <properties>
         <java.version>25</java.version>

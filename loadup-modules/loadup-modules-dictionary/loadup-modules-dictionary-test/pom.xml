@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-dictionary-test</artifactId>
-    <name>LoadUp Dictionary Test</name>
+    <name>LoadUp Modules Dictionary Test</name>
+    <description>Unit and integration tests for data dictionaries.</description>
     <properties/>
     <dependencies>
         <dependency>

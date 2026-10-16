@@ -9,7 +9,8 @@
     </parent>
     <artifactId>loadup-modules-dictionary</artifactId>
     <packaging>pom</packaging>
-    <name>LoadUp Dictionary</name>
+    <name>LoadUp Modules Dictionary</name>
+    <description>Dictionary types, entries and lookup management.</description>
     <modules>
         <module>loadup-modules-dictionary-client</module>
         <module>loadup-modules-dictionary-domain</module>

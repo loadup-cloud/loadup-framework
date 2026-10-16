@@ -10,8 +10,8 @@
 
     <artifactId>channels</artifactId>
     <packaging>pom</packaging>
-    <name>Loadup Gotone Channels</name>
-    <description>Loadup Gotone — notification channel binders</description>
+    <name>LoadUp Components Gotone Channels</name>
+    <description>Aggregation of Gotone notification channel providers.</description>
 
     <modules>
         <module>loadup-components-gotone-binder-email</module>

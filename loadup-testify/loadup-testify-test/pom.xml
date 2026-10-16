@@ -8,7 +8,8 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-testify-test</artifactId>
-    <name>Testify Demo</name>
+    <name>LoadUp Testify Test</name>
+    <description>Executable Testify examples and regression tests.</description>
 
     <properties>
         <java.version>25</java.version>

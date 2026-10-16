@@ -8,8 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-audit-web</artifactId>
-    <name>LoadUp Audit Center Web Adapter</name>
-    <description>HTTP audit capture and administrator query endpoint</description>
+    <name>LoadUp Modules Audit Web</name>
+    <description>Spring MVC endpoints for audit events.</description>
     <properties/>
     <dependencies>
         <dependency>

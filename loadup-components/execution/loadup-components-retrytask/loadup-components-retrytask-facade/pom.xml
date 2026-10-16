@@ -10,8 +10,8 @@
 
     <artifactId>loadup-components-retrytask-facade</artifactId>
 
-    <name>Loadup Components Retrytask Facade</name>
-    <description>Retry Task Facade</description>
+    <name>LoadUp Components RetryTask Facade</name>
+    <description>Retry task submission, management and processing contracts.</description>
     <properties>
         <java.version>25</java.version>
         <project.encoding>UTF-8</project.encoding>

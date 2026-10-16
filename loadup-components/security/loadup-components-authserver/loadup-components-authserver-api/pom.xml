@@ -11,7 +11,7 @@
 
     <artifactId>loadup-components-authserver-api</artifactId>
     <name>LoadUp Components AuthServer API</name>
-    <description>Standard OAuth2 authorization server contracts and configuration surface</description>
+    <description>OAuth2 token claims, user identity contracts and server configuration.</description>
 
     <dependencies>
         <dependency>

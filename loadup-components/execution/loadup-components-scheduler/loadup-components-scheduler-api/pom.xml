@@ -8,8 +8,8 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-scheduler-api</artifactId>
-    <name>Loadup Scheduler Api</name>
-    <description>Business facade for the scheduler component (zero Spring / engine dependencies)</description>
+    <name>LoadUp Components Scheduler API</name>
+    <description>Scheduler facade and provider contracts for recurring jobs.</description>
 
     <dependencies/>
 </project>

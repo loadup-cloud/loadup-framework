@@ -8,7 +8,8 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-testify-assert-engine</artifactId>
-    <name>Testify Assert Engine</name>
+    <name>LoadUp Testify Assert Engine</name>
+    <description>Response, database and exception assertions with difference reports.</description>
 
     <properties>
         <java.version>25</java.version>

@@ -9,8 +9,8 @@
     </parent>
 
     <artifactId>loadup-components-configcenter-binder-local</artifactId>
-    <name>LoadUp ConfigCenter Binder Local</name>
-    <description>Local file system binder for LoadUp Config Center component</description>
+    <name>LoadUp Components ConfigCenter Binder Local</name>
+    <description>Local file configuration loading and change detection.</description>
 
     <properties>
         <java.version>25</java.version>

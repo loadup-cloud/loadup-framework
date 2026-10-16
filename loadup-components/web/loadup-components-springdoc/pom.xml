@@ -11,7 +11,7 @@
 
     <artifactId>loadup-components-springdoc</artifactId>
     <name>LoadUp Components SpringDoc</name>
-    <description>SpringDoc OpenAPI 3 and Scalar UI integration for LoadUp modules</description>
+    <description>OpenAPI documentation generation with SpringDoc and Scalar UI.</description>
 
     <properties>
         <java.version>25</java.version>

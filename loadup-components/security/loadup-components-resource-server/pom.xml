@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-resource-server</artifactId>
-    <name>LoadUp JWT Resource Server</name>
+    <name>LoadUp Components Resource Server</name>
+    <description>JWT authentication and authority mapping for Spring Security resource servers.</description>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

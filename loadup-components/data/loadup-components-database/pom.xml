@@ -10,7 +10,8 @@
 
     <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-database</artifactId>
-    <name>Loadup Components Database</name>
+    <name>LoadUp Components Database</name>
+    <description>MyBatis-Flex defaults, persistence auditing, logical deletion and ID generation.</description>
 
     <properties>
         <java.version>25</java.version>

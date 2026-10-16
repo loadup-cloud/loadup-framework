@@ -8,8 +8,8 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-gotone-api</artifactId>
-    <name>Loadup Gotone API</name>
-    <description>API for Loadup Gotone notification component (Email/SMS/Push/Webhook)</description>
+    <name>LoadUp Components Gotone API</name>
+    <description>Notification requests, provider contracts and sending facade.</description>
 
     <properties>
         <java.version>25</java.version>

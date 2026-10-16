@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-transfer-app</artifactId>
-    <name>LoadUp Transfer App</name>
+    <name>LoadUp Modules Transfer App</name>
+    <description>Application services and business orchestration for import and export tasks.</description>
     <properties/>
     <dependencies>
         <dependency>

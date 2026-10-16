@@ -10,8 +10,8 @@
     </parent>
 
     <artifactId>loadup-modules-upms-domain</artifactId>
-    <name>Loadup Modules UPMS Domain Layer</name>
-    <description>UPMS Domain Layer - Core Business Entities and Repository Interfaces</description>
+    <name>LoadUp Modules UPMS Domain</name>
+    <description>Domain models, rules and gateway contracts for identity and access management.</description>
     <properties>
         <java.version>25</java.version>
         <project.encoding>UTF-8</project.encoding>

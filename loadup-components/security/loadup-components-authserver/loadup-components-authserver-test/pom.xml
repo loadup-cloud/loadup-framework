@@ -11,7 +11,7 @@
 
     <artifactId>loadup-components-authserver-test</artifactId>
     <name>LoadUp Components AuthServer Test</name>
-    <description>Unit and integration tests for the auth server component</description>
+    <description>Unit and integration tests for OAuth2 server configuration and token issuance.</description>
 
     <dependencies>
         <dependency>

@@ -10,8 +10,8 @@
 
     <artifactId>loadup-components-gotone</artifactId>
     <packaging>pom</packaging>
-    <name>Loadup Gotone Component</name>
-    <description>Loadup Gotone — unified notification engine + channels</description>
+    <name>LoadUp Components Gotone</name>
+    <description>Notification routing, templates and channel integrations.</description>
 
     <modules>
         <module>loadup-components-gotone-api</module>

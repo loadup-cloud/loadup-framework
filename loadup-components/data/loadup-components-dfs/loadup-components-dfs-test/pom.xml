@@ -9,6 +9,7 @@
     </parent>
     <artifactId>loadup-components-dfs-test</artifactId>
     <name>LoadUp Components DFS Test</name>
+    <description>Unit and integration tests for file storage providers.</description>
 
     <properties>
         <java.version>25</java.version>

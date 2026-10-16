@@ -10,8 +10,8 @@
 
     <artifactId>loadup-testify</artifactId>
     <packaging>pom</packaging>
-    <name>Loadup Testify</name>
-    <description>Loadup Testify — integration test framework</description>
+    <name>LoadUp Testify</name>
+    <description>Reusable integration testing utilities and assertion engines.</description>
 
     <modules>
         <module>loadup-testify-assert-engine</module>

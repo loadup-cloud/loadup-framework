@@ -8,8 +8,8 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-cache-binder-jetcache</artifactId>
-    <name>Loadup Cache Binder JetCache</name>
-    <description>JetCache binder (multi-level local + remote cache) for the Spring Cache facade</description>
+    <name>LoadUp Components Cache Binder JetCache</name>
+    <description>JetCache integration for local and remote Spring Cache storage.</description>
 
     <dependencies>
         <dependency>

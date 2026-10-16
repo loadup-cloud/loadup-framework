@@ -10,8 +10,8 @@
 
     <artifactId>loadup-components-retrytask</artifactId>
     <packaging>pom</packaging>
-    <name>Loadup RetryTask Component</name>
-    <description>Loadup RetryTask — JobRunr based distributed retry facade + binder</description>
+    <name>LoadUp Components RetryTask</name>
+    <description>Persistent retry task integration with a JobRunr backend.</description>
 
     <modules>
         <module>loadup-components-retrytask-facade</module>

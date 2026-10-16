@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-contract-domain</artifactId>
-    <name>LoadUp Contract Domain</name>
+    <name>LoadUp Modules Contract Domain</name>
+    <description>Domain models, rules and gateway contracts for product catalogs and merchant contracts.</description>
 
     <properties/>
 

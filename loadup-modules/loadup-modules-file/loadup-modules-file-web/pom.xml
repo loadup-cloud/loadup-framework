@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-file-web</artifactId>
-    <name>LoadUp File Resources Web Adapter</name>
+    <name>LoadUp Modules File Web</name>
+    <description>Spring MVC endpoints for file resources.</description>
     <properties/>
     <dependencies>
         <dependency>

@@ -8,7 +8,8 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-dfs-api</artifactId>
-    <name>Loadup Dfs Components Api</name>
+    <name>LoadUp Components DFS API</name>
+    <description>File storage facade, provider contracts and metadata types.</description>
 
     <properties>
         <java.version>25</java.version>

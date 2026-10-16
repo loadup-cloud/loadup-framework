@@ -8,8 +8,8 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-resilience4j-api</artifactId>
-    <name>Loadup Resilience4j API</name>
-    <description>Standard Resilience4j facade: annotations + registries + assembly contract</description>
+    <name>LoadUp Components Resilience4j API</name>
+    <description>Resilience4j annotations, registries and integration contracts.</description>
 
     <properties>
         <java.version>25</java.version>

@@ -10,8 +10,8 @@
 
     <artifactId>loadup-modules-upms</artifactId>
     <packaging>pom</packaging>
-    <name>Loadup UPMS Module</name>
-    <description>Loadup UPMS — user permission management (RBAC3 + OAuth2)</description>
+    <name>LoadUp Modules UPMS</name>
+    <description>User, organization and access management with RBAC and ABAC.</description>
 
     <modules>
         <module>loadup-modules-upms-app</module>

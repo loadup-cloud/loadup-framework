@@ -9,8 +9,8 @@
     </parent>
 
     <artifactId>loadup-application</artifactId>
-    <name>Loadup Launcher</name>
-    <description>Loadup Launcher module</description>
+    <name>LoadUp Application</name>
+    <description>Local launcher and integration validator; not a production deployment unit.</description>
 
     <properties>
         <java.version>25</java.version>

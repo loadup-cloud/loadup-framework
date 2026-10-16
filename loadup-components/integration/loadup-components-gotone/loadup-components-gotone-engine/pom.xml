@@ -8,8 +8,8 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-gotone-engine</artifactId>
-    <name>Loadup Gotone Engine</name>
-    <description>Gotone send engine with fallback support (zero storage)</description>
+    <name>LoadUp Components Gotone Engine</name>
+    <description>Notification routing, template rendering and channel fallback without persistence.</description>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

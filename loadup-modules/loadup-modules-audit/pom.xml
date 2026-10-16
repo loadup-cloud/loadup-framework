@@ -9,7 +9,8 @@
     </parent>
     <artifactId>loadup-modules-audit</artifactId>
     <packaging>pom</packaging>
-    <name>LoadUp Audit</name>
+    <name>LoadUp Modules Audit</name>
+    <description>Audit event capture, storage and administrator queries.</description>
     <modules>
         <module>loadup-modules-audit-client</module>
         <module>loadup-modules-audit-domain</module>

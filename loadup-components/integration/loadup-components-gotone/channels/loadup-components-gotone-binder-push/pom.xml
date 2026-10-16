@@ -8,8 +8,8 @@
         <relativePath>../../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-gotone-binder-push</artifactId>
-    <name>Loadup Gotone Binder Push</name>
-    <description>Push binder (Firebase Cloud Messaging) for Loadup Gotone</description>
+    <name>LoadUp Components Gotone Binder Push</name>
+    <description>FCM push provider configuration; delivery transport is not implemented.</description>
 
     <properties>
         <java.version>25</java.version>

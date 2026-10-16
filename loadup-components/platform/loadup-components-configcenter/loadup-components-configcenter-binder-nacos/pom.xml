@@ -9,8 +9,8 @@
     </parent>
 
     <artifactId>loadup-components-configcenter-binder-nacos</artifactId>
-    <name>LoadUp ConfigCenter Binder Nacos</name>
-    <description>Nacos binder for LoadUp Config Center component</description>
+    <name>LoadUp Components ConfigCenter Binder Nacos</name>
+    <description>Nacos configuration retrieval and change subscriptions.</description>
 
     <properties>
         <java.version>25</java.version>

@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-notification-domain</artifactId>
-    <name>LoadUp Notification Domain</name>
+    <name>LoadUp Modules Notification Domain</name>
+    <description>Domain models, rules and gateway contracts for in-app notifications.</description>
     <properties/>
     <dependencies>
         <dependency>

@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-contract-app</artifactId>
-    <name>LoadUp Contract App</name>
+    <name>LoadUp Modules Contract App</name>
+    <description>Application services and business orchestration for product catalogs and merchant contracts.</description>
     <properties/>
     <dependencies>
         <dependency>

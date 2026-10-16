@@ -8,7 +8,8 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-commons-masking</artifactId>
-    <name>LoadUp Common Masking</name>
+    <name>LoadUp Commons Masking</name>
+    <description>Sensitive data masking strategies and annotation contracts.</description>
     <properties/>
     <dependencies>
         <dependency>

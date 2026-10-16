@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-audit-test</artifactId>
-    <name>LoadUp Audit Test</name>
+    <name>LoadUp Modules Audit Test</name>
+    <description>Unit and integration tests for audit events.</description>
     <properties/>
     <dependencies>
         <dependency>

@@ -9,8 +9,8 @@
     </parent>
 
     <artifactId>loadup-components-configcenter-test</artifactId>
-    <name>LoadUp ConfigCenter Test</name>
-    <description>Integration and unit tests for LoadUp Config Center component</description>
+    <name>LoadUp Components ConfigCenter Test</name>
+    <description>Unit and integration tests for configuration providers.</description>
 
     <properties>
         <java.version>25</java.version>

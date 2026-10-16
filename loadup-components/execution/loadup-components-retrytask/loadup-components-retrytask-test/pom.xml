@@ -10,8 +10,8 @@
     </parent>
 
     <artifactId>loadup-components-retrytask-test</artifactId>
-    <name>Loadup Components Retrytask Test</name>
-    <description>Integration and unit tests for the retry task facade and its JobRunr binder</description>
+    <name>LoadUp Components RetryTask Test</name>
+    <description>Unit and integration tests for retry task execution and notifications.</description>
 
     <properties>
         <java.version>25</java.version>

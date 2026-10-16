@@ -12,7 +12,7 @@
     <artifactId>loadup-components-authserver</artifactId>
     <packaging>pom</packaging>
     <name>LoadUp Components AuthServer</name>
-    <description>LoadUp OAuth2 authorization server component (Spring Authorization Server / Keycloak issuer)</description>
+    <description>OAuth2 authorization server contracts and embedded server integration.</description>
 
     <modules>
         <module>loadup-components-authserver-api</module>

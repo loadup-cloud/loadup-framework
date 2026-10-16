@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-file-app</artifactId>
-    <name>LoadUp File App</name>
+    <name>LoadUp Modules File App</name>
+    <description>Application services and business orchestration for file resources.</description>
     <properties/>
     <dependencies>
         <dependency>

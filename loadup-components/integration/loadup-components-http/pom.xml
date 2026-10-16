@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-http</artifactId>
-    <name>LoadUp Http</name>
+    <name>LoadUp Components HTTP</name>
+    <description>Configuration-driven external API calls using Spring RestClient.</description>
     <properties/>
     <dependencies>
         <dependency>

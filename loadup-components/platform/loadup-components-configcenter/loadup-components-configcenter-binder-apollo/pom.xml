@@ -9,8 +9,8 @@
     </parent>
 
     <artifactId>loadup-components-configcenter-binder-apollo</artifactId>
-    <name>LoadUp ConfigCenter Binder Apollo</name>
-    <description>Ctrip Apollo binder for LoadUp Config Center component</description>
+    <name>LoadUp Components ConfigCenter Binder Apollo</name>
+    <description>Apollo configuration retrieval and change subscriptions.</description>
 
     <properties>
         <java.version>25</java.version>

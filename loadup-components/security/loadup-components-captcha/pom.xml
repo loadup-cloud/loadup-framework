@@ -11,7 +11,7 @@
     <artifactId>loadup-components-captcha</artifactId>
     <packaging>pom</packaging>
     <name>LoadUp Components Captcha</name>
-    <description>LoadUp Captcha — API + tianai/nanocaptcha binders</description>
+    <description>Captcha generation and verification with selectable providers.</description>
 
     <modules>
         <module>loadup-components-captcha-api</module>

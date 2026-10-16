@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-notification-app</artifactId>
-    <name>LoadUp Notification App</name>
+    <name>LoadUp Modules Notification App</name>
+    <description>Application services and business orchestration for in-app notifications.</description>
     <properties/>
     <dependencies>
         <dependency>

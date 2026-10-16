@@ -9,8 +9,8 @@
     </parent>
 
     <artifactId>loadup-components-captcha-binder-tianai</artifactId>
-    <name>LoadUp Captcha Binder Tianai</name>
-    <description>Tianai behavior captcha binder for LoadUp Captcha component</description>
+    <name>LoadUp Components Captcha Binder Tianai</name>
+    <description>Tianai behavior captcha generation and verification.</description>
 
     <dependencies>
         <dependency>

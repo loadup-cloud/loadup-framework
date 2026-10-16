@@ -8,7 +8,8 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-testify-spring-boot-starter</artifactId>
-    <name>Testify Spring Boot Starter</name>
+    <name>LoadUp Testify Spring Boot Starter</name>
+    <description>Spring Boot auto-configuration and scenario assertion support for Testify.</description>
 
     <properties>
         <java.version>25</java.version>

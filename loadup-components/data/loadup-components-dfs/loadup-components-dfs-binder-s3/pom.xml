@@ -8,7 +8,8 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-dfs-binder-s3</artifactId>
-    <name>Loadup Dfs Binder S3</name>
+    <name>LoadUp Components DFS Binder S3</name>
+    <description>S3-compatible object storage integration.</description>
 
     <properties>
         <java.version>25</java.version>

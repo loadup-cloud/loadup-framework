@@ -8,7 +8,8 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-testify-core</artifactId>
-    <name>Testify Core</name>
+    <name>LoadUp Testify Core</name>
+    <description>Shared JSON utilities for Testify test engines.</description>
 
     <properties>
         <java.version>25</java.version>

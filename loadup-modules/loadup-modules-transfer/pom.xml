@@ -9,7 +9,8 @@
     </parent>
     <artifactId>loadup-modules-transfer</artifactId>
     <packaging>pom</packaging>
-    <name>LoadUp Transfer</name>
+    <name>LoadUp Modules Transfer</name>
+    <description>Import and export task submission, execution and result tracking.</description>
     <modules>
         <module>loadup-modules-transfer-client</module>
         <module>loadup-modules-transfer-domain</module>

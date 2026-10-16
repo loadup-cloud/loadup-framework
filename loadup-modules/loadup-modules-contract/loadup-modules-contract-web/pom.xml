@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-contract-web</artifactId>
-    <name>LoadUp Contract Web</name>
+    <name>LoadUp Modules Contract Web</name>
+    <description>Spring MVC endpoints for product catalogs and merchant contracts.</description>
     <properties/>
     <dependencies>
         <dependency>

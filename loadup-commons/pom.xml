@@ -10,8 +10,8 @@
 
     <artifactId>loadup-commons</artifactId>
     <packaging>pom</packaging>
-    <name>Loadup Commons</name>
-    <description>Loadup Commons — shared base modules</description>
+    <name>LoadUp Commons</name>
+    <description>Shared foundational libraries for LoadUp modules and components.</description>
 
     <modules>
         <module>loadup-commons-error</module>

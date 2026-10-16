@@ -9,7 +9,8 @@
     </parent>
     <artifactId>loadup-modules-merchant</artifactId>
     <packaging>pom</packaging>
-    <name>LoadUp Merchant</name>
+    <name>LoadUp Modules Merchant</name>
+    <description>Merchant profiles and basic information management.</description>
     <modules>
         <module>loadup-modules-merchant-client</module>
         <module>loadup-modules-merchant-domain</module>

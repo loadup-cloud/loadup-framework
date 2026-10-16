@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-database-processor</artifactId>
-    <name>LoadUp Database Processor</name>
+    <name>LoadUp Components Database Processor</name>
+    <description>Compile-time generation of MyBatis-Flex mappers and table definitions.</description>
     <properties/>
     <dependencies>
         <dependency>

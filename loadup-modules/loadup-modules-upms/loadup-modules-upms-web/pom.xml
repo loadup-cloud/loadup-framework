@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-upms-web</artifactId>
-    <name>LoadUp UPMS Web Adapter</name>
+    <name>LoadUp Modules UPMS Web</name>
+    <description>Spring MVC endpoints for identity and access management.</description>
     <properties/>
     <dependencies>
         <dependency>

@@ -10,8 +10,8 @@
 
     <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-commons-dto</artifactId>
-    <name>Loadup Common DTO</name>
-    <description>Loadup Common DTO - data transfer objects used across modules</description>
+    <name>LoadUp Commons DTO</name>
+    <description>Shared commands, pagination, response envelopes and persistence base types.</description>
 
     <properties>
         <java.version>25</java.version>

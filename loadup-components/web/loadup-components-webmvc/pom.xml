@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-webmvc</artifactId>
-    <name>LoadUp Web MVC</name>
+    <name>LoadUp Components WebMVC</name>
+    <description>Spring MVC response envelopes, exception handling and Jackson defaults.</description>
     <properties/>
     <dependencies>
         <dependency>

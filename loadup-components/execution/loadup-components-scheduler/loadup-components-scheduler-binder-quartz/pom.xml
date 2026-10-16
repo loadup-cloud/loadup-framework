@@ -8,8 +8,8 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-scheduler-binder-quartz</artifactId>
-    <name>Loadup Scheduler Quartz Binder</name>
-    <description>Quartz binder (embedded clustered scheduler) for the scheduler facade</description>
+    <name>LoadUp Components Scheduler Binder Quartz</name>
+    <description>Quartz-backed recurring job scheduling.</description>
 
     <dependencies>
         <dependency>

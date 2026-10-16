@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-notification-infrastructure</artifactId>
-    <name>LoadUp Notification Infrastructure</name>
+    <name>LoadUp Modules Notification Infrastructure</name>
+    <description>MyBatis-Flex persistence and infrastructure adapters for in-app notifications.</description>
     <properties/>
     <dependencies>
         <dependency>

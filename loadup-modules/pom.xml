@@ -10,8 +10,8 @@
 
     <artifactId>loadup-modules</artifactId>
     <packaging>pom</packaging>
-    <name>Loadup Modules</name>
-    <description>Loadup Modules — reusable business modules</description>
+    <name>LoadUp Modules</name>
+    <description>Reusable business capabilities organized with COLA application layers.</description>
 
     <modules>
         <module>loadup-modules-merchant</module>

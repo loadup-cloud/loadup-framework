@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-dictionary-domain</artifactId>
-    <name>LoadUp Dictionary Domain</name>
+    <name>LoadUp Modules Dictionary Domain</name>
+    <description>Domain models, rules and gateway contracts for data dictionaries.</description>
     <properties/>
     <dependencies>
         <dependency>

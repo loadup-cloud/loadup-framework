@@ -9,8 +9,8 @@
     </parent>
 
     <artifactId>loadup-components-scheduler-binder-jobrunr</artifactId>
-    <name>Loadup Scheduler Binder JobRunr</name>
-    <description>JobRunr binder (recurring jobs on the same engine as retrytask) for the scheduler facade</description>
+    <name>LoadUp Components Scheduler Binder JobRunr</name>
+    <description>JobRunr-backed registration and execution of recurring jobs.</description>
 
     <dependencies>
         <dependency>

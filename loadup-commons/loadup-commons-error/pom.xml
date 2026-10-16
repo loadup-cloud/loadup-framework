@@ -8,7 +8,8 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-commons-error</artifactId>
-    <name>LoadUp Common Error</name>
+    <name>LoadUp Commons Error</name>
+    <description>Stable result codes and common business exception contracts.</description>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>

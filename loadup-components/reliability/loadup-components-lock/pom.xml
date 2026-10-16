@@ -8,8 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-lock</artifactId>
-    <name>LoadUp Lock</name>
-    <description>Synchronous distributed lock execution backed by Redisson</description>
+    <name>LoadUp Components Lock</name>
+    <description>Redisson-backed distributed locking for synchronous work.</description>
     <properties/>
     <dependencies>
         <dependency>

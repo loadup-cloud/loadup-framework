@@ -8,7 +8,8 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-commons-context</artifactId>
-    <name>LoadUp Common Context</name>
+    <name>LoadUp Commons Context</name>
+    <description>Immutable execution context and scoped service lifecycle support.</description>
     <properties/>
     <dependencies>
         <dependency>

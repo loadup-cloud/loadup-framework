@@ -11,7 +11,7 @@
 
     <artifactId>loadup-components-authserver-binder-sas</artifactId>
     <name>LoadUp Components AuthServer Binder SAS</name>
-    <description>Embedded Spring Authorization Server binder (default)</description>
+    <description>Embedded OAuth2 authorization server based on Spring Authorization Server.</description>
 
     <dependencies>
         <dependency>

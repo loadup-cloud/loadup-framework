@@ -8,7 +8,8 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-testify-data-engine</artifactId>
-    <name>Testify Data Engine</name>
+    <name>LoadUp Testify Data Engine</name>
+    <description>Test variable resolution and built-in data functions.</description>
 
     <properties>
         <java.version>25</java.version>

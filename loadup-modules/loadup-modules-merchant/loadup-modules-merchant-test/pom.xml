@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-merchant-test</artifactId>
-    <name>LoadUp Merchant Test</name>
+    <name>LoadUp Modules Merchant Test</name>
+    <description>Unit and integration tests for merchant profiles.</description>
     <properties/>
     <dependencies>
         <dependency>

@@ -12,6 +12,12 @@
 
 ## 当前建设目标与实施顺序
 
+2026-10-16 已补齐并统一全部 143 个 POM 的英文 description，简述实际模块职责，区分 API/binder、COLA 各层与测试模块，修正 AuthServer、Testify 及通知占位传输的能力描述。修改范围仅为项目 description，保留已统一的 name 与其余 XML 元数据；XML 解析、代表性 POM 的 IDEA 检查及差异检查通过，文档同步检查无差异，未运行 Maven 构建。
+
+2026-10-16 POM 显示名已统一：143 个 POM 保持唯一英文 name，调整其中 133 个，采用 LoadUp + 模块族 + 能力 + 职责/实现的顺序，规范缩写及三方名称。仅修改顶层 name；artifactId、坐标、依赖、模块路径及其余 XML 元数据保持原样，命名规则已写入 AGENTS。XML 解析和差异检查通过，未运行 Maven 构建；License 插件默认 canUpdateDescription=false，现有 Java 文件头描述无需随显示名重写。
+
+2026-10-16 文档同步已按根 POM 的 modules 声明递归定位，分类目录不增加模块层级，旧路径或游离 POM 不参与同步；删除过期生成页面时清理其空父目录。原 components 根目录下 8 个重复目录实际仅含 14 个 CheckStyle-IDEA `.iml`，已按当前模块位置迁移并清理，原件保留临时备份，IDEA 已执行 Maven 同步。8 项 Python 回归通过，142 个模块/284 份源文档同步检查无差异，Hugo 构建通过；本次未运行 Java/Maven 构建。
+
 2026-10-16 已实现注解驱动的 Service digest log：commons-log 提供 `@ServiceDigest`，Observability 对标记类或 public 方法注册统一 Advisor；Guava Stopwatch 按调用计时，LogUtil 输出固定摘要，不采集入参、返回值或异常文字。未标记 Service 不自动拦截。IDEA 批量检查无错误；一次定向 `mvnd clean spotless:apply verify -pl :loadup-components-observability -am -Dskip.spotbugs=true` 成功，Observability 14 项单测、7 项 IT 全部通过，无失败/错误/跳过，模块行/分支覆盖率均 100%；License/Spotless 校验通过，SpotBugs 未执行。集成测试验证 Boot 自动发现、Micrometer MDC 和事务提交失败的代理顺序，未以测试事务管理器替代真实数据库验收。此次仅定向验证，以下 48 个 jar 的整批报告仍指此前完整运行。
 
 ### 组件测试与覆盖率（2026-10-16 验收）

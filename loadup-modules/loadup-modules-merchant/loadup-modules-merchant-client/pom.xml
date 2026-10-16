@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-merchant-client</artifactId>
-    <name>LoadUp Merchant Client</name>
+    <name>LoadUp Modules Merchant Client</name>
+    <description>Public facades, commands, queries and DTOs for merchant profiles.</description>
     <properties/>
     <dependencies>
         <dependency>

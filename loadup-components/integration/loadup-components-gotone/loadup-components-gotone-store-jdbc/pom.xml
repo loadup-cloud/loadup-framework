@@ -8,8 +8,8 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-gotone-store-jdbc</artifactId>
-    <name>Loadup Gotone Store JDBC</name>
-    <description>Default MyBatis-Flex store for Loadup Gotone (service/channel config + send records)</description>
+    <name>LoadUp Components Gotone Store JDBC</name>
+    <description>MyBatis-Flex storage for notification configuration and delivery records.</description>
 
     <properties>
         <java.version>25</java.version>

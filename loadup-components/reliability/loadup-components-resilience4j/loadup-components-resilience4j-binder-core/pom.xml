@@ -8,8 +8,8 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-resilience4j-binder-core</artifactId>
-    <name>Loadup Resilience4j Binder Core</name>
-    <description>In-memory Resilience4j binder: registries + Spring AOP aspects + Micrometer metrics</description>
+    <name>LoadUp Components Resilience4j Binder Core</name>
+    <description>Resilience4j registries, Spring AOP advice and Micrometer metrics.</description>
 
     <properties>
         <java.version>25</java.version>

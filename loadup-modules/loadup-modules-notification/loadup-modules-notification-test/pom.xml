@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-notification-test</artifactId>
-    <name>LoadUp Notification Test</name>
+    <name>LoadUp Modules Notification Test</name>
+    <description>Unit and integration tests for in-app notifications.</description>
     <properties/>
     <dependencies>
         <dependency>

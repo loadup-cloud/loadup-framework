@@ -11,7 +11,7 @@
 
     <artifactId>loadup-components-authorization</artifactId>
     <name>LoadUp Components Authorization</name>
-    <description>Method-level authorization facade based on Spring Security standard APIs</description>
+    <description>Spring Security method authorization and access decision integration.</description>
     <properties>
         <java.version>25</java.version>
         <project.encoding>UTF-8</project.encoding>

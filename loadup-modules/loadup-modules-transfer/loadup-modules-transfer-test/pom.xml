@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-transfer-test</artifactId>
-    <name>LoadUp Transfer Test</name>
+    <name>LoadUp Modules Transfer Test</name>
+    <description>Unit and integration tests for import and export tasks.</description>
     <properties/>
     <dependencies>
         <dependency>

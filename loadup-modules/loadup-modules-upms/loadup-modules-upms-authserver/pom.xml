@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-upms-authserver</artifactId>
-    <name>LoadUp UPMS Authorization Server Adapter</name>
+    <name>LoadUp Modules UPMS AuthServer</name>
+    <description>UPMS credential authentication and token issuance integration.</description>
     <properties/>
     <dependencies>
         <dependency>

@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-audit-app</artifactId>
-    <name>LoadUp Audit App</name>
+    <name>LoadUp Modules Audit App</name>
+    <description>Application services and business orchestration for audit events.</description>
     <properties/>
     <dependencies>
         <dependency>

@@ -9,8 +9,8 @@
     </parent>
 
     <artifactId>loadup-components-configcenter-api</artifactId>
-    <name>LoadUp ConfigCenter Components API</name>
-    <description>Public API for LoadUp Config Center component</description>
+    <name>LoadUp Components ConfigCenter API</name>
+    <description>Configuration access, change listeners and provider contracts.</description>
 
     <properties>
         <java.version>25</java.version>

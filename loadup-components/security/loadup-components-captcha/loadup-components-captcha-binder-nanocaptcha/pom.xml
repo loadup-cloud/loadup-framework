@@ -9,8 +9,8 @@
     </parent>
 
     <artifactId>loadup-components-captcha-binder-nanocaptcha</artifactId>
-    <name>LoadUp Captcha Binder Nanocaptcha</name>
-    <description>Nanocaptcha image captcha binder for LoadUp Captcha component</description>
+    <name>LoadUp Components Captcha Binder NanoCaptcha</name>
+    <description>NanoCaptcha character images and single-use answer verification.</description>
 
     <dependencies>
         <dependency>

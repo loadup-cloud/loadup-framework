@@ -8,8 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-observability</artifactId>
-    <name>LoadUp Observability</name>
-    <description>Spring Boot metrics and OpenTelemetry tracing integration</description>
+    <name>LoadUp Components Observability</name>
+    <description>Micrometer metrics, tracing integration and annotated service digest logs.</description>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>

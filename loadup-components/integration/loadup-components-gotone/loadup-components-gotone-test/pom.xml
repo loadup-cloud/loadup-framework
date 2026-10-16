@@ -8,8 +8,8 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-gotone-test</artifactId>
-    <name>Loadup Gotone Test</name>
-    <description>Unit and integration tests for the gotone notification component</description>
+    <name>LoadUp Components Gotone Test</name>
+    <description>Unit and integration tests for notification routing, channels and storage.</description>
 
     <properties>
         <java.version>25</java.version>

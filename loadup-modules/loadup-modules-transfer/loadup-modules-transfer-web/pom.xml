@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-transfer-web</artifactId>
-    <name>LoadUp Import Export Tasks Web Adapter</name>
+    <name>LoadUp Modules Transfer Web</name>
+    <description>Spring MVC endpoints for import and export tasks.</description>
     <properties/>
     <dependencies>
         <dependency>

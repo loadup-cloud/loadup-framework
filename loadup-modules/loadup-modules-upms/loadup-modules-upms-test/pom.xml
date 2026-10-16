@@ -9,8 +9,8 @@
     </parent>
 
     <artifactId>loadup-modules-upms-test</artifactId>
-    <name>Loadup UPMS Test</name>
-    <description>UPMS Module Comprehensive Test Suite</description>
+    <name>LoadUp Modules UPMS Test</name>
+    <description>Unit and integration tests for identity and access management.</description>
 
     <properties>
         <java.version>25</java.version>

@@ -8,7 +8,8 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-modules-file-infrastructure</artifactId>
-    <name>LoadUp File Infrastructure</name>
+    <name>LoadUp Modules File Infrastructure</name>
+    <description>MyBatis-Flex persistence and infrastructure adapters for file resources.</description>
     <properties/>
     <dependencies>
         <dependency>
