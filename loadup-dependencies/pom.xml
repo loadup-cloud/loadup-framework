@@ -72,7 +72,7 @@
         <jackson-bom.version>3.2.3</jackson-bom.version>
         <jackson-annotations.version>2.22</jackson-annotations.version>
         <fastjson.version>2.0.65</fastjson.version>
-        <lz4-java.version>1.11.4</lz4-java.version>
+        <lz4-java.version>1.12.0</lz4-java.version>
         <jetcache.version>2.8.0.RC</jetcache.version>
         <jobrunr.version>9.0.0</jobrunr.version>
         <io.vavr.version>1.0.1</io.vavr.version>
