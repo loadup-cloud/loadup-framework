@@ -64,7 +64,9 @@ frozen-lockfile 安装、管理端生产构建、本地 VitePress 文档构建�
 
 2026-10-16 已重整 GitHub Actions：统一 JDK 25/mvnd、修复重复 env、单次 clean install 完成单测/真实 IT/质量门禁，同次产物执行逐组件 jar 行/分支双 90% 覆盖率门禁；增加 PR Dependency Review、修复 OWASP 聚合扫描与缓存、失败报告归档、最小凭证范围及显式发布开关。Testcontainers 复用开关改为可被 CI 覆盖，保留本地默认；删除失效配置与全局 Docker prune。actionlint 1.7.12 工作流检查、14 项 Python 工具回归、根 POM 的 `mvnd -N spotless:check` 和 git diff 空白检查通过，实际下载的 mvnd Linux 安装包 SHA-256 与固定值一致。IDEA 检查仍报告原有 surefire-report-plugin 3.6.0 无法解析，本次未修改其版本；没有运行完整 reactor 或触发远程工作流。
 
-- [ ] 推送后验收一次 PR 和主分支 CI，确认 GitHub Dependency Graph/Dependency Review 可用、真实容器测试、逐 jar 覆盖率与 OWASP 报告全部通过；按需配置 NVD_API_KEY，并将新的两个 PR 检查加入分支保护。
+2026-10-17 移除 OWASP `dependency-check-maven`：删除根 POM 的插件版本属性与 `pluginManagement` 声明，删除 CI 中的 NVD 数据缓存步骤、聚合扫描步骤及 `dependency-check-report.*` 归档路径。依赖安全仍由 PR 的 Dependency Review 负责；`NVD_API_KEY` 与 OWASP 缓存不再使用。
+
+- [ ] 推送后验收一次 PR 和主分支 CI，确认 GitHub Dependency Graph/Dependency Review 可用、真实容器测试与逐 jar 覆盖率全部通过，并将新的两个 PR 检查加入分支保护。
 - [ ] 需要发布时配置 PUBLISH_PACKAGES、PACKAGES_USERNAME、PACKAGES_TOKEN，验收对 loadup-cloud/loadup-packages 的跨仓库权限与 deployAtEnd；当前未执行发布。配置步骤见根 README 的 GitHub CI 章节。
 
 ## P1 · Database 业务 ID 与 Sequence

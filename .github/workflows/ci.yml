@@ -77,29 +77,10 @@ jobs:
           if [[ -f loadup-components/target/coverage/summary.md ]]; then
             cat loadup-components/target/coverage/summary.md >> "$GITHUB_STEP_SUMMARY"
           fi
-      - name: Cache vulnerability database
-        if: github.event_name != 'pull_request'
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/dependency-check
-          key: dependency-check-13-${{ runner.os }}-${{ github.run_id }}
-          restore-keys: dependency-check-13-${{ runner.os }}-
-      - name: Scan dependencies with OWASP
-        if: github.event_name != 'pull_request'
-        timeout-minutes: 30
-        env:
-          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-        run: |
-          dependency_check_version=$(python3 -c 'import xml.etree.ElementTree as E; print(E.parse("pom.xml").findtext("{*}properties/{*}dependency-check-plugin.version"))')
-          mvnd -B -ntp -U "org.owasp:dependency-check-maven:${dependency_check_version}:aggregate" \
-            -DnvdApiKeyEnvironmentVariable=NVD_API_KEY \
-            "-DdataDirectory=$HOME/.cache/dependency-check" \
-            -DfailBuildOnCVSS=7 -DfailOnError=true -Dformat=ALL \
-            -DossIndexAnalyzerEnabled=false
       - name: Show container state on failure
         if: failure()
         run: docker ps -a
-      - name: Upload test, quality, coverage and security reports
+      - name: Upload test, quality and coverage reports
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
@@ -115,7 +96,6 @@ jobs:
             **/target/site/jacoco/**
             **/target/site/jacoco-aggregate/**
             loadup-components/target/coverage/**
-            **/target/dependency-check-report.*
 
   publish:
     name: Publish GitHub Packages
