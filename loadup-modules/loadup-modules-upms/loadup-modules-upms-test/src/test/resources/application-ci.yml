@@ -9,19 +9,11 @@ spring:
       idle-timeout: 600000
       max-lifetime: 1800000
       connection-test-query: SELECT 1
-  sql:
-    init:
-      mode: always
-      schema-locations: classpath:schema-test.sql
-      data-locations: classpath:test-data.sql
-      continue-on-error: false
 
 mybatis-flex:
   configuration:
     map-underscore-to-camel-case: true
     cache-enabled: false
-  global-config:
-    print-sql: false
 
 testcontainers:
   reuse:

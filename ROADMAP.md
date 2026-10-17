@@ -2,6 +2,14 @@
 
 本文只记录尚未完成的工作。每完成一项任务立即更新：移除已完成的实现项，未执行的运行验证单独保留。已实现的能力、接入方式和设计边界以各 Maven 模块的 `README.md`、`ARCHITECTURE.md` 为准。LoadUp 是通过 BOM 按需引入的框架；`loadup-application` 用于本地集成验证。
 
+## UPMS Failsafe 后续验收
+
+2026-10-17 已复现并修复 UserServiceIT 启动失败：测试 profile 覆盖 mybatis-flex.global-config，被 database 的持久化配置保护拒绝。保留保护并清理两个 profile 的覆盖；测试启动器改用标准 Boot 自动装配，不直接扫描 database 自动配置或重复扫描 Mapper。SQL 初始化收敛至公共 application.yml，复用 database 的 Sequence 建表脚本，并在测试 schema 中清理旧分配表。README 修正为 mvnd clean verify，明确 test 阶段不执行 Failsafe IT。
+
+本地 test profile 与 ci profile（testcontainers.reuse.enable=false）分别通过定向 mvnd clean verify；同一个 UserServiceIT 在两种配置下各执行 1 次，均无失败/错误/跳过，连接真实 MySQL。CI 配置验证同时通过相关模块的 Spotless、License、Enforcer，IDEA 修改文件检查、git diff 空白检查通过；本轮跳过单元测试和 SpotBugs，没有执行完整 reactor。模块文档与文档站已同步。
+
+- [ ] 提交后在远程 CI 验收同一 Failsafe 流程；其他业务模块和完整测试集不在此次验证结论内。
+
 ## 前端依赖安全与部署清理后续验收
 
 2026-10-16 已读取 GitHub 的 24 条 open Dependabot 告警（12 个包，全部来自 frontend/pnpm-lock.yaml），并处理对应依赖：移除 Wrangler/Cloudflare 部署依赖及 miniflare/workerd/sharp/undici 链路；保留文档源码、本地预览和构建命令。删除本地文档中的模板 Cloudflare 发布说明。Vue 全链统一 3.5.42；source-map-js 1.2.2、postcss-selector-parser 7.1.6、probe-image-size 7.4.0、brace-expansion 5.0.12、js-yaml 4.3.2、fast-uri 3.1.8 及 colord 2.9.4 通过受限 overrides 管理；VitePress 内部 Vite 升至 6.4.3，移除旧 Vite/esbuild。MockJS 无修复版本，已替换旧插件为 vite-plugin-mock-dev-server 2.5.0，并适配现有静态演示数据，日志设为 warn 避免输出登录请求体。Dependabot 已增加 frontend npm 工作区维护。
@@ -82,7 +90,7 @@ frozen-lockfile 安装、管理端生产构建、本地 VitePress 文档构建�
 - [ ] 在真实 Nacos/Apollo、邮件、推送和短信供应商环境单独验收连接、权限及协议错误；SDK 模拟和本地协议服务器测试不替代外部系统验收。
 
 - [ ] JUnit 6.0.3 定向运行验收：版本由 Boot 4.1.1 BOM 统一管理，Testify/AGENTS 文档已对齐，launcher 架构测试已改用 ArchUnit 核心库；见 [分析记录](loadup-testify/JUNIT6-ANALYSIS.md)。用户验收普通/参数化/Spring 测试、架构与源码/错误码门禁及真实 MySQL IT，核对测试发现数量；本次未执行构建或测试。
-- [ ] Testify 真实数据库回归：运行 UserServiceIT、UserServiceBatchIT。TestifyAutoConfigurationTest 与 ScenarioAssertTest 已在本次质量治理中完成 14 项测试，Bean 装配、非数据库断言及缺少数据库引擎的错误契约通过；未以装配测试替代真实数据库验收。
+- [ ] Testify 真实数据库回归：UserServiceIT 已在本次 UPMS Failsafe 修复中通过真实 MySQL 回归；继续验证 Testify 的批量场景用例。TestifyAutoConfigurationTest 与 ScenarioAssertTest 已在本次质量治理中完成 14 项测试，Bean 装配、非数据库断言及缺少数据库引擎的错误契约通过；未以装配测试替代真实数据库验收。
 
 面向支付宝、微信支付、银联的商户聚合收单应用，优先补齐通用技术能力。收单业务放在独立消费工程中；支付状态机、渠道协议、退款、商户通知任务、费用与对账规则由业务工程负责。当前范围不包含用户余额钱包、充值、内部转账及提现。
 

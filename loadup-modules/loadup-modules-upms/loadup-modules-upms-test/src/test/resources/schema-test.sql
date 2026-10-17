@@ -18,6 +18,7 @@
 -- #L%
 ---
 -- UPMS Test Schema (与 modules/loadup-modules-upms/schema.sql 保持一致)
+DROP TABLE IF EXISTS loadup_sequence_allocation;
 DROP TABLE IF EXISTS upms_user_config;
 DROP TABLE IF EXISTS upms_password_reset_token;
 DROP TABLE IF EXISTS upms_user_oauth_binding;
