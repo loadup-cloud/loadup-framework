@@ -57,7 +57,7 @@ jobs:
           docker info
       - name: Build once, run unit and integration tests, enforce quality gates
         run: |
-          mvnd -B -ntp -T 1 clean install pmd:check checkstyle:check \
+          mvnd -B -ntp -U -T 1 clean install pmd:check checkstyle:check \
             -DskipTests=false -Dskip.unit.tests=false -Dskip.integration.tests=false \
             -Dskip.spotbugs=false -Dskip.spotless=false -Dlicense.skip=false \
             -Dskip.enforcer=false -Dskip.pmd=false -Dskip.checkstyle=false \
@@ -65,7 +65,7 @@ jobs:
       - name: Enforce 90 percent line and branch coverage per component jar
         run: |
           jacoco_version=$(python3 -c 'import xml.etree.ElementTree as E; print(E.parse("pom.xml").findtext("{*}properties/{*}jacoco-plugin.version"))')
-          mvnd -B -ntp -N org.apache.maven.plugins:maven-dependency-plugin:3.11.0:copy \
+          mvnd -B -ntp -U -N org.apache.maven.plugins:maven-dependency-plugin:3.11.0:copy \
             "-Dartifact=org.jacoco:org.jacoco.cli:${jacoco_version}:jar:nodeps" \
             "-DoutputDirectory=$RUNNER_TEMP/jacoco"
           python3 tools/component-coverage.py \
@@ -91,7 +91,7 @@ jobs:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: |
           dependency_check_version=$(python3 -c 'import xml.etree.ElementTree as E; print(E.parse("pom.xml").findtext("{*}properties/{*}dependency-check-plugin.version"))')
-          mvnd -B -ntp "org.owasp:dependency-check-maven:${dependency_check_version}:aggregate" \
+          mvnd -B -ntp -U "org.owasp:dependency-check-maven:${dependency_check_version}:aggregate" \
             -DnvdApiKeyEnvironmentVariable=NVD_API_KEY \
             "-DdataDirectory=$HOME/.cache/dependency-check" \
             -DfailBuildOnCVSS=7 -DfailOnError=true -Dformat=ALL \
@@ -143,6 +143,6 @@ jobs:
         run: |
           : "${PACKAGES_USERNAME:?Set the PACKAGES_USERNAME repository variable}"
           : "${PACKAGES_TOKEN:?Set PACKAGES_TOKEN with access to loadup-cloud/loadup-packages}"
-          mvnd -B -ntp -T 1 clean deploy -P github \
+          mvnd -B -ntp -U -T 1 clean deploy -P github \
             -DaltDeploymentRepository=github::https://maven.pkg.github.com/loadup-cloud/loadup-packages \
             -DdeployAtEnd=true -DskipTests -Dskip.spotbugs=true

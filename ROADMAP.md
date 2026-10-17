@@ -2,6 +2,14 @@
 
 本文只记录尚未完成的工作。每完成一项任务立即更新：移除已完成的实现项，未执行的运行验证单独保留。已实现的能力、接入方式和设计边界以各 Maven 模块的 `README.md`、`ARCHITECTURE.md` 为准。LoadUp 是通过 BOM 按需引入的框架；`loadup-application` 用于本地集成验证。
 
+## CI 插件依赖解析后续验收
+
+2026-10-17 针对 CI 的 Spotless 插件依赖批量 not found，已核对 xz 1.9、OkHttp 4.12.0、JGit 7.7.1、OSGi 3.24.200、Durian Core 1.2.0 的 Central 制品 URL，均返回 HTTP 200；这些代表性版本存在。首次下载失败的 HTTP 原因尚未从用户提供的末尾日志确认。根据 Maven 3 的 not-found 缓存机制，CI 在 setup-java 恢复缓存后清理 *.lastUpdated 失败标记，所有 Maven 命令增加 -U 重新检查缺失依赖，保留正常 jar/pom 缓存，不更换 Spotless 版本或仓库。
+
+本地 mvnd -U -N spotless:check 成功，actionlint、IDEA 修改文件检查及 git diff 空白检查通过；未运行全 reactor，也未触发远程构建。根 README 已更新缓存行为。
+
+- [ ] 提交后复跑出现 Spotless 解析失败的远程任务，确认依赖重新下载；若仍失败，保留首次下载的 HTTP 状态和完整解析异常，继续核对 CI 出口或 Central 的临时响应。不能仅凭本地成功声称远程问题已验证解决。
+
 ## UPMS Failsafe 后续验收
 
 2026-10-17 已复现并修复 UserServiceIT 启动失败：测试 profile 覆盖 mybatis-flex.global-config，被 database 的持久化配置保护拒绝。保留保护并清理两个 profile 的覆盖；测试启动器改用标准 Boot 自动装配，不直接扫描 database 自动配置或重复扫描 Mapper。SQL 初始化收敛至公共 application.yml，复用 database 的 Sequence 建表脚本，并在测试 schema 中清理旧分配表。README 修正为 mvnd clean verify，明确 test 阶段不执行 Failsafe IT。

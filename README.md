@@ -101,7 +101,7 @@ mvnd clean package \
 
 ## GitHub CI
 
-[Build and Test](.github/workflows/ci.yml) 在 `main`、`develop`、`dev` 的 push / PR 及手动触发时运行。Linux runner 使用 Temurin 25、经 SHA-256 校验的 mvnd 1.0.6 和 Maven 依赖缓存；PR 更新取消同分支的旧运行。
+[Build and Test](.github/workflows/ci.yml) 在 `main`、`develop`、`dev` 的 push / PR 及手动触发时运行。Linux runner 使用 Temurin 25、经 SHA-256 校验的 mvnd 1.0.6 和 Maven 依赖缓存；PR 更新取消同分支的旧运行。缓存恢复后清理 Maven 的 `*.lastUpdated` 失败标记；CI 的 mvnd 命令使用 `-U` 重新检查缺失的 release 及更新的 SNAPSHOT，已下载的正常制品继续复用。
 
 - **Tests, Quality and Coverage**：先运行 Python 工具回归，再执行一次 `mvnd clean install pmd:check checkstyle:check`。Surefire 单测、Failsafe 真实 Docker IT、Spotless、License、Enforcer、SpotBugs、PMD 和 Checkstyle 均为阻断门禁。CI 禁用容器复用，保留 Ryuk 清理；本地默认配置不变。
 - **覆盖率**：复用同次构建的 classes 和执行数据，通过 `tools/component-coverage.py` 检查每个运行时组件 jar 的行、分支覆盖率均 ≥90%；缺少编译产物或执行数据不匹配也会失败。结果写入 Actions Summary，测试及质量报告无论成功失败都归档 14 天。
