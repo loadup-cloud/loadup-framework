@@ -2,6 +2,14 @@
 
 本文只记录尚未完成的工作。每完成一项任务立即更新：移除已完成的实现项，未执行的运行验证单独保留。已实现的能力、接入方式和设计边界以各 Maven 模块的 `README.md`、`ARCHITECTURE.md` 为准。LoadUp 是通过 BOM 按需引入的框架；`loadup-application` 用于本地集成验证。
 
+## 商户与合约 Failsafe 后续验收
+
+2026-10-17 已清理商户、合约测试 test/ci 四份配置中的 mybatis-flex.global-config 遗留覆盖，保留 database 配置保护并补充诊断选项不可覆盖的回归。全仓源码配置检查未发现其他同类覆盖。两个测试模块显式引入可选 Flyway starter/MySQL 扩展，启用多租户，取消固定 test profile 并关闭容器复用，确保从空库执行业务及 Sequence 迁移。真实数据库回归进一步发现并修复合约并发签约的 MyBatis 会话缓存问题：获取方案锁后重查幂等请求，重复键处理移到事务回滚后；并发回归增加同步起跑、超时、幂等重放与不同请求冲突验证。
+
+定向 mvnd clean verify --fail-at-end 成功：5 项 database 配置保护单测、2 项 MerchantContractIT、5 项 ContractPersistenceIT 均无失败/错误/跳过；ci profile、非复用真实 MySQL，相关 Spotless/License/Enforcer 校验通过。IDEA 对生产修改、配置保护测试、POM/YAML 未报错，IT 构造器仍提示自动配置 Bean 不可解析，实际 Boot 启动与注入已通过。未运行完整 reactor、其他单测或 SpotBugs，未另跑 test profile；文档已同步。
+
+- [ ] 提交后复跑远程 CI 的商户与合约 Failsafe 流程；在消费工程验收迁移组合及并发签约容量。此次本地通过不等于远程或生产验收完成。
+
 ## CI 插件依赖解析后续验收
 
 2026-10-17 针对 CI 的 Spotless 插件依赖批量 not found，已核对 xz 1.9、OkHttp 4.12.0、JGit 7.7.1、OSGi 3.24.200、Durian Core 1.2.0 的 Central 制品 URL，均返回 HTTP 200；这些代表性版本存在。首次下载失败的 HTTP 原因尚未从用户提供的末尾日志确认。根据 Maven 3 的 not-found 缓存机制，CI 在 setup-java 恢复缓存后清理 *.lastUpdated 失败标记，所有 Maven 命令增加 -U 重新检查缺失依赖，保留正常 jar/pom 缓存，不更换 Spotless 版本或仓库。

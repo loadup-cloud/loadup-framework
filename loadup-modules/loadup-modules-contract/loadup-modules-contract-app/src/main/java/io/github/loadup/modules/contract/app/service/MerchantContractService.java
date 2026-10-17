@@ -91,34 +91,36 @@ public class MerchantContractService implements io.github.loadup.modules.contrac
         if (existing.isPresent()) return replay(existing.get(), digest);
         // External merchant lookup completes before the transaction acquires catalog/database locks.
         var profile = facts.load(tenant, command.merchantId());
-        return Objects.requireNonNull(transactions.execute(status -> {
-            var replay = gateway.findByRequest(tenant, command.requestKey());
-            if (replay.isPresent()) return replay(replay.get(), digest);
-            var entry = catalog.lock(tenant, command.planVersionId())
-                    .orElseThrow(() -> new CommonException(ContractResultCodeEnum.NOT_FOUND));
-            requirePlan(entry);
-            Instant now = clock.instant();
-            String id = UUID.randomUUID().toString();
-            var snapshot = sign(tenant, id, entry, command, profile, now);
-            var header = header(tenant, id, command, digest, actor, now);
-            var revision = new ContractRevisionRecord(
-                    UUID.randomUUID().toString(),
-                    tenant,
-                    id,
-                    1,
-                    codec.write(snapshot),
-                    snapshot.snapshotHash(),
-                    header.createdAt(),
-                    header.createdAt());
-            try {
+        try {
+            return Objects.requireNonNull(transactions.execute(status -> {
+                var entry = catalog.lock(tenant, command.planVersionId())
+                        .orElseThrow(() -> new CommonException(ContractResultCodeEnum.NOT_FOUND));
+                // Recheck after the lock; a competing signer may have committed while we waited.
+                var replay = gateway.findByRequest(tenant, command.requestKey());
+                if (replay.isPresent()) return replay(replay.get(), digest);
+                requirePlan(entry);
+                Instant now = clock.instant();
+                String id = UUID.randomUUID().toString();
+                var snapshot = sign(tenant, id, entry, command, profile, now);
+                var header = header(tenant, id, command, digest, actor, now);
+                var revision = new ContractRevisionRecord(
+                        UUID.randomUUID().toString(),
+                        tenant,
+                        id,
+                        1,
+                        codec.write(snapshot),
+                        snapshot.snapshotHash(),
+                        header.createdAt(),
+                        header.createdAt());
                 gateway.insert(header, revision);
-            } catch (DuplicateKeyException e) {
-                var winner = gateway.findByRequest(tenant, command.requestKey());
-                if (winner.isPresent()) return replay(winner.get(), digest);
-                throw new CommonException(ContractResultCodeEnum.CONFLICT, e);
-            }
-            return converter.toContract(header, snapshot);
-        }));
+                return converter.toContract(header, snapshot);
+            }));
+        } catch (DuplicateKeyException e) {
+            // Roll back both inserts before reading the winner in a fresh session.
+            var winner = gateway.findByRequest(tenant, command.requestKey());
+            if (winner.isPresent()) return replay(winner.get(), digest);
+            throw new CommonException(ContractResultCodeEnum.CONFLICT, e);
+        }
     }
 
     private void validate(ContractSignCommand command, String actor) {

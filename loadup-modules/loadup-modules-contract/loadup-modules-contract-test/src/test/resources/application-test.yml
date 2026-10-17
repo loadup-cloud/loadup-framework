@@ -10,5 +10,3 @@ loadup:
 mybatis-flex:
   configuration:
     map-underscore-to-camel-case: true
-  global-config:
-    print-banner: false

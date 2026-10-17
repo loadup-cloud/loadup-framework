@@ -23,6 +23,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.mybatisflex.spring.boot.MyBatisFlexCustomizer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
@@ -40,6 +42,18 @@ class PersistenceConventionGuardTest {
     void rejectsLegacyGlobalSettings() {
         runner.withPropertyValues("loadup.database.logical-delete.enabled=false")
                 .run(context -> assertThat(context).hasFailed());
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+            strings = {"mybatis-flex.global-config.print-banner=false", "mybatis-flex.global-config.print-sql=false"})
+    void rejectsGlobalConfigurationEvenForDiagnosticFlags(String property) {
+        runner.withPropertyValues(property).run(context -> {
+            assertThat(context).hasFailed();
+            assertThat(context.getStartupFailure())
+                    .hasMessageContaining("Framework-owned persistence configuration cannot be overridden")
+                    .hasMessageContaining("mybatis-flex.global-config");
+        });
     }
 
     @Test

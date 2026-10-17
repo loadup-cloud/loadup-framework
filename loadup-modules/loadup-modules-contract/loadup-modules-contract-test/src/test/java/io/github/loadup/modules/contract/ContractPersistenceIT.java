@@ -32,18 +32,18 @@ import io.github.loadup.modules.contract.client.query.ContractResolveQuery;
 import io.github.loadup.modules.contract.client.spi.MerchantFactsProvider;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(classes = ContractPersistenceIT.Application.class)
-@ActiveProfiles("test")
-@EnableTestContainers(ContainerType.MYSQL)
+@EnableTestContainers(value = ContainerType.MYSQL, reuse = false)
 class ContractPersistenceIT {
     private final CatalogService catalog;
     private final MerchantContractService contracts;
@@ -134,12 +134,29 @@ class ContractPersistenceIT {
         String tenant = UUID.randomUUID().toString();
         String plan = TenantUtil.callWithTenant(tenant, () -> plan());
         var command = command(plan, "concurrent");
+        var start = new CyclicBarrier(2);
         try (var executor = Executors.newFixedThreadPool(2)) {
-            var first =
-                    executor.submit(() -> TenantUtil.callWithTenant(tenant, () -> contracts.sign(command, "operator")));
-            var second =
-                    executor.submit(() -> TenantUtil.callWithTenant(tenant, () -> contracts.sign(command, "operator")));
-            assertThat(first.get().id()).isEqualTo(second.get().id());
+            var first = executor.submit(() -> {
+                start.await(10, TimeUnit.SECONDS);
+                return TenantUtil.callWithTenant(tenant, () -> contracts.sign(command, "operator"));
+            });
+            var second = executor.submit(() -> {
+                start.await(10, TimeUnit.SECONDS);
+                return TenantUtil.callWithTenant(tenant, () -> contracts.sign(command, "operator"));
+            });
+            String id = first.get(30, TimeUnit.SECONDS).id();
+            assertThat(second.get(30, TimeUnit.SECONDS).id()).isEqualTo(id);
+            TenantUtil.runWithTenant(tenant, () -> {
+                assertThat(contracts.sign(command, "operator").id()).isEqualTo(id);
+                assertThatThrownBy(() -> contracts.sign(command(plan, "different-request"), "operator"))
+                        .isInstanceOfSatisfying(
+                                CommonException.class,
+                                failure -> assertThat(failure.getResultCode())
+                                        .isEqualTo(
+                                                io.github.loadup.modules.contract.client.error.ContractResultCodeEnum
+                                                        .CONFLICT));
+                assertThat(contracts.detail(id).id()).isEqualTo(id);
+            });
         }
     }
 

@@ -39,11 +39,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(classes = MerchantContractIT.Application.class)
-@ActiveProfiles("test")
-@EnableTestContainers(ContainerType.MYSQL)
+@EnableTestContainers(value = ContainerType.MYSQL, reuse = false)
 class MerchantContractIT {
     private final MerchantService merchants;
     private final MerchantQueryFacade lookup;
