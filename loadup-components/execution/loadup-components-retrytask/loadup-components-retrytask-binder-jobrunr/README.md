@@ -37,3 +37,7 @@
 ## 自动装配
 
 - [`JobRunrRetryTaskAutoConfiguration`](src/main/java/io/github/loadup/retrytask/jobrunr/autoconfig/JobRunrRetryTaskAutoConfiguration.java)
+
+## 共享补丁运行时
+
+与 scheduler binder 共同依赖 [LoadUp JobRunr 运行时](../../loadup-components-jobrunr/README.md)，排除 starter 的原 core，避免同一应用出现两份核心类。此补丁仅处理周期调度缓存失效，重试任务继续使用原 JobRunr 逻辑和数据表，无新增配置。消费工程单独引入 starter 时也应排除原 `org.jobrunr:jobrunr`。上游库许可和对应完整源代码见该运行时文档。

@@ -51,6 +51,7 @@
         <loadup.framework.version>0.0.2-SNAPSHOT</loadup.framework.version>
 
         <!-- Plugin versions managed here; dependency versions managed in loadup-dependencies BOM -->
+        <build-helper-maven-plugin.version>3.6.2</build-helper-maven-plugin.version>
         <maven-antrun-plugin.version>3.2.0</maven-antrun-plugin.version>
         <maven-assembly-plugin.version>3.8.0</maven-assembly-plugin.version>
         <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>

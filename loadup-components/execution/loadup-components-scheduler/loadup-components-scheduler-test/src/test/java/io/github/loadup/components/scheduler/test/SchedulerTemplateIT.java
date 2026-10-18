@@ -30,9 +30,12 @@ import io.github.loadup.components.scheduler.model.SchedulerStatus;
 import io.github.loadup.components.scheduler.test.TestSchedulerProcessors.ControlledProcessor;
 import io.github.loadup.components.testcontainers.annotation.ContainerType;
 import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import org.jobrunr.jobs.states.StateName;
 import org.jobrunr.storage.StorageProvider;
+import org.jobrunr.storage.navigation.OffsetBasedPageRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,7 +44,7 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(
         classes = TestSchedulerApplication.class,
         properties = "spring.autoconfigure.exclude="
-                + "org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration,"
+                + "org.springframework.boot.quartz.autoconfigure.QuartzAutoConfiguration,"
                 + "io.github.loadup.components.scheduler.quartz.autoconfigure.QuartzSchedulerAutoConfiguration")
 @EnableTestContainers(value = ContainerType.MYSQL, reuse = false)
 @org.springframework.test.annotation.DirtiesContext(
@@ -57,6 +60,26 @@ class SchedulerTemplateIT {
 
     @Autowired
     private TestSchedulerProcessors processors;
+
+    @Test
+    void loadsOnePatchedJobRunrCore() throws Exception {
+        var resources = SchedulerTemplateIT.class
+                .getClassLoader()
+                .getResources("org/jobrunr/server/tasks/zookeeper/ProcessRecurringJobsTask.class");
+        assertThat(Collections.list(resources)).hasSize(1);
+        assertThat(org.jobrunr.server.tasks.zookeeper.ProcessRecurringJobsTask.class
+                        .getProtectionDomain()
+                        .getCodeSource()
+                        .getLocation())
+                .isEqualTo(org.jobrunr.jobs.Job.class
+                        .getProtectionDomain()
+                        .getCodeSource()
+                        .getLocation())
+                .isEqualTo(io.github.loadup.components.jobrunr.RecurringJobCacheInvalidator.class
+                        .getProtectionDomain()
+                        .getCodeSource()
+                        .getLocation());
+    }
 
     @Test
     void registerSchedulesRecurringRunWithPayload() {
@@ -103,6 +126,16 @@ class SchedulerTemplateIT {
         ControlledProcessor processor = processors.processor(taskName);
         template.register(ScheduleRequest.of(taskName, "0 0 0 1 1 *"));
 
+        // Ensure the old far-future run has been cached before updating the recurring schedule.
+        await().atMost(ofSeconds(15))
+                .until(
+                        () -> storageProvider
+                                .getJobs(StateName.SCHEDULED, new OffsetBasedPageRequest("updatedAt:ASC", 0L, 100))
+                                .getItems()
+                                .stream()
+                                .anyMatch(job -> job.getRecurringJobId()
+                                        .filter(taskName::equals)
+                                        .isPresent()));
         template.updateCron(taskName, "*/5 * * * * *");
 
         await().atMost(ofSeconds(20)).until(() -> processor.calls() >= 1);

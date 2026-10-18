@@ -33,8 +33,9 @@ jobrunr:
 ## 行为说明
 
 - 每个任务以 `taskName` 作为 recurring job id，重复注册/更新即覆盖，天然幂等。
-- `register` / `updateCron` / `delete` 会清理该任务的待执行实例，保证新 cron 立即生效、
-  删除后不会残留孤儿执行。
+- `register` / `updateCron` / `delete` 会清理该任务在存储中的待执行实例；已进入 PROCESSING 的任务不在清理范围内。此清理不等于刷新后台服务器的内存调度缓存。
+- 使用 [LoadUp JobRunr 补丁运行时](../../loadup-components-jobrunr/README.md) 修复原版 9.0.0 的远期 cron 更新缓存问题。新定义通过后台服务器正常轮询生效，不承诺同步立即执行；已在 PROCESSING 的任务不受取消。
+- starter 的原 `org.jobrunr:jobrunr` 已排除，由一个补丁 core jar 替代；消费工程不得额外引入原 core。该运行时也由 retrytask binder 共享，保留上游 LGPL 许可和完整 sources 附件。
 - 执行通过 `SchedulerJobRequestHandler` 分发到 `SchedulerProcessor`；处理器异常走 JobRunr
   重试策略。
 

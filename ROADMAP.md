@@ -10,6 +10,15 @@
 
 - [ ] 提交后复跑远程 CI 的商户与合约 Failsafe 流程；在消费工程验收迁移组合及并发签约容量。此次本地通过不等于远程或生产验收完成。
 
+## JobRunr 周期调度补丁后续验收
+
+2026-10-18 已定位并稳定复现 CI run 39026729412 的 SchedulerTemplateIT.updateCronChangesSchedule 超时：原版 JobRunr 9.0.0 在旧年度任务已被预调度后保留远期内存游标，更新 cron 与清理待执行实例不能刷新该游标。按用户选择保留 JobRunr，新增 loadup-components-jobrunr 共享替换运行时，在每个后台服务器重载周期定义时，仅失效定义变更/删除任务的游标。scheduler/retrytask 两个 binder 共同排除原 core 并引入替换 jar，保留官方 starter、API、任务 ID 和数据库结构。补丁基线由 Enforcer 固定；严格源码替换失败会终止构建，随制品附带完整对应 sources、上游 LGPL 许可和修改说明。未通过跳过测试、延长超时或删除执行断言绕过问题。
+
+定向合并 mvnd clean verify 通过 31 项单测、21 项 IT（JobRunr scheduler 7、Quartz 5、retrytask 9），使用真实 MySQL；关键用例显式等待旧年度任务入队再更新，核心类唯一来源检查通过。后续仅对补丁模块执行 clean verify，3 项单测和 2 项制品 IT 全部通过，逐项确认除目标补丁类与 manifest 外的上游二进制/资源未改变、multi-release 标记/源码/许可完整；Spotless、License、Enforcer 及补丁 helper 的 SpotBugs 通过（0 告警）。helper 行/分支覆盖率均为 100%（12/12 行、8/8 分支）；上游解包类不算作手写组件覆盖率。IDEA 修改源码检查仅剩 IT 的动态自动装配 StorageProvider 提示，类型均可解析、真实注入已通过。已更新模块文档并同步文档站；未跑完整 reactor 或远程 CI，合并回归跳过其他模块单测和 SpotBugs。现有 IT 沿用固定 test profile，未单独验证 ci profile 配置选择。
+
+- [ ] 提交并推送后复跑远程 CI；在部署工程验证多节点 cron 更新/删除/同 ID 重建、执行中任务和并发变更边界，以及现有 IT 的 ci profile 选择。
+- [ ] 跟进 JobRunr 上游缓存失效修复；升级前重审补丁点、核心依赖和许可。上游原生修复通过相同确定性回归后，同步撤销两个 binder 的替换依赖/exclusion、补丁模块与 BOM 声明，禁止原 core 与补丁 core 共存。
+
 ## CI 插件依赖解析后续验收
 
 2026-10-17 针对 CI 的 Spotless 插件依赖批量 not found，已核对 xz 1.9、OkHttp 4.12.0、JGit 7.7.1、OSGi 3.24.200、Durian Core 1.2.0 的 Central 制品 URL，均返回 HTTP 200；这些代表性版本存在。首次下载失败的 HTTP 原因尚未从用户提供的末尾日志确认。根据 Maven 3 的 not-found 缓存机制，CI 在 setup-java 恢复缓存后清理 *.lastUpdated 失败标记，所有 Maven 命令增加 -U 重新检查缺失依赖，保留正常 jar/pom 缓存，不更换 Spotless 版本或仓库。

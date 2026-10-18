@@ -39,6 +39,7 @@
         <module>reliability/loadup-components-globalunique</module>
         <module>reliability/loadup-components-resilience4j</module>
         <!-- execution -->
+        <module>execution/loadup-components-jobrunr</module>
         <module>execution/loadup-components-scheduler</module>
         <module>execution/loadup-components-retrytask</module>
         <module>execution/loadup-components-pipeline</module>

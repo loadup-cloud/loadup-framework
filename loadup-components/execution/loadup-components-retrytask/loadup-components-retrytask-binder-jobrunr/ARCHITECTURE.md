@@ -47,3 +47,7 @@ binder 实现框架契约，把实现库及其配置隔离在业务 API 之外�
 选择独立 binder，使可重试后台任务实现的依赖留在集成应用；替换底层实现时，业务侧仍使用 `RetryTaskFacade` 契约。
 
 集成方式与配置示例见 [README.md](README.md)。
+
+## 共享 core 的归属
+
+本 binder 与 scheduler binder 使用同一个 loadup-components-jobrunr 替换运行时，排除官方 starter 的原 core。仅周期定义刷新点打补丁，不更改 JobRunr 的重试/存储/执行代码；禁止同时引入原 core 依赖或通过重启共享 BackgroundJobServer 刷新单个任务。补丁装配和发布边界见 [运行时架构](../../loadup-components-jobrunr/ARCHITECTURE.md)。
