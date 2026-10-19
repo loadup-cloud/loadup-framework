@@ -39,7 +39,13 @@
 
     </scm>
 
-    <properties>        <!-- Spring Framework (FROZEN) -->
+    <properties>
+        <project.encoding>UTF-8</project.encoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+        <maven.resources.encoding>UTF-8</maven.resources.encoding>
+        <!-- Spring Framework (FROZEN) -->
         <!-- This POM-only BOM has no source headers; direct license goals still require a license name. -->
         <license.licenseName>apache_v2</license.licenseName>
         <license.skipRemoveLicense>true</license.skipRemoveLicense>

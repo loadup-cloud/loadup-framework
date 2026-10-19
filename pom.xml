@@ -47,6 +47,10 @@
         <license.trimHeaderLine>true</license.trimHeaderLine>
         <java.version>25</java.version>
         <project.encoding>UTF-8</project.encoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+        <maven.resources.encoding>UTF-8</maven.resources.encoding>
         <license.licenseName>apache_v2</license.licenseName>
         <loadup.framework.version>0.0.2-SNAPSHOT</loadup.framework.version>
 
@@ -105,7 +109,7 @@
 
         <!-- Appended by JaCoCo, which appends its agent to this property; silences the JDK
              "Java agent has been loaded dynamically" warning raised by Mockito/Byte Buddy. -->
-        <argLine>-XX:+EnableDynamicAgentLoading</argLine>
+        <argLine>-Dfile.encoding=UTF-8 -XX:+EnableDynamicAgentLoading</argLine>
     </properties>
 
     <dependencyManagement>
@@ -182,6 +186,7 @@
                     <version>${maven-resources-plugin.version}</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
+                        <propertiesEncoding>UTF-8</propertiesEncoding>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -192,6 +197,7 @@
                         <organizationName>LoadUp Cloud</organizationName>
                         <licenseName>${license.licenseName}</licenseName>
                         <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
+                        <encoding>UTF-8</encoding>
                         <includes>
                             <include>**/*.java</include>
                         </includes>
@@ -253,6 +259,9 @@
                             <additionalJOption>-Xdoclint:none</additionalJOption>
                         </additionalJOptions>
                         <skip>${skip.javadoc}</skip>
+                        <encoding>UTF-8</encoding>
+                        <docencoding>UTF-8</docencoding>
+                        <charset>UTF-8</charset>
                     </configuration>
                     <executions>
                         <execution>
@@ -276,6 +285,7 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
                     <configuration>
+                        <argLine>${argLine}</argLine>
                         <includes>
                             <include>**/*Test.java</include>
                         </includes>

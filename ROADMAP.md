@@ -2,6 +2,14 @@
 
 本文只记录尚未完成的工作。每完成一项任务立即更新：移除已完成的实现项，未执行的运行验证单独保留。已实现的能力、接入方式和设计边界以各 Maven 模块的 `README.md`、`ARCHITECTURE.md` 为准。LoadUp 是通过 BOM 按需引入的框架；`loadup-application` 用于本地集成验证。
 
+## CI 范围过滤与任务拆分
+
+2026-10-19 已增加后端变更检测：纯 frontend/docs/模块说明与文档同步改动跳过后端构建和发布；手动、未知路径、混合改动、删除/改名及缺少历史保守执行。快速质量任务与测试主任务并行，SpotBugs/PMD/覆盖率仍共享一次编译；保留原 Tests, Quality and Coverage 名称为汇总必需检查，跳过后端时明确成功，失败/取消不放行。测试失败后仍尝试产出覆盖率诊断，不降低 90% 门禁。
+
+本地已通过 20 项 Python 工具测试（含真实临时 Git 仓库的 PR merge-base / push / 改名场景）、6 种汇总门禁场景、actionlint 及定向无编译快速门禁。未执行全量构建、推送或远程 CI；不能据此承诺现有 20 分钟后端主任务会缩短多少。
+
+- [ ] 首次远程运行验收纯前端/文档跳过、混合变更构建及发布依赖关系，采集 lint/测试/分析阶段耗时后评估受限并行或按组件组分片。
+
 ## DelayedTask PMD 规则修复
 
 2026-10-19 已用 Java 25 未命名资源保留 Observation scope 的自动关闭，并将领取成功分支放入条件块，消除 UnusedLocalVariable / AvoidBranchingStatementAsLastInLoop，未添加抑制。新增竞争失败后继续下一候选的回归。定向 mvnd clean verify 通过 6 项单测、7 项 MySQL IT，随后组件 pmd:check 与 spotbugs:check 均通过；IDEA 无错误。未运行全量构建或远程 CI。
