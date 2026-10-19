@@ -83,6 +83,7 @@ public class DelayedTaskStore {
                     .and(DELAYED_TASK_DO.ATTEMPTS.lt(DELAYED_TASK_DO.MAX_ATTEMPTS))
                     .orderBy(DELAYED_TASK_DO.NEXT_EXECUTE_AT.asc(), DELAYED_TASK_DO.ID.asc())
                     .limit(props.getBatchSize()));
+            if (candidates == null) return Optional.empty();
             for (var row : candidates) {
                 var patch = UpdateEntity.of(DelayedTaskDO.class);
                 patch.setStatus(DelayedTaskStatus.RUNNING);
@@ -100,12 +101,13 @@ public class DelayedTaskStore {
                 else
                     expected.and(DELAYED_TASK_DO.CLAIM_TOKEN.eq(row.getClaimToken()))
                             .and(DELAYED_TASK_DO.LEASE_UNTIL.le(now));
-                if (mapper.updateByQuery(patch, expected) != 1) continue;
-                row.setStatus(DelayedTaskStatus.RUNNING);
-                row.setAttempts(patch.getAttempts());
-                row.setClaimToken(patch.getClaimToken());
-                row.setLeaseUntil(patch.getLeaseUntil());
-                return Optional.of(row);
+                if (mapper.updateByQuery(patch, expected) == 1) {
+                    row.setStatus(DelayedTaskStatus.RUNNING);
+                    row.setAttempts(patch.getAttempts());
+                    row.setClaimToken(patch.getClaimToken());
+                    row.setLeaseUntil(patch.getLeaseUntil());
+                    return Optional.of(row);
+                }
             }
             return Optional.empty();
         });

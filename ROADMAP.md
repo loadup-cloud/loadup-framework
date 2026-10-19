@@ -2,6 +2,18 @@
 
 本文只记录尚未完成的工作。每完成一项任务立即更新：移除已完成的实现项，未执行的运行验证单独保留。已实现的能力、接入方式和设计边界以各 Maven 模块的 `README.md`、`ARCHITECTURE.md` 为准。LoadUp 是通过 BOM 按需引入的框架；`loadup-application` 用于本地集成验证。
 
+## DelayedTask PMD 规则修复
+
+2026-10-19 已用 Java 25 未命名资源保留 Observation scope 的自动关闭，并将领取成功分支放入条件块，消除 UnusedLocalVariable / AvoidBranchingStatementAsLastInLoop，未添加抑制。新增竞争失败后继续下一候选的回归。定向 mvnd clean verify 通过 6 项单测、7 项 MySQL IT，随后组件 pmd:check 与 spotbugs:check 均通过；IDEA 无错误。未运行全量构建或远程 CI。
+
+## DelayedTask 质量告警修复
+
+2026-10-19 已修复 Dispatcher CT_CONSTRUCTOR_THROW 与 Store.claim 可空查询解引用：注册表在构造器委托参数中校验，保留 CGLIB/NOT_SUPPORTED 事务代理；null 候选返回 Optional.empty。补充空候选与真实数据库事务挂起/恢复回归。定向 mvnd clean verify 通过 5 项单测、7 项 MySQL IT；组件 spotbugs:check 为 0 问题，IDEA 检查无错误，行/分支覆盖率 97.97%/92.55%。未运行全量构建或远程 CI。
+
+## 本地质量检查脚本
+
+2026-10-19 已新增根 quality-check.sh：默认全模块、六项静态门禁，可按模块和检查项选择，支持 dry-run。统一 mvnd clean verify、跳过测试及源码自动修复、保留日志和失败退出码。已在 Scheduler API 及依赖上实际通过六项检查；默认全量和定向命令预览、Bash 语法及 IDEA 检查通过。未执行完整 reactor 质量扫描。
+
 ## Scheduler 构造安全告警修复
 
 2026-10-19 已将 SchedulerTemplate 声明为 final，保留非法/重复名称的构造校验，扩展仍通过 Provider / ScheduledTask 组合实现，消除子类终结器访问半初始化对象的路径，未增加告警抑制。定向 mvnd clean test 通过 API 3 项、Local 3 项、PowerJob binder 9 项单测；API spotbugs:check 为 0 问题，IDEA 检查无错误。未运行全量构建或远程 CI。

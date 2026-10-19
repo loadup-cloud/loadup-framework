@@ -44,17 +44,32 @@ public class DelayedTaskDispatcher implements ScheduledTask {
             Clock clock,
             ObservationRegistry observations,
             List<DelayedTaskHandler> handlers) {
+        this(store, converter, props, clock, observations, indexHandlers(handlers));
+    }
+
+    private DelayedTaskDispatcher(
+            DelayedTaskStore store,
+            DelayedTaskConverter converter,
+            DelayedTaskProperties props,
+            Clock clock,
+            ObservationRegistry observations,
+            Map<String, DelayedTaskHandler> handlers) {
         this.store = store;
         this.converter = converter;
         this.properties = props;
         this.clock = clock;
         this.observations = observations;
+        this.handlers = handlers;
+    }
+
+    // Validate before constructor delegation reaches Object initialization; retain CGLIB support.
+    private static Map<String, DelayedTaskHandler> indexHandlers(List<DelayedTaskHandler> handlers) {
         var map = new HashMap<String, DelayedTaskHandler>();
         for (var handler : handlers) {
             if (handler.taskType() == null || map.putIfAbsent(handler.taskType(), handler) != null)
                 throw new CommonException(DelayedTaskResultCodeEnum.INVALID_ARGUMENT);
         }
-        this.handlers = Map.copyOf(map);
+        return Map.copyOf(map);
     }
 
     public String name() {
@@ -74,7 +89,7 @@ public class DelayedTaskDispatcher implements ScheduledTask {
             Observation observation = Observation.createNotStarted("loadup.delayedtask.execute", observations)
                     .lowCardinalityKeyValue("task.type", handler == null ? "unregistered" : task.taskType())
                     .start();
-            try (var scope = observation.openScope()) {
+            try (var _ = observation.openScope()) {
                 if (handler == null) throw new CommonException(DelayedTaskResultCodeEnum.HANDLER_MISSING);
                 ContextHolder.callWith(ExecutionContext.empty().with(ContextKeys.TENANT_ID, task.tenantId()), () -> {
                     handler.handle(task);

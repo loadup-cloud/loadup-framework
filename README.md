@@ -87,17 +87,20 @@ python3 -m unittest discover -s tools -p test_doc_sync.py
 
 使用 Maven Daemon（`mvnd`）。Spotless 负责 Palantir 格式与 import 清理；Checkstyle 使用 `config/quality/checkstyle.xml` 检查空语句、equals/hashCode、switch fall-through 和 import 等结构规范，不叠加 Sun 格式规则。Checkstyle 引擎支持 Java 25，PMD 排除 `target/generated-sources` 和 `target/generated-test-sources`，生成文件由 APT 管理。
 
-定向检查时指定 `-pl :<artifactId> -am`。在同一次 reactor 中先执行 `clean package`，再运行报告/检查目标，确保下游插件解析本次生成的 jar。首次项目可能是仅提供 BOM 的 POM，因此 SpotBugs 使用完整插件坐标：
+本地统一使用根目录脚本，默认检查全部模块及六项质量门禁：SpotBugs、Spotless、License、Enforcer、PMD 和 Checkstyle。
 
 ```bash
-mvnd clean package \
-  com.github.spotbugs:spotbugs-maven-plugin:4.10.4.1:check \
-  pmd:check checkstyle:check license:check-file-header spotless:check \
-  -pl :loadup-components-http -am \
-  -DskipTests -Dskip.spotbugs=false -Dskip.spotless=false -Dlicense.skip=false
+./quality-check.sh                                      # Default: all modules and checks
+./quality-check.sh --dry-run                            # Preview without running Maven
+./quality-check.sh -m :loadup-components-scheduler-api   # Selected module and dependencies
+./quality-check.sh -m :loadup-components-http --checks spotbugs,spotless
 ```
 
-上述命令执行静态门禁，不运行单测或真实环境集成测试。需要修复格式时先执行 `spotless:apply`。报告位于各模块 `target/spotbugsXml.xml`、`target/pmd.xml` 和 `target/checkstyle-result.xml`；执行报告目标不等于对应 `check` 门禁通过。SpotBugs 排除项集中在 `config/quality/spotbugs-exclude.xml`，已知误报应限定到具体规则和责任边界，并说明理由；commons 手写代码参与扫描。
+`--all` 可显式指定全量，不能与 `--modules` 同时使用；模块选择支持 Maven 路径、`:artifactId` 和逗号分隔列表。脚本从任意目录调用均定位到项目根目录，使用一次 `mvnd clean verify`，按需追加 PMD/Checkstyle 门禁；插件版本与规则取自根 POM。定向检查包含工作区 BOM 和依赖，避免使用本地安装的旧 BOM。
+
+脚本跳过单测和集成测试，不自动格式化或更新 License 头；检查仍会编译和打包以提供 SpotBugs 所需产物。格式修复请单独执行 `spotless:apply`。日志保存为根目录已忽略的 `quality-check-*.log`，Maven 失败返回原退出码；不会回退到 `mvn`。
+
+报告位于各模块 `target/spotbugsXml.xml`、`target/pmd.xml` 和 `target/checkstyle-result.xml`。SpotBugs 排除项集中在 `config/quality/spotbugs-exclude.xml`，已知误报应限定到具体规则和责任边界，并说明理由；commons 手写代码参与扫描。
 
 ## GitHub CI
 

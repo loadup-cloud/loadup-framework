@@ -53,7 +53,7 @@ public class PowerJobProcessorAspect {
                             org.springframework.aop.support.AopUtils.getTargetClass(invocation.getTarget())
                                     .getName())
                     .start();
-            try (var scope = observation.openScope()) {
+            try (var _ = observation.openScope()) {
                 ProcessResult result = (ProcessResult) invocation.proceed();
                 if (result == null) throw new CommonException(PowerJobResultCodeEnum.INVALID_PROCESSOR_RESULT);
                 observation.lowCardinalityKeyValue("outcome", result.isSuccess() ? "success" : "failure");

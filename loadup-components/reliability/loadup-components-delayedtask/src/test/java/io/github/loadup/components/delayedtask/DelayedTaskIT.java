@@ -98,6 +98,25 @@ class DelayedTaskIT {
     }
 
     @Test
+    void dispatcherProxySuspendsAndRestoresTheCallerTransaction() {
+        assertThat(org.springframework.aop.support.AopUtils.isAopProxy(dispatcher))
+                .isTrue();
+        register("a", "transaction-suspension", now());
+        transactions.executeWithoutResult(
+                status -> {
+                    assertThat(org.springframework.transaction.support.TransactionSynchronizationManager
+                                    .isActualTransactionActive())
+                            .isTrue();
+                    dispatcher.execute();
+                    assertThat(org.springframework.transaction.support.TransactionSynchronizationManager
+                                    .isActualTransactionActive())
+                            .isTrue();
+                });
+        assertThat(calls).hasValue(1);
+        assertThat(get("a", "transaction-suspension").status()).isEqualTo(DelayedTaskStatus.SUCCEEDED);
+    }
+
+    @Test
     void deadlineTransactionDeduplicationAndTenantIsolation() {
         assertThatThrownBy(() -> tenant("a", () -> tasks.register("close-order", "no-tx", now())))
                 .isInstanceOf(CommonException.class);
@@ -266,6 +285,9 @@ class DelayedTaskIT {
                 }
 
                 public void handle(DelayedTask task) {
+                    assertThat(org.springframework.transaction.support.TransactionSynchronizationManager
+                                    .isActualTransactionActive())
+                            .isFalse();
                     assertThat(ContextHolder.get(ContextKeys.TENANT_ID)).isEqualTo(task.tenantId());
                     calls.incrementAndGet();
                     if (failures.getAndDecrement() > 0) throw new IllegalStateException("Synthetic failure");
