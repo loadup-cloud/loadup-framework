@@ -25,6 +25,7 @@ import java.util.Map;
 final class DatabaseAptConfiguration {
     static final Map<String, String> OPTIONS = Map.of(
             "processor.enable", "true",
+            "processor.charset", "UTF-8",
             "processor.stopBubbling", "true",
             "processor.allInTables.enable", "true",
             "processor.allInTables.className", "Tables",

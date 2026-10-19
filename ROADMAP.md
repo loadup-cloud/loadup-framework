@@ -2,6 +2,18 @@
 
 本文只记录尚未完成的工作。每完成一项任务立即更新：移除已完成的实现项，未执行的运行验证单独保留。已实现的能力、接入方式和设计边界以各 Maven 模块的 `README.md`、`ARCHITECTURE.md` 为准。LoadUp 是通过 BOM 按需引入的框架；`loadup-application` 用于本地集成验证。
 
+## TableDef 生成策略
+
+2026-10-19 按最新决定取消 serialVersionUID 定制，已撤回本轮生成适配与相关测试，恢复上游 APT 默认输出，不添加 final 或告警抑制。未重新构建。
+
+## PowerJob 处理器切点 CI 回归
+
+2026-10-19 已核对 run 39240677102 / job 118020529359 的失败堆栈：JDK 代理直接进入 lambda，未经过 PowerJobProcessorAspect。切点改为目标 BasicProcessor 类型判断与 process(TaskContext) 方法匹配，避免 execution 声明类型对隐藏实现类的解析。上下文用例扩展至 lambda、匿名类、具名类 JDK/CGLIB 代理，并验证父 Observation 与外层上下文恢复，保留所有原断言。
+
+本地原用例在 clean test 和 clean verify 下均通过，未稳定复现 CI 原失败。修改后定向 mvnd clean verify pmd:check 通过，PowerJob 10 项 Failsafe 用例及 2 项 Scheduler 单测通过，依赖模块测试与 SpotBugs/PMD 通过；未启动 PowerJob Server或执行全量 reactor。
+
+- [ ] 推送后验收同一 GitHub CI 的 PowerJob Failsafe 回归，本地通过不代表远程失败已消除。
+
 ## 拆仓后的 CI 配置
 
 2026-10-19 已适配并列 loadup-framework / loadup-admin / docs 仓库：后端移除 /frontend npm Dependabot 配置，范围检测仅跳过本仓库说明文档，旧 frontend/docs 路径重入按未知后端变更处理；doc-sync 默认 ../docs 并支持 --site 显式位置。admin 新增独立 Node/pnpm CI 和根目录 npm/GitHub Actions Dependabot，冻结安装、静态检查、类型检查、request/hooks 测试、生产构建与产物归档分项执行。

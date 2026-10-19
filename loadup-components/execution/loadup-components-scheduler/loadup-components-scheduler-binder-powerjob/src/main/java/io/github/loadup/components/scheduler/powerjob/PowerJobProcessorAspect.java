@@ -39,7 +39,8 @@ public class PowerJobProcessorAspect {
         this.observations = observations;
     }
 
-    @Around("execution(* tech.powerjob.worker.core.processor.sdk.BasicProcessor+.process(..)) && args(task)")
+    @Around("target(tech.powerjob.worker.core.processor.sdk.BasicProcessor)"
+            + " && execution(* process(tech.powerjob.worker.core.processor.TaskContext)) && args(task)")
     public Object process(ProceedingJoinPoint invocation, TaskContext task) throws Throwable {
         var context = ExecutionContext.empty()
                 .with(PowerJobExecutionContext.JOB_ID, task.getJobId())

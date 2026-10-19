@@ -32,6 +32,8 @@ import io.micrometer.observation.ObservationRegistry;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -120,8 +122,9 @@ class PowerJobIntegrationTest {
         assertThat(settings.toString()).doesNotContain("synthetic-secret");
     }
 
-    @Test
-    void scopesNativeIdentifiersAndRestoresOuterContext() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"lambda", "anonymous", "jdk", "cglib"})
+    void scopesNativeIdentifiersAndRestoresOuterContext(String implementation) throws Exception {
         var observations = ObservationRegistry.create();
         var recorder = new Recorder();
         observations.observationConfig().observationHandler(recorder);
@@ -138,20 +141,30 @@ class PowerJobIntegrationTest {
                             .isEqualTo(2);
                     assertThat(ContextHolder.get(outerKey)).isNull();
                     assertThat(observations.getCurrentObservation()).isNotNull();
+                    assertThat(observations.getCurrentObservation().getContext().getName())
+                            .isEqualTo("loadup.powerjob.process");
                     return new ProcessResult(true);
                 },
-                observations);
-        ContextHolder.callWith(ExecutionContext.empty().with(outerKey, "outer"), () -> {
-            assertThat(processor.process(task()).isSuccess()).isTrue();
-            assertThat(ContextHolder.get(outerKey)).isEqualTo("outer");
-            return null;
-        });
+                observations,
+                implementation);
+        Observation outer = Observation.start("test.outer", observations);
+        try (var _ = outer.openScope()) {
+            ContextHolder.callWith(ExecutionContext.empty().with(outerKey, "outer"), () -> {
+                assertThat(processor.process(task()).isSuccess()).isTrue();
+                assertThat(ContextHolder.get(outerKey)).isEqualTo("outer");
+                assertThat(observations.getCurrentObservation()).isSameAs(outer);
+                return null;
+            });
+        }
+        assertThat(observations.getCurrentObservation()).isNull();
         assertThat(ContextHolder.isBound()).isFalse();
         assertThat(recorder.stopped).singleElement().satisfies(context -> {
             assertThat(context.getError()).isNull();
             assertThat(context.getLowCardinalityKeyValue("outcome").getValue()).isEqualTo("success");
             assertThat(context.getLowCardinalityKeyValue("jobId")).isNull();
+            assertThat(context.getParentObservation()).isSameAs(outer);
         });
+        outer.stop();
     }
 
     @Test
@@ -201,9 +214,39 @@ class PowerJobIntegrationTest {
     }
 
     private static BasicProcessor proxy(BasicProcessor processor, ObservationRegistry registry) {
-        var factory = new AspectJProxyFactory(processor);
+        return proxy(processor, registry, "lambda");
+    }
+
+    private static BasicProcessor proxy(BasicProcessor processor, ObservationRegistry registry, String implementation) {
+        BasicProcessor target =
+                switch (implementation) {
+                    case "anonymous" ->
+                        new BasicProcessor() {
+                            @Override
+                            public ProcessResult process(TaskContext context) throws Exception {
+                                return processor.process(context);
+                            }
+                        };
+                    case "jdk", "cglib" -> new DelegatingProcessor(processor);
+                    default -> processor;
+                };
+        var factory = new AspectJProxyFactory(target);
+        factory.setProxyTargetClass("cglib".equals(implementation));
         factory.addAspect(new PowerJobProcessorAspect(registry));
         return factory.getProxy();
+    }
+
+    public static class DelegatingProcessor implements BasicProcessor {
+        private final BasicProcessor delegate;
+
+        public DelegatingProcessor(BasicProcessor delegate) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public ProcessResult process(TaskContext context) throws Exception {
+            return delegate.process(context);
+        }
     }
 
     private static class Recorder implements ObservationHandler<Observation.Context> {
