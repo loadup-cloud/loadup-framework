@@ -94,7 +94,7 @@
         <nacos.version>2.4.3</nacos.version>
         <apollo.version>2.5.0</apollo.version>
         <tianai-captcha.version>1.5.5</tianai-captcha.version>
-        <nanocaptcha.version>2.1</nanocaptcha.version>
+        <nanocaptcha.version>3.0</nanocaptcha.version>
         <dubbo.version>3.3.6</dubbo.version>
         <aws.sdk.version>2.55.15</aws.sdk.version>
         <resilience4j.version>2.3.0</resilience4j.version>
