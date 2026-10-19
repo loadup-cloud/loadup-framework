@@ -27,7 +27,7 @@ class BackendChangesTest(unittest.TestCase):
     def test_runtime_markdown_unknown_and_mixed_changes_run_backend(self):
         for path in ['pom.xml', 'loadup-dependencies/pom.xml', 'config/quality/checkstyle.xml',
                      '.github/workflows/ci.yml', '.github/actions/setup-build/action.yml',
-                     'tools/component-coverage.py', 'quality-check.sh',
+                     'loadup-coverage/pom.xml', 'quality-check.sh',
                      'loadup-application/src/main/resources/template.md', 'frontend/package.json',
                      'docs/hugo.toml', 'unknown.txt']:
             with self.subTest(path=path):

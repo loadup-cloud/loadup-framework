@@ -2,13 +2,16 @@
 
 本文只记录尚未完成的工作。每完成一项任务立即更新：移除已完成的实现项，未执行的运行验证单独保留。已实现的能力、接入方式和设计边界以各 Maven 模块的 `README.md`、`ARCHITECTURE.md` 为准。LoadUp 是通过 BOM 按需引入的框架；`loadup-application` 用于本地集成验证。
 
-## CI 单测覆盖率采集修复
+## Maven 原生覆盖率验收
 
-2026-10-19 分析 run 39249695125 / job 118050239757：862 项单测与 164 项集成测试全部通过，但未加载任何 jacoco-unit.exec，组件 summary 仅合并 17 份执行数据，4/49 jar 达标。已将 Surefire/Failsafe 的 argLine 改为延迟求值 @{argLine}，保留默认 JVM 参数；覆盖率工具新增已执行测试与对应非空执行数据的完整性检查，覆盖兄弟测试模块，--report-only 同样不放行数据缺失。
+2026-10-19 已迁移到 JaCoCo Maven 原生方案：新增 profile 启用的 loadup-coverage 聚合模块，先完成 clean install、unit/IT 数据完整性检查、merge 与 report-aggregate，再复用同批产物逐组件执行原生 check。49 个运行时组件启用行/分支双 90% 门禁；移除 Python 覆盖率工具、其专属测试及 CI 的 CLI 下载/自定义摘要，改为归档原生 HTML/XML/CSV 和 exec。保留 Surefire/Failsafe 的 @{argLine} 延迟取值修复。
 
-26 项 Python 工具回归通过。定向 mvnd clean verify（KMS、PowerJob binder 及依赖）通过，已确认单测文件生成，PowerJob 单测与 IT 数据合并成功。报告行/分支：KMS 96.57%/91.13%、HTTP 97.48%/94.49%、PowerJob binder 100%/100%。未运行全量 reactor，SpotBugs 本次跳过；本地样本通过不代表全部组件已达标。
+按照本轮要求，仅修改代码、配置和源文档，未运行 Maven、测试、质量插件、IDE 检查或文档站同步。此前 KMS/HTTP/PowerJob 的定向采集结果属于旧方案验证，不能证明本次原生配置或全部组件已通过。
 
-- [ ] 推送后重跑 CI 的逐 jar 行/分支双 90% 门禁，根据完整报告补齐实际缺口；此前本地基线不能替代本次提交的远程验收。
+- [ ] 按 loadup-coverage/README.md 手工执行两步原生流程，确认所有组件均执行门禁、兄弟测试数据计入、行/分支各 ≥90%，并在 CI 验收。
+- [ ] 手工验证缺少/空 unit 或 IT exec、缺少 classes、覆盖率未达标的失败路径；同时核对测试发现数量，不能仅凭 exec 存在判断测试完整性。
+- [ ] 验收新 POM 格式及质量插件配置；确认聚合清单、生成代码排除范围和报告模块不部署。
+- [ ] 验收后同步源文档到并列 docs 文档站；本轮按要求未运行同步脚本。
 
 ## TableDef 生成策略
 
@@ -32,7 +35,7 @@
 
 ## CI 范围过滤与任务拆分
 
-2026-10-19 已增加后端变更检测：纯 frontend/docs/模块说明与文档同步改动跳过后端构建和发布；手动、未知路径、混合改动、删除/改名及缺少历史保守执行。快速质量任务与测试主任务并行，SpotBugs/PMD/覆盖率仍共享一次编译；保留原 Tests, Quality and Coverage 名称为汇总必需检查，跳过后端时明确成功，失败/取消不放行。测试失败后仍尝试产出覆盖率诊断，不降低 90% 门禁。
+2026-10-19 已增加后端变更检测：纯 frontend/docs/模块说明与文档同步改动跳过后端构建和发布；手动、未知路径、混合改动、删除/改名及缺少历史保守执行。快速质量任务与测试主任务并行，SpotBugs/PMD/覆盖率仍共享一次编译；保留原 Tests, Quality and Coverage 名称为汇总必需检查，跳过后端时明确成功，失败/取消不放行。当前原生覆盖率方案在完整测试构建成功后聚合并执行双 90% 门禁；失败时归档已有模块报告。
 
 本地已通过 20 项 Python 工具测试（含真实临时 Git 仓库的 PR merge-base / push / 改名场景）、6 种汇总门禁场景、actionlint 及定向无编译快速门禁。未执行全量构建、推送或远程 CI；不能据此承诺现有 20 分钟后端主任务会缩短多少。
 
@@ -170,11 +173,11 @@ frozen-lockfile 安装、管理端生产构建、本地 VitePress 文档构建�
 
 已完成本地组件测试及双 90% 覆盖率目标。一次完整的 `mvnd clean spotless:apply verify -pl <全部组件 jar 及兄弟测试模块> -am --fail-at-end -Dskip.spotbugs=true` 成功：653 项组件单测、148 项组件 IT，失败、错误、跳过均为 0；同时执行的 commons 依赖有 74 项单测通过。License 与 Spotless 校验通过，`git diff --check` 通过，SpotBugs 未执行。
 
-随后对同一次完整运行执行 `tools/component-coverage.py` 正式门禁（未使用 `--report-only`），48/48 个运行时 jar 的行、分支均 ≥90%，返回码 0。报告逐 jar 计算，手写 DTO/配置/错误类型全部计入，仅排除 APT/MapStruct 生成代码；数据缺失或陈旧字节码不会通过。报告与重现命令见 components README。此结论仅覆盖本地执行环境，不代表 CI 或供应商生产环境验收。
+随后对同一次完整运行执行当时的 Python 覆盖率正式门禁（现已被 Maven 原生方案替代），48/48 个运行时 jar 的行、分支均 ≥90%，返回码 0。报告逐 jar 计算，手写 DTO/配置/错误类型全部计入，仅排除 APT/MapStruct 生成代码；数据缺失或陈旧字节码不会通过。此处为历史工具验收记录，当前重现命令见 loadup-coverage/README.md。此结论仅覆盖本地执行环境，不代表 CI 或供应商生产环境验收。
 
 收尾补齐 AuthServer 的实际 RSA 签名验签、claim 与配置边界，NanoCaptcha 的过期/单次消费/字符集，Tianai 的轨迹 JSON 及失败边界，Testcontainers 七种类型的配置注入/生命周期和真实 Elasticsearch 读写。修复配置模式遗漏 Redis/LocalStack、LocalStack 忽略 reusable、NanoCaptcha 空 ID 异常；移除验证码解析异常和 LocalStack 密钥日志。此前批次的调度分页删除、时区保留、缓存异常转换、Flyway 回调以及 Gotone 记录状态/表字段回归均在此次整批运行中通过。
 
-- [ ] 将逐 jar 覆盖率门禁接入 CI/发布流程，并保存 summary、HTML 及单测/IT 报告；本地门禁已通过，远端流水线尚未验收。
+- [ ] 验收 Maven 原生逐 jar 门禁的远程 CI/发布阻断及 HTML/XML/CSV、单测/IT 报告归档；历史本地结果不能替代当前流水线验收。
 - [ ] 在已有 Gotone 消费数据库验收 `V2__add_notification_record_trace_id.sql` 升级；本次真实 MySQL 验证覆盖从空库应用 V1/V2，未覆盖存量升级。
 - [ ] 为 Gotone FCM 及 Aliyun/Huawei/Yunpian SMS 接入真实传输并验收；当前占位路径显式失败，边界测试达标不代表具备实际发送能力。Webhook 后续补充厂商响应体业务错误码判定，当前只按 HTTP 状态判断。
 - [ ] 在真实 Nacos/Apollo、邮件、推送和短信供应商环境单独验收连接、权限及协议错误；SDK 模拟和本地协议服务器测试不替代外部系统验收。

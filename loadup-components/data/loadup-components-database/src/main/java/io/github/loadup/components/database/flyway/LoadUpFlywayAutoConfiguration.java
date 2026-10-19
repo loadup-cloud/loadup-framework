@@ -110,6 +110,10 @@ public class LoadUpFlywayAutoConfiguration {
         // Validation
         config.validateOnMigrate(properties.isValidateOnMigrate());
 
+        // Out-of-order migrations: module migrations share one history table but are versioned
+        // independently, so a later-added script may carry a lower version than the latest applied.
+        config.outOfOrder(properties.isOutOfOrder());
+
         // Clean disabled (always true in production)
         config.cleanDisabled(properties.isCleanDisabled());
 

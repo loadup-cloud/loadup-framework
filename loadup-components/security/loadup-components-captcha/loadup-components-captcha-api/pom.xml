@@ -12,6 +12,9 @@
     <name>LoadUp Components Captcha API</name>
     <description>Captcha generation, verification and provider contracts.</description>
 
+    <properties>
+        <loadup.coverage.skip>false</loadup.coverage.skip>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>

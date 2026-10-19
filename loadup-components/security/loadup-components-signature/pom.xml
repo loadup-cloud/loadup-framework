@@ -12,7 +12,9 @@
     <name>LoadUp Components Signature</name>
     <description>KMS-backed request signing, verification and replay protection.</description>
 
-    <properties/>
+    <properties>
+        <loadup.coverage.skip>false</loadup.coverage.skip>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

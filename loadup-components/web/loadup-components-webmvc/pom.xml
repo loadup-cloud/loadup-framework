@@ -10,7 +10,9 @@
     <artifactId>loadup-components-webmvc</artifactId>
     <name>LoadUp Components WebMVC</name>
     <description>Spring MVC response envelopes, exception handling and Jackson defaults.</description>
-    <properties/>
+    <properties>
+        <loadup.coverage.skip>false</loadup.coverage.skip>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

@@ -12,6 +12,9 @@
     <name>LoadUp Components Captcha Binder NanoCaptcha</name>
     <description>NanoCaptcha character images and single-use answer verification.</description>
 
+    <properties>
+        <loadup.coverage.skip>false</loadup.coverage.skip>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

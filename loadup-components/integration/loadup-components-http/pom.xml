@@ -10,7 +10,9 @@
     <artifactId>loadup-components-http</artifactId>
     <name>LoadUp Components HTTP</name>
     <description>Configuration-driven external API calls using Spring RestClient.</description>
-    <properties/>
+    <properties>
+        <loadup.coverage.skip>false</loadup.coverage.skip>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

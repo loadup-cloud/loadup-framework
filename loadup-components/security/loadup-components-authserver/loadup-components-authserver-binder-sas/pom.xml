@@ -13,6 +13,9 @@
     <name>LoadUp Components AuthServer Binder SAS</name>
     <description>Embedded OAuth2 authorization server based on Spring Authorization Server.</description>
 
+    <properties>
+        <loadup.coverage.skip>false</loadup.coverage.skip>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

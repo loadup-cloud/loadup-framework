@@ -41,9 +41,13 @@ commons → components → modules → 消费工程
 
 ## 验证边界
 
-组件质量按运行时 Maven jar 分别计量，行、分支覆盖率各 ≥90%；测试 jar 不作为生产代码分母。单测与 IT 常位于独立 `*-test` 模块，因此先合并所有组件执行数据，再使用每个 jar 的手写源码对应字节码生成独立 JaCoCo 报告，避免只查看实现模块本地 exec 导致漏计。
+组件质量按运行时 Maven jar 分别计量，行、分支覆盖率各 ≥90%；测试 jar 不作为生产代码分母。根 POM 为每个运行时组件提供显式 `component-coverage-check` execution，组件通过 `loadup.coverage.skip=false` 加入门禁。手写 DTO、配置、异常及适配器全部计入，根 JaCoCo 配置仅排除指定的 APT/MapStruct 输出。
 
-`tools/component-coverage.py` 提供报告与门禁，默认未达标即失败。生成代码不计入，手写 DTO、配置、异常及适配器均计入；缺失或部分编译的模块、陈旧字节码执行数据拒绝通过。测试过程必须先成功完成 `clean verify`；诊断模式及部分模块运行的报告不代表整组验收通过。覆盖率不能替代断言，应覆盖公开契约、异常传播、事务与资源生命周期，以及真实后端行为。
+内部 `loadup-coverage` POM 由 `component-coverage` profile 加入 reactor，通过依赖确保在全部组件和兄弟测试模块之后执行。运行时 jar 使用 compile scope（代码与数据均聚合）；测试模块使用 test scope（仅数据）。Enforcer 在 `post-integration-test` 检查预期 exec 非空，JaCoCo 在 `verify` 原生合并并生成聚合 HTML/XML/CSV。每个组件独立校验前另检查其 classes 目录及全局 exec，防止 JaCoCo 因缺少输入而静默跳过。
+
+JaCoCo `check` 面向当前项目的 classes，不直接校验 `report-aggregate` 的 XML。因此完整验收采用两次 Maven 调用：第一步 `clean install` 完成测试及聚合；第二步仅显式执行输入门禁及原生 `check`，共享同一批产物，不再编译或测试。`--fail-at-end` 保留多个 jar 的失败信息；总平均覆盖率不能替代逐 jar 双 90% 门禁。
+
+两步之间不能 clean、编译或修改源码。原生插件不提供原 Python 工具的逐手写源码字节码完整性检查或陈旧数据强制拒绝机制；以第一步完整 clean 构建成功及同批产物作为前提，不能把单独重跑 check 或部分模块结果当作整组验收。测试/组件新增时维护聚合依赖和预期文件清单，不自动发现。覆盖率不能替代断言，应覆盖公开契约、异常传播、事务、资源生命周期及真实后端行为。完整配置与手工验收步骤见 [Coverage](../loadup-coverage/README.md)。
 
 MySQL 测试中，拥有 Flyway 清库或持久作业执行器的组件使用 `reuse=false` 的独立容器，防止清库删掉其他组件的表、后台执行器消费其他测试作业，或迁移历史相互干扰。采用模拟仓储的单元测试只验证编排，不作为数据库 IT。
 

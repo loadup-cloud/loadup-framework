@@ -44,19 +44,26 @@ loadup-components/
 
 ## 测试与覆盖率
 
-单元测试使用 `*Test`；集成测试使用 `*IT`，数据库及 Redis 等后端使用真实 Testcontainers。运行全部组件测试需要 Docker，执行范围包括组件的独立测试模块及构建依赖：
+单元测试使用 `*Test`；集成测试使用 `*IT` / `*IntegrationTest`，数据库及 Redis 等后端使用真实 Testcontainers。完整验收需要 Docker，在仓库根目录依次执行：
 
 ```bash
-mvnd clean verify -pl "$(python3 tools/component-coverage.py --list-modules)" -am --fail-at-end \
-  -Dskip.spotless=true -Dskip.spotbugs=true
-mvnd -N dependency:get -Dartifact=org.jacoco:org.jacoco.cli:0.8.15:jar:nodeps -Dtransitive=false
-python3 tools/component-coverage.py --jacoco-cli /absolute/path/to/org.jacoco.cli-0.8.15-nodeps.jar
+# 一次 clean 构建，完成测试并合并本次执行数据。
+mvnd -B -ntp -T 1 -Pcomponent-coverage clean install \
+  -DskipTests=false -Dskip.unit.tests=false -Dskip.integration.tests=false \
+  -Dskip.spotless=true -Dskip.spotbugs=true -Dtestcontainers.reuse.enable=false
+# 直接调用插件，不经过编译/测试生命周期；不要在这两步之间 clean 或修改源码。
+mvnd -B -ntp -T 1 -Pcomponent-coverage -pl '!loadup-dependencies' --fail-at-end \
+  enforcer:enforce@component-coverage-inputs \
+  jacoco:check@component-coverage-check
 ```
 
-上述命令从仓库根目录执行。CLI jar 位于本机 Maven 仓库中；使用 Maven 输出的实际路径。只有 `verify` 成功后才执行覆盖率门禁。跳过格式与静态分析用于收集测试结果，不能替代发布检查。
+仅第一步成功后执行第二步。第二步排除独立继承 Spring Boot BOM 的 `loadup-dependencies`，其余项目按父 POM 的命名 execution 执行；只有运行时组件 jar 开启检查。这里跳过格式及 SpotBugs 用于测试验收，不能替代完整质量检查；CI 另外执行质量插件。
 
-验收要求是每个组件行、分支覆盖率均 ≥90%。工具进一步逐运行时 jar 检查：合并所有组件的单测与 IT 执行数据，解决测试位于兄弟 `*-test` 模块时报告漏计的问题。手写 DTO、配置及异常全部计入，只排除不在 `src/main/java` 的生成代码。无分支的 jar 分支指标视为不适用；缺失编译产物、陈旧执行数据或未达标时返回非零状态。工具核对每个模块 Surefire/Failsafe 的已执行用例：对应 jacoco-unit.exec / jacoco-it.exec 缺失或为空时直接失败，包括只有测试源码的兄弟模块；全部跳过的测试不要求执行数据。`--report-only` 仅放宽覆盖率阈值，不放宽数据完整性检查，不能用作验收门禁。
+`loadup-coverage` 是 profile 启用的内部 Maven 聚合模块，使用 JaCoCo 原生 `merge` / `report-aggregate` 及逐 jar `check`，无需 JaCoCo CLI 或 Python 覆盖率脚本。先收齐全部组件及兄弟测试模块的 unit / IT 数据，再按每个 jar 的实际 classes 校验行、分支覆盖率均 ≥90%；手写 DTO、配置、异常均计入，只排除根 POM 明列的 MyBatis-Flex / MapStruct 生成类型。没有分支的 jar 不产生分支阈值违规。Enforcer 要求当前测试清单中的每份 exec 存在且非空，并在逐 jar 检查前确认 classes 目录和全局数据存在。
 
-报告写入 `loadup-components/target/coverage/summary.md` 和 `summary.json`，各 jar 的 `html/index.html` 列出未覆盖源码。2026-10-16 本地完整组件运行及正式覆盖率门禁已通过：**48/48 个运行时 jar 行、分支均 ≥90%**，653 项单测、148 项 IT 全部通过，无失败、错误或跳过。该结果来自同一次完整运行，不使用分批历史报告替代验收。License 与 Spotless 检查通过；SpotBugs 静态验收后续已完成，远端 CI 和真实供应商环境验收仍见根 ROADMAP。
+聚合报告在 `loadup-coverage/target/site/jacoco-aggregate/index.html`，同目录有 `jacoco.xml` / `jacoco.csv`，每个依赖 jar 有独立页面；全局执行数据为 `loadup-coverage/target/jacoco-components.exec`。现有各模块本地报告保留，但本地 exec 可能不包含兄弟模块测试，不能用来替代完整组件门禁。
 
+新增或移除组件时，同时维护该模块的 `loadup.coverage.skip`、聚合 POM 的依赖清单和预期 unit / IT 文件清单。跳过测试、只运行部分模块或使用历史产物均不属于完整验收；详细限制见 [覆盖率架构](../loadup-coverage/ARCHITECTURE.md)。本次原生配置迁移未运行构建或检查，等待手工验收。
+
+历史基线：2026-10-16 同一次完整本地运行的 **48/48 个运行时 jar 行、分支均 ≥90%**，653 项单测、148 项 IT 通过。该历史结果不能证明当前原生配置或新提交已验收。
 新增 AsyncResult 的 3 个运行时 jar 在独立定向运行中均达到行/分支 ≥90%，21 项单测及 4 项 Redis/Kafka/MySQL IT 通过，报告见 [AsyncResult Test](reliability/loadup-components-async-result/loadup-components-async-result-test/README.md)。该结果不与前述 48 个 jar 合并宣称为同一次全量验收。

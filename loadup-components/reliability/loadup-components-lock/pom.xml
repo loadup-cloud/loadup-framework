@@ -10,7 +10,9 @@
     <artifactId>loadup-components-lock</artifactId>
     <name>LoadUp Components Lock</name>
     <description>Redisson-backed distributed locking for synchronous work.</description>
-    <properties/>
+    <properties>
+        <loadup.coverage.skip>false</loadup.coverage.skip>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

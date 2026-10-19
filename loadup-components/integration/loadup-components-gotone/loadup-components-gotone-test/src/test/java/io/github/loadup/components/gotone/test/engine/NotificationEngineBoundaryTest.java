@@ -40,10 +40,12 @@ import io.github.loadup.components.resilience4j.ResilienceRegistries;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.core.task.TaskExecutor;
 
 class NotificationEngineBoundaryTest {
     private final NotificationRequest request = NotificationRequest.of("ALERT", List.of("receiver"), Map.of());
@@ -194,5 +196,19 @@ class NotificationEngineBoundaryTest {
                     .withPropertyValues("loadup.gotone.resilience.enabled=" + enabled)
                     .run(context -> assertThat(context).hasSingleBean(NotificationService.class));
         }
+    }
+
+    @Test
+    void assemblyToleratesSeveralTaskExecutorsAndPrefersTheApplicationExecutor() {
+        AtomicBoolean schedulerExecutorUsed = new AtomicBoolean();
+        var contexts = new ApplicationContextRunner()
+                .withConfiguration(AutoConfigurations.of(GotoneEngineAutoConfiguration.class))
+                .withBean("applicationTaskExecutor", TaskExecutor.class, () -> Runnable::run)
+                .withBean("taskScheduler", TaskExecutor.class, () -> task -> schedulerExecutorUsed.set(true));
+        contexts.run(context -> {
+            assertThat(context).hasSingleBean(NotificationService.class);
+            context.getBean(NotificationService.class).sendAsync(request);
+            assertThat(schedulerExecutorUsed).isFalse();
+        });
     }
 }

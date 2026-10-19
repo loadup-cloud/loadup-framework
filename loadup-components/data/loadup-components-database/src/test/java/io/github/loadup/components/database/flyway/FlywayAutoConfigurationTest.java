@@ -60,6 +60,7 @@ class FlywayAutoConfigurationTest {
             assertThat(config.getBaselineVersion()).isEqualTo(MigrationVersion.fromVersion("0"));
             assertThat(config.getBaselineDescription()).isEqualTo("<<Flyway Baseline>>");
             assertThat(config.isValidateOnMigrate()).isTrue();
+            assertThat(config.isOutOfOrder()).isTrue();
             assertThat(config.isCleanDisabled()).isTrue();
             assertThat(config.getEncoding()).isEqualTo(StandardCharsets.UTF_8);
             assertThat(config.isPlaceholderReplacement()).isTrue();
@@ -81,6 +82,7 @@ class FlywayAutoConfigurationTest {
                         "loadup.flyway.baseline-version=3",
                         "loadup.flyway.baseline-description=Existing schema",
                         "loadup.flyway.validate-on-migrate=false",
+                        "loadup.flyway.out-of-order=false",
                         "loadup.flyway.clean-disabled=false",
                         "loadup.flyway.encoding=ISO-8859-1",
                         "loadup.flyway.placeholders.tenant=synthetic_tenant",
@@ -99,6 +101,7 @@ class FlywayAutoConfigurationTest {
                     assertThat(config.getBaselineVersion()).isEqualTo(MigrationVersion.fromVersion("3"));
                     assertThat(config.getBaselineDescription()).isEqualTo("Existing schema");
                     assertThat(config.isValidateOnMigrate()).isFalse();
+                    assertThat(config.isOutOfOrder()).isFalse();
                     assertThat(config.isCleanDisabled()).isFalse();
                     assertThat(config.getEncoding()).isEqualTo(StandardCharsets.ISO_8859_1);
                     assertThat(config.getPlaceholders()).containsEntry("tenant", "synthetic_tenant");
@@ -123,6 +126,7 @@ class FlywayAutoConfigurationTest {
                     null,
                     null,
                     false,
+                    true,
                     true,
                     null,
                     empty ? Map.of() : null,

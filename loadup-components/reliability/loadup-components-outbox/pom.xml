@@ -10,7 +10,9 @@
     <artifactId>loadup-components-outbox</artifactId>
     <name>LoadUp Components Outbox</name>
     <description>Transactional outbox delivery, inbox deduplication and retry handling.</description>
-    <properties/>
+    <properties>
+        <loadup.coverage.skip>false</loadup.coverage.skip>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

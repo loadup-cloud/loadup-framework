@@ -12,6 +12,9 @@
     <name>LoadUp Components GlobalUnique</name>
     <description>Database unique-constraint guards for business keys.</description>
 
+    <properties>
+        <loadup.coverage.skip>false</loadup.coverage.skip>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

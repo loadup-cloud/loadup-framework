@@ -10,6 +10,9 @@
     <artifactId>loadup-components-scheduler-binder-local</artifactId>
     <name>LoadUp Components Scheduler Binder Local</name>
     <description>Spring Scheduled wake-ups without external infrastructure.</description>
+    <properties>
+        <loadup.coverage.skip>false</loadup.coverage.skip>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

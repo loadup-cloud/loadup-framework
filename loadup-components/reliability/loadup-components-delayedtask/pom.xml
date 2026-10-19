@@ -10,6 +10,9 @@
     <artifactId>loadup-components-delayedtask</artifactId>
     <name>LoadUp Components DelayedTask</name>
     <description>Transactional business deadlines, leased execution and bounded retries.</description>
+    <properties>
+        <loadup.coverage.skip>false</loadup.coverage.skip>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

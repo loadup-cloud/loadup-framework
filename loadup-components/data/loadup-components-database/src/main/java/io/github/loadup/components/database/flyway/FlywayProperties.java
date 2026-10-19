@@ -87,6 +87,16 @@ public class FlywayProperties {
     private boolean validateOnMigrate = true;
 
     /**
+     * Whether migrations may be applied out of order.
+     *
+     * <p>LoadUp aggregates the migrations of many modules and components into a single schema
+     * history table while each module versions its scripts independently. A newly added module
+     * migration can therefore carry a version lower than the latest applied one. Keeping this
+     * enabled lets such migrations run instead of failing validation on startup.
+     */
+    private boolean outOfOrder = true;
+
+    /**
      * Whether to disable cleaning of the database.
      * Should be true in production to prevent accidental data loss.
      */
@@ -141,6 +151,7 @@ public class FlywayProperties {
             String baselineVersion,
             String baselineDescription,
             boolean validateOnMigrate,
+            boolean outOfOrder,
             boolean cleanDisabled,
             String encoding,
             Map<String, String> placeholders,
@@ -157,6 +168,7 @@ public class FlywayProperties {
         this.baselineVersion = baselineVersion;
         this.baselineDescription = baselineDescription;
         this.validateOnMigrate = validateOnMigrate;
+        this.outOfOrder = outOfOrder;
         this.cleanDisabled = cleanDisabled;
         this.encoding = encoding;
         this.placeholders = placeholders;
@@ -196,6 +208,10 @@ public class FlywayProperties {
 
     public boolean isValidateOnMigrate() {
         return this.validateOnMigrate;
+    }
+
+    public boolean isOutOfOrder() {
+        return this.outOfOrder;
     }
 
     public boolean isCleanDisabled() {
@@ -260,6 +276,10 @@ public class FlywayProperties {
 
     public void setValidateOnMigrate(boolean validateOnMigrate) {
         this.validateOnMigrate = validateOnMigrate;
+    }
+
+    public void setOutOfOrder(boolean outOfOrder) {
+        this.outOfOrder = outOfOrder;
     }
 
     public void setCleanDisabled(boolean cleanDisabled) {

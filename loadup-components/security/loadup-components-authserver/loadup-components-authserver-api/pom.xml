@@ -13,6 +13,9 @@
     <name>LoadUp Components AuthServer API</name>
     <description>OAuth2 token claims, user identity contracts and server configuration.</description>
 
+    <properties>
+        <loadup.coverage.skip>false</loadup.coverage.skip>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>

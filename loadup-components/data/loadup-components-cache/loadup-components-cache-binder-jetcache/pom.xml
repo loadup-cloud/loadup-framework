@@ -11,6 +11,9 @@
     <name>LoadUp Components Cache Binder JetCache</name>
     <description>JetCache integration for local and remote Spring Cache storage.</description>
 
+    <properties>
+        <loadup.coverage.skip>false</loadup.coverage.skip>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

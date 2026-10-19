@@ -10,6 +10,9 @@
     <artifactId>loadup-components-scheduler-binder-powerjob</artifactId>
     <name>LoadUp Components Scheduler Binder PowerJob</name>
     <description>PowerJob scheduler binder with native worker, optional client, scoped context and observations.</description>
+    <properties>
+        <loadup.coverage.skip>false</loadup.coverage.skip>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

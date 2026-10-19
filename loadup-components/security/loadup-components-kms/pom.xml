@@ -10,7 +10,9 @@
     <artifactId>loadup-components-kms</artifactId>
     <name>LoadUp Components KMS</name>
     <description>OpenBao Transit key management, encryption and digital signatures.</description>
-    <properties/>
+    <properties>
+        <loadup.coverage.skip>false</loadup.coverage.skip>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

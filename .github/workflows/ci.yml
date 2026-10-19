@@ -104,28 +104,20 @@ jobs:
       - name: Build once, run tests, SpotBugs and PMD
         id: build
         run: |
-          mvnd -B -ntp -U -T 1 clean install pmd:check \
+          mvnd -B -ntp -U -T 1 -Pcomponent-coverage clean install pmd:check \
             -DskipTests=false -Dskip.unit.tests=false -Dskip.integration.tests=false \
             -Dskip.spotbugs=false -Dskip.spotless=true \
             -Dlicense.skipUpdateLicense=true -Dlicense.skipCheckLicense=true \
             -Dskip.enforcer=true \
             -Dtestcontainers.reuse.enable=false -Dspring.profiles.active=ci
       - name: Enforce 90 percent line and branch coverage per component jar
-        if: ${{ !cancelled() && steps.build.outcome != 'skipped' }}
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        # Reuse exactly the bytecode and merged execution data from the successful build.
+        # The standalone BOM does not inherit the parent's named plugin executions.
         run: |
-          jacoco_version=$(python3 -c 'import xml.etree.ElementTree as E; print(E.parse("pom.xml").findtext("{*}properties/{*}jacoco-plugin.version"))')
-          mvnd -B -ntp -U -N org.apache.maven.plugins:maven-dependency-plugin:3.11.0:copy \
-            "-Dartifact=org.jacoco:org.jacoco.cli:${jacoco_version}:jar:nodeps" \
-            "-DoutputDirectory=$RUNNER_TEMP/jacoco"
-          python3 tools/component-coverage.py \
-            --jacoco-cli "$RUNNER_TEMP/jacoco/org.jacoco.cli-${jacoco_version}-nodeps.jar" \
-            --minimum 0.90
-      - name: Add coverage summary
-        if: always()
-        run: |
-          if [[ -f loadup-components/target/coverage/summary.md ]]; then
-            cat loadup-components/target/coverage/summary.md >> "$GITHUB_STEP_SUMMARY"
-          fi
+          mvnd -B -ntp -T 1 -Pcomponent-coverage -pl '!loadup-dependencies' --fail-at-end \
+            enforcer:enforce@component-coverage-inputs \
+            jacoco:check@component-coverage-check
       - name: Show container state on failure
         if: failure()
         run: docker ps -a
@@ -144,7 +136,9 @@ jobs:
             **/target/checkstyle-result.xml
             **/target/site/jacoco/**
             **/target/site/jacoco-aggregate/**
-            loadup-components/target/coverage/**
+            **/target/jacoco-unit.exec
+            **/target/jacoco-it.exec
+            loadup-coverage/target/jacoco-components.exec
 
   quality-gate:
     name: Tests, Quality and Coverage

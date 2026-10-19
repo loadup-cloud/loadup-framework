@@ -15,6 +15,7 @@
     <description>Shared Docker test containers and Spring connection property injection.</description>
 
     <properties>
+        <loadup.coverage.skip>false</loadup.coverage.skip>
         <java.version>25</java.version>
         <project.encoding>UTF-8</project.encoding>
         <maven.compiler.source>${java.version}</maven.compiler.source>

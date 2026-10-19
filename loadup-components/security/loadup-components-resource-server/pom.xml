@@ -10,6 +10,9 @@
     <artifactId>loadup-components-resource-server</artifactId>
     <name>LoadUp Components Resource Server</name>
     <description>JWT authentication and authority mapping for Spring Security resource servers.</description>
+    <properties>
+        <loadup.coverage.skip>false</loadup.coverage.skip>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

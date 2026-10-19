@@ -110,7 +110,7 @@ python3 -m unittest discover -s tools -p test_doc_sync.py
 
 - **变更范围**：轻量任务运行 Python 工具回归并比较 PR 的 merge-base 差异或 push 的 before/after。仅修改模块 README/ARCHITECTURE/AGENTS、根 ROADMAP/LICENSE/NOTICE 及文档同步工具时，跳过后端 Java、Docker、Maven 与发布任务；混合后端改动、未知文件、手动运行或比较历史缺失时运行后端检查。删除/改名也参与判断，资源目录中的普通 Markdown 模板仍属于后端改动。
 - **Backend Fast Quality**：与测试主任务并行，通过 validate + 独立门禁执行 Spotless、License、Enforcer 和 Checkstyle，不编译项目。
-- **Backend Tests and Analysis**：一次 `clean install` 执行单测、真实容器 IT、SpotBugs 和 PMD，不再重复快速检查。覆盖率保留同次构建的 classes/执行数据，通过 `tools/component-coverage.py` 要求每个组件 jar 行、分支均 ≥90%；构建失败后也尽量生成诊断，缺少数据仍失败，不以报告生成代替门禁。报告无论成功失败均归档 14 天。
+- **Backend Tests and Analysis**：一次 `-Pcomponent-coverage clean install` 执行单测、真实容器 IT、SpotBugs 和 PMD。`loadup-coverage` 使用 JaCoCo 原生 `merge` / `report-aggregate` 合并组件与兄弟测试模块的数据，Enforcer 拒绝预期执行文件缺失或为空。构建成功后，复用同一批 classes/exec，显式调用原生 `jacoco:check`，要求每个组件 jar 的行、分支覆盖率均 ≥90%，不重复编译或测试。报告和原始执行数据无论成功失败均归档 14 天；完整聚合报告需要测试构建成功。操作说明见 [覆盖率模块](loadup-coverage/README.md)。
 - **Tests, Quality and Coverage**：保留原必需检查名称作为轻量汇总门禁。纯前端/文档改动明确返回成功；后端改动必须同时通过快速质量和测试任务，检测失败、检查失败/取消不会放行。
 - **依赖安全**：PR 的 Dependency Review 阻止新增 high / critical 漏洞。仓库不再声明或执行 OWASP `dependency-check-maven` 聚合扫描，也不再需要 `NVD_API_KEY` 与 OWASP 数据缓存；如需 NVD 深度扫描，应在独立流水线或上游执行。PR 检查需要启用 GitHub Dependency Graph，私有仓库还需具备 Dependency Review 权限。参见 [GitHub 配置说明](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/manage-your-dependency-security/configure-dependency-review-action)。
 - **发布**：默认关闭。设置仓库变量 `PUBLISH_PACKAGES=true`、`PACKAGES_USERNAME` 以及具有目标仓库访问和 `write:packages` 权限的 secret `PACKAGES_TOKEN` 后，仅存在后端改动的 `main` / `develop` push 且上述验证全部通过才发布至既有 `loadup-cloud/loadup-packages`。跨仓库发布凭证仅在发布步骤注入，PR 不接收此凭证；不再复用 OSSRH 凭证。发布重新 clean 编译并跳过已执行的测试，不复用其他 job 的 target。

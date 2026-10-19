@@ -27,6 +27,7 @@ import io.github.loadup.components.gotone.template.TemplateRenderer;
 import io.github.loadup.components.resilience4j.ResilienceRegistries;
 import io.github.loadup.components.resilience4j.core.Resilience4jCoreAutoConfiguration;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -69,12 +70,31 @@ public class GotoneEngineAutoConfiguration {
             Optional<ChannelConfigProvider> channelConfigProvider,
             Optional<TemplateRenderer> templateRenderer,
             Optional<RecordHandler> recordHandler,
-            ObjectProvider<TaskExecutor> taskExecutor) {
+            Map<String, TaskExecutor> taskExecutors) {
         return new DefaultNotificationService(
                 channelManager,
                 channelConfigProvider,
                 templateRenderer,
                 recordHandler,
-                Optional.ofNullable(taskExecutor.getIfAvailable()));
+                selectTaskExecutor(taskExecutors));
+    }
+
+    /**
+     * Resolve the executor used for asynchronous delivery.
+     *
+     * <p>Several {@link TaskExecutor} beans are commonly registered: Spring Boot's
+     * {@code applicationTaskExecutor} plus a {@code taskScheduler}, which also implements the
+     * {@link TaskExecutor} contract. Prefer the application executor, fall back to the only
+     * candidate when exactly one exists, and otherwise disable asynchronous delivery so the
+     * service sends synchronously.
+     */
+    private static Optional<TaskExecutor> selectTaskExecutor(Map<String, TaskExecutor> taskExecutors) {
+        TaskExecutor applicationExecutor = taskExecutors.get("applicationTaskExecutor");
+        if (applicationExecutor != null) {
+            return Optional.of(applicationExecutor);
+        }
+        return taskExecutors.size() == 1
+                ? Optional.of(taskExecutors.values().iterator().next())
+                : Optional.empty();
     }
 }

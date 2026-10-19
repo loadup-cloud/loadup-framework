@@ -10,7 +10,9 @@
     <artifactId>loadup-components-database-processor</artifactId>
     <name>LoadUp Components Database Processor</name>
     <description>Compile-time generation of MyBatis-Flex mappers and table definitions.</description>
-    <properties/>
+    <properties>
+        <loadup.coverage.skip>false</loadup.coverage.skip>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>com.mybatis-flex</groupId>
