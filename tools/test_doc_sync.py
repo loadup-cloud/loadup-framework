@@ -42,9 +42,21 @@ class DocSyncTest(unittest.TestCase):
             (directory / filename).write_text(f'# {directory.name}\n\nSource {filename}.\n')
         return directory
 
-    def execute(self, option):
-        with patch.object(sys, 'argv', ['doc-sync-agent.py', option]), contextlib.redirect_stdout(io.StringIO()):
+    def execute(self, *options):
+        with patch.object(sys, 'argv', ['doc-sync-agent.py', *options]), contextlib.redirect_stdout(io.StringIO()):
             return sync.main()
+
+    def test_sync_supports_an_independent_site_repository(self):
+        with tempfile.TemporaryDirectory() as directory:
+            site = Path(directory).resolve()
+            (site / 'hugo.toml').write_text('title = "separate repository"\n')
+            (site / 'content').mkdir()
+            homepage = site / 'content/_index.md'
+            homepage.write_text('# Independently maintained homepage\n')
+            self.assertEqual(self.execute('--site', str(site), '--apply'), 0)
+            self.assertEqual(self.execute('--site', str(site), '--check'), 0)
+            self.assertTrue((site / 'content/docs/components/cache.md').is_file())
+            self.assertEqual(homepage.read_text(), '# Independently maintained homepage\n')
 
     def test_discovers_only_declared_modules_at_current_category_paths(self):
         ghost = self.pom('loadup-components/loadup-components-cache')

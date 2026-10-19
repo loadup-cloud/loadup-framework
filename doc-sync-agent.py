@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Merge each Maven module's README and ARCHITECTURE into one Hextra page.
 
-Usage: python3 doc-sync-agent.py [--apply | --check | --build]
+Usage: python3 doc-sync-agent.py [--site PATH] [--apply | --check | --build]
 Default is a read-only preview. --build applies changes before running Hugo.
 The site homepage and documentation landing page are maintained by hand.
 Modules are discovered from the root POM reactor, never from stray directories.
@@ -19,7 +19,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parent
-SITE = ROOT / "docs"
+SITE = ROOT.parent / "docs"
 CONTENT = SITE / "content" / "docs"
 SOURCE_URL = "https://github.com/loadup-cloud/loadup-framework/blob/main/"
 DOC_NAMES = ("README.md", "ARCHITECTURE.md")
@@ -211,12 +211,16 @@ def pending(mapping: dict[Path, Path]) -> tuple[list[tuple[Path, str]], list[Pat
 
 
 def main() -> int:
+    global SITE, CONTENT
     parser = argparse.ArgumentParser(description="Sync Maven module docs to Hugo/Hextra")
+    parser.add_argument("--site", type=Path, default=SITE, help="Hugo repository (default: sibling docs directory)")
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--apply", action="store_true", help="write generated pages")
     mode.add_argument("--check", action="store_true", help="fail if generated pages are stale")
     mode.add_argument("--build", action="store_true", help="apply and run hugo --gc --minify")
     args = parser.parse_args()
+    SITE = args.site.resolve()
+    CONTENT = SITE / "content" / "docs"
     if not (SITE / "hugo.toml").is_file():
         parser.error(f"Hugo site not found: {SITE}")
     try:
@@ -228,9 +232,9 @@ def main() -> int:
         return 1
     print(f"{len(modules)} modules; {len(mapping)} source documents; {len(updates)} updates, {len(obsolete)} obsolete pages")
     for path, _ in updates:
-        print(f"  update {path.relative_to(ROOT)}")
+        print(f"  update {path.relative_to(SITE)}")
     for path in obsolete:
-        print(f"  remove {path.relative_to(ROOT)}")
+        print(f"  remove {path.relative_to(SITE)}")
     if args.check:
         return int(bool(updates or obsolete))
     if args.apply or args.build:

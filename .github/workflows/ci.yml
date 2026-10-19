@@ -37,8 +37,56 @@ jobs:
           fail-on-severity: high
           comment-summary-in-pr: never
 
+  changes:
+    name: Detect Backend Changes
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      backend: ${{ steps.scope.outputs.backend }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Test repository tooling
+        run: python3 -m unittest discover -s tools -p 'test_*.py'
+      - name: Detect changed scope
+        id: scope
+        run: python3 tools/ci-changes.py
+
+  lint:
+    name: Backend Fast Quality
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-build
+      - name: Check formatting, licenses, dependency rules and Checkstyle without compilation
+        run: |
+          versions=$(python3 -c 'import xml.etree.ElementTree as E; p=E.parse("pom.xml").find("{*}properties"); print(p.findtext("{*}license-plugin.version"), p.findtext("{*}maven-checkstyle-plugin.version"))')
+          read -r license_version checkstyle_version <<< "$versions"
+          mvnd -B -ntp -U -T 1 validate \
+            "org.codehaus.mojo:license-maven-plugin:$license_version:check-file-header" \
+            "org.apache.maven.plugins:maven-checkstyle-plugin:$checkstyle_version:check" \
+            -Dskip.spotless=false -Dskip.enforcer=false \
+            -Dlicense.skipUpdateLicense=true
+      - name: Upload fast quality reports
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: fast-quality-reports
+          retention-days: 14
+          if-no-files-found: ignore
+          path: '**/target/checkstyle-result.xml'
+
   verify:
-    name: Tests, Quality and Coverage
+    name: Backend Tests and Analysis
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     env:
@@ -49,20 +97,21 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup-build
-      - name: Test repository tooling
-        run: python3 -m unittest discover -s tools -p 'test_*.py'
       - name: Configure Testcontainers
         run: |
           cp .github/testcontainers.properties "$HOME/.testcontainers.properties"
           docker info
-      - name: Build once, run unit and integration tests, enforce quality gates
+      - name: Build once, run tests, SpotBugs and PMD
+        id: build
         run: |
-          mvnd -B -ntp -U -T 1 clean install pmd:check checkstyle:check \
+          mvnd -B -ntp -U -T 1 clean install pmd:check \
             -DskipTests=false -Dskip.unit.tests=false -Dskip.integration.tests=false \
-            -Dskip.spotbugs=false -Dskip.spotless=false -Dlicense.skip=false \
-            -Dskip.enforcer=false -Dskip.pmd=false -Dskip.checkstyle=false \
+            -Dskip.spotbugs=false -Dskip.spotless=true \
+            -Dlicense.skipUpdateLicense=true -Dlicense.skipCheckLicense=true \
+            -Dskip.enforcer=true \
             -Dtestcontainers.reuse.enable=false -Dspring.profiles.active=ci
       - name: Enforce 90 percent line and branch coverage per component jar
+        if: ${{ !cancelled() && steps.build.outcome != 'skipped' }}
         run: |
           jacoco_version=$(python3 -c 'import xml.etree.ElementTree as E; print(E.parse("pom.xml").findtext("{*}properties/{*}jacoco-plugin.version"))')
           mvnd -B -ntp -U -N org.apache.maven.plugins:maven-dependency-plugin:3.11.0:copy \
@@ -97,10 +146,38 @@ jobs:
             **/target/site/jacoco-aggregate/**
             loadup-components/target/coverage/**
 
+  quality-gate:
+    name: Tests, Quality and Coverage
+    needs: [changes, lint, verify]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require backend checks or acknowledge non-backend changes
+        env:
+          SCOPE_RESULT: ${{ needs.changes.result }}
+          BACKEND: ${{ needs.changes.outputs.backend }}
+          LINT_RESULT: ${{ needs.lint.result }}
+          VERIFY_RESULT: ${{ needs.verify.result }}
+        run: |
+          if [[ "$SCOPE_RESULT" != success ]]; then
+            echo 'Change detection or tooling tests failed.' >&2
+            exit 1
+          fi
+          if [[ "$BACKEND" == false ]]; then
+            echo 'Documentation-only changes: backend build skipped.'
+          elif [[ "$BACKEND" == true && "$LINT_RESULT" == success && "$VERIFY_RESULT" == success ]]; then
+            echo 'All backend checks passed.'
+          else
+            echo "Backend checks did not pass: lint=$LINT_RESULT verify=$VERIFY_RESULT" >&2
+            exit 1
+          fi
+
   publish:
     name: Publish GitHub Packages
-    needs: verify
+    needs: [changes, quality-gate]
     if: >-
+      needs.changes.outputs.backend == 'true' &&
       github.event_name == 'push' && vars.PUBLISH_PACKAGES == 'true' &&
       (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
     runs-on: ubuntu-24.04

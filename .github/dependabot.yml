@@ -12,11 +12,3 @@ updates:
     groups:
       github-actions:
         patterns: ['*']
-  - package-ecosystem: npm
-    directory: /frontend
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 5
-    groups:
-      frontend-patches:
-        update-types: [patch, minor]

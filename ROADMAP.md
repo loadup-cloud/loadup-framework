@@ -2,6 +2,14 @@
 
 本文只记录尚未完成的工作。每完成一项任务立即更新：移除已完成的实现项，未执行的运行验证单独保留。已实现的能力、接入方式和设计边界以各 Maven 模块的 `README.md`、`ARCHITECTURE.md` 为准。LoadUp 是通过 BOM 按需引入的框架；`loadup-application` 用于本地集成验证。
 
+## 拆仓后的 CI 配置
+
+2026-10-19 已适配并列 loadup-framework / loadup-admin / docs 仓库：后端移除 /frontend npm Dependabot 配置，范围检测仅跳过本仓库说明文档，旧 frontend/docs 路径重入按未知后端变更处理；doc-sync 默认 ../docs 并支持 --site 显式位置。admin 新增独立 Node/pnpm CI 和根目录 npm/GitHub Actions Dependabot，冻结安装、静态检查、类型检查、request/hooks 测试、生产构建与产物归档分项执行。
+
+本地 21 项 Python 工具测试、外部站点同步 check、两个工作流 actionlint 通过；admin 冻结安装、lint/Prettier/Stylelint、应用与公共包类型检查、两组测试及生产构建通过。修复 apps/docs 锁文件缺失、5 个格式问题及表格行泛型导致的 25 处类型错误。未运行后端全量 Maven 或远程 CI；admin 本地 Node 24.4.0，远程将按 .node-version 使用 22.19.0。
+
+- [ ] 分别提交各仓库后验收 GitHub CI，并设置 admin 的必需检查 Admin Quality, Tests and Build。
+
 ## CI 范围过滤与任务拆分
 
 2026-10-19 已增加后端变更检测：纯 frontend/docs/模块说明与文档同步改动跳过后端构建和发布；手动、未知路径、混合改动、删除/改名及缺少历史保守执行。快速质量任务与测试主任务并行，SpotBugs/PMD/覆盖率仍共享一次编译；保留原 Tests, Quality and Coverage 名称为汇总必需检查，跳过后端时明确成功，失败/取消不放行。测试失败后仍尝试产出覆盖率诊断，不降低 90% 门禁。

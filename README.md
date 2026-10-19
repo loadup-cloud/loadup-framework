@@ -71,6 +71,8 @@ LoadUp 是供其他应用消费的 SDK。`loadup-application` 用于本地集成
 
 ## 文档同步
 
+文档站默认位于兄弟目录 `../docs`，其他位置可传入 `--site /path/to/docs`。
+
 `doc-sync-agent.py` 按根 `pom.xml` 的 `<modules>` 逐层发现模块，使用分类后的真实组件路径；不会扫描或创建旧的组件源码目录。每个模块的 README 和 ARCHITECTURE 合并为一页，文档站首页与文档入口页手工维护。
 
 ```bash
@@ -106,11 +108,11 @@ python3 -m unittest discover -s tools -p test_doc_sync.py
 
 [Build and Test](.github/workflows/ci.yml) 在 `main`、`develop`、`dev` 的 push / PR 及手动触发时运行。Linux runner 使用 Temurin 25、经 SHA-256 校验的 mvnd 1.0.6 和 Maven 依赖缓存；PR 更新取消同分支的旧运行。缓存恢复后清理 Maven 的 `*.lastUpdated` 失败标记；CI 的 mvnd 命令使用 `-U` 重新检查缺失的 release 及更新的 SNAPSHOT，已下载的正常制品继续复用。
 
-- **变更范围**：轻量任务运行 Python 工具回归并比较 PR 的 merge-base 差异或 push 的 before/after。仅修改 `frontend/`、`docs/`、模块 README/ARCHITECTURE/AGENTS、根 ROADMAP/LICENSE/NOTICE 及文档同步工具时，跳过后端 Java、Docker、Maven 与发布任务；混合后端改动、未知文件、手动运行或比较历史缺失时运行后端检查。删除/改名也参与判断，资源目录中的普通 Markdown 模板仍属于后端改动。
+- **变更范围**：轻量任务运行 Python 工具回归并比较 PR 的 merge-base 差异或 push 的 before/after。仅修改模块 README/ARCHITECTURE/AGENTS、根 ROADMAP/LICENSE/NOTICE 及文档同步工具时，跳过后端 Java、Docker、Maven 与发布任务；混合后端改动、未知文件、手动运行或比较历史缺失时运行后端检查。删除/改名也参与判断，资源目录中的普通 Markdown 模板仍属于后端改动。
 - **Backend Fast Quality**：与测试主任务并行，通过 validate + 独立门禁执行 Spotless、License、Enforcer 和 Checkstyle，不编译项目。
 - **Backend Tests and Analysis**：一次 `clean install` 执行单测、真实容器 IT、SpotBugs 和 PMD，不再重复快速检查。覆盖率保留同次构建的 classes/执行数据，通过 `tools/component-coverage.py` 要求每个组件 jar 行、分支均 ≥90%；构建失败后也尽量生成诊断，缺少数据仍失败，不以报告生成代替门禁。报告无论成功失败均归档 14 天。
 - **Tests, Quality and Coverage**：保留原必需检查名称作为轻量汇总门禁。纯前端/文档改动明确返回成功；后端改动必须同时通过快速质量和测试任务，检测失败、检查失败/取消不会放行。
 - **依赖安全**：PR 的 Dependency Review 阻止新增 high / critical 漏洞。仓库不再声明或执行 OWASP `dependency-check-maven` 聚合扫描，也不再需要 `NVD_API_KEY` 与 OWASP 数据缓存；如需 NVD 深度扫描，应在独立流水线或上游执行。PR 检查需要启用 GitHub Dependency Graph，私有仓库还需具备 Dependency Review 权限。参见 [GitHub 配置说明](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/manage-your-dependency-security/configure-dependency-review-action)。
 - **发布**：默认关闭。设置仓库变量 `PUBLISH_PACKAGES=true`、`PACKAGES_USERNAME` 以及具有目标仓库访问和 `write:packages` 权限的 secret `PACKAGES_TOKEN` 后，仅存在后端改动的 `main` / `develop` push 且上述验证全部通过才发布至既有 `loadup-cloud/loadup-packages`。跨仓库发布凭证仅在发布步骤注入，PR 不接收此凭证；不再复用 OSSRH 凭证。发布重新 clean 编译并跳过已执行的测试，不复用其他 job 的 target。
 
-仓库维护者应将 **Tests, Quality and Coverage** 与 **Dependency Review** 设为 PR 合并必需检查。`docs/` 为独立且未纳入本仓库跟踪的站点，当前工作流不构建文档站或前端。
+仓库维护者应将 **Tests, Quality and Coverage** 与 **Dependency Review** 设为 PR 合并必需检查。前端在独立的 `loadup-admin` 仓库执行 Node/pnpm CI；Hugo 站点在并列的 `docs` 仓库。本仓库不配置 npm Dependabot，也不构建前端或文档站。
