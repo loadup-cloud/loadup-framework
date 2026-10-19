@@ -618,12 +618,6 @@
 
     <profiles>
         <profile>
-            <id>powerjob-it</id>
-            <modules>
-                <module>loadup-components/execution/loadup-components-scheduler/loadup-components-scheduler-test</module>
-            </modules>
-        </profile>
-        <profile>
             <id>github</id>
             <activation>
                 <activeByDefault>false</activeByDefault>

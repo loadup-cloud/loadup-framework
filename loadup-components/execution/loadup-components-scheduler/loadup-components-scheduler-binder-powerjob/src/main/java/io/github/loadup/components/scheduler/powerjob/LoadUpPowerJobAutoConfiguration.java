@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Components PowerJob
+ * LoadUp Components Scheduler Binder PowerJob
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package io.github.loadup.components.powerjob;
+package io.github.loadup.components.scheduler.powerjob;
 
 import io.github.loadup.commons.error.CommonException;
 import io.micrometer.observation.ObservationRegistry;

@@ -41,7 +41,6 @@
         <module>reliability/loadup-components-delayedtask</module>
         <!-- execution -->
         <module>execution/loadup-components-scheduler</module>
-        <module>execution/loadup-components-powerjob</module>
         <module>execution/loadup-components-pipeline</module>
         <!-- platform -->
         <module>platform/loadup-components-configcenter</module>

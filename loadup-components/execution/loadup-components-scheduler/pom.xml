@@ -1,1 +1,19 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"><modelVersion>4.0.0</modelVersion><parent><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-parent</artifactId><version>0.0.2-SNAPSHOT</version><relativePath>../../../pom.xml</relativePath></parent><artifactId>loadup-components-scheduler</artifactId><name>LoadUp Components Scheduler</name><description>Pluggable wake-up scheduling for application scanners.</description><packaging>pom</packaging><modules><module>loadup-components-scheduler-api</module><module>loadup-components-scheduler-binder-local</module><module>loadup-components-scheduler-binder-powerjob</module></modules></project>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.github.loadup-cloud</groupId>
+        <artifactId>loadup-parent</artifactId>
+        <version>0.0.2-SNAPSHOT</version>
+        <relativePath>../../../pom.xml</relativePath>
+    </parent>
+    <artifactId>loadup-components-scheduler</artifactId>
+    <packaging>pom</packaging>
+    <name>LoadUp Components Scheduler</name>
+    <description>Pluggable wake-up scheduling for application scanners.</description>
+    <modules>
+        <module>loadup-components-scheduler-api</module>
+        <module>loadup-components-scheduler-binder-local</module>
+        <module>loadup-components-scheduler-binder-powerjob</module>
+    </modules>
+</project>

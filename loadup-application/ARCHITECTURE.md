@@ -15,7 +15,7 @@
 - `loadup-modules-upms-authserver`
 - `loadup-commons-log`
 - `loadup-components-observability`
-- `loadup-components-powerjob`（独立 Server；示例 Worker 默认关闭）
+- `loadup-components-scheduler-binder-local`（默认本地 @Scheduled；切换 PowerJob 时替换 binder）
 
 直接依赖的外部坐标（不含测试与 provided scope）：
 

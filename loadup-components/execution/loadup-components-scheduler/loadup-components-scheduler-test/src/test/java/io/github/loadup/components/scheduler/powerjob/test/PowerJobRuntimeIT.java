@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package io.github.loadup.components.powerjob.test;
+package io.github.loadup.components.scheduler.powerjob.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -256,7 +256,7 @@ class PowerJobRuntimeIT {
         @Override
         public ProcessResult process(TaskContext context) {
             assertThat(io.github.loadup.commons.context.ContextHolder.get(
-                            io.github.loadup.components.powerjob.PowerJobExecutionContext.INSTANCE_ID))
+                            io.github.loadup.components.scheduler.powerjob.PowerJobExecutionContext.INSTANCE_ID))
                     .isEqualTo(context.getInstanceId());
             int attempt = ATTEMPTS.computeIfAbsent(context.getInstanceId(), ignored -> new AtomicInteger())
                     .incrementAndGet();

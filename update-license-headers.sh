@@ -69,7 +69,7 @@ LoadUp Framework - License Header Update Script
 示例:
   $(basename "$0")                          # 更新所有模块的license头
   $(basename "$0") -m commons               # 仅更新commons目录下的模块
-  $(basename "$0") -m loadup-components/execution/loadup-components-powerjob  # 更新特定模块
+  $(basename "$0") -m loadup-components/execution/loadup-components-scheduler/loadup-components-scheduler-binder-powerjob  # 更新特定模块
   $(basename "$0") --check                  # 检查所有模块的license头
   $(basename "$0") -v -f                    # 详细模式下移除所有license头
   $(basename "$0") -d -m bom                # 干运行模式预览bom模块的更新

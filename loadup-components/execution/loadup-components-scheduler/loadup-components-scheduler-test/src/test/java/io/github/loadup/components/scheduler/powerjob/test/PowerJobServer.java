@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package io.github.loadup.components.powerjob.test;
+package io.github.loadup.components.scheduler.powerjob.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;

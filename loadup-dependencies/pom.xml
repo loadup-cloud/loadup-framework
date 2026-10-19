@@ -109,6 +109,7 @@
         <archunit.version>1.5.0</archunit.version>
         <spotbugs.version>4.10.5</spotbugs.version>
         <spotless.version>3.10.3</spotless.version>
+        <vertx.version>4.5.26</vertx.version>
 
     </properties>
 
@@ -153,11 +154,6 @@
             </dependency>
 
             <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-powerjob</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>tech.powerjob</groupId>
                 <artifactId>powerjob-client</artifactId>
                 <version>${powerjob.version}</version>
@@ -172,11 +168,31 @@
                 <artifactId>powerjob-server-starter</artifactId>
                 <version>${powerjob.version}</version>
             </dependency>
-<dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-components-async-result-api</artifactId><version>${loadup.framework.version}</version></dependency>
-<dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-components-async-result-binder-local</artifactId><version>${loadup.framework.version}</version></dependency>
-<dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-components-async-result-binder-redis</artifactId><version>${loadup.framework.version}</version></dependency>
-<dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-components-async-result-test</artifactId><version>${loadup.framework.version}</version></dependency>
-            <dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-commons-json</artifactId><version>${loadup.framework.version}</version></dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-async-result-api</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-async-result-binder-local</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-async-result-binder-redis</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-async-result-test</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-commons-json</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
             <dependency>
                 <groupId>at.yawk.lz4</groupId>
                 <artifactId>lz4-java</artifactId>
@@ -218,6 +234,13 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>io.vertx</groupId>
+                <artifactId>vertx-dependencies</artifactId>
+                <version>${vertx.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
 
             <!-- Loadup commons -->
             <dependency>
@@ -230,7 +253,7 @@
                 <artifactId>loadup-commons-error</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
-        <dependency>
+            <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-commons-dto</artifactId>
                 <version>${loadup.framework.version}</version>
@@ -1042,7 +1065,6 @@
                 <artifactId>loadup-components-testcontainers</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
-
 
 
             <dependency>

@@ -402,9 +402,9 @@ POM 的 `<name>` 统一采用 `LoadUp <模块族> <能力> [职责/实现]`，�
 - 只将固定枚举码及文案放入失败响应。cause 保留用于诊断；日志遵循敏感信息策略，异常链不进入响应。CommonException 的 JSON toString 是底层无 JSON 依赖的限定例外，仅输出 code/message。
 - 新增错误枚举后运行 ErrorCodeContractTest、架构/源码门禁及相关 MVC 回归。真实数据库和外部系统验收单独记录。
 
-## PowerJob integration
+## Scheduler PowerJob binder integration
 
-- Use the official BasicProcessor, TaskContext, ProcessResult and PowerJobClient with native powerjob.worker/client properties. Keep Server separate. Native capabilities remain native; Scheduler binders only wake registered ScheduledTask scanners and do not translate platform instance models or maintain job-name ID mappings.
+- PowerJob integration belongs to scheduler-binder-powerjob; do not create a standalone LoadUp PowerJob artifact. Use the official BasicProcessor, TaskContext, ProcessResult and PowerJobClient with native powerjob.worker/client properties. Keep Server separate. Native capabilities remain native; Scheduler binders only wake registered ScheduledTask scanners and do not translate platform instance models or maintain job-name ID mappings.
 - Spring BasicProcessor.process receives an isolated ScopedValue and a shared-registry Observation. Metrics use processor/outcome only; reconstruct trusted business identity explicitly from persisted records.
 - Durable business queues use transactional enqueue plus conditional claims. Transfer permits QUEUED → RUNNING only; failed-task requeue is explicit. Worker-crash recovery requires lease/reconciliation design, never unconditional reclaim of RUNNING tasks.
 - Run real-server integration with the optional powerjob-it profile; default application Worker remains disabled until a separately deployed Server and app are configured.
