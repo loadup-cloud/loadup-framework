@@ -83,20 +83,11 @@ spring:
 | 异步发送 | ✓ |
 | 模板渲染（`${var}`） | ✓ |
 | 发送记录（可选） | ✓（store-jdbc） |
-| 失败重试（跨实例） | 由 retrytask 组件承担 |
+| 失败重试（跨实例） | 消费方使用 PowerJob/Outbox 并保证业务幂等 |
 
-## 与 retrytask 集成
+## 后台任务与告警
 
-`loadup-components-retrytask-notifier-gotone` 复用 gotone 做重试任务的永久失败告警：
-
-```yaml
-loadup:
-  retrytask:
-    notify:
-      service-code: RETRY_TASK_FAILED
-      receivers:
-        - ops@example.com
-```
+跨实例补偿由消费方的原生 PowerJob Processor / Outbox 编排，Gotone 只负责发送。旧的 RetryTask 专用通知桥已移除；按 PowerJob 原生告警机制接入运维通知，不重复构建执行历史。
 
 ## 文档
 

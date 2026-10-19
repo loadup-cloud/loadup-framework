@@ -1,16 +1,15 @@
 # Import / Export Tasks
 
-面向后台业务的一次性导入导出任务：保存任务状态与进度，由 RetryTask/JobRunr 在后台执行具体处理器，并通过文件资源模块保存导入源文件和导出结果。框架不定义业务表的导入规则；消费工程实现 `TransferHandler`。
+面向后台业务的一次性导入导出任务：保存任务状态与进度，由原生 PowerJob Processor 定时领取业务数据库队列并执行处理器，并通过文件资源模块保存导入源文件和导出结果。框架不定义业务表的导入规则；消费工程实现 `TransferHandler`。
 
 ## 引入
 
 ```xml
 <dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-modules-transfer-app</artifactId></dependency>
-<dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-components-retrytask-binder-jobrunr</artifactId></dependency>
 <dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-components-dfs-binder-local</artifactId></dependency>
 ```
 
-模块依赖 `loadup-modules-file-app`、RetryTask facade 和 MySQL `DataSource`；Flyway 执行 `V20261003000002__create_transfer_task.sql`。导入源文件应先由文件资源模块上传。`loadup.modules.transfer.enabled: false` 可关闭自动装配；HTTP 端点由 `loadup-modules-transfer-web` 单独提供。多节点部署须配置共享 DFS binder 和持久 JobRunr storage。
+模块依赖 `loadup-modules-file-app`、PowerJob 原生 Worker 和 MySQL `DataSource`；Flyway 执行 `V20261003000002__create_transfer_task.sql`。导入源文件应先由文件资源模块上传。`loadup.modules.transfer.enabled: false` 可关闭自动装配；HTTP 端点由 `loadup-modules-transfer-web` 单独提供。多节点部署须配置共享 DFS binder 和独立 PowerJob Server。
 
 ## 处理器
 
@@ -60,7 +59,13 @@ loadup:
         enabled: true
 ```
 
-仅引入 app 时不注册 Controller；关闭 web 开关保留程序化服务，关闭模块 enabled 开关同时停止默认应用与持久化 Bean 装配。配置开关不控制 Flyway 对已在 classpath 上的脚本执行。不要在已有数据库重复复制迁移脚本。
+仅引入 app 时不注册 Controller；通过是否引入 web 依赖选择 HTTP 暴露，关闭模块 enabled 开关同时停止默认应用与持久化 Bean 装配。配置开关不控制 Flyway 对已在 classpath 上的脚本执行。不要在已有数据库重复复制迁移脚本。
+
+## PowerJob 任务配置
+
+按 PowerJob 组件 README 启用 Worker，在管理台为当前 app 创建 BUILT_IN / STANDALONE / CRON 任务，processorInfo=`transferTaskProcessor`，建议 cron=`0/30 * * * * ?`、maxInstanceNum=1、instanceRetryNum=0、taskRetryNum=0。每次扫描最多 `loadup.modules.transfer.dispatch-batch-size`（默认 20，上限 100）项 QUEUED 任务；原生实例是一轮扫描。任务通过业务数据库事务排队，不需要每次调用远程注册接口。没有 Worker 时任务保持 QUEUED，需监测队列积压。
+
+失败任务通过现有 retry API 重排队。RUNNING 状态不能自动重排；Worker 崩溃后的租约、对账和人工恢复仍是生产验收待办。业务处理器以 taskId 幂等，不能以 PowerJob 实例成功推断每个业务任务都成功。
 
 ## 统一接入契约
 

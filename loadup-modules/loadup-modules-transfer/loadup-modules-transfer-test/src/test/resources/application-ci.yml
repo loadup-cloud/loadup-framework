@@ -1,3 +1,9 @@
 spring:
   application:
     name: transfer-ci
+  main:
+    web-application-type: none
+loadup:
+  flyway:
+    enabled: true
+    locations: classpath:db/migration

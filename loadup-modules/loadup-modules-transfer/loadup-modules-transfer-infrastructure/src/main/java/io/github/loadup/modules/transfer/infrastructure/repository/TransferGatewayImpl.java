@@ -71,6 +71,22 @@ public class TransferGatewayImpl implements TransferGateway {
             options.insert(entity);
         });
     }
+    /** Background dispatch lookup across tenants; execution restores each task's persisted tenant. */
+    @Override
+    public List<String> queued(int limit) {
+        if (limit < 1 || limit > 100)
+            throw new CommonException(io.github.loadup.commons.enums.CommonResultCodeEnum.PARAM_ILLEGAL);
+        return TenantManager.withoutTenantCondition(() -> tasks
+                .selectListByQuery(QueryWrapper.create()
+                        .from(TRANSFER_TASK_DO)
+                        .where(TRANSFER_TASK_DO.STATUS.eq(TransferStatus.QUEUED.name()))
+                        .orderBy(TRANSFER_TASK_DO.CREATED_AT.asc(), TRANSFER_TASK_DO.ID.asc())
+                        .limit(limit))
+                .stream()
+                .map(TransferTaskDO::getId)
+                .toList());
+    }
+
     /** Job scheduler bootstrap lookup; user-facing services verify tenant and ownership. */
     @Override
     public Optional<TransferTask> find(String id) {
@@ -117,11 +133,7 @@ public class TransferGatewayImpl implements TransferGateway {
         patch.setStatus(TransferStatus.RUNNING);
         patch.setStartedAt(LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
         patch.setErrorMessage(null);
-        return tasks.updateByQuery(
-                        patch,
-                        task(id).and(TRANSFER_TASK_DO.STATUS.in(
-                                TransferStatus.QUEUED.name(), TransferStatus.RUNNING.name())))
-                > 0;
+        return tasks.updateByQuery(patch, task(id).and(TRANSFER_TASK_DO.STATUS.eq(TransferStatus.QUEUED.name()))) > 0;
     }
 
     @Override

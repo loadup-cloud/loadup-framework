@@ -27,7 +27,6 @@ import io.github.loadup.modules.transfer.app.service.TransferTaskService;
 import io.github.loadup.modules.transfer.client.facade.TransferTaskFacade;
 import io.github.loadup.modules.transfer.client.spi.TransferHandler;
 import io.github.loadup.modules.transfer.domain.gateway.TransferGateway;
-import io.github.loadup.retrytask.facade.RetryTaskFacade;
 import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -43,11 +42,10 @@ import org.springframework.context.annotation.Import;
 @AutoConfiguration(
         afterName = {
             "io.github.loadup.modules.transfer.infrastructure.autoconfigure.TransferPersistenceAutoConfiguration",
-            "io.github.loadup.modules.file.app.autoconfigure.FileResourceAutoConfiguration",
-            "io.github.loadup.retrytask.jobrunr.autoconfigure.JobRunrRetryTaskAutoConfiguration"
+            "io.github.loadup.modules.file.app.autoconfigure.FileResourceAutoConfiguration"
         })
 @ConditionalOnSingleCandidate(DataSource.class)
-@ConditionalOnBean({TransferGateway.class, FileResourceFacade.class, RetryTaskFacade.class})
+@ConditionalOnBean({TransferGateway.class, FileResourceFacade.class})
 @ConditionalOnProperty(
         prefix = "loadup.modules.transfer",
         name = "enabled",
@@ -61,12 +59,19 @@ public class TransferAutoConfiguration {
     public TransferTaskService transferTaskService(
             TransferGateway repository,
             FileResourceFacade files,
-            RetryTaskFacade retryTasks,
             List<TransferHandler> handlers,
             TransferTaskProperties properties,
             TransferDTOConverter converter,
             @org.springframework.beans.factory.annotation.Qualifier("transferClock") java.time.Clock clock) {
-        return new TransferTaskService(repository, files, retryTasks, handlers, properties, converter, clock);
+        return new TransferTaskService(repository, files, handlers, properties, converter, clock);
+    }
+
+    @Bean
+    @ConditionalOnBean(TransferTaskService.class)
+    @ConditionalOnMissingBean(name = "transferTaskProcessor")
+    public io.github.loadup.modules.transfer.app.service.TransferTaskProcessor transferTaskProcessor(
+            TransferTaskService service) {
+        return new io.github.loadup.modules.transfer.app.service.TransferTaskProcessor(service);
     }
 
     @Bean

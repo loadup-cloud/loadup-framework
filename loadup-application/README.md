@@ -18,7 +18,7 @@
 
 站内通知通过 `/api/notifications/**` 提供管理员发布和个人收件箱，消息持久化到 MySQL；Gotone 的 `IN_APP` 渠道也可将业务通知投递到同一收件箱。账号安全自助接口在 `/api/account/security/**`，提供概览、登录记录和修改本人密码。已签发 JWT 的撤销尚未实现，旧令牌在有效期结束前仍可使用。
 
-导入导出任务通过 `/api/transfer-tasks/**` 提交、查询进度和获取结果文件 ID；上传导入源文件先使用 `/api/files`。本地示例包含 `demo-csv-import`（CSV 校验报告）与 `demo-csv-export`（示例 CSV 数据）两个处理器。任务由已有 JobRunr RetryTask binder 执行，默认不自动重试，失败后需显式重试。
+导入导出任务通过 `/api/transfer-tasks/**` 提交、查询进度和获取结果文件 ID；上传导入源文件先使用 `/api/files`。本地示例包含 `demo-csv-import`（CSV 校验报告）与 `demo-csv-export`（示例 CSV 数据）两个处理器。任务持久化到业务数据库，由 PowerJob 的 `transferTaskProcessor` 定时领取，失败后需显式重试。默认关闭本地 Worker；先部署 Server、创建应用与原生任务，再设置 POWERJOB_WORKER_ENABLED=true，配置 POWERJOB_APP_NAME / POWERJOB_SERVER_ADDRESS。管理 Client 单独按需启用。
 
 ## 设计
 

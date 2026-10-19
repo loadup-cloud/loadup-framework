@@ -58,7 +58,7 @@ loadup-cloud/
 │   ├── data/           # cache, database, dfs
 │   ├── integration/    # http, gotone
 │   ├── reliability/    # lock, outbox, globalunique, resilience4j
-│   ├── execution/      # scheduler, retrytask, pipeline
+│   ├── execution/      # powerjob, pipeline
 │   └── platform/       # configcenter, extension, observability, testcontainers
 ├── loadup-modules/             # 通用业务聚合，各自包含 COLA 分层与可选 web 子模块
 │   ├── loadup-modules-upms/    # 用户与权限管理、账号安全
@@ -102,7 +102,7 @@ loadup-testify  → 仅 test scope，深度依赖框架内部类型
 
 ### 单后端选择模式（Mode A）
 
-适用于一次选一种后端，例如 Cache / Captcha / ConfigCenter / DFS / Scheduler。
+适用于一次选一种后端，例如 Cache / Captcha / ConfigCenter / DFS。
 
 ```
 loadup-components-{domain}/
@@ -115,7 +115,7 @@ loadup-components-{domain}/
 - 业务代码只引入 `-api`，注入 `{Domain}Template`
 - 集成方通过加 `-binder-{impl}` 的 pom 依赖 + yml 配置 `binder-type` 切换后端
 - 装配机制：`@ConditionalOnSingleCandidate(Provider.class)` 自动创建 Template
-- 示例：cache、captcha、configcenter、dfs、scheduler
+- 示例：cache、captcha、configcenter、dfs
 
 ### 多后端共存模式（Mode B）
 
@@ -401,3 +401,10 @@ POM 的 `<name>` 统一采用 `LoadUp <模块族> <能力> [职责/实现]`，�
 - domain 可引用本模块 client.error 的纯错误枚举；client 不依赖 domain。其他表示转换仍遵循 MapStruct 分层。
 - 只将固定枚举码及文案放入失败响应。cause 保留用于诊断；日志遵循敏感信息策略，异常链不进入响应。CommonException 的 JSON toString 是底层无 JSON 依赖的限定例外，仅输出 code/message。
 - 新增错误枚举后运行 ErrorCodeContractTest、架构/源码门禁及相关 MVC 回归。真实数据库和外部系统验收单独记录。
+
+## PowerJob integration
+
+- Use the official BasicProcessor, TaskContext, ProcessResult and PowerJobClient with native powerjob.worker/client properties. Keep Server separate; maintain no SchedulerTemplate, RetryTaskFacade, job-name ID mapping or patched scheduling engine.
+- Spring BasicProcessor.process receives an isolated ScopedValue and a shared-registry Observation. Metrics use processor/outcome only; reconstruct trusted business identity explicitly from persisted records.
+- Durable business queues use transactional enqueue plus conditional claims. Transfer permits QUEUED → RUNNING only; failed-task requeue is explicit. Worker-crash recovery requires lease/reconciliation design, never unconditional reclaim of RUNNING tasks.
+- Run real-server integration with the optional powerjob-it profile; default application Worker remains disabled until a separately deployed Server and app are configured.

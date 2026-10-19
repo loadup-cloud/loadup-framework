@@ -2,6 +2,17 @@
 
 本文只记录尚未完成的工作。每完成一项任务立即更新：移除已完成的实现项，未执行的运行验证单独保留。已实现的能力、接入方式和设计边界以各 Maven 模块的 `README.md`、`ARCHITECTURE.md` 为准。LoadUp 是通过 BOM 按需引入的框架；`loadup-application` 用于本地集成验证。
 
+## PowerJob 集成验收
+
+已按无兼容要求移除 scheduler/retrytask/jobrunr 三套旧模块、翻译接口与定制引擎补丁，使用官方 PowerJob 5.1.7 Worker / Client。新增薄集成组件与独立真实 Server 回归套件；Transfer 改为事务内入队、原生 Processor 有界扫描和 QUEUED → RUNNING 抢占。
+
+2026-10-19 已完成定向 mvnd clean verify：PowerJob 7 项单测、Transfer 7 项单测和 1 项真实 MySQL 并发领取用例通过；生产集成切面/Client 的 4 项真实 PowerJob Server 用例也已通过。共 14 项单测、5 项 IT 无失败/错误/跳过。新 PowerJob 组件自身 JaCoCo 行覆盖率与分支覆盖率均 100%（67/67 行、28/28 分支），未以其他组件平均值替代。IDEA 修改代码检查、Spotless、License 与文档同步通过；未运行完整 reactor、消费工程启动、Enforcer、SpotBugs 或远程 CI。
+
+空库回归发现并修正 file/transfer 两份 BaseDO 补字段迁移的版本长度，确保先建表后 ALTER。已执行旧版本迁移的消费工程需核对 Flyway 历史，框架未修改任何现有数据库记录。
+
+- [ ] 生产部署验收：双 Server / 多 Worker、k8s 可达地址、Worker 就绪、网络分区和重复投递、容量、备份升级与安全。
+- [ ] Transfer 运行中 Worker 崩溃后的租约、对账、人工恢复与业务幂等验收；默认不抢占 RUNNING。
+
 ## 商户与合约 Failsafe 后续验收
 
 2026-10-17 已清理商户、合约测试 test/ci 四份配置中的 mybatis-flex.global-config 遗留覆盖，保留 database 配置保护并补充诊断选项不可覆盖的回归。全仓源码配置检查未发现其他同类覆盖。两个测试模块显式引入可选 Flyway starter/MySQL 扩展，启用多租户，取消固定 test profile 并关闭容器复用，确保从空库执行业务及 Sequence 迁移。真实数据库回归进一步发现并修复合约并发签约的 MyBatis 会话缓存问题：获取方案锁后重查幂等请求，重复键处理移到事务回滚后；并发回归增加同步起跑、超时、幂等重放与不同请求冲突验证。
@@ -9,15 +20,6 @@
 定向 mvnd clean verify --fail-at-end 成功：5 项 database 配置保护单测、2 项 MerchantContractIT、5 项 ContractPersistenceIT 均无失败/错误/跳过；ci profile、非复用真实 MySQL，相关 Spotless/License/Enforcer 校验通过。IDEA 对生产修改、配置保护测试、POM/YAML 未报错，IT 构造器仍提示自动配置 Bean 不可解析，实际 Boot 启动与注入已通过。未运行完整 reactor、其他单测或 SpotBugs，未另跑 test profile；文档已同步。
 
 - [ ] 提交后复跑远程 CI 的商户与合约 Failsafe 流程；在消费工程验收迁移组合及并发签约容量。此次本地通过不等于远程或生产验收完成。
-
-## JobRunr 周期调度补丁后续验收
-
-2026-10-18 已定位并稳定复现 CI run 39026729412 的 SchedulerTemplateIT.updateCronChangesSchedule 超时：原版 JobRunr 9.0.0 在旧年度任务已被预调度后保留远期内存游标，更新 cron 与清理待执行实例不能刷新该游标。按用户选择保留 JobRunr，新增 loadup-components-jobrunr 共享替换运行时，在每个后台服务器重载周期定义时，仅失效定义变更/删除任务的游标。scheduler/retrytask 两个 binder 共同排除原 core 并引入替换 jar，保留官方 starter、API、任务 ID 和数据库结构。补丁基线由 Enforcer 固定；严格源码替换失败会终止构建，随制品附带完整对应 sources、上游 LGPL 许可和修改说明。未通过跳过测试、延长超时或删除执行断言绕过问题。
-
-定向合并 mvnd clean verify 通过 31 项单测、21 项 IT（JobRunr scheduler 7、Quartz 5、retrytask 9），使用真实 MySQL；关键用例显式等待旧年度任务入队再更新，核心类唯一来源检查通过。后续仅对补丁模块执行 clean verify，3 项单测和 2 项制品 IT 全部通过，逐项确认除目标补丁类与 manifest 外的上游二进制/资源未改变、multi-release 标记/源码/许可完整；Spotless、License、Enforcer 及补丁 helper 的 SpotBugs 通过（0 告警）。helper 行/分支覆盖率均为 100%（12/12 行、8/8 分支）；上游解包类不算作手写组件覆盖率。IDEA 修改源码检查仅剩 IT 的动态自动装配 StorageProvider 提示，类型均可解析、真实注入已通过。已更新模块文档并同步文档站；未跑完整 reactor 或远程 CI，合并回归跳过其他模块单测和 SpotBugs。现有 IT 沿用固定 test profile，未单独验证 ci profile 配置选择。
-
-- [ ] 提交并推送后复跑远程 CI；在部署工程验证多节点 cron 更新/删除/同 ID 重建、执行中任务和并发变更边界，以及现有 IT 的 ci profile 选择。
-- [ ] 跟进 JobRunr 上游缓存失效修复；升级前重审补丁点、核心依赖和许可。上游原生修复通过相同确定性回归后，同步撤销两个 binder 的替换依赖/exclusion、补丁模块与 BOM 声明，禁止原 core 与补丁 core 共存。
 
 ## CI 插件依赖解析后续验收
 

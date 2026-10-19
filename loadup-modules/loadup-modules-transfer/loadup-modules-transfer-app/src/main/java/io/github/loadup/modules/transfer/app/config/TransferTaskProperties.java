@@ -25,6 +25,18 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "loadup.modules.transfer")
 public class TransferTaskProperties {
+    private int dispatchBatchSize = 20;
+
+    public int getDispatchBatchSize() {
+        return dispatchBatchSize;
+    }
+
+    public void setDispatchBatchSize(int size) {
+        if (size < 1 || size > 100)
+            throw new CommonException(io.github.loadup.commons.enums.CommonResultCodeEnum.PARAM_ILLEGAL);
+        this.dispatchBatchSize = size;
+    }
+
     private long maxInputBytes = 20L * 1024 * 1024;
     private long maxOutputBytes = 100L * 1024 * 1024;
 

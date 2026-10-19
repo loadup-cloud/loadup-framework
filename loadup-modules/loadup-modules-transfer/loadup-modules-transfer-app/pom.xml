@@ -59,7 +59,7 @@
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-retrytask-facade</artifactId>
+            <artifactId>loadup-components-powerjob</artifactId>
         </dependency>
     </dependencies>
 </project>

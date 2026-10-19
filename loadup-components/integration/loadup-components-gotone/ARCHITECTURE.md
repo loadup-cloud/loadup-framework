@@ -110,16 +110,9 @@ loadup-components-gotone/
 与重试。二者正交：熔断打开只跳过当前 provider，由降级链切到备用 provider。instance 命名
 `gotone-<channel>-<provider>` 允许按 provider 用标准 `resilience4j.*` 配置。
 
-### 4.4 与 retrytask 的分工
+### 4.4 与后台任务的分工
 
-通知发送的**瞬时失败**由引擎内降级链 + resilience4j 处理；**最终一致性的失败重试**（如
-落库记录重扫、跨实例重试）不属于 gotone，由 `loadup-components-retrytask` 承担。反向复用：
-retrytask 的 `notifier-gotone` 模块把永久失败转成 `NotificationRequest` 告警，形成闭环。
-
-### 4.5 模型全部 record
-
-api 层模型（请求/响应/配置）使用 Java `record` 保证不可变与值语义；仅 JobRunr 序列化要求
-可变 POJO 的 `RetryTaskJobRequest` 除外（见 retrytask ARCHITECTURE）。
+通知的进程内降级与重试由 Gotone 引擎处理；跨实例的最终一致性补偿由消费方的 PowerJob/Outbox 编排，业务需保证幂等。执行历史和平台告警使用 PowerJob 原生能力，Gotone 不反向依赖调度组件。API 模型继续使用不可变 record。
 
 ## 5. 扩展点
 

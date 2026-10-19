@@ -128,3 +128,16 @@ logging:
   level:
     io.github.loadup: DEBUG
     org.springframework: INFO
+
+# Register the application in a separately deployed PowerJob Server before enabling the worker.
+powerjob:
+  worker:
+    enabled: ${POWERJOB_WORKER_ENABLED:false}
+    app-name: ${POWERJOB_APP_NAME:loadup-launcher}
+    server-address: ${POWERJOB_SERVER_ADDRESS:127.0.0.1:7700}
+    protocol: HTTP
+    port: ${POWERJOB_WORKER_PORT:27777}
+    store-strategy: DISK
+  client:
+    enabled: ${POWERJOB_CLIENT_ENABLED:false}
+    password: ${POWERJOB_APP_PASSWORD:}

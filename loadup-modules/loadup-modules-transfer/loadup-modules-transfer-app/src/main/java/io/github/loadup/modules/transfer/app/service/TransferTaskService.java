@@ -36,11 +36,6 @@ import io.github.loadup.modules.transfer.domain.gateway.TransferGateway;
 import io.github.loadup.modules.transfer.domain.model.TransferKind;
 import io.github.loadup.modules.transfer.domain.model.TransferStatus;
 import io.github.loadup.modules.transfer.domain.model.TransferTask;
-import io.github.loadup.retrytask.facade.RetryTaskFacade;
-import io.github.loadup.retrytask.facade.RetryTaskProcessor;
-import io.github.loadup.retrytask.facade.model.RetryTaskContext;
-import io.github.loadup.retrytask.facade.model.RetryTaskRequest;
-import io.github.loadup.retrytask.facade.model.RetryTaskStatus;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,26 +51,22 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-/** Persistent task service and RetryTask processor for bounded file transfers. */
-public class TransferTaskService
-        implements RetryTaskProcessor, io.github.loadup.modules.transfer.client.facade.TransferTaskFacade {
+/** Persistent task service for bounded file transfers. */
+public class TransferTaskService implements io.github.loadup.modules.transfer.client.facade.TransferTaskFacade {
     private final Clock clock;
 
-    private static final String BIZ_TYPE = "import-export";
     private static final String REF_TYPE = "transfer-task";
     private static final String DEFAULT_TENANT = "__default__";
 
     private final TransferDTOConverter converter;
     private final TransferGateway repository;
     private final FileResourceFacade files;
-    private final RetryTaskFacade retryTasks;
     private final Map<String, TransferHandler> handlers;
     private final TransferTaskProperties properties;
 
     public TransferTaskService(
             TransferGateway repository,
             FileResourceFacade files,
-            RetryTaskFacade retryTasks,
             List<TransferHandler> handlers,
             TransferTaskProperties properties,
             TransferDTOConverter converter,
@@ -84,13 +75,13 @@ public class TransferTaskService
         this.converter = converter;
         this.repository = repository;
         this.files = files;
-        this.retryTasks = retryTasks;
         this.properties = properties;
         this.handlers = handlers.stream()
                 .collect(Collectors.toUnmodifiableMap(
                         handler -> handler.kind().name() + ":" + handler.key(), Function.identity()));
     }
 
+    @org.springframework.transaction.annotation.Transactional
     public TransferTaskDTO submit(
             String tenantId,
             String ownerId,
@@ -126,15 +117,8 @@ public class TransferTaskService
                 LocalDateTime.ofInstant(clock.instant(), clock.getZone()),
                 null,
                 null);
+        protectSource(task);
         repository.insert(task, args);
-        try {
-            protectSource(task);
-            enqueue(task.id());
-        } catch (RuntimeException failure) {
-            repository.fail(task.id(), "Unable to queue task");
-            releaseSource(task);
-            LogUtil.warn(TransferTaskService.class, "Unable to queue transfer task {}", task.id(), failure);
-        }
         return converter.toDTO(repository.find(id).orElseThrow());
     }
 
@@ -159,43 +143,39 @@ public class TransferTaskService
     }
 
     /** Redispatch a queued task or explicitly replay a failed task. */
+    @org.springframework.transaction.annotation.Transactional
     public TransferTaskDTO retry(String tenantId, String id, String actorId, boolean admin) {
         TransferTask task = requireTask(tenantId, id, actorId, admin);
         if (task.status() != TransferStatus.FAILED && task.status() != TransferStatus.QUEUED) {
             throw new CommonException(TransferResultCodeEnum.TASK_NOT_DISPATCHABLE);
         }
-        if (task.status() == TransferStatus.FAILED
-                && retryTasks
-                        .getStatus(BIZ_TYPE, task.id())
-                        .filter(status -> status == RetryTaskStatus.PENDING || status == RetryTaskStatus.PROCESSING)
-                        .isPresent()) {
-            throw new CommonException(TransferResultCodeEnum.TASK_WORKER_HAS_NOT_FINISHED);
-        }
+        if (task.status() == TransferStatus.QUEUED) return converter.toDTO(task);
         if (task.sourceFileId() != null) {
             files.get(task.tenantId(), task.sourceFileId(), task.ownerId(), false);
         }
-        if (task.status() == TransferStatus.FAILED && !repository.requeue(task.id())) {
+        if (!repository.requeue(task.id())) {
             throw new CommonException(TransferResultCodeEnum.TASK_STATUS_CHANGED);
         }
-        try {
-            protectSource(task);
-            enqueue(task.id());
-        } catch (RuntimeException failure) {
-            repository.fail(task.id(), "Unable to queue task");
-            releaseSource(task);
-            LogUtil.warn(TransferTaskService.class, "Unable to redispatch transfer task {}", task.id(), failure);
-        }
+        protectSource(task);
         return converter.toDTO(repository.find(task.id()).orElseThrow());
     }
 
-    @Override
-    public String bizType() {
-        return BIZ_TYPE;
-    }
-
-    @Override
-    public void process(RetryTaskContext context) throws Exception {
-        execute(context.bizId());
+    /** Drains a bounded snapshot; atomic claims prevent duplicate work across worker instances. */
+    public boolean executeQueuedTasks() {
+        boolean succeeded = true;
+        for (String id : repository.queued(properties.getDispatchBatchSize())) {
+            try {
+                execute(id);
+            } catch (Exception failure) {
+                LogUtil.warn(
+                        TransferTaskService.class,
+                        "Transfer dispatch failed taskId={} type={}",
+                        id,
+                        failure.getClass().getSimpleName());
+                succeeded = false;
+            }
+        }
+        return succeeded;
     }
 
     private void execute(String id) throws Exception {
@@ -245,12 +225,12 @@ public class TransferTaskService
             releaseSource(task);
         } catch (Exception failure) {
             if (uploadedId != null) deleteUnlinkedOutput(task, uploadedId);
+            releaseSource(task);
             try {
                 repository.fail(id, "Task processing failed");
             } catch (RuntimeException stateFailure) {
                 failure.addSuppressed(stateFailure);
             }
-            releaseSource(task);
             LogUtil.warn(TransferTaskService.class, "Transfer task {} failed", id, failure);
             throw failure;
         } finally {
@@ -307,10 +287,6 @@ public class TransferTaskService
                     task.id(),
                     cleanupFailure);
         }
-    }
-
-    private void enqueue(String id) {
-        retryTasks.register(new RetryTaskRequest(BIZ_TYPE, id, Map.of(), null, 0));
     }
 
     private TransferHandler handler(TransferKind kind, String key) {

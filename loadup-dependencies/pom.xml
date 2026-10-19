@@ -74,7 +74,7 @@
         <fastjson.version>2.0.65</fastjson.version>
         <lz4-java.version>1.12.0</lz4-java.version>
         <jetcache.version>2.8.0.RC</jetcache.version>
-        <jobrunr.version>9.0.0</jobrunr.version>
+        <powerjob.version>5.1.7</powerjob.version>
         <asm.version>9.10.1</asm.version>
         <io.vavr.version>1.0.1</io.vavr.version>
         <guava.version>33.7.1-jre</guava.version>
@@ -126,6 +126,26 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-powerjob</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>tech.powerjob</groupId>
+                <artifactId>powerjob-client</artifactId>
+                <version>${powerjob.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>tech.powerjob</groupId>
+                <artifactId>powerjob-worker-spring-boot-starter</artifactId>
+                <version>${powerjob.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>tech.powerjob</groupId>
+                <artifactId>powerjob-server-starter</artifactId>
+                <version>${powerjob.version}</version>
+            </dependency>
 <dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-components-async-result-api</artifactId><version>${loadup.framework.version}</version></dependency>
 <dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-components-async-result-binder-local</artifactId><version>${loadup.framework.version}</version></dependency>
 <dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-components-async-result-binder-redis</artifactId><version>${loadup.framework.version}</version></dependency>
@@ -295,24 +315,9 @@
                 <version>${jetcache.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.jobrunr</groupId>
-                <artifactId>jobrunr</artifactId>
-                <version>${jobrunr.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.ow2.asm</groupId>
                 <artifactId>asm</artifactId>
                 <version>${asm.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-jobrunr</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jobrunr</groupId>
-                <artifactId>jobrunr-spring-boot-4-starter</artifactId>
-                <version>${jobrunr.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.vavr</groupId>
@@ -1008,61 +1013,11 @@
 
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-scheduler</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-scheduler-api</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-scheduler-binder-quartz</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-scheduler-binder-jobrunr</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-scheduler-test</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-testcontainers</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-retrytask</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
 
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-retrytask-facade</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-retrytask-binder-jobrunr</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-retrytask-notifier-gotone</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-retrytask-test</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
 
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>

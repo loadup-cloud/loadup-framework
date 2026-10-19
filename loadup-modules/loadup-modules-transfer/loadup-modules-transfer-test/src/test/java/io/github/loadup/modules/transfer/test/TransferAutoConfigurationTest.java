@@ -34,7 +34,6 @@ import io.github.loadup.modules.transfer.domain.gateway.TransferGateway;
 import io.github.loadup.modules.transfer.infrastructure.autoconfigure.TransferPersistenceAutoConfiguration;
 import io.github.loadup.modules.transfer.infrastructure.mapper.TransferTaskDOMapper;
 import io.github.loadup.modules.transfer.infrastructure.mapper.TransferTaskOptionDOMapper;
-import io.github.loadup.retrytask.facade.RetryTaskFacade;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -50,7 +49,6 @@ class TransferAutoConfigurationTest {
                     TransferTaskOptionDOMapper.class,
                     () -> mock(TransferTaskOptionDOMapper.class))
             .withBean(FileResourceService.class, () -> mock(FileResourceService.class))
-            .withBean(RetryTaskFacade.class, () -> mock(RetryTaskFacade.class))
             .withBean(TransferHandler.class, () -> {
                 TransferHandler handler = mock(TransferHandler.class);
                 when(handler.kind()).thenReturn(TransferKind.EXPORT);
@@ -68,6 +66,8 @@ class TransferAutoConfigurationTest {
                     .hasSingleBean(TransferGateway.class)
                     .hasSingleBean(TransferDTOConverter.class)
                     .hasSingleBean(TransferTaskService.class);
+            assertThat(context)
+                    .hasSingleBean(io.github.loadup.modules.transfer.app.service.TransferTaskProcessor.class);
         });
     }
 

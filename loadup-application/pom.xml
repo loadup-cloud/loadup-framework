@@ -27,6 +27,10 @@
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-components-powerjob</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-modules-merchant-web</artifactId>
         </dependency>
         <dependency>
@@ -123,15 +127,6 @@
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-observability</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-retrytask-binder-jobrunr</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-scheduler-binder-jobrunr</artifactId>
         </dependency>
 
         <!-- 架构约束测试 -->

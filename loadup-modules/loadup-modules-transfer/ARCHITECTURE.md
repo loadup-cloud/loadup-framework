@@ -1,73 +1,25 @@
-# Import / Export Tasks 架构
+# Transfer 架构
 
-## 边界
+## 分层与职责
 
-`TransferTaskService` 管理任务元数据、处理器选择、进度和结果文件；RetryTask 管理持久队列及工作节点执行；文件资源模块管理文件访问和 DFS 字节。导入导出任务把文件资源作为明确的下层业务能力，避免重复实现所有者校验、上传和下载。
+TransferTaskService 管理业务任务、文件引用、进度和结果；TransferTaskProcessor 实现原生 BasicProcessor，只调用 service 的有界队列扫描。文件操作复用 FileResourceFacade，持久化通过 TransferGateway 和 MyBatis-Flex。
 
-```text
-API / 业务提交 → TransferTaskService → transfer_task(+option) → MySQL
-                         │                   │
-                         ├→ FileResourceService → DFS
-                         └→ RetryTaskFacade → JobRunr → TransferHandler
-```
+## 事务与执行
 
-## 生命周期与失败语义
+提交在同一业务数据库事务内建立源文件引用并插入 QUEUED 记录；显式重试在事务内 CAS 重排队并保护输入引用。不调用远程调度 API，消除“业务库已提交、远程任务未注册”的双写窗口。文件资源表与任务表必须使用同一事务 DataSource。
 
-提交时校验处理器和输入文件、持久化 `QUEUED` 任务、建立源文件引用，然后注册 RetryTask。注册失败记为 `FAILED` 并释放引用；数据库提交后、注册前若进程异常退出，任务会停留在 `QUEUED`，可调用重发接口。执行时状态变为 `RUNNING`，处理器更新进度；输出经有界临时文件上传到文件资源模块，成功后记为 `SUCCEEDED` 并释放源文件引用。异常记为 `FAILED`，尝试清理未关联的输出，错误细节写入服务端日志，公开任务只返回通用失败信息。
+PowerJob 按配置触发 transferTaskProcessor，读取跨租户有界候选 ID，再根据数据库中可信租户绑定 TenantUtil，使用 QUEUED → RUNNING 条件更新抢占。RUNNING 不属于可领取条件，重复投递不会并发再次执行同一任务。扫描单个失败不阻断后续项，失败项保留 FAILED 等待人工重试，扫描返回失败供平台观测。
 
-一个任务 ID 对应一个 RetryTask `bizId`；默认 `maxRetries=0`，避免非幂等导入被自动重复执行。手动重试会重置失败任务；JobRunr 对异常运行中的作业的恢复行为仍可能重放处理器，业务处理器必须以任务 ID 做幂等。提交、文件存储和 JobRunr 分属不同事务，不提供跨系统原子提交。工作节点突然终止时可能保留 `RUNNING` 状态；运行中作业恢复与对账需结合生产部署继续完善，见 Roadmap。
+输入输出依旧有界；业务处理器按 taskId 保证副作用幂等。文件字节存储与业务数据库不能原子提交，输出清理和源文件解引用沿用既有补偿；失败状态在清理后发布，避免人工重试与前一次清理竞争。
 
-## 安全与资源限制
+Worker 崩溃后 RUNNING 任务仍需要租约/对账和显式恢复；未以放开 RUNNING 抢占换取自动重放。业务失败、PowerJob 扫描实例失败、管理 Client 请求超时是不同状态，不做模糊翻译。
 
-Web 端从认证主体取所有者，从可信租户上下文取租户；普通用户只可见自己的任务，超级管理员可指定所有者查询。导入源文件必须由所有者可读，处理期间通过文件引用防止删除。结果文件属于任务所有者，下载复用 `/api/files/{id}/content` 的权限校验。
+## 验证
 
-任务参数有数量与长度限制，处理器输出受字节上限限制；临时输出位于工作节点本地，适用于一次任务在一个节点上完成。首版不提供任务中途取消、分片处理或自动结果清理。
+TransferDispatchTest 验证有界扫描、失败隔离和抢占失败跳过；TransferClaimIT 用真实 MySQL 和两个并发虚拟线程验证仅一个领取成功，以及 FAILED 重排队和 SUCCEEDED 不可领取。运行状态见 ROADMAP。
 
-接入见 [README.md](README.md)。
+## 迁移版本顺序
 
-## COLA 职责与装配
+真实空库验收发现 file/transfer 的 BaseDO 补字段脚本原先使用 12 位版本号，数值早于 14 位建表版本。已改为 V20261010000101 和 V20261010000103，确保先建表后补字段。不对已部署库自动修复或重写 flyway_schema_history；已执行旧版迁移的消费工程升级前需单独核对历史。
 
-```text
-web → app → domain
-       ↓       ↑
-     client  infrastructure → MySQL / Flyway
-```
-
-- client 定义不可变请求和 DTO，domain 保留领域模型与 `TransferGateway` 端口；应用边界由 `TransferDTOConverter` 以 MapStruct Spring 模式映射。
-- `TransferPersistenceAutoConfiguration` 归 infrastructure，按 DataSource 和 `loadup.modules.transfer.enabled` 提供默认 Gateway，消费者可覆盖接口 Bean。
-- app 在持久化装配之后按 Gateway 及所需组件条件创建 `TransferTaskService`。生成的 converter 通过显式 `@Import` 注册，避免 REGISTER_BEAN 阶段条件与组件扫描冲突。
-- web 只负责路由、可信身份/租户、方法授权和 HTTP 投影；请求契约归 client。全局响应、Jackson 与 `/api` 前缀由 WebMVC 组件处理。
-- 仓储使用 MyBatis-Flex、Tables 常量与 Spring MapStruct；保留租户、锁、幂等及状态条件更新语义。Flyway 历史脚本保持原样，标准字段通过新增迁移补齐。
-- 所有子模块 parent 指向根 `loadup-parent`，所有内部依赖坐标由 BOM 管理。
-
-配置契约迁移到 `loadup.modules.transfer.*`，不保留旧前缀别名。自动装配、覆盖默认 Gateway 和关闭功能的回归源码见 `TransferAutoConfigurationTest`，本次未执行；真实数据库与 HTTP 验收仍需由消费工程完成。
-
-TransferKind/TransferStatus 是 domain 中的纯 Java 公共枚举，client 复用它们表达处理器与结果契约；domain 不依赖 client。导入导出 app 显式依赖 file-app，复用文件访问控制、引用和清理。
-
-## 公共边界与映射约束
-
-Facade 是 client 的业务契约，应用服务直接实现；Controller 和跨模块消费者依赖 Facade。domain 保留业务状态、规则与 Gateway，表示层字段转换交给 Spring 管理的 MapStruct。共享配置固定 Spring 模式、构造器注入和目标字段严格校验。
-
-仓储依赖 database 的固定 UUID、审计时间、逻辑删除规则，由 database processor 自动生成带 @Mapper 的 XxxDOMapper（继承 BaseMapper），并通过模块生成的 Tables 表达查询。字典删除与文件引用解绑明确使用物理删除；文件状态、通知归档和任务生命周期是业务状态，独立于 BaseDO 的 deleted。
-
-所有数据对象的诊断文本使用 commons-json；诊断序列化与真实 API JSON 分离，避免因 HTTP 脱敏设置改变日志中的凭证披露规则。
-
-## Client 入参与分页边界
-
-client.command 表达业务写动作，client.query 表达只读条件；Controller 和 Facade 共用入参契约。模块专用 PageDTO 已移除，app 将领域分页对象映射为 commons-dto 的 PageDTO；Web 输出 PageResponse，避免分页结构随模块变化。领域 Gateway 的分页返回值不携带 HTTP envelope。
-
-## 通用输入与时间约定
-
-分页缺省 page=1、size=20，size 上限 100；非法输入使用稳定业务错误码。业务时间使用具名 `transferClock` 并使用 Clock 所绑定的时区（默认系统本地时区）；持久化审计字段由 database 填充。可在测试或消费工程提供同名 Clock Bean。
-
-## 错误码契约
-
-公开错误枚举位于 `io.github.loadup.modules.transfer.client.error.TransferResultCodeEnum`，错误码以 `TRANSFER_` 开头。服务/领域/仓储使用 `CommonException(enum)`；系统原因可作为 cause 保留，响应文案仅来自枚举。WebMVC 统一返回 HTTP 200 的 result/data。枚举码按稳定公开契约维护，不用字符串消息覆盖。
-
-## Unified pagination contract
-
-Pure pagination inputs reuse `io.github.loadup.commons.dto.PageQuery`. HTTP fields remain `page` and `size`, with omitted/null values defaulting to 1 and 20; explicit invalid bounds are rejected and size is capped at 100. Business queries retain their filter fields and flat pagination fields but delegate policy to `PageQuery.normalized`, preserving their declared module error code. Mutable UPMS queries expose `pagination()` for validation at the service boundary. Sort whitelists remain business-specific.
-
-Domain Gateway results use `io.github.loadup.commons.domain.PageResult<T>`, shared with UPMS. Seven duplicate business Page wrappers have been removed. Application mapping uses the injected Spring MapStruct item converter and `PageResult.map`; `PageDTO.of(result)` adapts the unchanged total/page/size metadata. Facades return PageDTO, and Controllers return PageResponse. No HTTP envelope enters a Gateway.
-
-The response remains `{result, data: [...], pageInfo: {totalCount, pageIndex, pageSize, ...}}`; data is the current-page array. SuccessResponse serves ordinary success data only; its duplicate pagination field and ofPage factories have been removed. Empty PageDTO defaults to an empty array and metadata 0/1/20. Existing consumer code referencing removed business Page wrappers, DictionaryTypePageQuery, AccountLoginPageQuery or SuccessResponse.ofPage must use the shared contracts. No URL or frontend payload-field migration is required.
+2026-10-19 定向验收通过：7 项单测、1 项真实 MySQL IT。并发条件更新仅一个成功，RUNNING/SUCCEEDED 不再领取，FAILED 仅显式重排队；QUEUED 的重复重试不重新建立源文件引用。

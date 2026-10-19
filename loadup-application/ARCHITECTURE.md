@@ -15,8 +15,7 @@
 - `loadup-modules-upms-authserver`
 - `loadup-commons-log`
 - `loadup-components-observability`
-- `loadup-components-retrytask-binder-jobrunr`
-- `loadup-components-scheduler-binder-jobrunr`
+- `loadup-components-powerjob`（独立 Server；示例 Worker 默认关闭）
 
 直接依赖的外部坐标（不含测试与 provided scope）：
 

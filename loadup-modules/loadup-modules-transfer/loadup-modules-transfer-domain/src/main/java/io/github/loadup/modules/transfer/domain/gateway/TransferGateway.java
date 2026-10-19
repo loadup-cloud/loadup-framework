@@ -27,6 +27,8 @@ import java.util.Optional;
 public interface TransferGateway {
     void insert(TransferTask task, Map<String, String> options);
 
+    java.util.List<String> queued(int limit);
+
     Optional<TransferTask> find(String id);
 
     PageResult<TransferTask> list(String tenantId, String ownerId, int page, int size);
