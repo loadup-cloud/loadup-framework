@@ -202,7 +202,8 @@ updated_at DATETIME     NOT NULL,
 deleted    TINYINT      NOT NULL DEFAULT 0
 ```
 
-- Flyway 迁移脚本命名：`V{n}__{description}.sql`，放 `src/main/resources/db/migration/`
+- 所有 Flyway 脚本统一放在资源目录的 `db/migration/` 下（即 `src/main/resources/db/migration/`）。
+- Flyway 版本统一使用 14 位时间戳，文件命名为 `V<yyyyMMddHHmmss>__desc.sql`，例如 `V20261020153000__create_user_table.sql`。
 
 ---
 
