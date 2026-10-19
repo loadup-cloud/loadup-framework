@@ -112,7 +112,7 @@
         <mockito.version>5.24.0</mockito.version>
         <javers.version>7.11.9</javers.version>
         <jsonassert.version>1.5.3</jsonassert.version>
-        <archunit.version>1.5.0</archunit.version>
+        <archunit.version>1.5.1</archunit.version>
         <spotbugs.version>4.10.5</spotbugs.version>
         <spotless.version>3.10.3</spotless.version>
 
