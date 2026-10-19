@@ -2,6 +2,10 @@
 
 本文只记录尚未完成的工作。每完成一项任务立即更新：移除已完成的实现项，未执行的运行验证单独保留。已实现的能力、接入方式和设计边界以各 Maven 模块的 `README.md`、`ARCHITECTURE.md` 为准。LoadUp 是通过 BOM 按需引入的框架；`loadup-application` 用于本地集成验证。
 
+## 恢复默认依赖管理
+
+2026-10-19 已移除 vertx.version=4.5.26、Vert.x BOM 导入及为其添加的 Log4j/Netty 补偿 BOM。Netty/Log4j 使用 Boot 默认管理，Vert.x 按 PowerJob 上游依赖解析。修复前 SharedRedisContainerIT 的 5 项测试稳定出现 2 个 MultiThreadIoEventLoopGroup 缺类错误；修复后定向 mvnd clean verify 通过，Redis 5 项真实容器 IT、Scheduler API 3 项与 PowerJob binder 9 项单测全部成功。运行时核对 Netty 4.2.17.Final、Log4j API 2.25.5、Vert.x 4.3.7。IDEA POM 检查无错误，未启动 PowerJob Server，未运行全量构建、SpotBugs、Enforcer 或远程 CI。
+
 ## Transfer 空队列扫描修复
 
 2026-10-19 已修复 TransferGatewayImpl.queued 对 Mapper 可空返回值直接 stream 的问题，统一按空候选集合处理。新增 null / 空列表、候选顺序及批量参数边界用例；定向 mvnd clean test 的 5 项用例通过，infrastructure 的 spotbugs:check 为 0 问题，IDEA 修改文件检查未报错。未运行全量构建或远程 CI。
