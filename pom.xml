@@ -285,7 +285,7 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
                     <configuration>
-                        <argLine>${argLine}</argLine>
+                        <argLine>@{argLine}</argLine>
                         <includes>
                             <include>**/*Test.java</include>
                         </includes>
@@ -306,6 +306,7 @@
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <version>${maven-failsafe-plugin.version}</version>
                     <configuration>
+                        <argLine>@{argLine}</argLine>
                         <includes>
                             <include>**/*IT.java</include>
                             <include>**/*IntegrationTest.java</include>

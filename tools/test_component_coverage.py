@@ -86,6 +86,44 @@ class ComponentCoverageTest(unittest.TestCase):
         (self.root / 'loadup-components/data/high/src/main/java/example/Missing.java').touch()
         self.assertEqual(self.run_tool(), 1)
 
+    def execution_report(self, directory, tests=2, skipped=0):
+        report = self.execution.parent / directory / 'TEST-example.Test.xml'
+        report.parent.mkdir(parents=True)
+        report.write_text(f'<testsuite tests="{tests}" skipped="{skipped}"/>')
+
+    def test_executed_unit_tests_require_unit_data_even_when_integration_data_exists(self):
+        self.execution_report('surefire-reports')
+        self.execution.unlink()
+        (self.execution.parent / 'jacoco-it.exec').write_bytes(b'nonempty')
+        with self.assertRaises(SystemExit) as result:
+            self.run_tool('--report-only')
+        self.assertEqual(result.exception.code, 2)
+
+    def test_executed_integration_tests_require_integration_data_even_when_unit_data_exists(self):
+        self.execution_report('failsafe-reports')
+        self.execution.write_bytes(b'nonempty')
+        with self.assertRaises(SystemExit) as result:
+            self.run_tool()
+        self.assertEqual(result.exception.code, 2)
+
+    def test_empty_execution_data_cannot_stand_in_for_executed_tests(self):
+        self.execution_report('surefire-reports')
+        with self.assertRaises(SystemExit):
+            self.run_tool()
+
+    def test_fully_skipped_tests_do_not_require_execution_data(self):
+        self.execution_report('failsafe-reports', tests=2, skipped=2)
+        self.assertEqual(self.run_tool('--report-only'), 0)
+
+    def test_both_test_phases_with_nonempty_data_are_reported(self):
+        self.execution_report('surefire-reports')
+        self.execution_report('failsafe-reports')
+        self.execution.write_bytes(b'unit')
+        (self.execution.parent / 'jacoco-it.exec').write_bytes(b'integration')
+        self.assertEqual(self.run_tool('--report-only'), 0)
+        summary = json.loads((self.root / 'loadup-components/target/coverage/summary.json').read_text())
+        self.assertEqual(summary['execution_files'], 2)
+
     def test_no_execution_data_is_not_success(self):
         self.execution.unlink()
         with self.assertRaises(SystemExit) as result:

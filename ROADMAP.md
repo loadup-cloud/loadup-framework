@@ -2,6 +2,14 @@
 
 本文只记录尚未完成的工作。每完成一项任务立即更新：移除已完成的实现项，未执行的运行验证单独保留。已实现的能力、接入方式和设计边界以各 Maven 模块的 `README.md`、`ARCHITECTURE.md` 为准。LoadUp 是通过 BOM 按需引入的框架；`loadup-application` 用于本地集成验证。
 
+## CI 单测覆盖率采集修复
+
+2026-10-19 分析 run 39249695125 / job 118050239757：862 项单测与 164 项集成测试全部通过，但未加载任何 jacoco-unit.exec，组件 summary 仅合并 17 份执行数据，4/49 jar 达标。已将 Surefire/Failsafe 的 argLine 改为延迟求值 @{argLine}，保留默认 JVM 参数；覆盖率工具新增已执行测试与对应非空执行数据的完整性检查，覆盖兄弟测试模块，--report-only 同样不放行数据缺失。
+
+26 项 Python 工具回归通过。定向 mvnd clean verify（KMS、PowerJob binder 及依赖）通过，已确认单测文件生成，PowerJob 单测与 IT 数据合并成功。报告行/分支：KMS 96.57%/91.13%、HTTP 97.48%/94.49%、PowerJob binder 100%/100%。未运行全量 reactor，SpotBugs 本次跳过；本地样本通过不代表全部组件已达标。
+
+- [ ] 推送后重跑 CI 的逐 jar 行/分支双 90% 门禁，根据完整报告补齐实际缺口；此前本地基线不能替代本次提交的远程验收。
+
 ## TableDef 生成策略
 
 2026-10-19 按最新决定取消 serialVersionUID 定制，已撤回本轮生成适配与相关测试，恢复上游 APT 默认输出，不添加 final 或告警抑制。未重新构建。

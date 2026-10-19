@@ -38,6 +38,18 @@ def main():
         parser.error('JaCoCo CLI jar does not exist')
     output = component_root / 'target' / 'coverage'
     output.mkdir(parents=True, exist_ok=True)
+    missing_executions = []
+    for module, _ in modules:
+        for reports, execution in [('surefire-reports', 'jacoco-unit.exec'), ('failsafe-reports', 'jacoco-it.exec')]:
+            executed = 0
+            for report in (module / 'target' / reports).glob('TEST-*.xml'):
+                suite = ET.parse(report).getroot()
+                executed += int(suite.get('tests', '0')) - int(suite.get('skipped', '0'))
+            data = module / 'target' / execution
+            if executed > 0 and (not data.is_file() or data.stat().st_size == 0):
+                missing_executions.append(f'{module.relative_to(root)}/{execution} ({executed} executed tests)')
+    if missing_executions:
+        parser.error('Missing or empty JaCoCo execution data for executed tests: ' + '; '.join(missing_executions))
     executions = sorted(set(component_root.rglob('target/jacoco-unit.exec')) | set(component_root.rglob('target/jacoco-it.exec')))
     if not executions:
         parser.error('No component execution data. Run clean verify before reporting.')
