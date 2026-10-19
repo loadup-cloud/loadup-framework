@@ -2,6 +2,10 @@
 
 本文只记录尚未完成的工作。每完成一项任务立即更新：移除已完成的实现项，未执行的运行验证单独保留。已实现的能力、接入方式和设计边界以各 Maven 模块的 `README.md`、`ARCHITECTURE.md` 为准。LoadUp 是通过 BOM 按需引入的框架；`loadup-application` 用于本地集成验证。
 
+## Scheduler 构造安全告警修复
+
+2026-10-19 已将 SchedulerTemplate 声明为 final，保留非法/重复名称的构造校验，扩展仍通过 Provider / ScheduledTask 组合实现，消除子类终结器访问半初始化对象的路径，未增加告警抑制。定向 mvnd clean test 通过 API 3 项、Local 3 项、PowerJob binder 9 项单测；API spotbugs:check 为 0 问题，IDEA 检查无错误。未运行全量构建或远程 CI。
+
 ## 恢复默认依赖管理
 
 2026-10-19 已移除 vertx.version=4.5.26、Vert.x BOM 导入及为其添加的 Log4j/Netty 补偿 BOM。Netty/Log4j 使用 Boot 默认管理，Vert.x 按 PowerJob 上游依赖解析。修复前 SharedRedisContainerIT 的 5 项测试稳定出现 2 个 MultiThreadIoEventLoopGroup 缺类错误；修复后定向 mvnd clean verify 通过，Redis 5 项真实容器 IT、Scheduler API 3 项与 PowerJob binder 9 项单测全部成功。运行时核对 Netty 4.2.17.Final、Log4j API 2.25.5、Vert.x 4.3.7。IDEA POM 检查无错误，未启动 PowerJob Server，未运行全量构建、SpotBugs、Enforcer 或远程 CI。

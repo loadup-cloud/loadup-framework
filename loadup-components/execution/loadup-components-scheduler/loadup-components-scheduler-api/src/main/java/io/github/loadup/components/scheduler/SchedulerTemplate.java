@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.springframework.context.SmartLifecycle;
 
 /** Resolves registered scanners and suppresses overlapping calls within this application. */
-public class SchedulerTemplate implements SmartLifecycle {
+public final class SchedulerTemplate implements SmartLifecycle {
     private final SchedulerProvider provider;
     private final Map<String, ScheduledTask> tasks;
     private final Map<String, AtomicBoolean> active = new java.util.concurrent.ConcurrentHashMap<>();
