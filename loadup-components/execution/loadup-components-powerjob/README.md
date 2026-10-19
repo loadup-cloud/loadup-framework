@@ -1,6 +1,6 @@
 # LoadUp PowerJob
 
-基于官方 PowerJob 5.1.7 的薄集成，用于分布式周期调度、异步任务、实例重试与运维。Worker 随 Spring Boot 应用运行；Server 是单独部署的调度平台。支持当前 Java 25 / Spring Boot 4 应用，具体运行验证见相邻 `loadup-components-powerjob-test` 模块。
+基于官方 PowerJob 5.1.7 的薄集成，用于分布式周期调度、异步任务、实例重试与运维。Worker 随 Spring Boot 应用运行；Server 是单独部署的调度平台。支持当前 Java 25 / Spring Boot 4 应用，具体运行验证见相邻 `loadup-components-scheduler-test` 模块。
 
 ## 引入
 
@@ -13,7 +13,7 @@
 </dependency>
 ```
 
-不再提供 SchedulerTemplate、RetryTaskFacade、JobRunr/Quartz binder 或定制引擎补丁。业务直接使用官方 BasicProcessor、TaskContext、ProcessResult 与 PowerJobClient。
+原生高级能力直接使用官方 BasicProcessor、TaskContext、ProcessResult 与 PowerJobClient。统一扫描器接入选择 Scheduler PowerJob binder；持久化业务截止任务使用独立 DelayedTask，不为每个订单创建远程作业。
 
 ## 部署与配置
 

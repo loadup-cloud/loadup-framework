@@ -57,7 +57,7 @@ loadup-cloud/
 │   ├── web/            # webmvc, springdoc
 │   ├── data/           # cache, database, dfs
 │   ├── integration/    # http, gotone
-│   ├── reliability/    # lock, outbox, globalunique, resilience4j
+│   ├── reliability/    # lock, outbox, delayedtask, globalunique, resilience4j
 │   ├── execution/      # powerjob, pipeline
 │   └── platform/       # configcenter, extension, observability, testcontainers
 ├── loadup-modules/             # 通用业务聚合，各自包含 COLA 分层与可选 web 子模块
@@ -404,7 +404,12 @@ POM 的 `<name>` 统一采用 `LoadUp <模块族> <能力> [职责/实现]`，�
 
 ## PowerJob integration
 
-- Use the official BasicProcessor, TaskContext, ProcessResult and PowerJobClient with native powerjob.worker/client properties. Keep Server separate; maintain no SchedulerTemplate, RetryTaskFacade, job-name ID mapping or patched scheduling engine.
+- Use the official BasicProcessor, TaskContext, ProcessResult and PowerJobClient with native powerjob.worker/client properties. Keep Server separate. Native capabilities remain native; Scheduler binders only wake registered ScheduledTask scanners and do not translate platform instance models or maintain job-name ID mappings.
 - Spring BasicProcessor.process receives an isolated ScopedValue and a shared-registry Observation. Metrics use processor/outcome only; reconstruct trusted business identity explicitly from persisted records.
 - Durable business queues use transactional enqueue plus conditional claims. Transfer permits QUEUED → RUNNING only; failed-task requeue is explicit. Worker-crash recovery requires lease/reconciliation design, never unconditional reclaim of RUNNING tasks.
 - Run real-server integration with the optional powerjob-it profile; default application Worker remains disabled until a separately deployed Server and app are configured.
+
+## Scheduler and DelayedTask
+
+- For deadline tasks read Scheduler and DelayedTask README/ARCHITECTURE. Scheduler uses one Provider binder (local Spring @Scheduled or PowerJob); it only wakes scanners. Do not use @Async as a timer or create a remote engine job per business record.
+- DelayedTask owns bizId/executeAt, transactional registration, conditional claims, leases and retries. Register within the business transaction on the same DataSource. Expired-lease recovery is at-least-once: handlers must be idempotent; token fencing protects task acknowledgements, not external side effects. XXL-JOB/JobRunr binders are not implemented.

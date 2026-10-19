@@ -1,0 +1,8 @@
+spring:
+  profiles:
+    active: test
+loadup:
+  database:
+    multi-tenant:
+      enabled: true
+      required: true

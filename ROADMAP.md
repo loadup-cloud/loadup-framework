@@ -2,16 +2,15 @@
 
 本文只记录尚未完成的工作。每完成一项任务立即更新：移除已完成的实现项，未执行的运行验证单独保留。已实现的能力、接入方式和设计边界以各 Maven 模块的 `README.md`、`ARCHITECTURE.md` 为准。LoadUp 是通过 BOM 按需引入的框架；`loadup-application` 用于本地集成验证。
 
-## PowerJob 集成验收
+## Scheduler / DelayedTask 后续验收
 
-已按无兼容要求移除 scheduler/retrytask/jobrunr 三套旧模块、翻译接口与定制引擎补丁，使用官方 PowerJob 5.1.7 Worker / Client。新增薄集成组件与独立真实 Server 回归套件；Transfer 改为事务内入队、原生 Processor 有界扫描和 QUEUED → RUNNING 抢占。
+2026-10-19 已实现独立 DelayedTask、Scheduler API、本地 @Scheduled 与 PowerJob binder；Transfer 改为 ScheduledTask 扫描器。真实 Server 套件已迁到 scheduler-test，保留 powerjob-it profile。业务截止时间保存在业务数据库，调度平台只周期唤醒。已完成按模块 mvnd clean verify：Scheduler API 3 项、本地 binder 3 项、PowerJob binder 2 项、DelayedTask 4 项、PowerJob 7 项、Transfer 7 项单测通过；6 项 DelayedTask 真实 MySQL、1 项 Transfer 并发领取及 5 项真实 PowerJob Server 用例通过（含 binder 调用）。新增四个 jar 的 JaCoCo 行/分支：Scheduler API 100%/100%，Local 100%/100%，PowerJob binder 100%/100%，DelayedTask 97.94%/92.39%。IDEA 批量检查仍对新模块的生成 Mapper / Tables 泛型链提示无法解析，相关源码已通过 clean 编译及真实数据库回归；IDE 模型需重载后复核。文档站已同步。未运行完整 reactor、消费工程启动、SpotBugs、Enforcer 或远程 CI。
 
-2026-10-19 已完成定向 mvnd clean verify：PowerJob 7 项单测、Transfer 7 项单测和 1 项真实 MySQL 并发领取用例通过；生产集成切面/Client 的 4 项真实 PowerJob Server 用例也已通过。共 14 项单测、5 项 IT 无失败/错误/跳过。新 PowerJob 组件自身 JaCoCo 行覆盖率与分支覆盖率均 100%（67/67 行、28/28 分支），未以其他组件平均值替代。IDEA 修改代码检查、Spotless、License 与文档同步通过；未运行完整 reactor、消费工程启动、Enforcer、SpotBugs 或远程 CI。
-
-空库回归发现并修正 file/transfer 两份 BaseDO 补字段迁移的版本长度，确保先建表后 ALTER。已执行旧版本迁移的消费工程需核对 Flyway 历史，框架未修改任何现有数据库记录。
-
-- [ ] 生产部署验收：双 Server / 多 Worker、k8s 可达地址、Worker 就绪、网络分区和重复投递、容量、备份升级与安全。
-- [ ] Transfer 运行中 Worker 崩溃后的租约、对账、人工恢复与业务幂等验收；默认不抢占 RUNNING。
+- [ ] 按实际部署需求增加 XXL-JOB / JobRunr binder；当前仅实现 local / PowerJob。
+- [ ] DelayedTask 容量与故障验收：多 Pod 宕机重放、时钟漂移、长任务租约配置、重试积压、数据库竞争与业务幂等；当前无自动续租。
+- [ ] DelayedTask 运维：失败/积压告警、保留唯一键的历史归档策略、受权限保护的管理界面。
+- [ ] PowerJob 生产部署验收：双 Server / 多 Worker、k8s 可达地址、就绪、网络分区、容量、备份升级与安全。
+- [ ] Transfer 运行中 Worker 崩溃后的租约、对账、人工恢复；仍不抢占 RUNNING，不把 DelayedTask 的恢复能力误认为已迁移至 Transfer。
 
 ## 商户与合约 Failsafe 后续验收
 
@@ -68,7 +67,7 @@ frozen-lockfile 安装、管理端生产构建、本地 VitePress 文档构建�
 
 2026-10-16 已更新 actions/cache 6.1.0（固定 SHA）、JobRunr 9.0.0、Groovy / Groovy JSON 6.0.0、Axios 1.20.0 及 Central Publishing Plugin 0.11.0。setup-java 6、checkout 7、commons-text 1.15.0 原已到位；UPMS 移除 Awaitility 4.2.0 的局部版本，使用 Boot BOM 的 4.3.0。前端锁文件只保留 Axios 与其依赖变更。包含 BOM 的 14 模块定向 `mvnd clean test` 成功，JobRunr 9 的 scheduler/retrytask 共 8 项测试通过；请求客户端回归及类型检查、actionlint、根 POM release profile 的 validate（含插件加载、Spotless、Enforcer）、git diff 检查通过。接入文档和文档站已同步；未合并/关闭 Dependabot PR，未执行发布。
 
-- [ ] 在真实数据库上验收 JobRunr 8.x → 9 的迁移、存量任务序列化与 scheduler/retrytask 共用引擎；本轮仅运行定向单元测试。
+旧 JobRunr 引擎已移除，其迁移验收项不再适用；可选 binder 的实现另列于 Scheduler 待办。
 - [ ] 验收远程 CI 的 cache 6.1.0 与 Central 发布；消费工程若使用 Groovy 自定义脚本，按 Groovy 6 变更说明回归实际脚本，仓库当前没有直接使用 Groovy 的代码。
 
 ## GitHub CI 后续验收

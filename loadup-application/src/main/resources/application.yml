@@ -29,6 +29,10 @@ scalar:
 
 # LoadUp component and module properties
 loadup:
+  scheduler:
+    binder-type: local
+    local:
+      interval: PT1M
   modules:
     audit:
       web:

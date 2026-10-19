@@ -27,7 +27,11 @@
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-powerjob</artifactId>
+            <artifactId>loadup-components-delayedtask</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-components-scheduler-binder-local</artifactId>
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

@@ -1,6 +1,6 @@
 # Import / Export Tasks
 
-面向后台业务的一次性导入导出任务：保存任务状态与进度，由原生 PowerJob Processor 定时领取业务数据库队列并执行处理器，并通过文件资源模块保存导入源文件和导出结果。框架不定义业务表的导入规则；消费工程实现 `TransferHandler`。
+面向后台业务的一次性导入导出任务：保存任务状态与进度，由 Scheduler 定时唤醒扫描器领取业务数据库队列并执行处理器，并通过文件资源模块保存导入源文件和导出结果。框架不定义业务表的导入规则；消费工程实现 `TransferHandler`。
 
 ## 引入
 
@@ -9,7 +9,7 @@
 <dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-components-dfs-binder-local</artifactId></dependency>
 ```
 
-模块依赖 `loadup-modules-file-app`、PowerJob 原生 Worker 和 MySQL `DataSource`；Flyway 执行 `V20261003000002__create_transfer_task.sql`。导入源文件应先由文件资源模块上传。`loadup.modules.transfer.enabled: false` 可关闭自动装配；HTTP 端点由 `loadup-modules-transfer-web` 单独提供。多节点部署须配置共享 DFS binder 和独立 PowerJob Server。
+模块依赖 `loadup-modules-file-app`、Scheduler API 和 MySQL `DataSource`；Flyway 执行 `V20261003000002__create_transfer_task.sql`。导入源文件应先由文件资源模块上传。`loadup.modules.transfer.enabled: false` 可关闭自动装配；HTTP 端点由 `loadup-modules-transfer-web` 单独提供。多节点部署须配置共享 DFS binder，并选择一个 Scheduler binder；本地 @Scheduled 不需要独立 Server。
 
 ## 处理器
 
@@ -61,34 +61,10 @@ loadup:
 
 仅引入 app 时不注册 Controller；通过是否引入 web 依赖选择 HTTP 暴露，关闭模块 enabled 开关同时停止默认应用与持久化 Bean 装配。配置开关不控制 Flyway 对已在 classpath 上的脚本执行。不要在已有数据库重复复制迁移脚本。
 
-## PowerJob 任务配置
+## 调度配置
 
-按 PowerJob 组件 README 启用 Worker，在管理台为当前 app 创建 BUILT_IN / STANDALONE / CRON 任务，processorInfo=`transferTaskProcessor`，建议 cron=`0/30 * * * * ?`、maxInstanceNum=1、instanceRetryNum=0、taskRetryNum=0。每次扫描最多 `loadup.modules.transfer.dispatch-batch-size`（默认 20，上限 100）项 QUEUED 任务；原生实例是一轮扫描。任务通过业务数据库事务排队，不需要每次调用远程注册接口。没有 Worker 时任务保持 QUEUED，需监测队列积压。
+应用引入 `loadup-components-scheduler-binder-local`，设置 `loadup.scheduler.binder-type=local` 即使用 Spring @Scheduled 默认每分钟扫描。Transfer 注册名为 `transfer.scan`，业务模块仅依赖 Scheduler API，无 PowerJob 依赖。没有 binder 时任务保持 QUEUED。
 
-失败任务通过现有 retry API 重排队。RUNNING 状态不能自动重排；Worker 崩溃后的租约、对账和人工恢复仍是生产验收待办。业务处理器以 taskId 幂等，不能以 PowerJob 实例成功推断每个业务任务都成功。
+使用 PowerJob 时改引入 `loadup-components-scheduler-binder-powerjob`，设置 binder-type=powerjob 并配置原生 Worker。在管理台创建 BUILT_IN / STANDALONE / CRON 任务：processorInfo=`loadupSchedulerProcessor`、jobParams=`transfer.scan`，建议 cron=`0 * * * * ?`、maxInstanceNum=1、instanceRetryNum=0、taskRetryNum=0。
 
-## 统一接入契约
-
-Java 消费方通过 `client.facade.XxxFacade` 注入公开业务入口；默认应用 Service 直接实现接口。引入 `*-app` 装配业务能力，引入 `*-web` 才提供 Controller，Web 适配不再提供独立 enabled 开关。模块整体启停仍使用 `loadup.modules.transfer.enabled`。
-
-JSON Controller 显式返回 SuccessResponse，分页保留已有分页报文契约；异常由全局 WebMVC 处理。下载仍为流式响应。请求与 DTO 字段声明 OpenAPI，凭证只写。持久化经 database 组件使用 MyBatis-Flex、Tables 常量和 Spring MapStruct Converter；数据库连接与可信租户来源由消费工程配置。新 schema 迁移与本轮 clean 编译、运行验证仍需本地执行。
-
-## 入参与分页约定
-
-写操作入参采用业务动作 Command，查询入参采用 Query，分页查询使用 PageQuery 后缀；纯 ID 查询复用公共 IdQuery。Facade 分页统一返回 `PageDTO<T>`，HTTP 分页统一返回 `PageResponse<T>`：`result` 表示结果，`data` 为当前页数组，顶层 `pageInfo` 提供 totalCount/pageIndex/pageSize。不再提供模块专用分页 DTO。完整规则与示例见 [commons-dto](../../loadup-commons/loadup-commons-dto/README.md)。
-
-## 通用输入与时间约定
-
-分页缺省 page=1、size=20，size 上限 100；非法输入使用稳定业务错误码。业务时间使用具名 `transferClock` 并使用 Clock 所绑定的时区（默认系统本地时区）；持久化审计字段由 database 填充。可在测试或消费工程提供同名 Clock Bean。
-
-## 错误码契约
-
-公开错误枚举位于 `io.github.loadup.modules.transfer.client.error.TransferResultCodeEnum`，错误码以 `TRANSFER_` 开头。服务/领域/仓储使用 `CommonException(enum)`；系统原因可作为 cause 保留，响应文案仅来自枚举。WebMVC 统一返回 HTTP 200 的 result/data。枚举码按稳定公开契约维护，不用字符串消息覆盖。
-
-## Unified pagination contract
-
-Pure pagination inputs reuse `io.github.loadup.commons.dto.PageQuery`. HTTP fields remain `page` and `size`, with omitted/null values defaulting to 1 and 20; explicit invalid bounds are rejected and size is capped at 100. Business queries retain their filter fields and flat pagination fields but delegate policy to `PageQuery.normalized`, preserving their declared module error code. Mutable UPMS queries expose `pagination()` for validation at the service boundary. Sort whitelists remain business-specific.
-
-Domain Gateway results use `io.github.loadup.commons.domain.PageResult<T>`, shared with UPMS. Seven duplicate business Page wrappers have been removed. Application mapping uses the injected Spring MapStruct item converter and `PageResult.map`; `PageDTO.of(result)` adapts the unchanged total/page/size metadata. Facades return PageDTO, and Controllers return PageResponse. No HTTP envelope enters a Gateway.
-
-The response remains `{result, data: [...], pageInfo: {totalCount, pageIndex, pageSize, ...}}`; data is the current-page array. SuccessResponse serves ordinary success data only; its duplicate pagination field and ofPage factories have been removed. Empty PageDTO defaults to an empty array and metadata 0/1/20. Existing consumer code referencing removed business Page wrappers, DictionaryTypePageQuery, AccountLoginPageQuery or SuccessResponse.ofPage must use the shared contracts. No URL or frontend payload-field migration is required.
+每次扫描最多 `loadup.modules.transfer.dispatch-batch-size`（默认 20，上限 100）项 QUEUED 任务。扫描器遍历处理，单项失败存为 FAILED，扫描正常返回不代表所有业务任务成功。失败任务通过现有 retry API 重排；RUNNING 不自动重排。业务处理器以 taskId 幂等；Worker 崩溃后的租约、对账和恢复仍是待办。

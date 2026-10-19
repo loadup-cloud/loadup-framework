@@ -19,12 +19,10 @@
  */
 package io.github.loadup.modules.transfer.app.service;
 
-import tech.powerjob.worker.core.processor.ProcessResult;
-import tech.powerjob.worker.core.processor.TaskContext;
-import tech.powerjob.worker.core.processor.sdk.BasicProcessor;
+import io.github.loadup.components.scheduler.ScheduledTask;
 
-/** Native recurring processor for the durable transfer queue. */
-public class TransferTaskProcessor implements BasicProcessor {
+/** Backend-neutral scanner for the durable transfer queue. */
+public class TransferTaskProcessor implements ScheduledTask {
     private final TransferTaskService service;
 
     public TransferTaskProcessor(TransferTaskService service) {
@@ -32,7 +30,12 @@ public class TransferTaskProcessor implements BasicProcessor {
     }
 
     @Override
-    public ProcessResult process(TaskContext context) {
-        return new ProcessResult(service.executeQueuedTasks());
+    public String name() {
+        return "transfer.scan";
+    }
+
+    @Override
+    public void execute() {
+        service.executeQueuedTasks();
     }
 }

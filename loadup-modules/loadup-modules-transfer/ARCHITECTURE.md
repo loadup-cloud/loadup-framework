@@ -2,13 +2,13 @@
 
 ## 分层与职责
 
-TransferTaskService 管理业务任务、文件引用、进度和结果；TransferTaskProcessor 实现原生 BasicProcessor，只调用 service 的有界队列扫描。文件操作复用 FileResourceFacade，持久化通过 TransferGateway 和 MyBatis-Flex。
+TransferTaskService 管理业务任务、文件引用、进度和结果；TransferTaskProcessor 实现 Scheduler ScheduledTask（名称 transfer.scan），只调用 service 的有界队列扫描。文件操作复用 FileResourceFacade，持久化通过 TransferGateway 和 MyBatis-Flex。
 
 ## 事务与执行
 
 提交在同一业务数据库事务内建立源文件引用并插入 QUEUED 记录；显式重试在事务内 CAS 重排队并保护输入引用。不调用远程调度 API，消除“业务库已提交、远程任务未注册”的双写窗口。文件资源表与任务表必须使用同一事务 DataSource。
 
-PowerJob 按配置触发 transferTaskProcessor，读取跨租户有界候选 ID，再根据数据库中可信租户绑定 TenantUtil，使用 QUEUED → RUNNING 条件更新抢占。RUNNING 不属于可领取条件，重复投递不会并发再次执行同一任务。扫描单个失败不阻断后续项，失败项保留 FAILED 等待人工重试，扫描返回失败供平台观测。
+Scheduler 本地或 PowerJob binder 触发 transfer.scan，读取跨租户有界候选 ID，再根据数据库中可信租户绑定 TenantUtil，使用 QUEUED → RUNNING 条件更新抢占。RUNNING 不属于可领取条件，重复投递不会并发再次执行同一任务。扫描单个失败不阻断后续项，失败项保留 FAILED 等待人工重试，业务失败由持久化状态供运维观测，扫描正常结束不保证每个业务项成功。
 
 输入输出依旧有界；业务处理器按 taskId 保证副作用幂等。文件字节存储与业务数据库不能原子提交，输出清理和源文件解引用沿用既有补偿；失败状态在清理后发布，避免人工重试与前一次清理竞争。
 

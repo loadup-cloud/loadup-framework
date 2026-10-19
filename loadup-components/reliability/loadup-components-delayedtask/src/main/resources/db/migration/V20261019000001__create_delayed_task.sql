@@ -1,0 +1,20 @@
+CREATE TABLE delayed_task (
+    id VARCHAR(64) NOT NULL PRIMARY KEY,
+    tenant_id VARCHAR(64) NOT NULL,
+    created_at DATETIME(6) NOT NULL,
+    updated_at DATETIME(6) NOT NULL,
+    deleted TINYINT NOT NULL DEFAULT 0,
+    task_type VARCHAR(64) NOT NULL,
+    biz_id VARCHAR(128) NOT NULL,
+    execute_at DATETIME(6) NOT NULL,
+    next_execute_at DATETIME(6) NOT NULL,
+    status VARCHAR(16) NOT NULL,
+    attempts INT NOT NULL DEFAULT 0,
+    max_attempts INT NOT NULL,
+    lease_until DATETIME(6),
+    claim_token VARCHAR(64),
+    last_error VARCHAR(256),
+    UNIQUE KEY uk_delayed_business (tenant_id, task_type, biz_id),
+    KEY idx_delayed_due (status, next_execute_at, id),
+    KEY idx_delayed_lease (status, lease_until, id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;

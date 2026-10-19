@@ -128,6 +128,32 @@
         <dependencies>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-delayedtask</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-scheduler</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-scheduler-api</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-scheduler-binder-local</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-scheduler-binder-powerjob</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-powerjob</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>

@@ -17,7 +17,7 @@ Consumer application (Boot 4 / Java 25)
 
 官方 Starter 的自动配置保留原样；LoadUpPowerJobAutoConfiguration 额外绑定 `powerjob.client.*`，需要时创建 Closeable Client，并注册 process 切面。Client 的 appName/serverAddress 可继承 Worker 配置，密码始终显式提供；Client-only 应用可以禁用 Worker。自定义 Client Bean 优先；失败的客户端配置以 POWERJOB 错误枚举报告，不在错误中输出秘密。
 
-组件不隐式启动或创建 Server，不依赖 Server jar、JPA 或业务数据库。运行参数保持官方命名，未添加 loadup.scheduler/binder-type 或第二套 Worker 配置。
+组件不隐式启动或创建 Server，不依赖 Server jar、JPA 或业务数据库。运行参数保持官方命名，本组件不绑定 loadup.scheduler；可选 Scheduler binder 使用 loadup.scheduler.binder-type 选择接入，但 Worker 配置仍保持原生。
 
 ## 执行作用域
 
@@ -27,12 +27,12 @@ PowerJobProcessorAspect 拦截 Spring BasicProcessor.process，绑定全新不�
 
 ## 业务任务迁移
 
-旧 scheduler/retrytask/jobrunr 模块、公共翻译接口、两个引擎 binder、自维护补丁与专用告警桥均移除。Gotone 保持发送能力，告警集成由官方 PowerJob 与消费方明确接入。
+旧引擎补丁和 RetryTask 模型已移除。新 Scheduler 仅抽象扫描器唤醒，DelayedTask 独立管理业务截止时间。Gotone 保持发送能力，告警集成由官方 PowerJob 与消费方明确接入。
 
-Transfer 是实际消费方：提交与源文件引用在业务数据库事务中完成，定时 Processor 领取 QUEUED 任务，QUEUED → RUNNING 条件更新抢占；同一个运行中的任务不会被第二个 Worker 再次领取。输出和状态仍由 Transfer 管理，原生任务实例代表一次队列扫描，不代表单个 Transfer 业务任务。
+Transfer 是实际消费方：提交与源文件引用在业务数据库事务中完成，Scheduler 通过本地 @Scheduled 或 PowerJob binder 领取 QUEUED 任务，QUEUED → RUNNING 条件更新抢占；同一个运行中的任务不会被第二个 Worker 再次领取。输出和状态仍由 Transfer 管理，原生任务实例代表一次队列扫描，不代表单个 Transfer 业务任务。
 
 ## 验证边界
 
-组件单测验证配置校验、覆盖/关闭、结果/异常观测、ScopedValue 与 Observation 恢复。独立 `loadup-components-powerjob-test` 由根 `powerjob-it` profile 启用，使用真实 Server / MySQL 与生产 Starter、Client、切面验证手动执行、动态改期、自动重试、实例恢复、删除和重启恢复。Transfer 的真实 MySQL 用例验证并发领取和显式重排队。
+组件单测验证配置校验、覆盖/关闭、结果/异常观测、ScopedValue 与 Observation 恢复。独立 `loadup-components-scheduler-test` 由根 `powerjob-it` profile 启用，使用真实 Server / MySQL 与生产 Starter、Client、切面验证手动执行、动态改期、自动重试、实例恢复、删除和重启恢复。Transfer 的真实 MySQL 用例验证并发领取和显式重排队。
 
-PoC 已验证 Server Java 21 / Worker Java 25；Server Java 25、多节点故障接管、网络分区、升级备份和性能 SLA 不在已通过范围。Java 25 下 Netty 原生访问与 Fastjson Unsafe 警告仍需跟进上游，不通过隐藏日志宣称解决。
+PoC 已验证 Server Java 21 / Worker Java 25；本次也已通过 Server Java 25 的真实 Server 回归；多节点故障接管、网络分区、升级备份和性能 SLA 不在已通过范围。Java 25 下 Netty 原生访问与 Fastjson Unsafe 警告仍需跟进上游，不通过隐藏日志宣称解决。

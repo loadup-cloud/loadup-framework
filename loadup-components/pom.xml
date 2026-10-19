@@ -38,7 +38,9 @@
         <module>reliability/loadup-components-outbox</module>
         <module>reliability/loadup-components-globalunique</module>
         <module>reliability/loadup-components-resilience4j</module>
+        <module>reliability/loadup-components-delayedtask</module>
         <!-- execution -->
+        <module>execution/loadup-components-scheduler</module>
         <module>execution/loadup-components-powerjob</module>
         <module>execution/loadup-components-pipeline</module>
         <!-- platform -->
