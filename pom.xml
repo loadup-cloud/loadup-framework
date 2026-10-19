@@ -132,13 +132,14 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven-compiler-plugin.version}</version>
                     <configuration>
+                        <proc>full</proc>
                         <source>${java.version}</source>
                         <target>${java.version}</target>
                         <release>${java.version}</release>
                         <parameters>true</parameters>
                         <encoding>UTF-8</encoding>
                         <compilerArgs>
-                            <compilerArg>-Xlint:all</compilerArg>
+                            <arg>-Xlint:all</arg>
                         </compilerArgs>
                         <annotationProcessorPaths>
                             <path>
@@ -151,6 +152,7 @@
                                 <artifactId>spring-boot-configuration-processor</artifactId>
                                 <version>${spring.boot.version}</version>
                             </path>
+
                         </annotationProcessorPaths>
                     </configuration>
                 </plugin>

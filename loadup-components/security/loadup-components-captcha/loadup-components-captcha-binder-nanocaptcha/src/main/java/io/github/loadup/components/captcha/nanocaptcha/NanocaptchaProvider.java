@@ -29,12 +29,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.imageio.ImageIO;
-import net.logicsquad.nanocaptcha.content.ChineseContentProducer;
 import net.logicsquad.nanocaptcha.content.ContentProducer;
 import net.logicsquad.nanocaptcha.content.LatinContentProducer;
 import net.logicsquad.nanocaptcha.content.NumbersContentProducer;
 import net.logicsquad.nanocaptcha.image.ImageCaptcha;
-import net.logicsquad.nanocaptcha.image.backgrounds.GradiatedBackgroundProducer;
+import net.logicsquad.nanocaptcha.image.background.GradiatedBackgroundProducer;
 import net.logicsquad.nanocaptcha.image.noise.CurvedLineNoiseProducer;
 
 /**
@@ -59,12 +58,13 @@ public class NanocaptchaProvider implements CaptchaProvider {
         if (type != null && !CaptchaType.WORD.equals(type)) {
             throw new IllegalArgumentException("nanocaptcha only supports type " + CaptchaType.WORD);
         }
-        ImageCaptcha captcha = new ImageCaptcha.Builder(properties.getWidth(), properties.getHeight())
+        ImageCaptcha captcha = new ImageCaptcha.Factory.Builder(properties.getWidth(), properties.getHeight())
                 .addContent(contentProducer())
                 .addBackground(new GradiatedBackgroundProducer())
                 .addNoise(new CurvedLineNoiseProducer())
                 .addBorder()
-                .build();
+                .build()
+                .create();
 
         String captchaId = UUID.randomUUID().toString();
         long expiresAt = System.currentTimeMillis() + properties.getExpirationSeconds() * 1000;
@@ -105,7 +105,6 @@ public class NanocaptchaProvider implements CaptchaProvider {
     private ContentProducer contentProducer() {
         return switch (properties.getContent()) {
             case "latin" -> new LatinContentProducer(properties.getLength());
-            case "chinese" -> new ChineseContentProducer(properties.getLength());
             default -> new NumbersContentProducer(properties.getLength());
         };
     }

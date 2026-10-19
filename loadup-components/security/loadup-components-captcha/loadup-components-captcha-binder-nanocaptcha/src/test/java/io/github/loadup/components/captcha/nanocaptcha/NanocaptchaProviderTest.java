@@ -103,13 +103,13 @@ class NanocaptchaProviderTest {
         }
     }
 
-    private static MockedConstruction<ImageCaptcha.Builder> images(BufferedImage image) {
+    private static MockedConstruction<ImageCaptcha.Factory.Builder> images(BufferedImage image) {
         ImageCaptcha captcha = mock(ImageCaptcha.class);
         when(captcha.getContent()).thenReturn("Ab12");
         when(captcha.getImage()).thenReturn(image);
         return mockConstruction(
-                ImageCaptcha.Builder.class,
+                ImageCaptcha.Factory.Builder.class,
                 withSettings().defaultAnswer(Answers.RETURNS_SELF),
-                (builder, context) -> when(builder.build()).thenReturn(captcha));
+                (builder, context) -> when(builder.build().create()).thenReturn(captcha));
     }
 }

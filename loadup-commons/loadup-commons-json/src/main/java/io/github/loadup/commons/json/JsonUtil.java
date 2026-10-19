@@ -69,7 +69,9 @@ public class JsonUtil {
 
     private static volatile ObjectMapper objectMapper = initObjectMapper();
 
-    /** Use the application mapper when Spring configures one. */
+    /**
+     * Use the application mapper when Spring configures one.
+     */
     public static void setObjectMapper(ObjectMapper mapper) {
         objectMapper = java.util.Objects.requireNonNull(mapper);
     }
@@ -86,7 +88,9 @@ public class JsonUtil {
         return customize(JsonMapper.builder()).build();
     }
 
-    /** Apply the framework JSON conventions to a Jackson 3 mapper builder. */
+    /**
+     * Apply the framework JSON conventions to a Jackson 3 mapper builder.
+     */
     public static JsonMapper.Builder customize(JsonMapper.Builder builder) {
         SimpleModule javaTimeModule = new SimpleModule();
         javaTimeModule.addSerializer(
@@ -551,5 +555,9 @@ public class JsonUtil {
 
     public static boolean equals(Object expected, Object actual) {
         return toJson(expected).equals(toJson(actual));
+    }
+
+    public static JsonNode readTree(String text) {
+        return objectMapper.readTree(text);
     }
 }

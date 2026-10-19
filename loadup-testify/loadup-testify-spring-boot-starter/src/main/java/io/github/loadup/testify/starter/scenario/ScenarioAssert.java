@@ -19,12 +19,12 @@
  */
 package io.github.loadup.testify.starter.scenario;
 
+import io.github.loadup.commons.json.JsonUtil;
 import io.github.loadup.testify.asserts.engine.DbAssertEngine;
 import io.github.loadup.testify.asserts.engine.ExceptionAssertEngine;
 import io.github.loadup.testify.asserts.engine.ResponseAssertEngine;
 import io.github.loadup.testify.asserts.model.MatchResult;
 import io.github.loadup.testify.asserts.operator.OperatorProcessor;
-import io.github.loadup.testify.core.util.JsonUtil;
 import java.util.Map;
 import tools.jackson.databind.JsonNode;
 

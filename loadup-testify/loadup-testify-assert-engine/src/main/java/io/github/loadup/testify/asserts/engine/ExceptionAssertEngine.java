@@ -19,11 +19,11 @@
  */
 package io.github.loadup.testify.asserts.engine;
 
+import io.github.loadup.commons.json.JsonUtil;
 import io.github.loadup.testify.asserts.diff.DiffReportBuilder;
 import io.github.loadup.testify.asserts.model.FieldDiff;
 import io.github.loadup.testify.asserts.model.MatchResult;
 import io.github.loadup.testify.asserts.operator.OperatorProcessor;
-import io.github.loadup.testify.core.util.JsonUtil;
 import io.github.loadup.testify.data.engine.variable.VariableEngine;
 import java.util.ArrayList;
 import java.util.List;

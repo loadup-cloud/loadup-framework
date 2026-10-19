@@ -58,7 +58,7 @@ External projects must define the example version properties to match the select
 
 The explicit processor list avoids running upstream Flex a second time through service discovery. Both Flex paths are explicit so compilation works before the processor artifact is installed into the local repository. Build using `mvn clean ...` to avoid generating the same sources twice from stale output. Import `infrastructure.mapper.XxxDOMapper` and inject it into repositories; scan the generated mapper package with `@MapperScan`. MapStruct remains an independent processor for Spring-managed converters.
 
-Fixed options live in `DatabaseAptConfiguration` Java code. No project `mybatis-flex.config` or application property is needed; ancestor config files cannot change these options. The generated config in compiler output is an upstream implementation bridge, not an application configuration file.
+Fixed options live in the processor jar's canonical `mybatis-flex.config` resource. No project `mybatis-flex.config` or application property is needed; the wrapper copies the resource into compiler output and ancestor config files cannot change these options. The generated config in compiler output is an upstream implementation bridge, not an application configuration file.
 
 ## Configuration
 

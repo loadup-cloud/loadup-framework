@@ -19,9 +19,9 @@
  */
 package io.github.loadup.testify.asserts.operator.impl;
 
+import io.github.loadup.commons.json.JsonUtil;
 import io.github.loadup.testify.asserts.model.MatchResult;
 import io.github.loadup.testify.asserts.operator.OperatorMatcher;
-import io.github.loadup.testify.core.util.JsonUtil;
 import java.util.Map;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;

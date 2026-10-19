@@ -19,9 +19,9 @@
  */
 package io.github.loadup.testify.test.service;
 
+import io.github.loadup.commons.json.JsonUtil;
 import io.github.loadup.components.testcontainers.annotation.ContainerType;
 import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
-import io.github.loadup.testify.core.util.JsonUtil;
 import io.github.loadup.testify.data.engine.variable.VariableEngine;
 import io.github.loadup.testify.starter.cases.CaseFiles;
 import io.github.loadup.testify.starter.cases.TestifyCase;

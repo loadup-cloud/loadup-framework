@@ -19,7 +19,7 @@
  */
 package io.github.loadup.testify.data.engine.variable;
 
-import io.github.loadup.testify.core.util.JsonUtil;
+import io.github.loadup.commons.json.JsonUtil;
 import io.github.loadup.testify.data.engine.function.TestifyFunction;
 import java.util.ArrayList;
 import java.util.Collection;

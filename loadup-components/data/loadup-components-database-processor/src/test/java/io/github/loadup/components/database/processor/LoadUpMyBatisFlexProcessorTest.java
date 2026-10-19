@@ -27,9 +27,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Properties;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.tools.DiagnosticCollector;
@@ -57,6 +61,26 @@ class LoadUpMyBatisFlexProcessorTest {
     }
 
     @Test
+    void shipsTheCanonicalDefaultsAsAResource() throws Exception {
+        try (InputStream resource = LoadUpMyBatisFlexProcessor.class.getResourceAsStream("mybatis-flex.config")) {
+            assertThat(resource).isNotNull();
+            Properties defaults = new Properties();
+            defaults.load(new InputStreamReader(resource, StandardCharsets.UTF_8));
+
+            assertThat(defaults)
+                    .containsEntry("processor.enable", "true")
+                    .containsEntry("processor.charset", "UTF-8")
+                    .containsEntry("processor.stopBubbling", "true")
+                    .containsEntry("processor.allInTables.enable", "true")
+                    .containsEntry("processor.allInTables.className", "Tables")
+                    .containsEntry("processor.tableDef.classSuffix", "TableDef")
+                    .containsEntry("processor.tableDef.propertiesNameStyle", "upperCase")
+                    .containsEntry("processor.mapper.generateEnable", "true")
+                    .containsEntry("processor.mapper.annotation", "true");
+        }
+    }
+
+    @Test
     void generatesCompilablePersistenceSourcesWithFixedDefaults() throws Exception {
         Files.writeString(project.resolve("pom.xml"), "<project/>");
         Files.writeString(project.resolve("mybatis-flex.config"), """
@@ -78,6 +102,10 @@ class LoadUpMyBatisFlexProcessorTest {
                 }
                 """);
         Path output = Files.createDirectories(project.resolve("target/classes"));
+        Files.writeString(output.resolve("mybatis-flex.config"), """
+                processor.enable=false
+                processor.mapper.generateEnable=false
+                """);
         Path generated = Files.createDirectories(project.resolve("target/generated-sources/annotations"));
         var compiler = ToolProvider.getSystemJavaCompiler();
         var diagnostics = new DiagnosticCollector<JavaFileObject>();
@@ -104,5 +132,9 @@ class LoadUpMyBatisFlexProcessorTest {
                 .contains("PAYMENT_DO");
         assertThat(output.resolve("sample/mapper/PaymentDOMapper.class")).exists();
         assertThat(generated.resolve("external/mapper")).doesNotExist();
+        assertThat(output.resolve("mybatis-flex.config")).exists();
+        assertThat(Files.readString(output.resolve("mybatis-flex.config")))
+                .contains("processor.mapper.generateEnable=true", "processor.stopBubbling=true")
+                .doesNotContain("processor.enable=false");
     }
 }

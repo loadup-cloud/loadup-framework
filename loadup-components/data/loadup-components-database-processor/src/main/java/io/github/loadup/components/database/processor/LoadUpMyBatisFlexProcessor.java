@@ -21,7 +21,11 @@ package io.github.loadup.components.database.processor;
 
 import com.mybatisflex.processor.MybatisFlexProcessor;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -32,18 +36,26 @@ import javax.tools.StandardLocation;
 
 /** Applies database-owned defaults before delegating to the upstream generator. */
 public final class LoadUpMyBatisFlexProcessor extends AbstractProcessor {
+    private static final String CONFIG_RESOURCE = "mybatis-flex.config";
+    private static final String CONFIG_FILE = "mybatis-flex.config";
+
     private final MybatisFlexProcessor delegate = new MybatisFlexProcessor();
 
     @Override
     public synchronized void init(ProcessingEnvironment environment) {
         super.init(environment);
-        // Upstream reads files only. The nearest generated config prevents parent overrides.
-        try (Writer writer = environment
-                .getFiler()
-                .createResource(StandardLocation.CLASS_OUTPUT, "", "mybatis-flex.config")
-                .openWriter()) {
-            for (var entry : DatabaseAptConfiguration.OPTIONS.entrySet()) {
-                writer.write(entry.getKey() + "=" + entry.getValue() + "\n");
+        // Upstream reads files only. Copying the jar-owned defaults into CLASS_OUTPUT makes them
+        // the nearest configuration; stopBubbling keeps ancestor files out of the merge.
+        try (InputStream defaults = LoadUpMyBatisFlexProcessor.class.getResourceAsStream(CONFIG_RESOURCE)) {
+            if (defaults == null) {
+                throw new IllegalStateException("Missing " + CONFIG_RESOURCE + " in the database processor jar");
+            }
+            try (Reader reader = new InputStreamReader(defaults, StandardCharsets.UTF_8);
+                    Writer writer = environment
+                            .getFiler()
+                            .createResource(StandardLocation.CLASS_OUTPUT, "", CONFIG_FILE)
+                            .openWriter()) {
+                reader.transferTo(writer);
             }
         } catch (IOException exception) {
             throw new IllegalStateException("Cannot configure MyBatis-Flex annotation processing", exception);
