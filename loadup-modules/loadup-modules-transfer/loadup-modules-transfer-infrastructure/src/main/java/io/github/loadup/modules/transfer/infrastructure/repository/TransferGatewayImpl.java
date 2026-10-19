@@ -76,15 +76,15 @@ public class TransferGatewayImpl implements TransferGateway {
     public List<String> queued(int limit) {
         if (limit < 1 || limit > 100)
             throw new CommonException(io.github.loadup.commons.enums.CommonResultCodeEnum.PARAM_ILLEGAL);
-        return TenantManager.withoutTenantCondition(() -> tasks
-                .selectListByQuery(QueryWrapper.create()
-                        .from(TRANSFER_TASK_DO)
-                        .where(TRANSFER_TASK_DO.STATUS.eq(TransferStatus.QUEUED.name()))
-                        .orderBy(TRANSFER_TASK_DO.CREATED_AT.asc(), TRANSFER_TASK_DO.ID.asc())
-                        .limit(limit))
-                .stream()
-                .map(TransferTaskDO::getId)
-                .toList());
+        return TenantManager.withoutTenantCondition(() -> {
+            var queued = tasks.selectListByQuery(QueryWrapper.create()
+                    .from(TRANSFER_TASK_DO)
+                    .where(TRANSFER_TASK_DO.STATUS.eq(TransferStatus.QUEUED.name()))
+                    .orderBy(TRANSFER_TASK_DO.CREATED_AT.asc(), TRANSFER_TASK_DO.ID.asc())
+                    .limit(limit));
+            if (queued == null) return List.of();
+            return queued.stream().map(TransferTaskDO::getId).toList();
+        });
     }
 
     /** Job scheduler bootstrap lookup; user-facing services verify tenant and ownership. */

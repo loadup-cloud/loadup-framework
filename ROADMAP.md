@@ -2,6 +2,10 @@
 
 本文只记录尚未完成的工作。每完成一项任务立即更新：移除已完成的实现项，未执行的运行验证单独保留。已实现的能力、接入方式和设计边界以各 Maven 模块的 `README.md`、`ARCHITECTURE.md` 为准。LoadUp 是通过 BOM 按需引入的框架；`loadup-application` 用于本地集成验证。
 
+## Transfer 空队列扫描修复
+
+2026-10-19 已修复 TransferGatewayImpl.queued 对 Mapper 可空返回值直接 stream 的问题，统一按空候选集合处理。新增 null / 空列表、候选顺序及批量参数边界用例；定向 mvnd clean test 的 5 项用例通过，infrastructure 的 spotbugs:check 为 0 问题，IDEA 修改文件检查未报错。未运行全量构建或远程 CI。
+
 ## Scheduler / DelayedTask 后续验收
 
 2026-10-19 已实现独立 DelayedTask、Scheduler API、本地 @Scheduled 与 PowerJob binder；Transfer 改为 ScheduledTask 扫描器。真实 Server 套件已迁到 scheduler-test，保留 powerjob-it profile。业务截止时间保存在业务数据库，调度平台只周期唤醒。已完成按模块 mvnd clean verify：Scheduler API 3 项、本地 binder 3 项、PowerJob binder 2 项、DelayedTask 4 项、PowerJob 7 项、Transfer 7 项单测通过；6 项 DelayedTask 真实 MySQL、1 项 Transfer 并发领取及 5 项真实 PowerJob Server 用例通过（含 binder 调用）。新增四个 jar 的 JaCoCo 行/分支：Scheduler API 100%/100%，Local 100%/100%，PowerJob binder 100%/100%，DelayedTask 97.94%/92.39%。IDEA 批量检查仍对新模块的生成 Mapper / Tables 泛型链提示无法解析，相关源码已通过 clean 编译及真实数据库回归；IDE 模型需重载后复核。文档站已同步。未运行完整 reactor、消费工程启动、SpotBugs、Enforcer 或远程 CI。
