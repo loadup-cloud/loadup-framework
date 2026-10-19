@@ -37,8 +37,8 @@
             <artifactId>powerjob-worker-spring-boot-starter</artifactId>
             <exclusions>
                 <exclusion>
-                    <artifactId>powerjob-remote-impl-akka</artifactId>
                     <groupId>tech.powerjob</groupId>
+                    <artifactId>powerjob-remote-impl-akka</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

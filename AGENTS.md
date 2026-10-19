@@ -58,7 +58,7 @@ loadup-cloud/
 │   ├── data/           # cache, database, dfs
 │   ├── integration/    # http, gotone
 │   ├── reliability/    # lock, outbox, delayedtask, globalunique, resilience4j
-│   ├── execution/      # powerjob, pipeline
+│   ├── execution/      # scheduler, pipeline
 │   └── platform/       # configcenter, extension, observability, testcontainers
 ├── loadup-modules/             # 通用业务聚合，各自包含 COLA 分层与可选 web 子模块
 │   ├── loadup-modules-upms/    # 用户与权限管理、账号安全
@@ -407,7 +407,7 @@ POM 的 `<name>` 统一采用 `LoadUp <模块族> <能力> [职责/实现]`，�
 - PowerJob integration belongs to scheduler-binder-powerjob; do not create a standalone LoadUp PowerJob artifact. Use the official BasicProcessor, TaskContext, ProcessResult and PowerJobClient with native powerjob.worker/client properties. Keep Server separate. Native capabilities remain native; Scheduler binders only wake registered ScheduledTask scanners and do not translate platform instance models or maintain job-name ID mappings.
 - Spring BasicProcessor.process receives an isolated ScopedValue and a shared-registry Observation. Metrics use processor/outcome only; reconstruct trusted business identity explicitly from persisted records.
 - Durable business queues use transactional enqueue plus conditional claims. Transfer permits QUEUED → RUNNING only; failed-task requeue is explicit. Worker-crash recovery requires lease/reconciliation design, never unconditional reclaim of RUNNING tasks.
-- Run real-server integration with the optional powerjob-it profile; default application Worker remains disabled until a separately deployed Server and app are configured.
+- Scheduler tests must not launch a standalone PowerJob Server process or download its executable jar. Keep binder configuration, dispatch, context and observation tests in the binder; real-platform acceptance runs against a separately provisioned environment.
 
 ## Scheduler and DelayedTask
 

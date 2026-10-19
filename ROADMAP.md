@@ -8,7 +8,9 @@
 
 ## Scheduler / DelayedTask 后续验收
 
-2026-10-19 已实现独立 DelayedTask、Scheduler API、本地 @Scheduled 与 PowerJob binder；Transfer 改为 ScheduledTask 扫描器。真实 Server 套件已迁到 scheduler-test，保留 powerjob-it profile。业务截止时间保存在业务数据库，调度平台只周期唤醒。已完成按模块 mvnd clean verify：Scheduler API 3 项、本地 binder 3 项、PowerJob binder 2 项、DelayedTask 4 项、PowerJob 7 项、Transfer 7 项单测通过；6 项 DelayedTask 真实 MySQL、1 项 Transfer 并发领取及 5 项真实 PowerJob Server 用例通过（含 binder 调用）。新增四个 jar 的 JaCoCo 行/分支：Scheduler API 100%/100%，Local 100%/100%，PowerJob binder 100%/100%，DelayedTask 97.94%/92.39%。IDEA 批量检查仍对新模块的生成 Mapper / Tables 泛型链提示无法解析，相关源码已通过 clean 编译及真实数据库回归；IDE 模型需重载后复核。文档站已同步。未运行完整 reactor、消费工程启动、SpotBugs、Enforcer 或远程 CI。
+2026-10-19 已实现 DelayedTask、Scheduler API、本地 @Scheduled 与 PowerJob binder；Transfer 改为 ScheduledTask。PowerJob 原生装配、Client、上下文和观测归 binder，不再单独维护组件。合并时已完成 API 3 项、binder 9 项单测，binder 行/分支覆盖率均 100%（78/78、30/30），并修复 Vert.x BOM 的 Log4j 版本冲突。
+
+按用户要求移除自维护的 PowerJob Server 启动器、5 项依赖该 Server 的 IT、scheduler-test 模块、powerjob-it profile 及 Server jar 下载依赖；保留 API/binder 单测和 DelayedTask/Transfer 的数据库测试。已核对 Testcontainers 官方及社区目录，未找到 PowerJob 专用模块。此前真实 Server 回归属于历史验证，不再作为当前自动化测试套件承诺。本次删除不改变生产代码；未重跑构建和测试，平台验收列为部署待办。
 
 - [ ] 按实际部署需求增加 XXL-JOB / JobRunr binder；当前仅实现 local / PowerJob。
 - [ ] DelayedTask 容量与故障验收：多 Pod 宕机重放、时钟漂移、长任务租约配置、重试积压、数据库竞争与业务幂等；当前无自动续租。

@@ -164,11 +164,6 @@
                 <version>${powerjob.version}</version>
             </dependency>
             <dependency>
-                <groupId>tech.powerjob</groupId>
-                <artifactId>powerjob-server-starter</artifactId>
-                <version>${powerjob.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-async-result-api</artifactId>
                 <version>${loadup.framework.version}</version>
@@ -231,6 +226,14 @@
                 <groupId>io.github.resilience4j</groupId>
                 <artifactId>resilience4j-bom</artifactId>
                 <version>${resilience4j.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Preserve Boot logging alignment ahead of the older Vert.x logging constraints. -->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-bom</artifactId>
+                <version>${log4j2.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

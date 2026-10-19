@@ -1,9 +1,8 @@
 # Scheduler Binder PowerJob 架构
 
-PowerJobSchedulerProvider 同时实现 SchedulerProvider 与官方 BasicProcessor，Bean 名固定 loadupSchedulerProcessor。读取 jobParams 作为本地注册名，调用 SchedulerTemplate.trigger，异常传回原生引擎。Worker 的上下文隔离和观测由 PowerJob 组件提供，业务身份仍从持久化记录重建。Server 的作业定义由运维管理，不与业务截止时间形成一对一映射。
+PowerJobSchedulerProvider 同时实现 SchedulerProvider 与官方 BasicProcessor，Bean 名固定 loadupSchedulerProcessor。读取 jobParams 作为本地注册名，调用 SchedulerTemplate.trigger，异常传回原生引擎。Worker 的上下文隔离和观测由本 binder 内的切面提供，业务身份仍从持久化记录重建。Server 的作业定义由运维管理，不与业务截止时间形成一对一映射。
 
 总体职责及扩展契约见上级 [架构](../ARCHITECTURE.md)。
-
 
 ## 职责
 
@@ -22,7 +21,7 @@ Consumer application (Boot 4 / Java 25)
 
 官方 Starter 的自动配置保留原样；LoadUpPowerJobAutoConfiguration 额外绑定 `powerjob.client.*`，需要时创建 Closeable Client，并注册 process 切面。Client 的 appName/serverAddress 可继承 Worker 配置，密码始终显式提供；Client-only 应用可以禁用 Worker。自定义 Client Bean 优先；失败的客户端配置以 POWERJOB 错误枚举报告，不在错误中输出秘密。
 
-组件不隐式启动或创建 Server，不依赖 Server jar、JPA 或业务数据库。运行参数保持官方命名，本组件不绑定 loadup.scheduler；可选 Scheduler binder 使用 loadup.scheduler.binder-type 选择接入，但 Worker 配置仍保持原生。
+组件不隐式启动或创建 Server，不依赖 Server jar、JPA 或业务数据库。运行参数保持官方命名；PowerJobSchedulerAutoConfiguration 根据 loadup.scheduler.binder-type=powerjob 注册扫描入口，LoadUpPowerJobAutoConfiguration 管理原生 Client 和 process 切面。两者均由同一个 binder jar 提供，Worker 配置保持原生。
 
 ## 执行作用域
 
@@ -38,6 +37,6 @@ Transfer 是实际消费方：提交与源文件引用在业务数据库事务�
 
 ## 验证边界
 
-组件单测验证配置校验、覆盖/关闭、结果/异常观测、ScopedValue 与 Observation 恢复。Scheduler 的 `loadup-components-scheduler-test` 由根 `powerjob-it` profile 启用，使用真实 Server / MySQL 与生产 Starter、Client、切面验证手动执行、动态改期、自动重试、实例恢复、删除和重启恢复。Transfer 的真实 MySQL 用例验证并发领取和显式重排队。
+binder 内单测验证配置校验、Client 覆盖/关闭、结果/异常观测、ScopedValue 与 Observation 恢复及 ScheduledTask 分派。测试不启动独立 Server，不下载 Server jar；不再维护自定义 Server 启动器、Server 专用测试模块或启动 profile。此前真实 Server 运行记录不代表当前仍保留自动化平台验收。
 
-PoC 已验证 Server Java 21 / Worker Java 25；本次也已通过 Server Java 25 的真实 Server 回归；多节点故障接管、网络分区、升级备份和性能 SLA 不在已通过范围。Java 25 下 Netty 原生访问与 Fastjson Unsafe 警告仍需跟进上游，不通过隐藏日志宣称解决。
+平台通信、动态改期、实例重试、Server 重启恢复、多节点接管及容量由独立部署环境验收。Transfer / DelayedTask 的真实数据库测试仍验证其各自的持久化队列语义，不依赖 PowerJob Server。

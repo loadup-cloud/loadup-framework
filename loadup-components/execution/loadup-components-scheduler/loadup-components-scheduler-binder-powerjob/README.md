@@ -19,15 +19,6 @@ powerjob:
 
 不使用 PowerJob 时不要引入此 binder；若主动保留两个 binder 依赖，必须额外关闭未使用的原生 Worker/Client，binder 选择不会覆盖 PowerJob 官方配置。
 
-## 能力矩阵
-
-| 能力 | 支持 |
-|---|---|
-| 调度接入 | 已实现，边界见上文 |
-| 业务数据持久化 | 由业务组件负责 |
-
-完整接入契约见上级 [Scheduler](../README.md)。
-
 ## 部署与配置
 
 先部署独立 PowerJob Server 和数据库，通过管理台创建 namespace / app，为应用分配 appName 和应用密码。Server 的 Spring/JPA 运行时不放入业务应用类路径；Server 版本与 Worker/Client 一致。Server 管理口（默认 7700）与 HTTP 传输口（默认 10010）职责不同，Worker 端口也需要 Server 能访问。
@@ -84,6 +75,7 @@ Processor 调用业务 Facade；不要把 Controller、线程中的登录态或�
 
 | 能力 | 契约 |
 |---|---|
+| Scheduler 扫描入口 | loadupSchedulerProcessor 按 jobParams 分派 ScheduledTask |
 | Worker 生命周期 | 官方 Starter，原生配置与自动装配 |
 | 管理 Client | 可选原生 Bean、启动认证、关闭释放、允许覆盖 |
 | 动态路由到处理器 / 调度策略 | 官方 Spring Processor / Server / SDK |
@@ -105,6 +97,8 @@ Observation 使用共享 ObservationRegistry，消费工程引入 Actuator/Obser
 - 普通 cron 扫描周期为 15 秒，不承诺秒级实时性；独立任务时区、退避与重试策略按原生能力设计。
 - 多 Server、多 Worker、k8s 故障切换和容量验证仍属于生产部署验收，见 ROADMAP。
 
-## 验证记录
+## 验证边界
 
-2026-10-19：定向 mvnd clean verify 通过，组件 7 项单测全部成功，组件自身 JaCoCo 行/分支覆盖率均 100%。生产 Client Bean 与 Spring Processor 切面的 4 项真实 Server / MySQL 用例已通过。该结论不包含完整 reactor、消费工程启动或 k8s 验收；未运行 Enforcer / SpotBugs，Spotless / License 检查已通过。
+binder 保留 9 项单测，覆盖 Client 配置、生命周期、上下文隔离、观测和 Scheduler 扫描入口；当前 JaCoCo 行 / 分支覆盖率均为 100%。不启动 PowerJob Server、不下载 Server jar，也不依赖为此启动的 MySQL 容器。Testcontainers 官方及社区模块目录未找到 PowerJob 专用模块，本项目不维护自定义 Server 启动器。
+
+独立的 scheduler-test、powerjob-it profile 和 Server 下载依赖已移除。平台通信、动态调度、引擎重试及故障切换需要在独立部署环境验收，单元测试不能替代这些验收。原生 powerjob.worker / powerjob.client 配置及错误码保持不变。
