@@ -110,7 +110,7 @@ Database failover and backup restoration must preserve committed allocation maxi
 
 ### Verification and remaining acceptance
 
-The implementation uses generated `SequenceAllocationDOMapper` and Tables from the framework processor. The MySQL migration is isolated under `db/migration/loadup-sequence`; deployments explicitly include that location or apply the migration externally. The component deliberately retains UUID allocation-row primary keys to prevent recursion. Trusted tenant binding and scoped MyBatis-Flex tenant/logical-delete bypass keep allocation shared without changing the caller's identity. A deleted/corrupt allocation row fails explicitly.
+The implementation uses generated `SequenceAllocationDOMapper` and Tables from the framework processor. The MySQL migration is packaged under `db/migration`; deployments include that location or apply the migration externally. The component deliberately retains UUID allocation-row primary keys to prevent recursion. Trusted tenant binding and scoped MyBatis-Flex tenant/logical-delete bypass keep allocation shared without changing the caller's identity. A deleted/corrupt allocation row fails explicitly.
 
 Unit tests cover fixed encoding vectors, maximum length, leading zeros, invalid dates and values, local-zone batch dates, virtual-thread single/batch concurrency, restart waste, range boundaries, cache admission, timeouts, prefetch failure and metrics. Real MySQL tests cover concurrent first creation, committed disjoint ranges, tenant independence, caller rollback, final-range truncation and maximum conflicts. Leaf dependencies were not introduced; source-compatible upstream reuse was not required.
 

@@ -6,5 +6,5 @@ spring:
       mode: always
       schema-locations:
         - classpath:schema-test.sql
-        - classpath:db/migration/loadup-sequence/V2026101201__sequence_allocation.sql
+        - classpath:db/migration/V2026101201__sequence_allocation.sql
       continue-on-error: false
