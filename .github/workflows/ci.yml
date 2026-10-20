@@ -69,7 +69,7 @@ jobs:
         run: |
           versions=$(python3 -c 'import xml.etree.ElementTree as E; p=E.parse("pom.xml").find("{*}properties"); print(p.findtext("{*}license-plugin.version"), p.findtext("{*}maven-checkstyle-plugin.version"))')
           read -r license_version checkstyle_version <<< "$versions"
-          mvnd -B -ntp -U -T 1 validate \
+          mvn -B -ntp -U -T 1 validate \
             "org.codehaus.mojo:license-maven-plugin:$license_version:check-file-header" \
             "org.apache.maven.plugins:maven-checkstyle-plugin:$checkstyle_version:check" \
             -Dskip.spotless=false -Dskip.enforcer=false \
@@ -104,7 +104,7 @@ jobs:
       - name: Build once, run tests, SpotBugs and PMD
         id: build
         run: |
-          mvnd -B -ntp -U -T 1 -Pcomponent-coverage clean install pmd:check \
+          mvn -B -ntp -U -T 1 -Pcomponent-coverage clean install pmd:check \
             -DskipTests=false -Dskip.unit.tests=false -Dskip.integration.tests=false \
             -Dskip.spotbugs=false -Dskip.spotless=true \
             -Dlicense.skipUpdateLicense=true -Dlicense.skipCheckLicense=true \
@@ -115,7 +115,7 @@ jobs:
         # Reuse exactly the bytecode and merged execution data from the successful build.
         # The standalone BOM does not inherit the parent's named plugin executions.
         run: |
-          mvnd -B -ntp -T 1 -Pcomponent-coverage -pl '!loadup-dependencies' --fail-at-end \
+          mvn -B -ntp -T 1 -Pcomponent-coverage -pl '!loadup-dependencies' --fail-at-end \
             enforcer:enforce@component-coverage-inputs \
             jacoco:check@component-coverage-check
       - name: Show container state on failure
@@ -194,6 +194,6 @@ jobs:
         run: |
           : "${PACKAGES_USERNAME:?Set the PACKAGES_USERNAME repository variable}"
           : "${PACKAGES_TOKEN:?Set PACKAGES_TOKEN with access to loadup-cloud/loadup-packages}"
-          mvnd -B -ntp -U -T 1 clean deploy -P github \
+          mvn -B -ntp -U -T 1 clean deploy -P github \
             -DaltDeploymentRepository=github::https://maven.pkg.github.com/loadup-cloud/loadup-packages \
             -DdeployAtEnd=true -DskipTests -Dskip.spotbugs=true
