@@ -105,7 +105,9 @@ public class NanocaptchaProvider implements CaptchaProvider {
     private ContentProducer contentProducer() {
         return switch (properties.getContent()) {
             case "latin" -> new LatinContentProducer(properties.getLength());
-            default -> new NumbersContentProducer(properties.getLength());
+            case "numbers" -> new NumbersContentProducer(properties.getLength());
+            default ->
+                throw new IllegalArgumentException("Unsupported nanocaptcha content: " + properties.getContent());
         };
     }
 

@@ -696,6 +696,22 @@
     </reporting>
 
     <profiles>
+        <!-- Opt-in shortcut for local builds: mvnd clean compile/install -Pskip-quality. -->
+        <profile>
+            <id>skip-quality</id>
+            <properties>
+                <skip.spotless>true</skip.spotless>
+                <skip.spotbugs>true</skip.spotbugs>
+                <skip.enforcer>true</skip.enforcer>
+                <license.skipCheckLicense>true</license.skipCheckLicense>
+                <license.skipUpdateLicense>true</license.skipUpdateLicense>
+                <checkstyle.skip>true</checkstyle.skip>
+                <pmd.skip>true</pmd.skip>
+                <cpd.skip>true</cpd.skip>
+                <jacoco.skip>true</jacoco.skip>
+                <loadup.coverage.skip>true</loadup.coverage.skip>
+            </properties>
+        </profile>
         <profile>
             <id>component-coverage</id>
             <modules>

@@ -36,7 +36,7 @@ public class NanocaptchaProperties {
     /** Number of characters. */
     private int length = 4;
 
-    /** Character set: {@code numbers} (default) / {@code latin} / {@code chinese}. */
+    /** Character set: {@code numbers} (default) / {@code latin}. */
     private String content = "numbers";
 
     /** Answer expiration in seconds; default 5 minutes. */

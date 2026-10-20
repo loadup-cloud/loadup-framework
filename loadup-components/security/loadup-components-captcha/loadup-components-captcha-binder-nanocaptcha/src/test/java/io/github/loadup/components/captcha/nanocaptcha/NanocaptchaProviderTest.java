@@ -60,7 +60,7 @@ class NanocaptchaProviderTest {
 
     @Test
     void rendersActualPngForEachConfiguredCharacterSet() throws Exception {
-        for (String charset : new String[] {"numbers", "latin", "chinese"}) {
+        for (String charset : new String[] {"numbers", "latin"}) {
             var properties = new NanocaptchaProperties();
             properties.setContent(charset);
             properties.setWidth(180);
@@ -103,13 +103,26 @@ class NanocaptchaProviderTest {
         }
     }
 
+    @Test
+    void rejectsRemovedChineseAndUnknownCharacterSets() {
+        for (String charset : new String[] {"chinese", "unknown"}) {
+            var properties = new NanocaptchaProperties();
+            properties.setContent(charset);
+            assertThatThrownBy(() -> new NanocaptchaProvider(properties).generate(null))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("Unsupported nanocaptcha content: " + charset);
+        }
+    }
+
     private static MockedConstruction<ImageCaptcha.Factory.Builder> images(BufferedImage image) {
         ImageCaptcha captcha = mock(ImageCaptcha.class);
         when(captcha.getContent()).thenReturn("Ab12");
         when(captcha.getImage()).thenReturn(image);
+        ImageCaptcha.Factory factory = mock(ImageCaptcha.Factory.class);
+        when(factory.create()).thenReturn(captcha);
         return mockConstruction(
                 ImageCaptcha.Factory.Builder.class,
                 withSettings().defaultAnswer(Answers.RETURNS_SELF),
-                (builder, context) -> when(builder.build().create()).thenReturn(captcha));
+                (builder, context) -> when(builder.build()).thenReturn(factory));
     }
 }

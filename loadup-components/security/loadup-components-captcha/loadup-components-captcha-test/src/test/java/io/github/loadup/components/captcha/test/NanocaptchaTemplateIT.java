@@ -59,7 +59,8 @@ class NanocaptchaTemplateIT {
     void verify_wrongAnswer_rejects() {
         CaptchaResponse response = template.generate();
 
-        assertThat(template.verify(response.captchaId(), "0000")).isFalse();
+        assertThat(template.verify(response.captchaId(), "not-a-numeric-answer"))
+                .isFalse();
     }
 
     @Test
