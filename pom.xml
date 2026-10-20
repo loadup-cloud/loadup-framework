@@ -538,6 +538,8 @@
                                     </requireFilesExist>
                                     <requireFilesSize>
                                         <minsize>1</minsize>
+                                        <!-- Require non-empty execution data without the rule's default 10 KB cap. -->
+                                        <maxsize>9223372036854775807</maxsize>
                                         <files>
                                             <file>${loadup.coverage.dataFile}</file>
                                         </files>

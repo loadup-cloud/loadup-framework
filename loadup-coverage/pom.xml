@@ -267,6 +267,8 @@
                             <rules>
                                 <requireFilesSize>
                                     <minsize>1</minsize>
+                                    <!-- Require non-empty execution data without the rule's default 10 KB cap. -->
+                                    <maxsize>9223372036854775807</maxsize>
                                     <files>
                                         <!-- One file per current component test suite kind.
                                              Add entries when adding unit tests or ITs to another module. -->
