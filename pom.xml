@@ -34,7 +34,6 @@
         <module>loadup-components</module>
         <module>loadup-modules</module>
         <module>loadup-testify</module>
-        <module>loadup-application</module>
     </modules>
     <scm>
         <connection>scm:git:git://github.com/loadup-cloud/loadup-framework.git</connection>
