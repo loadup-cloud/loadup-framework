@@ -134,6 +134,22 @@
         <dependencies>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-rpc</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-rpc-binder-dubbo</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-rpc-binder-grpc</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-delayedtask</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>

@@ -4,7 +4,7 @@
 
     <parent>
         <groupId>io.github.loadup-cloud</groupId>
-        <artifactId>loadup-parent</artifactId>
+        <artifactId>loadup-framework</artifactId>
         <version>0.0.2-SNAPSHOT</version>
         <relativePath>../../../../pom.xml</relativePath>
     </parent>

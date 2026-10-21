@@ -1,6 +1,0 @@
-# Spring Boot owns the encoder; MDC traceId and spanId are included in ECS output.
-logging:
-  structured:
-    format:
-      console: ecs
-      file: ecs
