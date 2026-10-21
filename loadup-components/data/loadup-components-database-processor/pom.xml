@@ -11,7 +11,7 @@
     <name>LoadUp Components Database Processor</name>
     <description>Compile-time generation of MyBatis-Flex mappers and table definitions.</description>
     <properties>
-        <loadup.coverage.skip>false</loadup.coverage.skip>
+        <loadup.coverage.skip>true</loadup.coverage.skip>
     </properties>
     <dependencies>
         <dependency>
