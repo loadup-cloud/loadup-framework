@@ -33,6 +33,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -450,6 +451,78 @@ class HttpTemplateTest {
                                 new HttpCall(null, null, Map.of("Content-Type", "text/plain"), "body"))
                         .getBody())
                 .isEqualTo("text/plain:configured".getBytes(StandardCharsets.UTF_8));
+    }
+
+    @Test
+    void signerSeesFinalWireRequestAndCanAddAuthorizationWithoutMutatingBody() {
+        AtomicReference<String> method = new AtomicReference<>();
+        AtomicReference<String> rawPath = new AtomicReference<>();
+        AtomicReference<String> rawQuery = new AtomicReference<>();
+        AtomicReference<String> authorization = new AtomicReference<>();
+        AtomicReference<String> receivedBody = new AtomicReference<>();
+        server.createContext("/signed", exchange -> {
+            calls.incrementAndGet();
+            method.set(exchange.getRequestMethod());
+            rawPath.set(exchange.getRequestURI().getRawPath());
+            rawQuery.set(exchange.getRequestURI().getRawQuery());
+            authorization.set(exchange.getRequestHeaders().getFirst("Authorization"));
+            receivedBody.set(new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
+            byte[] response = receivedBody.get().getBytes(StandardCharsets.UTF_8);
+            exchange.sendResponseHeaders(200, response.length);
+            exchange.getResponseBody().write(response);
+            exchange.close();
+        });
+        var client = config(1024L, true, Map.of()).clients().get("test");
+        http.refresh(new HttpProperties(Map.of(
+                "test",
+                copyClient(
+                        client,
+                        null,
+                        null,
+                        null,
+                        Map.of("signed", new HttpProperties.Operation(HttpMethod.POST, "/signed/{id}", null))))));
+        String body = "退款-€";
+
+        var response = http.exchange(
+                "test",
+                "signed",
+                new HttpCall(Map.of("id", "a/b"), Map.of("q", List.of("x+y&z")), null, body),
+                (requestMethod, uri, signedBody) -> {
+                    assertThat(requestMethod).isEqualTo(HttpMethod.POST);
+                    assertThat(uri.getRawPath()).isEqualTo("/signed/a%2Fb");
+                    assertThat(uri.getRawQuery()).isEqualTo("q=x%2By%26z");
+                    assertThat(new String(signedBody, StandardCharsets.UTF_8)).isEqualTo(body);
+                    java.util.Arrays.fill(signedBody, (byte) 'x');
+                    return Map.of("Authorization", "Bearer signed");
+                });
+
+        assertThat(response.getBody()).isEqualTo(body.getBytes(StandardCharsets.UTF_8));
+        assertThat(method).hasValue("POST");
+        assertThat(rawPath).hasValue("/signed/a%2Fb");
+        assertThat(rawQuery).hasValue("q=x%2By%26z");
+        assertThat(authorization).hasValue("Bearer signed");
+        assertThat(receivedBody).hasValue(body);
+        assertThat(calls).hasValue(1);
+    }
+
+    @Test
+    void signerFailureAndMalformedSignerHeadersFailBeforeSending() {
+        assertThatThrownBy(() -> http.exchange(
+                        "test",
+                        "echo",
+                        new HttpCall(null, null, null, "body"),
+                        (method, uri, body) -> {
+                            throw new IllegalStateException("signing failed");
+                        }))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("signing failed");
+        assertThatThrownBy(() -> http.exchange(
+                        "test",
+                        "echo",
+                        new HttpCall(null, null, null, "body"),
+                        (method, uri, body) -> Map.of("X-Test", "invalid\rheader")))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThat(calls).hasValue(0);
     }
 
     private static HttpProperties.Client copyClient(

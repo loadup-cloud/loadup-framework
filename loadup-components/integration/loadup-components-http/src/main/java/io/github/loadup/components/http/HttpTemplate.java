@@ -118,7 +118,12 @@ public final class HttpTemplate implements AutoCloseable {
     }
 
     public ResponseEntity<byte[]> exchange(String client, String operation, HttpCall call) {
-        return execute(client, operation, call, (response, limit) -> {
+        return exchange(client, operation, call, (HttpRequestSigner) null);
+    }
+
+    /** The signer observes the same resolved target and wire bytes used by this exchange. */
+    public ResponseEntity<byte[]> exchange(String client, String operation, HttpCall call, HttpRequestSigner signer) {
+        return execute(client, operation, call, signer, (response, limit) -> {
             ByteArrayOutputStream output = new ByteArrayOutputStream();
             copy(response, output, limit);
             return output.toByteArray();
@@ -139,10 +144,10 @@ public final class HttpTemplate implements AutoCloseable {
     /** Does not close the caller's output; failed transfers may have written partial data. */
     public ResponseEntity<Long> download(String client, String operation, HttpCall call, OutputStream output) {
         if (output == null) throw new IllegalArgumentException("output is required");
-        return execute(client, operation, call, (response, limit) -> copy(response, output, limit));
+        return execute(client, operation, call, null, (response, limit) -> copy(response, output, limit));
     }
 
-    private <T> ResponseEntity<T> execute(String name, String operation, HttpCall call, BodyReader<T> reader) {
+    private <T> ResponseEntity<T> execute(String name, String operation, HttpCall call, HttpRequestSigner signer, BodyReader<T> reader) {
         lock.readLock().lock();
         long started = System.nanoTime();
         String outcome = "failure";
@@ -174,6 +179,10 @@ public final class HttpTemplate implements AutoCloseable {
                         call.body() instanceof byte[] || call.body() instanceof String
                                 ? MediaType.APPLICATION_OCTET_STREAM
                                 : MediaType.APPLICATION_JSON);
+            }
+            if (signer != null) {
+                Map<String, String> signed = signer.sign(definition.method(), uri, body == null ? new byte[0] : body.clone());
+                requestHeaders.setAll(headers(signed));
             }
             RestClient.RequestBodySpec request =
                     runtime.client.method(definition.method()).uri(uri).headers(h -> h.addAll(requestHeaders));
