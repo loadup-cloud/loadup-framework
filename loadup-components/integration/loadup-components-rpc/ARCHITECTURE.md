@@ -18,8 +18,12 @@ Dubbo 的 Java 接口代理与 gRPC 的生成 stub、MethodDescriptor、streamin
 
 ## 配置所有权
 
-仅使用原生配置命名空间，不复制注册中心、连接、超时、TLS、重试或线程池配置。注册中心客户端、Protobuf 编译插件、业务 proto 与生成代码属于消费工程。组件不启动独立注册中心，不自动生成业务服务，不依赖其他业务模块。
+目标、TLS、负载均衡与底层网络参数沿用原生配置。可选 GrpcSupportConfiguration 提供 loadup.rpc.clients 的逻辑 channel 名与调用 deadline 绑定，网络资源仍由原生 starter 管理；不实现注册中心或重试运行时。注册中心客户端、Protobuf 编译插件、业务 proto 与生成代码属于消费工程。组件不启动独立注册中心，不自动生成业务服务，不依赖其他业务模块。
 
 ## 验收边界
 
 依赖型 binder 的静态检查包括聚合入口、父 POM 相对路径、BOM 声明和依赖版本来源。运行验收由真实消费工程分别覆盖客户端与服务端、异常、deadline、资源关闭；两种协议共存、注册中心和 TLS 按实际部署配置单独验收。未运行的检查不得视为通过。
+
+## 可选 gRPC 边界支持
+
+现有 gRPC binder 提供类型化 RpcOperation/GrpcTransport、Bean Validation、固定枚举错误 trailer 与 JWT 逐回调隔离。GrpcSupportConfiguration 为显式 opt-in；resource-server 和 Validator 依赖为 optional，业务权限与可信租户仍由消费应用负责。共享 DTO/时间位于 commons，binder 不依赖具体业务契约；各服务维护自己的 proto 与 MapStruct mapper。
