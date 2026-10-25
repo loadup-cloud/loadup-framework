@@ -507,11 +507,8 @@ class HttpTemplateTest {
 
     @Test
     void signerFailureAndMalformedSignerHeadersFailBeforeSending() {
-        assertThatThrownBy(() -> http.exchange(
-                        "test",
-                        "echo",
-                        new HttpCall(null, null, null, "body"),
-                        (method, uri, body) -> {
+        assertThatThrownBy(() ->
+                        http.exchange("test", "echo", new HttpCall(null, null, null, "body"), (method, uri, body) -> {
                             throw new IllegalStateException("signing failed");
                         }))
                 .isInstanceOf(IllegalStateException.class)

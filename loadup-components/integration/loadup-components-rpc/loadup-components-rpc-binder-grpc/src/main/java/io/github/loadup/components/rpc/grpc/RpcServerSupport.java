@@ -24,21 +24,31 @@ import jakarta.validation.Validator;
 import java.util.function.Function;
 
 public final class RpcServerSupport {
-    public static final Metadata.Key<String> AUTHORIZATION = Metadata.Key.of("authorization", Metadata.ASCII_STRING_MARSHALLER);
-    public static final Metadata.Key<String> RESULT_CODE = Metadata.Key.of("loadup-result-code", Metadata.ASCII_STRING_MARSHALLER);
+    public static final Metadata.Key<String> AUTHORIZATION =
+            Metadata.Key.of("authorization", Metadata.ASCII_STRING_MARSHALLER);
+    public static final Metadata.Key<String> RESULT_CODE =
+            Metadata.Key.of("loadup-result-code", Metadata.ASCII_STRING_MARSHALLER);
     private final Validator validator;
 
-    public RpcServerSupport(Validator validator) { this.validator = validator; }
+    public RpcServerSupport(Validator validator) {
+        this.validator = validator;
+    }
 
-    public <P, Q, R, S> void invoke(P request, StreamObserver<S> observer,
-            Function<P, Q> decode, Function<Q, R> action, Function<R, S> encode) {
+    public <P, Q, R, S> void invoke(
+            P request,
+            StreamObserver<S> observer,
+            Function<P, Q> decode,
+            Function<Q, R> action,
+            Function<R, S> encode) {
         try {
             Q command;
             try {
                 command = decode.apply(request);
                 if (!validator.validate(command).isEmpty()) throw new IllegalArgumentException("Invalid RPC command");
             } catch (RuntimeException invalid) {
-                observer.onError(Status.INVALID_ARGUMENT.withDescription("Invalid RPC command").asRuntimeException());
+                observer.onError(Status.INVALID_ARGUMENT
+                        .withDescription("Invalid RPC command")
+                        .asRuntimeException());
                 return;
             }
             S response = encode.apply(action.apply(command));
@@ -48,15 +58,19 @@ public final class RpcServerSupport {
             var trailers = new Metadata();
             var code = failure.getResultCode();
             if (code instanceof Enum<?>) trailers.put(RESULT_CODE, code.getCode());
-            observer.onError(Status.FAILED_PRECONDITION.withDescription("Business operation rejected").asRuntimeException(trailers));
+            observer.onError(Status.FAILED_PRECONDITION
+                    .withDescription("Business operation rejected")
+                    .asRuntimeException(trailers));
         } catch (RuntimeException failure) {
-            observer.onError(Status.INTERNAL.withDescription("RPC operation failed").asRuntimeException());
+            observer.onError(
+                    Status.INTERNAL.withDescription("RPC operation failed").asRuntimeException());
         }
     }
 
     public static String resultCode(RuntimeException failure) {
         if (failure instanceof StatusRuntimeException status
-                && status.getStatus().getCode() == Status.Code.FAILED_PRECONDITION && status.getTrailers() != null) {
+                && status.getStatus().getCode() == Status.Code.FAILED_PRECONDITION
+                && status.getTrailers() != null) {
             String code = status.getTrailers().get(RESULT_CODE);
             return code == null ? "" : code;
         }

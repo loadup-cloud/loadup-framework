@@ -37,18 +37,26 @@ public final class GrpcTransport {
         this.properties = properties;
     }
 
-    public <Q, R, P extends Message, S extends Message> R call(RpcOperation<Q, R, P, S> operation, Q request, String token) {
+    public <Q, R, P extends Message, S extends Message> R call(
+            RpcOperation<Q, R, P, S> operation, Q request, String token) {
         var peer = properties.clients() == null ? null : properties.clients().get(operation.peer());
-        if (peer == null || peer.channel() == null || peer.channel().isBlank()
-                || peer.deadline() == null || peer.deadline().isZero() || peer.deadline().isNegative())
+        if (peer == null
+                || peer.channel() == null
+                || peer.channel().isBlank()
+                || peer.deadline() == null
+                || peer.deadline().isZero()
+                || peer.deadline().isNegative())
             throw new IllegalStateException("RPC channel and positive deadline are required");
         if (token == null || !token.matches("[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+"))
             throw new IllegalArgumentException("RPC bearer credential is required");
         var metadata = new Metadata();
         metadata.put(RpcServerSupport.AUTHORIZATION, "Bearer " + token);
-        var channel = ClientInterceptors.intercept(channels.computeIfAbsent(peer.channel(), factory::createChannel),
+        var channel = ClientInterceptors.intercept(
+                channels.computeIfAbsent(peer.channel(), factory::createChannel),
                 MetadataUtils.newAttachHeadersInterceptor(metadata));
-        var reply = ClientCalls.blockingUnaryCall(channel, operation.descriptor(),
+        var reply = ClientCalls.blockingUnaryCall(
+                channel,
+                operation.descriptor(),
                 CallOptions.DEFAULT.withDeadlineAfter(peer.deadline().toNanos(), TimeUnit.NANOSECONDS),
                 operation.encode().apply(request));
         return operation.decode().apply(reply);

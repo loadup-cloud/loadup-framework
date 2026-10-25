@@ -15,12 +15,11 @@
  */
 package io.github.loadup.commons.event;
 
-import io.github.loadup.commons.json.DiagnosticHidden;
 import io.github.loadup.commons.error.DomainViolation;
-import io.github.loadup.commons.validation.DomainChecks;
-import io.github.loadup.commons.time.BusinessTime;
+import io.github.loadup.commons.json.DiagnosticHidden;
 import io.github.loadup.commons.json.ToStringAsJson;
-
+import io.github.loadup.commons.time.BusinessTime;
+import io.github.loadup.commons.validation.DomainChecks;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 

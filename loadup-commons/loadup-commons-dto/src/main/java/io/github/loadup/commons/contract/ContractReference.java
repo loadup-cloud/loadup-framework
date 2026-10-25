@@ -15,8 +15,8 @@
  */
 package io.github.loadup.commons.contract;
 
-import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.commons.error.DomainViolation;
+import io.github.loadup.commons.json.ToStringAsJson;
 
 /**
  * Original commercial revision and separately compiled typed terms.

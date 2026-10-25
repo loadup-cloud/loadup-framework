@@ -34,28 +34,35 @@ public final class RpcJwtInterceptor implements ServerInterceptor {
     private final LoadUpJwtAuthenticationConverter converter;
     private final ResourceServerProperties properties;
 
-    public RpcJwtInterceptor(JwtDecoder decoder, LoadUpJwtAuthenticationConverter converter, ResourceServerProperties properties) {
+    public RpcJwtInterceptor(
+            JwtDecoder decoder, LoadUpJwtAuthenticationConverter converter, ResourceServerProperties properties) {
         this.decoder = decoder;
         this.converter = converter;
         this.properties = properties;
     }
 
     @Override
-    public <Q, R> ServerCall.Listener<Q> interceptCall(ServerCall<Q, R> call, Metadata headers, ServerCallHandler<Q, R> next) {
+    public <Q, R> ServerCall.Listener<Q> interceptCall(
+            ServerCall<Q, R> call, Metadata headers, ServerCallHandler<Q, R> next) {
         final SecurityContext context;
         try {
             String authorization = headers.get(RpcServerSupport.AUTHORIZATION);
             if (authorization == null || !authorization.startsWith("Bearer ")) throw new IllegalArgumentException();
             var jwt = decoder.decode(authorization.substring(7));
-            if (properties.getIssuerUri() == null || properties.getIssuerUri().isBlank()
-                    || properties.getAudience() == null || properties.getAudience().isBlank()
-                    || JwtValidators.createDefaultWithIssuer(properties.getIssuerUri()).validate(jwt).hasErrors()
-                    || jwt.getAudience() == null || !jwt.getAudience().contains(properties.getAudience()))
-                throw new IllegalArgumentException();
+            if (properties.getIssuerUri() == null
+                    || properties.getIssuerUri().isBlank()
+                    || properties.getAudience() == null
+                    || properties.getAudience().isBlank()
+                    || JwtValidators.createDefaultWithIssuer(properties.getIssuerUri())
+                            .validate(jwt)
+                            .hasErrors()
+                    || jwt.getAudience() == null
+                    || !jwt.getAudience().contains(properties.getAudience())) throw new IllegalArgumentException();
             String useClaim = properties.getAccessTokenUseClaim();
-            if (useClaim != null && !useClaim.isBlank()
+            if (useClaim != null
+                    && !useClaim.isBlank()
                     && (properties.getAccessTokenUseValue() == null
-                    || !properties.getAccessTokenUseValue().equals(jwt.getClaimAsString(useClaim))))
+                            || !properties.getAccessTokenUseValue().equals(jwt.getClaimAsString(useClaim))))
                 throw new IllegalArgumentException();
             context = SecurityContextHolder.createEmptyContext();
             context.setAuthentication(converter.convert(jwt));
@@ -81,11 +88,31 @@ public final class RpcJwtInterceptor implements ServerInterceptor {
                     SecurityContextHolder.setContext(prior);
                 }
             }
-            @Override public void onMessage(Q message) { authenticated(() -> super.onMessage(message)); }
-            @Override public void onHalfClose() { authenticated(super::onHalfClose); }
-            @Override public void onCancel() { authenticated(super::onCancel); }
-            @Override public void onComplete() { authenticated(super::onComplete); }
-            @Override public void onReady() { authenticated(super::onReady); }
+
+            @Override
+            public void onMessage(Q message) {
+                authenticated(() -> super.onMessage(message));
+            }
+
+            @Override
+            public void onHalfClose() {
+                authenticated(super::onHalfClose);
+            }
+
+            @Override
+            public void onCancel() {
+                authenticated(super::onCancel);
+            }
+
+            @Override
+            public void onComplete() {
+                authenticated(super::onComplete);
+            }
+
+            @Override
+            public void onReady() {
+                authenticated(super::onReady);
+            }
         };
     }
 }

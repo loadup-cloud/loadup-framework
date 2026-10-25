@@ -15,13 +15,14 @@
  */
 package io.github.loadup.commons.util.date;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import io.github.loadup.commons.time.BusinessTime;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.TimeZone;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Isolated;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Isolated("Changes the JVM default timezone")
 class BusinessTimeTest {
@@ -36,7 +37,9 @@ class BusinessTimeTest {
                 var value = instant.atZone(zone).toOffsetDateTime();
                 assertEquals(zone, BusinessTime.zone());
                 assertEquals(value.toLocalDateTime(), BusinessTime.local(value));
-                assertEquals(instant, BusinessTime.external(BusinessTime.local(value)).toInstant());
+                assertEquals(
+                        instant,
+                        BusinessTime.external(BusinessTime.local(value)).toInstant());
             }
         } finally {
             TimeZone.setDefault(original);

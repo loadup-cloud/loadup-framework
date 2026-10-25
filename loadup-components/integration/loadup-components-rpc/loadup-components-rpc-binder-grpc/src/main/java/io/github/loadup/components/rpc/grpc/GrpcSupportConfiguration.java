@@ -15,14 +15,14 @@
  */
 package io.github.loadup.components.rpc.grpc;
 
+import io.github.loadup.components.resourceserver.LoadUpJwtAuthenticationConverter;
+import io.github.loadup.components.resourceserver.ResourceServerProperties;
 import jakarta.validation.Validator;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.grpc.client.GrpcChannelFactory;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import io.github.loadup.components.resourceserver.LoadUpJwtAuthenticationConverter;
-import io.github.loadup.components.resourceserver.ResourceServerProperties;
 
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(RpcClientProperties.class)
@@ -31,11 +31,15 @@ public class GrpcSupportConfiguration {
     GrpcTransport grpcTransport(GrpcChannelFactory channels, RpcClientProperties properties) {
         return new GrpcTransport(channels, properties);
     }
+
     @Bean
-    RpcServerSupport rpcServerSupport(Validator validator) { return new RpcServerSupport(validator); }
+    RpcServerSupport rpcServerSupport(Validator validator) {
+        return new RpcServerSupport(validator);
+    }
+
     @Bean
-    RpcJwtInterceptor rpcJwtInterceptor(JwtDecoder decoder, LoadUpJwtAuthenticationConverter converter,
-            ResourceServerProperties properties) {
+    RpcJwtInterceptor rpcJwtInterceptor(
+            JwtDecoder decoder, LoadUpJwtAuthenticationConverter converter, ResourceServerProperties properties) {
         return new RpcJwtInterceptor(decoder, converter, properties);
     }
 }

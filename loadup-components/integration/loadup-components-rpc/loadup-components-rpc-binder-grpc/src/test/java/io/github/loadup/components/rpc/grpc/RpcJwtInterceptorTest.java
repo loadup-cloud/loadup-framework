@@ -15,21 +15,22 @@
  */
 package io.github.loadup.components.rpc.grpc;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
 import io.github.loadup.components.resourceserver.LoadUpJwtAuthenticationConverter;
 import io.github.loadup.components.resourceserver.ResourceServerProperties;
 import io.grpc.Metadata;
 import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
 import io.grpc.Status;
+import java.time.Instant;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import java.time.Instant;
-import java.util.List;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 
 class RpcJwtInterceptorTest {
     private final JwtDecoder decoder = mock(JwtDecoder.class);
@@ -42,12 +43,19 @@ class RpcJwtInterceptorTest {
     }
 
     private Jwt jwt(String audience) {
-        return Jwt.withTokenValue("header.payload.signature").header("alg", "RS256")
-                .issuer("https://issuer.example").subject("acquire")
-                .issuedAt(Instant.now().minusSeconds(10)).expiresAt(Instant.now().plusSeconds(300))
-                .audience(List.of(audience)).claim("token_use", "access")
-                .claim("tenant_id", "tenant").claim("service_id", "acquire").claim("principal_type", "SERVICE")
-                .claim("permissions", List.of("pay:payment:accept")).build();
+        return Jwt.withTokenValue("header.payload.signature")
+                .header("alg", "RS256")
+                .issuer("https://issuer.example")
+                .subject("acquire")
+                .issuedAt(Instant.now().minusSeconds(10))
+                .expiresAt(Instant.now().plusSeconds(300))
+                .audience(List.of(audience))
+                .claim("token_use", "access")
+                .claim("tenant_id", "tenant")
+                .claim("service_id", "acquire")
+                .claim("principal_type", "SERVICE")
+                .claim("permissions", List.of("pay:payment:accept"))
+                .build();
     }
 
     @Test
@@ -58,10 +66,17 @@ class RpcJwtInterceptorTest {
         var headers = new Metadata();
         headers.put(RpcServerSupport.AUTHORIZATION, "Bearer header.payload.signature");
         ServerCallHandler<String, String> handler = (serverCall, metadata) -> {
-            assertSame(verified, SecurityContextHolder.getContext().getAuthentication().getCredentials());
+            assertSame(
+                    verified,
+                    SecurityContextHolder.getContext().getAuthentication().getCredentials());
             return new ServerCall.Listener<>() {
-                @Override public void onHalfClose() {
-                    assertSame(verified, SecurityContextHolder.getContext().getAuthentication().getCredentials());
+                @Override
+                public void onHalfClose() {
+                    assertSame(
+                            verified,
+                            SecurityContextHolder.getContext()
+                                    .getAuthentication()
+                                    .getCredentials());
                     assertTrue(SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
                             .anyMatch(a -> a.getAuthority().equals("pay:payment:accept")));
                     throw new IllegalStateException("synthetic callback failure");

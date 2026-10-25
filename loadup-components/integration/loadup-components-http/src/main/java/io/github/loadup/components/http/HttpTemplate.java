@@ -147,7 +147,8 @@ public final class HttpTemplate implements AutoCloseable {
         return execute(client, operation, call, null, (response, limit) -> copy(response, output, limit));
     }
 
-    private <T> ResponseEntity<T> execute(String name, String operation, HttpCall call, HttpRequestSigner signer, BodyReader<T> reader) {
+    private <T> ResponseEntity<T> execute(
+            String name, String operation, HttpCall call, HttpRequestSigner signer, BodyReader<T> reader) {
         lock.readLock().lock();
         long started = System.nanoTime();
         String outcome = "failure";
@@ -181,7 +182,8 @@ public final class HttpTemplate implements AutoCloseable {
                                 : MediaType.APPLICATION_JSON);
             }
             if (signer != null) {
-                Map<String, String> signed = signer.sign(definition.method(), uri, body == null ? new byte[0] : body.clone());
+                Map<String, String> signed =
+                        signer.sign(definition.method(), uri, body == null ? new byte[0] : body.clone());
                 requestHeaders.setAll(headers(signed));
             }
             RestClient.RequestBodySpec request =

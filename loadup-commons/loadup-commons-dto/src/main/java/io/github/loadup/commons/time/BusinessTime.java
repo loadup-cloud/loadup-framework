@@ -25,8 +25,7 @@ public final class BusinessTime {
         return ZoneId.systemDefault();
     }
 
-    private BusinessTime() {
-    }
+    private BusinessTime() {}
 
     public static LocalDateTime local(OffsetDateTime value) {
         return Objects.requireNonNull(value, "value").atZoneSameInstant(zone()).toLocalDateTime();

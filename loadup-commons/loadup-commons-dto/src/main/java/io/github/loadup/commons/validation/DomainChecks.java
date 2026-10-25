@@ -15,14 +15,12 @@
  */
 package io.github.loadup.commons.validation;
 
-import io.github.loadup.commons.money.Money;
 import io.github.loadup.commons.error.DomainViolation;
-
+import io.github.loadup.commons.money.Money;
 import java.util.Objects;
 
 public final class DomainChecks {
-    private DomainChecks() {
-    }
+    private DomainChecks() {}
 
     public static String id(String value) {
         return text(value, 64);

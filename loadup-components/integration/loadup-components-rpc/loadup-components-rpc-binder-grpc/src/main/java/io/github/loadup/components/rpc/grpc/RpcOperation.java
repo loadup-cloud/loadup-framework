@@ -22,5 +22,7 @@ import java.util.function.Function;
 public record RpcOperation<Q, R, P extends Message, S extends Message>(
         String peer, MethodDescriptor<P, S> descriptor, Function<Q, P> encode, Function<S, R> decode) {
     @Override
-    public String toString() { return descriptor.getFullMethodName(); }
+    public String toString() {
+        return descriptor.getFullMethodName();
+    }
 }

@@ -28,15 +28,24 @@ public final class GrpcScalarMapper {
 
     public static Timestamp timestamp(OffsetDateTime value) {
         if (value == null) return null;
-        return Timestamps.checkValid(Timestamp.newBuilder().setSeconds(value.toEpochSecond()).setNanos(value.getNano()).build());
+        return Timestamps.checkValid(Timestamp.newBuilder()
+                .setSeconds(value.toEpochSecond())
+                .setNanos(value.getNano())
+                .build());
     }
 
     public static OffsetDateTime offset(Timestamp value) {
         if (value == null) return null;
         Timestamps.checkValid(value);
-        return OffsetDateTime.ofInstant(Instant.ofEpochSecond(value.getSeconds(), value.getNanos()), ZoneId.systemDefault());
+        return OffsetDateTime.ofInstant(
+                Instant.ofEpochSecond(value.getSeconds(), value.getNanos()), ZoneId.systemDefault());
     }
 
-    public static String decimal(BigDecimal value) { return value == null ? null : value.toPlainString(); }
-    public static BigDecimal decimal(String value) { return value == null ? null : new BigDecimal(value); }
+    public static String decimal(BigDecimal value) {
+        return value == null ? null : value.toPlainString();
+    }
+
+    public static BigDecimal decimal(String value) {
+        return value == null ? null : new BigDecimal(value);
+    }
 }
