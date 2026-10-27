@@ -28,47 +28,54 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 
-/** Reuses the HTTP resource-server trust policy without depending on servlet request state. */
+/**
+ * Reuses the HTTP resource-server trust policy without depending on servlet request state.
+ */
 public final class RpcJwtInterceptor implements ServerInterceptor {
     private final JwtDecoder decoder;
     private final LoadUpJwtAuthenticationConverter converter;
     private final ResourceServerProperties properties;
 
-    public RpcJwtInterceptor(
-            JwtDecoder decoder, LoadUpJwtAuthenticationConverter converter, ResourceServerProperties properties) {
+    public RpcJwtInterceptor(JwtDecoder decoder, LoadUpJwtAuthenticationConverter converter, ResourceServerProperties properties) {
         this.decoder = decoder;
         this.converter = converter;
         this.properties = properties;
     }
 
     @Override
-    public <Q, R> ServerCall.Listener<Q> interceptCall(
-            ServerCall<Q, R> call, Metadata headers, ServerCallHandler<Q, R> next) {
+    public <Q, R> ServerCall.Listener<Q> interceptCall(ServerCall<Q, R> call, Metadata headers, ServerCallHandler<Q, R> next) {
         final SecurityContext context;
         try {
             String authorization = headers.get(RpcServerSupport.AUTHORIZATION);
             if (authorization == null || !authorization.startsWith("Bearer ")) throw new IllegalArgumentException();
             var jwt = decoder.decode(authorization.substring(7));
-            if (properties.getIssuerUri() == null
-                    || properties.getIssuerUri().isBlank()
-                    || properties.getAudience() == null
-                    || properties.getAudience().isBlank()
-                    || JwtValidators.createDefaultWithIssuer(properties.getIssuerUri())
-                            .validate(jwt)
-                            .hasErrors()
-                    || jwt.getAudience() == null
-                    || !jwt.getAudience().contains(properties.getAudience())) throw new IllegalArgumentException();
+            if (properties.getIssuerUri() == null || properties.getIssuerUri().isBlank() || properties.getAudience() == null || properties.getAudience().isBlank()) {
+                throw new IllegalArgumentException("IssuerUri and Audience can't not be null or blank");
+            }
+
+            if (jwt == null) {
+                throw new IllegalArgumentException("JWT can't be null");
+            }
+
+            var validator = JwtValidators.createDefaultWithIssuer(properties.getIssuerUri());
+            if (validator.validate(jwt).hasErrors()) {
+                throw new IllegalArgumentException("JWT expired");
+            }
+
+            java.util.List<String> audiences = jwt.getAudience();
+            if (audiences == null || !audiences.contains(properties.getAudience())) {
+                throw new IllegalArgumentException("JWT Audience not found");
+            }
+
             String useClaim = properties.getAccessTokenUseClaim();
-            if (useClaim != null
-                    && !useClaim.isBlank()
-                    && (properties.getAccessTokenUseValue() == null
-                            || !properties.getAccessTokenUseValue().equals(jwt.getClaimAsString(useClaim))))
+            if (useClaim != null && !useClaim.isBlank() && (properties.getAccessTokenUseValue() == null || !properties.getAccessTokenUseValue().equals(jwt.getClaimAsString(useClaim))))
                 throw new IllegalArgumentException();
             context = SecurityContextHolder.createEmptyContext();
             context.setAuthentication(converter.convert(jwt));
         } catch (RuntimeException invalid) {
             call.close(Status.UNAUTHENTICATED.withDescription("Valid access token required"), new Metadata());
-            return new ServerCall.Listener<>() {};
+            return new ServerCall.Listener<>() {
+            };
         }
         SecurityContext previous = SecurityContextHolder.getContext();
         final ServerCall.Listener<Q> delegate;
