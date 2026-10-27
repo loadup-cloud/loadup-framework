@@ -36,20 +36,25 @@ public final class RpcJwtInterceptor implements ServerInterceptor {
     private final LoadUpJwtAuthenticationConverter converter;
     private final ResourceServerProperties properties;
 
-    public RpcJwtInterceptor(JwtDecoder decoder, LoadUpJwtAuthenticationConverter converter, ResourceServerProperties properties) {
+    public RpcJwtInterceptor(
+            JwtDecoder decoder, LoadUpJwtAuthenticationConverter converter, ResourceServerProperties properties) {
         this.decoder = decoder;
         this.converter = converter;
         this.properties = properties;
     }
 
     @Override
-    public <Q, R> ServerCall.Listener<Q> interceptCall(ServerCall<Q, R> call, Metadata headers, ServerCallHandler<Q, R> next) {
+    public <Q, R> ServerCall.Listener<Q> interceptCall(
+            ServerCall<Q, R> call, Metadata headers, ServerCallHandler<Q, R> next) {
         final SecurityContext context;
         try {
             String authorization = headers.get(RpcServerSupport.AUTHORIZATION);
             if (authorization == null || !authorization.startsWith("Bearer ")) throw new IllegalArgumentException();
             var jwt = decoder.decode(authorization.substring(7));
-            if (properties.getIssuerUri() == null || properties.getIssuerUri().isBlank() || properties.getAudience() == null || properties.getAudience().isBlank()) {
+            if (properties.getIssuerUri() == null
+                    || properties.getIssuerUri().isBlank()
+                    || properties.getAudience() == null
+                    || properties.getAudience().isBlank()) {
                 throw new IllegalArgumentException("IssuerUri and Audience can't not be null or blank");
             }
 
@@ -68,14 +73,16 @@ public final class RpcJwtInterceptor implements ServerInterceptor {
             }
 
             String useClaim = properties.getAccessTokenUseClaim();
-            if (useClaim != null && !useClaim.isBlank() && (properties.getAccessTokenUseValue() == null || !properties.getAccessTokenUseValue().equals(jwt.getClaimAsString(useClaim))))
+            if (useClaim != null
+                    && !useClaim.isBlank()
+                    && (properties.getAccessTokenUseValue() == null
+                            || !properties.getAccessTokenUseValue().equals(jwt.getClaimAsString(useClaim))))
                 throw new IllegalArgumentException();
             context = SecurityContextHolder.createEmptyContext();
             context.setAuthentication(converter.convert(jwt));
         } catch (RuntimeException invalid) {
             call.close(Status.UNAUTHENTICATED.withDescription("Valid access token required"), new Metadata());
-            return new ServerCall.Listener<>() {
-            };
+            return new ServerCall.Listener<>() {};
         }
         SecurityContext previous = SecurityContextHolder.getContext();
         final ServerCall.Listener<Q> delegate;
