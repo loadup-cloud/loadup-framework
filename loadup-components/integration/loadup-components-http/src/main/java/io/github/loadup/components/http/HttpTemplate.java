@@ -143,8 +143,13 @@ public final class HttpTemplate implements AutoCloseable {
 
     /** Does not close the caller's output; failed transfers may have written partial data. */
     public ResponseEntity<Long> download(String client, String operation, HttpCall call, OutputStream output) {
+        return download(client, operation, call, output, null);
+    }
+
+    /** Signs the exact resolved URI and empty/body wire bytes before a bounded streamed download. Does not close output. */
+    public ResponseEntity<Long> download(String client, String operation, HttpCall call, OutputStream output, HttpRequestSigner signer) {
         if (output == null) throw new IllegalArgumentException("output is required");
-        return execute(client, operation, call, null, (response, limit) -> copy(response, output, limit));
+        return execute(client, operation, call, signer, (response, limit) -> copy(response, output, limit));
     }
 
     private <T> ResponseEntity<T> execute(

@@ -21,11 +21,12 @@ package io.github.loadup.commons.util;
 
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Digest & hash utility.
@@ -34,10 +35,15 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public final class DigestUtils {
 
-    private DigestUtils() {}
+    private DigestUtils() {
+    }
 
     public static String md5(String data) {
         return digest(data, "MD5");
+    }
+
+    public static String sha256(byte[] bytes) {
+        return digest(bytes, "SHA-256");
     }
 
     public static String sha256(String data) {
@@ -56,14 +62,18 @@ public final class DigestUtils {
         return hmac(data, key, "HmacSHA512");
     }
 
-    private static String digest(String data, String algorithm) {
+    private static String digest(byte[] bytes, String algorithm) {
         try {
-            byte[] bytes = data.getBytes(StandardCharsets.UTF_8);
             MessageDigest md = MessageDigest.getInstance(algorithm);
             return bytesToHex(md.digest(bytes));
         } catch (NoSuchAlgorithmException e) {
             throw new CommonException(CommonResultCodeEnum.SYS_ERROR, e);
         }
+    }
+
+    private static String digest(String data, String algorithm) {
+        byte[] bytes = data.getBytes(StandardCharsets.UTF_8);
+        return digest(bytes, algorithm);
     }
 
     private static String hmac(String data, String key, String algorithm) {
@@ -84,4 +94,6 @@ public final class DigestUtils {
         }
         return sb.toString();
     }
+
+
 }

@@ -393,3 +393,9 @@ Command/Query 命名、ID 查询复用、字典 Command 合并、七类重复分
 2026-10-14 已重写 Testify 聚合及五个子模块的 README/ARCHITECTURE，共12份文档。基于实际源码补齐 Maven/条件装配、数据库隔离、两套轮询规则、参数化 YAML、变量/函数、操作符、根因异常、diff 和排错；修正反引号表名、自动函数收集等错误描述。此次仅文档修改，未执行 Maven、Docker 或示例测试；文档站同步完成。
 
 - [ ] 在最小消费工程按 Testify 手册验证有/无数据库接入及案例执行，并将运行结果与环境单独记录。
+
+## 2026-10-28 HTTP 签名流式下载
+
+- [ ] `HttpTemplate.download(..., output, signer)` 与最终 URI/原字节/调用方大小限制/不关闭输出流测试源码已补；尚未编译或执行。复用同一 execute 与受限复制，无自动重试或重定向。
+- [ ] 对应 artifact 尚未构建安装；loadup-pay 微信官方账单适配已引用新源码 API，消费者编译及真实签名下载/超限/断流验收待用户恢复验证后进行。
+- [ ] 本轮仅由 doc-sync-agent.py 的 render 定向生成 HTTP 文档页；未全站同步、运行 Hugo 或做文档验证。
