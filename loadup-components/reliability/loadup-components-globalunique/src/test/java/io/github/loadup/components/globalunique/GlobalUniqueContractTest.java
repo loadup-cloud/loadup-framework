@@ -37,13 +37,8 @@ import org.springframework.dao.DuplicateKeyException;
 class GlobalUniqueContractTest {
     private final GlobalUniqueDOMapper mapper = mock(GlobalUniqueDOMapper.class);
     private final DatabaseProperties properties = new DatabaseProperties();
-    private final org.springframework.transaction.PlatformTransactionManager transactionManager = mock(org.springframework.transaction.PlatformTransactionManager.class);
-    private final DefaultGlobalUniqueTemplate template = new DefaultGlobalUniqueTemplate(mapper, properties, transactionManager);
-
-    @org.junit.jupiter.api.BeforeEach
-    void transaction() {
-        when(transactionManager.getTransaction(any())).thenReturn(new org.springframework.transaction.support.SimpleTransactionStatus());
-    }
+    private final DefaultGlobalUniqueTemplate template =
+            new DefaultGlobalUniqueTemplate(mapper, properties, mock(javax.sql.DataSource.class));
 
     @Test
     void tenantDefaultsTrustedContextAndOptionalGlobalScopeRemainDistinct() {

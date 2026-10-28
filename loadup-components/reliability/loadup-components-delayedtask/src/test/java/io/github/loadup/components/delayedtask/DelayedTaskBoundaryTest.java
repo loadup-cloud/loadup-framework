@@ -79,7 +79,7 @@ class DelayedTaskBoundaryTest {
                 mock(DelayedTaskConverter.class),
                 new DelayedTaskProperties(),
                 new DatabaseProperties(),
-                Clock.systemDefaultZone(), mock(org.springframework.transaction.PlatformTransactionManager.class));
+                Clock.systemDefaultZone(), mock(javax.sql.DataSource.class));
         for (String type : Arrays.asList(null, "", "bad name"))
             assertThatThrownBy(() -> template.find(type, "id")).isInstanceOf(CommonException.class);
         for (String id : Arrays.asList(null, "", " ", "x".repeat(129)))
@@ -98,7 +98,7 @@ class DelayedTaskBoundaryTest {
                 mock(DelayedTaskConverter.class),
                 new DelayedTaskProperties(),
                 database,
-                Clock.systemDefaultZone(), mock(org.springframework.transaction.PlatformTransactionManager.class));
+                Clock.systemDefaultZone(), mock(javax.sql.DataSource.class));
         database.getMultiTenant().setEnabled(false);
         assertThat(template.find("order.close", "id")).isEmpty();
         database.getMultiTenant().setEnabled(true);

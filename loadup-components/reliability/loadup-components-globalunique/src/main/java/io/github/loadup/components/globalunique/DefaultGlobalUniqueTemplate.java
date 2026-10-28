@@ -25,6 +25,8 @@ import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.database.config.DatabaseProperties;
+import io.github.loadup.components.database.transaction.JdbcSavepointExecutor;
+import javax.sql.DataSource;
 import io.github.loadup.components.globalunique.dataobject.GlobalUniqueDO;
 import io.github.loadup.components.globalunique.mapper.GlobalUniqueDOMapper;
 import io.github.loadup.components.globalunique.model.GlobalUniqueClaim;
@@ -33,9 +35,6 @@ import java.util.Objects;
 import java.util.Optional;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.util.StringUtils;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.support.TransactionTemplate;
 
 /** Default MyBatis-Flex implementation of {@link GlobalUniqueTemplate}. */
 public class DefaultGlobalUniqueTemplate implements GlobalUniqueTemplate {
@@ -44,13 +43,12 @@ public class DefaultGlobalUniqueTemplate implements GlobalUniqueTemplate {
 
     private final GlobalUniqueDOMapper mapper;
     private final DatabaseProperties databaseProperties;
-    private final TransactionTemplate inserts;
+    private final DataSource dataSource;
 
-    public DefaultGlobalUniqueTemplate(GlobalUniqueDOMapper mapper, DatabaseProperties databaseProperties, PlatformTransactionManager transactionManager) {
+    public DefaultGlobalUniqueTemplate(GlobalUniqueDOMapper mapper, DatabaseProperties databaseProperties, DataSource dataSource) {
         this.mapper = mapper;
         this.databaseProperties = databaseProperties;
-        this.inserts = new TransactionTemplate(transactionManager);
-        this.inserts.setPropagationBehavior(TransactionDefinition.PROPAGATION_NESTED);
+        this.dataSource = dataSource;
     }
 
     @Override
@@ -69,7 +67,7 @@ public class DefaultGlobalUniqueTemplate implements GlobalUniqueTemplate {
         dataObject.setRequestData(claim.requestData());
 
         try {
-            return Boolean.TRUE.equals(inserts.execute(status -> mapper.insert(dataObject) == 1));
+            return JdbcSavepointExecutor.execute(dataSource, () -> mapper.insert(dataObject) == 1);
         } catch (DuplicateKeyException exception) {
             if (find(claim.bizType(), claim.uniqueKey()).isEmpty()) {
                 throw exception;

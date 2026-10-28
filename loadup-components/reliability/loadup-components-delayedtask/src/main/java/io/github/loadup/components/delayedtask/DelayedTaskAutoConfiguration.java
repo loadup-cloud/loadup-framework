@@ -63,8 +63,8 @@ public class DelayedTaskAutoConfiguration {
             DelayedTaskProperties properties,
             DatabaseProperties database,
             @Qualifier("delayedTaskClock") Clock clock,
-            org.springframework.transaction.PlatformTransactionManager transactionManager) {
-        return new DelayedTaskTemplate(store, converter, properties, database, clock, transactionManager);
+            DataSource dataSource) {
+        return new DelayedTaskTemplate(store, converter, properties, database, clock, dataSource);
     }
 
     @Bean
