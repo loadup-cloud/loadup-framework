@@ -39,7 +39,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 @SpringBootTest(classes = DatabaseSequenceIT.Application.class)
 @ActiveProfiles("test")
-@EnableTestContainers(ContainerType.MYSQL)
+@EnableTestContainers(ContainerType.POSTGRESQL)
 class DatabaseSequenceIT {
     @SpringBootConfiguration
     @EnableAutoConfiguration

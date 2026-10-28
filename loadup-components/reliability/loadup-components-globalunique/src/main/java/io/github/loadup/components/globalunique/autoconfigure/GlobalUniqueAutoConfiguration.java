@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.transaction.PlatformTransactionManager;
 
 /** Configures the database-backed global unique template. */
 @AutoConfiguration(after = MyBatisFlexAutoConfiguration.class)
@@ -40,7 +41,7 @@ public class GlobalUniqueAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(GlobalUniqueTemplate.class)
     public GlobalUniqueTemplate globalUniqueTemplate(
-            GlobalUniqueDOMapper mapper, DatabaseProperties databaseProperties) {
-        return new DefaultGlobalUniqueTemplate(mapper, databaseProperties);
+            GlobalUniqueDOMapper mapper, DatabaseProperties databaseProperties, PlatformTransactionManager transactionManager) {
+        return new DefaultGlobalUniqueTemplate(mapper, databaseProperties, transactionManager);
     }
 }

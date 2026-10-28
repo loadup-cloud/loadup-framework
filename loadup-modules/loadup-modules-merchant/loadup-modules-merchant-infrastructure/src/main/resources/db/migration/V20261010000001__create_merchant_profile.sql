@@ -1,24 +1,31 @@
+-- PostgreSQL initial schema.
+
 CREATE TABLE merchant_profile (
- id VARCHAR(64) NOT NULL PRIMARY KEY,
- tenant_id VARCHAR(64) NOT NULL,
- merchant_code VARCHAR(64) NOT NULL,
- name VARCHAR(200) NOT NULL,
- short_name VARCHAR(100),
- type VARCHAR(32) NOT NULL,
- industry VARCHAR(64) NOT NULL,
- country VARCHAR(2) NOT NULL,
- province VARCHAR(64),
- city VARCHAR(64),
- address VARCHAR(500),
- registration_no VARCHAR(64),
- contact_name VARCHAR(100),
- contact_phone VARCHAR(32),
- contact_email VARCHAR(200),
- status VARCHAR(16) NOT NULL,
- row_version BIGINT NOT NULL,
- created_by VARCHAR(256) NOT NULL, updated_by VARCHAR(256) NOT NULL,
- created_at DATETIME(6) NOT NULL, updated_at DATETIME(6) NOT NULL,
- deleted TINYINT NOT NULL DEFAULT 0,
- UNIQUE KEY uk_merchant_profile_code (tenant_id, merchant_code),
- KEY idx_merchant_profile_page (tenant_id, status, created_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+    id VARCHAR(64) COLLATE "C" NOT NULL PRIMARY KEY,
+    tenant_id VARCHAR(64) COLLATE "C" NOT NULL,
+    merchant_code VARCHAR(64) COLLATE "C" NOT NULL,
+    name VARCHAR(200) COLLATE "C" NOT NULL,
+    short_name VARCHAR(100) COLLATE "C",
+    type VARCHAR(32) COLLATE "C" NOT NULL,
+    industry VARCHAR(64) COLLATE "C" NOT NULL,
+    country VARCHAR(2) COLLATE "C" NOT NULL,
+    province VARCHAR(64) COLLATE "C",
+    city VARCHAR(64) COLLATE "C",
+    address VARCHAR(500) COLLATE "C",
+    registration_no VARCHAR(64) COLLATE "C",
+    contact_name VARCHAR(100) COLLATE "C",
+    contact_phone VARCHAR(32) COLLATE "C",
+    contact_email VARCHAR(200) COLLATE "C",
+    status VARCHAR(16) COLLATE "C" NOT NULL,
+    row_version BIGINT NOT NULL,
+    created_by VARCHAR(256) COLLATE "C" NOT NULL,
+    updated_by VARCHAR(256) COLLATE "C" NOT NULL,
+    created_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
+    updated_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
+    deleted SMALLINT NOT NULL DEFAULT 0,
+    CHECK (deleted IN (0, 1))
+);
+
+CREATE UNIQUE INDEX uk_merchant_profile_code ON merchant_profile (tenant_id, merchant_code);
+
+CREATE INDEX idx_merchant_profile_page ON merchant_profile (tenant_id, status, created_at);

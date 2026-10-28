@@ -42,7 +42,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @SpringBootTest(classes = DelayedTaskIT.Application.class)
-@EnableTestContainers(value = ContainerType.MYSQL, reuse = false)
+@EnableTestContainers(value = ContainerType.POSTGRESQL, reuse = false)
 class DelayedTaskIT {
     private final DelayedTaskTemplate tasks;
     private final DelayedTaskStore store;
@@ -141,6 +141,17 @@ class DelayedTaskIT {
         assertThat(calls).hasValue(2);
         assertThat(get("a", "order").status()).isEqualTo(DelayedTaskStatus.SUCCEEDED);
         assertThat(first.toString()).contains("order");
+    }
+
+    @Test
+    void duplicateRegistrationLeavesTheEnclosingPostgresqlTransactionUsable() {
+        tenant("a", () -> transactions.execute(status -> {
+            var first = tasks.register("close-order", "duplicate", now());
+            assertThat(tasks.register("close-order", "duplicate", now()).id()).isEqualTo(first.id());
+            tasks.register("close-order", "after-duplicate", now());
+            return null;
+        }));
+        assertThat(get("a", "after-duplicate").status()).isEqualTo(DelayedTaskStatus.PENDING);
     }
 
     @Test

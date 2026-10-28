@@ -21,7 +21,6 @@ package io.github.loadup.components.outbox;
 
 import java.util.UUID;
 import javax.sql.DataSource;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -46,24 +45,15 @@ public class OutboxInbox {
             throw new IllegalArgumentException("event and databaseWork are required");
         JdbcOutboxRepository.requireTransaction(dataSource);
         return Boolean.TRUE.equals(transactions.execute(status -> {
-            try {
-                jdbc.update(
-                        "INSERT INTO loadup_outbox_inbox (id, tenant_id, created_at, updated_at, consumer_id, event_id) "
-                                + "VALUES (?, ?, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), ?, ?)",
-                        UUID.randomUUID().toString(),
-                        event.message().tenantId(),
-                        consumerId,
-                        event.id());
-            } catch (DuplicateKeyException duplicate) {
-                Integer count = jdbc.queryForObject(
-                        "SELECT COUNT(*) FROM loadup_outbox_inbox WHERE tenant_id = ? AND consumer_id = ? AND event_id = ?",
-                        Integer.class,
-                        event.message().tenantId(),
-                        consumerId,
-                        event.id());
-                if (count == null || count == 0) throw duplicate;
-                return false;
-            }
+            int inserted = jdbc.update(
+                    "INSERT INTO loadup_outbox_inbox (id, tenant_id, created_at, updated_at, consumer_id, event_id) "
+                            + "VALUES (?, ?, statement_timestamp(), statement_timestamp(), ?, ?) "
+                            + "ON CONFLICT (tenant_id, consumer_id, event_id) DO NOTHING",
+                    UUID.randomUUID().toString(),
+                    event.message().tenantId(),
+                    consumerId,
+                    event.id());
+            if (inserted == 0) return false;
             databaseWork.run();
             return true;
         }));

@@ -43,7 +43,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@EnableTestContainers(value = ContainerType.MYSQL, reuse = false)
+@EnableTestContainers(value = ContainerType.POSTGRESQL, reuse = false)
 @DisplayName("GlobalUniqueTemplate integration tests")
 class GlobalUniqueTemplateIT {
     private final GlobalUniqueTemplate template;
@@ -95,6 +95,17 @@ class GlobalUniqueTemplateIT {
         assertThat(record.requestData()).isEqualTo("{\"amount\":100}");
         assertThat(record.createdAt()).isNotNull();
         assertThat(record.updatedAt()).isNotNull();
+    }
+
+    @Test
+    void duplicateClaimDoesNotAbortTheEnclosingPostgresqlTransaction() {
+        withTenant("tenant-savepoint", () -> transactionTemplate.execute(status -> {
+            assertThat(template.claim("ORDER", "first")).isTrue();
+            assertThat(template.claim("ORDER", "first")).isFalse();
+            assertThat(template.claim("ORDER", "second")).isTrue();
+            return null;
+        }));
+        assertThat(withTenant("tenant-savepoint", () -> template.find("ORDER", "second"))).isPresent();
     }
 
     @Test

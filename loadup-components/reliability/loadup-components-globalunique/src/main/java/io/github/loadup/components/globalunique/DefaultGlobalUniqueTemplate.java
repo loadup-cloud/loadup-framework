@@ -33,6 +33,9 @@ import java.util.Objects;
 import java.util.Optional;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.util.StringUtils;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /** Default MyBatis-Flex implementation of {@link GlobalUniqueTemplate}. */
 public class DefaultGlobalUniqueTemplate implements GlobalUniqueTemplate {
@@ -41,10 +44,13 @@ public class DefaultGlobalUniqueTemplate implements GlobalUniqueTemplate {
 
     private final GlobalUniqueDOMapper mapper;
     private final DatabaseProperties databaseProperties;
+    private final TransactionTemplate inserts;
 
-    public DefaultGlobalUniqueTemplate(GlobalUniqueDOMapper mapper, DatabaseProperties databaseProperties) {
+    public DefaultGlobalUniqueTemplate(GlobalUniqueDOMapper mapper, DatabaseProperties databaseProperties, PlatformTransactionManager transactionManager) {
         this.mapper = mapper;
         this.databaseProperties = databaseProperties;
+        this.inserts = new TransactionTemplate(transactionManager);
+        this.inserts.setPropagationBehavior(TransactionDefinition.PROPAGATION_NESTED);
     }
 
     @Override
@@ -63,7 +69,7 @@ public class DefaultGlobalUniqueTemplate implements GlobalUniqueTemplate {
         dataObject.setRequestData(claim.requestData());
 
         try {
-            return mapper.insert(dataObject) == 1;
+            return Boolean.TRUE.equals(inserts.execute(status -> mapper.insert(dataObject) == 1));
         } catch (DuplicateKeyException exception) {
             if (find(claim.bizType(), claim.uniqueKey()).isEmpty()) {
                 throw exception;

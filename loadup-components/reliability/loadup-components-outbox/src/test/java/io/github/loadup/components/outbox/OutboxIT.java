@@ -56,7 +56,7 @@ import tools.jackson.databind.json.JsonMapper;
 
 @SpringBootTest(classes = OutboxIT.Application.class)
 @ActiveProfiles("test")
-@EnableTestContainers(value = ContainerType.MYSQL, reuse = false)
+@EnableTestContainers(value = ContainerType.POSTGRESQL, reuse = false)
 class OutboxIT {
     private final JdbcOutboxRepository repository;
     private final OutboxInbox inbox;
@@ -99,7 +99,7 @@ class OutboxIT {
         String id = publish();
         var first = repository.claim().orElseThrow();
         jdbc.update(
-                "UPDATE loadup_outbox_event SET lease_until = TIMESTAMPADD(SECOND, -1, CURRENT_TIMESTAMP(6)) WHERE id = ?",
+                "UPDATE loadup_outbox_event SET lease_until = (clock_timestamp() + INTERVAL '-1 seconds') WHERE id = ?",
                 id);
         var recovered = repository.claim().orElseThrow();
         assertThat(recovered.event().id()).isEqualTo(id);
@@ -113,7 +113,7 @@ class OutboxIT {
         String id = publish();
         repository.claim().orElseThrow();
         jdbc.update(
-                "UPDATE loadup_outbox_event SET attempts = ?, lease_until = TIMESTAMPADD(SECOND, -1, CURRENT_TIMESTAMP(6)) WHERE id = ?",
+                "UPDATE loadup_outbox_event SET attempts = ?, lease_until = (clock_timestamp() + INTERVAL '-1 seconds') WHERE id = ?",
                 properties.getMaxAttempts(),
                 id);
         assertThat(repository.claim()).isEmpty();
@@ -300,13 +300,24 @@ class OutboxIT {
         assertThat(repository.failedCount()).isZero();
         assertThat(repository.pendingCount()).isEqualTo(1);
         jdbc.update(
-                "UPDATE loadup_outbox_event SET created_at = TIMESTAMPADD(SECOND, -30, CURRENT_TIMESTAMP(6)) WHERE id = ?",
+                "UPDATE loadup_outbox_event SET created_at = (clock_timestamp() + INTERVAL '-30 seconds') WHERE id = ?",
                 failed);
         assertThat(repository.oldestPendingSeconds()).isGreaterThanOrEqualTo(30);
         jdbc.update(
-                "UPDATE loadup_outbox_event SET created_at = TIMESTAMPADD(SECOND, 30, CURRENT_TIMESTAMP(6)) WHERE id = ?",
+                "UPDATE loadup_outbox_event SET created_at = (clock_timestamp() + INTERVAL '30 seconds') WHERE id = ?",
                 failed);
         assertThat(repository.oldestPendingSeconds()).isZero();
+    }
+
+    @Test
+    void duplicateInboxRecordDoesNotAbortTheEnclosingPostgresqlTransaction() {
+        var event = new OutboxEvent("duplicate-event", message(), Instant.now(), null);
+        transactions.executeWithoutResult(status -> {
+            assertThat(inbox.consume("consumer", event, () -> {})).isTrue();
+            assertThat(inbox.consume("consumer", event, () -> {})).isFalse();
+            repository.publish(message());
+        });
+        assertThat(repository.pendingCount()).isEqualTo(1);
     }
 
     @Test

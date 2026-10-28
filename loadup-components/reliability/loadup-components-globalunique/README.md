@@ -34,7 +34,7 @@ loadup:
     multi-tenant:
       enabled: true
   flyway:
-    locations: classpath:db/migration/mysql
+    locations: classpath:db/migration/postgresql
 ```
 
 唯一维度为 `tenant_id + biz_type + unique_key`。启用多租户后复用 database 的租户上下文；未启用时使用 database 的 `default-tenant-id`。ID、审计和逻辑删除也由 database 统一提供。

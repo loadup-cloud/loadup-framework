@@ -41,7 +41,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(classes = MerchantContractIT.Application.class)
-@EnableTestContainers(value = ContainerType.MYSQL, reuse = false)
+@EnableTestContainers(value = ContainerType.POSTGRESQL, reuse = false)
 class MerchantContractIT {
     private final MerchantService merchants;
     private final MerchantQueryFacade lookup;

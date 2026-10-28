@@ -29,6 +29,9 @@ import java.util.Optional;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.*;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /** Internal business API: call from trusted tenant scopes and a transaction shared with business data. */
 public class DelayedTaskTemplate {
@@ -37,18 +40,21 @@ public class DelayedTaskTemplate {
     private final DelayedTaskProperties properties;
     private final DatabaseProperties database;
     private final Clock clock;
+    private final TransactionTemplate inserts;
 
     public DelayedTaskTemplate(
             DelayedTaskStore store,
             DelayedTaskConverter converter,
             DelayedTaskProperties properties,
             DatabaseProperties database,
-            Clock clock) {
+            Clock clock, PlatformTransactionManager transactionManager) {
         this.store = store;
         this.converter = converter;
         this.properties = properties;
         this.database = database;
         this.clock = clock;
+        this.inserts = new TransactionTemplate(transactionManager);
+        this.inserts.setPropagationBehavior(TransactionDefinition.PROPAGATION_NESTED);
     }
 
     public DelayedTask register(String taskType, String bizId, LocalDateTime executeAt) {
@@ -69,7 +75,7 @@ public class DelayedTaskTemplate {
             row.setMaxAttempts(properties.getMaxAttempts());
             row.setTenantId(tenant);
             try {
-                store.mapper().insert(row);
+                inserts.executeWithoutResult(status -> store.mapper().insert(row));
                 return converter.toTask(row);
             } catch (DuplicateKeyException duplicate) {
                 var existing = store.mapper()

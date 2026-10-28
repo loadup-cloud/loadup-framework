@@ -43,7 +43,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 
 @SpringBootTest(classes = ContractPersistenceIT.Application.class)
-@EnableTestContainers(value = ContainerType.MYSQL, reuse = false)
+@EnableTestContainers(value = ContainerType.POSTGRESQL, reuse = false)
 class ContractPersistenceIT {
     private final CatalogService catalog;
     private final MerchantContractService contracts;

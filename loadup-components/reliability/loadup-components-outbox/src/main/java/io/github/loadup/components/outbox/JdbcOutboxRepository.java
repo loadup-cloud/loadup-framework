@@ -33,7 +33,7 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
-/** MySQL 8 durable queue. Claim and acknowledgement transactions never enclose handlers. */
+/** PostgreSQL durable queue. Claim and acknowledgement transactions never enclose handlers. */
 public class JdbcOutboxRepository implements OutboxTemplate {
     private final DataSource dataSource;
     private final JdbcTemplate jdbc;
@@ -76,7 +76,7 @@ public class JdbcOutboxRepository implements OutboxTemplate {
         jdbc.update(
                 "INSERT INTO loadup_outbox_event (id, tenant_id, created_at, updated_at, event_type, "
                         + "payload_version, business_id, payload, trace_id, status, available_at) "
-                        + "VALUES (?, ?, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), ?, ?, ?, ?, ?, 'PENDING', CURRENT_TIMESTAMP(6))",
+                        + "VALUES (?, ?, clock_timestamp(), clock_timestamp(), ?, ?, ?, ?, ?, 'PENDING', clock_timestamp())",
                 id,
                 message.tenantId(),
                 message.type(),
@@ -91,8 +91,8 @@ public class JdbcOutboxRepository implements OutboxTemplate {
         return transactions.execute(status -> {
             List<Claim> rows = jdbc.query(
                     "SELECT * FROM loadup_outbox_event WHERE "
-                            + "(status = 'PENDING' AND available_at <= CURRENT_TIMESTAMP(6)) OR "
-                            + "(status = 'PROCESSING' AND lease_until <= CURRENT_TIMESTAMP(6)) "
+                            + "(status = 'PENDING' AND available_at <= clock_timestamp()) OR "
+                            + "(status = 'PROCESSING' AND lease_until <= clock_timestamp()) "
                             + "ORDER BY created_at, id LIMIT 1 FOR UPDATE SKIP LOCKED",
                     (rs, row) -> new Claim(event(rs), UUID.randomUUID().toString(), rs.getInt("attempts") + 1));
             if (rows.isEmpty()) return Optional.empty();
@@ -100,13 +100,13 @@ public class JdbcOutboxRepository implements OutboxTemplate {
             if (claim.attempt() > properties.getMaxAttempts()) {
                 jdbc.update(
                         "UPDATE loadup_outbox_event SET status = 'FAILED', claim_token = NULL, lease_until = NULL, "
-                                + "last_error = 'LeaseExpired', updated_at = CURRENT_TIMESTAMP(6) WHERE id = ?",
+                                + "last_error = 'LeaseExpired', updated_at = clock_timestamp() WHERE id = ?",
                         claim.event().id());
                 return Optional.empty();
             }
             jdbc.update(
                     "UPDATE loadup_outbox_event SET status = 'PROCESSING', attempts = ?, claim_token = ?, "
-                            + "lease_until = TIMESTAMPADD(MICROSECOND, ?, CURRENT_TIMESTAMP(6)), updated_at = CURRENT_TIMESTAMP(6) "
+                            + "lease_until = (clock_timestamp() + ? * INTERVAL '1 microsecond'), updated_at = clock_timestamp() "
                             + "WHERE id = ?",
                     claim.attempt(),
                     claim.token(),
@@ -119,8 +119,8 @@ public class JdbcOutboxRepository implements OutboxTemplate {
     boolean complete(Claim claim) {
         return Boolean.TRUE.equals(transactions.execute(status -> jdbc.update(
                         "UPDATE loadup_outbox_event SET status = 'SUCCEEDED', claim_token = NULL, lease_until = NULL, "
-                                + "last_error = NULL, updated_at = CURRENT_TIMESTAMP(6) "
-                                + "WHERE id = ? AND status = 'PROCESSING' AND claim_token = ? AND lease_until > CURRENT_TIMESTAMP(6)",
+                                + "last_error = NULL, updated_at = clock_timestamp() "
+                                + "WHERE id = ? AND status = 'PROCESSING' AND claim_token = ? AND lease_until > clock_timestamp()",
                         claim.event().id(),
                         claim.token())
                 == 1));
@@ -134,8 +134,8 @@ public class JdbcOutboxRepository implements OutboxTemplate {
         String errorCode = error;
         transactions.executeWithoutResult(status -> jdbc.update(
                 "UPDATE loadup_outbox_event SET status = ?, claim_token = NULL, lease_until = NULL, last_error = ?, "
-                        + "available_at = TIMESTAMPADD(MICROSECOND, ?, CURRENT_TIMESTAMP(6)), updated_at = CURRENT_TIMESTAMP(6) "
-                        + "WHERE id = ? AND status = 'PROCESSING' AND claim_token = ? AND lease_until > CURRENT_TIMESTAMP(6)",
+                        + "available_at = (clock_timestamp() + ? * INTERVAL '1 microsecond'), updated_at = clock_timestamp() "
+                        + "WHERE id = ? AND status = 'PROCESSING' AND claim_token = ? AND lease_until > clock_timestamp()",
                 claim.attempt() >= properties.getMaxAttempts() ? "FAILED" : "PENDING",
                 errorCode,
                 delayMillis * 1000,
@@ -179,14 +179,14 @@ public class JdbcOutboxRepository implements OutboxTemplate {
         return Boolean.TRUE.equals(transactions.execute(status -> {
             int changed = jdbc.update(
                     "UPDATE loadup_outbox_event SET status = 'PENDING', attempts = 0, last_error = NULL, "
-                            + "available_at = CURRENT_TIMESTAMP(6), updated_at = CURRENT_TIMESTAMP(6) "
+                            + "available_at = clock_timestamp(), updated_at = clock_timestamp() "
                             + "WHERE tenant_id = ? AND id = ? AND status = 'FAILED'",
                     tenantId,
                     eventId);
             if (changed == 0) return false;
             jdbc.update(
                     "INSERT INTO loadup_outbox_replay (id, tenant_id, created_at, updated_at, event_id, operator_id, reason) "
-                            + "VALUES (?, ?, CURRENT_TIMESTAMP(6), CURRENT_TIMESTAMP(6), ?, ?, ?)",
+                            + "VALUES (?, ?, clock_timestamp(), clock_timestamp(), ?, ?, ?)",
                     UUID.randomUUID().toString(),
                     tenantId,
                     eventId,
@@ -210,7 +210,7 @@ public class JdbcOutboxRepository implements OutboxTemplate {
 
     public long oldestPendingSeconds() {
         Long age = jdbc.queryForObject(
-                "SELECT COALESCE(TIMESTAMPDIFF(SECOND, MIN(created_at), CURRENT_TIMESTAMP(6)), 0) "
+                "SELECT COALESCE(CAST(EXTRACT(EPOCH FROM (clock_timestamp() - MIN(created_at))) AS BIGINT), 0) "
                         + "FROM loadup_outbox_event WHERE status IN ('PENDING', 'PROCESSING')",
                 Long.class);
         return age == null ? 0 : Math.max(0, age);
