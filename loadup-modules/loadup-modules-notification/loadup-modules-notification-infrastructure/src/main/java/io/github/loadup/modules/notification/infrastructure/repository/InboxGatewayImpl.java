@@ -81,7 +81,7 @@ public class InboxGatewayImpl implements InboxGateway {
         String predicate = " AND archived_at IS NULL" + (unread ? " AND read_at IS NULL" : "");
         long total = count(predicate, args);
         var rows = jdbc.query(
-                "SELECT * FROM notification_inbox WHERE tenant_id = :tenant AND recipient_id = :recipient AND deleted = FALSE "
+                "SELECT id, tenant_id, recipient_id, sender_id, category, title, body, action_url, request_key, read_at, archived_at, created_at, updated_at FROM notification_inbox WHERE tenant_id = :tenant AND recipient_id = :recipient AND deleted = FALSE "
                         + predicate + " ORDER BY created_at DESC, id DESC LIMIT :limit OFFSET :offset",
                 args,
                 BeanPropertyRowMapper.newInstance(InboxMessageDO.class));

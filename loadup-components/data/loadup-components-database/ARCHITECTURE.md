@@ -1,4 +1,6 @@
-# Database Component Architecture
+# Database Component Architecture (historical)
+
+> The notes below describe the former MyBatis-Flex implementation and are retained as historical design context. They do not describe the current JDBC implementation. See [README.md](README.md) for current configuration and persistence responsibilities.
 
 ## Scope
 

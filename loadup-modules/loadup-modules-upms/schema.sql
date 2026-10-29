@@ -27,9 +27,9 @@ CREATE TABLE IF NOT EXISTS upms_department
     updated_by     VARCHAR(64),
     updated_at     TIMESTAMP(6)     NOT NULL,
     deleted        BOOLEAN      NOT NULL DEFAULT FALSE,
-    PRIMARY KEY (id),
-    UNIQUE (dept_code)
+    PRIMARY KEY (id)
 );
+CREATE UNIQUE INDEX IF NOT EXISTS uk_upms_department_dept_code_active ON upms_department (tenant_id, dept_code) NULLS NOT DISTINCT WHERE deleted = FALSE;
 CREATE INDEX IF NOT EXISTS idx_dept_parent_id ON upms_department (parent_id);
 CREATE INDEX IF NOT EXISTS idx_dept_tenant_id ON upms_department (tenant_id);
 CREATE INDEX IF NOT EXISTS idx_dept_status ON upms_department (status);
@@ -68,11 +68,11 @@ CREATE TABLE IF NOT EXISTS upms_user
     updated_by              VARCHAR(64),
     updated_at              TIMESTAMP(6)     NOT NULL,
     deleted                 BOOLEAN      NOT NULL DEFAULT FALSE,
-    PRIMARY KEY (id),
-    UNIQUE (username),
-    UNIQUE (email),
-    UNIQUE (mobile)
+    PRIMARY KEY (id)
 );
+CREATE UNIQUE INDEX IF NOT EXISTS uk_upms_user_username_active ON upms_user (tenant_id, username) NULLS NOT DISTINCT WHERE deleted = FALSE;
+CREATE UNIQUE INDEX IF NOT EXISTS uk_upms_user_email_active ON upms_user (tenant_id, email) NULLS NOT DISTINCT WHERE deleted = FALSE AND email IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS uk_upms_user_mobile_active ON upms_user (tenant_id, mobile) NULLS NOT DISTINCT WHERE deleted = FALSE AND mobile IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_user_dept_id ON upms_user (dept_id);
 CREATE INDEX IF NOT EXISTS idx_user_tenant_id ON upms_user (tenant_id);
 CREATE INDEX IF NOT EXISTS idx_user_status ON upms_user (status);
@@ -97,9 +97,9 @@ CREATE TABLE IF NOT EXISTS upms_role
     updated_by     VARCHAR(64),
     updated_at     TIMESTAMP(6)     NOT NULL,
     deleted        BOOLEAN      NOT NULL DEFAULT FALSE,
-    PRIMARY KEY (id),
-    UNIQUE (role_code)
+    PRIMARY KEY (id)
 );
+CREATE UNIQUE INDEX IF NOT EXISTS uk_upms_role_role_code_active ON upms_role (tenant_id, role_code) NULLS NOT DISTINCT WHERE deleted = FALSE;
 CREATE INDEX IF NOT EXISTS idx_role_parent_id ON upms_role (parent_role_id);
 CREATE INDEX IF NOT EXISTS idx_role_tenant_id ON upms_role (tenant_id);
 CREATE INDEX IF NOT EXISTS idx_role_status ON upms_role (status);
@@ -128,9 +128,9 @@ CREATE TABLE IF NOT EXISTS upms_permission
     updated_by      VARCHAR(64),
     updated_at      TIMESTAMP(6)     NOT NULL,
     deleted         BOOLEAN      NOT NULL DEFAULT FALSE,
-    PRIMARY KEY (id),
-    UNIQUE (permission_code)
+    PRIMARY KEY (id)
 );
+CREATE UNIQUE INDEX IF NOT EXISTS uk_upms_permission_permission_code_active ON upms_permission (tenant_id, permission_code) NULLS NOT DISTINCT WHERE deleted = FALSE;
 CREATE INDEX IF NOT EXISTS idx_perm_parent_id ON upms_permission (parent_id);
 CREATE INDEX IF NOT EXISTS idx_perm_tenant_id ON upms_permission (tenant_id);
 CREATE INDEX IF NOT EXISTS idx_perm_type ON upms_permission (permission_type);
@@ -276,9 +276,9 @@ CREATE TABLE IF NOT EXISTS upms_user_oauth_binding
     created_at    TIMESTAMP(6)     NOT NULL,
     updated_at    TIMESTAMP(6)     NOT NULL,
     deleted       BOOLEAN      NOT NULL DEFAULT FALSE,
-    PRIMARY KEY (id),
-    UNIQUE (provider, open_id)
+    PRIMARY KEY (id)
 );
+CREATE UNIQUE INDEX IF NOT EXISTS uk_oauth_active_provider_openid ON upms_user_oauth_binding (tenant_id, provider, open_id) NULLS NOT DISTINCT WHERE deleted = FALSE;
 CREATE INDEX IF NOT EXISTS idx_oauth_user_id ON upms_user_oauth_binding (user_id);
 CREATE INDEX IF NOT EXISTS idx_oauth_tenant_id ON upms_user_oauth_binding (tenant_id);
 CREATE INDEX IF NOT EXISTS idx_oauth_provider ON upms_user_oauth_binding (provider);

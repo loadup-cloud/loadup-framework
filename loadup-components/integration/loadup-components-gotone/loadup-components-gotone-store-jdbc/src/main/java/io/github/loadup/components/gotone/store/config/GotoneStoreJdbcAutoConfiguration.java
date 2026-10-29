@@ -38,7 +38,9 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
  * can swap the JDBC store for their own {@link ServiceConfigProvider} / {@link ChannelConfigProvider}
  * / {@link RecordHandler} beans without touching the engine.
  */
-@AutoConfiguration
+@AutoConfiguration(afterName = {
+        "io.github.loadup.components.database.autoconfigure.DatabaseCoreAutoConfiguration",
+        "org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration"})
 @ConditionalOnClass({ChannelConfigProvider.class, NamedParameterJdbcTemplate.class})
 public class GotoneStoreJdbcAutoConfiguration {
 

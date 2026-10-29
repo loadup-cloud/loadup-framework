@@ -91,7 +91,7 @@ class IdGeneratorAutoConfigurationTest {
     }
 
     @Test
-    void transitiveDatabaseJarDoesNotRequirePersistenceWhenNoSessionFactoryExists() {
+    void transitiveDatabaseJarDoesNotRequirePersistenceWithoutDataSource() {
         runner.withConfiguration(AutoConfigurations.of(SequenceAutoConfiguration.class))
                 .run(context -> assertThat(context)
                         .hasNotFailed()

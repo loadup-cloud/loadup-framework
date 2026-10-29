@@ -33,7 +33,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-/** Selects the default strategy without resolving it during SqlSessionFactory creation. */
+/** Configures the business ID strategy when a sequence allocator is available. */
 @AutoConfiguration(after = SequenceAutoConfiguration.class)
 @EnableConfigurationProperties(BusinessIdProperties.class)
 public class IdGeneratorAutoConfiguration {

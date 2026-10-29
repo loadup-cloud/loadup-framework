@@ -1,6 +1,6 @@
 # LoadUp Components Database
 
-MyBatis-Flex integration for common persistent fields, audit timestamps, business identifiers, logical deletion, and tenant isolation.
+Spring Data JDBC and Spring JDBC support for persistent IDs, PostgreSQL transactions, sequence allocation and tenant context.
 
 ## Maven
 
@@ -11,92 +11,11 @@ MyBatis-Flex integration for common persistent fields, audit timestamps, busines
 </dependency>
 ```
 
-This module brings the JDBC stack (`spring-boot-starter-jdbc`, so `DataSourceAutoConfiguration` and a
-default Hikari pool); the application still supplies the JDBC driver and the `spring.datasource.*`
-properties. This module does not select a database vendor.
+The component supplies `databaseClock`, a JDBC transaction manager for a single data source, `DatabaseTenant` and sequence/ID configuration. Spring Boot supplies JDBC and Spring Data JDBC infrastructure. Applications configure their own data source and PostgreSQL driver.
 
-Define each data object as `@Table(...) class XxxDO extends BaseDO`. `BaseDO` supplies `id`, `createdAt`, `updatedAt`, `tenantId`, and integer `deleted` (`0` normal, `1` deleted). The database processor generates `XxxDOMapper extends BaseMapper<XxxDO>` with MyBatis `@Mapper`, module-local `Tables` and TableDef sources. Do not declare these Mapper interfaces manually. Generated files remain under `target/`.
+Explicit SQL must set IDs, tenant IDs and audit timestamps, filter tenant and deleted rows, and implement logical deletion deliberately. The shared `BaseDO.deleted` property is an integer; PostgreSQL schemas use boolean `deleted`, so SQL row mappers must map or omit that column deliberately. `DatabaseTenant` uses the configured default when multi-tenancy is disabled and rejects missing tenant context when it is required.
 
-## Compile-time generation
-
-Infrastructure modules enable the database-owned processor separately from the runtime dependency. The BOM manages its version. A provided dependency establishes Maven reactor ordering and keeps the processor out of deployment dependencies:
-
-```xml
-<dependency>
-    <groupId>io.github.loadup-cloud</groupId>
-    <artifactId>loadup-components-database-processor</artifactId>
-    <scope>provided</scope>
-    <optional>true</optional>
-</dependency>
-```
-
-Configure `maven-compiler-plugin` annotation processing (external consumers must also include MapStruct/Boot paths if used):
-
-```xml
-<configuration>
-    <annotationProcessorPaths combine.children="append">
-        <path>
-            <groupId>com.mybatis-flex</groupId>
-            <artifactId>mybatis-flex-processor</artifactId>
-            <version>${mybatis.flex.version}</version>
-        </path>
-        <path>
-            <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-database-processor</artifactId>
-            <version>${loadup.framework.version}</version>
-        </path>
-    </annotationProcessorPaths>
-    <annotationProcessors>
-        <annotationProcessor>org.mapstruct.ap.MappingProcessor</annotationProcessor>
-        <annotationProcessor>org.springframework.boot.configurationprocessor.ConfigurationMetadataAnnotationProcessor</annotationProcessor>
-        <annotationProcessor>io.github.loadup.components.database.processor.LoadUpMyBatisFlexProcessor</annotationProcessor>
-    </annotationProcessors>
-</configuration>
-```
-
-External projects must define the example version properties to match the selected BOM; importing a BOM does not import its Maven properties or plugin configuration.
-
-The explicit processor list avoids running upstream Flex a second time through service discovery. Both Flex paths are explicit so compilation works before the processor artifact is installed into the local repository. Build using `mvn clean ...` to avoid generating the same sources twice from stale output. Import `infrastructure.mapper.XxxDOMapper` and inject it into repositories; scan the generated mapper package with `@MapperScan`. MapStruct remains an independent processor for Spring-managed converters.
-
-Fixed options live in the processor jar's canonical `mybatis-flex.config` resource. No project `mybatis-flex.config` or application property is needed; the wrapper copies the resource into compiler output and ancestor config files cannot change these options. The generated config in compiler output is an upstream implementation bridge, not an application configuration file.
-
-## Configuration
-
-```yaml
-loadup:
-  database:
-    multi-tenant:
-      enabled: true
-      required: true
-      default-tenant-id: __default__ # used when enabled=false
-      ignore-tables: [sys_tenant, sys_config]
-      request: {header-name: X-Tenant-Id, parameter-name: tenantId}
-```
-
-When `enabled=false` (the default), the request filter binds `default-tenant-id` for every HTTP request and the database insert listener writes the same ID into `BaseDO.tenantId`, ignoring request-supplied tenant values. The default ID is `__default__` and can be overridden. When `enabled=true`, the filter uses the configured request source; missing tenant context is rejected when `required=true` rather than falling back to the single-tenant ID.
-
-Use `TenantUtil.runWithTenant(...)` or `callWithTenant(...)` for non-HTTP jobs that need a tenant context. Tenant bindings are read-only within a JDK 25 ScopedValue scope; there is no set/clear API. The request filter saves immutable metadata under `ExecutionContext.class.getName()` and binds it around REQUEST/ASYNC/ERROR dispatch. Header/parameter/subdomain extraction remains a configurable convenience; authenticated tenant authorization must be enforced by the integrating application.
-
-## Capability matrix
-
-| Capability | MyBatis-Flex |
-|---|---|
-| CRUD, QueryWrapper, generated MyBatis Mapper, Tables and TableDef | ✓ |
-| Audit timestamps and default business primary keys | ✓ |
-| Business IDs up to 64 characters, formatting and parsing | ✓ |
-| Scope-based database segments, local batches and asynchronous prefetch | ✓ |
-| Integer logical deletion | ✓ |
-| Tenant SQL isolation and request propagation | ✓ |
-
-## Fixed framework conventions
-
-Local-time audit timestamps, `deleted = 0/1` and the `tenant_id` column are framework-owned defaults. These audit/deletion conventions cannot be switched off or renamed through application properties. The ID strategy is selected through a single IdGenerator bean and defaults to BusinessIdGenerator. Extra `MyBatisFlexCustomizer` beans fail startup. DataSource settings, tenant activation and trusted tenant resolution remain deployment concerns. All mapped business tables must contain the five BaseDO fields; apply the module migrations before enabling the adapters.
-
-Use generated `Tables` constants in repositories; do not concatenate SQL or sort expressions. MapStruct converters use the shared Spring configuration and constructor injection. `UpdateEntity.of` expresses partial updates, including intentional null assignments.
-
-## Flyway connection initialization
-
-Flyway `loadup.flyway.init-sqls` preserves all nonblank statements in configured order. The component registers the complete callback array once; blank/null entries are ignored. Initialization statements execute after connection acquisition and close their Statement without closing the Flyway-owned connection.
+Flyway support is optional; consumers using migrations must include Flyway and its PostgreSQL database module. Migration scripts assume a fresh PostgreSQL schema.
 
 ## Business IDs and database sequences
 
@@ -127,9 +46,9 @@ loadup:
 
 Apply `classpath:db/migration/V2026101201__sequence_allocation.sql` before enabling traffic. Use the integrating application's migration procedure or add `classpath:db/migration` to its existing Flyway locations, retaining all other module locations. The component does not create tables on the request path. Use one authoritative allocation database for each encoded site, preserve committed allocation maxima during failover/restoration, and restrict deletion/reset of allocation rows. The migration and allocation SQL target PostgreSQL.
 
-Inject `IdGenerator` for the configured automatic strategy. `IdGenerator` also implements MyBatis-Flex's generator contract; `generate(entity, keyColumn)` defaults to `generate()`. Flex registers it under `IdGenerator.KEY` through a lazy provider to avoid a SqlSessionFactory → generator → Sequence → Mapper initialization cycle. No ID is generated while constructing the SqlSessionFactory.
+Inject `IdGenerator` when a persistence operation needs an application-generated ID. Explicit SQL is responsible for setting its ID and audit columns.
 
-An application may supply one `IdGenerator` bean (for example `UuidV7IdGenerator`) to replace the default; do not replace the global Flex customizer. `loadup.database.sequence.enabled=false` requires such an alternative because the default generator depends on Sequence. Existing explicitly supplied IDs, including UUIDs assigned by application services, are preserved.
+An application may supply one `IdGenerator` bean (for example `UuidV7IdGenerator`) to replace the default. `loadup.database.sequence.enabled=false` requires such an alternative because the default generator depends on Sequence. Existing explicitly supplied IDs, including UUIDs assigned by application services, are preserved.
 
 Inject `BusinessIdGenerator` and reuse immutable metadata where practical:
 
@@ -169,10 +88,4 @@ mvnd clean test -pl loadup-components/data/loadup-components-database -am \
   -Dsurefire.failIfNoSpecifiedTests=false -Dskip.spotless=true -Dskip.spotbugs=true
 ```
 
-The IT requires Docker and uses real MySQL through the framework Testcontainers annotation. Consumer failover/restore rehearsals and P95/P99 capacity measurements are separate production acceptance work.
-
-## Explicit integer logical deletion
-
-`BaseDO.deleted` is an `Integer` annotated with `@Column(isLogicDelete = true)`, inherited by each mapped DO. The database component installs `IntegerLogicDeleteProcessor` and retains the fixed global column `deleted`, normal value 0 and deleted value 1. MySQL storage stays `TINYINT NOT NULL DEFAULT 0`; no schema migration is required. The processor expresses Java integer 0/1 semantics and does not require a four-byte SQL INT column. Do not mix a Boolean field or BooleanLogicDeleteProcessor into this contract.
-
-Generated BaseMapper delete operations follow logical deletion, and ordinary mapped queries filter deleted rows. Explicit `LogicDeleteManager.execWithoutLogicDelete` remains an intentional bypass for approved physical lifecycle operations. The sequence allocation table continues to prohibit deletion and resetting its counters.
+The IT requires Docker and uses real PostgreSQL through the framework Testcontainers annotation. Consumer failover/restore rehearsals and P95/P99 capacity measurements are separate production acceptance work.

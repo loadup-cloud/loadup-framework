@@ -83,7 +83,7 @@ public class DepartmentGatewayImpl implements DepartmentGateway {
         lockParent(row.getParentId());
         row.setTenantId(tenant.current());
         row.setUpdatedAt(LocalDateTime.now(clock));
-        jdbc.update("""
+        int changed = jdbc.update("""
                 UPDATE upms_department SET parent_id = COALESCE(:parentId, parent_id),
                     dept_name = COALESCE(:deptName, dept_name), dept_code = COALESCE(:deptCode, dept_code),
                     dept_level = COALESCE(:deptLevel, dept_level), sort_order = COALESCE(:sortOrder, sort_order),
@@ -92,6 +92,7 @@ public class DepartmentGatewayImpl implements DepartmentGateway {
                     remark = COALESCE(:remark, remark), updated_by = COALESCE(:updatedBy, updated_by), updated_at = :updatedAt
                 WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenantId AND deleted = FALSE
                 """, new BeanPropertySqlParameterSource(row));
+        if (changed != 1) throw new org.springframework.dao.IncorrectResultSizeDataAccessException(1, changed);
         return converter.toEntity(row);
     }
 

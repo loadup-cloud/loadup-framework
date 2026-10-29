@@ -30,7 +30,10 @@ import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.context.annotation.*;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
-@AutoConfiguration
+@AutoConfiguration(afterName = {
+        "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration",
+        "io.github.loadup.components.database.autoconfigure.DatabaseCoreAutoConfiguration",
+        "io.github.loadup.components.database.autoconfigure.IdGeneratorAutoConfiguration"})
 @ConditionalOnSingleCandidate(DataSource.class)
 @ConditionalOnProperty(
         prefix = "loadup.modules.notification",

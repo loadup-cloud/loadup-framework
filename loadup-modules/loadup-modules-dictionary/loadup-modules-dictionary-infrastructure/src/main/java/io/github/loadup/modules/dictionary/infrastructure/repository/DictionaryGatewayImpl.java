@@ -100,10 +100,11 @@ public class DictionaryGatewayImpl implements DictionaryGateway {
     public void updateType(DictionaryType type) {
         var row = converter.toDO(type);
         row.setUpdatedAt(LocalDateTime.now(clock));
-        jdbc.update(
+        int changed = jdbc.update(
                 "UPDATE dictionary_type SET type_name = :name, description = :description, enabled = :enabled, updated_at = :updatedAt "
                         + "WHERE tenant_id = :tenantId AND id = :id AND deleted = FALSE",
                 new BeanPropertySqlParameterSource(row));
+        if (changed != 1) throw new CommonException(DictionaryResultCodeEnum.DICTIONARY_TYPE_NOT_FOUND);
     }
 
     @Override
@@ -164,10 +165,11 @@ public class DictionaryGatewayImpl implements DictionaryGateway {
     public void updateItem(DictionaryItem item) {
         var row = converter.toDO(item);
         row.setUpdatedAt(LocalDateTime.now(clock));
-        jdbc.update(
+        int changed = jdbc.update(
                 "UPDATE dictionary_item SET item_label = :label, description = :description, sort_order = :sortOrder, enabled = :enabled, updated_at = :updatedAt "
                         + "WHERE tenant_id = :tenantId AND id = :id AND deleted = FALSE",
                 new BeanPropertySqlParameterSource(row));
+        if (changed != 1) throw new CommonException(DictionaryResultCodeEnum.DICTIONARY_ITEM_NOT_FOUND);
     }
 
     @Override

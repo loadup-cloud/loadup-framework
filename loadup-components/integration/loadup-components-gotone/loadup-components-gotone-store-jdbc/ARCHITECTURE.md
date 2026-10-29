@@ -32,19 +32,17 @@
 `NotificationService` 根据消息配置路由到多个 `NotificationChannelProvider`；JDBC store 只提供配置与记录持久化。
 
 ```text
-通知引擎 → 配置/记录 SPI → MyBatis-Flex Gateway → 数据库
+通知引擎 → 配置/记录 SPI → Spring JDBC → PostgreSQL
 ```
 
 ## 装配规则
 
 - [`GotoneStoreJdbcAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/store/config/GotoneStoreJdbcAutoConfiguration.java) 是自动配置入口。
-  - `@ConditionalOnClass({ChannelConfigProvider.class, MyBatisFlexAutoConfiguration.class})`
+  - `@ConditionalOnClass({ChannelConfigProvider.class, NamedParameterJdbcTemplate.class})`
 
 ## 扩展契约
 
-- [`ServiceChannelDOMapper`](src/main/java/io/github/loadup/components/gotone/store/mapper/ServiceChannelDOMapper.java)：由实现方或调用方按接口定义对接。
-- [`NotificationServiceDOMapper`](src/main/java/io/github/loadup/components/gotone/store/mapper/NotificationServiceDOMapper.java)：由实现方或调用方按接口定义对接。
-- [`NotificationRecordDOMapper`](src/main/java/io/github/loadup/components/gotone/store/mapper/NotificationRecordDOMapper.java)：由实现方或调用方按接口定义对接。
+通过 `ServiceConfigProvider`、`ChannelConfigProvider` 和 `RecordHandler` 提供自定义实现；默认实现使用参数化 JDBC 查询并显式限定当前租户。
 
 ## 设计取舍
 

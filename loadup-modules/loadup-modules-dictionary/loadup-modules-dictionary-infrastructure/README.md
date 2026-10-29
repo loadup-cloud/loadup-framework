@@ -1,6 +1,6 @@
 # LoadUp Dictionary Infrastructure
 
-MyBatis-Flex Gateway 默认实现、Flyway 迁移及持久化自动装配。
+JDBC Gateway 默认实现、Flyway 迁移及持久化自动装配。
 
 ## 接入
 
@@ -17,7 +17,7 @@ MyBatis-Flex Gateway 默认实现、Flyway 迁移及持久化自动装配。
 
 | 能力 | 本层提供 |
 | --- | --- |
-| MyBatis-Flex Gateway 默认实现、Flyway 迁移及持久化自动装配。 | 是 |
+| JDBC Gateway 默认实现、Flyway 迁移及持久化自动装配。 | 是 |
 | HTTP 适配 | 由同一业务目录下可选 web 提供 |
 
 完整业务 API、配置及使用示例见 [模块接入手册](../README.md)；内部职责见 [ARCHITECTURE.md](ARCHITECTURE.md)。

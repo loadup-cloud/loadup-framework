@@ -13,14 +13,6 @@
         <Class name="~.*IT$"/>
     </Match>
 
-    <!-- 排除 APT 生成的 TableDef 类 -->
-    <Match>
-        <Class name="~.*TableDef$"/>
-    </Match>
-    <Match>
-        <Class name="~.*Tables$"/>
-    </Match>
-
     <!-- 排除 MapStruct 生成的 Converter 实现类 -->
     <Match>
         <Class name="~.*ConverterImpl$"/>

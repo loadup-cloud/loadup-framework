@@ -62,8 +62,10 @@ public class RoleGatewayImpl implements RoleGateway {
     }
 
     @Override
+    @Transactional
     public Role save(Role role) {
         RoleDO row = converter.toDataObject(role);
+        lockParent(row.getParentId());
         if (row.getId() == null) row.setId(UUID.randomUUID().toString());
         var now = LocalDateTime.now(clock);
         if (row.getCreatedAt() == null) row.setCreatedAt(now);
@@ -79,11 +81,13 @@ public class RoleGatewayImpl implements RoleGateway {
     }
 
     @Override
+    @Transactional
     public Role update(Role role) {
         RoleDO row = converter.toDataObject(role);
+        lockParent(row.getParentId());
         row.setTenantId(tenant.current());
         row.setUpdatedAt(LocalDateTime.now(clock));
-        jdbc.update("""
+        int changed = jdbc.update("""
                 UPDATE upms_role SET role_name = COALESCE(:roleName, role_name), role_code = COALESCE(:roleCode, role_code),
                     parent_role_id = COALESCE(:parentId, parent_role_id), role_level = COALESCE(:roleLevel, role_level),
                     data_scope = COALESCE(:dataScope, data_scope), sort_order = COALESCE(:sortOrder, sort_order),
@@ -91,6 +95,7 @@ public class RoleGatewayImpl implements RoleGateway {
                     updated_by = COALESCE(:updatedBy, updated_by), updated_at = :updatedAt
                 WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenantId AND deleted = FALSE
                 """, new BeanPropertySqlParameterSource(row));
+        if (changed != 1) throw new org.springframework.dao.IncorrectResultSizeDataAccessException(1, changed);
         return converter.toEntity(row);
     }
 
@@ -102,6 +107,12 @@ public class RoleGatewayImpl implements RoleGateway {
                 "SELECT id FROM upms_role WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE FOR UPDATE",
                 params,
                 String.class);
+        if (!findByParentId(id).isEmpty()) {
+            throw new io.github.loadup.commons.error.CommonException(io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum.ROLE_STILL_HAS_CHILD_ROLES);
+        }
+        if (countUsersByRoleId(id) > 0) {
+            throw new io.github.loadup.commons.error.CommonException(io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum.ROLE_IS_STILL_ASSIGNED_TO_USERS);
+        }
         for (String table : List.of("upms_role_permission", "upms_role_department", "upms_user_role")) {
             jdbc.update(
                     "UPDATE " + table
@@ -172,7 +183,7 @@ public class RoleGatewayImpl implements RoleGateway {
     @Transactional
     public void assignPermissionsToRole(String roleId, List<String> permissionIds) {
         lockActive("upms_role", roleId);
-        for (String permissionId : permissionIds) {
+        for (String permissionId : permissionIds.stream().distinct().sorted().toList()) {
             lockActive("upms_permission", permissionId);
             insertRelation("upms_role_permission", "role_id", roleId, "permission_id", permissionId, null);
         }
@@ -187,7 +198,7 @@ public class RoleGatewayImpl implements RoleGateway {
     @Transactional
     public void assignDepartmentsToRole(String roleId, List<String> departmentIds) {
         lockActive("upms_role", roleId);
-        for (String deptId : departmentIds) {
+        for (String deptId : departmentIds.stream().distinct().sorted().toList()) {
             lockActive("upms_department", deptId);
             insertRelation("upms_role_department", "role_id", roleId, "dept_id", deptId, null);
         }
@@ -219,6 +230,14 @@ public class RoleGatewayImpl implements RoleGateway {
                 params().addValue("id", roleId),
                 Long.class);
         return count == null ? 0 : count;
+    }
+
+    private void lockParent(String id) {
+        if (id == null) return;
+        if (jdbc.queryForList("SELECT id FROM upms_role WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE FOR UPDATE",
+                params().addValue("id", id), String.class).isEmpty()) {
+            throw new io.github.loadup.commons.error.CommonException(io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum.PARENT_ROLE_DOES_NOT_EXIST);
+        }
     }
 
     private void lockActive(String table, String id) {

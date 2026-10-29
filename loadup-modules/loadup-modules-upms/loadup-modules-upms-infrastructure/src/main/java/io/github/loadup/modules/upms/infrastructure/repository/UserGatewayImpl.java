@@ -95,7 +95,7 @@ public class UserGatewayImpl implements UserGateway {
         if (row.getDeptId() != null) lockDepartment(row.getDeptId());
         row.setTenantId(tenant.current());
         row.setUpdatedAt(LocalDateTime.now(clock));
-        jdbc.update("""
+        int changed = jdbc.update("""
                 UPDATE upms_user SET username = COALESCE(:username, username), password = COALESCE(:password, password),
                     nickname = COALESCE(:nickname, nickname), real_name = COALESCE(:realName, real_name),
                     dept_id = COALESCE(:deptId, dept_id), email = COALESCE(:email, email),
@@ -111,6 +111,7 @@ public class UserGatewayImpl implements UserGateway {
                     updated_by = COALESCE(:updatedBy, updated_by), updated_at = :updatedAt
                 WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenantId AND deleted = FALSE
                 """, new BeanPropertySqlParameterSource(row));
+        if (changed != 1) throw new org.springframework.dao.IncorrectResultSizeDataAccessException(1, changed);
         return converter.toEntity(row);
     }
 

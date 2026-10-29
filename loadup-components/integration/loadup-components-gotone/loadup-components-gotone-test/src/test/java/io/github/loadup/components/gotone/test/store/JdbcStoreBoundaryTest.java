@@ -43,7 +43,7 @@ class JdbcStoreBoundaryTest {
     private final io.github.loadup.components.database.tenant.DatabaseTenant tenant =
             new io.github.loadup.components.database.tenant.DatabaseTenant(
                     new io.github.loadup.components.database.config.DatabaseProperties());
-    private final java.time.Clock clock = java.time.Clock.systemDefaultZone();
+    private final java.time.Clock clock = java.time.Clock.fixed(java.time.Instant.parse("2026-01-01T00:00:00Z"), java.time.ZoneOffset.UTC);
 
     @Test
     void missingServiceAndChannelRowsReturnEmptyResults() {
@@ -67,6 +67,14 @@ class JdbcStoreBoundaryTest {
                 .isEmpty();
         assertThat(new JdbcChannelConfigProvider(channels, tenant).findEnabledByServiceCode("missing"))
                 .isEmpty();
+        var serviceParams = ArgumentCaptor.forClass(org.springframework.jdbc.core.namedparam.SqlParameterSource.class);
+        var channelParams = ArgumentCaptor.forClass(org.springframework.jdbc.core.namedparam.SqlParameterSource.class);
+        verify(services).query(org.mockito.ArgumentMatchers.contains("tenant_id IS NOT DISTINCT FROM :tenant"), serviceParams.capture(),
+                org.mockito.ArgumentMatchers.<org.springframework.jdbc.core.RowMapper<io.github.loadup.components.gotone.store.dataobject.NotificationServiceDO>>any());
+        verify(channels).query(org.mockito.ArgumentMatchers.contains("tenant_id IS NOT DISTINCT FROM :tenant"), channelParams.capture(),
+                org.mockito.ArgumentMatchers.<org.springframework.jdbc.core.RowMapper<ServiceChannelDO>>any());
+        assertThat(serviceParams.getValue().getValue("tenant")).isEqualTo("__default__");
+        assertThat(channelParams.getValue().getValue("tenant")).isEqualTo("__default__");
     }
 
     @Test
@@ -149,7 +157,11 @@ class JdbcStoreBoundaryTest {
                 .containsExactly(null, "synthetic failure", null);
         assertThat(rows.getAllValues()).allSatisfy(row -> {
             assertThat(row.getValue("content")).isEqualTo("rendered");
-            assertThat(row.getValue("sendTime")).isNotNull();
+            assertThat(row.getValue("tenantId")).isEqualTo("__default__");
+            assertThat(row.getValue("id")).isNotNull();
+            assertThat(row.getValue("sendTime")).isEqualTo(java.time.LocalDateTime.of(2026, 1, 1, 0, 0));
+            assertThat(row.getValue("createdAt")).isEqualTo(row.getValue("sendTime"));
+            assertThat(row.getValue("updatedAt")).isEqualTo(row.getValue("sendTime"));
         });
     }
 

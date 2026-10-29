@@ -38,7 +38,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest(classes = TestApplication.class)
-@EnableTestContainers(value = ContainerType.MYSQL, reuse = false)
+@EnableTestContainers(value = ContainerType.POSTGRESQL, reuse = false)
 @ActiveProfiles("test")
 @TestPropertySource(properties = "loadup.dfs.binder-type=database")
 class DatabaseDfsProviderIT {
@@ -87,6 +87,7 @@ class DatabaseDfsProviderIT {
     void legacyNullMetadataRemainsReadableAndCorruptedJsonFailsExplicitly() throws Exception {
         var file = new io.github.loadup.components.dfs.database.dataobject.FileStorageDO();
         file.setId(java.util.UUID.randomUUID().toString());
+        file.setTenantId("__default__");
         file.setFilename("legacy.txt");
         file.setFileSize(0L);
         file.setContentType("text/plain");

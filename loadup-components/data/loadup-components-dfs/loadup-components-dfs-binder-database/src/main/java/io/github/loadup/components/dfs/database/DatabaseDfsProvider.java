@@ -19,7 +19,8 @@
  */
 package io.github.loadup.components.dfs.database;
 
-import io.github.loadup.commons.util.TenantUtil;
+import io.github.loadup.components.database.tenant.DatabaseTenant;
+import java.time.Clock;
 import io.github.loadup.components.dfs.DfsObjectNotFoundException;
 import io.github.loadup.components.dfs.DfsProvider;
 import io.github.loadup.components.dfs.DfsStorageException;
@@ -44,10 +45,14 @@ import tools.jackson.databind.ObjectMapper;
 public class DatabaseDfsProvider implements DfsProvider {
     private final NamedParameterJdbcTemplate jdbc;
     private final ObjectMapper objectMapper;
+    private final DatabaseTenant tenant;
+    private final Clock clock;
 
-    public DatabaseDfsProvider(NamedParameterJdbcTemplate jdbc, ObjectMapper objectMapper) {
+    public DatabaseDfsProvider(NamedParameterJdbcTemplate jdbc, ObjectMapper objectMapper, DatabaseTenant tenant, Clock clock) {
         this.jdbc = jdbc;
         this.objectMapper = objectMapper;
+        this.tenant = tenant;
+        this.clock = clock;
     }
 
     @Override
@@ -58,10 +63,10 @@ public class DatabaseDfsProvider implements DfsProvider {
             if (content.length != request.contentLength()) {
                 throw new DfsStorageException(DfsStorageException.Code.OPERATION_FAILED);
             }
-            LocalDateTime uploadedAt = LocalDateTime.now();
+            LocalDateTime uploadedAt = LocalDateTime.now(clock);
             FileStorageDO file = new FileStorageDO();
             file.setId(fileId);
-            file.setTenantId(TenantUtil.getTenantId());
+            file.setTenantId(tenant.current());
             file.setFilename(request.filename());
             file.setFileSize((long) content.length);
             file.setContentType(request.contentType());
@@ -91,7 +96,7 @@ public class DatabaseDfsProvider implements DfsProvider {
     public boolean delete(String fileId) {
         return jdbc.update(
                         "UPDATE dfs_file SET deleted = TRUE, updated_at = :now WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE",
-                        parameters(fileId).addValue("now", LocalDateTime.now()))
+                        parameters(fileId).addValue("now", LocalDateTime.now(clock)))
                 > 0;
     }
 
@@ -131,7 +136,7 @@ public class DatabaseDfsProvider implements DfsProvider {
     }
 
     private MapSqlParameterSource parameters(String fileId) {
-        return new MapSqlParameterSource("id", fileId).addValue("tenant", TenantUtil.getTenantId());
+        return new MapSqlParameterSource("id", fileId).addValue("tenant", tenant.current());
     }
 
     private FileMetadata toMetadata(FileStorageDO file) {
@@ -151,6 +156,6 @@ public class DatabaseDfsProvider implements DfsProvider {
                 getBinderType(),
                 file.getId(),
                 metadata,
-                file.getCreatedAt().atZone(java.time.ZoneId.systemDefault()).toInstant());
+                file.getCreatedAt().atZone(clock.getZone()).toInstant());
     }
 }
