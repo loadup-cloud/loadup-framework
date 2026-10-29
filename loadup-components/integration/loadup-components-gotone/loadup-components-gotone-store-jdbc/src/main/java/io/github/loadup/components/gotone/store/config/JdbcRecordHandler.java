@@ -19,13 +19,16 @@
  */
 package io.github.loadup.components.gotone.store.config;
 
+import io.github.loadup.components.database.tenant.DatabaseTenant;
 import io.github.loadup.components.gotone.config.ChannelConfigProvider.ChannelConfig;
 import io.github.loadup.components.gotone.model.NotificationRequest;
 import io.github.loadup.components.gotone.record.RecordHandler;
 import io.github.loadup.components.gotone.store.dataobject.NotificationRecordDO;
-import io.github.loadup.components.gotone.store.mapper.NotificationRecordDOMapper;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 /**
  * JDBC-backed {@link RecordHandler} that persists one notification record per receiver.
@@ -35,15 +38,19 @@ public class JdbcRecordHandler implements RecordHandler {
     private static final String STATUS_SUCCESS = "SUCCESS";
     private static final String STATUS_FAILED = "FAILED";
 
-    private final NotificationRecordDOMapper mapper;
+    private final NamedParameterJdbcTemplate jdbc;
+    private final DatabaseTenant tenant;
+    private final Clock clock;
 
-    public JdbcRecordHandler(NotificationRecordDOMapper mapper) {
-        this.mapper = mapper;
+    public JdbcRecordHandler(NamedParameterJdbcTemplate jdbc, DatabaseTenant tenant, Clock clock) {
+        this.jdbc = jdbc;
+        this.tenant = tenant;
+        this.clock = clock;
     }
 
     @Override
     public void onResult(NotificationRequest request, ChannelConfig config, SendAttemptResult result) {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(clock);
         for (String receiver : request.receivers()) {
             NotificationRecordDO record = new NotificationRecordDO();
             record.setId(UUID.randomUUID().toString());
@@ -59,7 +66,15 @@ public class JdbcRecordHandler implements RecordHandler {
             record.setStatus(delivered ? STATUS_SUCCESS : STATUS_FAILED);
             record.setErrorMessage(result.receiverErrors().get(receiver));
             record.setSendTime(now);
-            mapper.insert(record);
+            record.setTenantId(tenant.current());
+            record.setCreatedAt(now);
+            record.setUpdatedAt(now);
+            jdbc.update("""
+                    INSERT INTO gotone_notification_record (id, tenant_id, service_code, trace_id, request_id, channel, provider,
+                        receiver, content, status, error_message, send_time, created_at, updated_at, deleted)
+                    VALUES (:id, :tenantId, :serviceCode, :traceId, :requestId, :channel, :provider, :receiver, :content,
+                        :status, :errorMessage, :sendTime, :createdAt, :updatedAt, FALSE)
+                    """, new BeanPropertySqlParameterSource(record));
         }
     }
 }

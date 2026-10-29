@@ -30,6 +30,7 @@ import io.github.loadup.modules.dictionary.client.command.DictionaryTypeUpdateCo
 import io.github.loadup.modules.dictionary.client.dto.DictionaryItemDTO;
 import io.github.loadup.modules.dictionary.client.dto.DictionaryTypeDTO;
 import io.github.loadup.modules.dictionary.client.error.DictionaryResultCodeEnum;
+import io.github.loadup.modules.dictionary.client.facade.DictionaryFacade;
 import io.github.loadup.modules.dictionary.domain.gateway.DictionaryGateway;
 import io.github.loadup.modules.dictionary.domain.model.DictionaryItem;
 import io.github.loadup.modules.dictionary.domain.model.DictionaryType;
@@ -43,7 +44,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 
 /** Dictionary administration and effective-value queries. */
-public class DictionaryService implements io.github.loadup.modules.dictionary.client.facade.DictionaryFacade {
+public class DictionaryService implements DictionaryFacade {
     private final Clock clock;
     private static final String DEFAULT_TENANT = "__default__";
     private final DictionaryDTOConverter converter;

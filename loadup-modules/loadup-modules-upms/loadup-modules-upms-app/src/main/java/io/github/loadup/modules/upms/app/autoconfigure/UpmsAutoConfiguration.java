@@ -25,7 +25,6 @@ import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import io.github.loadup.modules.upms.domain.service.AccessDecisionService;
 import io.github.loadup.modules.upms.domain.service.UserPermissionService;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -44,7 +43,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  */
 @AutoConfiguration
 @EnableConfigurationProperties(UpmsSecurityProperties.class)
-@MapperScan("io.github.loadup.modules.upms.infrastructure.mapper")
 @ComponentScan(
         basePackages = {
             "io.github.loadup.modules.upms.app",

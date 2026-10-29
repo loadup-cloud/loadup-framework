@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.*;
 import io.github.loadup.components.asyncresult.local.LocalAsyncResultProvider;
 import io.github.loadup.components.outbox.*;
 import io.github.loadup.components.testcontainers.annotation.*;
-import io.github.loadup.components.testcontainers.database.SharedMySQLContainer;
+import io.github.loadup.components.testcontainers.database.SharedPostgreSQLContainer;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -41,7 +41,7 @@ import tools.jackson.databind.json.JsonMapper;
 
 @SpringBootTest(classes = AsyncResultOutboxIT.Application.class)
 @ActiveProfiles("test")
-@EnableTestContainers(value = ContainerType.MYSQL, reuse = false)
+@EnableTestContainers(value = ContainerType.POSTGRESQL, reuse = false)
 class AsyncResultOutboxIT {
     @SpringBootConfiguration
     static class Application {}
@@ -49,14 +49,15 @@ class AsyncResultOutboxIT {
     @Test
     void outboxBecomesVisibleAfterCommitAndCompletesAnAlreadyRegisteredWaiter() {
         var ds = new DriverManagerDataSource(
-                SharedMySQLContainer.getJdbcUrl(),
-                SharedMySQLContainer.getUsername(),
-                SharedMySQLContainer.getPassword());
+                SharedPostgreSQLContainer.getJdbcUrl(),
+                SharedPostgreSQLContainer.getUsername(),
+                SharedPostgreSQLContainer.getPassword());
         new ResourceDatabasePopulator(new ClassPathResource("db/migration/V20261008000001__create_outbox.sql"))
                 .execute(ds);
         var props = new OutboxProperties();
-        var outbox = new JdbcOutboxRepository(ds, props);
-        var tx = new TransactionTemplate(new DataSourceTransactionManager(ds));
+        var manager = new DataSourceTransactionManager(ds);
+        var outbox = new JdbcOutboxRepository(ds, manager, props);
+        var tx = new TransactionTemplate(manager);
         var mapper = JsonMapper.builder().build();
         try (var provider = new LocalAsyncResultProvider(100);
                 var template = AsyncResultTest.template(provider, AsyncResultTest.settings(5, Duration.ofSeconds(3)))) {

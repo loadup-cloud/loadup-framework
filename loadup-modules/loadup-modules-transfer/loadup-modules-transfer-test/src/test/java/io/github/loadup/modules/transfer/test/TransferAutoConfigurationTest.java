@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import io.github.loadup.components.database.id.IdGenerator;
 import io.github.loadup.modules.file.app.service.FileResourceService;
 import io.github.loadup.modules.transfer.app.autoconfigure.TransferAutoConfiguration;
 import io.github.loadup.modules.transfer.app.config.TransferTaskProperties;
@@ -32,22 +33,18 @@ import io.github.loadup.modules.transfer.client.enums.TransferKind;
 import io.github.loadup.modules.transfer.client.spi.TransferHandler;
 import io.github.loadup.modules.transfer.domain.gateway.TransferGateway;
 import io.github.loadup.modules.transfer.infrastructure.autoconfigure.TransferPersistenceAutoConfiguration;
-import io.github.loadup.modules.transfer.infrastructure.mapper.TransferTaskDOMapper;
-import io.github.loadup.modules.transfer.infrastructure.mapper.TransferTaskOptionDOMapper;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /** Exercises auto-configuration composition; no persistence operations are executed. */
 class TransferAutoConfigurationTest {
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
             .withBean(DataSource.class, () -> mock(DataSource.class))
-            .withBean("transferTaskDOMapper", TransferTaskDOMapper.class, () -> mock(TransferTaskDOMapper.class))
-            .withBean(
-                    "transferTaskOptionDOMapper",
-                    TransferTaskOptionDOMapper.class,
-                    () -> mock(TransferTaskOptionDOMapper.class))
+            .withBean(JdbcTemplate.class, () -> mock(JdbcTemplate.class))
+            .withBean(IdGenerator.class, () -> () -> "id")
             .withBean(FileResourceService.class, () -> mock(FileResourceService.class))
             .withBean(TransferHandler.class, () -> {
                 TransferHandler handler = mock(TransferHandler.class);

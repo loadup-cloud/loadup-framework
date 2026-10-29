@@ -19,20 +19,18 @@
  */
 package io.github.loadup.components.delayedtask.dataobject;
 
-import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
 import io.github.loadup.components.delayedtask.DelayedTaskStatus;
 import java.time.LocalDateTime;
 
-@Table("delayed_task")
 public class DelayedTaskDO extends BaseDO {
     private String taskType;
     private String bizId;
     private LocalDateTime executeAt;
     private LocalDateTime nextExecuteAt;
     private DelayedTaskStatus status;
-    private int attempts;
-    private int maxAttempts;
+    private Integer attempts;
+    private Integer maxAttempts;
     private LocalDateTime leaseUntil;
     private String claimToken;
     private String lastError;

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -59,7 +59,7 @@
         <loadup.framework.version>0.0.2-SNAPSHOT</loadup.framework.version>
 
         <!-- ORM and Database -->
-        <mybatis.flex.version>1.11.8</mybatis.flex.version>
+
         <mysql.version>9.7.0</mysql.version>
         <flyway.version>12.11.0</flyway.version>
 
@@ -925,11 +925,6 @@
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-database-processor</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-database</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
@@ -1160,28 +1155,6 @@
                 <version>${groovy.version}</version>
             </dependency>
 
-            <!-- MyBatis-Flex APT Processor for generating TableDef classes -->
-            <dependency>
-                <groupId>com.mybatis-flex</groupId>
-                <artifactId>mybatis-flex-processor</artifactId>
-                <version>${mybatis.flex.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.mybatis-flex</groupId>
-                <artifactId>mybatis-flex-spring-boot4-starter</artifactId>
-                <version>${mybatis.flex.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.mybatis-flex</groupId>
-                <artifactId>mybatis-flex-annotation</artifactId>
-                <version>${mybatis.flex.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.mybatis-flex</groupId>
-                <artifactId>mybatis-flex-core</artifactId>
-                <version>${mybatis.flex.version}</version>
-            </dependency>
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-annotations-jakarta</artifactId>

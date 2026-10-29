@@ -24,7 +24,9 @@ import io.github.loadup.modules.file.client.dto.FileResourceDTO;
 import io.github.loadup.modules.file.client.dto.FileResourceViewDTO;
 import org.mapstruct.Mapper;
 
-/** Produces the public HTTP projection from the application contract. */
+/**
+ * Produces the public HTTP projection from the application contract.
+ */
 @Mapper(config = LoadUpMapStructConfig.class)
 public interface FileWebConverter {
     FileResourceViewDTO toView(FileResourceDTO value);

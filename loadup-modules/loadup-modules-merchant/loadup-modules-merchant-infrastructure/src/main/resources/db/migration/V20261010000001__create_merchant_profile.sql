@@ -22,8 +22,7 @@ CREATE TABLE merchant_profile (
     updated_by VARCHAR(256) COLLATE "C" NOT NULL,
     created_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
     updated_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    deleted SMALLINT NOT NULL DEFAULT 0,
-    CHECK (deleted IN (0, 1))
+    deleted BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE UNIQUE INDEX uk_merchant_profile_code ON merchant_profile (tenant_id, merchant_code);

@@ -26,6 +26,8 @@ import java.util.Optional;
 public interface MerchantGateway {
     Optional<Merchant> find(String tenantId, String id);
 
+    Optional<Merchant> lock(String tenantId, String id);
+
     void insert(Merchant merchant);
 
     void update(Merchant merchant, long expectedRowVersion);

@@ -19,8 +19,8 @@
  */
 package io.github.loadup.components.dfs.database.dataobject;
 
-import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
+import org.springframework.data.relational.core.mapping.Table;
 
 /** Database representation of one stored file. */
 @Table("dfs_file")

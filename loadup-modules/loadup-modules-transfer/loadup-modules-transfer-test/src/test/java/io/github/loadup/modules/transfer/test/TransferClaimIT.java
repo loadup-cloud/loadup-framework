@@ -75,7 +75,7 @@ class TransferClaimIT {
             Callable<Boolean> claim = () -> TenantUtil.callWithTenant(tenant, () -> {
                 ready.countDown();
                 if (!start.await(10, TimeUnit.SECONDS)) throw new AssertionError("Claim barrier timed out");
-                return gateway.start(id);
+                return gateway.start(tenant, id);
             });
             var first = executor.submit(claim);
             var second = executor.submit(claim);
@@ -88,12 +88,12 @@ class TransferClaimIT {
         }
         assertThat(gateway.queued(100)).doesNotContain(id);
         TenantUtil.callWithTenant(tenant, () -> {
-            assertThat(gateway.start(id)).isFalse();
-            gateway.fail(id, "Synthetic failure");
-            assertThat(gateway.requeue(id)).isTrue();
-            assertThat(gateway.start(id)).isTrue();
-            gateway.succeed(id, null);
-            assertThat(gateway.start(id)).isFalse();
+            assertThat(gateway.start(tenant, id)).isFalse();
+            gateway.fail(tenant, id, "Synthetic failure");
+            assertThat(gateway.requeue(tenant, id)).isTrue();
+            assertThat(gateway.start(tenant, id)).isTrue();
+            gateway.succeed(tenant, id, null);
+            assertThat(gateway.start(tenant, id)).isFalse();
             return null;
         });
     }

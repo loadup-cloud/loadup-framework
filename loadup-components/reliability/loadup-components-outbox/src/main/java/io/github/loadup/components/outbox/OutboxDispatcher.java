@@ -98,7 +98,7 @@ public final class OutboxDispatcher {
                 Exception failure = exception instanceof HandlerFailure wrapper ? wrapper.failure : exception;
                 observation.error(new IllegalStateException(
                         "Outbox handler failed: " + failure.getClass().getSimpleName()));
-                repository.fail(claim, failure);
+                outcome = repository.fail(claim, failure) ? "failure" : "lease_lost";
                 LogUtil.warn(
                         OutboxDispatcher.class,
                         "Outbox delivery failed eventId={} attempt={} errorType={}",

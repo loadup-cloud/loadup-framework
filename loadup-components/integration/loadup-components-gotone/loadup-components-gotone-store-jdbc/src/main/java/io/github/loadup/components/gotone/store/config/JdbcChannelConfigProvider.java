@@ -19,13 +19,15 @@
  */
 package io.github.loadup.components.gotone.store.config;
 
-import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.commons.log.LogUtil;
+import io.github.loadup.components.database.tenant.DatabaseTenant;
 import io.github.loadup.components.gotone.config.ChannelConfigProvider;
 import io.github.loadup.components.gotone.store.dataobject.ServiceChannelDO;
-import io.github.loadup.components.gotone.store.mapper.ServiceChannelDOMapper;
 import java.util.List;
 import java.util.Map;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
@@ -34,22 +36,24 @@ import tools.jackson.databind.ObjectMapper;
  */
 public class JdbcChannelConfigProvider implements ChannelConfigProvider {
 
-    private final ServiceChannelDOMapper mapper;
+    private final NamedParameterJdbcTemplate jdbc;
+    private final DatabaseTenant tenant;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public JdbcChannelConfigProvider(ServiceChannelDOMapper mapper) {
-        this.mapper = mapper;
+    public JdbcChannelConfigProvider(NamedParameterJdbcTemplate jdbc, DatabaseTenant tenant) {
+        this.jdbc = jdbc;
+        this.tenant = tenant;
     }
 
     @Override
     public List<ChannelConfig> findEnabledByServiceCode(String serviceCode) {
-        List<ServiceChannelDO> entities = mapper.selectListByQuery(QueryWrapper.create()
-                .where(ServiceChannelDO::getServiceCode)
-                .eq(serviceCode)
-                .and(ServiceChannelDO::isEnabled)
-                .eq(true)
-                .orderBy(ServiceChannelDO::getPriority)
-                .asc());
+        List<ServiceChannelDO> entities = jdbc.query(
+                """
+                SELECT id, service_code, channel, template_content, channel_config, provider, fallback_providers, enabled, priority
+                FROM gotone_service_channel WHERE service_code = :code AND tenant_id IS NOT DISTINCT FROM :tenant AND enabled = TRUE AND deleted = FALSE ORDER BY priority ASC
+                """,
+                new MapSqlParameterSource("code", serviceCode).addValue("tenant", tenant.current()),
+                BeanPropertyRowMapper.newInstance(ServiceChannelDO.class));
         if (entities == null) {
             return List.of();
         }

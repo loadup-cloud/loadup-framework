@@ -1,6 +1,6 @@
 # Outbox
 
-在业务数据库事务中保存事件，提交后通过本地处理器可靠执行。首版使用 MySQL 8+ 和 Spring JDBC，支持多实例领取、租约恢复、有限重试、失败查询和人工重放。无消息队列和 JobRunr 依赖。
+在业务数据库事务中保存事件，提交后通过本地处理器可靠执行。使用 PostgreSQL 和 Spring JDBC，支持多实例领取、租约恢复、有限重试、失败查询和人工重放。无消息队列和 JobRunr 依赖。
 
 ## 引入与迁移
 
@@ -13,9 +13,9 @@
 </dependency>
 ```
 
-应用提供唯一候选或 `@Primary` DataSource，以及使用该 DataSource 的 Spring JDBC 事务管理器。组件不注册全局事务管理器；内部领取与确认使用该数据源的独立短事务。发布要求业务事务真实绑定该数据源，且不是只读事务。
+应用提供唯一候选或 `@Primary` DataSource，以及使用该 DataSource 的 Spring JDBC 事务管理器。组件使用这个事务管理器执行独立短事务，不另建事务管理器。发布要求业务事务真实绑定该数据源，且不是只读事务。
 
-应用负责引入并启用 Flyway 与 `flyway-mysql`，将 `classpath:db/migration` 加入迁移位置，加载 `V20261008000001__create_outbox.sql`。组件不在启动时自行建表。多数据源应用必须为选定的 DataSource 执行迁移。
+应用负责引入并启用 Flyway 与 `flyway-database-postgresql`，将 `classpath:db/migration` 加入迁移位置，加载 `V20261008000001__create_outbox.sql`。组件不在启动时自行建表。多数据源应用必须为选定的 DataSource 执行迁移。
 
 ```yaml
 loadup:
@@ -95,10 +95,10 @@ outbox.replay(trustedTenantId, eventId, operatorId, "Reviewed delivery failure")
 
 有 `MeterRegistry` 时注册 `loadup.outbox.delivery`（`outcome=success|failure|lease_lost`）、`loadup.outbox.pending`、`loadup.outbox.failed`、`loadup.outbox.oldest.age`（秒）。积压 Gauge 每次采集查询数据库，应用应设置合理抓取间隔。提供 `ObservationRegistry` 时创建处理 Observation；原请求 traceId 仅作为 `originTraceId` 诊断关联，新任务不伪造原 Span。
 
-`OutboxIT` 使用 Testcontainers MySQL，覆盖回滚、争抢、过期领取、旧领取者确认、Inbox 去重、失败重放及 HTTP 对端受理后模拟响应丢失。用户可在本地执行：
+`OutboxIT` 使用 Testcontainers PostgreSQL，测试源码覆盖回滚、争抢、过期领取、旧领取者确认、Inbox 去重、失败重放及 HTTP 对端受理后模拟响应丢失。用户可在本地执行：
 
 ```shell
-mvn clean verify -pl loadup-components/reliability/loadup-components-outbox -am \
+mvnd clean verify -pl loadup-components/reliability/loadup-components-outbox -am \
   -Dskip.unit.tests=true -Dit.test=OutboxIT \
   -Dfailsafe.failIfNoSpecifiedTests=false -Dskip.spotless=true -Dskip.spotbugs=true
 ```
@@ -110,7 +110,7 @@ mvn clean verify -pl loadup-components/reliability/loadup-components-outbox -am 
 | 能力 | 首版契约 |
 |---|---|
 | 业务与事件原子提交 | 同 DataSource 的 Spring JDBC 事务 |
-| 多实例领取 | MySQL `FOR UPDATE SKIP LOCKED` + 独立领取凭证 |
+| 多实例领取 | PostgreSQL `FOR UPDATE SKIP LOCKED` + 独立领取凭证 |
 | 崩溃恢复 | 租约过期后重新领取，次数耗尽进入失败 |
 | 重试与重放 | 有限指数退避，上限 24 小时；失败重放留痕 |
 | 本地数据库去重 | Inbox 与消费数据库操作同事务 |

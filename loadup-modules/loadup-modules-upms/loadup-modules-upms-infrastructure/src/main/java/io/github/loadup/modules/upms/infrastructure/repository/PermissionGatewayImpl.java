@@ -19,145 +19,158 @@
  */
 package io.github.loadup.modules.upms.infrastructure.repository;
 
-import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.PERMISSION_DO;
-import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.ROLE_PERMISSION_DO;
-
-import com.mybatisflex.core.query.QueryWrapper;
+import io.github.loadup.components.database.tenant.DatabaseTenant;
 import io.github.loadup.modules.upms.domain.gateway.PermissionGateway;
 import io.github.loadup.modules.upms.domain.model.Permission;
 import io.github.loadup.modules.upms.infrastructure.converter.PermissionConverter;
 import io.github.loadup.modules.upms.infrastructure.dataobject.PermissionDO;
-import io.github.loadup.modules.upms.infrastructure.dataobject.RolePermissionDO;
-import io.github.loadup.modules.upms.infrastructure.mapper.PermissionDOMapper;
-import io.github.loadup.modules.upms.infrastructure.mapper.RolePermissionDOMapper;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Permission Repository Implementation using MyBatis-Flex
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 @Repository
 public class PermissionGatewayImpl implements PermissionGateway {
+    private final NamedParameterJdbcTemplate jdbc;
+    private final Clock clock;
+    private final DatabaseTenant tenant;
+    private final PermissionConverter converter;
 
-    private final PermissionDOMapper permissionDOMapper;
-    private final PermissionConverter permissionConverter;
-    private final RolePermissionDOMapper rolePermissionMapper;
+    public PermissionGatewayImpl(
+            NamedParameterJdbcTemplate jdbc,
+            PermissionConverter converter,
+            @Qualifier("databaseClock") Clock clock,
+            DatabaseTenant tenant) {
+        this.jdbc = jdbc;
+        this.clock = clock;
+        this.tenant = tenant;
+        this.converter = converter;
+    }
 
     @Override
     public Permission save(Permission permission) {
-        if (permission.getId() == null) permission.setId(UUID.randomUUID().toString());
-        PermissionDO permissionDO = permissionConverter.toDataObject(permission);
-        if (permissionDO.getId() == null) permissionDO.setId(UUID.randomUUID().toString());
-
-        permissionDOMapper.insert(permissionDO);
-        permission = permissionConverter.toEntity(permissionDO);
-        return permission;
+        PermissionDO row = converter.toDataObject(permission);
+        if (row.getId() == null) row.setId(UUID.randomUUID().toString());
+        var now = LocalDateTime.now(clock);
+        if (row.getCreatedAt() == null) row.setCreatedAt(now);
+        row.setUpdatedAt(now);
+        row.setTenantId(tenant.current());
+        jdbc.update("""
+                INSERT INTO upms_permission (id, tenant_id, parent_id, permission_name, permission_code,
+                    permission_type, resource_path, http_method, icon, component_path, sort_order, visible,
+                    status, remark, created_by, updated_by, created_at, updated_at, deleted)
+                VALUES (:id, :tenantId, :parentId, :permissionName, :permissionCode, :permissionType,
+                    :resourcePath, :httpMethod, :icon, :componentPath, COALESCE(:sortOrder, 0),
+                    COALESCE(:visible, TRUE), COALESCE(:status, 1), :remark, :createdBy, :updatedBy,
+                    :createdAt, :updatedAt, FALSE)
+                """, new BeanPropertySqlParameterSource(row));
+        return converter.toEntity(row);
     }
 
     @Override
     public Permission update(Permission permission) {
-        PermissionDO permissionDO = permissionConverter.toDataObject(permission);
-        permissionDOMapper.update(permissionDO);
-        permission = permissionConverter.toEntity(permissionDO);
-        return permission;
+        PermissionDO row = converter.toDataObject(permission);
+        row.setTenantId(tenant.current());
+        row.setUpdatedAt(LocalDateTime.now(clock));
+        jdbc.update("""
+                UPDATE upms_permission SET parent_id = COALESCE(:parentId, parent_id),
+                    permission_name = COALESCE(:permissionName, permission_name),
+                    permission_code = COALESCE(:permissionCode, permission_code),
+                    permission_type = COALESCE(:permissionType, permission_type),
+                    resource_path = COALESCE(:resourcePath, resource_path), http_method = COALESCE(:httpMethod, http_method),
+                    icon = COALESCE(:icon, icon), component_path = COALESCE(:componentPath, component_path),
+                    sort_order = COALESCE(:sortOrder, sort_order), visible = COALESCE(:visible, visible),
+                    status = COALESCE(:status, status), remark = COALESCE(:remark, remark),
+                    updated_by = COALESCE(:updatedBy, updated_by), updated_at = :updatedAt
+                WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenantId AND deleted = FALSE
+                """, new BeanPropertySqlParameterSource(row));
+        return converter.toEntity(row);
     }
 
     @Override
+    @Transactional
     public void deleteById(String id) {
-        rolePermissionMapper.deleteByQuery(QueryWrapper.create().where(ROLE_PERMISSION_DO.PERMISSION_ID.eq(id)));
-        permissionDOMapper.deleteById(id);
+        var params = params().addValue("id", id).addValue("now", LocalDateTime.now(clock));
+        jdbc.queryForList(
+                "SELECT id FROM upms_permission WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE FOR UPDATE",
+                params,
+                String.class);
+        jdbc.update(
+                "UPDATE upms_role_permission SET deleted = TRUE, updated_at = :now WHERE permission_id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE",
+                params);
+        jdbc.update(
+                "UPDATE upms_permission SET deleted = TRUE, updated_at = :now WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE",
+                params);
     }
 
     @Override
     public Optional<Permission> findById(String id) {
-        PermissionDO permissionDO = permissionDOMapper.selectOneById(id);
-        return Optional.ofNullable(permissionDO).map(permissionConverter::toEntity);
+        return find("p.id = :value", id).stream().findFirst();
     }
 
     @Override
     public Optional<Permission> findByPermissionCode(String permissionCode) {
-        QueryWrapper query = QueryWrapper.create().where(PERMISSION_DO.PERMISSION_CODE.eq(permissionCode));
-        PermissionDO permissionDO = permissionDOMapper.selectOneByQuery(query);
-        return Optional.ofNullable(permissionDO).map(permissionConverter::toEntity);
+        return find("p.permission_code = :value", permissionCode).stream().findFirst();
     }
 
     @Override
     public List<Permission> findByRoleId(String roleId) {
-        List<String> permissionIds = java.util.Objects.requireNonNull(
-                        rolePermissionMapper.selectListByQuery(
-                                QueryWrapper.create().where(ROLE_PERMISSION_DO.ROLE_ID.eq(roleId))),
-                        "Mapper must return an empty list instead of null")
-                .stream()
-                .map(RolePermissionDO::getPermissionId)
-                .toList();
-        if (permissionIds.isEmpty()) return List.of();
-        return java.util.Objects.requireNonNull(
-                        permissionDOMapper.selectListByIds(permissionIds),
-                        "Mapper must return an empty list instead of null")
-                .stream()
-                .map(permissionConverter::toEntity)
-                .toList();
+        return find(
+                "EXISTS (SELECT 1 FROM upms_role_permission rp WHERE rp.permission_id = p.id AND rp.role_id = :value AND rp.deleted = FALSE AND rp.tenant_id IS NOT DISTINCT FROM :tenant)",
+                roleId);
     }
 
     @Override
     public List<Permission> findByParentId(String parentId) {
-        QueryWrapper query = QueryWrapper.create().where(PERMISSION_DO.PARENT_ID.eq(parentId));
-        List<PermissionDO> permissionDOs = java.util.Objects.requireNonNull(
-                permissionDOMapper.selectListByQuery(query), "Mapper must return an empty list instead of null");
-        return permissionDOs.stream().map(permissionConverter::toEntity).collect(Collectors.toList());
+        return find("p.parent_id = :value", parentId);
     }
 
     @Override
     public List<Permission> findByPermissionType(Short permissionType) {
-        QueryWrapper query = QueryWrapper.create().where(PERMISSION_DO.PERMISSION_TYPE.eq(permissionType));
-        List<PermissionDO> permissionDOs = java.util.Objects.requireNonNull(
-                permissionDOMapper.selectListByQuery(query), "Mapper must return an empty list instead of null");
-        return permissionDOs.stream().map(permissionConverter::toEntity).collect(Collectors.toList());
+        return find("p.permission_type = :value", permissionType);
     }
 
     @Override
     public List<Permission> findAll() {
-        List<PermissionDO> permissionDOs = permissionDOMapper.selectAll();
-        return permissionDOs.stream().map(permissionConverter::toEntity).collect(Collectors.toList());
+        return find("TRUE", null);
     }
 
     @Override
     public List<Permission> findAllEnabled() {
-        QueryWrapper query = QueryWrapper.create().where(PERMISSION_DO.STATUS.eq((short) 1));
-        List<PermissionDO> permissionDOs = java.util.Objects.requireNonNull(
-                permissionDOMapper.selectListByQuery(query), "Mapper must return an empty list instead of null");
-        return permissionDOs.stream().map(permissionConverter::toEntity).collect(Collectors.toList());
+        return find("p.status = 1", null);
     }
 
     @Override
     public List<Permission> findMenuPermissions() {
-        QueryWrapper query = QueryWrapper.create()
-                .where(PERMISSION_DO.PERMISSION_TYPE.in((short) 1, (short) 2))
-                .and(PERMISSION_DO.STATUS.eq((short) 1))
-                .orderBy(PERMISSION_DO.SORT_ORDER.asc());
-        List<PermissionDO> permissionDOs = java.util.Objects.requireNonNull(
-                permissionDOMapper.selectListByQuery(query), "Mapper must return an empty list instead of null");
-        return permissionDOs.stream().map(permissionConverter::toEntity).collect(Collectors.toList());
+        return find("p.permission_type IN (1, 2) AND p.status = 1 ORDER BY p.sort_order ASC", null);
     }
 
     @Override
     public boolean existsByPermissionCode(String permissionCode) {
-        QueryWrapper query = QueryWrapper.create().where(PERMISSION_DO.PERMISSION_CODE.eq(permissionCode));
-        return permissionDOMapper.selectCountByQuery(query) > 0;
+        return findByPermissionCode(permissionCode).isPresent();
     }
 
-    public PermissionGatewayImpl(
-            PermissionDOMapper permissionDOMapper,
-            PermissionConverter permissionConverter,
-            RolePermissionDOMapper rolePermissionMapper) {
-        this.permissionDOMapper = permissionDOMapper;
-        this.permissionConverter = permissionConverter;
-        this.rolePermissionMapper = rolePermissionMapper;
+    private List<Permission> find(String predicate, Object value) {
+        return jdbc
+                .query(
+                        "SELECT p.id, p.tenant_id, p.parent_id, p.permission_name, p.permission_code, p.permission_type, p.resource_path, p.http_method, p.icon, p.component_path, p.sort_order, p.visible, p.status, p.remark, p.created_by, p.updated_by, p.created_at, p.updated_at, CASE WHEN p.deleted THEN 1 ELSE 0 END AS deleted FROM upms_permission p WHERE p.tenant_id IS NOT DISTINCT FROM :tenant AND p.deleted = FALSE AND "
+                                + predicate,
+                        params().addValue("value", value),
+                        BeanPropertyRowMapper.newInstance(PermissionDO.class))
+                .stream()
+                .map(converter::toEntity)
+                .toList();
+    }
+
+    private MapSqlParameterSource params() {
+        return new MapSqlParameterSource("tenant", tenant.current());
     }
 }

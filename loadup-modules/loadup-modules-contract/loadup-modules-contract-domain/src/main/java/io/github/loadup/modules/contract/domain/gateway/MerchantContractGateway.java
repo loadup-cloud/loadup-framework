@@ -28,6 +28,8 @@ public interface MerchantContractGateway {
 
     Optional<ContractRecord> findByScope(String tenantId, String merchantId, String scopeKey);
 
+    Optional<ContractRecord> lockByScope(String tenantId, String merchantId, String scopeKey);
+
     Optional<ContractRecord> findByRequest(String tenantId, String requestKey);
 
     Optional<ContractRevisionRecord> revision(String tenantId, String contractId, int revision);

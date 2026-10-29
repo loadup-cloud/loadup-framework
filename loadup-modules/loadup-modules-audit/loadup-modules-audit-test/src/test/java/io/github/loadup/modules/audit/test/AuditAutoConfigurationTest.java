@@ -22,22 +22,28 @@ package io.github.loadup.modules.audit.test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
+import io.github.loadup.components.database.id.IdGenerator;
 import io.github.loadup.modules.audit.app.autoconfigure.AuditAutoConfiguration;
 import io.github.loadup.modules.audit.app.converter.AuditDTOConverter;
 import io.github.loadup.modules.audit.app.service.AuditService;
 import io.github.loadup.modules.audit.domain.gateway.AuditGateway;
 import io.github.loadup.modules.audit.infrastructure.autoconfigure.AuditPersistenceAutoConfiguration;
-import io.github.loadup.modules.audit.infrastructure.mapper.AuditEventDOMapper;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 /** Exercises auto-configuration composition; no persistence operations are executed. */
 class AuditAutoConfigurationTest {
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
             .withBean(DataSource.class, () -> mock(DataSource.class))
-            .withBean("auditEventDOMapper", AuditEventDOMapper.class, () -> mock(AuditEventDOMapper.class))
+            .withBean(NamedParameterJdbcTemplate.class, () -> mock(NamedParameterJdbcTemplate.class))
+            .withBean(
+                    org.springframework.data.jdbc.core.JdbcAggregateTemplate.class,
+                    () -> mock(org.springframework.data.jdbc.core.JdbcAggregateTemplate.class))
+            .withBean(IdGenerator.class, () -> () -> "audit-id")
+            .withBean("databaseClock", java.time.Clock.class, java.time.Clock::systemDefaultZone)
             .withConfiguration(
                     AutoConfigurations.of(AuditPersistenceAutoConfiguration.class, AuditAutoConfiguration.class));
 

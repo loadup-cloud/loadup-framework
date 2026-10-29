@@ -129,17 +129,41 @@ class HttpTemplateTest {
     void signedStreamObservesTheExactWireTargetAndPropagatesCallerOutputLimitsWithoutClosingOutput() {
         var observed = new AtomicReference<URI>();
         var closed = new java.util.concurrent.atomic.AtomicBoolean();
-        var output = new ByteArrayOutputStream() { @Override public void close() { closed.set(true); } };
-        var response = http.download("test", "echo", new HttpCall(null, Map.of("token", List.of("a+b&c")), null, "raw"), output,
+        var output = new ByteArrayOutputStream() {
+            @Override
+            public void close() {
+                closed.set(true);
+            }
+        };
+        var response = http.download(
+                "test",
+                "echo",
+                new HttpCall(null, Map.of("token", List.of("a+b&c")), null, "raw"),
+                output,
                 (method, uri, bytes) -> {
-                    observed.set(uri); assertThat(method).isEqualTo(HttpMethod.POST); assertThat(bytes).isEqualTo("raw".getBytes(StandardCharsets.UTF_8));
+                    observed.set(uri);
+                    assertThat(method).isEqualTo(HttpMethod.POST);
+                    assertThat(bytes).isEqualTo("raw".getBytes(StandardCharsets.UTF_8));
                     return Map.of("Authorization", "synthetic-signature");
                 });
         assertThat(observed.get().getRawQuery()).isEqualTo("token=a%2Bb%26c");
-        assertThat(response.getBody()).isEqualTo(3L); assertThat(output.toString(StandardCharsets.UTF_8)).isEqualTo("raw"); assertThat(closed).isFalse();
-        var limited = new java.io.OutputStream() { @Override public void write(int value) { throw new IllegalStateException("Synthetic caller size limit"); } };
-        assertThatThrownBy(() -> http.download("test", "echo", new HttpCall(null, null, null, "raw"), limited,
-                (method, uri, bytes) -> Map.of())).isInstanceOf(IllegalStateException.class).hasMessageContaining("caller size limit");
+        assertThat(response.getBody()).isEqualTo(3L);
+        assertThat(output.toString(StandardCharsets.UTF_8)).isEqualTo("raw");
+        assertThat(closed).isFalse();
+        var limited = new java.io.OutputStream() {
+            @Override
+            public void write(int value) {
+                throw new IllegalStateException("Synthetic caller size limit");
+            }
+        };
+        assertThatThrownBy(() -> http.download(
+                        "test",
+                        "echo",
+                        new HttpCall(null, null, null, "raw"),
+                        limited,
+                        (method, uri, bytes) -> Map.of()))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("caller size limit");
         assertThat(calls).hasValue(2);
     }
 

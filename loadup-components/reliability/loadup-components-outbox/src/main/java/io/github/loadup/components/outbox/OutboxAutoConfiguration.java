@@ -30,23 +30,30 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.transaction.PlatformTransactionManager;
 
 /** Requires one selected DataSource; schema migration remains the application's responsibility. */
-@AutoConfiguration(afterName = "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration")
+@AutoConfiguration(
+        afterName = {
+            "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration",
+            "org.springframework.boot.jdbc.autoconfigure.DataSourceTransactionManagerAutoConfiguration",
+            "io.github.loadup.components.database.autoconfigure.JdbcTransactionAutoConfiguration"
+        })
 @ConditionalOnSingleCandidate(DataSource.class)
 @ConditionalOnProperty(prefix = "loadup.outbox", name = "enabled", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(OutboxProperties.class)
 public class OutboxAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
-    public JdbcOutboxRepository outboxTemplate(DataSource source, OutboxProperties properties) {
-        return new JdbcOutboxRepository(source, properties);
+    public JdbcOutboxRepository outboxTemplate(
+            DataSource source, PlatformTransactionManager manager, OutboxProperties properties) {
+        return new JdbcOutboxRepository(source, manager, properties);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public OutboxInbox outboxInbox(DataSource source) {
-        return new OutboxInbox(source);
+    public OutboxInbox outboxInbox(DataSource source, PlatformTransactionManager manager) {
+        return new OutboxInbox(source, manager);
     }
 
     @Bean

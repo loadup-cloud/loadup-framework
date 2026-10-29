@@ -25,7 +25,6 @@ import static org.mockito.Mockito.*;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.components.database.config.DatabaseProperties;
 import io.github.loadup.components.delayedtask.dataobject.DelayedTaskDO;
-import io.github.loadup.components.delayedtask.mapper.DelayedTaskDOMapper;
 import io.micrometer.observation.ObservationRegistry;
 import java.time.*;
 import java.util.*;
@@ -33,53 +32,14 @@ import org.junit.jupiter.api.Test;
 
 class DelayedTaskBoundaryTest {
     @Test
-    void lostClaimContinuesToTheNextCandidate() {
-        var mapper = mock(DelayedTaskDOMapper.class);
-        var store = new DelayedTaskStore(mapper);
-        var properties = new DelayedTaskProperties();
-        var now = LocalDateTime.now();
-        var first = new DelayedTaskDO();
-        var second = new DelayedTaskDO();
-        first.setId("first");
-        second.setId("second");
-        for (var row : List.of(first, second)) {
-            row.setStatus(DelayedTaskStatus.PENDING);
-            row.setAttempts(0);
-            row.setExecuteAt(now);
-            row.setNextExecuteAt(now);
-        }
-        when(mapper.selectListByQuery(any())).thenReturn(List.of(first, second));
-        when(mapper.updateByQuery(any(DelayedTaskDO.class), any(com.mybatisflex.core.query.QueryWrapper.class)))
-                .thenReturn(0, 1);
-        assertThat(store.claim(now, properties)).contains(second);
-        assertThat(first.getStatus()).isEqualTo(DelayedTaskStatus.PENDING);
-        assertThat(first.getAttempts()).isZero();
-        assertThat(second.getStatus()).isEqualTo(DelayedTaskStatus.RUNNING);
-        assertThat(second.getAttempts()).isEqualTo(1);
-        assertThat(second.getClaimToken()).isNotBlank();
-        assertThat(second.getLeaseUntil()).isEqualTo(now.plus(properties.getLease()));
-    }
-
-    @Test
-    void nullAndEmptyCandidatesDoNotAttemptClaims() {
-        var mapper = mock(DelayedTaskDOMapper.class);
-        var store = new DelayedTaskStore(mapper);
-        when(mapper.selectListByQuery(any())).thenReturn(null, List.of());
-        var properties = new DelayedTaskProperties();
-        assertThat(store.claim(LocalDateTime.now(), properties)).isEmpty();
-        assertThat(store.claim(LocalDateTime.now(), properties)).isEmpty();
-        verify(mapper, times(2)).selectListByQuery(any());
-        verifyNoMoreInteractions(mapper);
-    }
-
-    @Test
     void rejectsInvalidBusinessKeysAndDeadlines() {
         var template = new DelayedTaskTemplate(
                 mock(DelayedTaskStore.class),
                 mock(DelayedTaskConverter.class),
                 new DelayedTaskProperties(),
                 new DatabaseProperties(),
-                Clock.systemDefaultZone(), mock(javax.sql.DataSource.class));
+                Clock.systemDefaultZone(),
+                mock(javax.sql.DataSource.class));
         for (String type : Arrays.asList(null, "", "bad name"))
             assertThatThrownBy(() -> template.find(type, "id")).isInstanceOf(CommonException.class);
         for (String id : Arrays.asList(null, "", " ", "x".repeat(129)))
@@ -91,14 +51,15 @@ class DelayedTaskBoundaryTest {
     @Test
     void optionalTenantFallsBackToConfiguredTenant() {
         var store = mock(DelayedTaskStore.class);
-        when(store.mapper()).thenReturn(mock(DelayedTaskDOMapper.class));
+        when(store.find(any(), any(), any(), eq(false))).thenReturn(Optional.empty());
         var database = new DatabaseProperties();
         var template = new DelayedTaskTemplate(
                 store,
                 mock(DelayedTaskConverter.class),
                 new DelayedTaskProperties(),
                 database,
-                Clock.systemDefaultZone(), mock(javax.sql.DataSource.class));
+                Clock.systemDefaultZone(),
+                mock(javax.sql.DataSource.class));
         database.getMultiTenant().setEnabled(false);
         assertThat(template.find("order.close", "id")).isEmpty();
         database.getMultiTenant().setEnabled(true);

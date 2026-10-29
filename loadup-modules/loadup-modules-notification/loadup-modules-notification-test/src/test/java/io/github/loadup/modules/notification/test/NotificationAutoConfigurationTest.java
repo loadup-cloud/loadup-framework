@@ -22,22 +22,26 @@ package io.github.loadup.modules.notification.test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
+import io.github.loadup.components.database.id.IdGenerator;
 import io.github.loadup.modules.notification.app.autoconfigure.NotificationAutoConfiguration;
 import io.github.loadup.modules.notification.app.converter.NotificationDTOConverter;
 import io.github.loadup.modules.notification.app.service.InboxService;
 import io.github.loadup.modules.notification.domain.gateway.InboxGateway;
 import io.github.loadup.modules.notification.infrastructure.autoconfigure.NotificationPersistenceAutoConfiguration;
-import io.github.loadup.modules.notification.infrastructure.mapper.InboxMessageDOMapper;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
-/** Exercises auto-configuration composition; no persistence operations are executed. */
+/**
+ * Exercises auto-configuration composition; no persistence operations are executed.
+ */
 class NotificationAutoConfigurationTest {
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
             .withBean(DataSource.class, () -> mock(DataSource.class))
-            .withBean("inboxMessageDOMapper", InboxMessageDOMapper.class, () -> mock(InboxMessageDOMapper.class))
+            .withBean(NamedParameterJdbcTemplate.class, () -> mock(NamedParameterJdbcTemplate.class))
+            .withBean(IdGenerator.class, () -> () -> "notification-id")
             .withConfiguration(AutoConfigurations.of(
                     NotificationPersistenceAutoConfiguration.class, NotificationAutoConfiguration.class));
 

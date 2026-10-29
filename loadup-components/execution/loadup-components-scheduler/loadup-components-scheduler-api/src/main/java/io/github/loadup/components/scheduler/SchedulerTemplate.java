@@ -21,11 +21,17 @@ package io.github.loadup.components.scheduler;
 
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.springframework.context.SmartLifecycle;
 
-/** Resolves registered scanners and suppresses overlapping calls within this application. */
+/**
+ * Resolves registered scanners and suppresses overlapping calls within this application.
+ */
 public final class SchedulerTemplate implements SmartLifecycle {
     private final SchedulerProvider provider;
     private final Map<String, ScheduledTask> tasks;

@@ -19,82 +19,127 @@
  */
 package io.github.loadup.modules.upms.infrastructure.repository;
 
-import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.USER_OAUTH_BINDING_DO;
-
-import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.commons.util.IdUtils;
+import io.github.loadup.components.database.tenant.DatabaseTenant;
 import io.github.loadup.modules.upms.domain.gateway.UserOAuthBindingGateway;
 import io.github.loadup.modules.upms.domain.model.UserOAuthBinding;
 import io.github.loadup.modules.upms.infrastructure.converter.UserOAuthBindingConverter;
 import io.github.loadup.modules.upms.infrastructure.dataobject.UserOAuthBindingDO;
-import io.github.loadup.modules.upms.infrastructure.mapper.UserOAuthBindingDOMapper;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-/**
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 @Component
 public class UserOAuthBindingGatewayImpl implements UserOAuthBindingGateway {
-
-    private final UserOAuthBindingDOMapper mapper;
+    private final NamedParameterJdbcTemplate jdbc;
+    private final Clock clock;
+    private final DatabaseTenant tenant;
     private final UserOAuthBindingConverter converter;
 
-    @Override
-    public UserOAuthBinding save(UserOAuthBinding binding) {
-        UserOAuthBindingDO dataObject = converter.toDO(binding);
-        if (dataObject.getId() == null) {
-            dataObject.setId(IdUtils.uuid());
-        }
+    public UserOAuthBindingGatewayImpl(
+            NamedParameterJdbcTemplate jdbc,
+            UserOAuthBindingConverter converter,
+            @Qualifier("databaseClock") Clock clock,
+            DatabaseTenant tenant) {
+        this.jdbc = jdbc;
+        this.clock = clock;
+        this.tenant = tenant;
+        this.converter = converter;
+    }
 
-        mapper.insertOrUpdate(dataObject);
-        return converter.toEntity(dataObject);
+    @Override
+    @Transactional
+    public UserOAuthBinding save(UserOAuthBinding binding) {
+        var row = converter.toDO(binding);
+        var users = jdbc.queryForList(
+                "SELECT id FROM upms_user WHERE id = :userId AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE AND status = 1 FOR UPDATE",
+                params().addValue("userId", row.getUserId()),
+                String.class);
+        if (users.isEmpty()) throw new IllegalArgumentException("Active user for OAuth binding not found");
+        if (row.getId() == null) row.setId(IdUtils.uuid());
+        var now = LocalDateTime.now(clock);
+        if (row.getCreatedAt() == null) row.setCreatedAt(now);
+        row.setUpdatedAt(now);
+        row.setTenantId(tenant.current());
+        int affected = jdbc.update("""
+                INSERT INTO upms_user_oauth_binding (id, tenant_id, user_id, provider, open_id, union_id,
+                    nickname, avatar, access_token, refresh_token, expires_at, bound_at, created_at, updated_at, deleted)
+                VALUES (:id, :tenantId, :userId, :provider, :openId, :unionId, :nickname, :avatar,
+                    :accessToken, :refreshToken, :expiresAt, :boundAt, :createdAt, :updatedAt, FALSE)
+                ON CONFLICT (id) DO UPDATE SET user_id = EXCLUDED.user_id, provider = EXCLUDED.provider,
+                    open_id = EXCLUDED.open_id, union_id = EXCLUDED.union_id, nickname = EXCLUDED.nickname,
+                    avatar = EXCLUDED.avatar, access_token = EXCLUDED.access_token, refresh_token = EXCLUDED.refresh_token,
+                    expires_at = EXCLUDED.expires_at, bound_at = EXCLUDED.bound_at, updated_at = EXCLUDED.updated_at
+                WHERE upms_user_oauth_binding.tenant_id IS NOT DISTINCT FROM EXCLUDED.tenant_id
+                    AND upms_user_oauth_binding.deleted = FALSE
+                """, new BeanPropertySqlParameterSource(row));
+        if (affected != 1) throw new IllegalStateException("OAuth binding was not saved");
+        return converter.toEntity(row);
     }
 
     @Override
     public Optional<UserOAuthBinding> findByProviderAndOpenId(String provider, String openId) {
-        UserOAuthBindingDO dataObject = mapper.selectOneByQuery(QueryWrapper.create()
-                .where(USER_OAUTH_BINDING_DO.PROVIDER.eq(provider))
-                .and(USER_OAUTH_BINDING_DO.OPEN_ID.eq(openId)));
-        return Optional.ofNullable(converter.toEntity(dataObject));
+        return find(
+                        "provider = :provider AND open_id = :openId",
+                        params().addValue("provider", provider).addValue("openId", openId))
+                .stream()
+                .findFirst();
     }
 
     @Override
     public List<UserOAuthBinding> findByUserId(String userId) {
-        List<UserOAuthBindingDO> entities =
-                mapper.selectListByQuery(QueryWrapper.create().where(USER_OAUTH_BINDING_DO.USER_ID.eq(userId)));
-        if (entities == null) {
-            return List.of();
-        }
-        return entities.stream().map(converter::toEntity).collect(Collectors.toList());
+        return find("user_id = :userId", params().addValue("userId", userId));
     }
 
     @Override
     public Optional<UserOAuthBinding> findByUserIdAndProvider(String userId, String provider) {
-        UserOAuthBindingDO dataObject = mapper.selectOneByQuery(QueryWrapper.create()
-                .where(USER_OAUTH_BINDING_DO.USER_ID.eq(userId))
-                .and(USER_OAUTH_BINDING_DO.PROVIDER.eq(provider)));
-        return Optional.ofNullable(converter.toEntity(dataObject));
+        return find(
+                        "user_id = :userId AND provider = :provider",
+                        params().addValue("userId", userId).addValue("provider", provider))
+                .stream()
+                .findFirst();
     }
 
     @Override
     public void delete(String id) {
-        mapper.deleteById(id);
+        deleteWhere("id = :id", params().addValue("id", id));
     }
 
     @Override
     public void deleteByUserIdAndProvider(String userId, String provider) {
-        mapper.deleteByQuery(QueryWrapper.create()
-                .where(USER_OAUTH_BINDING_DO.USER_ID.eq(userId))
-                .and(USER_OAUTH_BINDING_DO.PROVIDER.eq(provider)));
+        deleteWhere(
+                "user_id = :userId AND provider = :provider",
+                params().addValue("userId", userId).addValue("provider", provider));
     }
 
-    public UserOAuthBindingGatewayImpl(UserOAuthBindingDOMapper mapper, UserOAuthBindingConverter converter) {
-        this.mapper = mapper;
-        this.converter = converter;
+    private List<UserOAuthBinding> find(String predicate, MapSqlParameterSource params) {
+        return jdbc
+                .query(
+                        "SELECT id, tenant_id, user_id, provider, open_id, union_id, nickname, avatar, access_token, refresh_token, expires_at, bound_at, created_at, updated_at, CASE WHEN deleted THEN 1 ELSE 0 END AS deleted FROM upms_user_oauth_binding WHERE deleted = FALSE AND tenant_id IS NOT DISTINCT FROM :tenant AND "
+                                + predicate,
+                        params,
+                        BeanPropertyRowMapper.newInstance(UserOAuthBindingDO.class))
+                .stream()
+                .map(converter::toEntity)
+                .toList();
+    }
+
+    private void deleteWhere(String predicate, MapSqlParameterSource params) {
+        jdbc.update(
+                "UPDATE upms_user_oauth_binding SET deleted = TRUE, updated_at = :now WHERE deleted = FALSE AND tenant_id IS NOT DISTINCT FROM :tenant AND "
+                        + predicate,
+                params.addValue("now", LocalDateTime.now(clock)));
+    }
+
+    private MapSqlParameterSource params() {
+        return new MapSqlParameterSource("tenant", tenant.current());
     }
 }

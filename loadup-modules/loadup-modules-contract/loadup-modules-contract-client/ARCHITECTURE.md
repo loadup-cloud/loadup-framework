@@ -20,4 +20,4 @@ v1 只支持单合约范围、初次签约 revision=1。后续修订需增加独
 
 ## 验证
 
-ContractCodecTest 验证内部存储方言、摘要及边界；ContractPersistenceIT 使用真实 MySQL 验证数据库约束、事务、幂等和状态；源码已写入但未运行。HTTP/权限和真实消费工程部署验收仍待执行。
+ContractCodecTest 验证内部存储方言、摘要及边界；ContractPersistenceIT 使用真实 PostgreSQL 验证数据库约束、事务、幂等和状态；源码已写入但未运行。HTTP/权限和真实消费工程部署验收仍待执行。

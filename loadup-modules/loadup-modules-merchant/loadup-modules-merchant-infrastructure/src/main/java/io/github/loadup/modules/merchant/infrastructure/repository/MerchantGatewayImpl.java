@@ -19,28 +19,41 @@
  */
 package io.github.loadup.modules.merchant.infrastructure.repository;
 
-import static io.github.loadup.modules.merchant.infrastructure.dataobject.table.Tables.MERCHANT_DO;
-
-import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.merchant.client.error.MerchantResultCodeEnum;
 import io.github.loadup.modules.merchant.domain.gateway.MerchantGateway;
-import io.github.loadup.modules.merchant.domain.model.*;
+import io.github.loadup.modules.merchant.domain.model.Merchant;
+import io.github.loadup.modules.merchant.domain.model.MerchantStatus;
 import io.github.loadup.modules.merchant.infrastructure.converter.MerchantStorageConverter;
 import io.github.loadup.modules.merchant.infrastructure.dataobject.MerchantDO;
-import io.github.loadup.modules.merchant.infrastructure.mapper.MerchantDOMapper;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class MerchantGatewayImpl implements MerchantGateway {
-    private final MerchantDOMapper mapper;
+    private static final String COLUMNS = "id, tenant_id, merchant_code, name, short_name, type, industry, country, "
+            + "province, city, address, registration_no, contact_name, contact_phone, contact_email, status, "
+            + "row_version, created_by, updated_by, created_at, updated_at";
+    private final NamedParameterJdbcTemplate jdbc;
     private final MerchantStorageConverter converter;
+    private final Clock clock;
+    private final BeanPropertyRowMapper<MerchantDO> rowMapper = BeanPropertyRowMapper.newInstance(MerchantDO.class);
 
-    public MerchantGatewayImpl(MerchantDOMapper mapper, MerchantStorageConverter converter) {
-        this.mapper = mapper;
+    public MerchantGatewayImpl(
+            NamedParameterJdbcTemplate jdbc,
+            MerchantStorageConverter converter,
+            @Qualifier("databaseClock") Clock clock) {
+        this.jdbc = jdbc;
         this.converter = converter;
+        this.clock = clock;
     }
 
     private static String required(String value) {
@@ -48,53 +61,96 @@ public class MerchantGatewayImpl implements MerchantGateway {
         return value;
     }
 
-    private QueryWrapper scope(String tenant) {
-        return QueryWrapper.create()
-                .where(MerchantDO::getTenantId)
-                .eq(required(tenant))
-                .and(MerchantDO::getDeleted)
-                .eq(0);
+    @Override
+    public Optional<Merchant> find(String tenant, String id) {
+        return read(tenant, id, false);
     }
 
-    public Optional<Merchant> find(String tenant, String id) {
-        return Optional.ofNullable(mapper.selectOneByQuery(
-                        scope(tenant).and(MerchantDO::getId).eq(required(id))))
+    @Override
+    public Optional<Merchant> lock(String tenant, String id) {
+        return read(tenant, id, true);
+    }
+
+    private Optional<Merchant> read(String tenant, String id, boolean lock) {
+        var params =
+                new MapSqlParameterSource().addValue("tenant", required(tenant)).addValue("id", required(id));
+        return jdbc
+                .query(
+                        "SELECT " + COLUMNS + " FROM merchant_profile WHERE tenant_id = :tenant AND id = :id "
+                                + "AND deleted = FALSE" + (lock ? " FOR UPDATE" : ""),
+                        params,
+                        rowMapper)
+                .stream()
+                .findFirst()
                 .map(converter::toMerchant);
     }
 
+    @Override
     public void insert(Merchant merchant) {
-        mapper.insert(converter.toDO(merchant));
+        MerchantDO row = converter.toDO(merchant);
+        required(row.getTenantId());
+        required(row.getId());
+        LocalDateTime now = LocalDateTime.now(clock);
+        if (row.getCreatedAt() == null) row.setCreatedAt(now);
+        row.setUpdatedAt(now);
+        int count = jdbc.update("""
+                INSERT INTO merchant_profile (id, tenant_id, merchant_code, name, short_name, type, industry, country,
+                    province, city, address, registration_no, contact_name, contact_phone, contact_email, status,
+                    row_version, created_by, updated_by, created_at, updated_at, deleted)
+                VALUES (:id, :tenantId, :merchantCode, :name, :shortName, :type, :industry, :country, :province,
+                    :city, :address, :registrationNo, :contactName, :contactPhone, :contactEmail, :status,
+                    :rowVersion, :createdBy, :updatedBy, :createdAt, :updatedAt, FALSE)
+                ON CONFLICT (tenant_id, merchant_code) DO NOTHING
+                """, new BeanPropertySqlParameterSource(row));
+        if (count == 0) throw new CommonException(MerchantResultCodeEnum.CONFLICT);
+        if (count != 1) throw new IllegalStateException("Unexpected merchant insert count");
     }
 
+    @Override
     public void update(Merchant merchant, long expected) {
-        int changed = mapper.updateByQuery(
-                converter.toDO(merchant),
-                false,
-                scope(merchant.tenantId())
-                        .and(MerchantDO::getId)
-                        .eq(required(merchant.id()))
-                        .and(MerchantDO::getRowVersion)
-                        .eq(expected));
+        MerchantDO row = converter.toDO(merchant);
+        required(row.getTenantId());
+        required(row.getId());
+        row.setUpdatedAt(LocalDateTime.now(clock));
+        var source = new BeanPropertySqlParameterSource(row);
+        var params = new MapSqlParameterSource();
+        for (String name : source.getReadablePropertyNames()) params.addValue(name, source.getValue(name));
+        params.addValue("expected", expected);
+        int changed = jdbc.update("""
+                UPDATE merchant_profile SET merchant_code = :merchantCode, name = :name, short_name = :shortName,
+                    type = :type, industry = :industry, country = :country, province = :province, city = :city,
+                    address = :address, registration_no = :registrationNo, contact_name = :contactName,
+                    contact_phone = :contactPhone, contact_email = :contactEmail, status = :status,
+                    row_version = :rowVersion, updated_by = :updatedBy, updated_at = :updatedAt
+                WHERE tenant_id = :tenantId AND id = :id AND row_version = :expected AND deleted = FALSE
+                """, params);
         if (changed != 1) throw new CommonException(MerchantResultCodeEnum.CONFLICT);
     }
 
+    @Override
     public PageResult<Merchant> page(
             String tenant, String code, String name, MerchantStatus status, int page, int size) {
-        QueryWrapper query = scope(tenant);
-        if (code != null && !code.isBlank())
-            query.and(MerchantDO::getMerchantCode).eq(code);
-        if (name != null && !name.isBlank()) query.and(MerchantDO::getName).like(name);
-        if (status != null) query.and(MerchantDO::getStatus).eq(status.name());
-        long total = mapper.selectCountByQuery(query);
-        query.orderBy(MERCHANT_DO.CREATED_AT.desc(), MERCHANT_DO.ID.asc()).limit((long) (page - 1) * size, size);
+        var sql = new StringBuilder(" FROM merchant_profile WHERE tenant_id = :tenant AND deleted = FALSE");
+        var params = new MapSqlParameterSource("tenant", required(tenant));
+        if (code != null && !code.isBlank()) {
+            sql.append(" AND merchant_code = :code");
+            params.addValue("code", code);
+        }
+        if (name != null && !name.isBlank()) {
+            sql.append(" AND name LIKE :name");
+            params.addValue("name", "%" + name + "%");
+        }
+        if (status != null) {
+            sql.append(" AND status = :status");
+            params.addValue("status", status.name());
+        }
+        Long count = jdbc.queryForObject("SELECT COUNT(*)" + sql, params, Long.class);
+        params.addValue("limit", size).addValue("offset", (long) (page - 1) * size);
+        var rows = jdbc.query(
+                "SELECT " + COLUMNS + sql + " ORDER BY created_at DESC, id ASC LIMIT :limit OFFSET :offset",
+                params,
+                rowMapper);
         return new PageResult<>(
-                java.util.Objects.requireNonNull(
-                                mapper.selectListByQuery(query), "Mapper must return an empty list instead of null")
-                        .stream()
-                        .map(converter::toMerchant)
-                        .toList(),
-                total,
-                page,
-                size);
+                rows.stream().map(converter::toMerchant).toList(), count == null ? 0 : count, page, size);
     }
 }

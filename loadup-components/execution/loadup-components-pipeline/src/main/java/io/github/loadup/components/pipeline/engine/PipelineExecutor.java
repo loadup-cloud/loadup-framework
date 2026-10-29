@@ -73,6 +73,17 @@ public class PipelineExecutor {
 
     private final ApplicationContext applicationContext;
 
+    public PipelineExecutor(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+
+    // ── Internal helpers ─────────────────────────────────────────────────────
+
+    @SuppressWarnings("unchecked")
+    private static <T extends Throwable> void sneakyThrow(Throwable t) throws T {
+        throw (T) t;
+    }
+
     /**
      * Execute a pipeline defined by the given {@link IPipelineDefinition}.
      *
@@ -160,8 +171,6 @@ public class PipelineExecutor {
             }
         }
     }
-
-    // ── Internal helpers ─────────────────────────────────────────────────────
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void executeStageList(
@@ -306,14 +315,5 @@ public class PipelineExecutor {
         IExceptionClassHandler handler = applicationContext.getBean(handlerClass);
         handler.handleException(t, ctx);
         return handler.assembleResultOnException(t, ctx);
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T extends Throwable> void sneakyThrow(Throwable t) throws T {
-        throw (T) t;
-    }
-
-    public PipelineExecutor(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
     }
 }

@@ -9,15 +9,10 @@
     </parent>
     <artifactId>loadup-modules-audit-infrastructure</artifactId>
     <name>LoadUp Modules Audit Infrastructure</name>
-    <description>MyBatis-Flex persistence and infrastructure adapters for audit events.</description>
+    <description>JDBC persistence and infrastructure adapters for audit events.</description>
     <properties/>
     <dependencies>
-        <dependency>
-            <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-database-processor</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
+
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-modules-audit-domain</artifactId>
@@ -45,22 +40,11 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <annotationProcessorPaths combine.children="append">
-                        <path>
-                            <groupId>com.mybatis-flex</groupId>
-                            <artifactId>mybatis-flex-processor</artifactId>
-                            <version>${mybatis.flex.version}</version>
-                        </path>
-                        <path>
-                            <groupId>io.github.loadup-cloud</groupId>
-                            <artifactId>loadup-components-database-processor</artifactId>
-                            <version>${loadup.framework.version}</version>
-                        </path>
-                    </annotationProcessorPaths>
+                    <annotationProcessorPaths combine.children="append"/>
                     <annotationProcessors>
                         <annotationProcessor>org.mapstruct.ap.MappingProcessor</annotationProcessor>
                         <annotationProcessor>org.springframework.boot.configurationprocessor.ConfigurationMetadataAnnotationProcessor</annotationProcessor>
-                        <annotationProcessor>io.github.loadup.components.database.processor.LoadUpMyBatisFlexProcessor</annotationProcessor>
+
                     </annotationProcessors>
                 </configuration>
             </plugin>

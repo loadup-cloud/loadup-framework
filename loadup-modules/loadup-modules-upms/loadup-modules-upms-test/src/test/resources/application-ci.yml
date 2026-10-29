@@ -10,11 +10,6 @@ spring:
       max-lifetime: 1800000
       connection-test-query: SELECT 1
 
-mybatis-flex:
-  configuration:
-    map-underscore-to-camel-case: true
-    cache-enabled: false
-
 testcontainers:
   reuse:
     enable: false   # CI 环境禁用重用

@@ -169,7 +169,7 @@ loadup-modules-{mod}/
 
 | #  | 禁止行为                                     | 正确做法                                                                |
 |----|------------------------------------------|---------------------------------------------------------------------|
-| 1  | Java 文件头写 `/*- #%L ... #L% */` License 块 | 标准 Apache-2.0 模板：`mvnd license:update-file-header` 后执行 `mvnd spotless:apply`（模板空行含尾随空格需对齐），verify 阶段 `check-file-header` + `spotless:check` 双校验 |
+| 1  | 生成的文件包含 LICENSE 文件头 | 所有新生成文件均不添加 LICENSE 或版权声明头部 |
 | 2  | 将 HTTP 映射直接写在业务 Service 中 | 在可选 Web 适配模块中使用 Spring MVC Controller 调用 Service |
 | 3  | 集成测试中用 `@MockBean` 替代 DB                 | `@EnableTestContainers(ContainerType.MYSQL)` 启动真实容器                      |
 | 4  | `@Autowired` 字段注入                        | 构造器注入：显式 `public XxxService(XxxGateway gw) { this.gw = gw; }`                               |
@@ -310,7 +310,7 @@ POM 的 `<name>` 统一采用 `LoadUp <模块族> <能力> [职责/实现]`，�
 - Resilience4j **2.3.0**（容错；版本由 loadup-dependencies BOM 统一，跟随 Spring Cloud 2025.1.x）
 - JUnit **6.0.3**（由 Spring Boot BOM 管理）+ `loadup-testify-spring-boot-starter` + Testcontainers
 - SpringDoc + Scalar | Spotless (Palantir Java Format) | Maven
-- License: **Apache-2.0**（Java 文件头由 license-maven-plugin 自动维护）
+- License: **Apache-2.0**
 
 ---
 
@@ -385,7 +385,7 @@ POM 的 `<name>` 统一采用 `LoadUp <模块族> <能力> [职责/实现]`，�
 - Database listeners own persistence createdAt/updatedAt. Business event and expiry timestamps use injected Clock with Clock.systemDefaultZone() defaults and convert using clock.getZone(). Each module qualifies its named `<module>Clock`; infrastructure lease clocks are separately qualified. Verification-code createdAt is an in-memory business timestamp and must still be initialized.
 - Expected business failures use CommonException with stable ResultCode (PARAM_ILLEGAL, NOT_FOUND, CONFLICT, INVALID_STATE, RATE_LIMITED or authentication codes). Unexpected infrastructure failures remain system failures. API exception advice preserves result codes and HTTP 200 envelopes; non-API and Spring Security protocols retain their responsible handlers.
 - Logs contain neither raw verification codes, credentials nor raw JSON payloads. Mask email/phone explicitly. Jackson exceptions may contain payload fragments: log operation and exception type without the exception message or chain.
-- License header options are inherited from the root POM, including `license.useJavaNoReformatCommentStartTag=false`; do not override them in child modules. ArchitectureTest checks bytecode dependencies; SourceStandardsTest checks source-retained MapStruct/Lombok annotations. Run focused regression tests when changing these contracts.
+- ArchitectureTest checks bytecode dependencies; SourceStandardsTest checks source-retained MapStruct/Lombok annotations. Run focused regression tests when changing these contracts.
 
 - Every loadup-parent declaration includes an explicit relativePath to the root pom.xml; Maven's default ../pom.xml can select an unrelated aggregator and silently fall back to an installed stale parent.
 

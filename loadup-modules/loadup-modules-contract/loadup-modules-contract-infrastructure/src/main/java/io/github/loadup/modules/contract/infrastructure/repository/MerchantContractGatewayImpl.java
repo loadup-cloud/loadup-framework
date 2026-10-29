@@ -19,33 +19,36 @@
  */
 package io.github.loadup.modules.contract.infrastructure.repository;
 
-import static io.github.loadup.modules.contract.infrastructure.dataobject.table.Tables.MERCHANT_CONTRACT_DO;
-
-import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import io.github.loadup.modules.contract.domain.gateway.MerchantContractGateway;
-import io.github.loadup.modules.contract.domain.model.*;
-import io.github.loadup.modules.contract.infrastructure.converter.ContractStorageConverter;
-import io.github.loadup.modules.contract.infrastructure.dataobject.*;
-import io.github.loadup.modules.contract.infrastructure.mapper.*;
+import io.github.loadup.modules.contract.domain.gateway.RequestKeyConflictException;
+import io.github.loadup.modules.contract.domain.model.ContractRecord;
+import io.github.loadup.modules.contract.domain.model.ContractRevisionRecord;
+import io.github.loadup.modules.contract.domain.model.ContractStatus;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import org.postgresql.util.PSQLException;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class MerchantContractGatewayImpl implements MerchantContractGateway {
-    private final MerchantContractDOMapper contracts;
-    private final ContractRevisionDOMapper revisions;
-    private final ContractStorageConverter converter;
+    private final NamedParameterJdbcTemplate jdbc;
+    private final Clock clock;
 
-    public MerchantContractGatewayImpl(
-            MerchantContractDOMapper contracts,
-            ContractRevisionDOMapper revisions,
-            ContractStorageConverter converter) {
-        this.contracts = contracts;
-        this.revisions = revisions;
-        this.converter = converter;
+    public MerchantContractGatewayImpl(NamedParameterJdbcTemplate jdbc, @Qualifier("databaseClock") Clock clock) {
+        this.jdbc = jdbc;
+        this.clock = clock;
     }
 
     private static String required(String value) {
@@ -54,86 +57,177 @@ public class MerchantContractGatewayImpl implements MerchantContractGateway {
         return value;
     }
 
-    private QueryWrapper scope(String tenant) {
-        return QueryWrapper.create()
-                .where(MerchantContractDO::getTenantId)
-                .eq(required(tenant))
-                .and(MerchantContractDO::getDeleted)
-                .eq(0);
+    private Optional<ContractRecord> find(String condition, MapSqlParameterSource args) {
+        return jdbc
+                .query(
+                        "SELECT * FROM merchant_contract WHERE tenant_id = :tenant AND deleted = FALSE AND "
+                                + condition,
+                        args,
+                        MerchantContractGatewayImpl::contract)
+                .stream()
+                .findFirst();
     }
 
+    @Override
     public Optional<ContractRecord> find(String tenant, String id) {
-        return Optional.ofNullable(contracts.selectOneByQuery(
-                        scope(tenant).and(MerchantContractDO::getId).eq(required(id))))
-                .map(converter::toContract);
+        return find("id = :id", new MapSqlParameterSource("tenant", required(tenant)).addValue("id", required(id)));
     }
 
+    @Override
     public Optional<ContractRecord> findByScope(String tenant, String merchant, String key) {
-        return Optional.ofNullable(contracts.selectOneByQuery(scope(tenant)
-                        .and(MerchantContractDO::getMerchantId)
-                        .eq(required(merchant))
-                        .and(MerchantContractDO::getScopeKey)
-                        .eq(required(key))))
-                .map(converter::toContract);
+        return find(
+                "merchant_id = :merchant AND scope_key = :key",
+                new MapSqlParameterSource("tenant", required(tenant))
+                        .addValue("merchant", required(merchant))
+                        .addValue("key", required(key)));
     }
 
+    @Override
+    public Optional<ContractRecord> lockByScope(String tenant, String merchant, String key) {
+        return find(
+                "merchant_id = :merchant AND scope_key = :key FOR UPDATE",
+                new MapSqlParameterSource("tenant", required(tenant))
+                        .addValue("merchant", required(merchant))
+                        .addValue("key", required(key)));
+    }
+
+    @Override
     public Optional<ContractRecord> findByRequest(String tenant, String key) {
-        return Optional.ofNullable(contracts.selectOneByQuery(
-                        scope(tenant).and(MerchantContractDO::getRequestKey).eq(required(key))))
-                .map(converter::toContract);
+        return find(
+                "request_key = :key",
+                new MapSqlParameterSource("tenant", required(tenant)).addValue("key", required(key)));
     }
 
+    @Override
     public Optional<ContractRevisionRecord> revision(String tenant, String id, int version) {
-        var query = QueryWrapper.create()
-                .where(ContractRevisionDO::getTenantId)
-                .eq(required(tenant))
-                .and(ContractRevisionDO::getDeleted)
-                .eq(0)
-                .and(ContractRevisionDO::getContractId)
-                .eq(required(id))
-                .and(ContractRevisionDO::getRevision)
-                .eq(version);
-        return Optional.ofNullable(revisions.selectOneByQuery(query)).map(converter::toRevision);
+        var args = new MapSqlParameterSource("tenant", required(tenant))
+                .addValue("id", required(id))
+                .addValue("version", version);
+        return jdbc
+                .query(
+                        "SELECT * FROM merchant_contract_revision WHERE tenant_id = :tenant AND contract_id = :id "
+                                + "AND revision = :version AND deleted = FALSE",
+                        args,
+                        MerchantContractGatewayImpl::revision)
+                .stream()
+                .findFirst();
     }
 
-    public void insert(ContractRecord contract, ContractRevisionRecord revision) {
-        contracts.insert(converter.toContractDO(contract));
-        revisions.insert(converter.toRevisionDO(revision));
+    @Override
+    @Transactional(propagation = Propagation.MANDATORY)
+    public void insert(ContractRecord record, ContractRevisionRecord revision) {
+        if (!required(record.id()).equals(required(revision.contractId()))
+                || !required(record.tenantId()).equals(required(revision.tenantId())))
+            throw new IllegalArgumentException("Contract revision must belong to the new contract and tenant");
+        LocalDateTime now = LocalDateTime.now(clock);
+        var args = new MapSqlParameterSource("id", record.id())
+                .addValue("tenant", record.tenantId())
+                .addValue("merchant", record.merchantId())
+                .addValue("scope", record.scopeKey())
+                .addValue("plan", record.planVersionId())
+                .addValue("status", record.status().name())
+                .addValue("generation", record.generation())
+                .addValue("key", record.requestKey())
+                .addValue("digest", record.requestDigest())
+                .addValue("actor", record.createdBy())
+                .addValue("created", record.createdAt() == null ? now : record.createdAt())
+                .addValue("updated", now);
+        int inserted;
+        try {
+            inserted = jdbc.update("""
+                INSERT INTO merchant_contract (id, tenant_id, merchant_id, scope_key, plan_version_id, status, generation,
+                    request_key, request_digest, created_by, created_at, updated_at, deleted)
+                VALUES (:id, :tenant, :merchant, :scope, :plan, :status, :generation, :key, :digest, :actor, :created, :updated, FALSE)
+                ON CONFLICT (tenant_id, request_key) DO NOTHING
+                """, args);
+        } catch (DuplicateKeyException failure) {
+            if (scopeConflict(failure)) throw new CommonException(ContractResultCodeEnum.CONFLICT, failure);
+            throw failure;
+        }
+        if (inserted == 0) throw new RequestKeyConflictException();
+        if (inserted != 1) throw new IllegalStateException("Unexpected contract insert count");
+        var rev = new MapSqlParameterSource("id", required(revision.id()))
+                .addValue("tenant", revision.tenantId())
+                .addValue("contract", revision.contractId())
+                .addValue("revision", revision.revision())
+                .addValue("snapshot", revision.snapshot())
+                .addValue("hash", revision.snapshotHash())
+                .addValue("created", revision.createdAt() == null ? now : revision.createdAt())
+                .addValue("updated", now);
+        if (jdbc.update("""
+                INSERT INTO merchant_contract_revision (id, tenant_id, contract_id, revision, snapshot, snapshot_hash,
+                    created_at, updated_at, deleted) VALUES (:id, :tenant, :contract, :revision, :snapshot, :hash, :created, :updated, FALSE)
+                """, rev) != 1) throw new IllegalStateException("Unexpected contract revision insert count");
     }
 
+    private static boolean scopeConflict(Throwable failure) {
+        for (Throwable cause = failure; cause != null; cause = cause.getCause()) {
+            if (cause instanceof PSQLException sql
+                    && "23505".equals(sql.getSQLState())
+                    && sql.getServerErrorMessage() != null
+                    && "uk_merchant_contract_scope"
+                            .equals(sql.getServerErrorMessage().getConstraint())) return true;
+        }
+        return false;
+    }
+
+    @Override
     public void updateStatus(String tenant, String id, long generation, ContractStatus status) {
-        MerchantContractDO patch = new MerchantContractDO();
-        patch.setStatus(status.name());
-        patch.setGeneration(Math.addExact(generation, 1));
-
-        int changed = contracts.updateByQuery(
-                patch,
-                true,
-                scope(tenant)
-                        .and(MerchantContractDO::getId)
-                        .eq(required(id))
-                        .and(MerchantContractDO::getGeneration)
-                        .eq(generation)
-                        .and(MerchantContractDO::getStatus)
-                        .ne(ContractStatus.TERMINATED.name()));
+        var args = new MapSqlParameterSource("tenant", required(tenant))
+                .addValue("id", required(id))
+                .addValue("generation", generation)
+                .addValue("next", Math.addExact(generation, 1))
+                .addValue("status", status.name())
+                .addValue("updated", LocalDateTime.now(clock));
+        int changed = jdbc.update("""
+                UPDATE merchant_contract SET status = :status, generation = :next, updated_at = :updated
+                WHERE tenant_id = :tenant AND id = :id AND generation = :generation AND status <> 'TERMINATED' AND deleted = FALSE
+                """, args);
         if (changed != 1) throw new CommonException(ContractResultCodeEnum.CONTRACT_STATE_CHANGED_OR_TERMINATED);
     }
 
+    @Override
     public PageResult<ContractRecord> page(String tenant, String merchant, int page, int size) {
-        QueryWrapper query = scope(tenant);
-        if (merchant != null && !merchant.isBlank())
-            query.and(MerchantContractDO::getMerchantId).eq(required(merchant));
-        long total = contracts.selectCountByQuery(query);
-        query.orderBy(MERCHANT_CONTRACT_DO.CREATED_AT.desc(), MERCHANT_CONTRACT_DO.ID.asc())
-                .limit((long) (page - 1) * size, size);
-        return new PageResult<>(
-                java.util.Objects.requireNonNull(
-                                contracts.selectListByQuery(query), "Mapper must return an empty list instead of null")
-                        .stream()
-                        .map(converter::toContract)
-                        .toList(),
-                total,
-                page,
-                size);
+        var sql = new StringBuilder(" FROM merchant_contract WHERE tenant_id = :tenant AND deleted = FALSE");
+        var args = new MapSqlParameterSource("tenant", required(tenant));
+        if (merchant != null && !merchant.isBlank()) {
+            sql.append(" AND merchant_id = :merchant");
+            args.addValue("merchant", merchant);
+        }
+        Long total = jdbc.queryForObject("SELECT COUNT(*)" + sql, args, Long.class);
+        args.addValue("limit", size).addValue("offset", (long) (page - 1) * size);
+        var rows = jdbc.query(
+                "SELECT *" + sql + " ORDER BY created_at DESC, id ASC LIMIT :limit OFFSET :offset",
+                args,
+                MerchantContractGatewayImpl::contract);
+        return new PageResult<>(rows, total == null ? 0 : total, page, size);
+    }
+
+    private static ContractRecord contract(ResultSet rs, int row) throws SQLException {
+        return new ContractRecord(
+                rs.getString("id"),
+                rs.getString("tenant_id"),
+                rs.getString("merchant_id"),
+                rs.getString("scope_key"),
+                rs.getString("plan_version_id"),
+                ContractStatus.valueOf(rs.getString("status")),
+                rs.getLong("generation"),
+                rs.getString("request_key"),
+                rs.getString("request_digest"),
+                rs.getString("created_by"),
+                rs.getObject("created_at", LocalDateTime.class),
+                rs.getObject("updated_at", LocalDateTime.class));
+    }
+
+    private static ContractRevisionRecord revision(ResultSet rs, int row) throws SQLException {
+        return new ContractRevisionRecord(
+                rs.getString("id"),
+                rs.getString("tenant_id"),
+                rs.getString("contract_id"),
+                rs.getInt("revision"),
+                rs.getString("snapshot"),
+                rs.getString("snapshot_hash"),
+                rs.getObject("created_at", LocalDateTime.class),
+                rs.getObject("updated_at", LocalDateTime.class));
     }
 }

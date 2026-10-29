@@ -125,7 +125,7 @@ loadup:
       shard: 0
 ```
 
-Apply `classpath:db/migration/V2026101201__sequence_allocation.sql` before enabling traffic. Use the integrating application's migration procedure or add `classpath:db/migration` to its existing Flyway locations, retaining all other module locations. The component does not create tables on the request path. Use one authoritative allocation database for each encoded site, preserve committed allocation maxima during failover/restoration, and restrict deletion/reset of allocation rows. The migration uses MySQL syntax.
+Apply `classpath:db/migration/V2026101201__sequence_allocation.sql` before enabling traffic. Use the integrating application's migration procedure or add `classpath:db/migration` to its existing Flyway locations, retaining all other module locations. The component does not create tables on the request path. Use one authoritative allocation database for each encoded site, preserve committed allocation maxima during failover/restoration, and restrict deletion/reset of allocation rows. The migration and allocation SQL target PostgreSQL.
 
 Inject `IdGenerator` for the configured automatic strategy. `IdGenerator` also implements MyBatis-Flex's generator contract; `generate(entity, keyColumn)` defaults to `generate()`. Flex registers it under `IdGenerator.KEY` through a lazy provider to avoid a SqlSessionFactory → generator → Sequence → Mapper initialization cycle. No ID is generated while constructing the SqlSessionFactory.
 

@@ -19,23 +19,18 @@
  */
 package io.github.loadup.modules.dictionary.infrastructure.dataobject;
 
-import com.mybatisflex.annotation.Column;
-import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
 
-@Table("dictionary_item")
 public class DictionaryItemDO extends BaseDO {
     private String typeId;
 
-    @Column("item_value")
     private String value;
 
-    @Column("item_label")
     private String label;
 
     private String description;
-    private int sortOrder;
-    private boolean enabled;
+    private Integer sortOrder;
+    private Boolean enabled;
 
     public String getTypeId() {
         return typeId;

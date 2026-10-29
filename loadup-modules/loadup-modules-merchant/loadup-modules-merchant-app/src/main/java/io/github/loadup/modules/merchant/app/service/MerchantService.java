@@ -30,7 +30,6 @@ import io.github.loadup.modules.merchant.domain.gateway.MerchantGateway;
 import io.github.loadup.modules.merchant.domain.model.*;
 import java.time.*;
 import java.util.UUID;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,11 +67,7 @@ public class MerchantService implements io.github.loadup.modules.merchant.client
                 actor,
                 at,
                 at);
-        try {
-            gateway.insert(merchant);
-        } catch (DuplicateKeyException e) {
-            throw new CommonException(MerchantResultCodeEnum.CONFLICT, e);
-        }
+        gateway.insert(merchant);
         return converter.toDTO(merchant);
     }
 

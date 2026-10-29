@@ -5,7 +5,7 @@ CREATE TABLE delayed_task (
     tenant_id VARCHAR(64) COLLATE "C" NOT NULL,
     created_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
     updated_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    deleted SMALLINT NOT NULL DEFAULT 0,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     task_type VARCHAR(64) COLLATE "C" NOT NULL,
     biz_id VARCHAR(128) COLLATE "C" NOT NULL,
     execute_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
@@ -15,8 +15,7 @@ CREATE TABLE delayed_task (
     max_attempts INT NOT NULL,
     lease_until TIMESTAMP(6) WITHOUT TIME ZONE,
     claim_token VARCHAR(64) COLLATE "C",
-    last_error VARCHAR(256) COLLATE "C",
-    CHECK (deleted IN (0, 1))
+    last_error VARCHAR(256) COLLATE "C"
 );
 
 CREATE UNIQUE INDEX uk_delayed_business ON delayed_task (tenant_id, task_type, biz_id);

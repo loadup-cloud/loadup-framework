@@ -20,27 +20,27 @@
 package io.github.loadup.components.delayedtask;
 
 import io.github.loadup.components.database.config.DatabaseProperties;
-import io.github.loadup.components.delayedtask.mapper.DelayedTaskDOMapper;
+import io.github.loadup.components.database.id.IdGenerator;
 import io.micrometer.observation.ObservationRegistry;
 import java.time.Clock;
 import java.util.List;
 import javax.sql.DataSource;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.*;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 @AutoConfiguration(
         afterName = {
-            "com.mybatisflex.spring.boot.MybatisFlexAutoConfiguration",
-            "io.github.loadup.components.database.autoconfigure.MyBatisFlexAutoConfiguration"
+            "org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration",
+            "io.github.loadup.components.database.autoconfigure.IdGeneratorAutoConfiguration"
         })
 @ConditionalOnSingleCandidate(DataSource.class)
+@ConditionalOnBean({JdbcTemplate.class, IdGenerator.class})
 @ConditionalOnProperty(prefix = "loadup.delayedtask", name = "enabled", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(DelayedTaskProperties.class)
-@MapperScan(basePackageClasses = DelayedTaskDOMapper.class)
 @Import(DelayedTaskConverterImpl.class)
 public class DelayedTaskAutoConfiguration {
     @Bean
@@ -51,8 +51,8 @@ public class DelayedTaskAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public DelayedTaskStore delayedTaskStore(DelayedTaskDOMapper mapper) {
-        return new DelayedTaskStore(mapper);
+    public DelayedTaskStore delayedTaskStore(JdbcTemplate jdbc, IdGenerator ids) {
+        return new DelayedTaskStore(jdbc, ids);
     }
 
     @Bean

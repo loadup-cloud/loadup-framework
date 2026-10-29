@@ -19,21 +19,27 @@
  */
 package io.github.loadup.components.globalunique.autoconfigure;
 
-import io.github.loadup.components.database.autoconfigure.MyBatisFlexAutoConfiguration;
+import io.github.loadup.components.database.autoconfigure.IdGeneratorAutoConfiguration;
 import io.github.loadup.components.database.config.DatabaseProperties;
+import io.github.loadup.components.database.id.IdGenerator;
 import io.github.loadup.components.globalunique.DefaultGlobalUniqueTemplate;
 import io.github.loadup.components.globalunique.GlobalUniqueProperties;
 import io.github.loadup.components.globalunique.GlobalUniqueTemplate;
-import io.github.loadup.components.globalunique.mapper.GlobalUniqueDOMapper;
+import java.time.Clock;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import javax.sql.DataSource;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /** Configures the database-backed global unique template. */
-@AutoConfiguration(after = MyBatisFlexAutoConfiguration.class)
+@AutoConfiguration(
+        after = IdGeneratorAutoConfiguration.class,
+        afterName = "org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration")
+@ConditionalOnBean({JdbcTemplate.class, IdGenerator.class})
 @ConditionalOnProperty(prefix = "loadup.global-unique", name = "enabled", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(GlobalUniqueProperties.class)
 public class GlobalUniqueAutoConfiguration {
@@ -41,7 +47,10 @@ public class GlobalUniqueAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(GlobalUniqueTemplate.class)
     public GlobalUniqueTemplate globalUniqueTemplate(
-            GlobalUniqueDOMapper mapper, DatabaseProperties databaseProperties, DataSource dataSource) {
-        return new DefaultGlobalUniqueTemplate(mapper, databaseProperties, dataSource);
+            JdbcTemplate jdbc,
+            DatabaseProperties databaseProperties,
+            IdGenerator idGenerator,
+            @Qualifier("databaseClock") Clock clock) {
+        return new DefaultGlobalUniqueTemplate(jdbc, databaseProperties, idGenerator, clock);
     }
 }

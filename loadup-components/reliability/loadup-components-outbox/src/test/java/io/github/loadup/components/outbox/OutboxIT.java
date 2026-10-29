@@ -48,8 +48,8 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpMethod;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.client.RestClient;
 import tools.jackson.databind.json.JsonMapper;
@@ -65,12 +65,17 @@ class OutboxIT {
     private final TransactionTemplate transactions;
 
     @Autowired
-    OutboxIT(JdbcOutboxRepository repository, OutboxInbox inbox, OutboxProperties properties, DataSource source) {
+    OutboxIT(
+            JdbcOutboxRepository repository,
+            OutboxInbox inbox,
+            OutboxProperties properties,
+            DataSource source,
+            PlatformTransactionManager manager) {
         this.repository = repository;
         this.inbox = inbox;
         this.properties = properties;
         jdbc = new JdbcTemplate(source);
-        transactions = new TransactionTemplate(new JdbcTransactionManager(source));
+        transactions = new TransactionTemplate(manager);
     }
 
     @BeforeEach
@@ -105,6 +110,7 @@ class OutboxIT {
         assertThat(recovered.event().id()).isEqualTo(id);
         assertThat(recovered.token()).isNotEqualTo(first.token());
         assertThat(repository.complete(first)).isFalse();
+        assertThat(repository.fail(first, new IllegalStateException("stale"))).isFalse();
         assertThat(repository.complete(recovered)).isTrue();
     }
 

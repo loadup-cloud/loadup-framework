@@ -99,13 +99,16 @@ class GlobalUniqueTemplateIT {
 
     @Test
     void duplicateClaimDoesNotAbortTheEnclosingPostgresqlTransaction() {
-        withTenant("tenant-savepoint", () -> transactionTemplate.execute(status -> {
-            assertThat(template.claim("ORDER", "first")).isTrue();
-            assertThat(template.claim("ORDER", "first")).isFalse();
-            assertThat(template.claim("ORDER", "second")).isTrue();
-            return null;
-        }));
-        assertThat(withTenant("tenant-savepoint", () -> template.find("ORDER", "second"))).isPresent();
+        withTenant(
+                "tenant-savepoint",
+                () -> transactionTemplate.execute(status -> {
+                    assertThat(template.claim("ORDER", "first")).isTrue();
+                    assertThat(template.claim("ORDER", "first")).isFalse();
+                    assertThat(template.claim("ORDER", "second")).isTrue();
+                    return null;
+                }));
+        assertThat(withTenant("tenant-savepoint", () -> template.find("ORDER", "second")))
+                .isPresent();
     }
 
     @Test

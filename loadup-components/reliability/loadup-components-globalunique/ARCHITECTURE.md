@@ -3,8 +3,7 @@
 ## Scope
 
 The component is a single-jar idempotency primitive. It owns claim semantics and the
-`global_unique` schema; the database component owns MyBatis-Flex, IDs, audit fields, logical
-deletion, and tenant context propagation.
+`global_unique` schema; the database component provides IDs, a clock and tenant configuration.
 
 ## Runtime flow
 
@@ -14,13 +13,13 @@ business transaction
       └─ GlobalUniqueTemplate.claim
               │
               ├─ resolve tenant scope
-              ├─ GlobalUniqueMapper.insert(GlobalUniqueDO)
-              ├─ database listener fills id / timestamps / tenant / deleted
-              └─ MySQL unique index decides first claim or replay
+              ├─ allocate ID and populate audit fields
+              ├─ insert with ON CONFLICT (tenant_id, biz_type, unique_key) DO NOTHING
+              └─ PostgreSQL unique index decides first claim or replay
 ```
 
-`DuplicateKeyException` is the only duplicate signal consumed by the template. SQL error messages
-are never parsed. Other persistence errors propagate to the caller.
+Only a conflict on the specified business key is treated as a replay. Other constraint failures
+propagate to the caller. An inactive row that still owns the key is an integrity error.
 
 ## Uniqueness contract
 
@@ -46,6 +45,5 @@ without an outer transaction commits as a standalone idempotency record.
 
 ## Persistence
 
-`GlobalUniqueDO extends BaseDO`; its mapper only extends MyBatis-Flex `BaseMapper`. Query code uses
-the generated `GlobalUniqueDOTableDef`, and generated sources remain under `target/`. The migration
-targets the project database baseline, MySQL 8, and contains the five standard columns.
+Spring JDBC uses the Spring-managed connection and explicit tenant and soft-delete predicates.
+The PostgreSQL initial migration contains the standard columns, including a Boolean deletion flag.

@@ -19,13 +19,11 @@
  */
 package io.github.loadup.components.gotone.store.dataobject;
 
-import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
 
 /**
  * Notification service configuration (gotone_notification_service).
  */
-@Table("gotone_notification_service")
 public class NotificationServiceDO extends BaseDO {
 
     private String serviceCode;
@@ -58,7 +56,7 @@ public class NotificationServiceDO extends BaseDO {
         this.description = description;
     }
 
-    public Boolean isEnabled() {
+    public Boolean getEnabled() {
         return enabled;
     }
 

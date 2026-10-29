@@ -19,18 +19,17 @@
  */
 package io.github.loadup.components.gotone.store.config;
 
-import io.github.loadup.components.database.autoconfigure.MyBatisFlexAutoConfiguration;
+import io.github.loadup.components.database.tenant.DatabaseTenant;
 import io.github.loadup.components.gotone.config.ChannelConfigProvider;
 import io.github.loadup.components.gotone.config.ServiceConfigProvider;
 import io.github.loadup.components.gotone.record.RecordHandler;
-import io.github.loadup.components.gotone.store.mapper.NotificationRecordDOMapper;
-import io.github.loadup.components.gotone.store.mapper.NotificationServiceDOMapper;
-import io.github.loadup.components.gotone.store.mapper.ServiceChannelDOMapper;
-import org.mybatis.spring.annotation.MapperScan;
+import java.time.Clock;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 /**
  * Auto-configuration for the default JDBC store of the gotone component.
@@ -39,26 +38,26 @@ import org.springframework.context.annotation.Bean;
  * can swap the JDBC store for their own {@link ServiceConfigProvider} / {@link ChannelConfigProvider}
  * / {@link RecordHandler} beans without touching the engine.
  */
-@AutoConfiguration(after = MyBatisFlexAutoConfiguration.class)
-@ConditionalOnClass({ChannelConfigProvider.class, MyBatisFlexAutoConfiguration.class})
-@MapperScan("io.github.loadup.components.gotone.store.mapper")
+@AutoConfiguration
+@ConditionalOnClass({ChannelConfigProvider.class, NamedParameterJdbcTemplate.class})
 public class GotoneStoreJdbcAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ServiceConfigProvider serviceConfigProvider(NotificationServiceDOMapper mapper) {
-        return new JdbcServiceConfigProvider(mapper);
+    public ServiceConfigProvider serviceConfigProvider(NamedParameterJdbcTemplate jdbc, DatabaseTenant tenant) {
+        return new JdbcServiceConfigProvider(jdbc, tenant);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public ChannelConfigProvider channelConfigProvider(ServiceChannelDOMapper mapper) {
-        return new JdbcChannelConfigProvider(mapper);
+    public ChannelConfigProvider channelConfigProvider(NamedParameterJdbcTemplate jdbc, DatabaseTenant tenant) {
+        return new JdbcChannelConfigProvider(jdbc, tenant);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public RecordHandler recordHandler(NotificationRecordDOMapper mapper) {
-        return new JdbcRecordHandler(mapper);
+    public RecordHandler recordHandler(
+            NamedParameterJdbcTemplate jdbc, DatabaseTenant tenant, @Qualifier("databaseClock") Clock clock) {
+        return new JdbcRecordHandler(jdbc, tenant, clock);
     }
 }

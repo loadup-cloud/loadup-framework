@@ -3,7 +3,7 @@ spring:
   application:
     name: loadup-upms-test
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: org.postgresql.Driver
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
       pool-name: LoadupUpmsTestPool
@@ -16,13 +16,6 @@ spring:
       connection-test-query: SELECT 1
     # url/username/password 由 Testcontainers 自动注入，无需手动配置
 
-mybatis-flex:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-    map-underscore-to-camel-case: true
-    cache-enabled: false
-    lazy-loading-enabled: false
-
 testcontainers:
   reuse:
     enable: true   # 本地开发启用重用，加快测试速度
@@ -31,7 +24,6 @@ logging:
   level:
     root: INFO
     io.github.loadup.modules.upms: DEBUG
-    com.mybatisflex: DEBUG
     org.springframework.jdbc: DEBUG
     org.springframework.transaction: DEBUG
 

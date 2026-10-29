@@ -23,34 +23,31 @@ import io.github.loadup.components.database.sequence.DatabaseSequenceRangeAlloca
 import io.github.loadup.components.database.sequence.SegmentSequence;
 import io.github.loadup.components.database.sequence.SequenceProperties;
 import io.github.loadup.components.database.sequence.SequenceRangeAllocator;
-import io.github.loadup.components.database.sequence.mapper.SequenceAllocationDOMapper;
 import java.time.Clock;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @AutoConfiguration(
-        after = MyBatisFlexAutoConfiguration.class,
-        afterName = "com.mybatisflex.spring.boot.MybatisFlexAutoConfiguration")
-@ConditionalOnBean(SqlSessionFactory.class)
+        after = {DatabaseCoreAutoConfiguration.class, JdbcTransactionAutoConfiguration.class},
+        afterName = "org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration")
+@ConditionalOnBean({JdbcTemplate.class, PlatformTransactionManager.class})
 @ConditionalOnProperty(
         prefix = "loadup.database.sequence",
         name = "enabled",
         havingValue = "true",
         matchIfMissing = true)
 @EnableConfigurationProperties(SequenceProperties.class)
-@MapperScan("io.github.loadup.components.database.sequence.mapper")
 public class SequenceAutoConfiguration {
     @Bean
     public SequenceRangeAllocator sequenceRangeAllocator(
-            SequenceAllocationDOMapper mapper, PlatformTransactionManager manager) {
-        return new DatabaseSequenceRangeAllocator(mapper, manager);
+            JdbcTemplate jdbc, PlatformTransactionManager manager, @Qualifier("databaseClock") Clock clock) {
+        return new DatabaseSequenceRangeAllocator(jdbc, manager, clock);
     }
 
     @Bean(destroyMethod = "close")

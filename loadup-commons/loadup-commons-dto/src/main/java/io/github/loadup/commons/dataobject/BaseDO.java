@@ -19,18 +19,16 @@
  */
 package io.github.loadup.commons.dataobject;
 
-import com.mybatisflex.annotation.Column;
-import com.mybatisflex.annotation.Id;
-import com.mybatisflex.annotation.KeyType;
 import io.github.loadup.commons.json.ToStringAsJson;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import org.springframework.data.annotation.Id;
 
-/** Common persistent fields for MyBatis-Flex data objects. */
+/** Common persistent fields for data objects. */
 public abstract class BaseDO implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @Id(keyType = KeyType.None)
+    @Id
     private String id;
 
     private LocalDateTime createdAt;
@@ -39,7 +37,6 @@ public abstract class BaseDO implements Serializable {
 
     private String tenantId;
 
-    @Column(isLogicDelete = true)
     private Integer deleted;
 
     @Override

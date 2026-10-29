@@ -19,36 +19,36 @@
  */
 package io.github.loadup.components.globalunique;
 
-import static io.github.loadup.components.globalunique.dataobject.table.Tables.GLOBAL_UNIQUE_DO;
-
-import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.database.config.DatabaseProperties;
-import io.github.loadup.components.database.transaction.JdbcSavepointExecutor;
-import javax.sql.DataSource;
-import io.github.loadup.components.globalunique.dataobject.GlobalUniqueDO;
-import io.github.loadup.components.globalunique.mapper.GlobalUniqueDOMapper;
+import io.github.loadup.components.database.id.IdGenerator;
 import io.github.loadup.components.globalunique.model.GlobalUniqueClaim;
 import io.github.loadup.components.globalunique.model.GlobalUniqueRecord;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
-import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.StringUtils;
 
-/** Default MyBatis-Flex implementation of {@link GlobalUniqueTemplate}. */
+/** PostgreSQL implementation of {@link GlobalUniqueTemplate}. */
 public class DefaultGlobalUniqueTemplate implements GlobalUniqueTemplate {
 
     private static final String GLOBAL_TENANT = "__loadup_global__";
 
-    private final GlobalUniqueDOMapper mapper;
+    private final JdbcTemplate jdbc;
     private final DatabaseProperties databaseProperties;
-    private final DataSource dataSource;
+    private final IdGenerator idGenerator;
+    private final Clock clock;
 
-    public DefaultGlobalUniqueTemplate(GlobalUniqueDOMapper mapper, DatabaseProperties databaseProperties, DataSource dataSource) {
-        this.mapper = mapper;
+    public DefaultGlobalUniqueTemplate(
+            JdbcTemplate jdbc, DatabaseProperties databaseProperties, IdGenerator idGenerator, Clock clock) {
+        this.jdbc = jdbc;
         this.databaseProperties = databaseProperties;
-        this.dataSource = dataSource;
+        this.idGenerator = idGenerator;
+        this.clock = clock;
     }
 
     @Override
@@ -59,37 +59,67 @@ public class DefaultGlobalUniqueTemplate implements GlobalUniqueTemplate {
     @Override
     public boolean claim(GlobalUniqueClaim claim) {
         Objects.requireNonNull(claim, "claim must not be null");
-        GlobalUniqueDO dataObject = new GlobalUniqueDO();
-        dataObject.setTenantId(resolveTenantId());
-        dataObject.setBizType(claim.bizType());
-        dataObject.setUniqueKey(claim.uniqueKey());
-        dataObject.setBizId(claim.bizId());
-        dataObject.setRequestData(claim.requestData());
-
-        try {
-            return JdbcSavepointExecutor.execute(dataSource, () -> mapper.insert(dataObject) == 1);
-        } catch (DuplicateKeyException exception) {
-            if (find(claim.bizType(), claim.uniqueKey()).isEmpty()) {
-                throw exception;
+        String tenant = resolveTenantId();
+        LocalDateTime now = LocalDateTime.now(clock);
+        int inserted = jdbc.update(
+                """
+                INSERT INTO global_unique
+                    (id, tenant_id, biz_type, unique_key, biz_id, request_data, created_at, updated_at, deleted)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, FALSE)
+                ON CONFLICT (tenant_id, biz_type, unique_key) DO NOTHING
+                """,
+                idGenerator.generate(),
+                tenant,
+                claim.bizType(),
+                claim.uniqueKey(),
+                claim.bizId(),
+                claim.requestData(),
+                now,
+                now);
+        if (inserted == 0) {
+            if (find(tenant, claim.bizType(), claim.uniqueKey()).isEmpty()) {
+                throw new DataIntegrityViolationException("Global unique key exists but is not active");
             }
             LogUtil.debug(
                     DefaultGlobalUniqueTemplate.class,
                     "Global unique claim already exists: tenantId={}, bizType={}, uniqueKey={}",
-                    dataObject.getTenantId(),
+                    tenant,
                     claim.bizType(),
                     claim.uniqueKey());
             return false;
         }
+        if (inserted != 1) throw new IllegalStateException("Unexpected global unique insert count: " + inserted);
+        return true;
     }
 
     @Override
     public Optional<GlobalUniqueRecord> find(String bizType, String uniqueKey) {
         GlobalUniqueClaim lookup = new GlobalUniqueClaim(bizType, uniqueKey, null, null);
-        QueryWrapper query = QueryWrapper.create()
-                .where(GLOBAL_UNIQUE_DO.TENANT_ID.eq(resolveTenantId()))
-                .and(GLOBAL_UNIQUE_DO.BIZ_TYPE.eq(lookup.bizType()))
-                .and(GLOBAL_UNIQUE_DO.UNIQUE_KEY.eq(lookup.uniqueKey()));
-        return Optional.ofNullable(mapper.selectOneByQuery(query)).map(DefaultGlobalUniqueTemplate::toRecord);
+        return find(resolveTenantId(), lookup.bizType(), lookup.uniqueKey());
+    }
+
+    private Optional<GlobalUniqueRecord> find(String tenant, String bizType, String uniqueKey) {
+        return jdbc
+                .query(
+                        """
+                SELECT id, tenant_id, biz_type, unique_key, biz_id, request_data, created_at, updated_at
+                FROM global_unique
+                WHERE tenant_id = ? AND biz_type = ? AND unique_key = ? AND deleted = FALSE
+                """,
+                        (rs, row) -> new GlobalUniqueRecord(
+                                rs.getString("id"),
+                                rs.getString("tenant_id"),
+                                rs.getString("biz_type"),
+                                rs.getString("unique_key"),
+                                rs.getString("biz_id"),
+                                rs.getString("request_data"),
+                                rs.getObject("created_at", LocalDateTime.class),
+                                rs.getObject("updated_at", LocalDateTime.class)),
+                        tenant,
+                        bizType,
+                        uniqueKey)
+                .stream()
+                .findFirst();
     }
 
     private String resolveTenantId() {
@@ -106,17 +136,5 @@ public class DefaultGlobalUniqueTemplate implements GlobalUniqueTemplate {
             throw new IllegalStateException("Tenant context is required for global unique operations");
         }
         return GLOBAL_TENANT;
-    }
-
-    private static GlobalUniqueRecord toRecord(GlobalUniqueDO dataObject) {
-        return new GlobalUniqueRecord(
-                dataObject.getId(),
-                dataObject.getTenantId(),
-                dataObject.getBizType(),
-                dataObject.getUniqueKey(),
-                dataObject.getBizId(),
-                dataObject.getRequestData(),
-                dataObject.getCreatedAt(),
-                dataObject.getUpdatedAt());
     }
 }

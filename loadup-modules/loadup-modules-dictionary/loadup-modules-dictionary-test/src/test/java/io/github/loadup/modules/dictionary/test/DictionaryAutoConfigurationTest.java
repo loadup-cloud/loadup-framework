@@ -22,24 +22,25 @@ package io.github.loadup.modules.dictionary.test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
+import io.github.loadup.components.database.id.IdGenerator;
 import io.github.loadup.modules.dictionary.app.autoconfigure.DictionaryAutoConfiguration;
 import io.github.loadup.modules.dictionary.app.converter.DictionaryDTOConverter;
 import io.github.loadup.modules.dictionary.app.service.DictionaryService;
 import io.github.loadup.modules.dictionary.domain.gateway.DictionaryGateway;
 import io.github.loadup.modules.dictionary.infrastructure.autoconfigure.DictionaryPersistenceAutoConfiguration;
-import io.github.loadup.modules.dictionary.infrastructure.mapper.DictionaryItemDOMapper;
-import io.github.loadup.modules.dictionary.infrastructure.mapper.DictionaryTypeDOMapper;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 /** Exercises auto-configuration composition; no persistence operations are executed. */
 class DictionaryAutoConfigurationTest {
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
             .withBean(DataSource.class, () -> mock(DataSource.class))
-            .withBean("dictionaryTypeDOMapper", DictionaryTypeDOMapper.class, () -> mock(DictionaryTypeDOMapper.class))
-            .withBean("dictionaryItemDOMapper", DictionaryItemDOMapper.class, () -> mock(DictionaryItemDOMapper.class))
+            .withBean(NamedParameterJdbcTemplate.class, () -> mock(NamedParameterJdbcTemplate.class))
+            .withBean(IdGenerator.class, () -> () -> "dictionary-id")
+            .withBean("databaseClock", java.time.Clock.class, java.time.Clock::systemDefaultZone)
             .withConfiguration(AutoConfigurations.of(
                     DictionaryPersistenceAutoConfiguration.class, DictionaryAutoConfiguration.class));
 

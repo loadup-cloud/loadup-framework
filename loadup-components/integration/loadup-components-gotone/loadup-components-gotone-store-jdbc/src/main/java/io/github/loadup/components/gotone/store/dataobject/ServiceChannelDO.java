@@ -19,13 +19,11 @@
  */
 package io.github.loadup.components.gotone.store.dataobject;
 
-import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
 
 /**
  * Service-channel mapping (gotone_service_channel).
  */
-@Table("gotone_service_channel")
 public class ServiceChannelDO extends BaseDO {
 
     private String serviceCode;
@@ -85,7 +83,7 @@ public class ServiceChannelDO extends BaseDO {
         this.fallbackProviders = fallbackProviders;
     }
 
-    public Boolean isEnabled() {
+    public Boolean getEnabled() {
         return enabled;
     }
 

@@ -19,243 +19,271 @@
  */
 package io.github.loadup.modules.upms.infrastructure.repository;
 
-import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.ROLE_DEPARTMENT_DO;
-import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.ROLE_DO;
-import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.ROLE_PERMISSION_DO;
-import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.USER_ROLE_DO;
-
-import com.mybatisflex.core.paginate.Page;
-import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.dto.PageQuery;
+import io.github.loadup.components.database.tenant.DatabaseTenant;
 import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
 import io.github.loadup.modules.upms.domain.model.Role;
 import io.github.loadup.modules.upms.infrastructure.converter.RoleConverter;
 import io.github.loadup.modules.upms.infrastructure.dataobject.RoleDO;
-import io.github.loadup.modules.upms.infrastructure.dataobject.RoleDepartmentDO;
-import io.github.loadup.modules.upms.infrastructure.dataobject.RolePermissionDO;
-import io.github.loadup.modules.upms.infrastructure.dataobject.UserRoleDO;
-import io.github.loadup.modules.upms.infrastructure.mapper.RoleDOMapper;
-import io.github.loadup.modules.upms.infrastructure.mapper.RoleDepartmentDOMapper;
-import io.github.loadup.modules.upms.infrastructure.mapper.RolePermissionDOMapper;
-import io.github.loadup.modules.upms.infrastructure.mapper.UserRoleDOMapper;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Role Repository Implementation using MyBatis-Flex
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 @Repository
 public class RoleGatewayImpl implements RoleGateway {
+    private static final String FROM =
+            " FROM upms_role r WHERE r.deleted = FALSE AND r.tenant_id IS NOT DISTINCT FROM :tenant AND ";
+    private static final String COLUMNS =
+            "r.id, r.tenant_id, r.role_name, r.role_code, r.parent_role_id AS parent_id, r.role_level, r.data_scope, r.sort_order, r.status, r.remark, r.created_by, r.updated_by, r.created_at, r.updated_at, CASE WHEN r.deleted THEN 1 ELSE 0 END AS deleted";
+    private final NamedParameterJdbcTemplate jdbc;
+    private final Clock clock;
+    private final DatabaseTenant tenant;
+    private final RoleConverter converter;
 
-    private final RoleDOMapper roleDOMapper;
-    private final RoleConverter roleConverter;
-    private final UserRoleDOMapper userRoleMapper;
-    private final RolePermissionDOMapper rolePermissionMapper;
-    private final RoleDepartmentDOMapper roleDepartmentMapper;
+    public RoleGatewayImpl(
+            NamedParameterJdbcTemplate jdbc,
+            RoleConverter converter,
+            @Qualifier("databaseClock") Clock clock,
+            DatabaseTenant tenant) {
+        this.jdbc = jdbc;
+        this.clock = clock;
+        this.tenant = tenant;
+        this.converter = converter;
+    }
 
     @Override
     public Role save(Role role) {
-        if (role.getId() == null) role.setId(UUID.randomUUID().toString());
-        RoleDO roleDO = roleConverter.toDataObject(role);
-        if (roleDO.getId() == null) roleDO.setId(UUID.randomUUID().toString());
-
-        roleDOMapper.insert(roleDO);
-        role = roleConverter.toEntity(roleDO);
-        return role;
+        RoleDO row = converter.toDataObject(role);
+        if (row.getId() == null) row.setId(UUID.randomUUID().toString());
+        var now = LocalDateTime.now(clock);
+        if (row.getCreatedAt() == null) row.setCreatedAt(now);
+        row.setUpdatedAt(now);
+        row.setTenantId(tenant.current());
+        jdbc.update("""
+                INSERT INTO upms_role (id, tenant_id, role_name, role_code, parent_role_id, role_level, data_scope,
+                    sort_order, status, remark, created_by, updated_by, created_at, updated_at, deleted)
+                VALUES (:id, :tenantId, :roleName, :roleCode, :parentId, COALESCE(:roleLevel, 1), COALESCE(:dataScope, 1),
+                    COALESCE(:sortOrder, 0), COALESCE(:status, 1), :remark, :createdBy, :updatedBy, :createdAt, :updatedAt, FALSE)
+                """, new BeanPropertySqlParameterSource(row));
+        return converter.toEntity(row);
     }
 
     @Override
     public Role update(Role role) {
-        RoleDO roleDO = roleConverter.toDataObject(role);
-        roleDOMapper.update(roleDO);
-        role = roleConverter.toEntity(roleDO);
-        return role;
+        RoleDO row = converter.toDataObject(role);
+        row.setTenantId(tenant.current());
+        row.setUpdatedAt(LocalDateTime.now(clock));
+        jdbc.update("""
+                UPDATE upms_role SET role_name = COALESCE(:roleName, role_name), role_code = COALESCE(:roleCode, role_code),
+                    parent_role_id = COALESCE(:parentId, parent_role_id), role_level = COALESCE(:roleLevel, role_level),
+                    data_scope = COALESCE(:dataScope, data_scope), sort_order = COALESCE(:sortOrder, sort_order),
+                    status = COALESCE(:status, status), remark = COALESCE(:remark, remark),
+                    updated_by = COALESCE(:updatedBy, updated_by), updated_at = :updatedAt
+                WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenantId AND deleted = FALSE
+                """, new BeanPropertySqlParameterSource(row));
+        return converter.toEntity(row);
     }
 
     @Override
+    @Transactional
     public void deleteById(String id) {
-        rolePermissionMapper.deleteByQuery(QueryWrapper.create().where(ROLE_PERMISSION_DO.ROLE_ID.eq(id)));
-        roleDepartmentMapper.deleteByQuery(QueryWrapper.create().where(ROLE_DEPARTMENT_DO.ROLE_ID.eq(id)));
-        roleDOMapper.deleteById(id);
+        var params = params().addValue("id", id).addValue("now", LocalDateTime.now(clock));
+        jdbc.queryForList(
+                "SELECT id FROM upms_role WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE FOR UPDATE",
+                params,
+                String.class);
+        for (String table : List.of("upms_role_permission", "upms_role_department", "upms_user_role")) {
+            jdbc.update(
+                    "UPDATE " + table
+                            + " SET deleted = TRUE, updated_at = :now WHERE role_id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE",
+                    params);
+        }
+        jdbc.update(
+                "UPDATE upms_role SET deleted = TRUE, updated_at = :now WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE",
+                params);
     }
 
     @Override
     public Optional<Role> findById(String id) {
-        RoleDO roleDO = roleDOMapper.selectOneById(id);
-        return Optional.ofNullable(roleDO).map(roleConverter::toEntity);
+        return find("r.id = :value", id).stream().findFirst();
     }
 
     @Override
     public Optional<Role> findByRoleCode(String roleCode) {
-        QueryWrapper query = QueryWrapper.create().where(ROLE_DO.ROLE_CODE.eq(roleCode));
-        RoleDO roleDO = roleDOMapper.selectOneByQuery(query);
-        return Optional.ofNullable(roleDO).map(roleConverter::toEntity);
+        return find("r.role_code = :value", roleCode).stream().findFirst();
     }
 
     @Override
     public List<Role> findByUserId(String userId) {
-        List<String> roleIds = getUserRoleIds(userId);
-        if (roleIds.isEmpty()) return List.of();
-        return java.util.Objects.requireNonNull(
-                        roleDOMapper.selectListByIds(roleIds), "Mapper must return an empty list instead of null")
-                .stream()
-                .map(roleConverter::toEntity)
-                .toList();
+        return find(
+                "EXISTS (SELECT 1 FROM upms_user_role ur WHERE ur.role_id = r.id AND ur.user_id = :value AND ur.deleted = FALSE AND ur.tenant_id IS NOT DISTINCT FROM :tenant)",
+                userId);
     }
 
     @Override
     public List<Role> findByParentId(String parentId) {
-        QueryWrapper query = QueryWrapper.create().where(ROLE_DO.PARENT_ID.eq(parentId));
-        List<RoleDO> roleDOs = java.util.Objects.requireNonNull(
-                roleDOMapper.selectListByQuery(query), "Mapper must return an empty list instead of null");
-        return roleDOs.stream().map(roleConverter::toEntity).collect(Collectors.toList());
+        return find("r.parent_role_id = :value", parentId);
     }
 
     @Override
     public List<Role> findAll() {
-        List<RoleDO> roleDOs = roleDOMapper.selectAll();
-        return roleDOs.stream().map(roleConverter::toEntity).collect(Collectors.toList());
+        return find("TRUE", null);
     }
 
     @Override
     public List<Role> findAllEnabled() {
-        QueryWrapper query = QueryWrapper.create().where(ROLE_DO.STATUS.eq((short) 1));
-        List<RoleDO> roleDOs = java.util.Objects.requireNonNull(
-                roleDOMapper.selectListByQuery(query), "Mapper must return an empty list instead of null");
-        return roleDOs.stream().map(roleConverter::toEntity).collect(Collectors.toList());
+        return find("r.status = 1", null);
     }
 
     @Override
     public boolean existsByRoleCode(String roleCode) {
-        QueryWrapper query = QueryWrapper.create().where(ROLE_DO.ROLE_CODE.eq(roleCode));
-        return roleDOMapper.selectCountByQuery(query) > 0;
+        return findByRoleCode(roleCode).isPresent();
     }
 
     @Override
+    @Transactional
     public void assignRoleToUser(String userId, String roleId, String operatorId) {
-        if (userRoleMapper.selectCountByQuery(QueryWrapper.create()
-                        .where(USER_ROLE_DO.USER_ID.eq(userId))
-                        .and(USER_ROLE_DO.ROLE_ID.eq(roleId)))
-                > 0) return;
-        UserRoleDO relation = new UserRoleDO();
-        initialize(relation);
-        relation.setUserId(userId);
-        relation.setRoleId(roleId);
-        relation.setCreatedBy(operatorId);
-        userRoleMapper.insert(relation);
+        lockActive("upms_role", roleId);
+        lockActive("upms_user", userId);
+        insertRelation("upms_user_role", "user_id", userId, "role_id", roleId, operatorId);
     }
 
     @Override
     public void removeRoleFromUser(String userId, String roleId) {
-        userRoleMapper.deleteByQuery(
-                QueryWrapper.create().where(USER_ROLE_DO.USER_ID.eq(userId)).and(USER_ROLE_DO.ROLE_ID.eq(roleId)));
+        removeRelation("upms_user_role", "user_id", userId, "role_id", List.of(roleId));
     }
 
     @Override
     public List<String> getUserRoleIds(String userId) {
-        return java.util.Objects.requireNonNull(
-                        userRoleMapper.selectListByQuery(QueryWrapper.create().where(USER_ROLE_DO.USER_ID.eq(userId))),
-                        "Mapper must return an empty list instead of null")
-                .stream()
-                .map(UserRoleDO::getRoleId)
-                .toList();
+        return ids("upms_user_role", "role_id", "user_id", userId);
     }
 
     @Override
+    @Transactional
     public void assignPermissionsToRole(String roleId, List<String> permissionIds) {
+        lockActive("upms_role", roleId);
         for (String permissionId : permissionIds) {
-            if (rolePermissionMapper.selectCountByQuery(QueryWrapper.create()
-                            .where(ROLE_PERMISSION_DO.ROLE_ID.eq(roleId))
-                            .and(ROLE_PERMISSION_DO.PERMISSION_ID.eq(permissionId)))
-                    > 0) continue;
-            RolePermissionDO relation = new RolePermissionDO();
-            initialize(relation);
-            relation.setRoleId(roleId);
-            relation.setPermissionId(permissionId);
-            rolePermissionMapper.insert(relation);
+            lockActive("upms_permission", permissionId);
+            insertRelation("upms_role_permission", "role_id", roleId, "permission_id", permissionId, null);
         }
     }
 
     @Override
     public void removePermissionsFromRole(String roleId, List<String> permissionIds) {
-        if (permissionIds.isEmpty()) return;
-        rolePermissionMapper.deleteByQuery(QueryWrapper.create()
-                .where(ROLE_PERMISSION_DO.ROLE_ID.eq(roleId))
-                .and(ROLE_PERMISSION_DO.PERMISSION_ID.in(permissionIds)));
+        removeRelation("upms_role_permission", "role_id", roleId, "permission_id", permissionIds);
     }
 
     @Override
+    @Transactional
     public void assignDepartmentsToRole(String roleId, List<String> departmentIds) {
+        lockActive("upms_role", roleId);
         for (String deptId : departmentIds) {
-            if (roleDepartmentMapper.selectCountByQuery(QueryWrapper.create()
-                            .where(ROLE_DEPARTMENT_DO.ROLE_ID.eq(roleId))
-                            .and(ROLE_DEPARTMENT_DO.DEPT_ID.eq(deptId)))
-                    > 0) continue;
-            RoleDepartmentDO relation = new RoleDepartmentDO();
-            initialize(relation);
-            relation.setRoleId(roleId);
-            relation.setDeptId(deptId);
-            roleDepartmentMapper.insert(relation);
+            lockActive("upms_department", deptId);
+            insertRelation("upms_role_department", "role_id", roleId, "dept_id", deptId, null);
         }
     }
 
     @Override
     public void removeDepartmentsFromRole(String roleId, List<String> departmentIds) {
-        if (departmentIds.isEmpty()) return;
-        roleDepartmentMapper.deleteByQuery(QueryWrapper.create()
-                .where(ROLE_DEPARTMENT_DO.ROLE_ID.eq(roleId))
-                .and(ROLE_DEPARTMENT_DO.DEPT_ID.in(departmentIds)));
+        removeRelation("upms_role_department", "role_id", roleId, "dept_id", departmentIds);
     }
 
     @Override
     public List<String> findDepartmentIdsByRoleId(String roleId) {
-        return java.util.Objects.requireNonNull(
-                        roleDepartmentMapper.selectListByQuery(
-                                QueryWrapper.create().where(ROLE_DEPARTMENT_DO.ROLE_ID.eq(roleId))),
-                        "Mapper must return an empty list instead of null")
-                .stream()
-                .map(RoleDepartmentDO::getDeptId)
-                .toList();
-    }
-
-    private static void initialize(io.github.loadup.commons.dataobject.BaseDO relation) {
-        relation.setId(UUID.randomUUID().toString());
-
-        relation.setDeleted(0);
+        return ids("upms_role_department", "dept_id", "role_id", roleId);
     }
 
     @Override
     public PageResult<Role> findAll(PageQuery query) {
-        Page<RoleDO> page = roleDOMapper.paginate(Page.of(query.pageNum(), query.pageSize()), QueryWrapper.create());
-
-        List<Role> roles =
-                page.getRecords().stream().map(roleConverter::toEntity).collect(Collectors.toList());
-
-        return PageResult.of(roles, page.getTotalRow(), query.pageNum(), query.pageSize());
+        var params = params();
+        Long total = jdbc.queryForObject("SELECT COUNT(*)" + FROM + "TRUE", params, Long.class);
+        params.addValue("limit", query.pageSize()).addValue("offset", ((long) query.pageNum() - 1) * query.pageSize());
+        var rows = select("TRUE", params, " ORDER BY r.id LIMIT :limit OFFSET :offset");
+        return PageResult.of(rows, total == null ? 0 : total, query.pageNum(), query.pageSize());
     }
 
     @Override
     public long countUsersByRoleId(String roleId) {
-        return userRoleMapper.selectCountByQuery(QueryWrapper.create().where(USER_ROLE_DO.ROLE_ID.eq(roleId)));
+        Long count = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM upms_user_role WHERE role_id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE",
+                params().addValue("id", roleId),
+                Long.class);
+        return count == null ? 0 : count;
     }
 
-    public RoleGatewayImpl(
-            RoleDOMapper roleDOMapper,
-            RoleConverter roleConverter,
-            UserRoleDOMapper userRoleMapper,
-            RolePermissionDOMapper rolePermissionMapper,
-            RoleDepartmentDOMapper roleDepartmentMapper) {
-        this.roleDOMapper = roleDOMapper;
-        this.roleConverter = roleConverter;
-        this.userRoleMapper = userRoleMapper;
-        this.rolePermissionMapper = rolePermissionMapper;
-        this.roleDepartmentMapper = roleDepartmentMapper;
+    private void lockActive(String table, String id) {
+        var rows = jdbc.queryForList(
+                "SELECT id FROM " + table
+                        + " WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE AND status = 1 FOR UPDATE",
+                params().addValue("id", id),
+                String.class);
+        if (rows.isEmpty()) throw new IllegalArgumentException("Active related entity not found: " + table);
+    }
+
+    private void insertRelation(
+            String table, String firstColumn, String first, String secondColumn, String second, String operator) {
+        var values = params().addValue("id", UUID.randomUUID().toString())
+                .addValue("first", first)
+                .addValue("second", second)
+                .addValue("operator", operator)
+                .addValue("now", LocalDateTime.now(clock));
+        int changed = jdbc.update(
+                "INSERT INTO " + table + " (id, tenant_id, " + firstColumn + ", " + secondColumn
+                        + ", created_by, created_at, updated_at, deleted) "
+                        + "VALUES (:id, :tenant, :first, :second, :operator, :now, :now, FALSE) ON CONFLICT ("
+                        + firstColumn + ", " + secondColumn + ") "
+                        + "DO UPDATE SET deleted = FALSE, updated_at = EXCLUDED.updated_at WHERE " + table
+                        + ".tenant_id IS NOT DISTINCT FROM EXCLUDED.tenant_id",
+                values);
+        if (changed != 1) throw new IllegalStateException("Relation was not saved");
+    }
+
+    private void removeRelation(
+            String table, String firstColumn, String first, String secondColumn, List<String> seconds) {
+        if (seconds.isEmpty()) return;
+        jdbc.update(
+                "UPDATE " + table + " SET deleted = TRUE, updated_at = :now WHERE " + firstColumn + " = :first AND "
+                        + secondColumn
+                        + " IN (:seconds) AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE",
+                params().addValue("first", first)
+                        .addValue("seconds", seconds)
+                        .addValue("now", LocalDateTime.now(clock)));
+    }
+
+    private List<String> ids(String table, String resultColumn, String keyColumn, String key) {
+        return jdbc.queryForList(
+                "SELECT " + resultColumn + " FROM " + table + " WHERE " + keyColumn
+                        + " = :key AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE",
+                params().addValue("key", key),
+                String.class);
+    }
+
+    private List<Role> find(String predicate, Object value) {
+        return select(predicate, params().addValue("value", value), "");
+    }
+
+    private List<Role> select(String predicate, MapSqlParameterSource params, String suffix) {
+        return jdbc
+                .query(
+                        "SELECT " + COLUMNS + FROM + predicate + suffix,
+                        params,
+                        BeanPropertyRowMapper.newInstance(RoleDO.class))
+                .stream()
+                .map(converter::toEntity)
+                .toList();
+    }
+
+    private MapSqlParameterSource params() {
+        return new MapSqlParameterSource("tenant", tenant.current());
     }
 }

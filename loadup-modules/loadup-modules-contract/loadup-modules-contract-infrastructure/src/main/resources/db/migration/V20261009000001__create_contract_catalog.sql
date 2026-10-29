@@ -12,8 +12,7 @@ CREATE TABLE contract_catalog_version (
     updated_by VARCHAR(256) COLLATE "C" NOT NULL,
     created_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
     updated_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    deleted SMALLINT NOT NULL DEFAULT 0,
-    CHECK (deleted IN (0, 1))
+    deleted BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE UNIQUE INDEX uk_contract_catalog_version ON contract_catalog_version (tenant_id,kind,code,version);
@@ -33,8 +32,7 @@ CREATE TABLE merchant_contract (
     created_by VARCHAR(256) COLLATE "C" NOT NULL,
     created_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
     updated_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    deleted SMALLINT NOT NULL DEFAULT 0,
-    CHECK (deleted IN (0, 1))
+    deleted BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE UNIQUE INDEX uk_merchant_contract_scope ON merchant_contract (tenant_id,merchant_id,scope_key);
@@ -52,8 +50,7 @@ CREATE TABLE merchant_contract_revision (
     snapshot_hash VARCHAR(128) COLLATE "C" NOT NULL,
     created_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
     updated_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    deleted SMALLINT NOT NULL DEFAULT 0,
-    CHECK (deleted IN (0, 1))
+    deleted BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE UNIQUE INDEX uk_merchant_contract_revision ON merchant_contract_revision (tenant_id,contract_id,revision);

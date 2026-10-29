@@ -21,12 +21,11 @@ package io.github.loadup.commons.util;
 
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Digest & hash utility.
@@ -35,8 +34,7 @@ import java.security.NoSuchAlgorithmException;
  */
 public final class DigestUtils {
 
-    private DigestUtils() {
-    }
+    private DigestUtils() {}
 
     public static String md5(String data) {
         return digest(data, "MD5");
@@ -94,6 +92,4 @@ public final class DigestUtils {
         }
         return sb.toString();
     }
-
-
 }

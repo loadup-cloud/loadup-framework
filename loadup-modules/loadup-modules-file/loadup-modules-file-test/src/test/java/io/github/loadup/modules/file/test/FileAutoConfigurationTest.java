@@ -28,19 +28,19 @@ import io.github.loadup.modules.file.app.converter.FileDTOConverter;
 import io.github.loadup.modules.file.app.service.FileResourceService;
 import io.github.loadup.modules.file.domain.gateway.FileResourceGateway;
 import io.github.loadup.modules.file.infrastructure.autoconfigure.FilePersistenceAutoConfiguration;
-import io.github.loadup.modules.file.infrastructure.mapper.FileReferenceDOMapper;
-import io.github.loadup.modules.file.infrastructure.mapper.FileResourceDOMapper;
+import java.time.Clock;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /** Exercises auto-configuration composition; no persistence operations are executed. */
 class FileAutoConfigurationTest {
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
             .withBean(DataSource.class, () -> mock(DataSource.class))
-            .withBean("fileResourceDOMapper", FileResourceDOMapper.class, () -> mock(FileResourceDOMapper.class))
-            .withBean("fileReferenceDOMapper", FileReferenceDOMapper.class, () -> mock(FileReferenceDOMapper.class))
+            .withBean(JdbcTemplate.class, () -> mock(JdbcTemplate.class))
+            .withBean("databaseClock", Clock.class, Clock::systemDefaultZone)
             .withBean(DfsService.class, () -> mock(DfsService.class))
             .withConfiguration(
                     AutoConfigurations.of(FilePersistenceAutoConfiguration.class, FileResourceAutoConfiguration.class));

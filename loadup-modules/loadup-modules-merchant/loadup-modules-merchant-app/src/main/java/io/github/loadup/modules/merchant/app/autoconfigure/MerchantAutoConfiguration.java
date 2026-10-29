@@ -20,12 +20,12 @@
 package io.github.loadup.modules.merchant.app.autoconfigure;
 
 import io.github.loadup.modules.merchant.app.converter.MerchantConverterImpl;
+import io.github.loadup.modules.merchant.app.service.MerchantPersistenceService;
 import io.github.loadup.modules.merchant.app.service.MerchantQueryService;
 import io.github.loadup.modules.merchant.app.service.MerchantService;
 import io.github.loadup.modules.merchant.infrastructure.converter.MerchantStorageConverterImpl;
 import io.github.loadup.modules.merchant.infrastructure.repository.MerchantGatewayImpl;
 import javax.sql.DataSource;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.context.annotation.Import;
@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Import;
 @AutoConfiguration(
         afterName = {
             "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration",
-            "io.github.loadup.components.database.autoconfigure.MyBatisFlexAutoConfiguration"
+            "org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration"
         })
 @ConditionalOnSingleCandidate(DataSource.class)
 @ConditionalOnProperty(
@@ -41,10 +41,10 @@ import org.springframework.context.annotation.Import;
         name = "enabled",
         havingValue = "true",
         matchIfMissing = true)
-@MapperScan("io.github.loadup.modules.merchant.infrastructure.mapper")
 @Import({
     MerchantService.class,
     MerchantQueryService.class,
+    MerchantPersistenceService.class,
     MerchantConverterImpl.class,
     MerchantStorageConverterImpl.class,
     MerchantGatewayImpl.class

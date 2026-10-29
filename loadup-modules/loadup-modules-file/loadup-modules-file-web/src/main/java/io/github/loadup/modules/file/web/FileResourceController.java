@@ -54,7 +54,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-/** Authenticated file API; metadata uses the normal JSON envelope, content is streamed. */
+/**
+ * Authenticated file API; metadata uses the normal JSON envelope, content is streamed.
+ */
 @RestController
 @RequestMapping("/files")
 @Tag(name = "File Resources", description = "Managed file uploads, downloads and lifecycle")
@@ -65,6 +67,22 @@ public class FileResourceController {
     public FileResourceController(FileResourceFacade service, FileWebConverter converter) {
         this.converter = converter;
         this.service = service;
+    }
+
+    private static String actor(Authentication authentication) {
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || !(authentication.getPrincipal() instanceof LoadUpUser user)
+                || user.getUserId() == null
+                || user.getUserId().isBlank()) {
+            throw new CommonException(FileResultCodeEnum.AUTHENTICATED_USER_IS_REQUIRED);
+        }
+        return user.getUserId();
+    }
+
+    private static boolean admin(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .anyMatch(authority -> "ROLE_SUPER_ADMIN".equals(authority.getAuthority()));
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -155,22 +173,6 @@ public class FileResourceController {
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
     public SuccessResponse<Integer> cleanup(@RequestBody FileCleanupCommand request) {
         return SuccessResponse.of(service.cleanupPending(request.limit() == null ? 100 : request.limit()));
-    }
-
-    private static String actor(Authentication authentication) {
-        if (authentication == null
-                || !authentication.isAuthenticated()
-                || !(authentication.getPrincipal() instanceof LoadUpUser user)
-                || user.getUserId() == null
-                || user.getUserId().isBlank()) {
-            throw new CommonException(FileResultCodeEnum.AUTHENTICATED_USER_IS_REQUIRED);
-        }
-        return user.getUserId();
-    }
-
-    private static boolean admin(Authentication authentication) {
-        return authentication.getAuthorities().stream()
-                .anyMatch(authority -> "ROLE_SUPER_ADMIN".equals(authority.getAuthority()));
     }
 
     /** Public metadata omits the internal DFS storage key and tenant identifier. */

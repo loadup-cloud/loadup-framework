@@ -9,9 +9,8 @@ CREATE TABLE global_unique (
     request_data TEXT                  DEFAULT NULL,
     created_at   TIMESTAMP(6) WITHOUT TIME ZONE     NOT NULL,
     updated_at   TIMESTAMP(6) WITHOUT TIME ZONE     NOT NULL,
-    deleted      SMALLINT      NOT NULL DEFAULT 0,
-    PRIMARY KEY (id),
-    CHECK (deleted IN (0, 1))
+    deleted      BOOLEAN       NOT NULL DEFAULT FALSE,
+    PRIMARY KEY (id)
 );
 
 CREATE UNIQUE INDEX uk_global_unique_scope ON global_unique (tenant_id, biz_type, unique_key);

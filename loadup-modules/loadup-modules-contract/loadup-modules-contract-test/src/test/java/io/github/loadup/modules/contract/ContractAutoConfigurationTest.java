@@ -29,15 +29,12 @@ import io.github.loadup.modules.contract.app.service.ContractResolveService;
 import io.github.loadup.modules.contract.app.service.MerchantContractService;
 import io.github.loadup.modules.contract.domain.gateway.CatalogGateway;
 import io.github.loadup.modules.contract.domain.gateway.MerchantContractGateway;
-import io.github.loadup.modules.contract.infrastructure.converter.ContractStorageConverter;
-import io.github.loadup.modules.contract.infrastructure.mapper.CatalogVersionDOMapper;
-import io.github.loadup.modules.contract.infrastructure.mapper.ContractRevisionDOMapper;
-import io.github.loadup.modules.contract.infrastructure.mapper.MerchantContractDOMapper;
 import java.time.Clock;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -46,17 +43,10 @@ class ContractAutoConfigurationTest {
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(ContractAutoConfiguration.class))
             .withBean("contractClock", Clock.class, Clock::systemUTC)
+            .withBean("databaseClock", Clock.class, Clock::systemUTC)
             .withBean(JsonMapper.class, () -> JsonMapper.builder().build())
             .withBean(PlatformTransactionManager.class, () -> mock(PlatformTransactionManager.class))
-            .withBean("catalogVersionDOMapper", CatalogVersionDOMapper.class, () -> mock(CatalogVersionDOMapper.class))
-            .withBean(
-                    "merchantContractDOMapper",
-                    MerchantContractDOMapper.class,
-                    () -> mock(MerchantContractDOMapper.class))
-            .withBean(
-                    "contractRevisionDOMapper",
-                    ContractRevisionDOMapper.class,
-                    () -> mock(ContractRevisionDOMapper.class));
+            .withBean(NamedParameterJdbcTemplate.class, () -> mock(NamedParameterJdbcTemplate.class));
 
     @Test
     void registersServicesRepositoriesAndGeneratedConvertersWithSingleDataSource() {
@@ -68,7 +58,6 @@ class ContractAutoConfigurationTest {
             assertThat(context).hasSingleBean(CatalogGateway.class);
             assertThat(context).hasSingleBean(MerchantContractGateway.class);
             assertThat(context).hasSingleBean(ContractConverter.class);
-            assertThat(context).hasSingleBean(ContractStorageConverter.class);
         });
     }
 
@@ -90,7 +79,6 @@ class ContractAutoConfigurationTest {
                     assertThat(context).hasNotFailed();
                     assertThat(context).doesNotHaveBean(CatalogService.class);
                     assertThat(context).doesNotHaveBean(MerchantContractGateway.class);
-                    assertThat(context).doesNotHaveBean(ContractStorageConverter.class);
                 });
     }
 

@@ -19,12 +19,11 @@
  */
 package io.github.loadup.components.dfs.database;
 
-import com.mybatisflex.core.query.QueryWrapper;
+import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.dfs.DfsObjectNotFoundException;
 import io.github.loadup.components.dfs.DfsProvider;
 import io.github.loadup.components.dfs.DfsStorageException;
 import io.github.loadup.components.dfs.database.dataobject.FileStorageDO;
-import io.github.loadup.components.dfs.database.mapper.FileStorageDOMapper;
 import io.github.loadup.components.dfs.model.FileDownloadResponse;
 import io.github.loadup.components.dfs.model.FileMetadata;
 import io.github.loadup.components.dfs.model.FileUploadRequest;
@@ -33,17 +32,21 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import tools.jackson.core.JacksonException;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
 /** Transitional database binder for small files. S3 is the recommended production binder. */
 public class DatabaseDfsProvider implements DfsProvider {
-    private final FileStorageDOMapper mapper;
+    private final NamedParameterJdbcTemplate jdbc;
     private final ObjectMapper objectMapper;
 
-    public DatabaseDfsProvider(FileStorageDOMapper mapper, ObjectMapper objectMapper) {
-        this.mapper = mapper;
+    public DatabaseDfsProvider(NamedParameterJdbcTemplate jdbc, ObjectMapper objectMapper) {
+        this.jdbc = jdbc;
         this.objectMapper = objectMapper;
     }
 
@@ -58,6 +61,7 @@ public class DatabaseDfsProvider implements DfsProvider {
             LocalDateTime uploadedAt = LocalDateTime.now();
             FileStorageDO file = new FileStorageDO();
             file.setId(fileId);
+            file.setTenantId(TenantUtil.getTenantId());
             file.setFilename(request.filename());
             file.setFileSize((long) content.length);
             file.setContentType(request.contentType());
@@ -66,7 +70,10 @@ public class DatabaseDfsProvider implements DfsProvider {
             file.setCreatedAt(uploadedAt);
             file.setUpdatedAt(uploadedAt);
             file.setDeleted(0);
-            mapper.insert(file);
+            jdbc.update("""
+                    INSERT INTO dfs_file (id, tenant_id, filename, file_size, content_type, content, metadata_json, created_at, updated_at, deleted)
+                    VALUES (:id, :tenantId, :filename, :fileSize, :contentType, :content, :metadataJson, :createdAt, :updatedAt, FALSE)
+                    """, new BeanPropertySqlParameterSource(file));
             return toMetadata(file);
         } catch (IOException | JacksonException e) {
             throw new DfsStorageException(DfsStorageException.Code.OPERATION_FAILED, e);
@@ -82,12 +89,19 @@ public class DatabaseDfsProvider implements DfsProvider {
 
     @Override
     public boolean delete(String fileId) {
-        return mapper.deleteById(fileId) > 0;
+        return jdbc.update(
+                        "UPDATE dfs_file SET deleted = TRUE, updated_at = :now WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE",
+                        parameters(fileId).addValue("now", LocalDateTime.now()))
+                > 0;
     }
 
     @Override
     public boolean exists(String fileId) {
-        return mapper.selectOneById(fileId) != null;
+        return !jdbc.query(
+                        "SELECT id FROM dfs_file WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE",
+                        parameters(fileId),
+                        (rs, n) -> rs.getString(1))
+                .isEmpty();
     }
 
     @Override
@@ -101,11 +115,23 @@ public class DatabaseDfsProvider implements DfsProvider {
     }
 
     private FileStorageDO find(String fileId) {
-        FileStorageDO file = mapper.selectOneByQuery(QueryWrapper.create().eq("id", fileId));
+        FileStorageDO file = jdbc
+                .query(
+                        "SELECT id, tenant_id, filename, file_size, content_type, content, metadata_json, created_at, updated_at "
+                                + "FROM dfs_file WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE",
+                        parameters(fileId),
+                        BeanPropertyRowMapper.newInstance(FileStorageDO.class))
+                .stream()
+                .findFirst()
+                .orElse(null);
         if (file == null) {
             throw new DfsObjectNotFoundException(fileId);
         }
         return file;
+    }
+
+    private MapSqlParameterSource parameters(String fileId) {
+        return new MapSqlParameterSource("id", fileId).addValue("tenant", TenantUtil.getTenantId());
     }
 
     private FileMetadata toMetadata(FileStorageDO file) {

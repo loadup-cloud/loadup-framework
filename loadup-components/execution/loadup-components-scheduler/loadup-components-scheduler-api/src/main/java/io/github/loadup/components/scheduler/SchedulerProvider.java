@@ -19,7 +19,9 @@
  */
 package io.github.loadup.components.scheduler;
 
-/** Wake-up backend lifecycle, independent of persistent business tasks. */
+/**
+ * Wake-up backend lifecycle, independent of persistent business tasks.
+ */
 public interface SchedulerProvider {
     void start(SchedulerTemplate scheduler);
 

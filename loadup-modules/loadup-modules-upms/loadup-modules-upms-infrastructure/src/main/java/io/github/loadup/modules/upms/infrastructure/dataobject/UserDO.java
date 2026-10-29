@@ -19,10 +19,10 @@
  */
 package io.github.loadup.modules.upms.infrastructure.dataobject;
 
-import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import org.springframework.data.relational.core.mapping.Table;
 
 /**
  * User Data Object - Database mapping entity
@@ -151,7 +151,7 @@ public class UserDO extends BaseDO {
         return this.email;
     }
 
-    public Boolean isEmailVerified() {
+    public Boolean getEmailVerified() {
         return this.emailVerified;
     }
 
@@ -159,7 +159,7 @@ public class UserDO extends BaseDO {
         return this.mobile;
     }
 
-    public Boolean isMobileVerified() {
+    public Boolean getMobileVerified() {
         return this.mobileVerified;
     }
 
@@ -179,15 +179,15 @@ public class UserDO extends BaseDO {
         return this.status;
     }
 
-    public Boolean isAccountNonExpired() {
+    public Boolean getAccountNonExpired() {
         return this.accountNonExpired;
     }
 
-    public Boolean isAccountNonLocked() {
+    public Boolean getAccountNonLocked() {
         return this.accountNonLocked;
     }
 
-    public Boolean isCredentialsNonExpired() {
+    public Boolean getCredentialsNonExpired() {
         return this.credentialsNonExpired;
     }
 

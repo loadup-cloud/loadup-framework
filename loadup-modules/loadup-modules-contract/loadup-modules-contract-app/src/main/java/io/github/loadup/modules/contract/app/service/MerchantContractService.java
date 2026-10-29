@@ -29,10 +29,10 @@ import io.github.loadup.modules.contract.client.dto.*;
 import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import io.github.loadup.modules.contract.client.query.MerchantContractPageQuery;
 import io.github.loadup.modules.contract.domain.gateway.*;
+import io.github.loadup.modules.contract.domain.gateway.RequestKeyConflictException;
 import io.github.loadup.modules.contract.domain.model.*;
 import java.time.*;
 import java.util.*;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -115,7 +115,7 @@ public class MerchantContractService implements io.github.loadup.modules.contrac
                 gateway.insert(header, revision);
                 return converter.toContract(header, snapshot);
             }));
-        } catch (DuplicateKeyException e) {
+        } catch (RequestKeyConflictException e) {
             // Roll back both inserts before reading the winner in a fresh session.
             var winner = gateway.findByRequest(tenant, command.requestKey());
             if (winner.isPresent()) return replay(winner.get(), digest);

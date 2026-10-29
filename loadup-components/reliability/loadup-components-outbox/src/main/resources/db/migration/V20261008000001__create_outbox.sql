@@ -5,7 +5,7 @@ CREATE TABLE loadup_outbox_event (
     tenant_id VARCHAR(64) COLLATE "C" NOT NULL,
     created_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
     updated_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    deleted SMALLINT NOT NULL DEFAULT 0,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     event_type VARCHAR(128) COLLATE "C" NOT NULL,
     payload_version INT NOT NULL,
     business_id VARCHAR(128) COLLATE "C" NOT NULL,
@@ -16,8 +16,7 @@ CREATE TABLE loadup_outbox_event (
     available_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
     lease_until TIMESTAMP(6) WITHOUT TIME ZONE,
     claim_token VARCHAR(64) COLLATE "C",
-    last_error VARCHAR(256) COLLATE "C",
-    CHECK (deleted IN (0, 1))
+    last_error VARCHAR(256) COLLATE "C"
 );
 
 CREATE INDEX idx_outbox_ready ON loadup_outbox_event (status, available_at, created_at);
@@ -31,11 +30,10 @@ CREATE TABLE loadup_outbox_replay (
     tenant_id VARCHAR(64) COLLATE "C" NOT NULL,
     created_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
     updated_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    deleted SMALLINT NOT NULL DEFAULT 0,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     event_id VARCHAR(64) COLLATE "C" NOT NULL,
     operator_id VARCHAR(64) COLLATE "C" NOT NULL,
-    reason VARCHAR(512) COLLATE "C" NOT NULL,
-    CHECK (deleted IN (0, 1))
+    reason VARCHAR(512) COLLATE "C" NOT NULL
 );
 
 CREATE INDEX idx_outbox_replay_event ON loadup_outbox_replay (tenant_id, event_id);
@@ -45,10 +43,9 @@ CREATE TABLE loadup_outbox_inbox (
     tenant_id VARCHAR(64) COLLATE "C" NOT NULL,
     created_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
     updated_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    deleted SMALLINT NOT NULL DEFAULT 0,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     consumer_id VARCHAR(128) COLLATE "C" NOT NULL,
-    event_id VARCHAR(64) COLLATE "C" NOT NULL,
-    CHECK (deleted IN (0, 1))
+    event_id VARCHAR(64) COLLATE "C" NOT NULL
 );
 
 CREATE UNIQUE INDEX uk_outbox_inbox ON loadup_outbox_inbox (tenant_id, consumer_id, event_id);

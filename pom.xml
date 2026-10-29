@@ -94,7 +94,7 @@
 
         <!-- Annotation processor versions -->
         <mapstruct.version>1.6.3</mapstruct.version>
-        <mybatis.flex.version>1.11.8</mybatis.flex.version>
+
         <spring.boot.version>4.1.1</spring.boot.version>
 
         <!-- Flyway plugin support -->

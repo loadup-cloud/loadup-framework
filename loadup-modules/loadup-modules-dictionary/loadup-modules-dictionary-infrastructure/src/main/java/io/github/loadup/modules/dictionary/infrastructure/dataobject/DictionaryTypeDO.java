@@ -19,20 +19,15 @@
  */
 package io.github.loadup.modules.dictionary.infrastructure.dataobject;
 
-import com.mybatisflex.annotation.Column;
-import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
 
-@Table("dictionary_type")
 public class DictionaryTypeDO extends BaseDO {
-    @Column("type_code")
     private String code;
 
-    @Column("type_name")
     private String name;
 
     private String description;
-    private boolean enabled;
+    private Boolean enabled;
 
     public String getCode() {
         return code;

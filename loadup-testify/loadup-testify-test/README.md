@@ -1,15 +1,16 @@
 # Testify 可执行示例
 
-本模块演示 Testify 的真实使用并提供回归源码，不是消费工程应该引入的生产能力。包含 users/orders 示例表与服务；其 schema 和应用启动类只服务于测试，不能作为业务模块建模模板。
+本模块演示 Testify 的真实使用并提供回归源码，不是消费工程应该引入的生产能力。包含 users/orders 示例表与服务；其 schema
+和应用启动类只服务于测试，不能作为业务模块建模模板。
 
 ## 用例矩阵
 
-| 类 | 内容 | 环境 |
-|---|---|---|
-| ScenarioAssertTest | 对象/JsonPath/操作符和失败报告 | 无真实数据库 |
-| TestifyAutoConfigurationTest | JDBC 有/无时的条件装配 | 无真实数据库 |
-| UserServiceIT | 数据准备、Service 调用与数据库断言 | Docker + MySQL |
-| UserServiceBatchIT | YAML 用例、变量、输入绑定、响应断言 | Docker + MySQL |
+| 类                           | 内容                                | 环境           |
+|------------------------------|-------------------------------------|----------------|
+| ScenarioAssertTest           | 对象/JsonPath/操作符和失败报告      | 无真实数据库   |
+| TestifyAutoConfigurationTest | JDBC 有/无时的条件装配              | 无真实数据库   |
+| UserServiceIT                | 数据准备、Service 调用与数据库断言  | Docker + MySQL |
+| UserServiceBatchIT           | YAML 用例、变量、输入绑定、响应断言 | Docker + MySQL |
 
 ## 资源目录
 
@@ -18,7 +19,8 @@
 - schema.sql：示例表初始化；包含重建操作，仅限独占测试库。
 - testcases/UserServiceIT/batch-create.yaml：三条批量创建案例，展示 regex、approx、contains 和 JsonPath。
 
-UserServiceBatchIT 的执行顺序是 loadYaml → resolveVariables → resolveValue(input) → JsonUtil 类型绑定 → 清理样本 → 调用服务 → verify。当前示例源码保留了字段注入，消费工程新增测试应遵循项目规则使用构造器注入。
+UserServiceBatchIT 的执行顺序是 loadYaml → resolveVariables → resolveValue (input) → JsonUtil 类型绑定 → 清理样本 →
+调用服务 → verify。当前示例源码保留了字段注入，消费工程新增测试应遵循项目规则使用构造器注入。
 
 ## 运行命令
 
@@ -28,7 +30,8 @@ mvnd clean test -pl loadup-testify/loadup-testify-test -am   -Dtest=ScenarioAsse
 mvnd clean test -pl loadup-testify/loadup-testify-test -am   -Dtest=UserServiceIT,UserServiceBatchIT   -Dsurefire.failIfNoSpecifiedTests=false
 ```
 
-第二条使用 Surefire 显式选取 IT，要求可用 Docker，可能拉取 MySQL 镜像。容器复用不保证表数据隔离。已有示例整表清理与 schema 重建不适合共享库并行执行。
+第二条使用 Surefire 显式选取 IT，要求可用 Docker，可能拉取 MySQL 镜像。容器复用不保证表数据隔离。已有示例整表清理与 schema
+重建不适合共享库并行执行。
 
 ## 消费工程迁移步骤
 

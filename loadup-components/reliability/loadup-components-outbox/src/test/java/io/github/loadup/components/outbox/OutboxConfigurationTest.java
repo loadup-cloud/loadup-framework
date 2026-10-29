@@ -36,6 +36,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 
 class OutboxConfigurationTest {
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
@@ -103,25 +105,39 @@ class OutboxConfigurationTest {
 
     @Test
     void assemblesWithoutObservabilityAndHonorsWorkerSwitch() {
-        runner.withBean(DataSource.class, () -> mock(DataSource.class)).run(context -> {
-            assertThat(context).hasSingleBean(JdbcOutboxRepository.class);
-            assertThat(context).hasSingleBean(OutboxInbox.class);
-            assertThat(context).hasSingleBean(OutboxDispatcher.class);
-            OutboxWorker worker = context.getBean(OutboxWorker.class);
-            assertThat(worker.isAutoStartup()).isFalse();
-            assertThat(worker.isRunning()).isFalse();
-        });
+        DataSource source = mock(DataSource.class);
+        runner.withBean(DataSource.class, () -> source)
+                .withBean(PlatformTransactionManager.class, () -> new DataSourceTransactionManager(source))
+                .run(context -> {
+                    assertThat(context).hasSingleBean(JdbcOutboxRepository.class);
+                    assertThat(context).hasSingleBean(OutboxInbox.class);
+                    assertThat(context).hasSingleBean(OutboxDispatcher.class);
+                    OutboxWorker worker = context.getBean(OutboxWorker.class);
+                    assertThat(worker.isAutoStartup()).isFalse();
+                    assertThat(worker.isRunning()).isFalse();
+                });
+    }
+
+    @Test
+    void rejectsTransactionManagerBoundToAnotherDataSource() {
+        DataSource source = mock(DataSource.class);
+        DataSource other = mock(DataSource.class);
+        runner.withBean(DataSource.class, () -> source)
+                .withBean(PlatformTransactionManager.class, () -> new DataSourceTransactionManager(other))
+                .run(context -> assertThat(context).hasFailed());
     }
 
     @Test
     void gaugesUseSharedRegistryAndExistingRepository() {
+        DataSource source = mock(DataSource.class);
         JdbcOutboxRepository repository = mock(JdbcOutboxRepository.class);
         when(repository.pendingCount()).thenReturn(3L);
         when(repository.failedCount()).thenReturn(2L);
         when(repository.oldestPendingSeconds()).thenReturn(12L);
         SimpleMeterRegistry metrics = new SimpleMeterRegistry();
         ObservationRegistry observations = ObservationRegistry.create();
-        runner.withBean(DataSource.class, () -> mock(DataSource.class))
+        runner.withBean(DataSource.class, () -> source)
+                .withBean(PlatformTransactionManager.class, () -> new DataSourceTransactionManager(source))
                 .withBean(JdbcOutboxRepository.class, () -> repository)
                 .withBean(SimpleMeterRegistry.class, () -> metrics)
                 .withBean(ObservationRegistry.class, () -> observations)

@@ -10,7 +10,7 @@
 mvn -pl loadup-modules/loadup-modules-file/loadup-modules-file-test clean test -Dtest=FileAutoConfigurationTest -Dskip.spotless=true -Dskip.spotbugs=true
 ```
 
-测试使用 ApplicationContextRunner 与替身依赖验证 Bean 装配，不执行 SQL，也不代替真实 MySQL 或 HTTP 集成验收。
+测试使用 ApplicationContextRunner 与替身依赖验证 Bean 装配，不执行 SQL，也不代替真实 PostgreSQL 或 HTTP 集成验收。
 
 ## 能力契约
 

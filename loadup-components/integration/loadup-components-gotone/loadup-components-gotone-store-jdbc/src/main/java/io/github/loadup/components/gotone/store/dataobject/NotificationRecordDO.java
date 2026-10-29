@@ -19,14 +19,12 @@
  */
 package io.github.loadup.components.gotone.store.dataobject;
 
-import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
 import java.time.LocalDateTime;
 
 /**
  * Notification send record (gotone_notification_record), one row per receiver per channel.
  */
-@Table("gotone_notification_record")
 public class NotificationRecordDO extends BaseDO {
 
     private String serviceCode;

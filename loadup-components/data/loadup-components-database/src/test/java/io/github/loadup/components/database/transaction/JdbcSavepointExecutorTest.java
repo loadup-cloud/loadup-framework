@@ -15,9 +15,12 @@
  */
 package io.github.loadup.components.database.transaction;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import java.sql.Connection;
-import java.sql.Savepoint;
 import java.sql.SQLException;
+import java.sql.Savepoint;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -25,9 +28,6 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.datasource.ConnectionHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 class JdbcSavepointExecutorTest {
     private final DataSource dataSource = mock(DataSource.class);
@@ -52,8 +52,13 @@ class JdbcSavepointExecutorTest {
     void duplicateIsRolledBackToSavepointBeforeItIsReported() throws SQLException {
         bindTransaction();
         var duplicate = new DuplicateKeyException("duplicate");
-        assertSame(duplicate, assertThrows(DuplicateKeyException.class,
-                () -> JdbcSavepointExecutor.execute(dataSource, () -> { throw duplicate; })));
+        assertSame(
+                duplicate,
+                assertThrows(
+                        DuplicateKeyException.class,
+                        () -> JdbcSavepointExecutor.execute(dataSource, () -> {
+                            throw duplicate;
+                        })));
         var order = inOrder(connection);
         order.verify(connection).setSavepoint();
         order.verify(connection).rollback(savepoint);
@@ -73,8 +78,12 @@ class JdbcSavepointExecutorTest {
         bindTransaction();
         when(connection.getAutoCommit()).thenReturn(true);
         var invoked = new java.util.concurrent.atomic.AtomicBoolean();
-        assertThrows(DataAccessResourceFailureException.class,
-                () -> JdbcSavepointExecutor.execute(dataSource, () -> { invoked.set(true); return null; }));
+        assertThrows(
+                DataAccessResourceFailureException.class,
+                () -> JdbcSavepointExecutor.execute(dataSource, () -> {
+                    invoked.set(true);
+                    return null;
+                }));
         assertFalse(invoked.get());
         verify(connection, never()).setSavepoint();
     }
@@ -83,8 +92,11 @@ class JdbcSavepointExecutorTest {
     void rollbackFailureCannotBeMisreportedAsAnExpectedDuplicate() throws SQLException {
         bindTransaction();
         doThrow(new SQLException("savepoint rollback failed")).when(connection).rollback(savepoint);
-        assertThrows(DataAccessResourceFailureException.class,
-                () -> JdbcSavepointExecutor.execute(dataSource, () -> { throw new DuplicateKeyException("duplicate"); }));
+        assertThrows(
+                DataAccessResourceFailureException.class,
+                () -> JdbcSavepointExecutor.execute(dataSource, () -> {
+                    throw new DuplicateKeyException("duplicate");
+                }));
     }
 
     @Test
@@ -93,8 +105,11 @@ class JdbcSavepointExecutorTest {
         var duplicate = new DuplicateKeyException("duplicate");
         var release = new SQLException("savepoint release failed");
         doThrow(release).when(connection).releaseSavepoint(savepoint);
-        var error = assertThrows(DataAccessResourceFailureException.class,
-                () -> JdbcSavepointExecutor.execute(dataSource, () -> { throw duplicate; }));
+        var error = assertThrows(
+                DataAccessResourceFailureException.class,
+                () -> JdbcSavepointExecutor.execute(dataSource, () -> {
+                    throw duplicate;
+                }));
         assertSame(release, error.getCause());
         assertArrayEquals(new Throwable[] {duplicate}, release.getSuppressed());
     }

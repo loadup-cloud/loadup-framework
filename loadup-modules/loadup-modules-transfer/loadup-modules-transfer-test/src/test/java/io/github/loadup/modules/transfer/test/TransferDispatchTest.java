@@ -60,7 +60,7 @@ class TransferDispatchTest {
         when(gateway.find("duplicate")).thenReturn(Optional.of(task("duplicate")));
         when(gateway.find("missing")).thenReturn(Optional.empty());
         when(gateway.find("second")).thenReturn(Optional.of(task("second")));
-        when(gateway.start(anyString())).thenReturn(false);
+        when(gateway.start(anyString(), anyString())).thenReturn(false);
         var service = new TransferTaskService(
                 gateway,
                 mock(FileResourceFacade.class),
@@ -69,9 +69,9 @@ class TransferDispatchTest {
                 mock(TransferDTOConverter.class),
                 Clock.systemDefaultZone());
         assertThat(service.executeQueuedTasks()).isFalse();
-        verify(gateway).start("duplicate");
-        verify(gateway).start("second");
-        verify(gateway, never()).options(anyString());
+        verify(gateway).start("tenant", "duplicate");
+        verify(gateway).start("tenant", "second");
+        verify(gateway, never()).options(anyString(), anyString());
     }
 
     @Test

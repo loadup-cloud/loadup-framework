@@ -12,8 +12,7 @@ CREATE TABLE file_resource (
     state          VARCHAR(32) COLLATE "C"  NOT NULL,
     created_at     TIMESTAMP(6) WITHOUT TIME ZONE  NOT NULL,
     updated_at     TIMESTAMP(6) WITHOUT TIME ZONE  NOT NULL,
-    deleted SMALLINT NOT NULL DEFAULT 0,
-    CHECK (deleted IN (0, 1))
+    deleted BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE UNIQUE INDEX uk_file_resource_storage ON file_resource (provider, storage_id);
@@ -29,10 +28,8 @@ CREATE TABLE file_resource_reference (
     reference_type VARCHAR(128) COLLATE "C" NOT NULL,
     reference_id   VARCHAR(128) COLLATE "C" NOT NULL,
     created_at     TIMESTAMP(6) WITHOUT TIME ZONE  NOT NULL,
-    CONSTRAINT fk_file_resource_reference_file FOREIGN KEY (file_id) REFERENCES file_resource (id),
     updated_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    deleted SMALLINT NOT NULL DEFAULT 0,
-    CHECK (deleted IN (0, 1))
+    deleted BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE UNIQUE INDEX uk_file_resource_reference ON file_resource_reference (tenant_id, file_id, reference_type, reference_id);

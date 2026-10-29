@@ -16,4 +16,4 @@ MerchantBasicInfoTest 与 MerchantFactsTest 检查领域语义和适配；Mercha
 
 ## 测试装配约定
 
-使用标准 Boot 自动装配，显式声明可选 Flyway starter 及 MySQL 扩展，通过真实迁移创建业务表和 Sequence 表。持久化框架配置由 database 独占，测试配置不覆盖 `mybatis-flex.global-config`。测试类不固定 profile，允许 CI 切换配置；关闭容器复用以隔离迁移历史和其他测试遗留的 schema。
+使用标准 Boot 自动装配，显式声明 Flyway starter 及 PostgreSQL 扩展，通过迁移创建业务表和 Sequence 表。测试类不固定 profile，允许 CI 切换配置；关闭容器复用以隔离迁移历史和其他测试遗留的 schema。迁移后的构建和测试尚未运行。

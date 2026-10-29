@@ -2,7 +2,7 @@
 
 ## 分层与职责
 
-TransferTaskService 管理业务任务、文件引用、进度和结果；TransferTaskProcessor 实现 Scheduler ScheduledTask（名称 transfer.scan），只调用 service 的有界队列扫描。文件操作复用 FileResourceFacade，持久化通过 TransferGateway 和 MyBatis-Flex。
+TransferTaskService 管理业务任务、文件引用、进度和结果；TransferTaskProcessor 实现 Scheduler ScheduledTask（名称 transfer.scan），只调用 service 的有界队列扫描。文件操作复用 FileResourceFacade，持久化通过 TransferGateway 和 Spring JDBC。
 
 ## 事务与执行
 
@@ -16,12 +16,12 @@ Worker 崩溃后 RUNNING 任务仍需要租约/对账和显式恢复；未以放
 
 ## 验证
 
-TransferDispatchTest 验证有界扫描、失败隔离和抢占失败跳过；TransferClaimIT 用真实 MySQL 和两个并发虚拟线程验证仅一个领取成功，以及 FAILED 重排队和 SUCCEEDED 不可领取。运行状态见 ROADMAP。
+TransferDispatchTest 验证有界扫描、失败隔离和抢占失败跳过；TransferClaimIT 用真实 PostgreSQL 和两个并发虚拟线程验证仅一个领取成功，以及 FAILED 重排队和 SUCCEEDED 不可领取。运行状态见 ROADMAP。
 
 ## 迁移版本顺序
 
 真实空库验收发现 file/transfer 的 BaseDO 补字段脚本原先使用 12 位版本号，数值早于 14 位建表版本。已改为 V20261010000101 和 V20261010000103，确保先建表后补字段。不对已部署库自动修复或重写 flyway_schema_history；已执行旧版迁移的消费工程升级前需单独核对历史。
 
-2026-10-19 定向验收通过：7 项单测、1 项真实 MySQL IT。并发条件更新仅一个成功，RUNNING/SUCCEEDED 不再领取，FAILED 仅显式重排队；QUEUED 的重复重试不重新建立源文件引用。
+旧实现曾进行定向验收；本次 PostgreSQL 迁移后的构建与测试尚未运行。并发条件更新仅一个成功，RUNNING/SUCCEEDED 不再领取，FAILED 仅显式重排队；QUEUED 的重复重试不重新建立源文件引用。
 
 队列候选查询对 Mapper 返回 null 或空列表统一返回空集合，不在空队列上触发空指针；非空候选保留查询顺序与批量上限。

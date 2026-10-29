@@ -19,7 +19,9 @@
  */
 package io.github.loadup.components.scheduler;
 
-/** An idempotent, bounded scanner; scheduling does not own business task state. */
+/**
+ * An idempotent, bounded scanner; scheduling does not own business task state.
+ */
 public interface ScheduledTask {
     String name();
 

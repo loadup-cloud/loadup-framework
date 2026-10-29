@@ -4,7 +4,7 @@
 
 ## 引入与数据库
 
-引入 BOM 后添加 `io.github.loadup-cloud:loadup-components-delayedtask`，并在执行应用选择一个 Scheduler binder。注册任务与业务记录必须使用同一个 DataSource 和事务管理器。Flyway 需包含本组件 `V20261019000001__create_delayed_task.sql` 和 database Sequence 迁移。业务主键使用统一 IdGenerator；MyBatis-Flex 配置由 database 管理。
+引入 BOM 后添加 `io.github.loadup-cloud:loadup-components-delayedtask`，并在执行应用选择一个 Scheduler binder。注册任务与业务记录必须使用同一个 DataSource 和事务管理器。Flyway 需包含本组件 PostgreSQL `V20261019000001__create_delayed_task.sql` 和 database Sequence 迁移。业务主键使用统一 IdGenerator，持久化使用 Spring JDBC。
 
 ## 注册与处理
 
@@ -69,7 +69,7 @@ batch-size 与 max-attempts 为 1–1000；lease / retry-delay 为 1 秒–30 �
 | 长期延时、事务注册、回滚一致性 | 已实现 |
 | 到期领取、失败固定间隔重试、次数上限 | 已实现 |
 | 租约过期恢复、旧结果隔离 | 已实现；claim token + 有效租约条件回写 |
-| 多实例互斥领取 | 已实现；数据库原子条件更新 |
+| 多实例互斥领取 | 已实现；短事务内 PostgreSQL `FOR UPDATE SKIP LOCKED` 领取 |
 | 取消、改期、手动重试、租户隔离 | 已实现 |
 | 至少一次 | 已实现；业务必须幂等，不保证恰好一次 |
 | 租约续期、管理页面、历史清理、积压告警 | 尚未实现 |

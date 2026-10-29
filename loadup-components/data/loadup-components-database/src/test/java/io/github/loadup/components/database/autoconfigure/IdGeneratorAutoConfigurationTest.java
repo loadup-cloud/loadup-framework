@@ -97,7 +97,6 @@ class IdGeneratorAutoConfigurationTest {
                         .hasNotFailed()
                         .doesNotHaveBean(Sequence.class)
                         .doesNotHaveBean(IdGenerator.class)
-                        .doesNotHaveBean("sequenceAllocationDOMapper")
                         .hasSingleBean(BusinessIdFormatter.class));
     }
 }

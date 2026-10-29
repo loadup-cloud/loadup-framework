@@ -19,18 +19,20 @@
  */
 package io.github.loadup.modules.transfer.infrastructure.autoconfigure;
 
+import io.github.loadup.components.database.id.IdGenerator;
 import io.github.loadup.modules.transfer.domain.gateway.TransferGateway;
-import io.github.loadup.modules.transfer.infrastructure.converter.TransferStorageConverter;
-import io.github.loadup.modules.transfer.infrastructure.converter.TransferStorageConverterImpl;
-import io.github.loadup.modules.transfer.infrastructure.mapper.*;
 import io.github.loadup.modules.transfer.infrastructure.repository.TransferGatewayImpl;
 import javax.sql.DataSource;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.context.annotation.*;
+import org.springframework.jdbc.core.JdbcTemplate;
 
-@AutoConfiguration(afterName = "com.mybatisflex.spring.boot.MybatisFlexAutoConfiguration")
+@AutoConfiguration(
+        afterName = {
+            "org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration",
+            "io.github.loadup.components.database.autoconfigure.IdGeneratorAutoConfiguration"
+        })
 @ConditionalOnSingleCandidate(DataSource.class)
 @ConditionalOnProperty(
         prefix = "loadup.modules.transfer",
@@ -46,16 +48,13 @@ public class TransferPersistenceAutoConfiguration {
 
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnMissingBean(TransferGateway.class)
-    @MapperScan(basePackageClasses = TransferTaskDOMapper.class)
-    @Import(TransferStorageConverterImpl.class)
     static class DefaultPersistence {
         @Bean
         public TransferGateway transferGateway(
-                TransferTaskDOMapper transferTaskMapper,
-                TransferTaskOptionDOMapper transferTaskOptionMapper,
-                TransferStorageConverter converter,
+                JdbcTemplate jdbc,
+                IdGenerator ids,
                 @org.springframework.beans.factory.annotation.Qualifier("transferStorageClock") java.time.Clock clock) {
-            return new TransferGatewayImpl(transferTaskMapper, transferTaskOptionMapper, converter, clock);
+            return new TransferGatewayImpl(jdbc, ids, clock);
         }
     }
 }

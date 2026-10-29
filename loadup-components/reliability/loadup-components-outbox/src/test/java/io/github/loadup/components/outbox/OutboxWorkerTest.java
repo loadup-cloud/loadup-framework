@@ -112,6 +112,7 @@ class OutboxWorkerTest {
         var claim = claim(null);
         when(repository.claim()).thenReturn(Optional.of(claim));
         Exception failure = new Exception("synthetic failure");
+        when(repository.fail(claim, failure)).thenReturn(true);
         SimpleMeterRegistry metrics = new SimpleMeterRegistry();
         try {
             OutboxDispatcher dispatcher = new OutboxDispatcher(

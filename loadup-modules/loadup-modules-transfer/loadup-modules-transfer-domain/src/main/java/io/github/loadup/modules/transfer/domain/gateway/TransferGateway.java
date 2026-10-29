@@ -33,15 +33,15 @@ public interface TransferGateway {
 
     PageResult<TransferTask> list(String tenantId, String ownerId, int page, int size);
 
-    Map<String, String> options(String id);
+    Map<String, String> options(String tenantId, String id);
 
-    boolean start(String id);
+    boolean start(String tenantId, String id);
 
-    void progress(String id, long processed, long total);
+    void progress(String tenantId, String id, long processed, long total);
 
-    void succeed(String id, String resultFileId);
+    void succeed(String tenantId, String id, String resultFileId);
 
-    void fail(String id, String message);
+    void fail(String tenantId, String id, String message);
 
-    boolean requeue(String id);
+    boolean requeue(String tenantId, String id);
 }

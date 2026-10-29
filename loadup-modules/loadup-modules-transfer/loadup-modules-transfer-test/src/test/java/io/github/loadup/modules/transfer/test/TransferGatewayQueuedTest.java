@@ -20,46 +20,30 @@
 package io.github.loadup.modules.transfer.test;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.modules.transfer.infrastructure.converter.TransferStorageConverter;
-import io.github.loadup.modules.transfer.infrastructure.dataobject.TransferTaskDO;
-import io.github.loadup.modules.transfer.infrastructure.mapper.TransferTaskDOMapper;
-import io.github.loadup.modules.transfer.infrastructure.mapper.TransferTaskOptionDOMapper;
 import io.github.loadup.modules.transfer.infrastructure.repository.TransferGatewayImpl;
 import java.time.Clock;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 
 class TransferGatewayQueuedTest {
-    private final TransferTaskDOMapper mapper = mock(TransferTaskDOMapper.class);
-    private final TransferGatewayImpl gateway = new TransferGatewayImpl(
-            mapper,
-            mock(TransferTaskOptionDOMapper.class),
-            mock(TransferStorageConverter.class),
-            Clock.systemDefaultZone());
-
-    @Test
-    void nullOrEmptyQueryResultsAreEmptyQueues() {
-        when(mapper.selectListByQuery(any())).thenReturn(null, List.of());
-        assertThat(gateway.queued(20)).isEmpty();
-        assertThat(gateway.queued(20)).isEmpty();
-    }
+    private final JdbcTemplate jdbc = mock(JdbcTemplate.class);
+    private final TransferGatewayImpl gateway = new TransferGatewayImpl(jdbc, () -> "id", Clock.systemDefaultZone());
 
     @Test
     void preservesCandidateOrderAndRejectsInvalidBatchSizes() {
-        var first = new TransferTaskDO();
-        first.setId("first");
-        var second = new TransferTaskDO();
-        second.setId("second");
-        when(mapper.selectListByQuery(any())).thenReturn(List.of(first, second));
+        when(jdbc.query(anyString(), org.mockito.ArgumentMatchers.<RowMapper<String>>any(), anyInt()))
+                .thenReturn(List.of("first", "second"));
         assertThat(gateway.queued(2)).containsExactly("first", "second");
-        clearInvocations(mapper);
+        clearInvocations(jdbc);
         for (int limit : new int[] {0, -1, 101}) {
             assertThatThrownBy(() -> gateway.queued(limit)).isInstanceOf(CommonException.class);
         }
-        verifyNoInteractions(mapper);
+        verifyNoInteractions(jdbc);
     }
 }

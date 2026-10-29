@@ -23,7 +23,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * Test application for DFS component testing with MyBatis-Flex
+ * Test application for DFS component testing with JDBC
  */
 @SpringBootApplication
 public class TestApplication {

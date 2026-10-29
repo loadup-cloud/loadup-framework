@@ -36,7 +36,8 @@ public final class JdbcSavepointExecutor {
         Connection connection = DataSourceUtils.getConnection(dataSource);
         try {
             if (!DataSourceUtils.isConnectionTransactional(connection, dataSource) || connection.getAutoCommit())
-                throw new DataAccessResourceFailureException("The current transaction must use the same JDBC DataSource");
+                throw new DataAccessResourceFailureException(
+                        "The current transaction must use the same JDBC DataSource");
             Savepoint savepoint = connection.setSavepoint();
             Throwable priorFailure = null;
             try {
@@ -46,7 +47,8 @@ public final class JdbcSavepointExecutor {
                     connection.rollback(savepoint);
                 } catch (SQLException rollbackFailure) {
                     rollbackFailure.addSuppressed(failure);
-                    var error = new DataAccessResourceFailureException("Unable to roll back JDBC savepoint", rollbackFailure);
+                    var error = new DataAccessResourceFailureException(
+                            "Unable to roll back JDBC savepoint", rollbackFailure);
                     priorFailure = error;
                     throw error;
                 }

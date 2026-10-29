@@ -19,147 +19,208 @@
  */
 package io.github.loadup.modules.dictionary.infrastructure.repository;
 
-import static io.github.loadup.modules.dictionary.infrastructure.dataobject.table.Tables.*;
-
-import com.mybatisflex.core.logicdelete.LogicDeleteManager;
-import com.mybatisflex.core.query.QueryWrapper;
-import com.mybatisflex.core.util.UpdateEntity;
 import io.github.loadup.commons.domain.PageResult;
+import io.github.loadup.commons.error.CommonException;
+import io.github.loadup.components.database.id.IdGenerator;
+import io.github.loadup.modules.dictionary.client.error.DictionaryResultCodeEnum;
 import io.github.loadup.modules.dictionary.domain.gateway.DictionaryGateway;
 import io.github.loadup.modules.dictionary.domain.model.*;
 import io.github.loadup.modules.dictionary.infrastructure.converter.DictionaryStorageConverter;
 import io.github.loadup.modules.dictionary.infrastructure.dataobject.*;
-import io.github.loadup.modules.dictionary.infrastructure.mapper.*;
-import java.util.*;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 public class DictionaryGatewayImpl implements DictionaryGateway {
-
-    private final DictionaryTypeDOMapper types;
-    private final DictionaryItemDOMapper items;
+    private static final String TYPE_COLUMNS =
+            "id, tenant_id, type_code AS code, type_name AS name, description, enabled";
+    private static final String ITEM_COLUMNS =
+            "id, tenant_id, type_id, item_value AS value, item_label AS label, description, sort_order, enabled";
+    private final NamedParameterJdbcTemplate jdbc;
+    private final IdGenerator ids;
     private final DictionaryStorageConverter converter;
+    private final Clock clock;
 
     public DictionaryGatewayImpl(
-            DictionaryTypeDOMapper types, DictionaryItemDOMapper items, DictionaryStorageConverter converter) {
-        this.types = types;
-        this.items = items;
+            NamedParameterJdbcTemplate jdbc, IdGenerator ids, DictionaryStorageConverter converter, Clock clock) {
+        this.jdbc = jdbc;
+        this.ids = ids;
         this.converter = converter;
-    }
-
-    private QueryWrapper typeScope(String tenant) {
-        return QueryWrapper.create().from(DICTIONARY_TYPE_DO).where(DICTIONARY_TYPE_DO.TENANT_ID.eq(tenant));
-    }
-
-    private QueryWrapper itemScope(String tenant) {
-        return QueryWrapper.create().from(DICTIONARY_ITEM_DO).where(DICTIONARY_ITEM_DO.TENANT_ID.eq(tenant));
+        this.clock = clock;
     }
 
     @Override
     public Optional<DictionaryType> findTypeById(String tenant, String id) {
-        return Optional.ofNullable(types.selectOneByQuery(typeScope(tenant).and(DICTIONARY_TYPE_DO.ID.eq(id))))
+        var args = new MapSqlParameterSource("tenant", tenant).addValue("id", id);
+        return jdbc
+                .query(
+                        "SELECT " + TYPE_COLUMNS
+                                + " FROM dictionary_type WHERE tenant_id = :tenant AND id = :id AND deleted = FALSE",
+                        args,
+                        BeanPropertyRowMapper.newInstance(DictionaryTypeDO.class))
+                .stream()
+                .findFirst()
                 .map(converter::toDomain);
     }
 
     @Override
     public Optional<DictionaryType> findTypeByCode(String tenant, String code) {
-        return Optional.ofNullable(types.selectOneByQuery(typeScope(tenant).and(DICTIONARY_TYPE_DO.CODE.eq(code))))
+        var args = new MapSqlParameterSource("tenant", tenant).addValue("code", code);
+        return jdbc
+                .query(
+                        "SELECT " + TYPE_COLUMNS
+                                + " FROM dictionary_type WHERE tenant_id = :tenant AND type_code = :code AND deleted = FALSE",
+                        args,
+                        BeanPropertyRowMapper.newInstance(DictionaryTypeDO.class))
+                .stream()
+                .findFirst()
                 .map(converter::toDomain);
     }
 
     @Override
     public void insertType(DictionaryType type) {
-        types.insert(converter.toDO(type));
+        var row = converter.toDO(type);
+        if (row.getId() == null || row.getId().isBlank()) row.setId(ids.generate());
+        var now = LocalDateTime.now(clock);
+        row.setCreatedAt(now);
+        row.setUpdatedAt(now);
+        jdbc.update("""
+                INSERT INTO dictionary_type (id, tenant_id, type_code, type_name, description, enabled, created_at, updated_at, deleted)
+                VALUES (:id, :tenantId, :code, :name, :description, :enabled, :createdAt, :updatedAt, FALSE)
+                """, new BeanPropertySqlParameterSource(row));
     }
 
     @Override
     public void updateType(DictionaryType type) {
-        var update = UpdateEntity.of(DictionaryTypeDO.class);
-        update.setName(type.name());
-        update.setDescription(type.description());
-        update.setEnabled(type.enabled());
-        types.updateByQuery(update, typeScope(type.tenantId()).and(DICTIONARY_TYPE_DO.ID.eq(type.id())));
+        var row = converter.toDO(type);
+        row.setUpdatedAt(LocalDateTime.now(clock));
+        jdbc.update(
+                "UPDATE dictionary_type SET type_name = :name, description = :description, enabled = :enabled, updated_at = :updatedAt "
+                        + "WHERE tenant_id = :tenantId AND id = :id AND deleted = FALSE",
+                new BeanPropertySqlParameterSource(row));
     }
 
     @Override
+    @Transactional
     public void deleteType(String tenant, String id) {
-        LogicDeleteManager.execWithoutLogicDelete(
-                () -> types.deleteByQuery(typeScope(tenant).and(DICTIONARY_TYPE_DO.ID.eq(id))));
+        lockType(tenant, id);
+        if (countItems(tenant, id) != 0) throw new CommonException(DictionaryResultCodeEnum.DICTIONARY_TYPE_NOT_EMPTY);
+        jdbc.update(
+                "DELETE FROM dictionary_type WHERE tenant_id = :tenant AND id = :id",
+                new MapSqlParameterSource("tenant", tenant).addValue("id", id));
     }
 
     @Override
     public PageResult<DictionaryType> listTypes(String tenant, int page, int size) {
-        var q = typeScope(tenant);
-        long total = types.selectCountByQuery(q);
-        q.orderBy(DICTIONARY_TYPE_DO.CODE.asc()).limit(size).offset((long) (page - 1) * size);
-        return new PageResult<>(
-                Objects.requireNonNull(types.selectListByQuery(q), "Mapper must return an empty list instead of null")
-                        .stream()
-                        .map(converter::toDomain)
-                        .toList(),
-                total,
-                page,
-                size);
+        var args = new MapSqlParameterSource("tenant", tenant)
+                .addValue("limit", size)
+                .addValue("offset", (long) (page - 1) * size);
+        long total = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM dictionary_type WHERE tenant_id = :tenant AND deleted = FALSE", args, Long.class);
+        var rows = jdbc.query(
+                "SELECT " + TYPE_COLUMNS
+                        + " FROM dictionary_type WHERE tenant_id = :tenant AND deleted = FALSE ORDER BY type_code ASC LIMIT :limit OFFSET :offset",
+                args,
+                BeanPropertyRowMapper.newInstance(DictionaryTypeDO.class));
+        return new PageResult<>(rows.stream().map(converter::toDomain).toList(), total, page, size);
     }
 
     @Override
     public Optional<DictionaryItem> findItemById(String tenant, String id) {
-        return Optional.ofNullable(items.selectOneByQuery(itemScope(tenant).and(DICTIONARY_ITEM_DO.ID.eq(id))))
+        var args = new MapSqlParameterSource("tenant", tenant).addValue("id", id);
+        return jdbc
+                .query(
+                        "SELECT " + ITEM_COLUMNS
+                                + " FROM dictionary_item WHERE tenant_id = :tenant AND id = :id AND deleted = FALSE",
+                        args,
+                        BeanPropertyRowMapper.newInstance(DictionaryItemDO.class))
+                .stream()
+                .findFirst()
                 .map(converter::toDomain);
     }
 
     @Override
+    @Transactional
     public void insertItem(DictionaryItem item) {
-        items.insert(converter.toDO(item));
+        lockType(item.tenantId(), item.typeId());
+        var row = converter.toDO(item);
+        if (row.getId() == null || row.getId().isBlank()) row.setId(ids.generate());
+        var now = LocalDateTime.now(clock);
+        row.setCreatedAt(now);
+        row.setUpdatedAt(now);
+        jdbc.update("""
+                INSERT INTO dictionary_item (id, tenant_id, type_id, item_value, item_label, description, sort_order, enabled, created_at, updated_at, deleted)
+                VALUES (:id, :tenantId, :typeId, :value, :label, :description, :sortOrder, :enabled, :createdAt, :updatedAt, FALSE)
+                """, new BeanPropertySqlParameterSource(row));
     }
 
     @Override
     public void updateItem(DictionaryItem item) {
-        var update = UpdateEntity.of(DictionaryItemDO.class);
-        update.setLabel(item.label());
-        update.setDescription(item.description());
-        update.setSortOrder(item.sortOrder());
-        update.setEnabled(item.enabled());
-        items.updateByQuery(update, itemScope(item.tenantId()).and(DICTIONARY_ITEM_DO.ID.eq(item.id())));
+        var row = converter.toDO(item);
+        row.setUpdatedAt(LocalDateTime.now(clock));
+        jdbc.update(
+                "UPDATE dictionary_item SET item_label = :label, description = :description, sort_order = :sortOrder, enabled = :enabled, updated_at = :updatedAt "
+                        + "WHERE tenant_id = :tenantId AND id = :id AND deleted = FALSE",
+                new BeanPropertySqlParameterSource(row));
     }
 
     @Override
     public void deleteItem(String tenant, String id) {
-        LogicDeleteManager.execWithoutLogicDelete(
-                () -> items.deleteByQuery(itemScope(tenant).and(DICTIONARY_ITEM_DO.ID.eq(id))));
+        jdbc.update(
+                "DELETE FROM dictionary_item WHERE tenant_id = :tenant AND id = :id",
+                new MapSqlParameterSource("tenant", tenant).addValue("id", id));
+    }
+
+    private void lockType(String tenant, String id) {
+        var args = new MapSqlParameterSource("tenant", tenant).addValue("id", id);
+        if (jdbc.queryForList(
+                        "SELECT id FROM dictionary_type WHERE tenant_id = :tenant AND id = :id AND deleted = FALSE FOR UPDATE",
+                        args,
+                        String.class)
+                .isEmpty()) {
+            throw new CommonException(DictionaryResultCodeEnum.DICTIONARY_TYPE_NOT_FOUND);
+        }
     }
 
     @Override
     public long countItems(String tenant, String type) {
-        return items.selectCountByQuery(itemScope(tenant).and(DICTIONARY_ITEM_DO.TYPE_ID.eq(type)));
-    }
-
-    private QueryWrapper orderedItems(String tenant, String type) {
-        return itemScope(tenant)
-                .and(DICTIONARY_ITEM_DO.TYPE_ID.eq(type))
-                .orderBy(
-                        DICTIONARY_ITEM_DO.SORT_ORDER.asc(),
-                        DICTIONARY_ITEM_DO.LABEL.asc(),
-                        DICTIONARY_ITEM_DO.VALUE.asc());
+        return jdbc.queryForObject(
+                "SELECT COUNT(*) FROM dictionary_item WHERE tenant_id = :tenant AND type_id = :type AND deleted = FALSE",
+                new MapSqlParameterSource("tenant", tenant).addValue("type", type),
+                Long.class);
     }
 
     @Override
     public PageResult<DictionaryItem> listItems(String tenant, String type, int page, int size) {
-        long total = countItems(tenant, type);
-        var q = orderedItems(tenant, type).limit(size).offset((long) (page - 1) * size);
-        return new PageResult<>(
-                Objects.requireNonNull(items.selectListByQuery(q), "Mapper must return an empty list instead of null")
-                        .stream()
-                        .map(converter::toDomain)
-                        .toList(),
-                total,
-                page,
-                size);
+        var args = new MapSqlParameterSource("tenant", tenant)
+                .addValue("type", type)
+                .addValue("limit", size)
+                .addValue("offset", (long) (page - 1) * size);
+        var rows = jdbc.query(
+                "SELECT " + ITEM_COLUMNS
+                        + " FROM dictionary_item WHERE tenant_id = :tenant AND type_id = :type AND deleted = FALSE "
+                        + "ORDER BY sort_order ASC, item_label ASC, item_value ASC LIMIT :limit OFFSET :offset",
+                args,
+                BeanPropertyRowMapper.newInstance(DictionaryItemDO.class));
+        return new PageResult<>(rows.stream().map(converter::toDomain).toList(), countItems(tenant, type), page, size);
     }
 
     @Override
     public List<DictionaryItem> listEnabledItems(String tenant, String type) {
-        return Objects.requireNonNull(
-                        items.selectListByQuery(orderedItems(tenant, type).and(DICTIONARY_ITEM_DO.ENABLED.eq(true))),
-                        "Mapper must return an empty list instead of null")
+        var args = new MapSqlParameterSource("tenant", tenant).addValue("type", type);
+        return jdbc
+                .query(
+                        "SELECT " + ITEM_COLUMNS
+                                + " FROM dictionary_item WHERE tenant_id = :tenant AND type_id = :type AND enabled = TRUE AND deleted = FALSE "
+                                + "ORDER BY sort_order ASC, item_label ASC, item_value ASC",
+                        args,
+                        BeanPropertyRowMapper.newInstance(DictionaryItemDO.class))
                 .stream()
                 .map(converter::toDomain)
                 .toList();

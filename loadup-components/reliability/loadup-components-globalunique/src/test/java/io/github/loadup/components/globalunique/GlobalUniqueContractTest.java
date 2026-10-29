@@ -24,25 +24,28 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.database.config.DatabaseProperties;
-import io.github.loadup.components.globalunique.dataobject.GlobalUniqueDO;
-import io.github.loadup.components.globalunique.mapper.GlobalUniqueDOMapper;
 import io.github.loadup.components.globalunique.model.GlobalUniqueClaim;
+import io.github.loadup.components.globalunique.model.GlobalUniqueRecord;
+import java.time.Clock;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 
 class GlobalUniqueContractTest {
-    private final GlobalUniqueDOMapper mapper = mock(GlobalUniqueDOMapper.class);
+    private final JdbcTemplate jdbc = mock(JdbcTemplate.class);
     private final DatabaseProperties properties = new DatabaseProperties();
     private final DefaultGlobalUniqueTemplate template =
-            new DefaultGlobalUniqueTemplate(mapper, properties, mock(javax.sql.DataSource.class));
+            new DefaultGlobalUniqueTemplate(jdbc, properties, () -> "id", Clock.systemUTC());
 
     @Test
     void tenantDefaultsTrustedContextAndOptionalGlobalScopeRemainDistinct() {
-        when(mapper.insert(any(GlobalUniqueDO.class))).thenReturn(1);
+        when(jdbc.update(anyString(), any(), any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(1);
         properties.getMultiTenant().setDefaultTenantId("single-tenant");
         assertThat(template.claim("order", "1")).isTrue();
         properties.getMultiTenant().setEnabled(true);
@@ -51,31 +54,35 @@ class GlobalUniqueContractTest {
                 "trusted", () -> assertThat(template.claim("order", "3")).isTrue());
         properties.getMultiTenant().setRequired(false);
         assertThat(template.claim("order", "4")).isTrue();
-        var values = ArgumentCaptor.forClass(GlobalUniqueDO.class);
-        verify(mapper, times(3)).insert(values.capture());
-        assertThat(values.getAllValues())
-                .extracting(GlobalUniqueDO::getTenantId)
-                .containsExactly("single-tenant", "trusted", "__loadup_global__");
+        var tenants = ArgumentCaptor.forClass(String.class);
+        verify(jdbc, times(3)).update(anyString(), any(), tenants.capture(), any(), any(), any(), any(), any(), any());
+        assertThat(tenants.getAllValues()).containsExactly("single-tenant", "trusted", "__loadup_global__");
     }
 
     @Test
     void onlyDuplicateBusinessClaimsAreConvertedToFalse() {
         var failure = new DuplicateKeyException("synthetic duplicate");
-        when(mapper.insert(any(GlobalUniqueDO.class))).thenThrow(failure);
-        when(mapper.selectOneByQuery(any(QueryWrapper.class))).thenReturn(null);
+        when(jdbc.update(anyString(), any(), any(), any(), any(), any(), any(), any(), any()))
+                .thenThrow(failure);
         assertThatThrownBy(() -> template.claim("order", "key")).isSameAs(failure);
-        var stored = new GlobalUniqueDO();
-        stored.setId("id");
-        stored.setBizType("order");
-        stored.setUniqueKey("key");
-        when(mapper.selectOneByQuery(any(QueryWrapper.class))).thenReturn(stored);
+        doReturn(0).when(jdbc).update(anyString(), any(), any(), any(), any(), any(), any(), any(), any());
+        var stored = new GlobalUniqueRecord("id", "tenant", "order", "key", null, null, null, null);
+        when(jdbc.query(
+                        anyString(),
+                        org.mockito.ArgumentMatchers.<RowMapper<GlobalUniqueRecord>>any(),
+                        any(),
+                        any(),
+                        any()))
+                .thenReturn(List.of(stored));
         assertThat(template.claim("order", "key")).isFalse();
     }
 
     @Test
     void failedInsertAndNullInputCannotBeReportedAsAcquired() {
-        when(mapper.insert(any(GlobalUniqueDO.class))).thenReturn(0);
-        assertThat(template.claim("order", "key")).isFalse();
+        when(jdbc.update(anyString(), any(), any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(0);
+        assertThatThrownBy(() -> template.claim("order", "key"))
+                .isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
         assertThatThrownBy(() -> template.claim((GlobalUniqueClaim) null)).isInstanceOf(NullPointerException.class);
         assertThat(template.find("order", "missing")).isEmpty();
     }

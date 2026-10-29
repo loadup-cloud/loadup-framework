@@ -19,171 +19,161 @@
  */
 package io.github.loadup.modules.upms.infrastructure.repository;
 
-import static io.github.loadup.modules.upms.infrastructure.dataobject.table.Tables.LOGIN_LOG_DO;
-
-import com.mybatisflex.core.paginate.Page;
-import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.dto.PageQuery;
+import io.github.loadup.components.database.tenant.DatabaseTenant;
 import io.github.loadup.modules.upms.domain.gateway.LoginLogGateway;
 import io.github.loadup.modules.upms.domain.model.LoginLog;
 import io.github.loadup.modules.upms.infrastructure.converter.LoginLogConverter;
 import io.github.loadup.modules.upms.infrastructure.dataobject.LoginLogDO;
-import io.github.loadup.modules.upms.infrastructure.mapper.LoginLogDOMapper;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-/**
- * LoginLog Repository Implementation using MyBatis-Flex
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 @Repository
 public class LoginLogGatewayImpl implements LoginLogGateway {
+    private static final String FROM =
+            " FROM upms_login_log WHERE deleted = FALSE AND tenant_id IS NOT DISTINCT FROM :tenant AND ";
+    private static final String COLUMNS =
+            "id, tenant_id, user_id, username, login_time, logout_time, ip_address, login_location, browser, os, login_status, login_message, login_type, provider, created_at, updated_at, CASE WHEN deleted THEN 1 ELSE 0 END AS deleted";
+    private final NamedParameterJdbcTemplate jdbc;
+    private final Clock clock;
+    private final DatabaseTenant tenant;
+    private final LoginLogConverter converter;
 
-    private final LoginLogDOMapper loginLogDOMapper;
-    private final LoginLogConverter loginLogConverter;
+    public LoginLogGatewayImpl(
+            NamedParameterJdbcTemplate jdbc,
+            LoginLogConverter converter,
+            @Qualifier("databaseClock") Clock clock,
+            DatabaseTenant tenant) {
+        this.jdbc = jdbc;
+        this.clock = clock;
+        this.tenant = tenant;
+        this.converter = converter;
+    }
 
     @Override
     public LoginLog save(LoginLog entity) {
-        LoginLogDO loginLogDO = loginLogConverter.toDataObject(entity);
-        if (loginLogDO.getId() == null) loginLogDO.setId(UUID.randomUUID().toString());
-
-        loginLogDOMapper.insert(loginLogDO);
-        entity = loginLogConverter.toEntity(loginLogDO);
-        return entity;
+        LoginLogDO row = converter.toDataObject(entity);
+        if (row.getId() == null) row.setId(UUID.randomUUID().toString());
+        var now = LocalDateTime.now(clock);
+        if (row.getCreatedAt() == null) row.setCreatedAt(now);
+        row.setUpdatedAt(now);
+        row.setTenantId(tenant.current());
+        jdbc.update("""
+                INSERT INTO upms_login_log (id, tenant_id, user_id, username, login_time, logout_time, ip_address,
+                    login_location, browser, os, login_status, login_message, login_type, provider, created_at, updated_at, deleted)
+                VALUES (:id, :tenantId, :userId, :username, :loginTime, :logoutTime, :ipAddress,
+                    :loginLocation, :browser, :os, COALESCE(:loginStatus, 1), :loginMessage, :loginType,
+                    :provider, :createdAt, :updatedAt, FALSE)
+                """, new BeanPropertySqlParameterSource(row));
+        return converter.toEntity(row);
     }
 
     @Override
     public Optional<LoginLog> findById(String id) {
-        LoginLogDO loginLogDO = loginLogDOMapper.selectOneById(id);
-        return Optional.ofNullable(loginLogDO).map(loginLogConverter::toEntity);
+        return list("id = :id", params().addValue("id", id), " LIMIT 1").stream()
+                .findFirst();
     }
 
     @Override
     public PageResult<LoginLog> findByUserId(String userId, PageQuery query) {
-        QueryWrapper wrapper =
-                QueryWrapper.create().where(LOGIN_LOG_DO.USER_ID.eq(userId)).orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
-
-        Page<LoginLogDO> page = loginLogDOMapper.paginate(Page.of(query.pageNum(), query.pageSize()), wrapper);
-
-        List<LoginLog> logs =
-                page.getRecords().stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
-
-        return PageResult.of(logs, page.getTotalRow(), query.pageNum(), query.pageSize());
+        return page("user_id = :userId", params().addValue("userId", userId), query);
     }
 
     @Override
     public PageResult<LoginLog> findByUsername(String username, PageQuery query) {
-        QueryWrapper wrapper =
-                QueryWrapper.create().where(LOGIN_LOG_DO.USERNAME.eq(username)).orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
-
-        Page<LoginLogDO> page = loginLogDOMapper.paginate(Page.of(query.pageNum(), query.pageSize()), wrapper);
-
-        List<LoginLog> logs =
-                page.getRecords().stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
-
-        return PageResult.of(logs, page.getTotalRow(), query.pageNum(), query.pageSize());
+        return page("username = :username", params().addValue("username", username), query);
     }
 
     @Override
     public PageResult<LoginLog> findByDateRange(LocalDateTime startTime, LocalDateTime endTime, PageQuery query) {
-        QueryWrapper wrapper = QueryWrapper.create()
-                .where(LOGIN_LOG_DO.LOGIN_TIME.between(startTime, endTime))
-                .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
-
-        Page<LoginLogDO> page = loginLogDOMapper.paginate(Page.of(query.pageNum(), query.pageSize()), wrapper);
-
-        List<LoginLog> logs =
-                page.getRecords().stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
-
-        return PageResult.of(logs, page.getTotalRow(), query.pageNum(), query.pageSize());
+        return page("login_time BETWEEN :start AND :end", range(startTime, endTime), query);
     }
 
     @Override
     public PageResult<LoginLog> findFailedLogins(LocalDateTime startTime, LocalDateTime endTime, PageQuery query) {
-        QueryWrapper wrapper = QueryWrapper.create()
-                .where(LOGIN_LOG_DO.LOGIN_STATUS.eq((short) 0))
-                .and(LOGIN_LOG_DO.LOGIN_TIME.between(startTime, endTime))
-                .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
-
-        Page<LoginLogDO> page = loginLogDOMapper.paginate(Page.of(query.pageNum(), query.pageSize()), wrapper);
-
-        List<LoginLog> logs =
-                page.getRecords().stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
-
-        return PageResult.of(logs, page.getTotalRow(), query.pageNum(), query.pageSize());
+        return page("login_status = 0 AND login_time BETWEEN :start AND :end", range(startTime, endTime), query);
     }
 
     @Override
     public void deleteBeforeDate(LocalDateTime date) {
-        loginLogDOMapper.deleteByQuery(QueryWrapper.create().where(LOGIN_LOG_DO.LOGIN_TIME.lt(date)));
+        jdbc.update(
+                "UPDATE upms_login_log SET deleted = TRUE, updated_at = :now WHERE deleted = FALSE AND tenant_id IS NOT DISTINCT FROM :tenant AND login_time < :date",
+                params().addValue("date", date).addValue("now", LocalDateTime.now(clock)));
     }
 
     @Override
     public List<LoginLog> findByLoginTimeBetween(LocalDateTime startTime, LocalDateTime endTime) {
-        QueryWrapper query = QueryWrapper.create()
-                .where(LOGIN_LOG_DO.LOGIN_TIME.between(startTime, endTime))
-                .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
-        List<LoginLogDO> loginLogDOs = loginLogDOMapper.selectListByQuery(query);
-        return loginLogDOs.stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
+        return list("login_time BETWEEN :start AND :end", range(startTime, endTime), "");
     }
 
     @Override
     public PageResult<LoginLog> findAll(PageQuery query) {
-        QueryWrapper wrapper = QueryWrapper.create().orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
-
-        Page<LoginLogDO> page = loginLogDOMapper.paginate(Page.of(query.pageNum(), query.pageSize()), wrapper);
-
-        List<LoginLog> logs =
-                page.getRecords().stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
-
-        return PageResult.of(logs, page.getTotalRow(), query.pageNum(), query.pageSize());
+        return page("TRUE", params(), query);
     }
 
     @Override
     public long countLoginAttempts(String userId, LocalDateTime startTime, LocalDateTime endTime) {
-        QueryWrapper query = QueryWrapper.create()
-                .where(LOGIN_LOG_DO.USER_ID.eq(userId))
-                .and(LOGIN_LOG_DO.LOGIN_TIME.between(startTime, endTime));
-        return loginLogDOMapper.selectCountByQuery(query);
+        return count(
+                "user_id = :userId AND login_time BETWEEN :start AND :end",
+                range(startTime, endTime).addValue("userId", userId));
     }
 
     @Override
     public long countFailedLoginAttempts(String userId, LocalDateTime startTime, LocalDateTime endTime) {
-        QueryWrapper query = QueryWrapper.create()
-                .where(LOGIN_LOG_DO.USER_ID.eq(userId))
-                .and(LOGIN_LOG_DO.LOGIN_STATUS.eq((short) 0))
-                .and(LOGIN_LOG_DO.LOGIN_TIME.between(startTime, endTime));
-        return loginLogDOMapper.selectCountByQuery(query);
+        return count(
+                "user_id = :userId AND login_status = 0 AND login_time BETWEEN :start AND :end",
+                range(startTime, endTime).addValue("userId", userId));
     }
 
     @Override
     public List<LoginLog> findByUserId(String userId) {
-        QueryWrapper query =
-                QueryWrapper.create().where(LOGIN_LOG_DO.USER_ID.eq(userId)).orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc());
-        List<LoginLogDO> loginLogDOs = loginLogDOMapper.selectListByQuery(query);
-        return loginLogDOs.stream().map(loginLogConverter::toEntity).collect(Collectors.toList());
+        return list("user_id = :userId", params().addValue("userId", userId), "");
     }
 
     @Override
     public Optional<LoginLog> findLastSuccessfulLogin(String userId) {
-        QueryWrapper query = QueryWrapper.create()
-                .where(LOGIN_LOG_DO.USER_ID.eq(userId))
-                .and(LOGIN_LOG_DO.LOGIN_STATUS.eq((short) 1))
-                .orderBy(LOGIN_LOG_DO.LOGIN_TIME.desc())
-                .limit(1);
-        LoginLogDO loginLogDO = loginLogDOMapper.selectOneByQuery(query);
-        return Optional.ofNullable(loginLogDO).map(loginLogConverter::toEntity);
+        return list("user_id = :userId AND login_status = 1", params().addValue("userId", userId), " LIMIT 1").stream()
+                .findFirst();
     }
 
-    public LoginLogGatewayImpl(LoginLogDOMapper loginLogDOMapper, LoginLogConverter loginLogConverter) {
-        this.loginLogDOMapper = loginLogDOMapper;
-        this.loginLogConverter = loginLogConverter;
+    private PageResult<LoginLog> page(String predicate, MapSqlParameterSource params, PageQuery page) {
+        long total = count(predicate, params);
+        params.addValue("limit", page.pageSize()).addValue("offset", ((long) page.pageNum() - 1) * page.pageSize());
+        return PageResult.of(
+                list(predicate, params, " LIMIT :limit OFFSET :offset"), total, page.pageNum(), page.pageSize());
+    }
+
+    private long count(String predicate, MapSqlParameterSource params) {
+        Long count = jdbc.queryForObject("SELECT COUNT(*)" + FROM + predicate, params, Long.class);
+        return count == null ? 0 : count;
+    }
+
+    private List<LoginLog> list(String predicate, MapSqlParameterSource params, String limit) {
+        return jdbc
+                .query(
+                        "SELECT " + COLUMNS + FROM + predicate + " ORDER BY login_time DESC" + limit,
+                        params,
+                        BeanPropertyRowMapper.newInstance(LoginLogDO.class))
+                .stream()
+                .map(converter::toEntity)
+                .toList();
+    }
+
+    private MapSqlParameterSource range(LocalDateTime start, LocalDateTime end) {
+        return params().addValue("start", start).addValue("end", end);
+    }
+
+    private MapSqlParameterSource params() {
+        return new MapSqlParameterSource("tenant", tenant.current());
     }
 }

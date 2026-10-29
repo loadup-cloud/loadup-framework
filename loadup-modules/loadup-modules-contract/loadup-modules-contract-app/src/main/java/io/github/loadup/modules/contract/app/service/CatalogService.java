@@ -90,13 +90,8 @@ public class CatalogService implements io.github.loadup.modules.contract.client.
                 previous == null ? now : previous.createdAt(),
                 now);
         assembler.validate(entry, false);
-        if (previous == null) {
-            try {
-                gateway.insert(entry);
-            } catch (org.springframework.dao.DuplicateKeyException e) {
-                throw new CommonException(ContractResultCodeEnum.CONFLICT, e);
-            }
-        } else gateway.update(entry, previous.rowVersion());
+        if (previous == null) gateway.insert(entry);
+        else gateway.update(entry, previous.rowVersion());
         return converter.toCatalog(entry);
     }
 

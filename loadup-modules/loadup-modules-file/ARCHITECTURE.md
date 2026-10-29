@@ -2,10 +2,10 @@
 
 ## 边界
 
-`FileResourceService` 管理业务文件 ID、租户、所有者、元数据、引用和删除状态。它通过 `DfsService` 存取字节，不重新实现本地文件、数据库或对象存储 binder。`FileResourceGateway` 隔离 MySQL；可选 Web 模块负责身份与 HTTP 流式传输。模块不依赖 UPMS 或审计中心。
+`FileResourceService` 管理业务文件 ID、租户、所有者、元数据、引用和删除状态。它通过 `DfsService` 存取字节，不重新实现本地文件、数据库或对象存储 binder。`FileResourceGateway` 隔离 PostgreSQL；可选 Web 模块负责身份与 HTTP 流式传输。模块不依赖 UPMS 或审计中心。
 
 ```text
-业务/API → FileResourceService ┬→ FileResourceGateway → MySQL
+业务/API → FileResourceService ┬→ FileResourceGateway → PostgreSQL
                            └→ DfsService → 选定 DFS binder
 ```
 
@@ -13,7 +13,7 @@
 
 `file_resource` 记录业务 ID 与 DFS storage ID、租户/所有者、文件名、大小、类型、provider、状态和时间戳；`file_resource_reference` 记录业务引用，唯一键避免同一关联重复。引用增加与删除申请都先锁定文件行，再检查状态或引用计数，从而阻止“删除检查后又加引用”的竞态。
 
-上传先完成 DFS 写入，再写 MySQL；MySQL 失败时尝试补偿删除 DFS 对象。如果补偿删除也失败，原异常附带清理异常，需按 DFS 运维手段清理孤儿对象。删除先在数据库事务内由 `ACTIVE` 变为 `PENDING_DELETE`，提交后清理 DFS，再置 `DELETED`。清理失败保留待处理状态，`cleanupPending` 可重试。若 DFS 对象已不存在，binder 的幂等删除仍可完成状态收敛。跨 MySQL 与 DFS 不承诺原子事务。
+上传先完成 DFS 写入，再写 PostgreSQL；PostgreSQL 失败时尝试补偿删除 DFS 对象。如果补偿删除也失败，原异常附带清理异常，需按 DFS 运维手段清理孤儿对象。删除先在数据库事务内由 `ACTIVE` 变为 `PENDING_DELETE`，提交后清理 DFS，再置 `DELETED`。清理失败保留待处理状态，`cleanupPending` 可重试。若 DFS 对象已不存在，binder 的幂等删除仍可完成状态收敛。跨 PostgreSQL 与 DFS 不承诺原子事务。
 
 ## 安全与部署
 
@@ -28,14 +28,14 @@ HTTP 上传受 Spring Multipart 大小限制。对高风险文件类型的病毒
 ```text
 web → app → domain
        ↓       ↑
-     client  infrastructure → MySQL / Flyway
+     client  infrastructure → PostgreSQL / Flyway
 ```
 
 - client 定义不可变请求和 DTO，domain 保留领域模型与 `FileResourceGateway` 端口；应用边界由 `FileDTOConverter` 以 MapStruct Spring 模式映射。
 - `FilePersistenceAutoConfiguration` 归 infrastructure，按 DataSource 和 `loadup.modules.file.enabled` 提供默认 Gateway，消费者可覆盖接口 Bean。
 - app 在持久化装配之后按 Gateway 及所需组件条件创建 `FileResourceService`。生成的 converter 通过显式 `@Import` 注册，避免 REGISTER_BEAN 阶段条件与组件扫描冲突。
 - web 只负责路由、可信身份/租户、方法授权和 HTTP 投影；请求契约归 client。全局响应、Jackson 与 `/api` 前缀由 WebMVC 组件处理。
-- 仓储使用 MyBatis-Flex、Tables 常量与 Spring MapStruct；保留租户、锁、幂等及状态条件更新语义。Flyway 历史脚本保持原样，标准字段通过新增迁移补齐。
+- 仓储使用 Spring JDBC，保留租户、锁与状态条件更新；无外键场景下，引用创建和删除请求在同一事务锁定并校验父记录。初始 Flyway 脚本针对 PostgreSQL 新库。
 - 所有子模块 parent 指向根 `loadup-parent`，所有内部依赖坐标由 BOM 管理。
 
 配置契约迁移到 `loadup.modules.file.*`，不保留旧前缀别名。自动装配、覆盖默认 Gateway 和关闭功能的回归源码见 `FileAutoConfigurationTest`，本次未执行；真实数据库与 HTTP 验收仍需由消费工程完成。

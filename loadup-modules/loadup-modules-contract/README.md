@@ -2,7 +2,7 @@
 
 可复用的产品目录、条件规则、产品组合、销售方案与商户合约模块。通过管理 API 动态发布条款、签约并解析最终配置，无需为配置变更重新部署。
 
-已提供 COLA client/domain/infrastructure/app 和可选 web 适配、MySQL 迁移、Spring 自动装配及前端页面。**源码已完成，未执行编译、测试或端到端联调。** 浏览器中的 Contract 页面已接入目录管理和商户合约接口；未保存的表单内容仍留在页面内存中。详细设计见 [ARCHITECTURE.md](ARCHITECTURE.md)。
+已提供 COLA client/domain/infrastructure/app 和可选 web 适配、PostgreSQL 迁移、Spring 自动装配及前端页面。**源码已完成，未执行编译、测试或端到端联调。** 浏览器中的 Contract 页面已接入目录管理和商户合约接口；未保存的表单内容仍留在页面内存中。详细设计见 [ARCHITECTURE.md](ARCHITECTURE.md)。
 
 ## 能力矩阵
 
@@ -30,7 +30,7 @@
 </dependency>
 ```
 
-API 类型由 `loadup-modules-contract-client` 提供；纯 Java 解析可单独使用 `loadup-modules-contract-domain`。聚合坐标 `loadup-modules-contract` 为 POM。数据库使用 database 组件的 MyBatis-Flex 与 Flyway；配置 DataSource、共享 Jackson3 JsonMapper、事务管理器及生产数据库迁移。web 自动引入全局 WebMVC 约定，认证需由消费工程接入 resource-server，方法授权由 authorization 提供。
+API 类型由 `loadup-modules-contract-client` 提供；纯 Java 解析可单独使用 `loadup-modules-contract-domain`。聚合坐标 `loadup-modules-contract` 为 POM。数据库使用 Spring JDBC 与 Flyway；配置 DataSource、共享 Jackson3 JsonMapper、事务管理器及生产数据库迁移。web 自动引入全局 WebMVC 约定，认证需由消费工程接入 resource-server，方法授权由 authorization 提供。
 
 ```yaml
 loadup:
@@ -120,9 +120,9 @@ await publishCatalog<'PRODUCT'>(data.id, data.rowVersion)
 
 ## 验证状态
 
-提供 ContractFlowTest、ConditionEvaluatorTest、ContractCodecTest 和 ContractPersistenceIT 源码，尚未运行。IT 使用真实 MySQL Testcontainers，涵盖租户引用隔离、发布不可变、乐观版本、持久重放、并发重复签约、暂停/终止门禁和回滚。按项目约定，由用户定向构建/运行，必须带 clean；集成验证需要 Docker。
+提供 ContractFlowTest、ConditionEvaluatorTest、ContractCodecTest 和 ContractPersistenceIT 源码，尚未运行。IT 使用真实 PostgreSQL Testcontainers，涵盖租户引用隔离、发布不可变、乐观版本、持久重放、并发重复签约、暂停/终止门禁和回滚。按项目约定，由用户定向构建/运行，必须带 clean；集成验证需要 Docker。
 
-后续生产验收包括真实 Boot/WebMVC/授权接入、MySQL 多实例与故障恢复、迁移组合、备份恢复及支付订单保存 contractId/revision/snapshotHash 和实际计费值。条款摘要不是电子签名，也不是对数据库管理员篡改的密码学认证。
+后续生产验收包括真实 Boot/WebMVC/授权接入、PostgreSQL 多实例与故障恢复、迁移组合、备份恢复及支付订单保存 contractId/revision/snapshotHash 和实际计费值。条款摘要不是电子签名，也不是对数据库管理员篡改的密码学认证。
 
 ## 使用 Merchant 资料模块
 
@@ -138,7 +138,7 @@ await publishCatalog<'PRODUCT'>(data.id, data.rowVersion)
 
 Java 消费方通过 `client.facade.XxxFacade` 注入公开业务入口；默认应用 Service 直接实现接口。引入 `*-app` 装配业务能力，引入 `*-web` 才提供 Controller，Web 适配不再提供独立 enabled 开关。模块整体启停仍使用 `loadup.modules.contract.enabled`。
 
-JSON Controller 显式返回 SuccessResponse，分页保留已有分页报文契约；异常由全局 WebMVC 处理。下载仍为流式响应。请求与 DTO 字段声明 OpenAPI，凭证只写。持久化经 database 组件使用 MyBatis-Flex、Tables 常量和 Spring MapStruct Converter；数据库连接与可信租户来源由消费工程配置。新 schema 迁移与本轮 clean 编译、运行验证仍需本地执行。
+JSON Controller 显式返回 SuccessResponse，分页保留已有分页报文契约；异常由全局 WebMVC 处理。下载仍为流式响应。请求与 DTO 字段声明 OpenAPI，凭证只写。持久化使用 Spring JDBC 和明确的数据映射；数据库连接与可信租户来源由消费工程配置。新 schema 迁移与本轮 clean 编译、运行验证仍需本地执行。
 
 ## 入参与分页约定
 

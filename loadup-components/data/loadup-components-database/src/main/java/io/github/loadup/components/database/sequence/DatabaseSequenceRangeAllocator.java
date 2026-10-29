@@ -19,20 +19,15 @@
  */
 package io.github.loadup.components.database.sequence;
 
-import static io.github.loadup.components.database.sequence.dataobject.table.Tables.SEQUENCE_ALLOCATION_DO;
-
-import com.mybatisflex.core.logicdelete.LogicDeleteManager;
-import com.mybatisflex.core.query.QueryWrapper;
-import com.mybatisflex.core.tenant.TenantManager;
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.commons.util.TenantUtil;
-import io.github.loadup.components.database.sequence.dataobject.SequenceAllocationDO;
-import io.github.loadup.components.database.sequence.mapper.SequenceAllocationDOMapper;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.locks.LockSupport;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.TransientDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
@@ -40,11 +35,13 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 /** Globally shared sequence rows, isolated from caller tenant and business rollback. */
 public final class DatabaseSequenceRangeAllocator implements SequenceRangeAllocator {
-    private final SequenceAllocationDOMapper mapper;
+    private final JdbcTemplate jdbc;
+    private final Clock clock;
     private final TransactionTemplate transaction;
 
-    public DatabaseSequenceRangeAllocator(SequenceAllocationDOMapper mapper, PlatformTransactionManager manager) {
-        this.mapper = mapper;
+    public DatabaseSequenceRangeAllocator(JdbcTemplate jdbc, PlatformTransactionManager manager, Clock clock) {
+        this.jdbc = jdbc;
+        this.clock = clock;
         transaction = new TransactionTemplate(manager);
         transaction.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
         transaction.setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED);
@@ -55,11 +52,8 @@ public final class DatabaseSequenceRangeAllocator implements SequenceRangeAlloca
         if (scope == null || step < 1) throw new CommonException(DatabaseResultCodeEnum.INVALID_INPUT);
         for (int attempt = 0; attempt < 8; attempt++) {
             try {
-                return TenantUtil.callWithTenant(
-                        "__sequence__",
-                        () -> TenantManager.withoutTenantCondition(() -> LogicDeleteManager.execWithoutLogicDelete(
-                                () -> transaction.execute(status -> allocate(scope, step)))));
-            } catch (DuplicateKeyException | TransientDataAccessException conflict) {
+                return transaction.execute(status -> allocate(scope, step));
+            } catch (TransientDataAccessException conflict) {
                 if (attempt == 7) throw new CommonException(DatabaseResultCodeEnum.UNAVAILABLE, conflict);
                 LockSupport.parkNanos(
                         ThreadLocalRandom.current().nextLong(1_000_000L, Math.min(50_000_000L, 2_000_000L << attempt)));
@@ -73,30 +67,34 @@ public final class DatabaseSequenceRangeAllocator implements SequenceRangeAlloca
     }
 
     private SequenceRange allocate(SequenceScope scope, int step) {
-        SequenceAllocationDO row = mapper.selectOneByQuery(QueryWrapper.create()
-                .where(SEQUENCE_ALLOCATION_DO.SCOPE_KEY.eq(scope.key()))
-                .forUpdate());
-        if (row == null) {
-            row = new SequenceAllocationDO();
-            // Allocation metadata must not recursively invoke the business sequence.
-            row.setId(java.util.UUID.randomUUID().toString());
-            row.setScopeKey(scope.key());
-            row.setMaxAllocated(0L);
-            row.setMaxValue(scope.maximum());
-            mapper.insert(row);
-        }
-        if (row.getDeleted() != 0
-                || row.getMaxAllocated() == null
-                || row.getMaxAllocated() < 0
-                || row.getMaxValue() == null
-                || row.getMaxAllocated() > row.getMaxValue())
+        LocalDateTime now = LocalDateTime.now(clock);
+        jdbc.update("""
+                INSERT INTO loadup_sequence_allocation
+                    (id, tenant_id, created_at, updated_at, deleted, scope_key, max_allocated, max_value)
+                VALUES (?, ?, ?, ?, FALSE, ?, 0, ?)
+                ON CONFLICT (scope_key) DO NOTHING
+                """, UUID.randomUUID().toString(), "__sequence__", now, now, scope.key(), scope.maximum());
+        Allocation row = jdbc.queryForObject(
+                """
+                SELECT max_allocated, max_value, deleted FROM loadup_sequence_allocation
+                WHERE scope_key = ? FOR UPDATE
+                """,
+                (rs, index) ->
+                        new Allocation(rs.getLong("max_allocated"), rs.getLong("max_value"), rs.getBoolean("deleted")),
+                scope.key());
+        if (row == null || row.deleted() || row.allocated() < 0 || row.allocated() > row.maximum())
             throw new CommonException(DatabaseResultCodeEnum.CORRUPT_STATE);
-        if (row.getMaxValue() != scope.maximum()) throw new CommonException(DatabaseResultCodeEnum.CONFIG_CONFLICT);
-        long first = row.getMaxAllocated() + 1;
+        if (row.maximum() != scope.maximum()) throw new CommonException(DatabaseResultCodeEnum.CONFIG_CONFLICT);
+        long first = row.allocated() + 1;
         if (first > scope.maximum()) throw new CommonException(DatabaseResultCodeEnum.EXHAUSTED);
-        long last = row.getMaxAllocated() + Math.min((long) step, scope.maximum() - row.getMaxAllocated());
-        row.setMaxAllocated(last);
-        if (mapper.update(row) != 1) throw new CommonException(DatabaseResultCodeEnum.CORRUPT_STATE);
+        long last = row.allocated() + Math.min((long) step, scope.maximum() - row.allocated());
+        if (jdbc.update("""
+                UPDATE loadup_sequence_allocation SET max_allocated = ?, updated_at = ?
+                WHERE scope_key = ? AND max_allocated = ? AND deleted = FALSE
+                """, last, LocalDateTime.now(clock), scope.key(), row.allocated()) != 1)
+            throw new CommonException(DatabaseResultCodeEnum.CORRUPT_STATE);
         return new SequenceRange(first, last);
     }
+
+    private record Allocation(long allocated, long maximum, boolean deleted) {}
 }

@@ -43,13 +43,13 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(properties = "loadup.dfs.binder-type=database")
 class DatabaseDfsProviderIT {
     private final DfsService service;
-    private final io.github.loadup.components.dfs.database.mapper.FileStorageDOMapper mapper;
+    private final org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate jdbc;
 
     @Autowired
     DatabaseDfsProviderIT(
-            DfsService service, io.github.loadup.components.dfs.database.mapper.FileStorageDOMapper mapper) {
+            DfsService service, org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate jdbc) {
         this.service = service;
-        this.mapper = mapper;
+        this.jdbc = jdbc;
     }
 
     @Test
@@ -91,13 +91,22 @@ class DatabaseDfsProviderIT {
         file.setFileSize(0L);
         file.setContentType("text/plain");
         file.setContent(new byte[0]);
-        mapper.insert(file);
+        var now = java.time.LocalDateTime.now();
+        file.setCreatedAt(now);
+        file.setUpdatedAt(now);
+        jdbc.update(
+                "INSERT INTO dfs_file (id, tenant_id, filename, file_size, content_type, content, metadata_json, created_at, updated_at, deleted) "
+                        + "VALUES (:id, :tenantId, :filename, :fileSize, :contentType, :content, :metadataJson, :createdAt, :updatedAt, FALSE)",
+                new org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource(file));
         try {
             org.assertj.core.api.Assertions.assertThat(
                             service.getMetadata(file.getId()).metadata())
                     .isEmpty();
             file.setMetadataJson("not valid json");
-            mapper.update(file);
+            jdbc.update(
+                    "UPDATE dfs_file SET metadata_json = :metadata WHERE id = :id",
+                    new org.springframework.jdbc.core.namedparam.MapSqlParameterSource("id", file.getId())
+                            .addValue("metadata", file.getMetadataJson()));
             org.assertj.core.api.Assertions.assertThatThrownBy(() -> service.getMetadata(file.getId()))
                     .isInstanceOf(io.github.loadup.components.dfs.DfsStorageException.class);
         } finally {

@@ -56,26 +56,17 @@ class PipelineExecutionIT {
         this.jdbc = jdbc;
     }
 
-    @SpringBootConfiguration
-    @EnableAutoConfiguration
-    static class Application {
-        @Bean
-        FailureHandler failureHandler() {
-            return new FailureHandler();
-        }
-    }
-
     @BeforeEach
     void createTable() {
         jdbc.execute("""
-                CREATE TABLE IF NOT EXISTS pipeline_execution_test (
-                  id VARCHAR(64) NOT NULL PRIMARY KEY,
-                  tenant_id VARCHAR(64),
-                  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                  deleted TINYINT NOT NULL DEFAULT 0
-                ) ENGINE=InnoDB
-                """);
+            CREATE TABLE IF NOT EXISTS pipeline_execution_test (
+              id VARCHAR(64) NOT NULL PRIMARY KEY,
+              tenant_id VARCHAR(64),
+              created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+              updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+              deleted TINYINT NOT NULL DEFAULT 0
+            ) ENGINE=InnoDB
+            """);
     }
 
     @Test
@@ -156,6 +147,15 @@ class PipelineExecutionIT {
             }
         };
         return executor.execute(definition, request);
+    }
+
+    @SpringBootConfiguration
+    @EnableAutoConfiguration
+    static class Application {
+        @Bean
+        FailureHandler failureHandler() {
+            return new FailureHandler();
+        }
     }
 
     static class FailureHandler implements IExceptionClassHandler<String> {

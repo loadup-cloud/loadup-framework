@@ -44,10 +44,6 @@
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-database-processor</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-dfs-api</artifactId>
         </dependency>
         <dependency>
@@ -276,7 +272,6 @@
                                         <file>${maven.multiModuleProjectDirectory}/loadup-components/data/loadup-components-cache/loadup-components-cache-test/target/jacoco-it.exec</file>
                                         <file>${maven.multiModuleProjectDirectory}/loadup-components/data/loadup-components-database/target/jacoco-unit.exec</file>
                                         <file>${maven.multiModuleProjectDirectory}/loadup-components/data/loadup-components-database/target/jacoco-it.exec</file>
-                                        <file>${maven.multiModuleProjectDirectory}/loadup-components/data/loadup-components-database-processor/target/jacoco-unit.exec</file>
                                         <file>${maven.multiModuleProjectDirectory}/loadup-components/data/loadup-components-dfs/loadup-components-dfs-test/target/jacoco-unit.exec</file>
                                         <file>${maven.multiModuleProjectDirectory}/loadup-components/data/loadup-components-dfs/loadup-components-dfs-test/target/jacoco-it.exec</file>
                                         <file>${maven.multiModuleProjectDirectory}/loadup-components/execution/loadup-components-pipeline/target/jacoco-unit.exec</file>

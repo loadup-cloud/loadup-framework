@@ -37,30 +37,26 @@ import java.util.Objects;
 public class PipelineContext {
 
     /**
-     * The original request object passed to the pipeline executor.
-     */
-    private Object request;
-
-    /**
-     * The domain model set by {@link io.github.loadup.components.pipeline.api.IDataPrepareStage}.
-     */
-    private Object model;
-
-    /**
-     * Runtime class of {@link #model}, used for safe casting.
-     */
-    private Class<?> modelClass;
-
-    /**
-     * The response object set by {@link io.github.loadup.components.pipeline.api.IResultAssembleStage}.
-     */
-    private Object response;
-
-    /**
      * Arbitrary key-value bag for cross-stage communication.
      * Prefer typed getters/setters over raw map access when possible.
      */
     private final Map<String, Object> properties = new HashMap<>();
+    /**
+     * The original request object passed to the pipeline executor.
+     */
+    private Object request;
+    /**
+     * The domain model set by {@link io.github.loadup.components.pipeline.api.IDataPrepareStage}.
+     */
+    private Object model;
+    /**
+     * Runtime class of {@link #model}, used for safe casting.
+     */
+    private Class<?> modelClass;
+    /**
+     * The response object set by {@link io.github.loadup.components.pipeline.api.IResultAssembleStage}.
+     */
+    private Object response;
 
     // ── Public read API ─────────────────────────────────────────────────────
 
@@ -81,6 +77,13 @@ public class PipelineContext {
      */
     public Object getRequest() {
         return request;
+    }
+
+    /**
+     * @internal used by {@link io.github.loadup.components.pipeline.engine.PipelineExecutor}
+     */
+    public void setRequest(Object request) {
+        this.request = request;
     }
 
     /**
@@ -106,6 +109,14 @@ public class PipelineContext {
     }
 
     /**
+     * @internal used by {@link io.github.loadup.components.pipeline.engine.PipelineExecutor}
+     */
+    public void setModel(Object model) {
+        this.model = model;
+        this.modelClass = model.getClass();
+    }
+
+    /**
      * Returns the final response object.
      *
      * @param <RES> expected response type
@@ -121,6 +132,15 @@ public class PipelineContext {
      */
     public Object getResponse() {
         return response;
+    }
+
+    // ── Internal mutators (used by PipelineExecutor) ─────────────────────────
+
+    /**
+     * @internal used by {@link io.github.loadup.components.pipeline.engine.PipelineExecutor}
+     */
+    public void setResponse(Object response) {
+        this.response = response;
     }
 
     /**
@@ -146,30 +166,6 @@ public class PipelineContext {
         } else {
             properties.put(key, value);
         }
-    }
-
-    // ── Internal mutators (used by PipelineExecutor) ─────────────────────────
-
-    /**
-     * @internal used by {@link io.github.loadup.components.pipeline.engine.PipelineExecutor}
-     */
-    public void setRequest(Object request) {
-        this.request = request;
-    }
-
-    /**
-     * @internal used by {@link io.github.loadup.components.pipeline.engine.PipelineExecutor}
-     */
-    public void setModel(Object model) {
-        this.model = model;
-        this.modelClass = model.getClass();
-    }
-
-    /**
-     * @internal used by {@link io.github.loadup.components.pipeline.engine.PipelineExecutor}
-     */
-    public void setResponse(Object response) {
-        this.response = response;
     }
 
     /**

@@ -19,29 +19,36 @@
  */
 package io.github.loadup.modules.audit.infrastructure.autoconfigure;
 
+import io.github.loadup.components.database.id.IdGenerator;
 import io.github.loadup.modules.audit.domain.gateway.AuditGateway;
 import io.github.loadup.modules.audit.infrastructure.converter.AuditStorageConverter;
 import io.github.loadup.modules.audit.infrastructure.converter.AuditStorageConverterImpl;
-import io.github.loadup.modules.audit.infrastructure.mapper.*;
 import io.github.loadup.modules.audit.infrastructure.repository.AuditGatewayImpl;
+import java.time.Clock;
 import javax.sql.DataSource;
-import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.context.annotation.*;
+import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
-@AutoConfiguration(afterName = "com.mybatisflex.spring.boot.MybatisFlexAutoConfiguration")
+@AutoConfiguration
 @ConditionalOnSingleCandidate(DataSource.class)
 @ConditionalOnProperty(prefix = "loadup.modules.audit", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class AuditPersistenceAutoConfiguration {
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnMissingBean(AuditGateway.class)
-    @MapperScan(basePackageClasses = AuditEventDOMapper.class)
     @Import(AuditStorageConverterImpl.class)
     static class DefaultPersistence {
         @Bean
-        public AuditGateway auditGateway(AuditEventDOMapper auditEventMapper, AuditStorageConverter converter) {
-            return new AuditGatewayImpl(auditEventMapper, converter);
+        public AuditGateway auditGateway(
+                NamedParameterJdbcTemplate jdbc,
+                JdbcAggregateTemplate aggregates,
+                IdGenerator ids,
+                AuditStorageConverter converter,
+                @Qualifier("databaseClock") Clock clock) {
+            return new AuditGatewayImpl(jdbc, aggregates, ids, converter, clock);
         }
     }
 }

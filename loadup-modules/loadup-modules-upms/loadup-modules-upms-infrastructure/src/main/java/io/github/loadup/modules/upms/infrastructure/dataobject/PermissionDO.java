@@ -19,8 +19,8 @@
  */
 package io.github.loadup.modules.upms.infrastructure.dataobject;
 
-import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
+import org.springframework.data.relational.core.mapping.Table;
 
 /**
  * Permission Data Object
@@ -124,7 +124,7 @@ public class PermissionDO extends BaseDO {
         return this.sortOrder;
     }
 
-    public Boolean isVisible() {
+    public Boolean getVisible() {
         return this.visible;
     }
 

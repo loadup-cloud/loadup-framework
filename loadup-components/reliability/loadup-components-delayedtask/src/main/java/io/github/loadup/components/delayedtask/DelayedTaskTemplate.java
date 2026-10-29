@@ -19,16 +19,12 @@
  */
 package io.github.loadup.components.delayedtask;
 
-import com.mybatisflex.core.tenant.TenantManager;
 import io.github.loadup.commons.context.*;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.components.database.config.DatabaseProperties;
-import io.github.loadup.components.database.transaction.JdbcSavepointExecutor;
-import javax.sql.DataSource;
-import io.github.loadup.components.delayedtask.dataobject.DelayedTaskDO;
 import java.time.*;
 import java.util.Optional;
-import org.springframework.dao.DuplicateKeyException;
+import javax.sql.DataSource;
 import org.springframework.transaction.annotation.*;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -46,7 +42,8 @@ public class DelayedTaskTemplate {
             DelayedTaskConverter converter,
             DelayedTaskProperties properties,
             DatabaseProperties database,
-            Clock clock, DataSource dataSource) {
+            Clock clock,
+            DataSource dataSource) {
         this.store = store;
         this.converter = converter;
         this.properties = properties;
@@ -58,61 +55,27 @@ public class DelayedTaskTemplate {
     public DelayedTask register(String taskType, String bizId, LocalDateTime executeAt) {
         validate(taskType, bizId);
         if (executeAt == null) invalid();
-        if (!TransactionSynchronizationManager.isActualTransactionActive())
+        if (!TransactionSynchronizationManager.isActualTransactionActive()
+                || TransactionSynchronizationManager.isCurrentTransactionReadOnly()
+                || !TransactionSynchronizationManager.hasResource(dataSource))
             throw new CommonException(DelayedTaskResultCodeEnum.TRANSACTION_REQUIRED);
         String tenant = tenant();
-        final LocalDateTime deadline = executeAt.truncatedTo(java.time.temporal.ChronoUnit.MICROS);
-        return TenantManager.withoutTenantCondition(() -> {
-            var row = new DelayedTaskDO();
-            row.setTaskType(taskType);
-            row.setBizId(bizId);
-            row.setExecuteAt(deadline);
-            row.setNextExecuteAt(deadline);
-            row.setStatus(DelayedTaskStatus.PENDING);
-            row.setAttempts(0);
-            row.setMaxAttempts(properties.getMaxAttempts());
-            row.setTenantId(tenant);
-            try {
-                JdbcSavepointExecutor.execute(dataSource, () -> store.mapper().insert(row));
-                return converter.toTask(row);
-            } catch (DuplicateKeyException duplicate) {
-                var existing = store.mapper()
-                        .selectOneByQuery(
-                                DelayedTaskStore.key(tenant, taskType, bizId).forUpdate());
-                if (existing == null) throw duplicate;
-                if (!existing.getExecuteAt().equals(deadline))
-                    throw new CommonException(DelayedTaskResultCodeEnum.CONFLICT);
-                return converter.toTask(existing);
-            }
-        });
+        LocalDateTime deadline = executeAt.truncatedTo(java.time.temporal.ChronoUnit.MICROS);
+        var row =
+                store.insert(tenant, taskType, bizId, deadline, properties.getMaxAttempts(), LocalDateTime.now(clock));
+        if (!row.getExecuteAt().equals(deadline)) throw new CommonException(DelayedTaskResultCodeEnum.CONFLICT);
+        return converter.toTask(row);
     }
 
     public Optional<DelayedTask> find(String type, String biz) {
         validate(type, biz);
-        String tenant = tenant();
-        return TenantManager.withoutTenantCondition(
-                () -> Optional.ofNullable(store.mapper().selectOneByQuery(DelayedTaskStore.key(tenant, type, biz)))
-                        .map(converter::toTask));
+        return store.find(tenant(), type, biz, false).map(converter::toTask);
     }
 
     @Transactional
     public boolean cancel(String type, String biz) {
         validate(type, biz);
-        String tenant = tenant();
-        return TenantManager.withoutTenantCondition(() -> {
-            var patch = com.mybatisflex.core.util.UpdateEntity.of(DelayedTaskDO.class);
-            patch.setStatus(DelayedTaskStatus.CANCELLED);
-            patch.setClaimToken(null);
-            patch.setLeaseUntil(null);
-            return store.mapper()
-                            .updateByQuery(
-                                    patch,
-                                    DelayedTaskStore.key(tenant, type, biz)
-                                            .and(io.github.loadup.components.delayedtask.dataobject.table.Tables
-                                                    .DELAYED_TASK_DO
-                                                    .STATUS.in("PENDING", "RUNNING", "FAILED")))
-                    == 1;
-        });
+        return store.cancel(tenant(), type, biz, LocalDateTime.now(clock));
     }
 
     @Transactional
@@ -129,23 +92,8 @@ public class DelayedTaskTemplate {
     }
 
     private void change(String type, String biz, LocalDateTime deadline, boolean retry) {
-        String tenant = tenant();
-        TenantManager.withoutTenantCondition(() -> {
-            var patch = com.mybatisflex.core.util.UpdateEntity.of(DelayedTaskDO.class);
-            patch.setStatus(DelayedTaskStatus.PENDING);
-            if (!retry) patch.setExecuteAt(deadline);
-            patch.setNextExecuteAt(deadline);
-            patch.setAttempts(0);
-            patch.setLastError(null);
-            patch.setClaimToken(null);
-            patch.setLeaseUntil(null);
-            var q = DelayedTaskStore.key(tenant, type, biz)
-                    .and(io.github.loadup.components.delayedtask.dataobject.table.Tables.DELAYED_TASK_DO.STATUS.in(
-                            retry ? new String[] {"FAILED"} : new String[] {"PENDING", "FAILED", "CANCELLED"}));
-            if (store.mapper().updateByQuery(patch, q) != 1)
-                throw new CommonException(DelayedTaskResultCodeEnum.INVALID_STATE);
-            return null;
-        });
+        if (!store.reschedule(tenant(), type, biz, deadline, retry, LocalDateTime.now(clock)))
+            throw new CommonException(DelayedTaskResultCodeEnum.INVALID_STATE);
     }
 
     private String tenant() {

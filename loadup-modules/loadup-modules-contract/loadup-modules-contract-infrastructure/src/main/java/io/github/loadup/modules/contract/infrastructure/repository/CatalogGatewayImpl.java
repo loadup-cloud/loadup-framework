@@ -19,28 +19,29 @@
  */
 package io.github.loadup.modules.contract.infrastructure.repository;
 
-import static io.github.loadup.modules.contract.infrastructure.dataobject.table.Tables.CATALOG_VERSION_DO;
-
-import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import io.github.loadup.modules.contract.domain.gateway.CatalogGateway;
 import io.github.loadup.modules.contract.domain.model.*;
-import io.github.loadup.modules.contract.infrastructure.converter.ContractStorageConverter;
-import io.github.loadup.modules.contract.infrastructure.dataobject.CatalogVersionDO;
-import io.github.loadup.modules.contract.infrastructure.mapper.CatalogVersionDOMapper;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class CatalogGatewayImpl implements CatalogGateway {
-    private final CatalogVersionDOMapper mapper;
-    private final ContractStorageConverter converter;
+    private final NamedParameterJdbcTemplate jdbc;
+    private final Clock clock;
 
-    public CatalogGatewayImpl(CatalogVersionDOMapper mapper, ContractStorageConverter converter) {
-        this.mapper = mapper;
-        this.converter = converter;
+    public CatalogGatewayImpl(NamedParameterJdbcTemplate jdbc, @Qualifier("databaseClock") Clock clock) {
+        this.jdbc = jdbc;
+        this.clock = clock;
     }
 
     private static String required(String value) {
@@ -49,60 +50,103 @@ public class CatalogGatewayImpl implements CatalogGateway {
         return value;
     }
 
-    private QueryWrapper scope(String tenant) {
-        return QueryWrapper.create()
-                .where(CatalogVersionDO::getTenantId)
-                .eq(required(tenant))
-                .and(CatalogVersionDO::getDeleted)
-                .eq(0);
-    }
-
+    @Override
     public Optional<CatalogEntry> find(String tenant, String id) {
-        return Optional.ofNullable(mapper.selectOneByQuery(
-                        scope(tenant).and(CatalogVersionDO::getId).eq(required(id))))
-                .map(converter::toCatalog);
+        return read(tenant, id, false);
     }
 
+    @Override
     public Optional<CatalogEntry> lock(String tenant, String id) {
-        return Optional.ofNullable(mapper.selectOneByQuery(scope(tenant)
-                        .and(CatalogVersionDO::getId)
-                        .eq(required(id))
-                        .forUpdate()))
-                .map(converter::toCatalog);
+        return read(tenant, id, true);
     }
 
+    private Optional<CatalogEntry> read(String tenant, String id, boolean lock) {
+        var args = new MapSqlParameterSource("tenant", required(tenant)).addValue("id", required(id));
+        return jdbc
+                .query(
+                        "SELECT * FROM contract_catalog_version WHERE tenant_id = :tenant AND id = :id "
+                                + "AND deleted = FALSE" + (lock ? " FOR UPDATE" : ""),
+                        args,
+                        CatalogGatewayImpl::map)
+                .stream()
+                .findFirst();
+    }
+
+    @Override
     public void insert(CatalogEntry entry) {
-        mapper.insert(converter.toCatalogDO(entry));
+        LocalDateTime now = LocalDateTime.now(clock);
+        var args = params(entry)
+                .addValue("createdAt", entry.createdAt() == null ? now : entry.createdAt())
+                .addValue("updatedAt", now);
+        int count = jdbc.update("""
+                INSERT INTO contract_catalog_version (id, tenant_id, kind, code, version, status, row_version,
+                    content, updated_by, created_at, updated_at, deleted)
+                VALUES (:id, :tenant, :kind, :code, :version, :status, :rowVersion, :content, :updatedBy,
+                    :createdAt, :updatedAt, FALSE)
+                ON CONFLICT (tenant_id, kind, code, version) DO NOTHING
+                """, args);
+        if (count == 0) throw new CommonException(ContractResultCodeEnum.CONFLICT);
+        if (count != 1) throw new IllegalStateException("Unexpected catalog insert count");
     }
 
+    @Override
     public void update(CatalogEntry entry, long expected) {
-        int changed = mapper.updateByQuery(
-                converter.toCatalogDO(entry),
-                scope(entry.tenantId())
-                        .and(CatalogVersionDO::getId)
-                        .eq(entry.id())
-                        .and(CatalogVersionDO::getRowVersion)
-                        .eq(expected));
+        var args = params(entry).addValue("expected", expected).addValue("updatedAt", LocalDateTime.now(clock));
+        int changed = jdbc.update("""
+                UPDATE contract_catalog_version SET kind = :kind, code = :code, version = :version, status = :status,
+                    row_version = :rowVersion, content = :content, updated_by = :updatedBy, updated_at = :updatedAt
+                WHERE tenant_id = :tenant AND id = :id AND row_version = :expected AND deleted = FALSE
+                """, args);
         if (changed != 1) throw new CommonException(ContractResultCodeEnum.CATALOG_VERSION_CHANGED);
     }
 
+    private static MapSqlParameterSource params(CatalogEntry entry) {
+        return new MapSqlParameterSource("id", required(entry.id()))
+                .addValue("tenant", required(entry.tenantId()))
+                .addValue("kind", entry.kind().name())
+                .addValue("code", entry.code())
+                .addValue("version", entry.version())
+                .addValue("status", entry.status().name())
+                .addValue("rowVersion", entry.rowVersion())
+                .addValue("content", entry.content())
+                .addValue("updatedBy", entry.updatedBy());
+    }
+
+    @Override
     public PageResult<CatalogEntry> page(
             String tenant, CatalogKind kind, CatalogStatus status, String code, int page, int size) {
-        QueryWrapper query = scope(tenant).and(CatalogVersionDO::getKind).eq(kind.name());
-        if (status != null) query.and(CatalogVersionDO::getStatus).eq(status.name());
-        if (code != null && !code.isBlank())
-            query.and(CatalogVersionDO::getCode).eq(code);
-        long total = mapper.selectCountByQuery(query);
-        query.orderBy(CATALOG_VERSION_DO.UPDATED_AT.desc(), CATALOG_VERSION_DO.ID.asc())
-                .limit((long) (page - 1) * size, size);
-        return new PageResult<>(
-                java.util.Objects.requireNonNull(
-                                mapper.selectListByQuery(query), "Mapper must return an empty list instead of null")
-                        .stream()
-                        .map(converter::toCatalog)
-                        .toList(),
-                total,
-                page,
-                size);
+        var sql = new StringBuilder(
+                " FROM contract_catalog_version WHERE tenant_id = :tenant AND kind = :kind AND deleted = FALSE");
+        var args = new MapSqlParameterSource("tenant", required(tenant)).addValue("kind", kind.name());
+        if (status != null) {
+            sql.append(" AND status = :status");
+            args.addValue("status", status.name());
+        }
+        if (code != null && !code.isBlank()) {
+            sql.append(" AND code = :code");
+            args.addValue("code", code);
+        }
+        Long total = jdbc.queryForObject("SELECT COUNT(*)" + sql, args, Long.class);
+        args.addValue("limit", size).addValue("offset", (long) (page - 1) * size);
+        var rows = jdbc.query(
+                "SELECT *" + sql + " ORDER BY updated_at DESC, id ASC LIMIT :limit OFFSET :offset",
+                args,
+                CatalogGatewayImpl::map);
+        return new PageResult<>(rows, total == null ? 0 : total, page, size);
+    }
+
+    private static CatalogEntry map(ResultSet rs, int row) throws SQLException {
+        return new CatalogEntry(
+                rs.getString("id"),
+                rs.getString("tenant_id"),
+                CatalogKind.valueOf(rs.getString("kind")),
+                rs.getString("code"),
+                rs.getInt("version"),
+                CatalogStatus.valueOf(rs.getString("status")),
+                rs.getLong("row_version"),
+                rs.getString("content"),
+                rs.getString("updated_by"),
+                rs.getObject("created_at", LocalDateTime.class),
+                rs.getObject("updated_at", LocalDateTime.class));
     }
 }

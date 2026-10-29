@@ -31,7 +31,7 @@
 - 公共配置启用 `loadup.database.multi-tenant.enabled/required`，使租户上下文与持久化过滤一致；各场景使用独立租户。
 - IT 显式关闭容器复用，从空 MySQL 数据库执行迁移，避免其他测试留下的表和 Flyway 历史污染。
 - 测试模块显式引入 test scope 的 `spring-boot-starter-flyway` 和 `flyway-mysql`；database 的可选 Flyway 依赖不会自动传递给消费方。使用真实的业务及 Sequence 迁移，不手动复制建表脚本。
-- 不设置 `mybatis-flex.global-config`，包括 `print-banner` 等诊断选项；database 统一管理持久化约定。
+- 使用 PostgreSQL 初始迁移；数据库与事务配置由测试应用提供。
 
 从仓库根目录执行（`verify` 才会运行 Failsafe IT）：
 

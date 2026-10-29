@@ -110,7 +110,7 @@ Database failover and backup restoration must preserve committed allocation maxi
 
 ### Verification and remaining acceptance
 
-The implementation uses generated `SequenceAllocationDOMapper` and Tables from the framework processor. The MySQL migration is packaged under `db/migration`; deployments include that location or apply the migration externally. The component deliberately retains UUID allocation-row primary keys to prevent recursion. Trusted tenant binding and scoped MyBatis-Flex tenant/logical-delete bypass keep allocation shared without changing the caller's identity. A deleted/corrupt allocation row fails explicitly.
+The allocator uses Spring JDBC with PostgreSQL `ON CONFLICT (scope_key) DO NOTHING` and a row lock in an independent transaction. The PostgreSQL migration is packaged under `db/migration`; deployments include that location or apply the migration externally. UUID allocation-row primary keys prevent recursive business ID allocation. The allocation namespace is global, uses the reserved tenant `__sequence__`, and does not depend on the caller's tenant context. A deleted/corrupt allocation row fails explicitly.
 
 Unit tests cover fixed encoding vectors, maximum length, leading zeros, invalid dates and values, local-zone batch dates, virtual-thread single/batch concurrency, restart waste, range boundaries, cache admission, timeouts, prefetch failure and metrics. Real MySQL tests cover concurrent first creation, committed disjoint ranges, tenant independence, caller rollback, final-range truncation and maximum conflicts. Leaf dependencies were not introduced; source-compatible upstream reuse was not required.
 

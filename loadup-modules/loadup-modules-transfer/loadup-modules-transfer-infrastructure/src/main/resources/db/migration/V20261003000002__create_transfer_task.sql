@@ -16,8 +16,7 @@ CREATE TABLE transfer_task (
     started_at      TIMESTAMP(6) WITHOUT TIME ZONE,
     finished_at     TIMESTAMP(6) WITHOUT TIME ZONE,
     updated_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    deleted SMALLINT NOT NULL DEFAULT 0,
-    CHECK (deleted IN (0, 1))
+    deleted BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE INDEX idx_transfer_owner ON transfer_task (tenant_id, owner_id, created_at);
@@ -28,13 +27,11 @@ CREATE TABLE transfer_task_option (
     task_id      VARCHAR(64) COLLATE "C"   NOT NULL,
     option_name  VARCHAR(64) COLLATE "C"   NOT NULL,
     option_value VARCHAR(1000) COLLATE "C" NOT NULL,
-    CONSTRAINT fk_transfer_task_option_task FOREIGN KEY (task_id) REFERENCES transfer_task (id),
     id VARCHAR(64) COLLATE "C" NOT NULL PRIMARY KEY,
-    tenant_id VARCHAR(64) COLLATE "C" NULL,
+    tenant_id VARCHAR(64) COLLATE "C" NOT NULL,
     created_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
     updated_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    deleted SMALLINT NOT NULL DEFAULT 0,
-    CHECK (deleted IN (0, 1))
+    deleted BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE UNIQUE INDEX uk_transfer_option ON transfer_task_option (task_id, option_name);

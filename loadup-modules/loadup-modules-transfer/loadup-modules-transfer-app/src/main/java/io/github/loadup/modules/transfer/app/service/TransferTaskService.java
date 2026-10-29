@@ -153,7 +153,7 @@ public class TransferTaskService implements io.github.loadup.modules.transfer.cl
         if (task.sourceFileId() != null) {
             files.get(task.tenantId(), task.sourceFileId(), task.ownerId(), false);
         }
-        if (!repository.requeue(task.id())) {
+        if (!repository.requeue(task.tenantId(), task.id())) {
             throw new CommonException(TransferResultCodeEnum.TASK_STATUS_CHANGED);
         }
         protectSource(task);
@@ -189,7 +189,7 @@ public class TransferTaskService implements io.github.loadup.modules.transfer.cl
 
     private void executeForTenant(TransferTask task) throws Exception {
         String id = task.id();
-        if (!repository.start(id)) return;
+        if (!repository.start(task.tenantId(), id)) return;
         Path output = null;
         String uploadedId = null;
         try {
@@ -199,8 +199,8 @@ public class TransferTaskService implements io.github.loadup.modules.transfer.cl
                     task.id(),
                     task.tenantId(),
                     task.ownerId(),
-                    repository.options(id),
-                    (processed, total) -> report(id, processed, total));
+                    repository.options(task.tenantId(), id),
+                    (processed, total) -> report(task.tenantId(), id, processed, total));
             try (FileDownloadResponse source = task.kind() == TransferKind.IMPORT
                             ? files.download(task.tenantId(), task.sourceFileId(), task.ownerId(), false)
                             : null;
@@ -221,13 +221,13 @@ public class TransferTaskService implements io.github.loadup.modules.transfer.cl
                             .id();
                 }
             }
-            repository.succeed(id, uploadedId);
+            repository.succeed(task.tenantId(), id, uploadedId);
             releaseSource(task);
         } catch (Exception failure) {
             if (uploadedId != null) deleteUnlinkedOutput(task, uploadedId);
             releaseSource(task);
             try {
-                repository.fail(id, "Task processing failed");
+                repository.fail(task.tenantId(), id, "Task processing failed");
             } catch (RuntimeException stateFailure) {
                 failure.addSuppressed(stateFailure);
             }
@@ -248,9 +248,9 @@ public class TransferTaskService implements io.github.loadup.modules.transfer.cl
         }
     }
 
-    private void report(String id, long processed, long total) {
+    private void report(String tenant, String id, long processed, long total) {
         if (processed < 0 || total < processed) throw new CommonException(TransferResultCodeEnum.INVALID_TASK_PROGRESS);
-        repository.progress(id, processed, total);
+        repository.progress(tenant, id, processed, total);
     }
 
     private void protectSource(TransferTask task) {

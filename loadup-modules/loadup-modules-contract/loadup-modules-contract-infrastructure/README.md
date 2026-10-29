@@ -1,6 +1,6 @@
 # LoadUp Contract Infrastructure
 
-MySQL 合约持久化与租户 Gateway。主接入手册与完整报文见 [Contract README](../README.md)。
+PostgreSQL 合约持久化与租户 Gateway。主接入手册与完整报文见 [Contract README](../README.md)。
 
 ## Maven
 
@@ -17,7 +17,7 @@ MySQL 合约持久化与租户 Gateway。主接入手册与完整报文见 [Cont
 
 | 能力 | 契约 |
 |---|---|
-| 当前职责 | MySQL 合约持久化与租户 Gateway |
+| 当前职责 | PostgreSQL 合约持久化与租户 Gateway |
 | 生命周期 | 有效草稿、固定发布版本、初次签约和暂停/恢复/终止 |
 | 验证状态 | 源码已提供，未编译或执行测试 |
 

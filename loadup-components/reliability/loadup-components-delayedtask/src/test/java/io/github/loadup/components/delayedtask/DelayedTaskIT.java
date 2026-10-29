@@ -19,14 +19,10 @@
  */
 package io.github.loadup.components.delayedtask;
 
-import static io.github.loadup.components.delayedtask.dataobject.table.Tables.*;
 import static org.assertj.core.api.Assertions.*;
 
-import com.mybatisflex.core.query.QueryWrapper;
-import com.mybatisflex.core.tenant.TenantManager;
 import io.github.loadup.commons.context.*;
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.components.delayedtask.mapper.DelayedTaskDOMapper;
 import io.github.loadup.components.testcontainers.annotation.*;
 import java.time.*;
 import java.util.*;
@@ -38,6 +34,7 @@ import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -50,7 +47,7 @@ class DelayedTaskIT {
     private final DelayedTaskProperties properties;
     private final MutableClock clock;
     private final TransactionTemplate transactions;
-    private final DelayedTaskDOMapper mapper;
+    private final JdbcTemplate jdbc;
     private static final AtomicInteger calls = new AtomicInteger();
     private static final AtomicInteger failures = new AtomicInteger();
 
@@ -62,20 +59,19 @@ class DelayedTaskIT {
             DelayedTaskProperties properties,
             MutableClock clock,
             PlatformTransactionManager manager,
-            DelayedTaskDOMapper mapper) {
+            JdbcTemplate jdbc) {
         this.tasks = tasks;
         this.store = store;
         this.dispatcher = dispatcher;
         this.properties = properties;
         this.clock = clock;
         this.transactions = new TransactionTemplate(manager);
-        this.mapper = mapper;
+        this.jdbc = jdbc;
     }
 
     @BeforeEach
     void clear() {
-        TenantManager.withoutTenantCondition(() -> mapper.deleteByQuery(
-                QueryWrapper.create().from(DELAYED_TASK_DO).where(DELAYED_TASK_DO.ID.isNotNull())));
+        jdbc.update("DELETE FROM delayed_task");
         calls.set(0);
         failures.set(0);
         properties.setMaxAttempts(2);
@@ -145,12 +141,15 @@ class DelayedTaskIT {
 
     @Test
     void duplicateRegistrationLeavesTheEnclosingPostgresqlTransactionUsable() {
-        tenant("a", () -> transactions.execute(status -> {
-            var first = tasks.register("close-order", "duplicate", now());
-            assertThat(tasks.register("close-order", "duplicate", now()).id()).isEqualTo(first.id());
-            tasks.register("close-order", "after-duplicate", now());
-            return null;
-        }));
+        tenant(
+                "a",
+                () -> transactions.execute(status -> {
+                    var first = tasks.register("close-order", "duplicate", now());
+                    assertThat(tasks.register("close-order", "duplicate", now()).id())
+                            .isEqualTo(first.id());
+                    tasks.register("close-order", "after-duplicate", now());
+                    return null;
+                }));
         assertThat(get("a", "after-duplicate").status()).isEqualTo(DelayedTaskStatus.PENDING);
     }
 
@@ -240,6 +239,39 @@ class DelayedTaskIT {
                     .containsExactlyInAnyOrder(true, false);
         } finally {
             start.countDown();
+        }
+    }
+
+    @Test
+    void lockedDueTaskDoesNotBlockClaimOfAnotherTask() throws Exception {
+        register("a", "locked", now().minusSeconds(2));
+        register("a", "available", now().minusSeconds(1));
+        var locked = new CountDownLatch(1);
+        var release = new CountDownLatch(1);
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            var holder = executor.submit(() -> transactions.executeWithoutResult(status -> {
+                jdbc.queryForObject(
+                        "SELECT id FROM delayed_task WHERE tenant_id = ? AND biz_id = ? FOR UPDATE",
+                        String.class,
+                        "a",
+                        "locked");
+                locked.countDown();
+                try {
+                    if (!release.await(5, TimeUnit.SECONDS)) throw new AssertionError("Timeout waiting for release");
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new IllegalStateException(e);
+                }
+            }));
+            try {
+                assertThat(locked.await(5, TimeUnit.SECONDS)).isTrue();
+                var claim = executor.submit(() -> store.claim(LocalDateTime.now(clock), properties));
+                assertThat(claim.get(2, TimeUnit.SECONDS).orElseThrow().getBizId())
+                        .isEqualTo("available");
+            } finally {
+                release.countDown();
+                holder.get(5, TimeUnit.SECONDS);
+            }
         }
     }
 

@@ -20,31 +20,29 @@
 package io.github.loadup.modules.file.infrastructure.autoconfigure;
 
 import io.github.loadup.modules.file.domain.gateway.FileResourceGateway;
-import io.github.loadup.modules.file.infrastructure.converter.FileStorageConverter;
-import io.github.loadup.modules.file.infrastructure.converter.FileStorageConverterImpl;
-import io.github.loadup.modules.file.infrastructure.mapper.*;
 import io.github.loadup.modules.file.infrastructure.repository.FileResourceGatewayImpl;
+import java.time.Clock;
 import javax.sql.DataSource;
-import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.context.annotation.*;
+import org.springframework.jdbc.core.JdbcTemplate;
 
-@AutoConfiguration(afterName = "com.mybatisflex.spring.boot.MybatisFlexAutoConfiguration")
+@AutoConfiguration(
+        afterName = {
+            "org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration",
+            "io.github.loadup.components.database.autoconfigure.DatabaseCoreAutoConfiguration"
+        })
 @ConditionalOnSingleCandidate(DataSource.class)
 @ConditionalOnProperty(prefix = "loadup.modules.file", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class FilePersistenceAutoConfiguration {
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnMissingBean(FileResourceGateway.class)
-    @MapperScan(basePackageClasses = FileResourceDOMapper.class)
-    @Import(FileStorageConverterImpl.class)
     static class DefaultPersistence {
         @Bean
-        public FileResourceGateway fileGateway(
-                FileResourceDOMapper fileResourceMapper,
-                FileReferenceDOMapper fileReferenceMapper,
-                FileStorageConverter converter) {
-            return new FileResourceGatewayImpl(fileResourceMapper, fileReferenceMapper, converter);
+        public FileResourceGateway fileGateway(JdbcTemplate jdbc, @Qualifier("databaseClock") Clock clock) {
+            return new FileResourceGatewayImpl(jdbc, clock);
         }
     }
 }

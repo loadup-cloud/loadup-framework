@@ -50,9 +50,36 @@ import org.springframework.transaction.support.AbstractPlatformTransactionManage
 import org.springframework.transaction.support.DefaultTransactionStatus;
 
 class PipelineExecutorTest {
+    private final List<String> events = new ArrayList<>();
     private GenericApplicationContext application;
     private PipelineExecutor executor;
-    private final List<String> events = new ArrayList<>();
+
+    private static IPipelineDefinition definition(PipelineSpec spec, ExceptionHandlerBus bus) {
+        return new IPipelineDefinition() {
+            @Override
+            public PipelineSpec definePipeline() {
+                return spec;
+            }
+
+            @Override
+            public ExceptionHandlerBus exceptions() {
+                return bus;
+            }
+        };
+    }
+
+    @SafeVarargs
+    private static PipelineSpec stages(Class<? extends IStage>... classes) {
+        return new PipelineSpec(List.of(classes), Map.of(), Map.of(), Map.of());
+    }
+
+    private static PipelineSpec failing() {
+        return PipelineBuilder.builder()
+                .process(ctx -> {
+                    throw new IllegalArgumentException("failure");
+                })
+                .build();
+    }
 
     @BeforeEach
     void setUp() {
@@ -352,35 +379,36 @@ class PipelineExecutorTest {
         return executor.execute(definition(spec, bus), "request");
     }
 
-    private static IPipelineDefinition definition(PipelineSpec spec, ExceptionHandlerBus bus) {
-        return new IPipelineDefinition() {
-            @Override
-            public PipelineSpec definePipeline() {
-                return spec;
-            }
-
-            @Override
-            public ExceptionHandlerBus exceptions() {
-                return bus;
-            }
-        };
-    }
-
-    @SafeVarargs
-    private static PipelineSpec stages(Class<? extends IStage>... classes) {
-        return new PipelineSpec(List.of(classes), Map.of(), Map.of(), Map.of());
-    }
-
-    private static PipelineSpec failing() {
-        return PipelineBuilder.builder()
-                .process(ctx -> {
-                    throw new IllegalArgumentException("failure");
-                })
-                .build();
-    }
-
     private void register(String name, Object bean) {
         application.getBeanFactory().registerSingleton(name, bean);
+    }
+
+    static class Stop implements IControlStage {
+        @Override
+        public boolean shouldStop(PipelineContext ctx) {
+            return true;
+        }
+    }
+
+    static class Continue implements IControlStage {
+        @Override
+        public boolean shouldStop(PipelineContext ctx) {
+            return false;
+        }
+    }
+
+    static class Failure implements IBizProcessStage {
+        @Override
+        public void process(PipelineContext ctx) {
+            throw new IllegalArgumentException("failure");
+        }
+    }
+
+    static class FallbackHandler implements IExceptionClassHandler<String> {
+        @Override
+        public String assembleResultOnException(Throwable failure, PipelineContext ctx) {
+            return "fallback";
+        }
     }
 
     class Verify implements IParamVerifyStage<String> {
@@ -435,27 +463,6 @@ class PipelineExecutorTest {
         }
     }
 
-    static class Stop implements IControlStage {
-        @Override
-        public boolean shouldStop(PipelineContext ctx) {
-            return true;
-        }
-    }
-
-    static class Continue implements IControlStage {
-        @Override
-        public boolean shouldStop(PipelineContext ctx) {
-            return false;
-        }
-    }
-
-    static class Failure implements IBizProcessStage {
-        @Override
-        public void process(PipelineContext ctx) {
-            throw new IllegalArgumentException("failure");
-        }
-    }
-
     class ExactHandler implements IExceptionClassHandler<String> {
         @Override
         public void handleException(Throwable failure, PipelineContext ctx) {
@@ -466,13 +473,6 @@ class PipelineExecutorTest {
         public String assembleResultOnException(Throwable failure, PipelineContext ctx) {
             events.add("assemble-exact");
             return "exact";
-        }
-    }
-
-    static class FallbackHandler implements IExceptionClassHandler<String> {
-        @Override
-        public String assembleResultOnException(Throwable failure, PipelineContext ctx) {
-            return "fallback";
         }
     }
 

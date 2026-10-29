@@ -19,18 +19,18 @@
  */
 package io.github.loadup.modules.notification.infrastructure.autoconfigure;
 
+import io.github.loadup.components.database.id.IdGenerator;
 import io.github.loadup.modules.notification.domain.gateway.InboxGateway;
 import io.github.loadup.modules.notification.infrastructure.converter.NotificationStorageConverter;
 import io.github.loadup.modules.notification.infrastructure.converter.NotificationStorageConverterImpl;
-import io.github.loadup.modules.notification.infrastructure.mapper.*;
 import io.github.loadup.modules.notification.infrastructure.repository.InboxGatewayImpl;
 import javax.sql.DataSource;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.context.annotation.*;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
-@AutoConfiguration(afterName = "com.mybatisflex.spring.boot.MybatisFlexAutoConfiguration")
+@AutoConfiguration
 @ConditionalOnSingleCandidate(DataSource.class)
 @ConditionalOnProperty(
         prefix = "loadup.modules.notification",
@@ -46,16 +46,16 @@ public class NotificationPersistenceAutoConfiguration {
 
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnMissingBean(InboxGateway.class)
-    @MapperScan(basePackageClasses = InboxMessageDOMapper.class)
     @Import(NotificationStorageConverterImpl.class)
     static class DefaultPersistence {
         @Bean
         public InboxGateway notificationGateway(
-                InboxMessageDOMapper inboxMessageMapper,
+                NamedParameterJdbcTemplate jdbc,
+                IdGenerator ids,
                 NotificationStorageConverter converter,
                 @org.springframework.beans.factory.annotation.Qualifier("notificationStorageClock")
                         java.time.Clock clock) {
-            return new InboxGatewayImpl(inboxMessageMapper, converter, clock);
+            return new InboxGatewayImpl(jdbc, converter, clock, ids);
         }
     }
 }
