@@ -37,6 +37,7 @@ public class OutboxProperties {
                 || pollInterval.toMillis() < 1
                 || lease == null
                 || lease.toMillis() < 1
+                || lease.toMillis() > Long.MAX_VALUE / 1000
                 || retryDelay == null
                 || retryDelay.toMillis() < 1
                 || retryDelay.toMillis() > 86400000

@@ -10,7 +10,7 @@
 |------|------|
 | `-api` | `NotificationService` facade + `NotificationChannelProvider` SPI + 可选存储 SPI |
 | `-engine` | 纯发送引擎（零存储、零 DB）：可用性过滤、provider 降级链、resilience4j 包装、异步发送、模板渲染 |
-| `-store-jdbc` | 默认存储实现（MyBatis-Flex，3 张表，Flyway 自动迁移） |
+| `-store-jdbc` | 默认 Spring JDBC 存储实现（3 张表，PostgreSQL Flyway 迁移） |
 | `-binder-email` | SMTP（Spring Mail），真实实现 |
 | `-binder-sms` | aliyun / huawei / yunpian（stub，待接厂商 SDK） |
 | `-binder-push` | fcm（stub，待接 Firebase Admin SDK） |

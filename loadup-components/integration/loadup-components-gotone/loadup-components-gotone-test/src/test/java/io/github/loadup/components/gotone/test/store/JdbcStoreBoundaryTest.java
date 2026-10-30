@@ -33,7 +33,8 @@ import io.github.loadup.components.gotone.record.RecordHandler;
 import io.github.loadup.components.gotone.store.config.JdbcChannelConfigProvider;
 import io.github.loadup.components.gotone.store.config.JdbcRecordHandler;
 import io.github.loadup.components.gotone.store.config.JdbcServiceConfigProvider;
-import io.github.loadup.components.gotone.store.dataobject.ServiceChannelDO;
+import io.github.loadup.components.gotone.store.dataobject.ServiceChannelRow;
+import io.github.loadup.components.gotone.store.dataobject.NotificationRecordRow;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -47,56 +48,36 @@ class JdbcStoreBoundaryTest {
 
     @Test
     void missingServiceAndChannelRowsReturnEmptyResults() {
-        var services = mock(org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate.class);
-        var channels = mock(org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate.class);
-        when(services.query(
-                        any(String.class),
-                        any(org.springframework.jdbc.core.namedparam.SqlParameterSource.class),
-                        org.mockito.ArgumentMatchers
-                                .<org.springframework.jdbc.core.RowMapper<
-                                                io.github.loadup.components.gotone.store.dataobject
-                                                        .NotificationServiceDO>>
-                                        any()))
-                .thenReturn(List.of());
-        when(channels.query(
-                        any(String.class),
-                        any(org.springframework.jdbc.core.namedparam.SqlParameterSource.class),
-                        org.mockito.ArgumentMatchers.<org.springframework.jdbc.core.RowMapper<ServiceChannelDO>>any()))
+        var services = mock(org.springframework.data.jdbc.core.JdbcAggregateTemplate.class);
+        var channels = mock(org.springframework.data.jdbc.core.JdbcAggregateTemplate.class);
+        when(services.findOne(any(org.springframework.data.relational.core.query.Query.class),
+                        org.mockito.ArgumentMatchers.eq(io.github.loadup.components.gotone.store.dataobject.NotificationServiceRow.class)))
+                .thenReturn(java.util.Optional.empty());
+        when(channels.findAll(any(org.springframework.data.relational.core.query.Query.class),
+                        eq(ServiceChannelRow.class)))
                 .thenReturn(List.of());
         assertThat(new JdbcServiceConfigProvider(services, tenant).findByServiceCode("missing"))
                 .isEmpty();
         assertThat(new JdbcChannelConfigProvider(channels, tenant).findEnabledByServiceCode("missing"))
                 .isEmpty();
-        var serviceParams = ArgumentCaptor.forClass(org.springframework.jdbc.core.namedparam.SqlParameterSource.class);
-        var channelParams = ArgumentCaptor.forClass(org.springframework.jdbc.core.namedparam.SqlParameterSource.class);
-        verify(services).query(org.mockito.ArgumentMatchers.contains("tenant_id IS NOT DISTINCT FROM :tenant"), serviceParams.capture(),
-                org.mockito.ArgumentMatchers.<org.springframework.jdbc.core.RowMapper<io.github.loadup.components.gotone.store.dataobject.NotificationServiceDO>>any());
-        verify(channels).query(org.mockito.ArgumentMatchers.contains("tenant_id IS NOT DISTINCT FROM :tenant"), channelParams.capture(),
-                org.mockito.ArgumentMatchers.<org.springframework.jdbc.core.RowMapper<ServiceChannelDO>>any());
-        assertThat(serviceParams.getValue().getValue("tenant")).isEqualTo("__default__");
-        assertThat(channelParams.getValue().getValue("tenant")).isEqualTo("__default__");
+        verify(services).findOne(any(org.springframework.data.relational.core.query.Query.class),
+                org.mockito.ArgumentMatchers.eq(io.github.loadup.components.gotone.store.dataobject.NotificationServiceRow.class));
+        verify(channels).findAll(any(org.springframework.data.relational.core.query.Query.class), eq(ServiceChannelRow.class));
     }
 
     @Test
     void nullBlankAndValidJsonSettingsAreMappedThroughThePublicProvider() {
-        var mapper = mock(org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate.class);
+        var mapper = mock(org.springframework.data.jdbc.core.JdbcAggregateTemplate.class);
         var provider = new JdbcChannelConfigProvider(mapper, tenant);
         for (String raw : new String[] {null, " ", "null"}) {
             var row = channel(raw, raw);
-            when(mapper.query(
-                            any(String.class),
-                            any(org.springframework.jdbc.core.namedparam.SqlParameterSource.class),
-                            org.mockito.ArgumentMatchers
-                                    .<org.springframework.jdbc.core.RowMapper<ServiceChannelDO>>any()))
+            when(mapper.findAll(any(org.springframework.data.relational.core.query.Query.class), eq(ServiceChannelRow.class)))
                     .thenReturn(List.of(row));
             var actual = provider.findEnabledByServiceCode("ALERT").getFirst();
             assertThat(actual.channelConfig()).isEmpty();
             assertThat(actual.fallbackProviders()).isEmpty();
         }
-        when(mapper.query(
-                        any(String.class),
-                        any(org.springframework.jdbc.core.namedparam.SqlParameterSource.class),
-                        org.mockito.ArgumentMatchers.<org.springframework.jdbc.core.RowMapper<ServiceChannelDO>>any()))
+        when(mapper.findAll(any(org.springframework.data.relational.core.query.Query.class), eq(ServiceChannelRow.class)))
                 .thenReturn(List.of(channel("{\"limit\":42}", "[\"secondary\"]")));
         var actual = provider.findEnabledByServiceCode("ALERT").getFirst();
         assertThat(actual.channelConfig()).containsEntry("limit", 42);
@@ -105,12 +86,9 @@ class JdbcStoreBoundaryTest {
 
     @Test
     void malformedJsonUsesEmptySettingsAndNeverLogsPayloadOrExceptionChain() {
-        var mapper = mock(org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate.class);
+        var mapper = mock(org.springframework.data.jdbc.core.JdbcAggregateTemplate.class);
         var row = channel("{\"secret\":\"synthetic-private-marker\"", "[\"synthetic-private-marker\"");
-        when(mapper.query(
-                        any(String.class),
-                        any(org.springframework.jdbc.core.namedparam.SqlParameterSource.class),
-                        org.mockito.ArgumentMatchers.<org.springframework.jdbc.core.RowMapper<ServiceChannelDO>>any()))
+        when(mapper.findAll(any(org.springframework.data.relational.core.query.Query.class), eq(ServiceChannelRow.class)))
                 .thenReturn(List.of(row));
         Logger logger = (Logger) LogUtil.getLogger(JdbcChannelConfigProvider.class);
         var events = new ListAppender<ILoggingEvent>();
@@ -134,7 +112,7 @@ class JdbcStoreBoundaryTest {
 
     @Test
     void receiverRecordsKeepIndependentSuccessAndFailureStates() {
-        var mapper = mock(org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate.class);
+        var mapper = mock(org.springframework.data.jdbc.core.JdbcAggregateTemplate.class);
         var request = NotificationRequest.of("ALERT", List.of("ok", "failed", "absent"), Map.of());
         var config = new ChannelConfig("EMAIL", "smtp", List.of(), null, Map.of());
         var result = new RecordHandler.SendAttemptResult(
@@ -147,27 +125,27 @@ class JdbcStoreBoundaryTest {
                 Map.of("failed", "synthetic failure"),
                 List.of());
         new JdbcRecordHandler(mapper, tenant, clock).onResult(request, config, result);
-        var rows = ArgumentCaptor.forClass(org.springframework.jdbc.core.namedparam.SqlParameterSource.class);
-        verify(mapper, times(3)).update(any(String.class), rows.capture());
+        var rows = ArgumentCaptor.forClass(NotificationRecordRow.class);
+        verify(mapper, times(3)).insert(rows.capture());
         assertThat(rows.getAllValues())
-                .extracting(row -> row.getValue("status"))
+                .extracting(NotificationRecordRow::status)
                 .containsExactly("SUCCESS", "FAILED", "FAILED");
         assertThat(rows.getAllValues())
-                .extracting(row -> row.getValue("errorMessage"))
+                .extracting(NotificationRecordRow::errorMessage)
                 .containsExactly(null, "synthetic failure", null);
         assertThat(rows.getAllValues()).allSatisfy(row -> {
-            assertThat(row.getValue("content")).isEqualTo("rendered");
-            assertThat(row.getValue("tenantId")).isEqualTo("__default__");
-            assertThat(row.getValue("id")).isNotNull();
-            assertThat(row.getValue("sendTime")).isEqualTo(java.time.LocalDateTime.of(2026, 1, 1, 0, 0));
-            assertThat(row.getValue("createdAt")).isEqualTo(row.getValue("sendTime"));
-            assertThat(row.getValue("updatedAt")).isEqualTo(row.getValue("sendTime"));
+            assertThat(row.content()).isEqualTo("rendered");
+            assertThat(row.tenantId()).isEqualTo("__default__");
+            assertThat(row.id()).isNotNull();
+            assertThat(row.sendTime()).isEqualTo(java.time.LocalDateTime.of(2026, 1, 1, 0, 0));
+            assertThat(row.createdAt()).isEqualTo(row.sendTime());
+            assertThat(row.updatedAt()).isEqualTo(row.sendTime());
         });
     }
 
     @Test
     void webhookRecordsUseGroupDeliveryResultForMentionedReceivers() {
-        var mapper = mock(org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate.class);
+        var mapper = mock(org.springframework.data.jdbc.core.JdbcAggregateTemplate.class);
         var handler = new JdbcRecordHandler(mapper, tenant, clock);
         var request = NotificationRequest.of("ALERT", List.of("mentioned-user"), Map.of());
         var config = new ChannelConfig("WEBHOOK", "dingtalk", List.of(), null, Map.of());
@@ -185,20 +163,16 @@ class JdbcStoreBoundaryTest {
                             Map.of(),
                             List.of()));
         }
-        var rows = ArgumentCaptor.forClass(org.springframework.jdbc.core.namedparam.SqlParameterSource.class);
-        verify(mapper, times(2)).update(any(String.class), rows.capture());
+        var rows = ArgumentCaptor.forClass(NotificationRecordRow.class);
+        verify(mapper, times(2)).insert(rows.capture());
         assertThat(rows.getAllValues())
-                .extracting(row -> row.getValue("status"))
+                .extracting(NotificationRecordRow::status)
                 .containsExactly("SUCCESS", "FAILED");
     }
 
-    private static ServiceChannelDO channel(String config, String fallback) {
-        var row = new ServiceChannelDO();
-        row.setChannel("EMAIL");
-        row.setProvider("smtp");
-        row.setTemplateContent("template");
-        row.setChannelConfig(config);
-        row.setFallbackProviders(fallback);
-        return row;
+    private static ServiceChannelRow channel(String config, String fallback) {
+        var now = java.time.LocalDateTime.of(2026, 1, 1, 0, 0);
+        return new ServiceChannelRow("id", "__default__", "ALERT", "EMAIL", "template", config,
+                "smtp", fallback, true, 0, now, now, false);
     }
 }

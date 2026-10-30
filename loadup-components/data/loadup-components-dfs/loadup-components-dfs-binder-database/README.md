@@ -9,7 +9,7 @@ Transitional binder for small files when object storage is unavailable. S3 is re
 </dependency>
 ```
 
-Select it with `loadup.dfs.binder-type=database`. Flyway creates the `dfs_file` table. The binder uses MyBatis-Flex, stores file bytes in a `LONGBLOB`, and persists custom metadata as JSON. It supports the common CRUD and metadata capabilities only; presigned URLs and multipart upload are unsupported.
+Select it with `loadup.dfs.binder-type=database`. Flyway creates the PostgreSQL `dfs_file` table. The binder uses Spring JDBC, stores file bytes in `BYTEA`, and stores JSON metadata as text. It supports the common CRUD and metadata capabilities only; presigned URLs and multipart upload are unsupported.
 
 ## 接入步骤
 

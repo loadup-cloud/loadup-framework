@@ -36,6 +36,7 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Repository
 public class MerchantGatewayImpl implements MerchantGateway {
@@ -68,6 +69,12 @@ public class MerchantGatewayImpl implements MerchantGateway {
 
     @Override
     public Optional<Merchant> lock(String tenant, String id) {
+        var dataSource = jdbc.getJdbcTemplate().getDataSource();
+        if (!TransactionSynchronizationManager.isActualTransactionActive()
+                || TransactionSynchronizationManager.isCurrentTransactionReadOnly()
+                || dataSource == null
+                || !TransactionSynchronizationManager.hasResource(dataSource))
+            throw new IllegalStateException("Merchant lock requires a writable transaction on its data source");
         return read(tenant, id, true);
     }
 
@@ -108,6 +115,8 @@ public class MerchantGatewayImpl implements MerchantGateway {
 
     @Override
     public void update(Merchant merchant, long expected) {
+        if (expected < 1 || expected == Long.MAX_VALUE || merchant.rowVersion() != expected + 1)
+            throw new CommonException(MerchantResultCodeEnum.CONFLICT);
         MerchantDO row = converter.toDO(merchant);
         required(row.getTenantId());
         required(row.getId());
@@ -117,12 +126,13 @@ public class MerchantGatewayImpl implements MerchantGateway {
         for (String name : source.getReadablePropertyNames()) params.addValue(name, source.getValue(name));
         params.addValue("expected", expected);
         int changed = jdbc.update("""
-                UPDATE merchant_profile SET merchant_code = :merchantCode, name = :name, short_name = :shortName,
+                UPDATE merchant_profile SET name = :name, short_name = :shortName,
                     type = :type, industry = :industry, country = :country, province = :province, city = :city,
                     address = :address, registration_no = :registrationNo, contact_name = :contactName,
                     contact_phone = :contactPhone, contact_email = :contactEmail, status = :status,
                     row_version = :rowVersion, updated_by = :updatedBy, updated_at = :updatedAt
-                WHERE tenant_id = :tenantId AND id = :id AND row_version = :expected AND deleted = FALSE
+                WHERE tenant_id = :tenantId AND id = :id AND merchant_code = :merchantCode
+                    AND row_version = :expected AND deleted = FALSE
                 """, params);
         if (changed != 1) throw new CommonException(MerchantResultCodeEnum.CONFLICT);
     }

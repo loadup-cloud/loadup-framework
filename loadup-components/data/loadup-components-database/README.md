@@ -13,17 +13,19 @@ Spring Data JDBC and Spring JDBC support for persistent IDs, PostgreSQL transact
 
 The component supplies `databaseClock`, a JDBC transaction manager for a single data source, `DatabaseTenant` and sequence/ID configuration. Spring Boot supplies JDBC and Spring Data JDBC infrastructure. Applications configure their own data source and PostgreSQL driver.
 
+File, audit, Gotone and database DFS use `JdbcAggregateTemplate` and require Spring Data JDBC infrastructure. Boot's JDBC repository auto-configuration supplies it under its normal conditions; if that auto-configuration is disabled, the application must provide equivalent infrastructure explicitly. Wiring remains subject to application-level verification.
+
 Explicit SQL must set IDs, tenant IDs and audit timestamps, filter tenant and deleted rows, and implement logical deletion deliberately. The shared `BaseDO.deleted` property is an integer; PostgreSQL schemas use boolean `deleted`, so SQL row mappers must map or omit that column deliberately. `DatabaseTenant` uses the configured default when multi-tenancy is disabled and rejects missing tenant context when it is required.
 
 Flyway support is optional; consumers using migrations must include Flyway and its PostgreSQL database module. Migration scripts assume a fresh PostgreSQL schema.
 
 ## Business IDs and database sequences
 
-`BusinessIdGenerator` is the default `IdGenerator` for MyBatis-Flex and BaseDO insert listeners. Missing IDs automatically receive a business ID; explicit IDs remain unchanged. Sequence is enabled by default. Apply the sequence migration before any insert that relies on automatic ID generation. Allocation metadata explicitly uses UUID to avoid recursively requesting a sequence.
+`BusinessIdGenerator` is the default `IdGenerator` when Sequence is available. Persistence code explicitly requests an ID when needed; `BaseDO` and JDBC inserts do not automatically assign one. Sequence is enabled by default. Apply its migration before using the default generator.
 
-Sequence persistence is assembled only after MyBatis-Flex supplies a `SqlSessionFactory`. A transitive database jar in a non-database application does not create sequence mappers or require a DataSource. The default BusinessIdGenerator is assembled when Sequence is available; a consumer-provided IdGenerator still takes precedence.
+Sequence persistence uses Spring JDBC and requires a suitable DataSource and transaction manager. A consumer-provided `IdGenerator` takes precedence over the default generator.
 
-Default automatic metadata uses data version 0, system version 1, event code `00000000`, no extension, site 000 and shard 000. Reserve `00000000` for generic persistence IDs; explicit business generation may use registered event codes. All entities using the same default scope share its eight-digit daily capacity. Configure stable site ownership when independent databases issue IDs.
+Default generator metadata uses data version 0, system version 1, event code `00000000`, no extension, site 000 and shard 000. Reserve `00000000` for generic persistence IDs; explicit business generation may use registered event codes. All entities using the same default scope share its eight-digit daily capacity. Configure stable site ownership when independent databases issue IDs.
 
 ```yaml
 loadup:

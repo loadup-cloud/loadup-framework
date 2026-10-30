@@ -28,10 +28,12 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.context.annotation.*;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
 
 @AutoConfiguration(
         afterName = {
             "org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration",
+            "org.springframework.boot.data.jdbc.autoconfigure.DataJdbcRepositoriesAutoConfiguration",
             "io.github.loadup.components.database.autoconfigure.DatabaseCoreAutoConfiguration"
         })
 @ConditionalOnSingleCandidate(DataSource.class)
@@ -41,8 +43,9 @@ public class FilePersistenceAutoConfiguration {
     @ConditionalOnMissingBean(FileResourceGateway.class)
     static class DefaultPersistence {
         @Bean
-        public FileResourceGateway fileGateway(JdbcTemplate jdbc, @Qualifier("databaseClock") Clock clock) {
-            return new FileResourceGatewayImpl(jdbc, clock);
+        public FileResourceGateway fileGateway(JdbcTemplate jdbc, JdbcAggregateTemplate aggregates,
+                @Qualifier("databaseClock") Clock clock) {
+            return new FileResourceGatewayImpl(jdbc, aggregates, clock);
         }
     }
 }

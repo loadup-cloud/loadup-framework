@@ -25,6 +25,8 @@ import io.github.loadup.modules.file.client.error.FileResultCodeEnum;
 import io.github.loadup.modules.file.domain.gateway.FileResourceGateway;
 import io.github.loadup.modules.file.domain.model.FileReference;
 import io.github.loadup.modules.file.domain.model.FileResource;
+import io.github.loadup.modules.file.infrastructure.dataobject.FileResourceInsert;
+import io.github.loadup.modules.file.infrastructure.dataobject.FileReferenceRow;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Clock;
@@ -32,27 +34,29 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.relational.core.query.Criteria;
+import org.springframework.data.relational.core.query.Query;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 public class FileResourceGatewayImpl implements FileResourceGateway {
     private final JdbcTemplate jdbc;
+    private final JdbcAggregateTemplate aggregates;
     private final Clock clock;
 
-    public FileResourceGatewayImpl(JdbcTemplate jdbc, Clock clock) {
+    public FileResourceGatewayImpl(JdbcTemplate jdbc, JdbcAggregateTemplate aggregates, Clock clock) {
         this.jdbc = jdbc;
+        this.aggregates = aggregates;
         this.clock = clock;
     }
 
     @Override
     public void insert(FileResource file) {
         LocalDateTime now = LocalDateTime.now(clock);
-        int changed = jdbc.update(
-                """
-                INSERT INTO file_resource (id, tenant_id, owner_id, storage_id, filename, content_type,
-                    content_length, provider, state, created_at, updated_at, deleted)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, FALSE)
-                """,
+        aggregates.insert(new FileResourceInsert(
                 file.id(),
                 file.tenantId(),
                 file.ownerId(),
@@ -63,49 +67,40 @@ public class FileResourceGatewayImpl implements FileResourceGateway {
                 file.provider(),
                 file.state(),
                 file.createdAt() == null ? now : file.createdAt(),
-                now);
-        if (changed != 1) throw new IllegalStateException("Unexpected file insert count");
+                now,
+                false));
     }
 
     @Override
     public Optional<FileResource> find(String tenant, String id) {
-        return read(tenant, id, false);
+        var query = Query.query(Criteria.where("tenantId").is(tenant)
+                .and("id").is(id).and("deleted").is(false));
+        return aggregates.findOne(query, FileResourceInsert.class).map(FileResourceGatewayImpl::file);
     }
 
     @Override
     public Optional<FileResource> lock(String tenant, String id) {
-        return read(tenant, id, true);
-    }
-
-    private Optional<FileResource> read(String tenant, String id, boolean lock) {
-        return jdbc
-                .query(
-                        "SELECT * FROM file_resource WHERE tenant_id = ? AND id = ? AND deleted = FALSE"
-                                + (lock ? " FOR UPDATE" : ""),
-                        FileResourceGatewayImpl::file,
-                        tenant,
-                        id)
-                .stream()
-                .findFirst();
+        var dataSource = jdbc.getDataSource();
+        if (!TransactionSynchronizationManager.isActualTransactionActive()
+                || TransactionSynchronizationManager.isCurrentTransactionReadOnly()
+                || dataSource == null
+                || !TransactionSynchronizationManager.hasResource(dataSource))
+            throw new IllegalStateException("File lock requires a writable transaction on its data source");
+        return jdbc.query(
+                        "SELECT * FROM file_resource WHERE tenant_id = ? AND id = ? AND deleted = FALSE FOR UPDATE",
+                        FileResourceGatewayImpl::file, tenant, id)
+                .stream().findFirst();
     }
 
     @Override
     public PageResult<FileResource> list(String tenant, String owner, int page, int size) {
-        Long count = jdbc.queryForObject(
-                "SELECT COUNT(*) FROM file_resource WHERE tenant_id = ? AND owner_id = ? "
-                        + "AND state = 'ACTIVE' AND deleted = FALSE",
-                Long.class,
-                tenant,
-                owner);
-        var rows = jdbc.query(
-                "SELECT * FROM file_resource WHERE tenant_id = ? AND owner_id = ? "
-                        + "AND state = 'ACTIVE' AND deleted = FALSE ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?",
-                FileResourceGatewayImpl::file,
-                tenant,
-                owner,
-                size,
-                (long) (page - 1) * size);
-        return new PageResult<>(rows, count == null ? 0 : count, page, size);
+        var query = Query.query(Criteria.where("tenantId").is(tenant).and("ownerId").is(owner)
+                .and("state").is("ACTIVE").and("deleted").is(false));
+        long count = aggregates.count(query, FileResourceInsert.class);
+        var rows = aggregates.findAll(query.sort(Sort.by(Sort.Direction.DESC, "createdAt", "id"))
+                        .limit(size).offset((long) (page - 1) * size), FileResourceInsert.class)
+                .stream().map(FileResourceGatewayImpl::file).toList();
+        return new PageResult<>(rows, count, page, size);
     }
 
     @Override
@@ -143,11 +138,10 @@ public class FileResourceGatewayImpl implements FileResourceGateway {
     /** Authorized system maintenance scan across tenants. */
     @Override
     public List<FileResource> pending(int limit) {
-        return jdbc.query(
-                "SELECT * FROM file_resource WHERE state = 'PENDING_DELETE' AND deleted = FALSE "
-                        + "ORDER BY updated_at ASC, id ASC LIMIT ?",
-                FileResourceGatewayImpl::file,
-                limit);
+        var query = Query.query(Criteria.where("state").is("PENDING_DELETE").and("deleted").is(false))
+                .sort(Sort.by("updatedAt", "id")).limit(limit);
+        return aggregates.findAll(query, FileResourceInsert.class).stream()
+                .map(FileResourceGatewayImpl::file).toList();
     }
 
     @Override
@@ -157,23 +151,23 @@ public class FileResourceGatewayImpl implements FileResourceGateway {
                 .filter(file -> "ACTIVE".equals(file.state()))
                 .orElseThrow(() -> new CommonException(FileResultCodeEnum.FILE_NOT_FOUND));
         LocalDateTime now = LocalDateTime.now(clock);
-        int changed = jdbc.update(
-                """
-                INSERT INTO file_resource_reference (id, tenant_id, file_id, reference_type, reference_id,
-                    created_at, updated_at, deleted) VALUES (?, ?, ?, ?, ?, ?, ?, FALSE)
-                """,
+        aggregates.insert(new FileReferenceRow(
                 ref.id(),
                 parent.tenantId(),
                 parent.id(),
                 ref.referenceType(),
                 ref.referenceId(),
                 ref.createdAt() == null ? now : ref.createdAt(),
-                now);
-        if (changed != 1) throw new IllegalStateException("Unexpected file reference insert count");
+                now,
+                false));
     }
 
     @Override
+    @Transactional(propagation = Propagation.MANDATORY)
     public void removeReference(String tenant, String file, String type, String id) {
+        lock(tenant, file)
+                .filter(parent -> "ACTIVE".equals(parent.state()))
+                .orElseThrow(() -> new CommonException(FileResultCodeEnum.FILE_NOT_FOUND));
         jdbc.update(
                 "DELETE FROM file_resource_reference WHERE tenant_id = ? AND file_id = ? "
                         + "AND reference_type = ? AND reference_id = ?",
@@ -185,23 +179,25 @@ public class FileResourceGatewayImpl implements FileResourceGateway {
 
     @Override
     public long countReferences(String tenant, String file) {
-        Long count = jdbc.queryForObject(
-                "SELECT COUNT(*) FROM file_resource_reference "
-                        + "WHERE tenant_id = ? AND file_id = ? AND deleted = FALSE",
-                Long.class,
-                tenant,
-                file);
-        return count == null ? 0 : count;
+        return aggregates.count(referenceQuery(tenant, file), FileReferenceRow.class);
     }
 
     @Override
     public List<FileReference> references(String tenant, String file) {
-        return jdbc.query(
-                "SELECT * FROM file_resource_reference WHERE tenant_id = ? AND file_id = ? "
-                        + "AND deleted = FALSE ORDER BY created_at ASC, id ASC",
-                FileResourceGatewayImpl::reference,
-                tenant,
-                file);
+        return aggregates.findAll(referenceQuery(tenant, file).sort(Sort.by("createdAt", "id")), FileReferenceRow.class)
+                .stream()
+                .map(row -> new FileReference(row.id(), row.tenantId(), row.fileId(), row.referenceType(),
+                        row.referenceId(), row.createdAt()))
+                .toList();
+    }
+
+    private static Query referenceQuery(String tenant, String file) {
+        return Query.query(Criteria.where("tenantId").is(tenant).and("fileId").is(file).and("deleted").is(false));
+    }
+
+    private static FileResource file(FileResourceInsert row) {
+        return new FileResource(row.id(), row.tenantId(), row.ownerId(), row.storageId(), row.filename(),
+                row.contentType(), row.contentLength(), row.provider(), row.state(), row.createdAt(), row.updatedAt());
     }
 
     private static FileResource file(ResultSet rs, int index) throws SQLException {
@@ -219,13 +215,4 @@ public class FileResourceGatewayImpl implements FileResourceGateway {
                 rs.getObject("updated_at", LocalDateTime.class));
     }
 
-    private static FileReference reference(ResultSet rs, int index) throws SQLException {
-        return new FileReference(
-                rs.getString("id"),
-                rs.getString("tenant_id"),
-                rs.getString("file_id"),
-                rs.getString("reference_type"),
-                rs.getString("reference_id"),
-                rs.getObject("created_at", LocalDateTime.class));
-    }
 }

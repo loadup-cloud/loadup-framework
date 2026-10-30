@@ -32,12 +32,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
 import tools.jackson.databind.ObjectMapper;
 
 /** Auto-configuration for the transitional database DFS binder. */
 @AutoConfiguration(before = DfsAutoConfiguration.class, afterName = {
         "io.github.loadup.components.database.autoconfigure.DatabaseCoreAutoConfiguration",
-        "org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration"})
+        "org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration",
+        "org.springframework.boot.data.jdbc.autoconfigure.DataJdbcRepositoriesAutoConfiguration"})
 @ConditionalOnClass({NamedParameterJdbcTemplate.class, ObjectMapper.class})
 @ConditionalOnProperty(prefix = "loadup.dfs", name = "binder-type", havingValue = "database")
 public class DatabaseDfsAutoConfiguration {
@@ -45,7 +47,8 @@ public class DatabaseDfsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DfsProvider.class)
     public DfsProvider databaseDfsProvider(
-            NamedParameterJdbcTemplate jdbc, ObjectProvider<ObjectMapper> objectMapperProvider, DatabaseTenant tenant, @Qualifier("databaseClock") Clock clock) {
-        return new DatabaseDfsProvider(jdbc, objectMapperProvider.getIfAvailable(ObjectMapper::new), tenant, clock);
+            NamedParameterJdbcTemplate jdbc, JdbcAggregateTemplate aggregates,
+            ObjectProvider<ObjectMapper> objectMapperProvider, DatabaseTenant tenant, @Qualifier("databaseClock") Clock clock) {
+        return new DatabaseDfsProvider(jdbc, aggregates, objectMapperProvider.getIfAvailable(ObjectMapper::new), tenant, clock);
     }
 }

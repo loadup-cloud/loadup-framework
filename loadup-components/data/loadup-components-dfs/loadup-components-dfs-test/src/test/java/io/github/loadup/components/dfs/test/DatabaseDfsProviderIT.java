@@ -85,33 +85,28 @@ class DatabaseDfsProviderIT {
 
     @Test
     void legacyNullMetadataRemainsReadableAndCorruptedJsonFailsExplicitly() throws Exception {
-        var file = new io.github.loadup.components.dfs.database.dataobject.FileStorageDO();
-        file.setId(java.util.UUID.randomUUID().toString());
-        file.setTenantId("__default__");
-        file.setFilename("legacy.txt");
-        file.setFileSize(0L);
-        file.setContentType("text/plain");
-        file.setContent(new byte[0]);
+        String fileId = java.util.UUID.randomUUID().toString();
         var now = java.time.LocalDateTime.now();
-        file.setCreatedAt(now);
-        file.setUpdatedAt(now);
         jdbc.update(
                 "INSERT INTO dfs_file (id, tenant_id, filename, file_size, content_type, content, metadata_json, created_at, updated_at, deleted) "
                         + "VALUES (:id, :tenantId, :filename, :fileSize, :contentType, :content, :metadataJson, :createdAt, :updatedAt, FALSE)",
-                new org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource(file));
+                new org.springframework.jdbc.core.namedparam.MapSqlParameterSource()
+                        .addValue("id", fileId).addValue("tenantId", "__default__")
+                        .addValue("filename", "legacy.txt").addValue("fileSize", 0L)
+                        .addValue("contentType", "text/plain").addValue("content", new byte[0])
+                        .addValue("metadataJson", null).addValue("createdAt", now).addValue("updatedAt", now));
         try {
             org.assertj.core.api.Assertions.assertThat(
-                            service.getMetadata(file.getId()).metadata())
+                            service.getMetadata(fileId).metadata())
                     .isEmpty();
-            file.setMetadataJson("not valid json");
             jdbc.update(
                     "UPDATE dfs_file SET metadata_json = :metadata WHERE id = :id",
-                    new org.springframework.jdbc.core.namedparam.MapSqlParameterSource("id", file.getId())
-                            .addValue("metadata", file.getMetadataJson()));
-            org.assertj.core.api.Assertions.assertThatThrownBy(() -> service.getMetadata(file.getId()))
+                    new org.springframework.jdbc.core.namedparam.MapSqlParameterSource("id", fileId)
+                            .addValue("metadata", "not valid json"));
+            org.assertj.core.api.Assertions.assertThatThrownBy(() -> service.getMetadata(fileId))
                     .isInstanceOf(io.github.loadup.components.dfs.DfsStorageException.class);
         } finally {
-            service.delete(file.getId());
+            service.delete(fileId);
         }
     }
 

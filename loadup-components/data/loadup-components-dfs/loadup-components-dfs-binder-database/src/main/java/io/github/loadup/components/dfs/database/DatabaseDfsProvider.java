@@ -24,7 +24,7 @@ import java.time.Clock;
 import io.github.loadup.components.dfs.DfsObjectNotFoundException;
 import io.github.loadup.components.dfs.DfsProvider;
 import io.github.loadup.components.dfs.DfsStorageException;
-import io.github.loadup.components.dfs.database.dataobject.FileStorageDO;
+import io.github.loadup.components.dfs.database.dataobject.DfsFileInsert;
 import io.github.loadup.components.dfs.model.FileDownloadResponse;
 import io.github.loadup.components.dfs.model.FileMetadata;
 import io.github.loadup.components.dfs.model.FileUploadRequest;
@@ -33,8 +33,9 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
+import org.springframework.data.relational.core.query.Criteria;
+import org.springframework.data.relational.core.query.Query;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import tools.jackson.core.JacksonException;
@@ -44,12 +45,15 @@ import tools.jackson.databind.ObjectMapper;
 /** Transitional database binder for small files. S3 is the recommended production binder. */
 public class DatabaseDfsProvider implements DfsProvider {
     private final NamedParameterJdbcTemplate jdbc;
+    private final JdbcAggregateTemplate aggregates;
     private final ObjectMapper objectMapper;
     private final DatabaseTenant tenant;
     private final Clock clock;
 
-    public DatabaseDfsProvider(NamedParameterJdbcTemplate jdbc, ObjectMapper objectMapper, DatabaseTenant tenant, Clock clock) {
+    public DatabaseDfsProvider(NamedParameterJdbcTemplate jdbc, JdbcAggregateTemplate aggregates,
+            ObjectMapper objectMapper, DatabaseTenant tenant, Clock clock) {
         this.jdbc = jdbc;
+        this.aggregates = aggregates;
         this.objectMapper = objectMapper;
         this.tenant = tenant;
         this.clock = clock;
@@ -64,21 +68,10 @@ public class DatabaseDfsProvider implements DfsProvider {
                 throw new DfsStorageException(DfsStorageException.Code.OPERATION_FAILED);
             }
             LocalDateTime uploadedAt = LocalDateTime.now(clock);
-            FileStorageDO file = new FileStorageDO();
-            file.setId(fileId);
-            file.setTenantId(tenant.current());
-            file.setFilename(request.filename());
-            file.setFileSize((long) content.length);
-            file.setContentType(request.contentType());
-            file.setContent(content);
-            file.setMetadataJson(objectMapper.writeValueAsString(request.metadata()));
-            file.setCreatedAt(uploadedAt);
-            file.setUpdatedAt(uploadedAt);
-            file.setDeleted(0);
-            jdbc.update("""
-                    INSERT INTO dfs_file (id, tenant_id, filename, file_size, content_type, content, metadata_json, created_at, updated_at, deleted)
-                    VALUES (:id, :tenantId, :filename, :fileSize, :contentType, :content, :metadataJson, :createdAt, :updatedAt, FALSE)
-                    """, new BeanPropertySqlParameterSource(file));
+            var file = new DfsFileInsert(fileId, tenant.current(), request.filename(), content.length,
+                    request.contentType(), content, objectMapper.writeValueAsString(request.metadata()),
+                    uploadedAt, uploadedAt, false);
+            aggregates.insert(file);
             return toMetadata(file);
         } catch (IOException | JacksonException e) {
             throw new DfsStorageException(DfsStorageException.Code.OPERATION_FAILED, e);
@@ -87,9 +80,9 @@ public class DatabaseDfsProvider implements DfsProvider {
 
     @Override
     public FileDownloadResponse download(String fileId) {
-        FileStorageDO file = find(fileId);
+        DfsFileInsert file = find(fileId);
         return new FileDownloadResponse(
-                toMetadata(file), new ByteArrayInputStream(file.getContent()), file.getFileSize());
+                toMetadata(file), new ByteArrayInputStream(file.content()), file.fileSize());
     }
 
     @Override
@@ -102,11 +95,7 @@ public class DatabaseDfsProvider implements DfsProvider {
 
     @Override
     public boolean exists(String fileId) {
-        return !jdbc.query(
-                        "SELECT id FROM dfs_file WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE",
-                        parameters(fileId),
-                        (rs, n) -> rs.getString(1))
-                .isEmpty();
+        return aggregates.exists(fileQuery(fileId), DfsFileInsert.class);
     }
 
     @Override
@@ -119,43 +108,38 @@ public class DatabaseDfsProvider implements DfsProvider {
         return "database";
     }
 
-    private FileStorageDO find(String fileId) {
-        FileStorageDO file = jdbc
-                .query(
-                        "SELECT id, tenant_id, filename, file_size, content_type, content, metadata_json, created_at, updated_at "
-                                + "FROM dfs_file WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE",
-                        parameters(fileId),
-                        BeanPropertyRowMapper.newInstance(FileStorageDO.class))
-                .stream()
-                .findFirst()
-                .orElse(null);
-        if (file == null) {
-            throw new DfsObjectNotFoundException(fileId);
-        }
-        return file;
+    private DfsFileInsert find(String fileId) {
+        return aggregates.findOne(fileQuery(fileId), DfsFileInsert.class)
+                .orElseThrow(() -> new DfsObjectNotFoundException(fileId));
+    }
+
+    private Query fileQuery(String fileId) {
+        String tenantId = tenant.current();
+        var criteria = Criteria.where("id").is(fileId).and("deleted").is(false).and("tenantId");
+        return Query.query(tenantId == null ? criteria.isNull() : criteria.is(tenantId));
     }
 
     private MapSqlParameterSource parameters(String fileId) {
         return new MapSqlParameterSource("id", fileId).addValue("tenant", tenant.current());
     }
 
-    private FileMetadata toMetadata(FileStorageDO file) {
+    private FileMetadata toMetadata(DfsFileInsert file) {
         Map<String, String> metadata;
         try {
-            metadata = file.getMetadataJson() == null
+            metadata = file.metadataJson() == null
                     ? Map.of()
-                    : objectMapper.readValue(file.getMetadataJson(), new TypeReference<>() {});
+                    : objectMapper.readValue(file.metadataJson(), new TypeReference<>() {});
         } catch (JacksonException e) {
             throw new DfsStorageException(DfsStorageException.Code.OPERATION_FAILED, e);
         }
         return new FileMetadata(
-                file.getId(),
-                file.getFilename(),
-                file.getFileSize(),
-                file.getContentType(),
+                file.id(),
+                file.filename(),
+                file.fileSize(),
+                file.contentType(),
                 getBinderType(),
-                file.getId(),
+                file.id(),
                 metadata,
-                file.getCreatedAt().atZone(clock.getZone()).toInstant());
+                file.createdAt().atZone(clock.getZone()).toInstant());
     }
 }

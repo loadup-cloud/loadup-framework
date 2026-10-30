@@ -21,25 +21,39 @@ package io.github.loadup.modules.file.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 
+import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.dfs.DfsService;
 import io.github.loadup.modules.file.app.autoconfigure.FileResourceAutoConfiguration;
 import io.github.loadup.modules.file.app.converter.FileDTOConverter;
 import io.github.loadup.modules.file.app.service.FileResourceService;
 import io.github.loadup.modules.file.domain.gateway.FileResourceGateway;
+import io.github.loadup.modules.file.domain.model.FileResource;
 import io.github.loadup.modules.file.infrastructure.autoconfigure.FilePersistenceAutoConfiguration;
+import io.github.loadup.modules.file.infrastructure.dataobject.FileResourceInsert;
+import io.github.loadup.modules.file.infrastructure.repository.FileResourceGatewayImpl;
 import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
+import org.springframework.data.relational.core.query.Query;
+import org.mockito.ArgumentCaptor;
 
 /** Exercises auto-configuration composition; no persistence operations are executed. */
 class FileAutoConfigurationTest {
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
             .withBean(DataSource.class, () -> mock(DataSource.class))
             .withBean(JdbcTemplate.class, () -> mock(JdbcTemplate.class))
+            .withBean(JdbcAggregateTemplate.class, () -> mock(JdbcAggregateTemplate.class))
             .withBean("databaseClock", Clock.class, Clock::systemDefaultZone)
             .withBean(DfsService.class, () -> mock(DfsService.class))
             .withConfiguration(
@@ -76,5 +90,46 @@ class FileAutoConfigurationTest {
                     .doesNotHaveBean(FileResourceGateway.class)
                     .doesNotHaveBean(FileResourceService.class);
         });
+    }
+
+    @Test
+    void downloadUsesResourceTenantAndRestoresCallerContext() {
+        var gateway = mock(FileResourceGateway.class);
+        var dfs = mock(DfsService.class);
+        var now = LocalDateTime.of(2026, 1, 1, 0, 0);
+        var file = new FileResource("file", "tenant-a", "owner", "storage", "name", "text/plain",
+                0, "database", "ACTIVE", now, now);
+        when(gateway.find("tenant-a", "file")).thenReturn(Optional.of(file));
+        when(dfs.download("storage")).thenAnswer(invocation -> {
+            assertThat(TenantUtil.getTenantId()).isEqualTo("tenant-a");
+            return null;
+        });
+        var service = new FileResourceService(gateway, dfs, mock(FileDTOConverter.class), Clock.systemUTC());
+        TenantUtil.runWithTenant("outer-tenant", () -> {
+            service.download("tenant-a", "file", "owner", false);
+            assertThat(TenantUtil.getTenantId()).isEqualTo("outer-tenant");
+        });
+    }
+
+    @Test
+    void fileAggregatePreservesAssignedIdAndReadMapping() {
+        var aggregates = mock(JdbcAggregateTemplate.class);
+        var gateway = new FileResourceGatewayImpl(mock(JdbcTemplate.class), aggregates, Clock.systemUTC());
+        var now = LocalDateTime.of(2026, 1, 1, 0, 0);
+        var file = new FileResource("file", "tenant-a", "owner", "storage", "name", "text/plain",
+                7, "database", "ACTIVE", now, now);
+        gateway.insert(file);
+        var inserted = ArgumentCaptor.forClass(FileResourceInsert.class);
+        verify(aggregates).insert(inserted.capture());
+        assertThat(inserted.getValue().id()).isEqualTo("file");
+        assertThat(inserted.getValue().tenantId()).isEqualTo("tenant-a");
+        assertThat(inserted.getValue().deleted()).isFalse();
+        when(aggregates.findOne(any(Query.class), eq(FileResourceInsert.class))).thenReturn(Optional.of(inserted.getValue()));
+        var read = gateway.find("tenant-a", "file").orElseThrow();
+        assertThat(read.id()).isEqualTo(file.id());
+        assertThat(read.tenantId()).isEqualTo(file.tenantId());
+        assertThat(read.storageId()).isEqualTo(file.storageId());
+        assertThat(read.size()).isEqualTo(file.size());
+        assertThat(read.state()).isEqualTo(file.state());
     }
 }

@@ -74,8 +74,8 @@ public class FileResourceService implements io.github.loadup.modules.file.client
         if (content == null || size < 0) throw new CommonException(FileResultCodeEnum.INVALID_FILE_CONTENT);
         String type =
                 contentType == null || contentType.isBlank() ? "application/octet-stream" : required(contentType, 255);
-        FileMetadata stored = dfs.upload(
-                new FileUploadRequest(safeName, content, size, type, "resources/" + UUID.randomUUID(), Map.of()));
+        FileMetadata stored = io.github.loadup.commons.util.TenantUtil.callWithTenant(tenant, () -> dfs.upload(
+                new FileUploadRequest(safeName, content, size, type, "resources/" + UUID.randomUUID(), Map.of())));
         LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), clock.getZone());
         FileResource file = new FileResource(
                 UUID.randomUUID().toString(),
@@ -93,7 +93,7 @@ public class FileResourceService implements io.github.loadup.modules.file.client
             repository.insert(file);
         } catch (RuntimeException failure) {
             try {
-                dfs.delete(stored.fileId());
+                io.github.loadup.commons.util.TenantUtil.runWithTenant(tenant, () -> dfs.delete(stored.fileId()));
             } catch (RuntimeException cleanupFailure) {
                 failure.addSuppressed(cleanupFailure);
             }
@@ -116,7 +116,9 @@ public class FileResourceService implements io.github.loadup.modules.file.client
     }
 
     public FileDownloadResponse download(String tenantId, String id, String actorId, boolean admin) {
-        return dfs.download(get(tenantId, id, actorId, admin).storageId());
+        FileResource file = requireFile(tenantId, id, actorId, admin);
+        return io.github.loadup.commons.util.TenantUtil.callWithTenant(
+                file.tenantId(), () -> dfs.download(file.storageId()));
     }
 
     public PageDTO<FileResourceDTO> list(
@@ -193,7 +195,7 @@ public class FileResourceService implements io.github.loadup.modules.file.client
                 .find(tenant(tenantId), required(id, 64))
                 .filter(item -> "PENDING_DELETE".equals(item.state()))
                 .orElseThrow(() -> new CommonException(FileResultCodeEnum.FILE_IS_NOT_PENDING_DELETION));
-        dfs.delete(file.storageId());
+        io.github.loadup.commons.util.TenantUtil.runWithTenant(file.tenantId(), () -> dfs.delete(file.storageId()));
         repository.markDeleted(file.tenantId(), file.id());
     }
 

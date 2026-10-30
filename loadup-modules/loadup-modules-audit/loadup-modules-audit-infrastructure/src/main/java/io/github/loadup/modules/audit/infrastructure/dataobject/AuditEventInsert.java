@@ -9,15 +9,15 @@ import org.springframework.data.relational.core.mapping.Table;
 /** Append-only audit row; its application-assigned ID is always inserted explicitly. */
 @Table("audit_event")
 public record AuditEventInsert(
-        @Id String id,
+        @Id @Column("id") String id,
         @Column("tenant_id") String tenantId,
         @Column("actor_id") String actorId,
-        String action,
+        @Column("action") String action,
         @Column("http_method") String method,
         @Column("request_path") String path,
-        String outcome,
+        @Column("outcome") String outcome,
         @Column("trace_id") String traceId,
         @Column("occurred_at") LocalDateTime occurredAt,
         @Column("created_at") LocalDateTime createdAt,
         @Column("updated_at") LocalDateTime updatedAt,
-        boolean deleted) {}
+        @Column("deleted") boolean deleted) {}

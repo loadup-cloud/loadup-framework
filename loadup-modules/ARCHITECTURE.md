@@ -30,7 +30,7 @@ Transfer client 自有公共枚举，domain 保留领域枚举，应用层通过
 
 ## 装配与配置
 
-五个轻量业务模块的默认 MyBatis-Flex Gateway 与 Flyway 脚本归 infrastructure；持久化自动配置只创建端口适配。app 在其之后按 Gateway 和所需组件条件创建用例服务。消费者可替换 Gateway Bean。条件配置通过显式 Import 注册生成的 mapper，避免 REGISTER_BEAN 阶段条件与扫描冲突。
+业务模块的默认 Spring Data JDBC / Spring JDBC Gateway 与 Flyway 脚本归 infrastructure；持久化自动配置创建端口适配。app 在其之后按 Gateway 和所需组件条件创建用例服务。消费者可替换 Gateway Bean。
 
 配置为 `loadup.modules.<business>.*`，Web 按 `*-web` Maven 依赖装配，无额外 enabled 开关；全局安全协议由技术组件的 `loadup.security.*` 管理。配置的 enabled 开关控制 Bean，不作为 Flyway 跳过脚本机制。用户需迁移旧前缀，无兼容别名。
 

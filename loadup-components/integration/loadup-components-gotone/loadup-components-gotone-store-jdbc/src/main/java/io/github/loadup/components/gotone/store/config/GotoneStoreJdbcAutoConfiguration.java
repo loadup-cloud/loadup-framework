@@ -24,12 +24,14 @@ import io.github.loadup.components.gotone.config.ChannelConfigProvider;
 import io.github.loadup.components.gotone.config.ServiceConfigProvider;
 import io.github.loadup.components.gotone.record.RecordHandler;
 import java.time.Clock;
+import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.context.annotation.Bean;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
 
 /**
  * Auto-configuration for the default JDBC store of the gotone component.
@@ -40,26 +42,28 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
  */
 @AutoConfiguration(afterName = {
         "io.github.loadup.components.database.autoconfigure.DatabaseCoreAutoConfiguration",
-        "org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration"})
-@ConditionalOnClass({ChannelConfigProvider.class, NamedParameterJdbcTemplate.class})
+        "org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration",
+        "org.springframework.boot.data.jdbc.autoconfigure.DataJdbcRepositoriesAutoConfiguration"})
+@ConditionalOnClass({ChannelConfigProvider.class, JdbcAggregateTemplate.class})
+@ConditionalOnSingleCandidate(DataSource.class)
 public class GotoneStoreJdbcAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ServiceConfigProvider serviceConfigProvider(NamedParameterJdbcTemplate jdbc, DatabaseTenant tenant) {
-        return new JdbcServiceConfigProvider(jdbc, tenant);
+    public ServiceConfigProvider serviceConfigProvider(JdbcAggregateTemplate aggregates, DatabaseTenant tenant) {
+        return new JdbcServiceConfigProvider(aggregates, tenant);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public ChannelConfigProvider channelConfigProvider(NamedParameterJdbcTemplate jdbc, DatabaseTenant tenant) {
-        return new JdbcChannelConfigProvider(jdbc, tenant);
+    public ChannelConfigProvider channelConfigProvider(JdbcAggregateTemplate aggregates, DatabaseTenant tenant) {
+        return new JdbcChannelConfigProvider(aggregates, tenant);
     }
 
     @Bean
     @ConditionalOnMissingBean
     public RecordHandler recordHandler(
-            NamedParameterJdbcTemplate jdbc, DatabaseTenant tenant, @Qualifier("databaseClock") Clock clock) {
-        return new JdbcRecordHandler(jdbc, tenant, clock);
+            JdbcAggregateTemplate aggregates, DatabaseTenant tenant, @Qualifier("databaseClock") Clock clock) {
+        return new JdbcRecordHandler(aggregates, tenant, clock);
     }
 }

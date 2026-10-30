@@ -28,7 +28,7 @@ NotificationChannelProvider SPI
         ├── binder-push    → fcm（stub）
         └── binder-webhook → dingtalk / wechat / feishu（真实 HTTP）
         ▼
-RecordHandler（可选）→ store-jdbc（MyBatis-Flex，3 张表）
+RecordHandler（可选）→ store-jdbc（Spring Data JDBC / Spring JDBC，3 张表）
 ```
 
 ## 3. 模块结构（Mode B）
@@ -38,7 +38,7 @@ loadup-components-gotone/
 ├── pom.xml                                    # 聚合 POM
 ├── loadup-components-gotone-api/              # SPI + facade + 模型（零框架依赖）
 ├── loadup-components-gotone-engine/           # 纯发送引擎（零存储、零 DB）
-├── loadup-components-gotone-store-jdbc/       # 默认存储实现（MyBatis-Flex，可选）
+├── loadup-components-gotone-store-jdbc/       # 默认存储实现（Spring JDBC，可选）
 ├── channels/
 │   ├── loadup-components-gotone-binder-email/    # Spring Mail 真实实现
 │   ├── loadup-components-gotone-binder-sms/      # stub

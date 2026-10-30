@@ -22,12 +22,13 @@ package io.github.loadup.components.gotone.store.config;
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.database.tenant.DatabaseTenant;
 import io.github.loadup.components.gotone.config.ChannelConfigProvider;
-import io.github.loadup.components.gotone.store.dataobject.ServiceChannelDO;
+import io.github.loadup.components.gotone.store.dataobject.ServiceChannelRow;
 import java.util.List;
 import java.util.Map;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
+import org.springframework.data.relational.core.query.Criteria;
+import org.springframework.data.relational.core.query.Query;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
@@ -36,37 +37,34 @@ import tools.jackson.databind.ObjectMapper;
  */
 public class JdbcChannelConfigProvider implements ChannelConfigProvider {
 
-    private final NamedParameterJdbcTemplate jdbc;
+    private final JdbcAggregateTemplate aggregates;
     private final DatabaseTenant tenant;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public JdbcChannelConfigProvider(NamedParameterJdbcTemplate jdbc, DatabaseTenant tenant) {
-        this.jdbc = jdbc;
+    public JdbcChannelConfigProvider(JdbcAggregateTemplate aggregates, DatabaseTenant tenant) {
+        this.aggregates = aggregates;
         this.tenant = tenant;
     }
 
     @Override
     public List<ChannelConfig> findEnabledByServiceCode(String serviceCode) {
-        List<ServiceChannelDO> entities = jdbc.query(
-                """
-                SELECT id, service_code, channel, template_content, channel_config, provider, fallback_providers, enabled, priority
-                FROM gotone_service_channel WHERE service_code = :code AND tenant_id IS NOT DISTINCT FROM :tenant AND enabled = TRUE AND deleted = FALSE ORDER BY priority ASC
-                """,
-                new MapSqlParameterSource("code", serviceCode).addValue("tenant", tenant.current()),
-                BeanPropertyRowMapper.newInstance(ServiceChannelDO.class));
-        if (entities == null) {
-            return List.of();
-        }
+        String tenantId = tenant.current();
+        if (serviceCode == null) return List.of();
+        var criteria = Criteria.where("serviceCode").is(serviceCode).and("enabled").is(true)
+                .and("deleted").is(false).and("tenantId");
+        var query = Query.query(tenantId == null ? criteria.isNull() : criteria.is(tenantId))
+                .sort(Sort.by("priority"));
+        List<ServiceChannelRow> entities = aggregates.findAll(query, ServiceChannelRow.class);
         return entities.stream().map(this::toConfig).toList();
     }
 
-    private ChannelConfig toConfig(ServiceChannelDO entity) {
+    private ChannelConfig toConfig(ServiceChannelRow entity) {
         return new ChannelConfig(
-                entity.getChannel(),
-                entity.getProvider(),
-                parseJsonList(entity.getFallbackProviders()),
-                entity.getTemplateContent(),
-                parseJsonMap(entity.getChannelConfig()));
+                entity.channel(),
+                entity.provider(),
+                parseJsonList(entity.fallbackProviders()),
+                entity.templateContent(),
+                parseJsonMap(entity.channelConfig()));
     }
 
     private Map<String, Object> parseJsonMap(String json) {
@@ -74,8 +72,9 @@ public class JdbcChannelConfigProvider implements ChannelConfigProvider {
             return Map.of();
         }
         try {
-            return objectMapper.readValue(
+            Map<String, Object> result = objectMapper.readValue(
                     json, objectMapper.getTypeFactory().constructMapType(Map.class, String.class, Object.class));
+            return result == null ? Map.of() : result;
         } catch (JacksonException e) {
             LogUtil.warn(
                     JdbcChannelConfigProvider.class,
@@ -90,8 +89,9 @@ public class JdbcChannelConfigProvider implements ChannelConfigProvider {
             return List.of();
         }
         try {
-            return objectMapper.readValue(
+            List<String> result = objectMapper.readValue(
                     json, objectMapper.getTypeFactory().constructCollectionType(List.class, String.class));
+            return result == null ? List.of() : result;
         } catch (JacksonException e) {
             LogUtil.warn(
                     JdbcChannelConfigProvider.class,

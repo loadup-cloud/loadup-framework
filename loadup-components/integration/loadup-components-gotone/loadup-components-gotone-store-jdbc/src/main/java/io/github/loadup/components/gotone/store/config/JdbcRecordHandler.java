@@ -23,12 +23,11 @@ import io.github.loadup.components.database.tenant.DatabaseTenant;
 import io.github.loadup.components.gotone.config.ChannelConfigProvider.ChannelConfig;
 import io.github.loadup.components.gotone.model.NotificationRequest;
 import io.github.loadup.components.gotone.record.RecordHandler;
-import io.github.loadup.components.gotone.store.dataobject.NotificationRecordDO;
+import io.github.loadup.components.gotone.store.dataobject.NotificationRecordRow;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.UUID;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
 
 /**
  * JDBC-backed {@link RecordHandler} that persists one notification record per receiver.
@@ -38,12 +37,12 @@ public class JdbcRecordHandler implements RecordHandler {
     private static final String STATUS_SUCCESS = "SUCCESS";
     private static final String STATUS_FAILED = "FAILED";
 
-    private final NamedParameterJdbcTemplate jdbc;
+    private final JdbcAggregateTemplate aggregates;
     private final DatabaseTenant tenant;
     private final Clock clock;
 
-    public JdbcRecordHandler(NamedParameterJdbcTemplate jdbc, DatabaseTenant tenant, Clock clock) {
-        this.jdbc = jdbc;
+    public JdbcRecordHandler(JdbcAggregateTemplate aggregates, DatabaseTenant tenant, Clock clock) {
+        this.aggregates = aggregates;
         this.tenant = tenant;
         this.clock = clock;
     }
@@ -52,29 +51,13 @@ public class JdbcRecordHandler implements RecordHandler {
     public void onResult(NotificationRequest request, ChannelConfig config, SendAttemptResult result) {
         LocalDateTime now = LocalDateTime.now(clock);
         for (String receiver : request.receivers()) {
-            NotificationRecordDO record = new NotificationRecordDO();
-            record.setId(UUID.randomUUID().toString());
-            record.setServiceCode(request.serviceCode());
-            record.setRequestId(request.requestId());
-            record.setChannel(config.channel());
-            record.setProvider(result.actualProvider());
-            record.setReceiver(receiver);
-            record.setContent(result.content());
             boolean delivered = "WEBHOOK".equals(config.channel())
                     ? result.success()
                     : Boolean.TRUE.equals(result.receiverStatus().get(receiver));
-            record.setStatus(delivered ? STATUS_SUCCESS : STATUS_FAILED);
-            record.setErrorMessage(result.receiverErrors().get(receiver));
-            record.setSendTime(now);
-            record.setTenantId(tenant.current());
-            record.setCreatedAt(now);
-            record.setUpdatedAt(now);
-            jdbc.update("""
-                    INSERT INTO gotone_notification_record (id, tenant_id, service_code, trace_id, request_id, channel, provider,
-                        receiver, content, status, error_message, send_time, created_at, updated_at, deleted)
-                    VALUES (:id, :tenantId, :serviceCode, :traceId, :requestId, :channel, :provider, :receiver, :content,
-                        :status, :errorMessage, :sendTime, :createdAt, :updatedAt, FALSE)
-                    """, new BeanPropertySqlParameterSource(record));
+            aggregates.insert(new NotificationRecordRow(UUID.randomUUID().toString(), tenant.current(),
+                    request.serviceCode(), null, request.requestId(), config.channel(), result.actualProvider(), receiver,
+                    result.content(), delivered ? STATUS_SUCCESS : STATUS_FAILED, result.receiverErrors().get(receiver),
+                    now, now, now, false));
         }
     }
 }
