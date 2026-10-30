@@ -1,0 +1,1 @@
+loadupIdentityProvider=io.github.loadup.components.rpc.dubbo.RpcIdentityProviderFilter

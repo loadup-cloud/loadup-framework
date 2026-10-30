@@ -414,13 +414,13 @@ POM 的 `<name>` 统一采用 `LoadUp <模块族> <能力> [职责/实现]`，�
 - For deadline tasks read Scheduler and DelayedTask README/ARCHITECTURE. Scheduler uses one Provider binder (local Spring @Scheduled or PowerJob); it only wakes scanners. Do not use @Async as a timer or create a remote engine job per business record.
 - DelayedTask owns bizId/executeAt, transactional registration, conditional claims, leases and retries. Register within the business transaction on the same DataSource. Expired-lease recovery is at-least-once: handlers must be idempotent; token fencing protects task acknowledgements, not external side effects. XXL-JOB/JobRunr binders are not implemented.
 
-## 应用间 gRPC 与系统时区
+## 应用间 Dubbo Triple 与系统时区
 
-- 消费工程的应用间调用统一使用 Protobuf gRPC；不新增内部 HTTP 客户端、内部 REST 入口或 HTTP 回退。商户/运营 API、收银台、渠道通知与外部系统沿用各自协议。
-- 每个提供方在自己的 `<service>-rpc` 模块维护 `.proto`、消息映射和类型化方法；消费方引用提供方契约。业务 client/domain 不依赖 gRPC。跨服务消息归源服务，消费方通过 proto import 引用，不复制或集中维护全部业务协议。
-- 通用数据契约放现有 `loadup-commons`，通用 RPC 支持放现有 `loadup-components-rpc-binder-grpc`；commons 不反向依赖 components，不另建 pay-common/pay-rpc。
-- DTO ↔ Protobuf 使用 MapStruct，保留 `optional` 的 hasX presence、未知枚举拒绝、`oneof` 分支、Timestamp 和精确十进制语义。集合通过 protobuf builder adders 写入，不能修改不可变 getter 返回值；手写代码仅处理这些协议边界。
-- channel/目标地址/deadline/TLS 通过 Spring 配置绑定；复用 starter 管理的 channel。K8s 命名固定 `<service>-headless:50051`，同 Namespace 使用 `dns:///<service>-headless:50051` 与 `round_robin`，不把环境地址写进 Java。
-- gRPC 入站校验 JWT 签名、issuer、audience、token_use 和业务权限，逐回调隔离/恢复 SecurityContext；租户来自已验证身份。SERVICE token 逐次读取，商户委托遵循受众约束。网络调用不跨本地事务，写操作保留幂等键/deadline；未知远端错误映射为依赖失败，不输出凭证/载荷。
-- 业务时间采用 `ZoneId.systemDefault()`、`Clock.systemDefaultZone()` 或已注入 Clock 的 zone；不在代码、JVM 参数、JDBC 初始化 SQL 或 K8s 清单强制指定时区。JWT epoch、Protobuf Timestamp 等协议边界保持绝对时间语义。
-- 修改 RPC 契约、认证或部署时，读取 [gRPC binder 规范](loadup-components/integration/loadup-components-rpc/loadup-components-rpc-binder-grpc/README.md)；源码编译、测试执行与真实 RPC 验收分别报告，遵守现有窄范围 clean 构建约定。
+- 消费工程的应用间调用统一使用 Dubbo Triple；不新增内部 HTTP 客户端、内部 REST 入口或 HTTP 回退，也不引入 gRPC 契约；Protobuf 仅用于 IDL。商户/运营 API、收银台、渠道通知与外部系统沿用各自协议。
+- 每个提供方在自己的 `<service>-client` 模块维护 Java Facade、Command/Query/DTO、结果码，以及 Protobuf `.proto`、生成存根与 Wire↔DTO mapper；IDL 代码固定在 `rpc` 子包。适配器用 `@DubboService` 实现生成的 `ImplBase`，消费方 `*-infrastructure` 用 `@DubboReference` 引用生成接口。domain/app 不直接引用 rpc 类型。
+- 通用数据契约放现有 `loadup-commons`，通用 RPC 支持放现有 `loadup-components-rpc-binder-dubbo`（`RpcTokenContext`、`RpcExceptionCodes`、provider filter）与 `loadup-components-rpc-proto`（Wire 标量转换）；commons 不反向依赖 components，不另建 pay-common/pay-rpc。
+- 跨进程只传 Protobuf 消息，使用 Dubbo Triple 的 IDL 分支，不产生 Wrapper 信封。`*-client` 用 `dubbo-maven-plugin` 生成消息与存根，MapStruct mapper 负责 Wire↔record DTO；不需要 `serialization`、`serialize-check-status` 或 `check-serializable`。字段号不可复用，删除字段必须 `reserved`。
+- 目标地址/超时/重试/TLS 通过 `dubbo.*` 配置绑定。K8s 命名固定 `<service>-headless:50051`，同 Namespace 使用 `tri://<service>-headless:50051`，不把环境地址写进 Java；无注册中心时 `registry.address: N/A`，写调用保持 `retries: 0`。
+- 消费方用 `RpcTokenContext.call(token, ...)` 逐次传播令牌，调用结束即移除。提供方 filter 重建 `Jwt`/`SecurityContext` 并恢复；入口负责签名、issuer、audience 和 token_use，内部跳转只校验 `exp`，因此 RPC 端口只对同 Namespace 开放。租户来自已验证身份。网络调用不跨本地事务；业务拒绝编码为 `loadup-result-code=<CODE>`，消费方只按本地白名单映射，未知错误按依赖失败处理，不输出凭证/载荷。
+- 业务时间采用 `ZoneId.systemDefault()`、`Clock.systemDefaultZone()` 或已注入 Clock 的 zone；不在代码、JVM 参数、JDBC 初始化 SQL 或 K8s 清单强制指定时区。JWT epoch、`Instant` 等协议边界保持绝对时间语义。
+- 修改 RPC 契约、认证或部署时，读取 [Dubbo binder 规范](loadup-components/integration/loadup-components-rpc/loadup-components-rpc-binder-dubbo/README.md)；源码编译、测试执行与真实 RPC 验收分别报告，遵守现有窄范围 clean 构建约定。

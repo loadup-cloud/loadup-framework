@@ -10,9 +10,9 @@
     <artifactId>loadup-components-rpc</artifactId>
     <packaging>pom</packaging>
     <name>LoadUp Components RPC</name>
-    <description>Native Dubbo and gRPC communication binders.</description>
+    <description>Native Dubbo Triple communication binder and Protobuf IDL scalar helpers.</description>
     <modules>
         <module>loadup-components-rpc-binder-dubbo</module>
-        <module>loadup-components-rpc-binder-grpc</module>
+        <module>loadup-components-rpc-proto</module>
     </modules>
 </project>
