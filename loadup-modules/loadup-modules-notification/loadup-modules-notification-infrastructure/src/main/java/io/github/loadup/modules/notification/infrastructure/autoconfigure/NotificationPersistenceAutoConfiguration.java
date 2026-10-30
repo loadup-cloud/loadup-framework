@@ -24,16 +24,19 @@ import io.github.loadup.modules.notification.domain.gateway.InboxGateway;
 import io.github.loadup.modules.notification.infrastructure.converter.NotificationStorageConverter;
 import io.github.loadup.modules.notification.infrastructure.converter.NotificationStorageConverterImpl;
 import io.github.loadup.modules.notification.infrastructure.repository.InboxGatewayImpl;
+import io.github.loadup.modules.notification.infrastructure.repository.InboxMessageRepository;
 import javax.sql.DataSource;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.context.annotation.*;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
-@AutoConfiguration(afterName = {
-        "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration",
-        "io.github.loadup.components.database.autoconfigure.DatabaseCoreAutoConfiguration",
-        "io.github.loadup.components.database.autoconfigure.IdGeneratorAutoConfiguration"})
+@AutoConfiguration(
+        afterName = {
+            "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration",
+            "io.github.loadup.components.database.autoconfigure.DatabaseCoreAutoConfiguration",
+            "io.github.loadup.components.database.autoconfigure.IdGeneratorAutoConfiguration"
+        })
 @ConditionalOnSingleCandidate(DataSource.class)
 @ConditionalOnProperty(
         prefix = "loadup.modules.notification",
@@ -54,11 +57,12 @@ public class NotificationPersistenceAutoConfiguration {
         @Bean
         public InboxGateway notificationGateway(
                 NamedParameterJdbcTemplate jdbc,
+                InboxMessageRepository inbox,
                 IdGenerator ids,
                 NotificationStorageConverter converter,
                 @org.springframework.beans.factory.annotation.Qualifier("notificationStorageClock")
                         java.time.Clock clock) {
-            return new InboxGatewayImpl(jdbc, converter, clock, ids);
+            return new InboxGatewayImpl(jdbc, inbox, converter, clock, ids);
         }
     }
 }

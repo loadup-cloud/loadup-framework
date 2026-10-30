@@ -21,7 +21,9 @@ package io.github.loadup.modules.merchant.infrastructure.dataobject;
 
 import io.github.loadup.commons.dataobject.BaseDO;
 import io.github.loadup.commons.json.ToStringAsJson;
+import org.springframework.data.relational.core.mapping.Table;
 
+@Table("merchant_profile")
 public class MerchantDO extends BaseDO {
     private String merchantCode;
 

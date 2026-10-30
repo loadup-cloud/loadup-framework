@@ -23,12 +23,10 @@ import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.database.tenant.DatabaseTenant;
 import io.github.loadup.components.gotone.config.ChannelConfigProvider;
 import io.github.loadup.components.gotone.store.dataobject.ServiceChannelRow;
+import io.github.loadup.components.gotone.store.repository.ServiceChannelRepository;
 import java.util.List;
 import java.util.Map;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
-import org.springframework.data.relational.core.query.Criteria;
-import org.springframework.data.relational.core.query.Query;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
@@ -37,25 +35,21 @@ import tools.jackson.databind.ObjectMapper;
  */
 public class JdbcChannelConfigProvider implements ChannelConfigProvider {
 
-    private final JdbcAggregateTemplate aggregates;
+    private final ServiceChannelRepository channels;
     private final DatabaseTenant tenant;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public JdbcChannelConfigProvider(JdbcAggregateTemplate aggregates, DatabaseTenant tenant) {
-        this.aggregates = aggregates;
+    public JdbcChannelConfigProvider(ServiceChannelRepository channels, DatabaseTenant tenant) {
+        this.channels = channels;
         this.tenant = tenant;
     }
 
     @Override
     public List<ChannelConfig> findEnabledByServiceCode(String serviceCode) {
-        String tenantId = tenant.current();
         if (serviceCode == null) return List.of();
-        var criteria = Criteria.where("serviceCode").is(serviceCode).and("enabled").is(true)
-                .and("deleted").is(false).and("tenantId");
-        var query = Query.query(tenantId == null ? criteria.isNull() : criteria.is(tenantId))
-                .sort(Sort.by("priority"));
-        List<ServiceChannelRow> entities = aggregates.findAll(query, ServiceChannelRow.class);
-        return entities.stream().map(this::toConfig).toList();
+        return channels.findEnabledByServiceCode(serviceCode, Sort.by("priority")).stream()
+                .map(this::toConfig)
+                .toList();
     }
 
     private ChannelConfig toConfig(ServiceChannelRow entity) {

@@ -13,9 +13,13 @@
 - [ ] 验收新 POM 格式及质量插件配置；确认聚合清单、生成代码排除范围和报告模块不部署。
 - [ ] 验收后同步源文档到并列 docs 文档站；本轮按要求未运行同步脚本。
 
-## TableDef 生成策略
+## Spring Data JDBC Repository 与租户上下文
 
-2026-10-19 按最新决定取消 serialVersionUID 定制，已撤回本轮生成适配与相关测试，恢复上游 APT 默认输出，不添加 final 或告警抑制。未重新构建。
+2026-10-30 已完成框架与 Pay 的 Spring Data JDBC Repository 集成：`loadup` 根包注册到 Boot 单次 Repository 扫描；简单单表读取改为 Repository 默认方法，复杂条件、行锁、批量、状态围栏保留显式 Spring JDBC。Repository 对外不再接收租户参数，统一由 `TenantContext`/`DatabaseTenant` 从执行上下文解析；`BaseDO.deleted` 已与 PostgreSQL `BOOLEAN` 对齐。框架与 Pay 的主源码、测试源码通过 `clean test-compile`。
+
+- [ ] 在真实 PostgreSQL 上运行 Repository 装配、租户隔离、行锁、分页与乐观更新回归；当前仅有编译证据。
+- [ ] 补充 Repository 扫描与多租户默认/缺失上下文的自动装配测试，并验证消费工程自有 Repository 包不受影响。
+- [ ] 将历史 Flex/TableDef 文档、测试与外部消费者说明全部清理并同步文档站。
 
 ## PowerJob 处理器切点 CI 回归
 

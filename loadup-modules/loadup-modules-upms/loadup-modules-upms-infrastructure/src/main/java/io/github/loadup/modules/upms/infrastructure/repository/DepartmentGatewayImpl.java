@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -40,16 +39,22 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public class DepartmentGatewayImpl implements DepartmentGateway {
     private final NamedParameterJdbcTemplate jdbc;
+    private final DepartmentRepository departments;
+    private final UserRepository users;
     private final Clock clock;
     private final DatabaseTenant tenant;
     private final DepartmentConverter converter;
 
     public DepartmentGatewayImpl(
             NamedParameterJdbcTemplate jdbc,
+            DepartmentRepository departments,
+            UserRepository users,
             DepartmentConverter converter,
             @Qualifier("databaseClock") Clock clock,
             DatabaseTenant tenant) {
         this.jdbc = jdbc;
+        this.departments = departments;
+        this.users = users;
         this.clock = clock;
         this.tenant = tenant;
         this.converter = converter;
@@ -116,51 +121,51 @@ public class DepartmentGatewayImpl implements DepartmentGateway {
 
     @Override
     public Optional<Department> findById(String id) {
-        return find("id = :value", id).stream().findFirst();
+        return departments.findById(id).map(converter::toEntity);
     }
 
     @Override
     public Optional<Department> findByDeptCode(String deptCode) {
-        return find("dept_code = :value", deptCode).stream().findFirst();
+        return departments.findByDeptCode(deptCode).map(converter::toEntity);
     }
 
     @Override
     public List<Department> findByParentId(String parentId) {
-        return find("parent_id = :value", parentId);
+        return departments.findByParentId(parentId).stream()
+                .map(converter::toEntity)
+                .toList();
     }
 
     @Override
     public List<Department> findAll() {
-        return find("TRUE", null);
+        return departments.findAll().stream().map(converter::toEntity).toList();
     }
 
     @Override
     public List<Department> findAllEnabled() {
-        return find("status = 1", null);
+        return departments.findAllEnabled().stream().map(converter::toEntity).toList();
     }
 
     @Override
     public List<Department> findRootDepartments() {
-        return find("(parent_id IS NULL OR parent_id = '0')", null);
+        return findAll().stream()
+                .filter(dept -> dept.getParentId() == null || "0".equals(dept.getParentId()))
+                .toList();
     }
 
     @Override
     public boolean existsByDeptCode(String deptCode) {
-        return !findByDeptCode(deptCode).isEmpty();
+        return departments.existsByDeptCode(deptCode);
     }
 
     @Override
     public boolean hasChildren(String deptId) {
-        return !findByParentId(deptId).isEmpty();
+        return !departments.findByParentId(deptId).isEmpty();
     }
 
     @Override
     public boolean hasUsers(String deptId) {
-        Long count = jdbc.queryForObject(
-                "SELECT COUNT(*) FROM upms_user WHERE dept_id = :dept AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE",
-                params().addValue("dept", deptId),
-                Long.class);
-        return count != null && count > 0;
+        return users.countByDeptId(deptId) > 0;
     }
 
     @Override
@@ -188,18 +193,6 @@ public class DepartmentGatewayImpl implements DepartmentGateway {
                 .isEmpty()) {
             throw new IllegalArgumentException("Active parent department not found");
         }
-    }
-
-    private List<Department> find(String predicate, Object value) {
-        return jdbc
-                .query(
-                        "SELECT d.id, d.tenant_id, d.parent_id, d.dept_name, d.dept_code, d.dept_level, d.sort_order, d.leader_user_id, d.phone AS mobile, d.email, d.status, d.remark, d.created_by, d.updated_by, d.created_at, d.updated_at, CASE WHEN d.deleted THEN 1 ELSE 0 END AS deleted FROM upms_department d WHERE d.tenant_id IS NOT DISTINCT FROM :tenant AND d.deleted = FALSE AND "
-                                + predicate,
-                        params().addValue("value", value),
-                        BeanPropertyRowMapper.newInstance(DepartmentDO.class))
-                .stream()
-                .map(converter::toEntity)
-                .toList();
     }
 
     private MapSqlParameterSource params() {

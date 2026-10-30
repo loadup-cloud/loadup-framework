@@ -33,7 +33,7 @@ public interface MerchantStorageConverter {
     @Mapping(target = "info", source = "source")
     Merchant toMerchant(MerchantDO source);
 
-    @Mapping(target = "deleted", constant = "0")
+    @Mapping(target = "deleted", constant = "false")
     @Mapping(target = "merchantCode", source = "info.merchantCode")
     @Mapping(target = "name", source = "info.name")
     @Mapping(target = "shortName", source = "info.shortName")

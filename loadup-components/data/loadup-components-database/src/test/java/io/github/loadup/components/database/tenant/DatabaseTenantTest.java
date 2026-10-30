@@ -14,7 +14,8 @@ class DatabaseTenantTest {
         var properties = new DatabaseProperties();
         properties.getMultiTenant().setDefaultTenantId("single");
         var resolver = new DatabaseTenant(properties);
-        TenantUtil.runWithTenant("untrusted", () -> assertThat(resolver.current()).isEqualTo("single"));
+        TenantUtil.runWithTenant(
+                "untrusted", () -> assertThat(resolver.current()).isEqualTo("single"));
     }
 
     @Test
@@ -22,7 +23,8 @@ class DatabaseTenantTest {
         var properties = new DatabaseProperties();
         properties.getMultiTenant().setEnabled(true);
         var resolver = new DatabaseTenant(properties);
-        TenantUtil.runWithTenant(" tenant-a ", () -> assertThat(resolver.current()).isEqualTo("tenant-a"));
+        TenantUtil.runWithTenant(
+                " tenant-a ", () -> assertThat(resolver.current()).isEqualTo("tenant-a"));
         TenantUtil.runWithTenant(null, () -> assertThatIllegalStateException().isThrownBy(resolver::current));
     }
 

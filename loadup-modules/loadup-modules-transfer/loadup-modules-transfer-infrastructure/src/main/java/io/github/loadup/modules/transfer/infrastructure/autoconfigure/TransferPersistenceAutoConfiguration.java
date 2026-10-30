@@ -22,6 +22,8 @@ package io.github.loadup.modules.transfer.infrastructure.autoconfigure;
 import io.github.loadup.components.database.id.IdGenerator;
 import io.github.loadup.modules.transfer.domain.gateway.TransferGateway;
 import io.github.loadup.modules.transfer.infrastructure.repository.TransferGatewayImpl;
+import io.github.loadup.modules.transfer.infrastructure.repository.TransferTaskOptionRepository;
+import io.github.loadup.modules.transfer.infrastructure.repository.TransferTaskRepository;
 import javax.sql.DataSource;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.*;
@@ -52,9 +54,11 @@ public class TransferPersistenceAutoConfiguration {
         @Bean
         public TransferGateway transferGateway(
                 JdbcTemplate jdbc,
+                TransferTaskRepository tasks,
+                TransferTaskOptionRepository options,
                 IdGenerator ids,
                 @org.springframework.beans.factory.annotation.Qualifier("transferStorageClock") java.time.Clock clock) {
-            return new TransferGatewayImpl(jdbc, ids, clock);
+            return new TransferGatewayImpl(jdbc, tasks, options, ids, clock);
         }
     }
 }

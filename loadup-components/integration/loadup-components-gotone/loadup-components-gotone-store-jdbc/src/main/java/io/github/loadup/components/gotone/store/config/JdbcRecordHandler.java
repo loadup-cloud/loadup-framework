@@ -54,10 +54,22 @@ public class JdbcRecordHandler implements RecordHandler {
             boolean delivered = "WEBHOOK".equals(config.channel())
                     ? result.success()
                     : Boolean.TRUE.equals(result.receiverStatus().get(receiver));
-            aggregates.insert(new NotificationRecordRow(UUID.randomUUID().toString(), tenant.current(),
-                    request.serviceCode(), null, request.requestId(), config.channel(), result.actualProvider(), receiver,
-                    result.content(), delivered ? STATUS_SUCCESS : STATUS_FAILED, result.receiverErrors().get(receiver),
-                    now, now, now, false));
+            aggregates.insert(new NotificationRecordRow(
+                    UUID.randomUUID().toString(),
+                    tenant.current(),
+                    request.serviceCode(),
+                    null,
+                    request.requestId(),
+                    config.channel(),
+                    result.actualProvider(),
+                    receiver,
+                    result.content(),
+                    delivered ? STATUS_SUCCESS : STATUS_FAILED,
+                    result.receiverErrors().get(receiver),
+                    now,
+                    now,
+                    now,
+                    false));
         }
     }
 }

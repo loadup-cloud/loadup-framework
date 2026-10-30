@@ -20,22 +20,21 @@
 package io.github.loadup.components.dfs.database;
 
 import io.github.loadup.components.database.tenant.DatabaseTenant;
-import java.time.Clock;
 import io.github.loadup.components.dfs.DfsObjectNotFoundException;
 import io.github.loadup.components.dfs.DfsProvider;
 import io.github.loadup.components.dfs.DfsStorageException;
 import io.github.loadup.components.dfs.database.dataobject.DfsFileInsert;
+import io.github.loadup.components.dfs.database.repository.DfsFileRepository;
 import io.github.loadup.components.dfs.model.FileDownloadResponse;
 import io.github.loadup.components.dfs.model.FileMetadata;
 import io.github.loadup.components.dfs.model.FileUploadRequest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
-import org.springframework.data.relational.core.query.Criteria;
-import org.springframework.data.relational.core.query.Query;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import tools.jackson.core.JacksonException;
@@ -46,14 +45,21 @@ import tools.jackson.databind.ObjectMapper;
 public class DatabaseDfsProvider implements DfsProvider {
     private final NamedParameterJdbcTemplate jdbc;
     private final JdbcAggregateTemplate aggregates;
+    private final DfsFileRepository files;
     private final ObjectMapper objectMapper;
     private final DatabaseTenant tenant;
     private final Clock clock;
 
-    public DatabaseDfsProvider(NamedParameterJdbcTemplate jdbc, JdbcAggregateTemplate aggregates,
-            ObjectMapper objectMapper, DatabaseTenant tenant, Clock clock) {
+    public DatabaseDfsProvider(
+            NamedParameterJdbcTemplate jdbc,
+            JdbcAggregateTemplate aggregates,
+            DfsFileRepository files,
+            ObjectMapper objectMapper,
+            DatabaseTenant tenant,
+            Clock clock) {
         this.jdbc = jdbc;
         this.aggregates = aggregates;
+        this.files = files;
         this.objectMapper = objectMapper;
         this.tenant = tenant;
         this.clock = clock;
@@ -68,9 +74,17 @@ public class DatabaseDfsProvider implements DfsProvider {
                 throw new DfsStorageException(DfsStorageException.Code.OPERATION_FAILED);
             }
             LocalDateTime uploadedAt = LocalDateTime.now(clock);
-            var file = new DfsFileInsert(fileId, tenant.current(), request.filename(), content.length,
-                    request.contentType(), content, objectMapper.writeValueAsString(request.metadata()),
-                    uploadedAt, uploadedAt, false);
+            var file = new DfsFileInsert(
+                    fileId,
+                    tenant.current(),
+                    request.filename(),
+                    content.length,
+                    request.contentType(),
+                    content,
+                    objectMapper.writeValueAsString(request.metadata()),
+                    uploadedAt,
+                    uploadedAt,
+                    false);
             aggregates.insert(file);
             return toMetadata(file);
         } catch (IOException | JacksonException e) {
@@ -81,8 +95,7 @@ public class DatabaseDfsProvider implements DfsProvider {
     @Override
     public FileDownloadResponse download(String fileId) {
         DfsFileInsert file = find(fileId);
-        return new FileDownloadResponse(
-                toMetadata(file), new ByteArrayInputStream(file.content()), file.fileSize());
+        return new FileDownloadResponse(toMetadata(file), new ByteArrayInputStream(file.content()), file.fileSize());
     }
 
     @Override
@@ -95,7 +108,7 @@ public class DatabaseDfsProvider implements DfsProvider {
 
     @Override
     public boolean exists(String fileId) {
-        return aggregates.exists(fileQuery(fileId), DfsFileInsert.class);
+        return files.exists(fileId);
     }
 
     @Override
@@ -109,14 +122,7 @@ public class DatabaseDfsProvider implements DfsProvider {
     }
 
     private DfsFileInsert find(String fileId) {
-        return aggregates.findOne(fileQuery(fileId), DfsFileInsert.class)
-                .orElseThrow(() -> new DfsObjectNotFoundException(fileId));
-    }
-
-    private Query fileQuery(String fileId) {
-        String tenantId = tenant.current();
-        var criteria = Criteria.where("id").is(fileId).and("deleted").is(false).and("tenantId");
-        return Query.query(tenantId == null ? criteria.isNull() : criteria.is(tenantId));
+        return files.find(fileId).orElseThrow(() -> new DfsObjectNotFoundException(fileId));
     }
 
     private MapSqlParameterSource parameters(String fileId) {

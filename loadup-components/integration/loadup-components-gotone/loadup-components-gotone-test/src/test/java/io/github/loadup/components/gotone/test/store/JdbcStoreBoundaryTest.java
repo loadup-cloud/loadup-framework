@@ -33,51 +33,50 @@ import io.github.loadup.components.gotone.record.RecordHandler;
 import io.github.loadup.components.gotone.store.config.JdbcChannelConfigProvider;
 import io.github.loadup.components.gotone.store.config.JdbcRecordHandler;
 import io.github.loadup.components.gotone.store.config.JdbcServiceConfigProvider;
-import io.github.loadup.components.gotone.store.dataobject.ServiceChannelRow;
 import io.github.loadup.components.gotone.store.dataobject.NotificationRecordRow;
+import io.github.loadup.components.gotone.store.dataobject.ServiceChannelRow;
+import io.github.loadup.components.gotone.store.repository.NotificationServiceRepository;
+import io.github.loadup.components.gotone.store.repository.ServiceChannelRepository;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.data.domain.Sort;
 
 class JdbcStoreBoundaryTest {
     private final io.github.loadup.components.database.tenant.DatabaseTenant tenant =
             new io.github.loadup.components.database.tenant.DatabaseTenant(
                     new io.github.loadup.components.database.config.DatabaseProperties());
-    private final java.time.Clock clock = java.time.Clock.fixed(java.time.Instant.parse("2026-01-01T00:00:00Z"), java.time.ZoneOffset.UTC);
+    private final java.time.Clock clock =
+            java.time.Clock.fixed(java.time.Instant.parse("2026-01-01T00:00:00Z"), java.time.ZoneOffset.UTC);
 
     @Test
     void missingServiceAndChannelRowsReturnEmptyResults() {
-        var services = mock(org.springframework.data.jdbc.core.JdbcAggregateTemplate.class);
-        var channels = mock(org.springframework.data.jdbc.core.JdbcAggregateTemplate.class);
-        when(services.findOne(any(org.springframework.data.relational.core.query.Query.class),
-                        org.mockito.ArgumentMatchers.eq(io.github.loadup.components.gotone.store.dataobject.NotificationServiceRow.class)))
-                .thenReturn(java.util.Optional.empty());
-        when(channels.findAll(any(org.springframework.data.relational.core.query.Query.class),
-                        eq(ServiceChannelRow.class)))
-                .thenReturn(List.of());
+        var services = mock(NotificationServiceRepository.class);
+        var channels = mock(ServiceChannelRepository.class);
+        when(services.findByServiceCode("missing")).thenReturn(Optional.empty());
+        when(channels.findEnabledByServiceCode(eq("missing"), any(Sort.class))).thenReturn(List.of());
         assertThat(new JdbcServiceConfigProvider(services, tenant).findByServiceCode("missing"))
                 .isEmpty();
         assertThat(new JdbcChannelConfigProvider(channels, tenant).findEnabledByServiceCode("missing"))
                 .isEmpty();
-        verify(services).findOne(any(org.springframework.data.relational.core.query.Query.class),
-                org.mockito.ArgumentMatchers.eq(io.github.loadup.components.gotone.store.dataobject.NotificationServiceRow.class));
-        verify(channels).findAll(any(org.springframework.data.relational.core.query.Query.class), eq(ServiceChannelRow.class));
+        verify(services).findByServiceCode("missing");
+        verify(channels).findEnabledByServiceCode(eq("missing"), any(Sort.class));
     }
 
     @Test
     void nullBlankAndValidJsonSettingsAreMappedThroughThePublicProvider() {
-        var mapper = mock(org.springframework.data.jdbc.core.JdbcAggregateTemplate.class);
+        var mapper = mock(ServiceChannelRepository.class);
         var provider = new JdbcChannelConfigProvider(mapper, tenant);
         for (String raw : new String[] {null, " ", "null"}) {
             var row = channel(raw, raw);
-            when(mapper.findAll(any(org.springframework.data.relational.core.query.Query.class), eq(ServiceChannelRow.class)))
-                    .thenReturn(List.of(row));
+            when(mapper.findEnabledByServiceCode(eq("ALERT"), any(Sort.class))).thenReturn(List.of(row));
             var actual = provider.findEnabledByServiceCode("ALERT").getFirst();
             assertThat(actual.channelConfig()).isEmpty();
             assertThat(actual.fallbackProviders()).isEmpty();
         }
-        when(mapper.findAll(any(org.springframework.data.relational.core.query.Query.class), eq(ServiceChannelRow.class)))
+        when(mapper.findEnabledByServiceCode(eq("ALERT"), any(Sort.class)))
                 .thenReturn(List.of(channel("{\"limit\":42}", "[\"secondary\"]")));
         var actual = provider.findEnabledByServiceCode("ALERT").getFirst();
         assertThat(actual.channelConfig()).containsEntry("limit", 42);
@@ -86,10 +85,9 @@ class JdbcStoreBoundaryTest {
 
     @Test
     void malformedJsonUsesEmptySettingsAndNeverLogsPayloadOrExceptionChain() {
-        var mapper = mock(org.springframework.data.jdbc.core.JdbcAggregateTemplate.class);
+        var mapper = mock(ServiceChannelRepository.class);
         var row = channel("{\"secret\":\"synthetic-private-marker\"", "[\"synthetic-private-marker\"");
-        when(mapper.findAll(any(org.springframework.data.relational.core.query.Query.class), eq(ServiceChannelRow.class)))
-                .thenReturn(List.of(row));
+        when(mapper.findEnabledByServiceCode(eq("ALERT"), any(Sort.class))).thenReturn(List.of(row));
         Logger logger = (Logger) LogUtil.getLogger(JdbcChannelConfigProvider.class);
         var events = new ListAppender<ILoggingEvent>();
         events.start();
@@ -172,7 +170,7 @@ class JdbcStoreBoundaryTest {
 
     private static ServiceChannelRow channel(String config, String fallback) {
         var now = java.time.LocalDateTime.of(2026, 1, 1, 0, 0);
-        return new ServiceChannelRow("id", "__default__", "ALERT", "EMAIL", "template", config,
-                "smtp", fallback, true, 0, now, now, false);
+        return new ServiceChannelRow(
+                "id", "__default__", "ALERT", "EMAIL", "template", config, "smtp", fallback, true, 0, now, now, false);
     }
 }

@@ -27,6 +27,8 @@ import io.github.loadup.modules.contract.domain.gateway.RequestKeyConflictExcept
 import io.github.loadup.modules.contract.domain.model.ContractRecord;
 import io.github.loadup.modules.contract.domain.model.ContractRevisionRecord;
 import io.github.loadup.modules.contract.domain.model.ContractStatus;
+import io.github.loadup.modules.contract.infrastructure.dataobject.ContractRevisionRow;
+import io.github.loadup.modules.contract.infrastructure.dataobject.MerchantContractRow;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Clock;
@@ -44,10 +46,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public class MerchantContractGatewayImpl implements MerchantContractGateway {
     private final NamedParameterJdbcTemplate jdbc;
+    private final MerchantContractRepository contracts;
+    private final ContractRevisionRepository revisions;
     private final Clock clock;
 
-    public MerchantContractGatewayImpl(NamedParameterJdbcTemplate jdbc, @Qualifier("databaseClock") Clock clock) {
+    public MerchantContractGatewayImpl(
+            NamedParameterJdbcTemplate jdbc,
+            MerchantContractRepository contracts,
+            ContractRevisionRepository revisions,
+            @Qualifier("databaseClock") Clock clock) {
         this.jdbc = jdbc;
+        this.contracts = contracts;
+        this.revisions = revisions;
         this.clock = clock;
     }
 
@@ -70,47 +80,36 @@ public class MerchantContractGatewayImpl implements MerchantContractGateway {
 
     @Override
     public Optional<ContractRecord> find(String tenant, String id) {
-        return find("id = :id", new MapSqlParameterSource("tenant", required(tenant)).addValue("id", required(id)));
+        required(tenant);
+        return contracts.find(required(id)).map(MerchantContractGatewayImpl::toContract);
     }
 
     @Override
     public Optional<ContractRecord> findByScope(String tenant, String merchant, String key) {
-        return find(
-                "merchant_id = :merchant AND scope_key = :key",
-                new MapSqlParameterSource("tenant", required(tenant))
-                        .addValue("merchant", required(merchant))
-                        .addValue("key", required(key)));
+        required(tenant);
+        return contracts.findByScope(required(merchant), required(key)).map(MerchantContractGatewayImpl::toContract);
     }
 
     @Override
     public Optional<ContractRecord> lockByScope(String tenant, String merchant, String key) {
         return find(
                 "merchant_id = :merchant AND scope_key = :key FOR UPDATE",
-                new MapSqlParameterSource("tenant", required(tenant))
+                new MapSqlParameterSource(
+                                "tenant", io.github.loadup.components.database.tenant.TenantContext.tenantId())
                         .addValue("merchant", required(merchant))
                         .addValue("key", required(key)));
     }
 
     @Override
     public Optional<ContractRecord> findByRequest(String tenant, String key) {
-        return find(
-                "request_key = :key",
-                new MapSqlParameterSource("tenant", required(tenant)).addValue("key", required(key)));
+        required(tenant);
+        return contracts.findByRequest(required(key)).map(MerchantContractGatewayImpl::toContract);
     }
 
     @Override
     public Optional<ContractRevisionRecord> revision(String tenant, String id, int version) {
-        var args = new MapSqlParameterSource("tenant", required(tenant))
-                .addValue("id", required(id))
-                .addValue("version", version);
-        return jdbc
-                .query(
-                        "SELECT * FROM merchant_contract_revision WHERE tenant_id = :tenant AND contract_id = :id "
-                                + "AND revision = :version AND deleted = FALSE",
-                        args,
-                        MerchantContractGatewayImpl::revision)
-                .stream()
-                .findFirst();
+        required(tenant);
+        return revisions.revision(required(id), version).map(MerchantContractGatewayImpl::toRevision);
     }
 
     @Override
@@ -189,7 +188,8 @@ public class MerchantContractGatewayImpl implements MerchantContractGateway {
     @Override
     public PageResult<ContractRecord> page(String tenant, String merchant, int page, int size) {
         var sql = new StringBuilder(" FROM merchant_contract WHERE tenant_id = :tenant AND deleted = FALSE");
-        var args = new MapSqlParameterSource("tenant", required(tenant));
+        var args = new MapSqlParameterSource(
+                "tenant", io.github.loadup.components.database.tenant.TenantContext.tenantId());
         if (merchant != null && !merchant.isBlank()) {
             sql.append(" AND merchant_id = :merchant");
             args.addValue("merchant", merchant);
@@ -201,6 +201,34 @@ public class MerchantContractGatewayImpl implements MerchantContractGateway {
                 args,
                 MerchantContractGatewayImpl::contract);
         return new PageResult<>(rows, total == null ? 0 : total, page, size);
+    }
+
+    private static ContractRecord toContract(MerchantContractRow row) {
+        return new ContractRecord(
+                row.id(),
+                row.tenantId(),
+                row.merchantId(),
+                row.scopeKey(),
+                row.planVersionId(),
+                ContractStatus.valueOf(row.status()),
+                row.generation(),
+                row.requestKey(),
+                row.requestDigest(),
+                row.createdBy(),
+                row.createdAt(),
+                row.updatedAt());
+    }
+
+    private static ContractRevisionRecord toRevision(ContractRevisionRow row) {
+        return new ContractRevisionRecord(
+                row.id(),
+                row.tenantId(),
+                row.contractId(),
+                row.revision(),
+                row.snapshot(),
+                row.snapshotHash(),
+                row.createdAt(),
+                row.updatedAt());
     }
 
     private static ContractRecord contract(ResultSet rs, int row) throws SQLException {
@@ -215,18 +243,6 @@ public class MerchantContractGatewayImpl implements MerchantContractGateway {
                 rs.getString("request_key"),
                 rs.getString("request_digest"),
                 rs.getString("created_by"),
-                rs.getObject("created_at", LocalDateTime.class),
-                rs.getObject("updated_at", LocalDateTime.class));
-    }
-
-    private static ContractRevisionRecord revision(ResultSet rs, int row) throws SQLException {
-        return new ContractRevisionRecord(
-                rs.getString("id"),
-                rs.getString("tenant_id"),
-                rs.getString("contract_id"),
-                rs.getInt("revision"),
-                rs.getString("snapshot"),
-                rs.getString("snapshot_hash"),
                 rs.getObject("created_at", LocalDateTime.class),
                 rs.getObject("updated_at", LocalDateTime.class));
     }

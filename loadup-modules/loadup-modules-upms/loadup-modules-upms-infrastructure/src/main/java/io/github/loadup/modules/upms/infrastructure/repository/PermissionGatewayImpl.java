@@ -40,16 +40,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public class PermissionGatewayImpl implements PermissionGateway {
     private final NamedParameterJdbcTemplate jdbc;
+    private final PermissionRepository permissions;
     private final Clock clock;
     private final DatabaseTenant tenant;
     private final PermissionConverter converter;
 
     public PermissionGatewayImpl(
             NamedParameterJdbcTemplate jdbc,
+            PermissionRepository permissions,
             PermissionConverter converter,
             @Qualifier("databaseClock") Clock clock,
             DatabaseTenant tenant) {
         this.jdbc = jdbc;
+        this.permissions = permissions;
         this.clock = clock;
         this.tenant = tenant;
         this.converter = converter;
@@ -110,7 +113,8 @@ public class PermissionGatewayImpl implements PermissionGateway {
                 String.class);
         if (!findByParentId(id).isEmpty()) {
             throw new io.github.loadup.commons.error.CommonException(
-                    io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum.PERMISSION_CONTAINS_CHILD_PERMISSIONS);
+                    io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum
+                            .PERMISSION_CONTAINS_CHILD_PERMISSIONS);
         }
         jdbc.update(
                 "UPDATE upms_role_permission SET deleted = TRUE, updated_at = :now WHERE permission_id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE",
@@ -122,12 +126,12 @@ public class PermissionGatewayImpl implements PermissionGateway {
 
     @Override
     public Optional<Permission> findById(String id) {
-        return find("p.id = :value", id).stream().findFirst();
+        return permissions.findById(id).map(converter::toEntity);
     }
 
     @Override
     public Optional<Permission> findByPermissionCode(String permissionCode) {
-        return find("p.permission_code = :value", permissionCode).stream().findFirst();
+        return permissions.findByPermissionCode(permissionCode).map(converter::toEntity);
     }
 
     @Override
@@ -139,38 +143,47 @@ public class PermissionGatewayImpl implements PermissionGateway {
 
     @Override
     public List<Permission> findByParentId(String parentId) {
-        return find("p.parent_id = :value", parentId);
+        return permissions.findByParentId(parentId).stream()
+                .map(converter::toEntity)
+                .toList();
     }
 
     @Override
     public List<Permission> findByPermissionType(Short permissionType) {
-        return find("p.permission_type = :value", permissionType);
+        return permissions.findByPermissionType(permissionType).stream()
+                .map(converter::toEntity)
+                .toList();
     }
 
     @Override
     public List<Permission> findAll() {
-        return find("TRUE", null);
+        return permissions.findAll().stream().map(converter::toEntity).toList();
     }
 
     @Override
     public List<Permission> findAllEnabled() {
-        return find("p.status = 1", null);
+        return permissions.findAllEnabled().stream().map(converter::toEntity).toList();
     }
 
     @Override
     public List<Permission> findMenuPermissions() {
-        return find("p.permission_type IN (1, 2) AND p.status = 1 ORDER BY p.sort_order ASC", null);
+        return permissions.findMenuPermissions().stream()
+                .map(converter::toEntity)
+                .toList();
     }
 
     @Override
     public boolean existsByPermissionCode(String permissionCode) {
-        return findByPermissionCode(permissionCode).isPresent();
+        return permissions.existsByPermissionCode(permissionCode);
     }
 
     private void lockParent(String id) {
         if (id == null || "0".equals(id)) return;
-        if (jdbc.queryForList("SELECT id FROM upms_permission WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE FOR UPDATE",
-                params().addValue("id", id), String.class).isEmpty()) {
+        if (jdbc.queryForList(
+                        "SELECT id FROM upms_permission WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE FOR UPDATE",
+                        params().addValue("id", id),
+                        String.class)
+                .isEmpty()) {
             throw new io.github.loadup.commons.error.CommonException(
                     io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum.PERMISSION_NOT_FOUND);
         }
@@ -179,7 +192,7 @@ public class PermissionGatewayImpl implements PermissionGateway {
     private List<Permission> find(String predicate, Object value) {
         return jdbc
                 .query(
-                        "SELECT p.id, p.tenant_id, p.parent_id, p.permission_name, p.permission_code, p.permission_type, p.resource_path, p.http_method, p.icon, p.component_path, p.sort_order, p.visible, p.status, p.remark, p.created_by, p.updated_by, p.created_at, p.updated_at, CASE WHEN p.deleted THEN 1 ELSE 0 END AS deleted FROM upms_permission p WHERE p.tenant_id IS NOT DISTINCT FROM :tenant AND p.deleted = FALSE AND "
+                        "SELECT p.id, p.tenant_id, p.parent_id, p.permission_name, p.permission_code, p.permission_type, p.resource_path, p.http_method, p.icon, p.component_path, p.sort_order, p.visible, p.status, p.remark, p.created_by, p.updated_by, p.created_at, p.updated_at, p.deleted FROM upms_permission p WHERE p.tenant_id IS NOT DISTINCT FROM :tenant AND p.deleted = FALSE AND "
                                 + predicate,
                         params().addValue("value", value),
                         BeanPropertyRowMapper.newInstance(PermissionDO.class))

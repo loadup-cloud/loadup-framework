@@ -20,12 +20,17 @@
 package io.github.loadup.modules.dictionary.infrastructure.dataobject;
 
 import io.github.loadup.commons.dataobject.BaseDO;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
+@Table("dictionary_item")
 public class DictionaryItemDO extends BaseDO {
     private String typeId;
 
+    @Column("item_value")
     private String value;
 
+    @Column("item_label")
     private String label;
 
     private String description;

@@ -28,24 +28,34 @@ import io.github.loadup.modules.transfer.domain.gateway.TransferGateway;
 import io.github.loadup.modules.transfer.domain.model.TransferKind;
 import io.github.loadup.modules.transfer.domain.model.TransferStatus;
 import io.github.loadup.modules.transfer.domain.model.TransferTask;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import io.github.loadup.modules.transfer.infrastructure.dataobject.TransferTaskRow;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 public class TransferGatewayImpl implements TransferGateway {
     private final JdbcTemplate jdbc;
+    private final TransferTaskRepository tasks;
+    private final TransferTaskOptionRepository options;
     private final IdGenerator ids;
     private final Clock clock;
 
-    public TransferGatewayImpl(JdbcTemplate jdbc, IdGenerator ids, Clock clock) {
+    public TransferGatewayImpl(
+            JdbcTemplate jdbc,
+            TransferTaskRepository tasks,
+            TransferTaskOptionRepository options,
+            IdGenerator ids,
+            Clock clock) {
         this.jdbc = jdbc;
+        this.tasks = tasks;
+        this.options = options;
         this.ids = ids;
         this.clock = clock;
     }
@@ -90,51 +100,33 @@ public class TransferGatewayImpl implements TransferGateway {
     @Override
     public List<String> queued(int limit) {
         if (limit < 1 || limit > 100) throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
-        return jdbc.query(
-                "SELECT id FROM transfer_task WHERE status = 'QUEUED' AND deleted = FALSE "
-                        + "ORDER BY created_at ASC, id ASC LIMIT ?",
-                (rs, index) -> rs.getString("id"),
-                limit);
+        return tasks
+                .findByStatusAndDeletedFalse("QUEUED", PageRequest.of(0, limit, Sort.by("createdAt", "id")))
+                .stream()
+                .map(TransferTaskRow::id)
+                .toList();
     }
 
     /** Internal bootstrap lookup; user-facing callers verify tenant and ownership. */
     @Override
     public Optional<TransferTask> find(String id) {
-        return jdbc
-                .query("SELECT * FROM transfer_task WHERE id = ? AND deleted = FALSE", TransferGatewayImpl::task, id)
-                .stream()
-                .findFirst();
+        return tasks.findByIdAndDeletedFalse(id).map(TransferGatewayImpl::task);
     }
 
     @Override
     public PageResult<TransferTask> list(String tenant, String owner, int page, int size) {
-        Long total = jdbc.queryForObject(
-                "SELECT COUNT(*) FROM transfer_task WHERE tenant_id = ? AND owner_id = ? " + "AND deleted = FALSE",
-                Long.class,
-                tenant,
-                owner);
-        var rows = jdbc.query(
-                "SELECT * FROM transfer_task WHERE tenant_id = ? AND owner_id = ? AND deleted = FALSE "
-                        + "ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?",
-                TransferGatewayImpl::task,
-                tenant,
-                owner,
-                size,
-                (long) (page - 1) * size);
-        return new PageResult<>(rows, total == null ? 0 : total, page, size);
+        var result =
+                tasks.listOwned(owner, PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt", "id")));
+        return new PageResult<>(
+                result.stream().map(TransferGatewayImpl::task).toList(), result.getTotalElements(), page, size);
     }
 
     @Override
     public Map<String, String> options(String tenant, String id) {
         Map<String, String> result = new LinkedHashMap<>();
-        jdbc.query(
-                "SELECT option_name, option_value FROM transfer_task_option WHERE tenant_id = ? AND task_id = ? "
-                        + "AND deleted = FALSE ORDER BY option_name ASC",
-                rs -> {
-                    result.put(rs.getString("option_name"), rs.getString("option_value"));
-                },
-                tenant,
-                id);
+        for (var option : options.options(id)) {
+            result.put(option.optionName(), option.optionValue());
+        }
         return Map.copyOf(result);
     }
 
@@ -206,21 +198,21 @@ public class TransferGatewayImpl implements TransferGateway {
                 == 1;
     }
 
-    private static TransferTask task(ResultSet rs, int index) throws SQLException {
+    private static TransferTask task(TransferTaskRow row) {
         return new TransferTask(
-                rs.getString("id"),
-                rs.getString("tenant_id"),
-                rs.getString("owner_id"),
-                TransferKind.valueOf(rs.getString("kind")),
-                rs.getString("handler_key"),
-                rs.getString("source_file_id"),
-                rs.getString("result_file_id"),
-                TransferStatus.valueOf(rs.getString("status")),
-                rs.getLong("processed_count"),
-                rs.getLong("total_count"),
-                rs.getString("error_message"),
-                rs.getObject("created_at", LocalDateTime.class),
-                rs.getObject("started_at", LocalDateTime.class),
-                rs.getObject("finished_at", LocalDateTime.class));
+                row.id(),
+                row.tenantId(),
+                row.ownerId(),
+                TransferKind.valueOf(row.kind()),
+                row.handlerKey(),
+                row.sourceFileId(),
+                row.resultFileId(),
+                TransferStatus.valueOf(row.status()),
+                row.processedCount(),
+                row.totalCount(),
+                row.errorMessage(),
+                row.createdAt(),
+                row.startedAt(),
+                row.finishedAt());
     }
 }

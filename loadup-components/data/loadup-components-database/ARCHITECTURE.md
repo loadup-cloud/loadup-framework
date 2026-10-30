@@ -122,36 +122,26 @@ Consumer acceptance still requires representative multi-JVM P95/P99 and capacity
 
 ## Logical deletion and ownership
 
-The framework always configures `deleted`, normal value `0` and deleted value `1`. Physical lifecycle operations such as dictionary removal or reference unlinking explicitly use `LogicDeleteManager.execWithoutLogicDelete`; default repository queries retain the normal-row filter.
-
-A bean-definition guard rejects additional MyBatisFlexCustomizer beans before singleton initialization. Fixed defaults are applied after Boot property binding. This protects normal Spring integration; MyBatis-Flex exposes mutable static APIs, so direct calls to mutate globals remain prohibited rather than technically immutable. Applications own deployment connection settings and trusted tenant resolution, not audit listeners or global CRUD conventions.
+`BaseDO.deleted` is a nullable `Boolean` inherited by every mapped DO. The PostgreSQL schema stores `deleted BOOLEAN NOT NULL DEFAULT FALSE`. Repository derived queries and explicit SQL filters use `deleted = false`; physical lifecycle operations (such as removing dictionary items or unlinking references) are written explicitly and do not rely on an ORM-wide logic-delete switch.
 
 ## Multi-tenancy
 
-The Flex tenant factory receives the current table name, so ignored tables return no tenant predicate. When multi-tenancy is enabled, all other tables resolve the tenant from `TenantUtil`. With `required=true`, missing context fails closed rather than issuing an unscoped query. The single-tenant default is not used as a fallback in this mode.
+`DatabaseTenant.current()` is the single source of the trusted tenant. It returns the configured default tenant in single-tenant mode and the ScopedValue tenant in multi-tenant mode; `required=true` fails closed when the context is missing. `TenantContext.tenantId()` exposes the same resolver to Spring Data JDBC repository default methods.
 
-The servlet filter always propagates request context. With multi-tenancy disabled, it binds the configured `default-tenant-id` and ignores headers, parameters and subdomains. The insert listener also assigns this ID to every `BaseDO`. With multi-tenancy enabled, header lookup is enabled by default; query-parameter lookup is enabled by configuring a name, and subdomain lookup is opt-in. Authentication and authorization layers remain responsible for validating that the caller may act as the supplied tenant.
+Repositories expose tenant-free read methods (`findById`, `findByUsername`, `findByOrder`, ...) that resolve the tenant internally and delegate to derived `findByTenantId...` methods. Callers and repository method signatures never supply a tenant identifier, so a request cannot select another tenant by passing a parameter. Explicit SQL paths also bind `TenantContext.tenantId()` rather than a caller-provided value.
+
+The servlet filter always propagates request context. With multi-tenancy disabled, it binds the configured `default-tenant-id` and ignores headers, parameters and subdomains. With multi-tenancy enabled, header lookup is enabled by default; query-parameter lookup is enabled by configuring a name, and subdomain lookup is opt-in. Authentication and authorization layers remain responsible for validating that the caller may act as the supplied tenant.
 
 `TenantUtil` reads immutable ScopedValue bindings. Executor integrations use LoadUpContextTaskDecorator or ContextHolder.wrap; runWithTenant/callWithTenant establish callback scopes and automatically restore previous bindings.
 
-## Code generation
+## Repository scanning
 
-Generation belongs to the database component's `loadup-components-database-processor` build-time jar. Its canonical `mybatis-flex.config` resource fixes the options; `LoadUpMyBatisFlexProcessor` copies it into compiler output and delegates source generation to the upstream MyBatis-Flex processor. It generates uppercase TableDef properties, module-local `Tables`, and `XxxDOMapper extends BaseMapper<XxxDO>` annotated with MyBatis `@Mapper`. DOs in `.dataobject` produce interfaces in the sibling `.mapper` package. Generated sources stay under `target/generated-sources/annotations` and must not be committed.
-
-Upstream 1.11.8 reads generation configuration only from files, not from the classpath. Before initializing the delegate, the wrapper copies the processor jar's `mybatis-flex.config` into `CLASS_OUTPUT`; the resource keeps `stopBubbling` enabled, so parent configuration is ignored. This bridge avoids reflection, copied upstream generator code and runtime Spring configuration for a compile-time concern. The compile test verifies that disabling generation or changing packages in a parent config cannot override the defaults.
-
-The processor jar is an independent reactor module beneath database; the runtime database artifact remains a jar. Infrastructure modules declare it as optional/provided and explicitly select the wrapper alongside MapStruct and Boot processors. The upstream processor path supplies the delegate but is not selected independently, preventing duplicate generation. The wrapper is not a dependency of the runtime database artifact. Empty hand-written persistence Mapper interfaces are removed; MapStruct converter contracts remain unchanged.
+`DataJdbcRepositoryPackagesAutoConfiguration` registers `io.github.loadup` as an auto-configuration package before Boot's Spring Data JDBC repository scanner runs. This makes repository interfaces in framework and Pay modules discoverable by Spring Boot's single repository registrar without enabling one registrar per module. Modules continue to declare `spring-boot-starter-data-jdbc` transitively through `loadup-components-database`.
 
 ## Schema contract
 
-Every business table uses the five standard fields shown in `schema.sql`. Tenant-enabled query patterns should normally add a composite index beginning with `tenant_id` and `deleted`; business-selective columns can follow them.
+Every business table uses the five standard fields: `id VARCHAR(64)`, `tenant_id VARCHAR(64)`, `created_at`, `updated_at` and `deleted BOOLEAN NOT NULL DEFAULT FALSE`. Tenant-enabled query patterns should normally add a composite index beginning with `tenant_id` and `deleted`; business-selective columns can follow them.
 
 ## 租户绑定生命周期
 
 TenantUtil 基于 commons-context 的不可变 ExecutionContext 与 JDK 25 ScopedValue。TenantFilter 显式派生租户上下文、写入同名请求属性并包裹 FilterChain；REQUEST/ASYNC/ERROR 分派受支持，异常/结束由 JDK 恢复此前绑定，不再 set/clear。单租户模式固定使用 `default-tenant-id`；多租户模式解析请求来源，客户端租户提取配置不替代认证授权，集成方必须验证可访问租户。
-
-## Explicit integer logical deletion
-
-`BaseDO.deleted` is an `Integer` annotated with `@Column(isLogicDelete = true)`, inherited by each mapped DO. The database component installs `IntegerLogicDeleteProcessor` and retains the fixed global column `deleted`, normal value 0 and deleted value 1. MySQL storage stays `TINYINT NOT NULL DEFAULT 0`; no schema migration is required. The processor expresses Java integer 0/1 semantics and does not require a four-byte SQL INT column. Do not mix a Boolean field or BooleanLogicDeleteProcessor into this contract.
-
-Generated BaseMapper delete operations follow logical deletion, and ordinary mapped queries filter deleted rows. Explicit `LogicDeleteManager.execWithoutLogicDelete` remains an intentional bypass for approved physical lifecycle operations. The sequence allocation table continues to prohibit deletion and resetting its counters.

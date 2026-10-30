@@ -24,13 +24,11 @@ import io.github.loadup.components.database.tenant.DatabaseTenant;
 import io.github.loadup.modules.upms.domain.gateway.UserOAuthBindingGateway;
 import io.github.loadup.modules.upms.domain.model.UserOAuthBinding;
 import io.github.loadup.modules.upms.infrastructure.converter.UserOAuthBindingConverter;
-import io.github.loadup.modules.upms.infrastructure.dataobject.UserOAuthBindingDO;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -40,16 +38,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class UserOAuthBindingGatewayImpl implements UserOAuthBindingGateway {
     private final NamedParameterJdbcTemplate jdbc;
+    private final UserOAuthBindingRepository bindings;
     private final Clock clock;
     private final DatabaseTenant tenant;
     private final UserOAuthBindingConverter converter;
 
     public UserOAuthBindingGatewayImpl(
             NamedParameterJdbcTemplate jdbc,
+            UserOAuthBindingRepository bindings,
             UserOAuthBindingConverter converter,
             @Qualifier("databaseClock") Clock clock,
             DatabaseTenant tenant) {
         this.jdbc = jdbc;
+        this.bindings = bindings;
         this.clock = clock;
         this.tenant = tenant;
         this.converter = converter;
@@ -87,25 +88,17 @@ public class UserOAuthBindingGatewayImpl implements UserOAuthBindingGateway {
 
     @Override
     public Optional<UserOAuthBinding> findByProviderAndOpenId(String provider, String openId) {
-        return find(
-                        "provider = :provider AND open_id = :openId",
-                        params().addValue("provider", provider).addValue("openId", openId))
-                .stream()
-                .findFirst();
+        return bindings.findByProviderAndOpenId(provider, openId).map(converter::toEntity);
     }
 
     @Override
     public List<UserOAuthBinding> findByUserId(String userId) {
-        return find("user_id = :userId", params().addValue("userId", userId));
+        return bindings.findByUserId(userId).stream().map(converter::toEntity).toList();
     }
 
     @Override
     public Optional<UserOAuthBinding> findByUserIdAndProvider(String userId, String provider) {
-        return find(
-                        "user_id = :userId AND provider = :provider",
-                        params().addValue("userId", userId).addValue("provider", provider))
-                .stream()
-                .findFirst();
+        return bindings.findByUserIdAndProvider(userId, provider).map(converter::toEntity);
     }
 
     @Override
@@ -118,18 +111,6 @@ public class UserOAuthBindingGatewayImpl implements UserOAuthBindingGateway {
         deleteWhere(
                 "user_id = :userId AND provider = :provider",
                 params().addValue("userId", userId).addValue("provider", provider));
-    }
-
-    private List<UserOAuthBinding> find(String predicate, MapSqlParameterSource params) {
-        return jdbc
-                .query(
-                        "SELECT id, tenant_id, user_id, provider, open_id, union_id, nickname, avatar, access_token, refresh_token, expires_at, bound_at, created_at, updated_at, CASE WHEN deleted THEN 1 ELSE 0 END AS deleted FROM upms_user_oauth_binding WHERE deleted = FALSE AND tenant_id IS NOT DISTINCT FROM :tenant AND "
-                                + predicate,
-                        params,
-                        BeanPropertyRowMapper.newInstance(UserOAuthBindingDO.class))
-                .stream()
-                .map(converter::toEntity)
-                .toList();
     }
 
     private void deleteWhere(String predicate, MapSqlParameterSource params) {

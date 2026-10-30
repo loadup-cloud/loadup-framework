@@ -23,6 +23,8 @@ import io.github.loadup.components.database.tenant.DatabaseTenant;
 import io.github.loadup.components.gotone.config.ChannelConfigProvider;
 import io.github.loadup.components.gotone.config.ServiceConfigProvider;
 import io.github.loadup.components.gotone.record.RecordHandler;
+import io.github.loadup.components.gotone.store.repository.NotificationServiceRepository;
+import io.github.loadup.components.gotone.store.repository.ServiceChannelRepository;
 import java.time.Clock;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -40,24 +42,26 @@ import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
  * can swap the JDBC store for their own {@link ServiceConfigProvider} / {@link ChannelConfigProvider}
  * / {@link RecordHandler} beans without touching the engine.
  */
-@AutoConfiguration(afterName = {
-        "io.github.loadup.components.database.autoconfigure.DatabaseCoreAutoConfiguration",
-        "org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration",
-        "org.springframework.boot.data.jdbc.autoconfigure.DataJdbcRepositoriesAutoConfiguration"})
+@AutoConfiguration(
+        afterName = {
+            "io.github.loadup.components.database.autoconfigure.DatabaseCoreAutoConfiguration",
+            "org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration",
+            "org.springframework.boot.data.jdbc.autoconfigure.DataJdbcRepositoriesAutoConfiguration"
+        })
 @ConditionalOnClass({ChannelConfigProvider.class, JdbcAggregateTemplate.class})
 @ConditionalOnSingleCandidate(DataSource.class)
 public class GotoneStoreJdbcAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ServiceConfigProvider serviceConfigProvider(JdbcAggregateTemplate aggregates, DatabaseTenant tenant) {
-        return new JdbcServiceConfigProvider(aggregates, tenant);
+    public ServiceConfigProvider serviceConfigProvider(NotificationServiceRepository services, DatabaseTenant tenant) {
+        return new JdbcServiceConfigProvider(services, tenant);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public ChannelConfigProvider channelConfigProvider(JdbcAggregateTemplate aggregates, DatabaseTenant tenant) {
-        return new JdbcChannelConfigProvider(aggregates, tenant);
+    public ChannelConfigProvider channelConfigProvider(ServiceChannelRepository channels, DatabaseTenant tenant) {
+        return new JdbcChannelConfigProvider(channels, tenant);
     }
 
     @Bean

@@ -44,15 +44,18 @@ public class MerchantGatewayImpl implements MerchantGateway {
             + "province, city, address, registration_no, contact_name, contact_phone, contact_email, status, "
             + "row_version, created_by, updated_by, created_at, updated_at";
     private final NamedParameterJdbcTemplate jdbc;
+    private final MerchantRepository merchants;
     private final MerchantStorageConverter converter;
     private final Clock clock;
     private final BeanPropertyRowMapper<MerchantDO> rowMapper = BeanPropertyRowMapper.newInstance(MerchantDO.class);
 
     public MerchantGatewayImpl(
             NamedParameterJdbcTemplate jdbc,
+            MerchantRepository merchants,
             MerchantStorageConverter converter,
             @Qualifier("databaseClock") Clock clock) {
         this.jdbc = jdbc;
+        this.merchants = merchants;
         this.converter = converter;
         this.clock = clock;
     }
@@ -64,7 +67,8 @@ public class MerchantGatewayImpl implements MerchantGateway {
 
     @Override
     public Optional<Merchant> find(String tenant, String id) {
-        return read(tenant, id, false);
+        required(tenant);
+        return merchants.find(required(id)).map(converter::toMerchant);
     }
 
     @Override
@@ -79,8 +83,9 @@ public class MerchantGatewayImpl implements MerchantGateway {
     }
 
     private Optional<Merchant> read(String tenant, String id, boolean lock) {
-        var params =
-                new MapSqlParameterSource().addValue("tenant", required(tenant)).addValue("id", required(id));
+        var params = new MapSqlParameterSource()
+                .addValue("tenant", io.github.loadup.components.database.tenant.TenantContext.tenantId())
+                .addValue("id", required(id));
         return jdbc
                 .query(
                         "SELECT " + COLUMNS + " FROM merchant_profile WHERE tenant_id = :tenant AND id = :id "
@@ -141,7 +146,8 @@ public class MerchantGatewayImpl implements MerchantGateway {
     public PageResult<Merchant> page(
             String tenant, String code, String name, MerchantStatus status, int page, int size) {
         var sql = new StringBuilder(" FROM merchant_profile WHERE tenant_id = :tenant AND deleted = FALSE");
-        var params = new MapSqlParameterSource("tenant", required(tenant));
+        var params = new MapSqlParameterSource(
+                "tenant", io.github.loadup.components.database.tenant.TenantContext.tenantId());
         if (code != null && !code.isBlank()) {
             sql.append(" AND merchant_code = :code");
             params.addValue("code", code);

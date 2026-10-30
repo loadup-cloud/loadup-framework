@@ -24,6 +24,8 @@ import io.github.loadup.modules.dictionary.domain.gateway.DictionaryGateway;
 import io.github.loadup.modules.dictionary.infrastructure.converter.DictionaryStorageConverter;
 import io.github.loadup.modules.dictionary.infrastructure.converter.DictionaryStorageConverterImpl;
 import io.github.loadup.modules.dictionary.infrastructure.repository.DictionaryGatewayImpl;
+import io.github.loadup.modules.dictionary.infrastructure.repository.DictionaryItemRepository;
+import io.github.loadup.modules.dictionary.infrastructure.repository.DictionaryTypeRepository;
 import java.time.Clock;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -32,10 +34,12 @@ import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.context.annotation.*;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
-@AutoConfiguration(afterName = {
-        "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration",
-        "io.github.loadup.components.database.autoconfigure.DatabaseCoreAutoConfiguration",
-        "io.github.loadup.components.database.autoconfigure.IdGeneratorAutoConfiguration"})
+@AutoConfiguration(
+        afterName = {
+            "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration",
+            "io.github.loadup.components.database.autoconfigure.DatabaseCoreAutoConfiguration",
+            "io.github.loadup.components.database.autoconfigure.IdGeneratorAutoConfiguration"
+        })
 @ConditionalOnSingleCandidate(DataSource.class)
 @ConditionalOnProperty(
         prefix = "loadup.modules.dictionary",
@@ -50,10 +54,12 @@ public class DictionaryPersistenceAutoConfiguration {
         @Bean
         public DictionaryGateway dictionaryGateway(
                 NamedParameterJdbcTemplate jdbc,
+                DictionaryTypeRepository types,
+                DictionaryItemRepository items,
                 IdGenerator ids,
                 DictionaryStorageConverter converter,
                 @Qualifier("databaseClock") Clock clock) {
-            return new DictionaryGatewayImpl(jdbc, ids, converter, clock);
+            return new DictionaryGatewayImpl(jdbc, types, items, ids, converter, clock);
         }
     }
 }

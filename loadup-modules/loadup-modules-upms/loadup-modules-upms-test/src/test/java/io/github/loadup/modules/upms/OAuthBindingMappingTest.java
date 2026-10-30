@@ -36,7 +36,7 @@ class OAuthBindingMappingTest {
             var stored = new UserOAuthBindingDO();
             stored.setId("binding");
             stored.setTenantId("trusted-tenant");
-            stored.setDeleted(0);
+            stored.setDeleted(false);
             stored.setUserId("user");
             stored.setProvider("test");
             stored.setOpenId("subject");

@@ -25,19 +25,17 @@ import io.github.loadup.modules.file.client.error.FileResultCodeEnum;
 import io.github.loadup.modules.file.domain.gateway.FileResourceGateway;
 import io.github.loadup.modules.file.domain.model.FileReference;
 import io.github.loadup.modules.file.domain.model.FileResource;
-import io.github.loadup.modules.file.infrastructure.dataobject.FileResourceInsert;
 import io.github.loadup.modules.file.infrastructure.dataobject.FileReferenceRow;
+import io.github.loadup.modules.file.infrastructure.dataobject.FileResourceInsert;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.relational.core.query.Criteria;
-import org.springframework.data.relational.core.query.Query;
+import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -45,11 +43,20 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 public class FileResourceGatewayImpl implements FileResourceGateway {
     private final JdbcTemplate jdbc;
     private final JdbcAggregateTemplate aggregates;
+    private final FileResourceRepository resources;
+    private final FileReferenceRepository references;
     private final Clock clock;
 
-    public FileResourceGatewayImpl(JdbcTemplate jdbc, JdbcAggregateTemplate aggregates, Clock clock) {
+    public FileResourceGatewayImpl(
+            JdbcTemplate jdbc,
+            JdbcAggregateTemplate aggregates,
+            FileResourceRepository resources,
+            FileReferenceRepository references,
+            Clock clock) {
         this.jdbc = jdbc;
         this.aggregates = aggregates;
+        this.resources = resources;
+        this.references = references;
         this.clock = clock;
     }
 
@@ -73,9 +80,7 @@ public class FileResourceGatewayImpl implements FileResourceGateway {
 
     @Override
     public Optional<FileResource> find(String tenant, String id) {
-        var query = Query.query(Criteria.where("tenantId").is(tenant)
-                .and("id").is(id).and("deleted").is(false));
-        return aggregates.findOne(query, FileResourceInsert.class).map(FileResourceGatewayImpl::file);
+        return resources.find(id).map(FileResourceGatewayImpl::toResource);
     }
 
     @Override
@@ -86,21 +91,27 @@ public class FileResourceGatewayImpl implements FileResourceGateway {
                 || dataSource == null
                 || !TransactionSynchronizationManager.hasResource(dataSource))
             throw new IllegalStateException("File lock requires a writable transaction on its data source");
-        return jdbc.query(
+        return jdbc
+                .query(
                         "SELECT * FROM file_resource WHERE tenant_id = ? AND id = ? AND deleted = FALSE FOR UPDATE",
-                        FileResourceGatewayImpl::file, tenant, id)
-                .stream().findFirst();
+                        FileResourceGatewayImpl::file,
+                        io.github.loadup.components.database.tenant.TenantContext.tenantId(),
+                        id)
+                .stream()
+                .findFirst();
     }
 
     @Override
     public PageResult<FileResource> list(String tenant, String owner, int page, int size) {
-        var query = Query.query(Criteria.where("tenantId").is(tenant).and("ownerId").is(owner)
-                .and("state").is("ACTIVE").and("deleted").is(false));
-        long count = aggregates.count(query, FileResourceInsert.class);
-        var rows = aggregates.findAll(query.sort(Sort.by(Sort.Direction.DESC, "createdAt", "id"))
-                        .limit(size).offset((long) (page - 1) * size), FileResourceInsert.class)
-                .stream().map(FileResourceGatewayImpl::file).toList();
-        return new PageResult<>(rows, count, page, size);
+        var result = resources.listOwned(
+                owner,
+                org.springframework.data.domain.PageRequest.of(
+                        page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt", "id")));
+        return new PageResult<>(
+                result.stream().map(FileResourceGatewayImpl::toResource).toList(),
+                result.getTotalElements(),
+                page,
+                size);
     }
 
     @Override
@@ -138,10 +149,10 @@ public class FileResourceGatewayImpl implements FileResourceGateway {
     /** Authorized system maintenance scan across tenants. */
     @Override
     public List<FileResource> pending(int limit) {
-        var query = Query.query(Criteria.where("state").is("PENDING_DELETE").and("deleted").is(false))
-                .sort(Sort.by("updatedAt", "id")).limit(limit);
-        return aggregates.findAll(query, FileResourceInsert.class).stream()
-                .map(FileResourceGatewayImpl::file).toList();
+        return resources.pending(Sort.by("updatedAt", "id")).stream()
+                .limit(limit)
+                .map(FileResourceGatewayImpl::toResource)
+                .toList();
     }
 
     @Override
@@ -179,25 +190,35 @@ public class FileResourceGatewayImpl implements FileResourceGateway {
 
     @Override
     public long countReferences(String tenant, String file) {
-        return aggregates.count(referenceQuery(tenant, file), FileReferenceRow.class);
+        return references.countReferences(file);
     }
 
     @Override
     public List<FileReference> references(String tenant, String file) {
-        return aggregates.findAll(referenceQuery(tenant, file).sort(Sort.by("createdAt", "id")), FileReferenceRow.class)
-                .stream()
-                .map(row -> new FileReference(row.id(), row.tenantId(), row.fileId(), row.referenceType(),
-                        row.referenceId(), row.createdAt()))
+        return references.references(file, Sort.by("createdAt", "id")).stream()
+                .map(row -> new FileReference(
+                        row.id(),
+                        row.tenantId(),
+                        row.fileId(),
+                        row.referenceType(),
+                        row.referenceId(),
+                        row.createdAt()))
                 .toList();
     }
 
-    private static Query referenceQuery(String tenant, String file) {
-        return Query.query(Criteria.where("tenantId").is(tenant).and("fileId").is(file).and("deleted").is(false));
-    }
-
-    private static FileResource file(FileResourceInsert row) {
-        return new FileResource(row.id(), row.tenantId(), row.ownerId(), row.storageId(), row.filename(),
-                row.contentType(), row.contentLength(), row.provider(), row.state(), row.createdAt(), row.updatedAt());
+    private static FileResource toResource(FileResourceInsert row) {
+        return new FileResource(
+                row.id(),
+                row.tenantId(),
+                row.ownerId(),
+                row.storageId(),
+                row.filename(),
+                row.contentType(),
+                row.contentLength(),
+                row.provider(),
+                row.state(),
+                row.createdAt(),
+                row.updatedAt());
     }
 
     private static FileResource file(ResultSet rs, int index) throws SQLException {
@@ -214,5 +235,4 @@ public class FileResourceGatewayImpl implements FileResourceGateway {
                 rs.getObject("created_at", LocalDateTime.class),
                 rs.getObject("updated_at", LocalDateTime.class));
     }
-
 }

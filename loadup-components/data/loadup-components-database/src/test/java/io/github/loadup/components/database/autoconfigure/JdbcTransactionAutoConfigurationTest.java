@@ -20,7 +20,8 @@ class JdbcTransactionAutoConfigurationTest {
         var source = mock(DataSource.class);
         runner.withBean(DataSource.class, () -> source).run(context -> {
             assertThat(context).hasNotFailed().hasSingleBean(JdbcTransactionManager.class);
-            assertThat(context.getBean(JdbcTransactionManager.class).getDataSource()).isSameAs(source);
+            assertThat(context.getBean(JdbcTransactionManager.class).getDataSource())
+                    .isSameAs(source);
         });
     }
 
@@ -31,7 +32,8 @@ class JdbcTransactionAutoConfigurationTest {
                 .withBean(PlatformTransactionManager.class, () -> manager)
                 .run(context -> {
                     assertThat(context).hasNotFailed().doesNotHaveBean(JdbcTransactionManager.class);
-                    assertThat(context.getBean(PlatformTransactionManager.class)).isSameAs(manager);
+                    assertThat(context.getBean(PlatformTransactionManager.class))
+                            .isSameAs(manager);
                 });
     }
 

@@ -74,8 +74,10 @@ public class FileResourceService implements io.github.loadup.modules.file.client
         if (content == null || size < 0) throw new CommonException(FileResultCodeEnum.INVALID_FILE_CONTENT);
         String type =
                 contentType == null || contentType.isBlank() ? "application/octet-stream" : required(contentType, 255);
-        FileMetadata stored = io.github.loadup.commons.util.TenantUtil.callWithTenant(tenant, () -> dfs.upload(
-                new FileUploadRequest(safeName, content, size, type, "resources/" + UUID.randomUUID(), Map.of())));
+        FileMetadata stored = io.github.loadup.commons.util.TenantUtil.callWithTenant(
+                tenant,
+                () -> dfs.upload(new FileUploadRequest(
+                        safeName, content, size, type, "resources/" + UUID.randomUUID(), Map.of())));
         LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), clock.getZone());
         FileResource file = new FileResource(
                 UUID.randomUUID().toString(),

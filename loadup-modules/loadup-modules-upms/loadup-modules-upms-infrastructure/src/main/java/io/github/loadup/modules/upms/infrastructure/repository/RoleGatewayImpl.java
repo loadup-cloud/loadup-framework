@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -44,18 +46,24 @@ public class RoleGatewayImpl implements RoleGateway {
     private static final String FROM =
             " FROM upms_role r WHERE r.deleted = FALSE AND r.tenant_id IS NOT DISTINCT FROM :tenant AND ";
     private static final String COLUMNS =
-            "r.id, r.tenant_id, r.role_name, r.role_code, r.parent_role_id AS parent_id, r.role_level, r.data_scope, r.sort_order, r.status, r.remark, r.created_by, r.updated_by, r.created_at, r.updated_at, CASE WHEN r.deleted THEN 1 ELSE 0 END AS deleted";
+            "r.id, r.tenant_id, r.role_name, r.role_code, r.parent_role_id AS parent_id, r.role_level, r.data_scope, r.sort_order, r.status, r.remark, r.created_by, r.updated_by, r.created_at, r.updated_at, r.deleted";
     private final NamedParameterJdbcTemplate jdbc;
+    private final RoleRepository roles;
+    private final UserRoleRepository userRoles;
     private final Clock clock;
     private final DatabaseTenant tenant;
     private final RoleConverter converter;
 
     public RoleGatewayImpl(
             NamedParameterJdbcTemplate jdbc,
+            RoleRepository roles,
+            UserRoleRepository userRoles,
             RoleConverter converter,
             @Qualifier("databaseClock") Clock clock,
             DatabaseTenant tenant) {
         this.jdbc = jdbc;
+        this.roles = roles;
+        this.userRoles = userRoles;
         this.clock = clock;
         this.tenant = tenant;
         this.converter = converter;
@@ -108,10 +116,12 @@ public class RoleGatewayImpl implements RoleGateway {
                 params,
                 String.class);
         if (!findByParentId(id).isEmpty()) {
-            throw new io.github.loadup.commons.error.CommonException(io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum.ROLE_STILL_HAS_CHILD_ROLES);
+            throw new io.github.loadup.commons.error.CommonException(
+                    io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum.ROLE_STILL_HAS_CHILD_ROLES);
         }
         if (countUsersByRoleId(id) > 0) {
-            throw new io.github.loadup.commons.error.CommonException(io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum.ROLE_IS_STILL_ASSIGNED_TO_USERS);
+            throw new io.github.loadup.commons.error.CommonException(
+                    io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum.ROLE_IS_STILL_ASSIGNED_TO_USERS);
         }
         for (String table : List.of("upms_role_permission", "upms_role_department", "upms_user_role")) {
             jdbc.update(
@@ -126,12 +136,12 @@ public class RoleGatewayImpl implements RoleGateway {
 
     @Override
     public Optional<Role> findById(String id) {
-        return find("r.id = :value", id).stream().findFirst();
+        return roles.findById(id).map(converter::toEntity);
     }
 
     @Override
     public Optional<Role> findByRoleCode(String roleCode) {
-        return find("r.role_code = :value", roleCode).stream().findFirst();
+        return roles.findByRoleCode(roleCode).map(converter::toEntity);
     }
 
     @Override
@@ -143,22 +153,22 @@ public class RoleGatewayImpl implements RoleGateway {
 
     @Override
     public List<Role> findByParentId(String parentId) {
-        return find("r.parent_role_id = :value", parentId);
+        return roles.findByParentId(parentId).stream().map(converter::toEntity).toList();
     }
 
     @Override
     public List<Role> findAll() {
-        return find("TRUE", null);
+        return roles.findAll().stream().map(converter::toEntity).toList();
     }
 
     @Override
     public List<Role> findAllEnabled() {
-        return find("r.status = 1", null);
+        return roles.findAllEnabled().stream().map(converter::toEntity).toList();
     }
 
     @Override
     public boolean existsByRoleCode(String roleCode) {
-        return findByRoleCode(roleCode).isPresent();
+        return roles.existsByRoleCode(roleCode);
     }
 
     @Override
@@ -176,7 +186,9 @@ public class RoleGatewayImpl implements RoleGateway {
 
     @Override
     public List<String> getUserRoleIds(String userId) {
-        return ids("upms_user_role", "role_id", "user_id", userId);
+        return userRoles.findByUserId(userId).stream()
+                .map(io.github.loadup.modules.upms.infrastructure.dataobject.UserRoleDO::getRoleId)
+                .toList();
     }
 
     @Override
@@ -216,27 +228,28 @@ public class RoleGatewayImpl implements RoleGateway {
 
     @Override
     public PageResult<Role> findAll(PageQuery query) {
-        var params = params();
-        Long total = jdbc.queryForObject("SELECT COUNT(*)" + FROM + "TRUE", params, Long.class);
-        params.addValue("limit", query.pageSize()).addValue("offset", ((long) query.pageNum() - 1) * query.pageSize());
-        var rows = select("TRUE", params, " ORDER BY r.id LIMIT :limit OFFSET :offset");
-        return PageResult.of(rows, total == null ? 0 : total, query.pageNum(), query.pageSize());
+        var page = roles.findAll(PageRequest.of(query.pageNum() - 1, query.pageSize(), Sort.by("id")));
+        return PageResult.of(
+                page.stream().map(converter::toEntity).toList(),
+                page.getTotalElements(),
+                query.pageNum(),
+                query.pageSize());
     }
 
     @Override
     public long countUsersByRoleId(String roleId) {
-        Long count = jdbc.queryForObject(
-                "SELECT COUNT(*) FROM upms_user_role WHERE role_id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE",
-                params().addValue("id", roleId),
-                Long.class);
-        return count == null ? 0 : count;
+        return userRoles.countByRoleId(roleId);
     }
 
     private void lockParent(String id) {
         if (id == null) return;
-        if (jdbc.queryForList("SELECT id FROM upms_role WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE FOR UPDATE",
-                params().addValue("id", id), String.class).isEmpty()) {
-            throw new io.github.loadup.commons.error.CommonException(io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum.PARENT_ROLE_DOES_NOT_EXIST);
+        if (jdbc.queryForList(
+                        "SELECT id FROM upms_role WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE FOR UPDATE",
+                        params().addValue("id", id),
+                        String.class)
+                .isEmpty()) {
+            throw new io.github.loadup.commons.error.CommonException(
+                    io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum.PARENT_ROLE_DOES_NOT_EXIST);
         }
     }
 

@@ -21,33 +21,40 @@ package io.github.loadup.modules.notification.infrastructure.repository;
 
 import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.components.database.id.IdGenerator;
+import io.github.loadup.components.database.tenant.TenantContext;
 import io.github.loadup.modules.notification.domain.gateway.InboxGateway;
 import io.github.loadup.modules.notification.domain.model.InboxMessage;
 import io.github.loadup.modules.notification.infrastructure.converter.NotificationStorageConverter;
-import io.github.loadup.modules.notification.infrastructure.dataobject.InboxMessageDO;
 import java.time.Clock;
 import java.time.LocalDateTime;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 public class InboxGatewayImpl implements InboxGateway {
     private final NamedParameterJdbcTemplate jdbc;
+    private final InboxMessageRepository inbox;
     private final NotificationStorageConverter converter;
     private final IdGenerator ids;
     private final Clock clock;
 
     public InboxGatewayImpl(
-            NamedParameterJdbcTemplate jdbc, NotificationStorageConverter converter, Clock clock, IdGenerator ids) {
+            NamedParameterJdbcTemplate jdbc,
+            InboxMessageRepository inbox,
+            NotificationStorageConverter converter,
+            Clock clock,
+            IdGenerator ids) {
         this.jdbc = jdbc;
+        this.inbox = inbox;
         this.converter = converter;
         this.clock = clock;
         this.ids = ids;
     }
 
     private MapSqlParameterSource args(String tenant, String recipient) {
-        return new MapSqlParameterSource("tenant", tenant).addValue("recipient", recipient);
+        return new MapSqlParameterSource("tenant", TenantContext.tenantId()).addValue("recipient", recipient);
     }
 
     private long count(String predicate, MapSqlParameterSource args) {
@@ -77,20 +84,15 @@ public class InboxGatewayImpl implements InboxGateway {
 
     @Override
     public PageResult<InboxMessage> list(String tenant, String recipient, boolean unread, int page, int size) {
-        var args = args(tenant, recipient).addValue("limit", size).addValue("offset", (long) (page - 1) * size);
-        String predicate = " AND archived_at IS NULL" + (unread ? " AND read_at IS NULL" : "");
-        long total = count(predicate, args);
-        var rows = jdbc.query(
-                "SELECT id, tenant_id, recipient_id, sender_id, category, title, body, action_url, request_key, read_at, archived_at, created_at, updated_at FROM notification_inbox WHERE tenant_id = :tenant AND recipient_id = :recipient AND deleted = FALSE "
-                        + predicate + " ORDER BY created_at DESC, id DESC LIMIT :limit OFFSET :offset",
-                args,
-                BeanPropertyRowMapper.newInstance(InboxMessageDO.class));
-        return new PageResult<>(rows.stream().map(converter::toDomain).toList(), total, page, size);
+        var pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt", "id"));
+        var result = inbox.list(recipient, unread, pageable);
+        return new PageResult<>(
+                result.stream().map(converter::toDomain).toList(), result.getTotalElements(), page, size);
     }
 
     @Override
     public long unreadCount(String tenant, String recipient) {
-        return count(" AND archived_at IS NULL AND read_at IS NULL", args(tenant, recipient));
+        return inbox.unreadCount(recipient);
     }
 
     @Override

@@ -78,7 +78,8 @@ public class AuditGatewayImpl implements AuditGateway {
 
     @Override
     public PageResult<AuditEvent> search(AuditQuery query) {
-        var args = new MapSqlParameterSource("tenant", query.tenantId())
+        var args = new MapSqlParameterSource(
+                        "tenant", io.github.loadup.components.database.tenant.TenantContext.tenantId())
                 .addValue("limit", query.size())
                 .addValue("offset", (long) (query.page() - 1) * query.size());
         var where = new StringBuilder("deleted = FALSE AND tenant_id IS NOT DISTINCT FROM :tenant");

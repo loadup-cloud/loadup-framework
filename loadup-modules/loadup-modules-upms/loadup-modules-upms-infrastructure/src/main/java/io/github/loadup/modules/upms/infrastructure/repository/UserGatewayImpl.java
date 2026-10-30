@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -46,18 +48,21 @@ public class UserGatewayImpl implements UserGateway {
     private static final String FROM =
             " FROM upms_user WHERE deleted = FALSE AND tenant_id IS NOT DISTINCT FROM :tenant AND ";
     private static final String COLUMNS =
-            "id, tenant_id, username, password, nickname, real_name, dept_id, email, email_verified, mobile, mobile_verified, avatar, gender, birthday, status, account_non_expired, account_non_locked, credentials_non_expired, last_login_time, last_login_ip, login_fail_count, locked_time, password_update_time, remark, created_by, updated_by, created_at, updated_at, CASE WHEN deleted THEN 1 ELSE 0 END AS deleted";
+            "id, tenant_id, username, password, nickname, real_name, dept_id, email, email_verified, mobile, mobile_verified, avatar, gender, birthday, status, account_non_expired, account_non_locked, credentials_non_expired, last_login_time, last_login_ip, login_fail_count, locked_time, password_update_time, remark, created_by, updated_by, created_at, updated_at, deleted";
     private final NamedParameterJdbcTemplate jdbc;
+    private final UserRepository users;
     private final Clock clock;
     private final DatabaseTenant tenant;
     private final UserConverter converter;
 
     public UserGatewayImpl(
             NamedParameterJdbcTemplate jdbc,
+            UserRepository users,
             UserConverter converter,
             @Qualifier("databaseClock") Clock clock,
             DatabaseTenant tenant) {
         this.jdbc = jdbc;
+        this.users = users;
         this.clock = clock;
         this.tenant = tenant;
         this.converter = converter;
@@ -136,32 +141,46 @@ public class UserGatewayImpl implements UserGateway {
 
     @Override
     public Optional<User> findById(String id) {
-        return one("id = :value", id);
+        return users.findById(id).map(converter::toEntity);
     }
 
     @Override
     public Optional<User> findByUsername(String username) {
-        return one("username = :value", username);
+        return users.findByUsername(username).map(converter::toEntity);
     }
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return one("email = :value", email);
+        return users.findByEmail(email).map(converter::toEntity);
     }
 
     @Override
     public Optional<User> findByMobile(String mobile) {
-        return one("mobile = :value", mobile);
+        return users.findByMobile(mobile).map(converter::toEntity);
     }
 
     @Override
     public List<User> findByDeptId(String deptId) {
-        return list("dept_id = :value", params().addValue("value", deptId), "");
+        return users.findByDeptId(deptId).stream().map(converter::toEntity).toList();
     }
 
     @Override
     public PageResult<User> findAll(PageQuery query, String sortBy, String sortOrder) {
-        return page("TRUE", params(), query, sortBy, sortOrder);
+        String property =
+                switch (sortBy) {
+                    case "createdAt" -> "createdAt";
+                    case "username" -> "username";
+                    case "nickname" -> "nickname";
+                    case "id" -> "id";
+                    default -> throw new CommonException(UpmsResultCodeEnum.UNSUPPORTED_USER_SORT_FIELD);
+                };
+        var sort = Sort.by("DESC".equalsIgnoreCase(sortOrder) ? Sort.Direction.DESC : Sort.Direction.ASC, property);
+        var page = users.findAll(PageRequest.of(query.pageNum() - 1, query.pageSize(), sort));
+        return PageResult.of(
+                page.stream().map(converter::toEntity).toList(),
+                page.getTotalElements(),
+                query.pageNum(),
+                query.pageSize());
     }
 
     @Override
@@ -176,22 +195,22 @@ public class UserGatewayImpl implements UserGateway {
 
     @Override
     public boolean existsByUsername(String username) {
-        return findByUsername(username).isPresent();
+        return users.existsByUsername(username);
     }
 
     @Override
     public boolean existsByEmail(String email) {
-        return findByEmail(email).isPresent();
+        return users.existsByEmail(email);
     }
 
     @Override
     public boolean existsByMobile(String mobile) {
-        return findByMobile(mobile).isPresent();
+        return users.existsByMobile(mobile);
     }
 
     @Override
     public long countByDeptId(String deptId) {
-        return count("dept_id = :value", params().addValue("value", deptId));
+        return users.countByDeptId(deptId);
     }
 
     private void lockDepartment(String id) {
@@ -203,11 +222,6 @@ public class UserGatewayImpl implements UserGateway {
                         .isEmpty()) {
             throw new IllegalArgumentException("Active department not found");
         }
-    }
-
-    private Optional<User> one(String predicate, Object value) {
-        return list(predicate, params().addValue("value", value), " LIMIT 1").stream()
-                .findFirst();
     }
 
     private PageResult<User> page(

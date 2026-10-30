@@ -20,15 +20,17 @@
 package io.github.loadup.modules.file.infrastructure.autoconfigure;
 
 import io.github.loadup.modules.file.domain.gateway.FileResourceGateway;
+import io.github.loadup.modules.file.infrastructure.repository.FileReferenceRepository;
 import io.github.loadup.modules.file.infrastructure.repository.FileResourceGatewayImpl;
+import io.github.loadup.modules.file.infrastructure.repository.FileResourceRepository;
 import java.time.Clock;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.context.annotation.*;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 @AutoConfiguration(
         afterName = {
@@ -43,9 +45,13 @@ public class FilePersistenceAutoConfiguration {
     @ConditionalOnMissingBean(FileResourceGateway.class)
     static class DefaultPersistence {
         @Bean
-        public FileResourceGateway fileGateway(JdbcTemplate jdbc, JdbcAggregateTemplate aggregates,
+        public FileResourceGateway fileGateway(
+                JdbcTemplate jdbc,
+                JdbcAggregateTemplate aggregates,
+                FileResourceRepository resources,
+                FileReferenceRepository references,
                 @Qualifier("databaseClock") Clock clock) {
-            return new FileResourceGatewayImpl(jdbc, aggregates, clock);
+            return new FileResourceGatewayImpl(jdbc, aggregates, resources, references, clock);
         }
     }
 }

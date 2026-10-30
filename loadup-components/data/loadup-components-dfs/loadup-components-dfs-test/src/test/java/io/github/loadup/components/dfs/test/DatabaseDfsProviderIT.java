@@ -91,10 +91,15 @@ class DatabaseDfsProviderIT {
                 "INSERT INTO dfs_file (id, tenant_id, filename, file_size, content_type, content, metadata_json, created_at, updated_at, deleted) "
                         + "VALUES (:id, :tenantId, :filename, :fileSize, :contentType, :content, :metadataJson, :createdAt, :updatedAt, FALSE)",
                 new org.springframework.jdbc.core.namedparam.MapSqlParameterSource()
-                        .addValue("id", fileId).addValue("tenantId", "__default__")
-                        .addValue("filename", "legacy.txt").addValue("fileSize", 0L)
-                        .addValue("contentType", "text/plain").addValue("content", new byte[0])
-                        .addValue("metadataJson", null).addValue("createdAt", now).addValue("updatedAt", now));
+                        .addValue("id", fileId)
+                        .addValue("tenantId", "__default__")
+                        .addValue("filename", "legacy.txt")
+                        .addValue("fileSize", 0L)
+                        .addValue("contentType", "text/plain")
+                        .addValue("content", new byte[0])
+                        .addValue("metadataJson", null)
+                        .addValue("createdAt", now)
+                        .addValue("updatedAt", now));
         try {
             org.assertj.core.api.Assertions.assertThat(
                             service.getMetadata(fileId).metadata())

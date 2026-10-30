@@ -21,33 +21,26 @@ package io.github.loadup.components.gotone.store.config;
 
 import io.github.loadup.components.database.tenant.DatabaseTenant;
 import io.github.loadup.components.gotone.config.ServiceConfigProvider;
-import io.github.loadup.components.gotone.store.dataobject.NotificationServiceRow;
+import io.github.loadup.components.gotone.store.repository.NotificationServiceRepository;
 import java.util.Optional;
-import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
-import org.springframework.data.relational.core.query.Criteria;
-import org.springframework.data.relational.core.query.Query;
 
 /**
  * JDBC-backed {@link ServiceConfigProvider} backed by {@code gotone_notification_service}.
  */
 public class JdbcServiceConfigProvider implements ServiceConfigProvider {
 
-    private final JdbcAggregateTemplate aggregates;
+    private final NotificationServiceRepository services;
     private final DatabaseTenant tenant;
 
-    public JdbcServiceConfigProvider(JdbcAggregateTemplate aggregates, DatabaseTenant tenant) {
-        this.aggregates = aggregates;
+    public JdbcServiceConfigProvider(NotificationServiceRepository services, DatabaseTenant tenant) {
+        this.services = services;
         this.tenant = tenant;
     }
 
     @Override
     public Optional<ServiceConfig> findByServiceCode(String serviceCode) {
-        String tenantId = tenant.current();
         if (serviceCode == null) return Optional.empty();
-        var criteria = Criteria.where("serviceCode").is(serviceCode).and("enabled").is(true)
-                .and("deleted").is(false).and("tenantId");
-        var query = Query.query(tenantId == null ? criteria.isNull() : criteria.is(tenantId));
-        return aggregates.findOne(query, NotificationServiceRow.class)
+        return services.findByServiceCode(serviceCode)
                 .map(row -> new ServiceConfig(row.serviceCode(), row.serviceName(), row.enabled()));
     }
 }

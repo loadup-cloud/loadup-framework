@@ -24,6 +24,7 @@ import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import io.github.loadup.modules.contract.domain.gateway.CatalogGateway;
 import io.github.loadup.modules.contract.domain.model.*;
+import io.github.loadup.modules.contract.infrastructure.dataobject.CatalogVersionRow;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Clock;
@@ -37,10 +38,15 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class CatalogGatewayImpl implements CatalogGateway {
     private final NamedParameterJdbcTemplate jdbc;
+    private final CatalogVersionRepository catalogs;
     private final Clock clock;
 
-    public CatalogGatewayImpl(NamedParameterJdbcTemplate jdbc, @Qualifier("databaseClock") Clock clock) {
+    public CatalogGatewayImpl(
+            NamedParameterJdbcTemplate jdbc,
+            CatalogVersionRepository catalogs,
+            @Qualifier("databaseClock") Clock clock) {
         this.jdbc = jdbc;
+        this.catalogs = catalogs;
         this.clock = clock;
     }
 
@@ -52,20 +58,19 @@ public class CatalogGatewayImpl implements CatalogGateway {
 
     @Override
     public Optional<CatalogEntry> find(String tenant, String id) {
-        return read(tenant, id, false);
+        required(tenant);
+        return catalogs.find(required(id)).map(CatalogGatewayImpl::toEntry);
     }
 
     @Override
     public Optional<CatalogEntry> lock(String tenant, String id) {
-        return read(tenant, id, true);
-    }
-
-    private Optional<CatalogEntry> read(String tenant, String id, boolean lock) {
-        var args = new MapSqlParameterSource("tenant", required(tenant)).addValue("id", required(id));
+        var args = new MapSqlParameterSource(
+                        "tenant", io.github.loadup.components.database.tenant.TenantContext.tenantId())
+                .addValue("id", required(id));
         return jdbc
                 .query(
                         "SELECT * FROM contract_catalog_version WHERE tenant_id = :tenant AND id = :id "
-                                + "AND deleted = FALSE" + (lock ? " FOR UPDATE" : ""),
+                                + "AND deleted = FALSE FOR UPDATE",
                         args,
                         CatalogGatewayImpl::map)
                 .stream()
@@ -117,7 +122,9 @@ public class CatalogGatewayImpl implements CatalogGateway {
             String tenant, CatalogKind kind, CatalogStatus status, String code, int page, int size) {
         var sql = new StringBuilder(
                 " FROM contract_catalog_version WHERE tenant_id = :tenant AND kind = :kind AND deleted = FALSE");
-        var args = new MapSqlParameterSource("tenant", required(tenant)).addValue("kind", kind.name());
+        var args = new MapSqlParameterSource(
+                        "tenant", io.github.loadup.components.database.tenant.TenantContext.tenantId())
+                .addValue("kind", kind.name());
         if (status != null) {
             sql.append(" AND status = :status");
             args.addValue("status", status.name());
@@ -133,6 +140,21 @@ public class CatalogGatewayImpl implements CatalogGateway {
                 args,
                 CatalogGatewayImpl::map);
         return new PageResult<>(rows, total == null ? 0 : total, page, size);
+    }
+
+    private static CatalogEntry toEntry(CatalogVersionRow row) {
+        return new CatalogEntry(
+                row.id(),
+                row.tenantId(),
+                CatalogKind.valueOf(row.kind()),
+                row.code(),
+                row.version(),
+                CatalogStatus.valueOf(row.status()),
+                row.rowVersion(),
+                row.content(),
+                row.updatedBy(),
+                row.createdAt(),
+                row.updatedAt());
     }
 
     private static CatalogEntry map(ResultSet rs, int row) throws SQLException {

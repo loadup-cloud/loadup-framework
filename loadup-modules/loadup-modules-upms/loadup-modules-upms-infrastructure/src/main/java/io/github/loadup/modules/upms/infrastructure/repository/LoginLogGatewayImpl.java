@@ -32,7 +32,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -40,21 +41,22 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class LoginLogGatewayImpl implements LoginLogGateway {
-    private static final String FROM =
-            " FROM upms_login_log WHERE deleted = FALSE AND tenant_id IS NOT DISTINCT FROM :tenant AND ";
-    private static final String COLUMNS =
-            "id, tenant_id, user_id, username, login_time, logout_time, ip_address, login_location, browser, os, login_status, login_message, login_type, provider, created_at, updated_at, CASE WHEN deleted THEN 1 ELSE 0 END AS deleted";
+    private static final Short SUCCESS = 1;
+    private static final Short FAILURE = 0;
     private final NamedParameterJdbcTemplate jdbc;
+    private final LoginLogRepository loginLogs;
     private final Clock clock;
     private final DatabaseTenant tenant;
     private final LoginLogConverter converter;
 
     public LoginLogGatewayImpl(
             NamedParameterJdbcTemplate jdbc,
+            LoginLogRepository loginLogs,
             LoginLogConverter converter,
             @Qualifier("databaseClock") Clock clock,
             DatabaseTenant tenant) {
         this.jdbc = jdbc;
+        this.loginLogs = loginLogs;
         this.clock = clock;
         this.tenant = tenant;
         this.converter = converter;
@@ -80,28 +82,27 @@ public class LoginLogGatewayImpl implements LoginLogGateway {
 
     @Override
     public Optional<LoginLog> findById(String id) {
-        return list("id = :id", params().addValue("id", id), " LIMIT 1").stream()
-                .findFirst();
+        return loginLogs.findById(id).map(converter::toEntity);
     }
 
     @Override
     public PageResult<LoginLog> findByUserId(String userId, PageQuery query) {
-        return page("user_id = :userId", params().addValue("userId", userId), query);
+        return page(loginLogs.findByUserId(userId, pageable(query)));
     }
 
     @Override
     public PageResult<LoginLog> findByUsername(String username, PageQuery query) {
-        return page("username = :username", params().addValue("username", username), query);
+        return page(loginLogs.findByUsername(username, pageable(query)));
     }
 
     @Override
     public PageResult<LoginLog> findByDateRange(LocalDateTime startTime, LocalDateTime endTime, PageQuery query) {
-        return page("login_time BETWEEN :start AND :end", range(startTime, endTime), query);
+        return page(loginLogs.findByDateRange(startTime, endTime, pageable(query)));
     }
 
     @Override
     public PageResult<LoginLog> findFailedLogins(LocalDateTime startTime, LocalDateTime endTime, PageQuery query) {
-        return page("login_status = 0 AND login_time BETWEEN :start AND :end", range(startTime, endTime), query);
+        return page(loginLogs.findFailedLogins(startTime, endTime, pageable(query)));
     }
 
     @Override
@@ -113,64 +114,46 @@ public class LoginLogGatewayImpl implements LoginLogGateway {
 
     @Override
     public List<LoginLog> findByLoginTimeBetween(LocalDateTime startTime, LocalDateTime endTime) {
-        return list("login_time BETWEEN :start AND :end", range(startTime, endTime), "");
-    }
-
-    @Override
-    public PageResult<LoginLog> findAll(PageQuery query) {
-        return page("TRUE", params(), query);
-    }
-
-    @Override
-    public long countLoginAttempts(String userId, LocalDateTime startTime, LocalDateTime endTime) {
-        return count(
-                "user_id = :userId AND login_time BETWEEN :start AND :end",
-                range(startTime, endTime).addValue("userId", userId));
-    }
-
-    @Override
-    public long countFailedLoginAttempts(String userId, LocalDateTime startTime, LocalDateTime endTime) {
-        return count(
-                "user_id = :userId AND login_status = 0 AND login_time BETWEEN :start AND :end",
-                range(startTime, endTime).addValue("userId", userId));
-    }
-
-    @Override
-    public List<LoginLog> findByUserId(String userId) {
-        return list("user_id = :userId", params().addValue("userId", userId), "");
-    }
-
-    @Override
-    public Optional<LoginLog> findLastSuccessfulLogin(String userId) {
-        return list("user_id = :userId AND login_status = 1", params().addValue("userId", userId), " LIMIT 1").stream()
-                .findFirst();
-    }
-
-    private PageResult<LoginLog> page(String predicate, MapSqlParameterSource params, PageQuery page) {
-        long total = count(predicate, params);
-        params.addValue("limit", page.pageSize()).addValue("offset", ((long) page.pageNum() - 1) * page.pageSize());
-        return PageResult.of(
-                list(predicate, params, " LIMIT :limit OFFSET :offset"), total, page.pageNum(), page.pageSize());
-    }
-
-    private long count(String predicate, MapSqlParameterSource params) {
-        Long count = jdbc.queryForObject("SELECT COUNT(*)" + FROM + predicate, params, Long.class);
-        return count == null ? 0 : count;
-    }
-
-    private List<LoginLog> list(String predicate, MapSqlParameterSource params, String limit) {
-        return jdbc
-                .query(
-                        "SELECT " + COLUMNS + FROM + predicate + " ORDER BY login_time DESC" + limit,
-                        params,
-                        BeanPropertyRowMapper.newInstance(LoginLogDO.class))
-                .stream()
+        return loginLogs.findByLoginTimeBetween(startTime, endTime).stream()
                 .map(converter::toEntity)
                 .toList();
     }
 
-    private MapSqlParameterSource range(LocalDateTime start, LocalDateTime end) {
-        return params().addValue("start", start).addValue("end", end);
+    @Override
+    public PageResult<LoginLog> findAll(PageQuery query) {
+        return page(loginLogs.findAll(pageable(query)));
+    }
+
+    @Override
+    public long countLoginAttempts(String userId, LocalDateTime startTime, LocalDateTime endTime) {
+        return loginLogs.countLoginAttempts(userId, startTime, endTime);
+    }
+
+    @Override
+    public long countFailedLoginAttempts(String userId, LocalDateTime startTime, LocalDateTime endTime) {
+        return loginLogs.countFailedLoginAttempts(userId, startTime, endTime);
+    }
+
+    @Override
+    public List<LoginLog> findByUserId(String userId) {
+        return loginLogs.findByUserId(userId).stream().map(converter::toEntity).toList();
+    }
+
+    @Override
+    public Optional<LoginLog> findLastSuccessfulLogin(String userId) {
+        return loginLogs.findLastSuccessfulLogin(userId).map(converter::toEntity);
+    }
+
+    private PageResult<LoginLog> page(org.springframework.data.domain.Page<LoginLogDO> page) {
+        return PageResult.of(
+                page.stream().map(converter::toEntity).toList(),
+                page.getTotalElements(),
+                page.getNumber() + 1,
+                page.getSize());
+    }
+
+    private PageRequest pageable(PageQuery query) {
+        return PageRequest.of(query.pageNum() - 1, query.pageSize(), Sort.by(Sort.Direction.DESC, "loginTime"));
     }
 
     private MapSqlParameterSource params() {

@@ -364,6 +364,7 @@ POM 的 `<name>` 统一采用 `LoadUp <模块族> <能力> [职责/实现]`，�
 - Public business interfaces reside in `client.facade` and use `XxxFacade`. Application services implement the interfaces directly; Controllers and cross-module consumers depend on Facades. Consumer-supplied extensions remain `client.spi.XxxProvider` or `XxxHandler`.
 - Facades return client DTOs or JDK values. HTTP envelopes belong to Controllers. Keep domain Gateway ports separate from public Facades.
 - Persistence stays in infrastructure. Use Spring Data JDBC for suitable simple aggregates and parameterized Spring JDBC for conditional writes, locking and complex queries. Keep MapStruct converters separate and Spring-managed.
+- Repository read methods resolve the trusted tenant through `TenantContext.tenantId()` and expose tenant-free signatures (`findById`, `findByOrder`, ...); do not accept a tenant identifier in repository or query methods. Explicit SQL binds the same context value.
 - Explicit SQL maintains ID, tenant, audit and soft-delete fields; use the shared `IdGenerator` and injected `Clock` where applicable. Tenant-scoped reads and writes include a trusted tenant predicate. Check affected rows for state and version updates.
 - Business writes and reliability records use the same Spring-managed data source and JDBC transaction manager. Sort SQL uses fixed, whitelisted columns; schema changes target PostgreSQL and preserve business constraints.
 

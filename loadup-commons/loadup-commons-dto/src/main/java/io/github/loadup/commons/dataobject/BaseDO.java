@@ -37,7 +37,7 @@ public abstract class BaseDO implements Serializable {
 
     private String tenantId;
 
-    private Integer deleted;
+    private Boolean deleted;
 
     @Override
     public String toString() {
@@ -60,7 +60,7 @@ public abstract class BaseDO implements Serializable {
         return this.tenantId;
     }
 
-    public Integer getDeleted() {
+    public Boolean getDeleted() {
         return this.deleted;
     }
 
@@ -80,7 +80,7 @@ public abstract class BaseDO implements Serializable {
         this.tenantId = tenantId;
     }
 
-    public void setDeleted(Integer deleted) {
+    public void setDeleted(Boolean deleted) {
         this.deleted = deleted;
     }
 }

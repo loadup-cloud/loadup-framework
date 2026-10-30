@@ -20,7 +20,8 @@ class DatabaseCoreAutoConfigurationTest {
         runner.run(context -> {
             assertThat(context).hasNotFailed().hasSingleBean(DatabaseTenant.class);
             assertThat(context).hasBean("databaseClock");
-            assertThat(context.getBean("databaseClock", Clock.class).getZone()).isEqualTo(java.time.ZoneId.systemDefault());
+            assertThat(context.getBean("databaseClock", Clock.class).getZone())
+                    .isEqualTo(java.time.ZoneId.systemDefault());
         });
     }
 
