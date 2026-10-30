@@ -52,13 +52,13 @@ public enum TimeUnitEnum implements IEnum {
     private String code;
     private String description;
 
-    public static TimeUnitEnum getByCode(String code) {
-        return IEnum.EnumLookup.fromCode(TimeUnitEnum.class, code);
-    }
-
     TimeUnitEnum(String code, String description) {
         this.code = code;
         this.description = description;
+    }
+
+    public static TimeUnitEnum getByCode(String code) {
+        return IEnum.EnumLookup.fromCode(TimeUnitEnum.class, code);
     }
 
     public String getCode() {

@@ -22,7 +22,9 @@ package io.github.loadup.commons.dto;
 import io.github.loadup.commons.json.ToStringAsJson;
 import java.io.Serializable;
 
-/** Common data contract with safe JSON diagnostics separate from HTTP serialization. */
+/**
+ * Common data contract with safe JSON diagnostics separate from HTTP serialization.
+ */
 public interface DTO extends Serializable {
     default String toJsonString() {
         return ToStringAsJson.reflectionToString(this);

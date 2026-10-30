@@ -29,13 +29,19 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "loadup.captcha.binder.tianai")
 public class TianaiCaptchaProperties {
 
-    /** Whether to load the default slider / rotate templates bundled in the tianai jar. */
+    /**
+     * Whether to load the default slider / rotate templates bundled in the tianai jar.
+     */
     private boolean initDefaultResource = true;
 
-    /** Default captcha type used by {@code generate()}, one of the {@code CaptchaType} constants. */
+    /**
+     * Default captcha type used by {@code generate()}, one of the {@code CaptchaType} constants.
+     */
     private String defaultType = "SLIDER";
 
-    /** Verification expiration in seconds, keyed by captcha type; {@code default} applies to all. */
+    /**
+     * Verification expiration in seconds, keyed by captcha type; {@code default} applies to all.
+     */
     private Map<String, Long> expireSeconds = new LinkedHashMap<>();
 
     public boolean isInitDefaultResource() {

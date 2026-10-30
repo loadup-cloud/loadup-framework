@@ -8,8 +8,8 @@
 
 ## 能力矩阵
 
-| 能力 | 契约 |
-|---|---|
-| 模块职责 | 业务仅依赖本模块，通过 AsyncResultTemplate 使用同步/异步等待；AsyncResultProvider 是单后端 SPI。 |
-| 配置与示例 | [组件接入手册](../README.md) |
-| 架构边界 | [ARCHITECTURE.md](ARCHITECTURE.md) |
+| 能力       | 契约                                                                                             |
+|------------|--------------------------------------------------------------------------------------------------|
+| 模块职责   | 业务仅依赖本模块，通过 AsyncResultTemplate 使用同步/异步等待；AsyncResultProvider 是单后端 SPI。 |
+| 配置与示例 | [组件接入手册](../README.md)                                                                     |
+| 架构边界   | [ARCHITECTURE.md](ARCHITECTURE.md)                                                               |

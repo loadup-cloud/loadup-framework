@@ -19,7 +19,9 @@
  */
 package io.github.loadup.commons.masking;
 
-/** Output display rules; none of these rules encrypt or anonymize data. */
+/**
+ * Output display rules; none of these rules encrypt or anonymize data.
+ */
 public enum MaskType {
     PHONE,
     EMAIL,

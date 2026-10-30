@@ -62,7 +62,7 @@ public class TransferAutoConfiguration {
             List<TransferHandler> handlers,
             TransferTaskProperties properties,
             TransferDTOConverter converter,
-            @org.springframework.beans.factory.annotation.Qualifier("transferClock") java.time.Clock clock) {
+            java.time.Clock clock) {
         return new TransferTaskService(repository, files, handlers, properties, converter, clock);
     }
 
@@ -72,11 +72,5 @@ public class TransferAutoConfiguration {
     public io.github.loadup.modules.transfer.app.service.TransferTaskProcessor transferTaskProcessor(
             TransferTaskService service) {
         return new io.github.loadup.modules.transfer.app.service.TransferTaskProcessor(service);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(name = "transferClock")
-    public java.time.Clock transferClock() {
-        return java.time.Clock.systemDefaultZone();
     }
 }

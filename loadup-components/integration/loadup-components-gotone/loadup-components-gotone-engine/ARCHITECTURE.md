@@ -20,9 +20,12 @@
 
 主要入口文件：
 
-- [`GotoneEngineAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/engine/GotoneEngineAutoConfiguration.java)
-- [`DefaultNotificationService`](src/main/java/io/github/loadup/components/gotone/engine/DefaultNotificationService.java)
-- [`ResilientNotificationChannelProvider`](src/main/java/io/github/loadup/components/gotone/engine/ResilientNotificationChannelProvider.java)
+- [
+  `GotoneEngineAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/engine/GotoneEngineAutoConfiguration.java)
+- [
+  `DefaultNotificationService`](src/main/java/io/github/loadup/components/gotone/engine/DefaultNotificationService.java)
+- [
+  `ResilientNotificationChannelProvider`](src/main/java/io/github/loadup/components/gotone/engine/ResilientNotificationChannelProvider.java)
 
 ## 分层与调用路径
 
@@ -34,12 +37,16 @@
 
 ## 装配规则
 
-- [`GotoneEngineAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/engine/GotoneEngineAutoConfiguration.java) 是自动配置入口。
-  - `@ConditionalOnMissingBean(NotificationService.class)`
+- [
+  `GotoneEngineAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/engine/GotoneEngineAutoConfiguration.java)
+  是自动配置入口。
+    - `@ConditionalOnMissingBean(NotificationService.class)`
 
 ## 配置归属
 
-- [`GotoneResilienceProperties`](src/main/java/io/github/loadup/components/gotone/engine/GotoneResilienceProperties.java) 绑定 `loadup.gotone.resilience`。
+- [
+  `GotoneResilienceProperties`](src/main/java/io/github/loadup/components/gotone/engine/GotoneResilienceProperties.java)
+  绑定 `loadup.gotone.resilience`。
 
 ## 设计取舍
 

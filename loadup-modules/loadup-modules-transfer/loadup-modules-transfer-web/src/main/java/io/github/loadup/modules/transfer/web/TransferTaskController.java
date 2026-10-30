@@ -23,7 +23,6 @@ import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.request.query.IdQuery;
 import io.github.loadup.commons.result.PageResponse;
 import io.github.loadup.commons.result.SuccessResponse;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.authorization.model.LoadUpUser;
 import io.github.loadup.modules.transfer.client.command.TransferTaskRetryCommand;
 import io.github.loadup.modules.transfer.client.command.TransferTaskSubmitCommand;
@@ -44,7 +43,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Authenticated submission and tracking of business-supplied import/export handlers. */
+/**
+ * Authenticated submission and tracking of business-supplied import/export handlers.
+ */
 @RestController
 @RequestMapping("/transfer-tasks")
 @Tag(name = "Import Export Tasks", description = "Asynchronous import and export tasks")
@@ -55,81 +56,6 @@ public class TransferTaskController {
     public TransferTaskController(TransferTaskFacade service, TransferWebConverter converter) {
         this.converter = converter;
         this.service = service;
-    }
-
-    @PostMapping("/imports")
-    @Operation(summary = "Submit an import using a previously uploaded file")
-    @PreAuthorize("isAuthenticated()")
-    public SuccessResponse<TransferViewDTO> submitImport(
-            @RequestBody TransferTaskSubmitCommand request, Authentication authentication) {
-        if (request == null) throw new CommonException(TransferResultCodeEnum.REQUEST_IS_REQUIRED);
-        return SuccessResponse.of(converter.toView(service.submit(
-                TenantUtil.getTenantId(),
-                actor(authentication),
-                TransferKind.IMPORT,
-                request.handlerKey(),
-                request.sourceFileId(),
-                request.options())));
-    }
-
-    @PostMapping("/exports")
-    @Operation(summary = "Submit an export")
-    @PreAuthorize("isAuthenticated()")
-    public SuccessResponse<TransferViewDTO> submitExport(
-            @RequestBody TransferTaskSubmitCommand request, Authentication authentication) {
-        if (request == null) throw new CommonException(TransferResultCodeEnum.REQUEST_IS_REQUIRED);
-        return SuccessResponse.of(converter.toView(service.submit(
-                TenantUtil.getTenantId(),
-                actor(authentication),
-                TransferKind.EXPORT,
-                request.handlerKey(),
-                request.sourceFileId(),
-                request.options())));
-    }
-
-    @PostMapping("/list")
-    @Operation(summary = "List my tasks; administrators may select an owner")
-    @PreAuthorize("isAuthenticated()")
-    public PageResponse<TransferViewDTO> list(
-            @RequestBody TransferTaskPageQuery request, Authentication authentication) {
-        var result = service.list(
-                TenantUtil.getTenantId(),
-                actor(authentication),
-                admin(authentication),
-                request.ownerId(),
-                request.page() == null ? 1 : request.page(),
-                request.size() == null ? 20 : request.size());
-        return PageResponse.of(result.map(converter::toView));
-    }
-
-    @PostMapping("/detail")
-    @Operation(summary = "Get task progress and result metadata")
-    @PreAuthorize("isAuthenticated()")
-    public SuccessResponse<TransferViewDTO> get(@RequestBody IdQuery request, Authentication authentication) {
-        return SuccessResponse.of(converter.toView(
-                service.get(TenantUtil.getTenantId(), request.id(), actor(authentication), admin(authentication))));
-    }
-
-    @PostMapping("/result")
-    @Operation(summary = "Get the result file reference for download")
-    @PreAuthorize("isAuthenticated()")
-    public SuccessResponse<ResultFileDTO> result(@RequestBody IdQuery request, Authentication authentication) {
-        TransferTaskDTO task =
-                service.get(TenantUtil.getTenantId(), request.id(), actor(authentication), admin(authentication));
-        if (task.status() != TransferStatus.SUCCEEDED || task.resultFileId() == null) {
-            throw new CommonException(TransferResultCodeEnum.TASK_HAS_NO_RESULT_FILE);
-        }
-        return SuccessResponse.of(
-                new ResultFileDTO(task.resultFileId(), "/api/files/" + task.resultFileId() + "/content"));
-    }
-
-    @PostMapping("/retry")
-    @Operation(summary = "Redispatch a queued task or retry a failed task")
-    @PreAuthorize("isAuthenticated()")
-    public SuccessResponse<TransferViewDTO> retry(
-            @RequestBody TransferTaskRetryCommand request, Authentication authentication) {
-        return SuccessResponse.of(converter.toView(
-                service.retry(TenantUtil.getTenantId(), request.id(), actor(authentication), admin(authentication))));
     }
 
     private static String actor(Authentication authentication) {
@@ -146,5 +72,80 @@ public class TransferTaskController {
     private static boolean admin(Authentication authentication) {
         return authentication.getAuthorities().stream()
                 .anyMatch(authority -> "ROLE_SUPER_ADMIN".equals(authority.getAuthority()));
+    }
+
+    @PostMapping("/imports")
+    @Operation(summary = "Submit an import using a previously uploaded file")
+    @PreAuthorize("isAuthenticated()")
+    public SuccessResponse<TransferViewDTO> submitImport(
+            @RequestBody TransferTaskSubmitCommand request, Authentication authentication) {
+        if (request == null) {
+            throw new CommonException(TransferResultCodeEnum.REQUEST_IS_REQUIRED);
+        }
+        return SuccessResponse.of(converter.toView(service.submit(
+                actor(authentication),
+                TransferKind.IMPORT,
+                request.handlerKey(),
+                request.sourceFileId(),
+                request.options())));
+    }
+
+    @PostMapping("/exports")
+    @Operation(summary = "Submit an export")
+    @PreAuthorize("isAuthenticated()")
+    public SuccessResponse<TransferViewDTO> submitExport(
+            @RequestBody TransferTaskSubmitCommand request, Authentication authentication) {
+        if (request == null) {
+            throw new CommonException(TransferResultCodeEnum.REQUEST_IS_REQUIRED);
+        }
+        return SuccessResponse.of(converter.toView(service.submit(
+                actor(authentication),
+                TransferKind.EXPORT,
+                request.handlerKey(),
+                request.sourceFileId(),
+                request.options())));
+    }
+
+    @PostMapping("/list")
+    @Operation(summary = "List my tasks; administrators may select an owner")
+    @PreAuthorize("isAuthenticated()")
+    public PageResponse<TransferViewDTO> list(
+            @RequestBody TransferTaskPageQuery request, Authentication authentication) {
+        var result = service.list(
+                actor(authentication),
+                admin(authentication),
+                request.ownerId(),
+                request.page() == null ? 1 : request.page(),
+                request.size() == null ? 20 : request.size());
+        return PageResponse.of(result.map(converter::toView));
+    }
+
+    @PostMapping("/detail")
+    @Operation(summary = "Get task progress and result metadata")
+    @PreAuthorize("isAuthenticated()")
+    public SuccessResponse<TransferViewDTO> get(@RequestBody IdQuery request, Authentication authentication) {
+        return SuccessResponse.of(
+                converter.toView(service.get(request.id(), actor(authentication), admin(authentication))));
+    }
+
+    @PostMapping("/result")
+    @Operation(summary = "Get the result file reference for download")
+    @PreAuthorize("isAuthenticated()")
+    public SuccessResponse<ResultFileDTO> result(@RequestBody IdQuery request, Authentication authentication) {
+        TransferTaskDTO task = service.get(request.id(), actor(authentication), admin(authentication));
+        if (task.status() != TransferStatus.SUCCEEDED || task.resultFileId() == null) {
+            throw new CommonException(TransferResultCodeEnum.TASK_HAS_NO_RESULT_FILE);
+        }
+        return SuccessResponse.of(
+                new ResultFileDTO(task.resultFileId(), "/api/files/" + task.resultFileId() + "/content"));
+    }
+
+    @PostMapping("/retry")
+    @Operation(summary = "Redispatch a queued task or retry a failed task")
+    @PreAuthorize("isAuthenticated()")
+    public SuccessResponse<TransferViewDTO> retry(
+            @RequestBody TransferTaskRetryCommand request, Authentication authentication) {
+        return SuccessResponse.of(
+                converter.toView(service.retry(request.id(), actor(authentication), admin(authentication))));
     }
 }

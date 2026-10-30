@@ -32,7 +32,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandi
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
-/** Wires the dictionary service to its JDBC store. */
+/**
+ * Wires the dictionary service to its JDBC store.
+ */
 @Import(DictionaryDTOConverterImpl.class)
 @AutoConfiguration(
         afterName =
@@ -49,15 +51,7 @@ public class DictionaryAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(io.github.loadup.modules.dictionary.client.facade.DictionaryFacade.class)
     public DictionaryService dictionaryService(
-            DictionaryGateway repository,
-            DictionaryDTOConverter converter,
-            @org.springframework.beans.factory.annotation.Qualifier("dictionaryClock") java.time.Clock clock) {
+            DictionaryGateway repository, DictionaryDTOConverter converter, java.time.Clock clock) {
         return new DictionaryService(repository, converter, clock);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(name = "dictionaryClock")
-    public java.time.Clock dictionaryClock() {
-        return java.time.Clock.systemDefaultZone();
     }
 }

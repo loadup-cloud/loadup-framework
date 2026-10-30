@@ -25,45 +25,37 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
-/** Transport headers with strict duplicate rejection and canonical Base64 encoding. */
+/**
+ * Transport headers with strict duplicate rejection and canonical Base64 encoding.
+ */
 public record RequestSignature(RequestSignatureParameters parameters, String signature) {
     public RequestSignature {
-        if (parameters == null || signature == null || signature.length() > 684) throw malformed();
+        if (parameters == null || signature == null || signature.length() > 684) {
+            throw malformed();
+        }
         try {
             byte[] bytes = Base64.getDecoder().decode(signature);
             if ((bytes.length != 256 && bytes.length != 384 && bytes.length != 512)
-                    || !Base64.getEncoder().encodeToString(bytes).equals(signature)) throw malformed();
+                    || !Base64.getEncoder().encodeToString(bytes).equals(signature)) {
+                throw malformed();
+            }
         } catch (IllegalArgumentException invalid) {
             throw malformed();
         }
     }
 
-    public Map<String, String> toHeaders() {
-        return Map.of(
-                "X-Signature-Protocol",
-                RequestSignatureCanonicalizer.PROTOCOL,
-                "X-App-Id",
-                parameters.appId(),
-                "X-Signature-Audience",
-                parameters.audience(),
-                "X-Key-Version",
-                Integer.toString(parameters.keyVersion()),
-                "X-Signature-Algorithm",
-                parameters.algorithm().name(),
-                "X-Timestamp",
-                Long.toString(parameters.timestamp()),
-                "X-Nonce",
-                parameters.nonce(),
-                "X-Signature",
-                signature);
-    }
-
     public static RequestSignature fromHeaders(Map<String, ? extends List<String>> headers) {
-        if (headers == null) throw malformed();
-        if (!RequestSignatureCanonicalizer.PROTOCOL.equals(single(headers, "X-Signature-Protocol"))) throw malformed();
+        if (headers == null) {
+            throw malformed();
+        }
+        if (!RequestSignatureCanonicalizer.PROTOCOL.equals(single(headers, "X-Signature-Protocol"))) {
+            throw malformed();
+        }
         String version = single(headers, "X-Key-Version");
         String timestamp = single(headers, "X-Timestamp");
-        if (!version.matches("[1-9][0-9]{0,9}") || !timestamp.matches("0|[1-9][0-9]{0,17}")) throw malformed();
+        if (!version.matches("[1-9][0-9]{0,9}") || !timestamp.matches("0|[1-9][0-9]{0,17}")) {
+            throw malformed();
+        }
         try {
             return new RequestSignature(
                     new RequestSignatureParameters(
@@ -88,16 +80,40 @@ public record RequestSignature(RequestSignatureParameters parameters, String sig
                         || values == null
                         || values.size() != 1
                         || values.getFirst() == null
-                        || values.getFirst().length() > 1024) throw malformed();
+                        || values.getFirst().length() > 1024) {
+                    throw malformed();
+                }
                 result = values.getFirst();
             }
         }
-        if (result == null) throw malformed();
+        if (result == null) {
+            throw malformed();
+        }
         return result;
     }
 
     private static RequestSignatureException malformed() {
         return new RequestSignatureException(RequestSignatureException.Code.MALFORMED);
+    }
+
+    public Map<String, String> toHeaders() {
+        return Map.of(
+                "X-Signature-Protocol",
+                RequestSignatureCanonicalizer.PROTOCOL,
+                "X-App-Id",
+                parameters.appId(),
+                "X-Signature-Audience",
+                parameters.audience(),
+                "X-Key-Version",
+                Integer.toString(parameters.keyVersion()),
+                "X-Signature-Algorithm",
+                parameters.algorithm().name(),
+                "X-Timestamp",
+                Long.toString(parameters.timestamp()),
+                "X-Nonce",
+                parameters.nonce(),
+                "X-Signature",
+                signature);
     }
 
     @Override

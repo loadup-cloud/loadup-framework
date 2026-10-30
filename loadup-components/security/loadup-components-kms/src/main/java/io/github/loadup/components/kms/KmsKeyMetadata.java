@@ -21,7 +21,9 @@ package io.github.loadup.components.kms;
 
 import java.util.Map;
 
-/** Public metadata; the map contains versioned public keys, never private or symmetric key material. */
+/**
+ * Public metadata; the map contains versioned public keys, never private or symmetric key material.
+ */
 public record KmsKeyMetadata(
         String name,
         String type,

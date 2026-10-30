@@ -19,7 +19,6 @@
  */
 package io.github.loadup.modules.upms.web;
 
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.modules.audit.client.command.AuditRecordCommand;
 import io.github.loadup.modules.audit.client.facade.AuditFacade;
 import io.github.loadup.modules.upms.app.service.SensitiveReadAudit;
@@ -54,7 +53,6 @@ public class SensitiveReadAuditConfiguration {
         @Transactional(propagation = Propagation.REQUIRES_NEW)
         public void record(String actorId, String subjectId, SensitiveReadPurpose purpose) {
             audit.record(new AuditRecordCommand(
-                    TenantUtil.getTenantId(),
                     actorId,
                     "UPMS_SENSITIVE_READ:" + purpose.name(),
                     "POST",

@@ -219,14 +219,14 @@ public class ExtensionRegistry implements ApplicationListener<ContextRefreshedEv
                 && extension.scenario().equals(scenario.scenario());
     }
 
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
+    }
+
     private record ScenarioKey(Class<?> extensionType, String bizCode, String useCase, String scenario) {
         ScenarioKey(Class<?> extensionType, BizScenario bizScenario) {
             this(extensionType, bizScenario.bizCode(), bizScenario.useCase(), bizScenario.scenario());
         }
-    }
-
-    @Override
-    public String toString() {
-        return ToStringAsJson.reflectionToString(this);
     }
 }

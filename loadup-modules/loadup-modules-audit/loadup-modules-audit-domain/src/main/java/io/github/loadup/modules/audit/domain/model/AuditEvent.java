@@ -22,10 +22,11 @@ package io.github.loadup.modules.audit.domain.model;
 import io.github.loadup.commons.json.ToStringAsJson;
 import java.time.LocalDateTime;
 
-/** Stored audit event. */
+/**
+ * Stored audit event.
+ */
 public record AuditEvent(
         String id,
-        String tenantId,
         String actorId,
         String action,
         String method,

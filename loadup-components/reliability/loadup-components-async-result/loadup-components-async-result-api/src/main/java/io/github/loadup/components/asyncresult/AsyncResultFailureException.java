@@ -21,7 +21,9 @@ package io.github.loadup.components.asyncresult;
 
 import io.github.loadup.commons.error.CommonException;
 
-/** Remote codes are data; applications explicitly map their own known error enums. */
+/**
+ * Remote codes are data; applications explicitly map their own known error enums.
+ */
 public final class AsyncResultFailureException extends CommonException {
     private final String remoteCode;
 

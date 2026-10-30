@@ -38,7 +38,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -61,7 +60,7 @@ public class OAuthLoginStrategy implements LoginStrategy {
             UserOAuthBindingGateway bindingGateway,
             UserGateway userGateway,
             PasswordEncoder passwordEncoder,
-            @Qualifier("upmsClock") Clock clock) {
+            Clock clock) {
         this.clock = clock;
         this.bindingGateway = bindingGateway;
         this.userGateway = userGateway;

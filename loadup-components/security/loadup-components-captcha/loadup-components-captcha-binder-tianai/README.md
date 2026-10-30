@@ -38,11 +38,13 @@ loadup:
 
 ## 配置入口
 
-| 前缀 | 配置类 |
-|---|---|
+| 前缀                           | 配置类                                                                                                             |
+|--------------------------------|--------------------------------------------------------------------------------------------------------------------|
 | `loadup.captcha.binder.tianai` | [`TianaiCaptchaProperties`](src/main/java/io/github/loadup/components/captcha/tianai/TianaiCaptchaProperties.java) |
 
 ## 自动装配
 
-- [`TianaiCaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/tianai/autoconfig/TianaiCaptchaAutoConfiguration.java)
-  - 启用条件：`@ConditionalOnProperty(prefix = "loadup.captcha", name = "binder-type", havingValue = "tianai", matchIfMissing = true)`。
+- [
+  `TianaiCaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/tianai/autoconfig/TianaiCaptchaAutoConfiguration.java)
+    - 启用条件：
+      `@ConditionalOnProperty(prefix = "loadup.captcha", name = "binder-type", havingValue = "tianai", matchIfMissing = true)`。

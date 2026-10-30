@@ -36,8 +36,9 @@ public record ResolvedContractItem(
         productVersion = ContractChecks.version(productVersion);
         capabilityCode = ContractChecks.code(capabilityCode);
         Objects.requireNonNull(bundleOrigin, "bundle origin");
-        if (bundleOrigin.layer() != ConfigurationLayer.BUNDLE)
+        if (bundleOrigin.layer() != ConfigurationLayer.BUNDLE) {
             throw new CommonException(ContractResultCodeEnum.INVALID_BUNDLE_ORIGIN);
+        }
         Objects.requireNonNull(configuration, "configuration");
         new ConditionEvaluator().validate(usageCondition);
     }

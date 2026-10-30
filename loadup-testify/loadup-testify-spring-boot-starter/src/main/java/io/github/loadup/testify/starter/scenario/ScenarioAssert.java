@@ -61,8 +61,8 @@ public class ScenarioAssert {
     /**
      * Verify an actual result against an expected structure.
      *
-     * @param actual the object returned by the code under test
-     * @param expected a Map, JsonNode or JSON string describing expected values
+     * @param actual    the object returned by the code under test
+     * @param expected  a Map, JsonNode or JSON string describing expected values
      * @param variables resolved variables used to expand {@code ${...}} placeholders
      */
     public ScenarioAssert verify(Object actual, Object expected, Map<String, Object> variables) {

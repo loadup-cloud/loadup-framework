@@ -26,12 +26,13 @@
 ```text
 业务调用 → DfsService → SPI/领域契约 → 运行时实现
 ```
+
 接口模块固定业务侧依赖方向；实现与基础设施通过独立模块接入。
 
 ## 装配规则
 
 - [`DfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/autoconfig/DfsAutoConfiguration.java) 是自动配置入口。
-  - `@ConditionalOnSingleCandidate(DfsProvider.class)`
+    - `@ConditionalOnSingleCandidate(DfsProvider.class)`
 
 ## 扩展契约
 

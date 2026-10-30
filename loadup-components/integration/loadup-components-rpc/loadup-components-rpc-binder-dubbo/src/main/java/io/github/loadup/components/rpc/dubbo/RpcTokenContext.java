@@ -22,8 +22,9 @@ public final class RpcTokenContext {
 
     public static <T> T call(String token, Supplier<T> action) {
         Objects.requireNonNull(action, "action");
-        if (token == null || !TOKEN.matcher(token).matches())
+        if (token == null || !TOKEN.matcher(token).matches()) {
             throw new IllegalArgumentException("RPC bearer credential is required");
+        }
         RpcContextAttachment attachment = RpcContext.getClientAttachment();
         attachment.setAttachment(AUTHORIZATION, "Bearer " + token);
         try {

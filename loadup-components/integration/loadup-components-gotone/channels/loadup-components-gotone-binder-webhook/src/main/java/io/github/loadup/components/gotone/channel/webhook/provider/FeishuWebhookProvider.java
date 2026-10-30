@@ -40,6 +40,14 @@ public class FeishuWebhookProvider implements NotificationChannelProvider {
 
     private static final ObjectMapper JSON = new ObjectMapper();
 
+    private static ChannelSendResponse success(ChannelSendRequest request) {
+        return new ChannelSendResponse(request.content(), 1, 0, Map.of("feishu", true), Map.of());
+    }
+
+    private static ChannelSendResponse failure(ChannelSendRequest request, String error) {
+        return new ChannelSendResponse(request.content(), 0, 1, Map.of("feishu", false), Map.of("feishu", error));
+    }
+
     @Override
     public String getChannelType() {
         return "WEBHOOK";
@@ -82,13 +90,5 @@ public class FeishuWebhookProvider implements NotificationChannelProvider {
     @Override
     public boolean isAvailable() {
         return true;
-    }
-
-    private static ChannelSendResponse success(ChannelSendRequest request) {
-        return new ChannelSendResponse(request.content(), 1, 0, Map.of("feishu", true), Map.of());
-    }
-
-    private static ChannelSendResponse failure(ChannelSendRequest request, String error) {
-        return new ChannelSendResponse(request.content(), 0, 1, Map.of("feishu", false), Map.of("feishu", error));
     }
 }

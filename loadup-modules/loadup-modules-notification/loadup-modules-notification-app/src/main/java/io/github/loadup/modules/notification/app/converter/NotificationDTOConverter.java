@@ -26,7 +26,9 @@ import io.github.loadup.modules.notification.client.dto.InboxMessageDTO;
 import io.github.loadup.modules.notification.domain.model.InboxMessage;
 import org.mapstruct.Mapper;
 
-/** Maps application results without exposing persistence or domain models. */
+/**
+ * Maps application results without exposing persistence or domain models.
+ */
 @Mapper(config = LoadUpMapStructConfig.class)
 public interface NotificationDTOConverter {
     InboxMessageDTO toDTO(InboxMessage value);

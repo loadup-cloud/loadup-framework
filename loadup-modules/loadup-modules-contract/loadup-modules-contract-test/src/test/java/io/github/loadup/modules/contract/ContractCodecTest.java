@@ -19,13 +19,24 @@
  */
 package io.github.loadup.modules.contract;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.loadup.modules.contract.app.support.ContractCodec;
 import io.github.loadup.modules.contract.client.dto.CatalogDefinitions;
-import io.github.loadup.modules.contract.domain.model.*;
+import io.github.loadup.modules.contract.domain.model.ComparisonOperator;
+import io.github.loadup.modules.contract.domain.model.Condition;
+import io.github.loadup.modules.contract.domain.model.ConfigurationLayer;
+import io.github.loadup.modules.contract.domain.model.MerchantContractRevision;
+import io.github.loadup.modules.contract.domain.model.ResolvedConfiguration;
+import io.github.loadup.modules.contract.domain.model.ResolvedContractItem;
+import io.github.loadup.modules.contract.domain.model.TypedValue;
+import io.github.loadup.modules.contract.domain.model.ValueOrigin;
 import java.time.Instant;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -49,7 +60,7 @@ class ContractCodecTest {
                 rule,
                 new ValueOrigin(ConfigurationLayer.BUNDLE, "BASIC", 1));
         var original = new MerchantContractRevision(
-                "tenant", "merchant", "store", "contract", 1, "PLAN", 1, now, now, null, Map.of("basic.scan", item));
+                "merchant", "store", "contract", 1, "PLAN", 1, now, now, null, Map.of("basic.scan", item));
         var restored = codec.read(codec.write(original), MerchantContractRevision.class);
         assertThat(restored).isEqualTo(original);
         assertThat(restored.snapshotHash()).isEqualTo(original.snapshotHash());

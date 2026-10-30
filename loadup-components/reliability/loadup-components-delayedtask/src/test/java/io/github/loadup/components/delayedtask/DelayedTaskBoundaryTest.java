@@ -19,15 +19,25 @@
  */
 package io.github.loadup.components.delayedtask;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.same;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.components.database.config.DatabaseProperties;
 import io.github.loadup.components.delayedtask.dataobject.DelayedTaskDO;
 import io.micrometer.observation.ObservationRegistry;
-import java.time.*;
-import java.util.*;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 class DelayedTaskBoundaryTest {
@@ -37,38 +47,29 @@ class DelayedTaskBoundaryTest {
                 mock(DelayedTaskStore.class),
                 mock(DelayedTaskConverter.class),
                 new DelayedTaskProperties(),
-                new DatabaseProperties(),
                 Clock.systemDefaultZone(),
                 mock(javax.sql.DataSource.class));
-        for (String type : Arrays.asList(null, "", "bad name"))
+        for (String type : Arrays.asList(null, "", "bad name")) {
             assertThatThrownBy(() -> template.find(type, "id")).isInstanceOf(CommonException.class);
-        for (String id : Arrays.asList(null, "", " ", "x".repeat(129)))
+        }
+        for (String id : Arrays.asList(null, "", " ", "x".repeat(129))) {
             assertThatThrownBy(() -> template.find("order.close", id)).isInstanceOf(CommonException.class);
+        }
         assertThatThrownBy(() -> template.register("order.close", "id", null)).isInstanceOf(CommonException.class);
         assertThatThrownBy(() -> template.reschedule("order.close", "id", null)).isInstanceOf(CommonException.class);
     }
 
     @Test
-    void optionalTenantFallsBackToConfiguredTenant() {
+    void findDoesNotRequireTenantContext() {
         var store = mock(DelayedTaskStore.class);
-        when(store.find(any(), any(), any(), eq(false))).thenReturn(Optional.empty());
-        var database = new DatabaseProperties();
+        when(store.find(any(), any(), eq(false))).thenReturn(Optional.empty());
         var template = new DelayedTaskTemplate(
                 store,
                 mock(DelayedTaskConverter.class),
                 new DelayedTaskProperties(),
-                database,
                 Clock.systemDefaultZone(),
                 mock(javax.sql.DataSource.class));
-        database.getMultiTenant().setEnabled(false);
         assertThat(template.find("order.close", "id")).isEmpty();
-        database.getMultiTenant().setEnabled(true);
-        database.getMultiTenant().setRequired(false);
-        assertThat(template.find("order.close", "id")).isEmpty();
-        io.github.loadup.commons.context.ContextHolder.runWith(
-                io.github.loadup.commons.context.ExecutionContext.empty()
-                        .with(io.github.loadup.commons.context.ContextKeys.TENANT_ID, " "),
-                () -> assertThat(template.find("order.close", "id")).isEmpty());
     }
 
     @Test
@@ -99,7 +100,6 @@ class DelayedTaskBoundaryTest {
         when(store.claim(any(), same(props))).thenReturn(Optional.of(row));
         var task = new DelayedTask(
                 "id",
-                "tenant",
                 "order.close",
                 "order",
                 LocalDateTime.now(),

@@ -55,13 +55,17 @@ public class AccessDecisionService {
             return AccessDecision.deny("INVALID_REQUEST");
         }
         User user = userGateway.findById(userId).orElse(null);
-        if (user == null || !user.isActive()) return AccessDecision.deny("INACTIVE_SUBJECT");
+        if (user == null || !user.isActive()) {
+            return AccessDecision.deny("INACTIVE_SUBJECT");
+        }
 
         Set<String> visited = new HashSet<>();
         for (Role assigned : roleGateway.findByUserId(userId)) {
             Role role = assigned;
             while (role != null && role.getId() != null && visited.add(role.getId())) {
-                if (!role.isEnabled()) break;
+                if (!role.isEnabled()) {
+                    break;
+                }
                 boolean grantsPermission = permissionGateway.findByRoleId(role.getId()).stream()
                         .anyMatch(permission ->
                                 permission.isEnabled() && permissionCode.equals(permission.getPermissionCode()));
@@ -95,13 +99,19 @@ public class AccessDecisionService {
     }
 
     private boolean isInDepartmentTree(String rootId, String resourceDeptId) {
-        if (rootId == null || resourceDeptId == null) return false;
+        if (rootId == null || resourceDeptId == null) {
+            return false;
+        }
         Set<String> visited = new HashSet<>();
         String current = resourceDeptId;
         while (current != null && visited.add(current)) {
-            if (rootId.equals(current)) return true;
+            if (rootId.equals(current)) {
+                return true;
+            }
             Department department = departmentGateway.findById(current).orElse(null);
-            if (department == null || !department.isEnabled()) return false;
+            if (department == null || !department.isEnabled()) {
+                return false;
+            }
             current = department.getParentId();
         }
         return false;

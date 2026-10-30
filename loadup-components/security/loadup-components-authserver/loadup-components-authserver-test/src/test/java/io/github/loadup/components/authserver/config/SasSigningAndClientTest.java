@@ -19,7 +19,8 @@
  */
 package io.github.loadup.components.authserver.config;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.loadup.components.authserver.properties.LoadUpAuthServerProperties;
 import io.github.loadup.components.authserver.properties.LoadUpAuthServerProperties.Client;
@@ -35,11 +36,23 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
-import org.springframework.security.oauth2.jwt.*;
+import org.springframework.security.oauth2.jwt.JwsHeader;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 
 class SasSigningAndClientTest {
     private final SasAuthServerAutoConfiguration configuration = new SasAuthServerAutoConfiguration();
+
+    private static Client client() {
+        Client client = new Client();
+        client.setClientId("merchant");
+        client.setClientSecret("synthetic-secret");
+        client.setGrantTypes(List.of("client_credentials"));
+        return client;
+    }
 
     @Test
     void configuredPrivateKeySignsTokensThatLocalDecoderVerifies() throws Exception {
@@ -146,13 +159,5 @@ class SasSigningAndClientTest {
                             .hasSingleBean(JwtDecoder.class)
                             .doesNotHaveBean(RegisteredClientRepository.class);
                 });
-    }
-
-    private static Client client() {
-        Client client = new Client();
-        client.setClientId("merchant");
-        client.setClientSecret("synthetic-secret");
-        client.setGrantTypes(List.of("client_credentials"));
-        return client;
     }
 }

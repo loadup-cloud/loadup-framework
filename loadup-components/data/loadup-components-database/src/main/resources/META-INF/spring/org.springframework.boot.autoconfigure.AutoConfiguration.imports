@@ -1,5 +1,5 @@
 io.github.loadup.components.database.autoconfigure.DatabaseCoreAutoConfiguration
-io.github.loadup.components.database.autoconfigure.DataJdbcRepositoryPackagesAutoConfiguration
+io.github.loadup.components.database.autoconfigure.MyBatisFlexAutoConfiguration
 io.github.loadup.components.database.autoconfigure.JdbcTransactionAutoConfiguration
 io.github.loadup.components.database.autoconfigure.MultiTenantAutoConfiguration
 io.github.loadup.components.database.flyway.LoadUpFlywayAutoConfiguration

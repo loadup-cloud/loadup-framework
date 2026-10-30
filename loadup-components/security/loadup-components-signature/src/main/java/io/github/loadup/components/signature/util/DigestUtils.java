@@ -68,7 +68,7 @@ public final class DigestUtils {
      * Computes the HMAC-SHA256 of the given string with the given key.
      *
      * @param data the input string
-     * @param key the secret key
+     * @param key  the secret key
      * @return the hex-encoded MAC
      */
     public static String hmacSha256(String data, String key) {
@@ -79,7 +79,7 @@ public final class DigestUtils {
      * Computes the HMAC-SHA512 of the given string with the given key.
      *
      * @param data the input string
-     * @param key the secret key
+     * @param key  the secret key
      * @return the hex-encoded MAC
      */
     public static String hmacSha512(String data, String key) {
@@ -89,7 +89,7 @@ public final class DigestUtils {
     /**
      * Computes the digest of the given string using the given algorithm.
      *
-     * @param data the input string
+     * @param data      the input string
      * @param algorithm the non-HMAC digest algorithm
      * @return the hex-encoded digest
      */

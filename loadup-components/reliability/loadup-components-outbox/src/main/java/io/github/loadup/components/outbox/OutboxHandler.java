@@ -19,7 +19,9 @@
  */
 package io.github.loadup.components.outbox;
 
-/** One handler per event type. Implementations must tolerate repeated invocation. */
+/**
+ * One handler per event type. Implementations must tolerate repeated invocation.
+ */
 public interface OutboxHandler {
     String eventType();
 

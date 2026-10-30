@@ -19,16 +19,22 @@
  */
 package io.github.loadup.components.delayedtask;
 
-import io.github.loadup.commons.context.*;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.scheduler.ScheduledTask;
-import io.micrometer.observation.*;
-import java.time.*;
-import java.util.*;
-import org.springframework.transaction.annotation.*;
+import io.micrometer.observation.Observation;
+import io.micrometer.observation.ObservationRegistry;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-/** Calls business code outside claim transactions, with at-least-once delivery semantics. */
+/**
+ * Calls business code outside claim transactions, with at-least-once delivery semantics.
+ */
 public class DelayedTaskDispatcher implements ScheduledTask {
     private final DelayedTaskStore store;
     private final DelayedTaskConverter converter;
@@ -66,8 +72,9 @@ public class DelayedTaskDispatcher implements ScheduledTask {
     private static Map<String, DelayedTaskHandler> indexHandlers(List<DelayedTaskHandler> handlers) {
         var map = new HashMap<String, DelayedTaskHandler>();
         for (var handler : handlers) {
-            if (handler.taskType() == null || map.putIfAbsent(handler.taskType(), handler) != null)
+            if (handler.taskType() == null || map.putIfAbsent(handler.taskType(), handler) != null) {
                 throw new CommonException(DelayedTaskResultCodeEnum.INVALID_ARGUMENT);
+            }
         }
         return Map.copyOf(map);
     }
@@ -81,7 +88,9 @@ public class DelayedTaskDispatcher implements ScheduledTask {
         store.recoverExhausted(LocalDateTime.now(clock));
         for (int i = 0; i < properties.getBatchSize() && !Thread.currentThread().isInterrupted(); i++) {
             var next = store.claim(LocalDateTime.now(clock), properties);
-            if (next.isEmpty()) break;
+            if (next.isEmpty()) {
+                break;
+            }
             var claimed = next.orElseThrow();
             var task = converter.toTask(claimed);
             boolean success = false;
@@ -90,11 +99,10 @@ public class DelayedTaskDispatcher implements ScheduledTask {
                     .lowCardinalityKeyValue("task.type", handler == null ? "unregistered" : task.taskType())
                     .start();
             try (var _ = observation.openScope()) {
-                if (handler == null) throw new CommonException(DelayedTaskResultCodeEnum.HANDLER_MISSING);
-                ContextHolder.callWith(ExecutionContext.empty().with(ContextKeys.TENANT_ID, task.tenantId()), () -> {
-                    handler.handle(task);
-                    return null;
-                });
+                if (handler == null) {
+                    throw new CommonException(DelayedTaskResultCodeEnum.HANDLER_MISSING);
+                }
+                handler.handle(task);
                 success = true;
             } catch (Exception failure) {
                 observation.error(new CommonException(DelayedTaskResultCodeEnum.HANDLER_FAILED));
@@ -104,8 +112,9 @@ public class DelayedTaskDispatcher implements ScheduledTask {
                         task.id(),
                         task.attempts(),
                         failure.getClass().getSimpleName());
-                if (failure instanceof InterruptedException)
+                if (failure instanceof InterruptedException) {
                     Thread.currentThread().interrupt();
+                }
             } finally {
                 try {
                     boolean acknowledged = store.finish(claimed, LocalDateTime.now(clock), success, properties);

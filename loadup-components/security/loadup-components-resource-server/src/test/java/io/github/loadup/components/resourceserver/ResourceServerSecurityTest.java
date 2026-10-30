@@ -68,6 +68,31 @@ class ResourceServerSecurityTest {
                     "loadup.security.resource-server.issuer-uri=https://issuer.test",
                     "loadup.security.resource-server.audience=merchant-api");
 
+    private static MockHttpServletResponse request(Filter filter, String path, String token, Runnable endpoint)
+            throws Exception {
+        var request = new MockHttpServletRequest("POST", path);
+        request.setServletPath(path);
+        if (token != null) {
+            request.addHeader("Authorization", "Bearer " + token);
+        }
+        var response = new MockHttpServletResponse();
+        filter.doFilter(request, response, (incoming, outgoing) -> {
+            endpoint.run();
+            ((jakarta.servlet.http.HttpServletResponse) outgoing).setStatus(200);
+        });
+        assertThat(request.getSession(false)).isNull();
+        return response;
+    }
+
+    private static void assertFailure(MockHttpServletResponse response, CommonResultCodeEnum code) throws Exception {
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(response.getContentType()).startsWith("application/json");
+        var json = JsonMapper.builder().build().readTree(response.getContentAsString());
+        assertThat(json.path("result").path("code").asString()).isEqualTo(code.getCode());
+        assertThat(json.has("data")).isTrue();
+        assertThat(response.getContentAsString()).doesNotContain("sensitive decoder detail");
+    }
+
     @Test
     void unauthenticatedApiRequestReturnsJsonBusinessFailureAndRecordsOutcome() {
         runner.run(application -> {
@@ -276,29 +301,6 @@ class ResourceServerSecurityTest {
                 });
     }
 
-    private static MockHttpServletResponse request(Filter filter, String path, String token, Runnable endpoint)
-            throws Exception {
-        var request = new MockHttpServletRequest("POST", path);
-        request.setServletPath(path);
-        if (token != null) request.addHeader("Authorization", "Bearer " + token);
-        var response = new MockHttpServletResponse();
-        filter.doFilter(request, response, (incoming, outgoing) -> {
-            endpoint.run();
-            ((jakarta.servlet.http.HttpServletResponse) outgoing).setStatus(200);
-        });
-        assertThat(request.getSession(false)).isNull();
-        return response;
-    }
-
-    private static void assertFailure(MockHttpServletResponse response, CommonResultCodeEnum code) throws Exception {
-        assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(response.getContentType()).startsWith("application/json");
-        var json = JsonMapper.builder().build().readTree(response.getContentAsString());
-        assertThat(json.path("result").path("code").asString()).isEqualTo(code.getCode());
-        assertThat(json.has("data")).isTrue();
-        assertThat(response.getContentAsString()).doesNotContain("sensitive decoder detail");
-    }
-
     @Configuration(proxyBeanMethods = false)
     @EnableWebSecurity
     @EnableMethodSecurity
@@ -306,7 +308,9 @@ class ResourceServerSecurityTest {
         @Bean
         JwtDecoder jwtDecoder() {
             return token -> {
-                if (token.equals("invalid")) throw new BadJwtException("sensitive decoder detail");
+                if (token.equals("invalid")) {
+                    throw new BadJwtException("sensitive decoder detail");
+                }
                 return Jwt.withTokenValue(token)
                         .header("alg", "RS256")
                         .subject("merchant-user")

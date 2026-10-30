@@ -29,7 +29,9 @@ import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
-/** Marks logical failures that use HTTP 200 and the common response envelope. */
+/**
+ * Marks logical failures that use HTTP 200 and the common response envelope.
+ */
 @RestControllerAdvice
 public class AuditResponseAdvice implements ResponseBodyAdvice<Object> {
     static final String FAILURE_ATTRIBUTE = AuditResponseAdvice.class.getName() + ".failure";

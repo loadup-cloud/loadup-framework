@@ -25,7 +25,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.ResolverStyle;
 
-/** ASCII encoding with an 18-character prefix and 14-character fixed tail. */
+/**
+ * ASCII encoding with an 18-character prefix and 14-character fixed tail.
+ */
 public final class BusinessIdFormatter {
     public static final long MAX_SEQUENCE = 99_999_999L;
     private static final DateTimeFormatter DATE =
@@ -38,7 +40,9 @@ public final class BusinessIdFormatter {
                 || parts.sequence() < 1
                 || parts.sequence() > MAX_SEQUENCE
                 || parts.date().getYear() < 1
-                || parts.date().getYear() > 9999) throw new CommonException(DatabaseResultCodeEnum.INVALID_INPUT);
+                || parts.date().getYear() > 9999) {
+            throw new CommonException(DatabaseResultCodeEnum.INVALID_INPUT);
+        }
         BusinessIdCommand c = parts.command();
         return DATE.format(parts.date())
                 + c.dataVersion()
@@ -55,8 +59,9 @@ public final class BusinessIdFormatter {
                 || value.length() < 32
                 || value.length() > 64
                 || !value.substring(0, 18).matches("[0-9]{18}")
-                || !value.substring(value.length() - 14).matches("[0-9]{14}"))
+                || !value.substring(value.length() - 14).matches("[0-9]{14}")) {
             throw new CommonException(DatabaseResultCodeEnum.INVALID_INPUT);
+        }
         try {
             int tail = value.length() - 14;
             BusinessIdCommand c = new BusinessIdCommand(

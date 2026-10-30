@@ -59,7 +59,6 @@ class UserServiceIT {
                 "upms_department",
                 Map.ofEntries(
                         Map.entry("id", departmentId),
-                        Map.entry("tenant_id", "1"),
                         Map.entry("parent_id", "0"),
                         Map.entry("dept_name", "Test Department"),
                         Map.entry("dept_code", departmentCode),
@@ -71,7 +70,7 @@ class UserServiceIT {
                         Map.entry("created_at", LocalDateTime.now()),
                         Map.entry("updated_by", "tester"),
                         Map.entry("updated_at", LocalDateTime.now()),
-                        Map.entry("deleted", 0)));
+                        Map.entry("deleted", false)));
 
         String username = "user_" + scenario.uuid().replace("-", "").substring(0, 12);
         String email = username + "@example.com";

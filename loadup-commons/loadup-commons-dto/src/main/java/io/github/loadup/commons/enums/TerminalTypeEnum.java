@@ -54,13 +54,13 @@ public enum TerminalTypeEnum implements IEnum {
 
     private final String description;
 
-    public static TerminalTypeEnum getByCode(String code) {
-        return IEnum.EnumLookup.fromCode(TerminalTypeEnum.class, code);
-    }
-
     TerminalTypeEnum(String code, String description) {
         this.code = code;
         this.description = description;
+    }
+
+    public static TerminalTypeEnum getByCode(String code) {
+        return IEnum.EnumLookup.fromCode(TerminalTypeEnum.class, code);
     }
 
     public String getCode() {

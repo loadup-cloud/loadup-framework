@@ -46,6 +46,22 @@ public class FcmPushProvider implements NotificationChannelProvider {
         this.serverKey = serverKey;
     }
 
+    @SuppressWarnings("unchecked")
+    private static Map<String, Object> configMap(Map<String, Object> config, String key) {
+        if (!config.containsKey(key)) {
+            return Map.of();
+        }
+        Object value = config.get(key);
+        return value instanceof Map<?, ?> map ? (Map<String, Object>) map : Map.of();
+    }
+
+    private static String maskToken(String token) {
+        if (token.length() < 8) {
+            return "***";
+        }
+        return token.substring(0, 4) + "***" + token.substring(token.length() - 4);
+    }
+
     @Override
     public String getChannelType() {
         return "PUSH";
@@ -97,9 +113,9 @@ public class FcmPushProvider implements NotificationChannelProvider {
      * <p>Placeholder: replace with the Firebase Admin SDK call
      * {@code FirebaseMessaging.getInstance().send(message)}.
      *
-     * @param token the device token
+     * @param token   the device token
      * @param content the message body
-     * @param extras the custom data payload
+     * @param extras  the custom data payload
      * @throws Exception when the send fails
      */
     protected void sendMessage(String token, String content, Map<String, Object> extras) throws Exception {
@@ -112,21 +128,5 @@ public class FcmPushProvider implements NotificationChannelProvider {
     @Override
     public boolean isAvailable() {
         return serverKey != null && !serverKey.isBlank();
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Map<String, Object> configMap(Map<String, Object> config, String key) {
-        if (!config.containsKey(key)) {
-            return Map.of();
-        }
-        Object value = config.get(key);
-        return value instanceof Map<?, ?> map ? (Map<String, Object>) map : Map.of();
-    }
-
-    private static String maskToken(String token) {
-        if (token.length() < 8) {
-            return "***";
-        }
-        return token.substring(0, 4) + "***" + token.substring(token.length() - 4);
     }
 }

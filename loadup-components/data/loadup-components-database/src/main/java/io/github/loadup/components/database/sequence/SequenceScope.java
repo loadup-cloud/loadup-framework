@@ -23,7 +23,9 @@ import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
 import java.time.LocalDate;
 
-/** A shared allocation namespace; the maximum is immutable once initialized. */
+/**
+ * A shared allocation namespace; the maximum is immutable once initialized.
+ */
 public final class SequenceScope {
     private static final java.util.regex.Pattern NAME = java.util.regex.Pattern.compile("[A-Za-z0-9_-]{1,120}");
     private final String name;
@@ -32,8 +34,9 @@ public final class SequenceScope {
     private final String key;
 
     public SequenceScope(String name, LocalDate date, long maximum) {
-        if (name == null || !NAME.matcher(name).matches() || maximum < 1 || maximum == Long.MAX_VALUE)
+        if (name == null || !NAME.matcher(name).matches() || maximum < 1 || maximum == Long.MAX_VALUE) {
             throw new CommonException(DatabaseResultCodeEnum.INVALID_INPUT);
+        }
         this.name = name;
         this.date = date;
         this.maximum = maximum;

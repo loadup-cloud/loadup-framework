@@ -19,7 +19,9 @@
  */
 package io.github.loadup.components.signature.enums;
 
-/** Supported digest and HMAC algorithms. */
+/**
+ * Supported digest and HMAC algorithms.
+ */
 public enum DigestAlgorithm {
 
     /**
@@ -52,7 +54,9 @@ public enum DigestAlgorithm {
      */
     HMAC_SHA512("HmacSHA512", true);
 
-    /** The JCA algorithm name. */
+    /**
+     * The JCA algorithm name.
+     */
     private final String jcaName;
 
     /**

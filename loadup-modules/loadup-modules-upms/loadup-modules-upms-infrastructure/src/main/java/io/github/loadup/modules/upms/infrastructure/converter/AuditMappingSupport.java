@@ -19,7 +19,9 @@
  */
 package io.github.loadup.modules.upms.infrastructure.converter;
 
-/** Converts domain audit values to the database representation. */
+/**
+ * Converts domain audit values to the database representation.
+ */
 public final class AuditMappingSupport {
     private AuditMappingSupport() {}
 

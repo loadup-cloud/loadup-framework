@@ -28,6 +28,9 @@
 
 ## 自动装配
 
-- [`WebhookChannelAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/channel/webhook/config/WebhookChannelAutoConfiguration.java)
-  - 启用条件：`@ConditionalOnProperty( prefix = "loadup.gotone.binder.webhook.dingtalk", name = "enabled", havingValue = "true", matchIfMissing = true)`。
-  - 启用条件：`@ConditionalOnProperty( prefix = "loadup.gotone.binder.webhook.wechat", name = "enabled", havingValue = "true", matchIfMissing = true)`。
+- [
+  `WebhookChannelAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/channel/webhook/config/WebhookChannelAutoConfiguration.java)
+    - 启用条件：
+      `@ConditionalOnProperty( prefix = "loadup.gotone.binder.webhook.dingtalk", name = "enabled", havingValue = "true", matchIfMissing = true)`。
+    - 启用条件：
+      `@ConditionalOnProperty( prefix = "loadup.gotone.binder.webhook.wechat", name = "enabled", havingValue = "true", matchIfMissing = true)`。

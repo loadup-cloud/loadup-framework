@@ -111,36 +111,72 @@ public class PermissionUpdateCommand {
         return this.id;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getParentId() {
         return this.parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
     }
 
     public String getPermissionName() {
         return this.permissionName;
     }
 
+    public void setPermissionName(String permissionName) {
+        this.permissionName = permissionName;
+    }
+
     public Short getPermissionType() {
         return this.permissionType;
+    }
+
+    public void setPermissionType(Short permissionType) {
+        this.permissionType = permissionType;
     }
 
     public String getResourcePath() {
         return this.resourcePath;
     }
 
+    public void setResourcePath(String resourcePath) {
+        this.resourcePath = resourcePath;
+    }
+
     public String getHttpMethod() {
         return this.httpMethod;
+    }
+
+    public void setHttpMethod(String httpMethod) {
+        this.httpMethod = httpMethod;
     }
 
     public String getIcon() {
         return this.icon;
     }
 
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
     public String getComponentPath() {
         return this.componentPath;
     }
 
+    public void setComponentPath(String componentPath) {
+        this.componentPath = componentPath;
+    }
+
     public Integer getSortOrder() {
         return this.sortOrder;
+    }
+
+    public void setSortOrder(Integer sortOrder) {
+        this.sortOrder = sortOrder;
     }
 
     public Boolean isVisible() {
@@ -151,64 +187,28 @@ public class PermissionUpdateCommand {
         return this.status;
     }
 
-    public String getRemark() {
-        return this.remark;
-    }
-
-    public String getUpdatedBy() {
-        return this.updatedBy;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setParentId(String parentId) {
-        this.parentId = parentId;
-    }
-
-    public void setPermissionName(String permissionName) {
-        this.permissionName = permissionName;
-    }
-
-    public void setPermissionType(Short permissionType) {
-        this.permissionType = permissionType;
-    }
-
-    public void setResourcePath(String resourcePath) {
-        this.resourcePath = resourcePath;
-    }
-
-    public void setHttpMethod(String httpMethod) {
-        this.httpMethod = httpMethod;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
-    public void setComponentPath(String componentPath) {
-        this.componentPath = componentPath;
-    }
-
-    public void setSortOrder(Integer sortOrder) {
-        this.sortOrder = sortOrder;
-    }
-
-    public void setVisible(Boolean visible) {
-        this.visible = visible;
-    }
-
     public void setStatus(Short status) {
         this.status = status;
+    }
+
+    public String getRemark() {
+        return this.remark;
     }
 
     public void setRemark(String remark) {
         this.remark = remark;
     }
 
+    public String getUpdatedBy() {
+        return this.updatedBy;
+    }
+
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
+    }
+
+    public void setVisible(Boolean visible) {
+        this.visible = visible;
     }
 
     @Override

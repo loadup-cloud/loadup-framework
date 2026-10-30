@@ -32,7 +32,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Administrator-only audit search. */
+/**
+ * Administrator-only audit search.
+ */
 @RestController
 @Tag(name = "Audit", description = "Tenant-scoped administrator audit search")
 public class AuditController {

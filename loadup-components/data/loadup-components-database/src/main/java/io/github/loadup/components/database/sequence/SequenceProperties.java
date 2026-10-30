@@ -38,8 +38,9 @@ public class SequenceProperties {
                 || waitTimeout == null
                 || waitTimeout.isNegative()
                 || waitTimeout.isZero()
-                || waitTimeout.compareTo(Duration.ofMinutes(1)) > 0)
+                || waitTimeout.compareTo(Duration.ofMinutes(1)) > 0) {
             throw new CommonException(DatabaseResultCodeEnum.INVALID_INPUT);
+        }
     }
 
     public boolean isEnabled() {

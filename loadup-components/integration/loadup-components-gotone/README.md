@@ -6,16 +6,16 @@
 
 ## 模块结构
 
-| 模块 | 职责 |
-|------|------|
-| `-api` | `NotificationService` facade + `NotificationChannelProvider` SPI + 可选存储 SPI |
-| `-engine` | 纯发送引擎（零存储、零 DB）：可用性过滤、provider 降级链、resilience4j 包装、异步发送、模板渲染 |
-| `-store-jdbc` | 默认 Spring JDBC 存储实现（3 张表，PostgreSQL Flyway 迁移） |
-| `-binder-email` | SMTP（Spring Mail），真实实现 |
-| `-binder-sms` | aliyun / huawei / yunpian（stub，待接厂商 SDK） |
-| `-binder-push` | fcm（stub，待接 Firebase Admin SDK） |
-| `-binder-webhook` | dingtalk / wechat / feishu，JDK HttpClient 真实 HTTP 发送 |
-| `-test` | 引擎单测 + webhook 本地 HTTP 测试 + JDBC 存储容器测试 |
+| 模块              | 职责                                                                                            |
+|-------------------|-------------------------------------------------------------------------------------------------|
+| `-api`            | `NotificationService` facade + `NotificationChannelProvider` SPI + 可选存储 SPI                 |
+| `-engine`         | 纯发送引擎（零存储、零 DB）：可用性过滤、provider 降级链、resilience4j 包装、异步发送、模板渲染 |
+| `-store-jdbc`     | 默认 Spring JDBC 存储实现（3 张表，PostgreSQL Flyway 迁移）                                     |
+| `-binder-email`   | SMTP（Spring Mail），真实实现                                                                   |
+| `-binder-sms`     | aliyun / huawei / yunpian（stub，待接厂商 SDK）                                                 |
+| `-binder-push`    | fcm（stub，待接 Firebase Admin SDK）                                                            |
+| `-binder-webhook` | dingtalk / wechat / feishu，JDK HttpClient 真实 HTTP 发送                                       |
+| `-test`           | 引擎单测 + webhook 本地 HTTP 测试 + JDBC 存储容器测试                                           |
 
 ## 引入
 
@@ -73,21 +73,22 @@ spring:
 
 ## 能力矩阵
 
-| 能力 | 支持 |
-|------|------|
-| ServiceCode 路由 | ✓ |
-| 直接指定渠道（无配置时） | ✓ |
-| 多渠道一次发送 | ✓ |
-| 渠道内 provider 降级链 | ✓ |
-| 熔断 + 重试（resilience4j） | ✓ |
-| 异步发送 | ✓ |
-| 模板渲染（`${var}`） | ✓ |
-| 发送记录（可选） | ✓（store-jdbc） |
-| 失败重试（跨实例） | 消费方使用 PowerJob/Outbox 并保证业务幂等 |
+| 能力                        | 支持                                      |
+|-----------------------------|-------------------------------------------|
+| ServiceCode 路由            | ✓                                        |
+| 直接指定渠道（无配置时）    | ✓                                        |
+| 多渠道一次发送              | ✓                                        |
+| 渠道内 provider 降级链      | ✓                                        |
+| 熔断 + 重试（resilience4j） | ✓                                        |
+| 异步发送                    | ✓                                        |
+| 模板渲染（`${var}`）        | ✓                                        |
+| 发送记录（可选）            | ✓（store-jdbc）                          |
+| 失败重试（跨实例）          | 消费方使用 PowerJob/Outbox 并保证业务幂等 |
 
 ## 后台任务与告警
 
-跨实例补偿由消费方的原生 PowerJob Processor / Outbox 编排，Gotone 只负责发送。旧的 RetryTask 专用通知桥已移除；按 PowerJob 原生告警机制接入运维通知，不重复构建执行历史。
+跨实例补偿由消费方的原生 PowerJob Processor / Outbox 编排，Gotone 只负责发送。旧的 RetryTask 专用通知桥已移除；按 PowerJob
+原生告警机制接入运维通知，不重复构建执行历史。
 
 ## 文档
 

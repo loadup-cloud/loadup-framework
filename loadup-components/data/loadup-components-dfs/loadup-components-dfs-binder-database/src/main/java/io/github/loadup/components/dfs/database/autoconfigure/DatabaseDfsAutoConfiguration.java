@@ -19,30 +19,29 @@
  */
 package io.github.loadup.components.dfs.database.autoconfigure;
 
-import io.github.loadup.components.database.tenant.DatabaseTenant;
 import io.github.loadup.components.dfs.DfsProvider;
 import io.github.loadup.components.dfs.autoconfigure.DfsAutoConfiguration;
 import io.github.loadup.components.dfs.database.DatabaseDfsProvider;
-import io.github.loadup.components.dfs.database.repository.DfsFileRepository;
+import io.github.loadup.components.dfs.database.mapper.DfsFileInsertMapper;
 import java.time.Clock;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import tools.jackson.databind.ObjectMapper;
 
-/** Auto-configuration for the transitional database DFS binder. */
+/**
+ * Auto-configuration for the transitional database DFS binder.
+ */
 @AutoConfiguration(
         before = DfsAutoConfiguration.class,
         afterName = {
             "io.github.loadup.components.database.autoconfigure.DatabaseCoreAutoConfiguration",
             "org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration",
-            "org.springframework.boot.data.jdbc.autoconfigure.DataJdbcRepositoriesAutoConfiguration"
+            "com.mybatisflex.spring.boot.v4.MybatisFlexAutoConfiguration"
         })
 @ConditionalOnClass({NamedParameterJdbcTemplate.class, ObjectMapper.class})
 @ConditionalOnProperty(prefix = "loadup.dfs", name = "binder-type", havingValue = "database")
@@ -52,12 +51,9 @@ public class DatabaseDfsAutoConfiguration {
     @ConditionalOnMissingBean(DfsProvider.class)
     public DfsProvider databaseDfsProvider(
             NamedParameterJdbcTemplate jdbc,
-            JdbcAggregateTemplate aggregates,
-            DfsFileRepository files,
+            DfsFileInsertMapper files,
             ObjectProvider<ObjectMapper> objectMapperProvider,
-            DatabaseTenant tenant,
-            @Qualifier("databaseClock") Clock clock) {
-        return new DatabaseDfsProvider(
-                jdbc, aggregates, files, objectMapperProvider.getIfAvailable(ObjectMapper::new), tenant, clock);
+            Clock clock) {
+        return new DatabaseDfsProvider(jdbc, files, objectMapperProvider.getIfAvailable(ObjectMapper::new), clock);
     }
 }

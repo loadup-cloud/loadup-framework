@@ -49,15 +49,13 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Qualifier;
 
-/** Persistent task service for bounded file transfers. */
+/**
+ * Persistent task service for bounded file transfers.
+ */
 public class TransferTaskService implements io.github.loadup.modules.transfer.client.facade.TransferTaskFacade {
-    private final Clock clock;
-
     private static final String REF_TYPE = "transfer-task";
-    private static final String DEFAULT_TENANT = "__default__";
-
+    private final Clock clock;
     private final TransferDTOConverter converter;
     private final TransferGateway repository;
     private final FileResourceFacade files;
@@ -70,7 +68,7 @@ public class TransferTaskService implements io.github.loadup.modules.transfer.cl
             List<TransferHandler> handlers,
             TransferTaskProperties properties,
             TransferDTOConverter converter,
-            @Qualifier("transferClock") Clock clock) {
+            Clock clock) {
         this.clock = clock;
         this.converter = converter;
         this.repository = repository;
@@ -81,20 +79,44 @@ public class TransferTaskService implements io.github.loadup.modules.transfer.cl
                         handler -> handler.kind().name() + ":" + handler.key(), Function.identity()));
     }
 
+    private static Map<String, String> options(Map<String, String> options) {
+        if (options == null) {
+            return Map.of();
+        }
+        if (options.size() > 30) {
+            throw new CommonException(TransferResultCodeEnum.TOO_MANY_TASK_OPTIONS);
+        }
+        options.forEach((key, value) -> {
+            required(key, 64);
+            if (!key.matches("[A-Za-z][A-Za-z0-9_.-]*")) {
+                throw new CommonException(TransferResultCodeEnum.INVALID_OPTION_NAME);
+            }
+            if (value == null || value.length() > 1000) {
+                throw new CommonException(TransferResultCodeEnum.INVALID_OPTION_VALUE);
+            }
+        });
+        return Map.copyOf(options);
+    }
+
+    private static String required(String value, int max) {
+        if (value == null || value.isBlank() || value.trim().length() > max) {
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
+        }
+        return value.trim();
+    }
+
     @org.springframework.transaction.annotation.Transactional
     public TransferTaskDTO submit(
-            String tenantId,
             String ownerId,
             io.github.loadup.modules.transfer.client.enums.TransferKind kind,
             String handlerKey,
             String sourceFileId,
             Map<String, String> options) {
-        String tenant = tenant(tenantId);
         String owner = required(ownerId, 64);
         TransferHandler handler = handler(TransferKind.valueOf(kind.name()), handlerKey);
         Map<String, String> args = options(options);
         if (kind == io.github.loadup.modules.transfer.client.enums.TransferKind.IMPORT) {
-            FileResourceDTO source = files.get(tenant, required(sourceFileId, 64), owner, false);
+            FileResourceDTO source = files.get(required(sourceFileId, 64), owner, false);
             if (source.size() > properties.getMaxInputBytes()) {
                 throw new CommonException(TransferResultCodeEnum.SOURCE_FILE_EXCEEDS_IMPORT_LIMIT);
             }
@@ -104,7 +126,6 @@ public class TransferTaskService implements io.github.loadup.modules.transfer.cl
         String id = UUID.randomUUID().toString();
         TransferTask task = new TransferTask(
                 id,
-                tenant,
                 owner,
                 TransferKind.valueOf(handler.kind().name()),
                 handler.key(),
@@ -122,45 +143,51 @@ public class TransferTaskService implements io.github.loadup.modules.transfer.cl
         return converter.toDTO(repository.find(id).orElseThrow());
     }
 
-    public TransferTaskDTO get(String tenantId, String id, String actorId, boolean admin) {
-        return converter.toDTO(requireTask(tenantId, id, actorId, admin));
+    public TransferTaskDTO get(String id, String actorId, boolean admin) {
+        return converter.toDTO(requireTask(id, actorId, admin));
     }
 
-    private TransferTask requireTask(String tenantId, String id, String actorId, boolean admin) {
+    private TransferTask requireTask(String id, String actorId, boolean admin) {
         TransferTask task = repository
                 .find(required(id, 64))
-                .filter(item -> item.tenantId().equals(tenant(tenantId)))
                 .orElseThrow(() -> new CommonException(TransferResultCodeEnum.TASK_NOT_FOUND));
-        if (!admin && !task.ownerId().equals(actorId)) throw new CommonException(TransferResultCodeEnum.TASK_NOT_FOUND);
+        if (!admin && !task.ownerId().equals(actorId)) {
+            throw new CommonException(TransferResultCodeEnum.TASK_NOT_FOUND);
+        }
         return task;
     }
 
-    public PageDTO<TransferTaskDTO> list(
-            String tenantId, String actorId, boolean admin, String ownerId, int page, int size) {
+    public PageDTO<TransferTaskDTO> list(String actorId, boolean admin, String ownerId, int page, int size) {
         io.github.loadup.commons.dto.PageQuery.normalized(page, size, TransferResultCodeEnum.INVALID_PAGE);
         String owner = admin && ownerId != null && !ownerId.isBlank() ? required(ownerId, 64) : required(actorId, 64);
-        return converter.toPageDTO(repository.list(tenant(tenantId), owner, page, size));
+        return converter.toPageDTO(repository.list(owner, page, size));
     }
 
-    /** Redispatch a queued task or explicitly replay a failed task. */
+    /**
+     * Redispatch a queued task or explicitly replay a failed task.
+     */
     @org.springframework.transaction.annotation.Transactional
-    public TransferTaskDTO retry(String tenantId, String id, String actorId, boolean admin) {
-        TransferTask task = requireTask(tenantId, id, actorId, admin);
+    public TransferTaskDTO retry(String id, String actorId, boolean admin) {
+        TransferTask task = requireTask(id, actorId, admin);
         if (task.status() != TransferStatus.FAILED && task.status() != TransferStatus.QUEUED) {
             throw new CommonException(TransferResultCodeEnum.TASK_NOT_DISPATCHABLE);
         }
-        if (task.status() == TransferStatus.QUEUED) return converter.toDTO(task);
-        if (task.sourceFileId() != null) {
-            files.get(task.tenantId(), task.sourceFileId(), task.ownerId(), false);
+        if (task.status() == TransferStatus.QUEUED) {
+            return converter.toDTO(task);
         }
-        if (!repository.requeue(task.tenantId(), task.id())) {
+        if (task.sourceFileId() != null) {
+            files.get(task.sourceFileId(), task.ownerId(), false);
+        }
+        if (!repository.requeue(task.id())) {
             throw new CommonException(TransferResultCodeEnum.TASK_STATUS_CHANGED);
         }
         protectSource(task);
         return converter.toDTO(repository.find(task.id()).orElseThrow());
     }
 
-    /** Drains a bounded snapshot; atomic claims prevent duplicate work across worker instances. */
+    /**
+     * Drains a bounded snapshot; atomic claims prevent duplicate work across worker instances.
+     */
     public boolean executeQueuedTasks() {
         boolean succeeded = true;
         for (String id : repository.queued(properties.getDispatchBatchSize())) {
@@ -181,15 +208,14 @@ public class TransferTaskService implements io.github.loadup.modules.transfer.cl
     private void execute(String id) throws Exception {
         TransferTask task =
                 repository.find(id).orElseThrow(() -> new CommonException(TransferResultCodeEnum.TASK_NOT_FOUND));
-        io.github.loadup.commons.util.TenantUtil.callWithTenant(task.tenantId(), () -> {
-            executeForTenant(task);
-            return null;
-        });
+        executeForTenant(task);
     }
 
     private void executeForTenant(TransferTask task) throws Exception {
         String id = task.id();
-        if (!repository.start(task.tenantId(), id)) return;
+        if (!repository.start(id)) {
+            return;
+        }
         Path output = null;
         String uploadedId = null;
         try {
@@ -197,12 +223,11 @@ public class TransferTaskService implements io.github.loadup.modules.transfer.cl
             output = Files.createTempFile("loadup-transfer-", ".tmp");
             TransferContext ctx = new TransferContext(
                     task.id(),
-                    task.tenantId(),
                     task.ownerId(),
-                    repository.options(task.tenantId(), id),
-                    (processed, total) -> report(task.tenantId(), id, processed, total));
+                    repository.options(id),
+                    (processed, total) -> report(id, processed, total));
             try (FileDownloadResponse source = task.kind() == TransferKind.IMPORT
-                            ? files.download(task.tenantId(), task.sourceFileId(), task.ownerId(), false)
+                            ? files.download(task.sourceFileId(), task.ownerId(), false)
                             : null;
                     OutputStream sink =
                             new BoundedOutputStream(Files.newOutputStream(output), properties.getMaxOutputBytes())) {
@@ -212,7 +237,6 @@ public class TransferTaskService implements io.github.loadup.modules.transfer.cl
             if (task.kind() == TransferKind.EXPORT || length > 0) {
                 try (InputStream generated = Files.newInputStream(output)) {
                     uploadedId = files.upload(
-                                    task.tenantId(),
                                     task.ownerId(),
                                     handler.outputFilename(),
                                     handler.outputContentType(),
@@ -221,13 +245,15 @@ public class TransferTaskService implements io.github.loadup.modules.transfer.cl
                             .id();
                 }
             }
-            repository.succeed(task.tenantId(), id, uploadedId);
+            repository.succeed(id, uploadedId);
             releaseSource(task);
         } catch (Exception failure) {
-            if (uploadedId != null) deleteUnlinkedOutput(task, uploadedId);
+            if (uploadedId != null) {
+                deleteUnlinkedOutput(task, uploadedId);
+            }
             releaseSource(task);
             try {
-                repository.fail(task.tenantId(), id, "Task processing failed");
+                repository.fail(id, "Task processing failed");
             } catch (RuntimeException stateFailure) {
                 failure.addSuppressed(stateFailure);
             }
@@ -248,24 +274,31 @@ public class TransferTaskService implements io.github.loadup.modules.transfer.cl
         }
     }
 
-    private void report(String tenant, String id, long processed, long total) {
-        if (processed < 0 || total < processed) throw new CommonException(TransferResultCodeEnum.INVALID_TASK_PROGRESS);
-        repository.progress(tenant, id, processed, total);
+    private void report(String id, long processed, long total) {
+        if (processed < 0 || total < processed) {
+            throw new CommonException(TransferResultCodeEnum.INVALID_TASK_PROGRESS);
+        }
+        repository.progress(id, processed, total);
     }
 
     private void protectSource(TransferTask task) {
-        if (task.sourceFileId() == null) return;
-        boolean alreadyLinked = files.references(task.tenantId(), task.sourceFileId(), task.ownerId(), false).stream()
+        if (task.sourceFileId() == null) {
+            return;
+        }
+        boolean alreadyLinked = files.references(task.sourceFileId(), task.ownerId(), false).stream()
                 .anyMatch(
                         ref -> REF_TYPE.equals(ref.referenceType()) && task.id().equals(ref.referenceId()));
-        if (!alreadyLinked)
-            files.attach(task.tenantId(), task.sourceFileId(), task.ownerId(), false, REF_TYPE, task.id());
+        if (!alreadyLinked) {
+            files.attach(task.sourceFileId(), task.ownerId(), false, REF_TYPE, task.id());
+        }
     }
 
     private void releaseSource(TransferTask task) {
-        if (task.sourceFileId() == null) return;
+        if (task.sourceFileId() == null) {
+            return;
+        }
         try {
-            files.detach(task.tenantId(), task.sourceFileId(), task.ownerId(), false, REF_TYPE, task.id());
+            files.detach(task.sourceFileId(), task.ownerId(), false, REF_TYPE, task.id());
         } catch (RuntimeException cleanupFailure) {
             LogUtil.warn(
                     TransferTaskService.class,
@@ -277,8 +310,8 @@ public class TransferTaskService implements io.github.loadup.modules.transfer.cl
 
     private void deleteUnlinkedOutput(TransferTask task, String fileId) {
         try {
-            files.requestDeletion(task.tenantId(), fileId, task.ownerId(), false);
-            files.cleanup(task.tenantId(), fileId);
+            files.requestDeletion(fileId, task.ownerId(), false);
+            files.cleanup(fileId);
         } catch (RuntimeException cleanupFailure) {
             LogUtil.warn(
                     TransferTaskService.class,
@@ -290,34 +323,14 @@ public class TransferTaskService implements io.github.loadup.modules.transfer.cl
     }
 
     private TransferHandler handler(TransferKind kind, String key) {
-        if (kind == null) throw new CommonException(TransferResultCodeEnum.KIND_IS_REQUIRED);
-        TransferHandler handler = handlers.get(kind.name() + ":" + required(key, 64));
-        if (handler == null) throw new CommonException(TransferResultCodeEnum.UNKNOWN_TRANSFER_HANDLER);
-        return handler;
-    }
-
-    private static Map<String, String> options(Map<String, String> options) {
-        if (options == null) return Map.of();
-        if (options.size() > 30) throw new CommonException(TransferResultCodeEnum.TOO_MANY_TASK_OPTIONS);
-        options.forEach((key, value) -> {
-            required(key, 64);
-            if (!key.matches("[A-Za-z][A-Za-z0-9_.-]*"))
-                throw new CommonException(TransferResultCodeEnum.INVALID_OPTION_NAME);
-            if (value == null || value.length() > 1000)
-                throw new CommonException(TransferResultCodeEnum.INVALID_OPTION_VALUE);
-        });
-        return Map.copyOf(options);
-    }
-
-    private static String tenant(String value) {
-        return value == null || value.isBlank() ? DEFAULT_TENANT : required(value, 64);
-    }
-
-    private static String required(String value, int max) {
-        if (value == null || value.isBlank() || value.trim().length() > max) {
-            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
+        if (kind == null) {
+            throw new CommonException(TransferResultCodeEnum.KIND_IS_REQUIRED);
         }
-        return value.trim();
+        TransferHandler handler = handlers.get(kind.name() + ":" + required(key, 64));
+        if (handler == null) {
+            throw new CommonException(TransferResultCodeEnum.UNKNOWN_TRANSFER_HANDLER);
+        }
+        return handler;
     }
 
     private static final class BoundedOutputStream extends FilterOutputStream {
@@ -344,7 +357,9 @@ public class TransferTaskService implements io.github.loadup.modules.transfer.cl
         }
 
         private void ensureRoom(int length) throws IOException {
-            if (length < 0 || length > limit - written) throw new IOException("export output exceeds limit");
+            if (length < 0 || length > limit - written) {
+                throw new IOException("export output exceeds limit");
+            }
         }
     }
 }

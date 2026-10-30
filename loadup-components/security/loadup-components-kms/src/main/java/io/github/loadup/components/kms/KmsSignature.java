@@ -22,7 +22,9 @@ package io.github.loadup.components.kms;
 import io.github.loadup.commons.json.ToStringAsJson;
 import java.util.Base64;
 
-/** Raw signature bytes plus the metadata required to reconstruct a Transit signature. */
+/**
+ * Raw signature bytes plus the metadata required to reconstruct a Transit signature.
+ */
 public record KmsSignature(String keyName, int version, KmsSignatureAlgorithm algorithm, byte[] bytes) {
     public KmsSignature {
         KmsKeyRef.validateName(keyName);

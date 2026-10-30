@@ -28,8 +28,8 @@
 
 ## 配置入口
 
-| 前缀 | 配置类 |
-|---|---|
+| 前缀                  | 配置类                                                                                                         |
+|-----------------------|----------------------------------------------------------------------------------------------------------------|
 | `loadup.configcenter` | [`ConfigCenterProperties`](src/main/java/io/github/loadup/components/configcenter/ConfigCenterProperties.java) |
 
 ## 对外契约
@@ -43,5 +43,6 @@
 
 ## 自动装配
 
-- [`ConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/autoconfig/ConfigCenterAutoConfiguration.java)
-  - 启用条件：`@ConditionalOnSingleCandidate(ConfigCenterProvider.class)`。
+- [
+  `ConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/autoconfig/ConfigCenterAutoConfiguration.java)
+    - 启用条件：`@ConditionalOnSingleCandidate(ConfigCenterProvider.class)`。

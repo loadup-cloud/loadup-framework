@@ -43,17 +43,19 @@ public record ParameterDefinition(
         if (editableLayers.contains(ConfigurationLayer.PRODUCT)) {
             throw new CommonException(ContractResultCodeEnum.PRODUCT_OVERRIDE_FORBIDDEN);
         }
-        if (allowedValues.size() > 100) throw new CommonException(ContractResultCodeEnum.TOO_MANY_ALLOWED_VALUES);
+        if (allowedValues.size() > 100) {
+            throw new CommonException(ContractResultCodeEnum.TOO_MANY_ALLOWED_VALUES);
+        }
         if (allowedValues.stream().anyMatch(v -> v.type() != type)) {
             throw new CommonException(ContractResultCodeEnum.ALLOWED_VALUE_TYPE_MISMATCH);
         }
         checkBounds(type, minimum, maximum);
-        for (TypedValue value : allowedValues) checkValue(type, value, minimum, maximum, Set.of());
-        if (defaultValue != null) checkValue(type, defaultValue, minimum, maximum, allowedValues);
-    }
-
-    public void validate(TypedValue value) {
-        checkValue(type, value, minimum, maximum, allowedValues);
+        for (TypedValue value : allowedValues) {
+            checkValue(type, value, minimum, maximum, Set.of());
+        }
+        if (defaultValue != null) {
+            checkValue(type, defaultValue, minimum, maximum, allowedValues);
+        }
     }
 
     static void checkBounds(ValueType type, BigDecimal minimum, BigDecimal maximum) {
@@ -76,13 +78,22 @@ public record ParameterDefinition(
     static void checkValue(
             ValueType type, TypedValue value, BigDecimal minimum, BigDecimal maximum, Set<TypedValue> allowed) {
         Objects.requireNonNull(value, "parameter value");
-        if (value.type() != type) throw new CommonException(ContractResultCodeEnum.PARAMETER_TYPE_MISMATCH);
-        if (!allowed.isEmpty() && !allowed.contains(value))
+        if (value.type() != type) {
+            throw new CommonException(ContractResultCodeEnum.PARAMETER_TYPE_MISMATCH);
+        }
+        if (!allowed.isEmpty() && !allowed.contains(value)) {
             throw new CommonException(ContractResultCodeEnum.VALUE_NOT_ALLOWED);
-        if (minimum != null && value.number().compareTo(minimum) < 0)
+        }
+        if (minimum != null && value.number().compareTo(minimum) < 0) {
             throw new CommonException(ContractResultCodeEnum.BELOW_MINIMUM);
-        if (maximum != null && value.number().compareTo(maximum) > 0)
+        }
+        if (maximum != null && value.number().compareTo(maximum) > 0) {
             throw new CommonException(ContractResultCodeEnum.ABOVE_MAXIMUM);
+        }
+    }
+
+    public void validate(TypedValue value) {
+        checkValue(type, value, minimum, maximum, allowedValues);
     }
 
     @Override

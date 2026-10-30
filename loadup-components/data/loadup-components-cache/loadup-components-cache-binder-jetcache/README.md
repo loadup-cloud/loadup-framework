@@ -38,11 +38,13 @@ loadup:
 
 ## 配置入口
 
-| 前缀 | 配置类 |
-|---|---|
+| 前缀                           | 配置类                                                                                                             |
+|--------------------------------|--------------------------------------------------------------------------------------------------------------------|
 | `loadup.cache.binder.jetcache` | [`JetCacheCacheProperties`](src/main/java/io/github/loadup/components/cache/jetcache/JetCacheCacheProperties.java) |
 
 ## 自动装配
 
-- [`JetCacheCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/jetcache/autoconfig/JetCacheCacheAutoConfiguration.java)
-  - 启用条件：`@ConditionalOnProperty(prefix = "loadup.cache", name = "type", havingValue = CacheBackendType.JETCACHE)`。
+- [
+  `JetCacheCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/jetcache/autoconfig/JetCacheCacheAutoConfiguration.java)
+    - 启用条件：
+      `@ConditionalOnProperty(prefix = "loadup.cache", name = "type", havingValue = CacheBackendType.JETCACHE)`。

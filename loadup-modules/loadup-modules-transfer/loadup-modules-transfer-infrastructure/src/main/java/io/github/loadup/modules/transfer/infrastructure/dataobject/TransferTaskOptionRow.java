@@ -1,18 +1,58 @@
 package io.github.loadup.modules.transfer.infrastructure.dataobject;
 
+import com.mybatisflex.annotation.Table;
+import io.github.loadup.commons.dataobject.BaseDO;
 import java.time.LocalDateTime;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
 
-/** Row model for transfer task options, read through Spring Data JDBC. */
+/**
+ * Row model for transfer task options.
+ */
 @Table("transfer_task_option")
-public record TransferTaskOptionRow(
-        @Id @Column("id") String id,
-        @Column("tenant_id") String tenantId,
-        @Column("task_id") String taskId,
-        @Column("option_name") String optionName,
-        @Column("option_value") String optionValue,
-        @Column("created_at") LocalDateTime createdAt,
-        @Column("updated_at") LocalDateTime updatedAt,
-        @Column("deleted") boolean deleted) {}
+public class TransferTaskOptionRow extends BaseDO {
+    private String taskId;
+    private String optionName;
+    private String optionValue;
+
+    public TransferTaskOptionRow() {}
+
+    public TransferTaskOptionRow(
+            String id,
+            String taskId,
+            String optionName,
+            String optionValue,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt,
+            boolean deleted) {
+        setId(id);
+        this.taskId = taskId;
+        this.optionName = optionName;
+        this.optionValue = optionValue;
+        setCreatedAt(createdAt);
+        setUpdatedAt(updatedAt);
+        setDeleted(deleted);
+    }
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String value) {
+        this.taskId = value;
+    }
+
+    public String getOptionName() {
+        return optionName;
+    }
+
+    public void setOptionName(String value) {
+        this.optionName = value;
+    }
+
+    public String getOptionValue() {
+        return optionValue;
+    }
+
+    public void setOptionValue(String value) {
+        this.optionValue = value;
+    }
+}

@@ -20,8 +20,10 @@
 package io.github.loadup.modules.dictionary.infrastructure.converter;
 
 import io.github.loadup.commons.mapping.LoadUpMapStructConfig;
-import io.github.loadup.modules.dictionary.domain.model.*;
-import io.github.loadup.modules.dictionary.infrastructure.dataobject.*;
+import io.github.loadup.modules.dictionary.domain.model.DictionaryItem;
+import io.github.loadup.modules.dictionary.domain.model.DictionaryType;
+import io.github.loadup.modules.dictionary.infrastructure.dataobject.DictionaryItemDO;
+import io.github.loadup.modules.dictionary.infrastructure.dataobject.DictionaryTypeDO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

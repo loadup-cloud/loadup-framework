@@ -28,4 +28,6 @@ UPMS 对外 DTO、Command 与 Query 契约。
 
 ## 展示与明文 DTO
 
-`UserDetailDTO` 的 realName/email/mobile 带 `@Masked`，用于 WebMVC 响应和诊断文本；内部服务返回的对象仍有原值。`UserSensitiveQuery` 使用目标 ID 和枚举 `SensitiveReadPurpose`；独立 `UserSensitiveDTO` 仅由经过授权和可靠审计的 app 服务返回。明文 DTO 的 toString 不包含个人字段。
+`UserDetailDTO` 的 realName/email/mobile 带 `@Masked`，用于 WebMVC 响应和诊断文本；内部服务返回的对象仍有原值。
+`UserSensitiveQuery` 使用目标 ID 和枚举 `SensitiveReadPurpose`；独立 `UserSensitiveDTO` 仅由经过授权和可靠审计的 app
+服务返回。明文 DTO 的 toString 不包含个人字段。

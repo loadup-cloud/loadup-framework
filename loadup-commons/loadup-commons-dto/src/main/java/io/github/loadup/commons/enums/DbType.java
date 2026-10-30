@@ -38,7 +38,9 @@ public enum DbType {
         this.displayName = displayName;
     }
 
-    /** Resolve by value (case-insensitive); defaults to {@link #MYSQL} when null or unknown. */
+    /**
+     * Resolve by value (case-insensitive); defaults to {@link #MYSQL} when null or unknown.
+     */
     public static DbType fromValue(String value) {
         if (value == null) {
             return MYSQL;

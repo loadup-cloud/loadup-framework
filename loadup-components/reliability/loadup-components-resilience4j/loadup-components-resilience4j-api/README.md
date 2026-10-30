@@ -22,6 +22,6 @@
 
 ## 配置入口
 
-| 前缀 | 配置类 |
-|---|---|
+| 前缀                  | 配置类                                                                                                         |
+|-----------------------|----------------------------------------------------------------------------------------------------------------|
 | `loadup.resilience4j` | [`Resilience4jProperties`](src/main/java/io/github/loadup/components/resilience4j/Resilience4jProperties.java) |

@@ -33,7 +33,6 @@ import org.mapstruct.Mapping;
  */
 @Mapper(config = LoadUpMapStructConfig.class, uses = AuditMappingSupport.class)
 public interface DepartmentConverter {
-    @Mapping(target = "tenantId", ignore = true)
     DepartmentDO toDataObject(Department department);
 
     @Mapping(target = "parent", ignore = true)

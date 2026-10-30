@@ -42,10 +42,33 @@ import org.springframework.web.client.RestClient;
 import tools.jackson.databind.json.JsonMapper;
 
 class HttpTemplateTest {
+    private final AtomicInteger calls = new AtomicInteger();
     private HttpServer server;
     private HttpTemplate http;
     private SimpleMeterRegistry metrics;
-    private final AtomicInteger calls = new AtomicInteger();
+
+    private static HttpProperties.Client copyClient(
+            HttpProperties.Client source,
+            String credentialRef,
+            String sslBundle,
+            URI proxy,
+            Map<String, HttpProperties.Operation> operations) {
+        return new HttpProperties.Client(
+                source.baseUrl(),
+                source.connectTimeout(),
+                source.readTimeout(),
+                source.acquireTimeout(),
+                source.maxConnections(),
+                source.maxConnectionsPerRoute(),
+                source.maxRequestBytes(),
+                source.maxResponseBytes(),
+                sslBundle,
+                proxy,
+                source.allowPrivateAddresses(),
+                credentialRef,
+                source.headers(),
+                operations);
+    }
 
     @BeforeEach
     void start() throws Exception {
@@ -83,9 +106,15 @@ class HttpTemplateTest {
 
     @AfterEach
     void stop() {
-        if (http != null) http.close();
-        if (server != null) server.stop(0);
-        if (metrics != null) metrics.close();
+        if (http != null) {
+            http.close();
+        }
+        if (server != null) {
+            server.stop(0);
+        }
+        if (metrics != null) {
+            metrics.close();
+        }
     }
 
     @Test
@@ -326,13 +355,16 @@ class HttpTemplateTest {
         assertThatThrownBy(() -> http.refresh(new HttpProperties(Map.of("bad name", valid))))
                 .isInstanceOf(IllegalArgumentException.class);
         var operations = new java.util.HashMap<String, HttpProperties.Operation>();
-        for (int i = 0; i < 257; i++)
+        for (int i = 0; i < 257; i++) {
             operations.put("operation" + i, new HttpProperties.Operation(HttpMethod.POST, "/echo", null));
+        }
         assertThatThrownBy(() -> http.refresh(
                         new HttpProperties(Map.of("test", copyClient(valid, null, null, null, operations)))))
                 .isInstanceOf(IllegalArgumentException.class);
         var clients = new java.util.HashMap<String, HttpProperties.Client>();
-        for (int i = 0; i < 257; i++) clients.put("client" + i, valid);
+        for (int i = 0; i < 257; i++) {
+            clients.put("client" + i, valid);
+        }
         assertThatThrownBy(() -> http.refresh(new HttpProperties(clients)))
                 .isInstanceOf(IllegalArgumentException.class);
         assertThat(http.refresh(config(1024L, true, Map.of()))).isEqualTo(2L);
@@ -396,7 +428,9 @@ class HttpTemplateTest {
         http = new HttpTemplate(
                 config(1024L, true, Map.of()),
                 () -> {
-                    if (failBuild.get()) throw new IllegalStateException("builder failure");
+                    if (failBuild.get()) {
+                        throw new IllegalStateException("builder failure");
+                    }
                     return RestClient.builder();
                 },
                 JsonMapper.builder().build(),
@@ -562,29 +596,6 @@ class HttpTemplateTest {
                         (method, uri, body) -> Map.of("X-Test", "invalid\rheader")))
                 .isInstanceOf(IllegalArgumentException.class);
         assertThat(calls).hasValue(0);
-    }
-
-    private static HttpProperties.Client copyClient(
-            HttpProperties.Client source,
-            String credentialRef,
-            String sslBundle,
-            URI proxy,
-            Map<String, HttpProperties.Operation> operations) {
-        return new HttpProperties.Client(
-                source.baseUrl(),
-                source.connectTimeout(),
-                source.readTimeout(),
-                source.acquireTimeout(),
-                source.maxConnections(),
-                source.maxConnectionsPerRoute(),
-                source.maxRequestBytes(),
-                source.maxResponseBytes(),
-                sslBundle,
-                proxy,
-                source.allowPrivateAddresses(),
-                credentialRef,
-                source.headers(),
-                operations);
     }
 
     private HttpProperties config(long limit, boolean allowPrivate, Map<String, String> headers) {

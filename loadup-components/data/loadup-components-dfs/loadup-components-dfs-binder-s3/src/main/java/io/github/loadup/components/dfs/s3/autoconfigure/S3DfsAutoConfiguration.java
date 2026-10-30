@@ -40,12 +40,31 @@ import software.amazon.awssdk.services.s3.S3ClientBuilder;
 import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
-/** Auto-configuration for AWS S3 and compatible object stores such as MinIO. */
+/**
+ * Auto-configuration for AWS S3 and compatible object stores such as MinIO.
+ */
 @AutoConfiguration(before = DfsAutoConfiguration.class)
 @ConditionalOnClass(S3Client.class)
 @ConditionalOnProperty(prefix = "loadup.dfs", name = "binder-type", havingValue = "s3")
 @EnableConfigurationProperties(S3DfsProperties.class)
 public class S3DfsAutoConfiguration {
+
+    private static AwsCredentialsProvider credentialsProvider(S3DfsProperties properties) {
+        boolean hasAccessKey = hasText(properties.getAccessKey());
+        boolean hasSecretKey = hasText(properties.getSecretKey());
+        if (hasAccessKey != hasSecretKey) {
+            throw new IllegalArgumentException("S3 access-key and secret-key must be configured together");
+        }
+        if (hasAccessKey) {
+            return StaticCredentialsProvider.create(
+                    AwsBasicCredentials.create(properties.getAccessKey(), properties.getSecretKey()));
+        }
+        return DefaultCredentialsProvider.builder().build();
+    }
+
+    private static boolean hasText(String value) {
+        return value != null && !value.isBlank();
+    }
 
     @Bean(destroyMethod = "close")
     @ConditionalOnMissingBean
@@ -81,22 +100,5 @@ public class S3DfsAutoConfiguration {
     @ConditionalOnMissingBean(DfsProvider.class)
     public DfsProvider s3DfsProvider(S3Client dfsS3Client, S3Presigner dfsS3Presigner, S3DfsProperties properties) {
         return new S3DfsProvider(dfsS3Client, dfsS3Presigner, properties);
-    }
-
-    private static AwsCredentialsProvider credentialsProvider(S3DfsProperties properties) {
-        boolean hasAccessKey = hasText(properties.getAccessKey());
-        boolean hasSecretKey = hasText(properties.getSecretKey());
-        if (hasAccessKey != hasSecretKey) {
-            throw new IllegalArgumentException("S3 access-key and secret-key must be configured together");
-        }
-        if (hasAccessKey) {
-            return StaticCredentialsProvider.create(
-                    AwsBasicCredentials.create(properties.getAccessKey(), properties.getSecretKey()));
-        }
-        return DefaultCredentialsProvider.builder().build();
-    }
-
-    private static boolean hasText(String value) {
-        return value != null && !value.isBlank();
     }
 }

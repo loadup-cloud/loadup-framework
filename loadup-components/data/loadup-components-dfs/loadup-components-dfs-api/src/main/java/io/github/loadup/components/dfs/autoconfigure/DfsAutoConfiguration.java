@@ -29,7 +29,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandi
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-/** Creates the facade only when exactly one DFS binder is active. */
+/**
+ * Creates the facade only when exactly one DFS binder is active.
+ */
 @AutoConfiguration
 @ConditionalOnSingleCandidate(DfsProvider.class)
 @EnableConfigurationProperties(DfsProperties.class)

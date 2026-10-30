@@ -25,7 +25,7 @@ import tools.jackson.databind.JsonNode;
 public interface TestifyAssertEngine {
     /**
      *
-     * @param context    testcontext
+     * @param context testcontext
      */
     void compare(JsonNode expectNode, Object actual, Map<String, Object> context);
 }

@@ -25,6 +25,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import io.github.loadup.components.database.config.DatabaseProperties;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import javax.sql.DataSource;
@@ -136,7 +137,8 @@ class FlywayAutoConfigurationTest {
                     empty ? new String[0] : null,
                     null,
                     false);
-            var config = auto.flyway(dataSource, properties).getConfiguration();
+            var config = auto.flyway(dataSource, properties, new DatabaseProperties())
+                    .getConfiguration();
             assertThat(config.getLocations())
                     .extracting(Location::getDescriptor)
                     .containsExactly("classpath:db/migration");
@@ -155,7 +157,7 @@ class FlywayAutoConfigurationTest {
         FlywayProperties properties = new FlywayProperties();
         properties.setInitSqls(new String[] {null, " ", "SET @first = 1", "", "SET @second = 2"});
         var config = new LoadUpFlywayAutoConfiguration()
-                .flyway(dataSource, properties)
+                .flyway(dataSource, properties, new DatabaseProperties())
                 .getConfiguration();
         assertThat(config.getCallbacks())
                 .extracting(callback -> callback.getCallbackName())

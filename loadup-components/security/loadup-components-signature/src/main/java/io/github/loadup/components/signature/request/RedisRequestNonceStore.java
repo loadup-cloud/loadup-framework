@@ -23,7 +23,9 @@ import java.time.Duration;
 import java.util.Objects;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
-/** Uses one SET NX with an expiry; never releases claims after business failure. */
+/**
+ * Uses one SET NX with an expiry; never releases claims after business failure.
+ */
 public final class RedisRequestNonceStore implements RequestNonceStore {
     private final StringRedisTemplate redis;
 
@@ -41,10 +43,14 @@ public final class RedisRequestNonceStore implements RequestNonceStore {
             throw new IllegalArgumentException("Invalid nonce claim");
         }
         long millis = ttl.toMillis();
-        if (!ttl.equals(Duration.ofMillis(millis))) millis++;
+        if (!ttl.equals(Duration.ofMillis(millis))) {
+            millis++;
+        }
         Boolean result = redis.opsForValue()
                 .setIfAbsent("loadup:signature:nonce:" + replayKey, "1", Duration.ofMillis(Math.max(1, millis)));
-        if (result == null) throw new IllegalStateException("Nonce claim requires an immediate Redis result");
+        if (result == null) {
+            throw new IllegalStateException("Nonce claim requires an immediate Redis result");
+        }
         return result;
     }
 }

@@ -19,7 +19,8 @@
  */
 package io.github.loadup.components.observability.digest;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mockStatic;
 
 import ch.qos.logback.classic.Level;
@@ -214,8 +215,9 @@ class ServiceDigestTest {
                         }
                     }));
                 }
-                for (int i = 0; i < results.size(); i++)
+                for (int i = 0; i < results.size(); i++) {
                     assertThat(results.get(i).get()).isEqualTo("trace-" + i);
+                }
             }
             assertThat(appender.events).hasSize(8);
             assertThat(appender.events)
@@ -235,6 +237,17 @@ class ServiceDigestTest {
         assertThat(pointcut.matches(Object.class.getMethod("hashCode"), WholeService.class))
                 .isFalse();
     }
+
+    public interface ServiceApi {
+        @ServiceDigest
+        String fromInterface();
+
+        String fromImplementation();
+    }
+
+    @ServiceDigest
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface Observed {}
 
     @Configuration(proxyBeanMethods = false)
     static class Services {
@@ -272,6 +285,8 @@ class ServiceDigestTest {
 
     @ServiceDigest
     public static class WholeService {
+        public static void utility() {}
+
         public Object echo(Object value) {
             return value;
         }
@@ -287,8 +302,6 @@ class ServiceDigestTest {
         }
 
         private void hidden() {}
-
-        public static void utility() {}
     }
 
     public static class MethodService {
@@ -309,13 +322,6 @@ class ServiceDigestTest {
 
     public static final class UnmarkedService {}
 
-    public interface ServiceApi {
-        @ServiceDigest
-        String fromInterface();
-
-        String fromImplementation();
-    }
-
     public static class ServiceImplementation implements ServiceApi {
         @Override
         public String fromInterface() {
@@ -330,10 +336,6 @@ class ServiceDigestTest {
     }
 
     public static class InheritedService extends WholeService {}
-
-    @ServiceDigest
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface Observed {}
 
     @Observed
     public static class ComposedService {

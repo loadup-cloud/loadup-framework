@@ -19,9 +19,9 @@
  */
 package io.github.loadup.modules.upms.infrastructure.dataobject;
 
+import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
 import java.time.LocalDateTime;
-import org.springframework.data.relational.core.mapping.Table;
 
 @Table("upms_user_oauth_binding")
 public class UserOAuthBindingDO extends BaseDO {
@@ -69,76 +69,76 @@ public class UserOAuthBindingDO extends BaseDO {
         return this.userId;
     }
 
-    public String getProvider() {
-        return this.provider;
-    }
-
-    public String getOpenId() {
-        return this.openId;
-    }
-
-    public String getUnionId() {
-        return this.unionId;
-    }
-
-    public String getNickname() {
-        return this.nickname;
-    }
-
-    public String getAvatar() {
-        return this.avatar;
-    }
-
-    public String getAccessToken() {
-        return this.accessToken;
-    }
-
-    public String getRefreshToken() {
-        return this.refreshToken;
-    }
-
-    public LocalDateTime getExpiresAt() {
-        return this.expiresAt;
-    }
-
-    public LocalDateTime getBoundAt() {
-        return this.boundAt;
-    }
-
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getProvider() {
+        return this.provider;
     }
 
     public void setProvider(String provider) {
         this.provider = provider;
     }
 
+    public String getOpenId() {
+        return this.openId;
+    }
+
     public void setOpenId(String openId) {
         this.openId = openId;
+    }
+
+    public String getUnionId() {
+        return this.unionId;
     }
 
     public void setUnionId(String unionId) {
         this.unionId = unionId;
     }
 
+    public String getNickname() {
+        return this.nickname;
+    }
+
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public String getAvatar() {
+        return this.avatar;
     }
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
     }
 
+    public String getAccessToken() {
+        return this.accessToken;
+    }
+
     public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
+    }
+
+    public String getRefreshToken() {
+        return this.refreshToken;
     }
 
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
 
+    public LocalDateTime getExpiresAt() {
+        return this.expiresAt;
+    }
+
     public void setExpiresAt(LocalDateTime expiresAt) {
         this.expiresAt = expiresAt;
+    }
+
+    public LocalDateTime getBoundAt() {
+        return this.boundAt;
     }
 
     public void setBoundAt(LocalDateTime boundAt) {

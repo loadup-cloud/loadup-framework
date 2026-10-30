@@ -23,7 +23,9 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Objects;
 
-/** Request for uploading one object. The caller retains ownership of {@code content}. */
+/**
+ * Request for uploading one object. The caller retains ownership of {@code content}.
+ */
 public record FileUploadRequest(
         String filename,
         InputStream content,

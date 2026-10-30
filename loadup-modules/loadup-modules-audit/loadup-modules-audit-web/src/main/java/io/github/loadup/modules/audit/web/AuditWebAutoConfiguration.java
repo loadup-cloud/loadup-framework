@@ -27,7 +27,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-/** Optional MVC capture and query surface for the audit center. */
+/**
+ * Optional MVC capture and query surface for the audit center.
+ */
 @AutoConfiguration(afterName = "io.github.loadup.modules.audit.app.autoconfigure.AuditAutoConfiguration")
 @ConditionalOnBean(AuditFacade.class)
 @EnableConfigurationProperties(AuditWebProperties.class)

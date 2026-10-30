@@ -19,7 +19,8 @@
  */
 package io.github.loadup.components.observability.digest;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import ch.qos.logback.classic.Logger;
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
@@ -132,7 +133,9 @@ class ServiceDigestIT {
         @Override
         public void commit(TransactionStatus status) {
             commits++;
-            if (failCommit) throw failure;
+            if (failCommit) {
+                throw failure;
+            }
         }
 
         @Override

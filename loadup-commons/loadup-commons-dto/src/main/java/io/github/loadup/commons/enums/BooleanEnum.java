@@ -37,13 +37,13 @@ public enum BooleanEnum implements IEnum {
     private final String code;
     private final String description;
 
-    public static BooleanEnum getByCode(String code) {
-        return IEnum.EnumLookup.fromCode(BooleanEnum.class, code);
-    }
-
     BooleanEnum(String code, String description) {
         this.code = code;
         this.description = description;
+    }
+
+    public static BooleanEnum getByCode(String code) {
+        return IEnum.EnumLookup.fromCode(BooleanEnum.class, code);
     }
 
     public String getCode() {

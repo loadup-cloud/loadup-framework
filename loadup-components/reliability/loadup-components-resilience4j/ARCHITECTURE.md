@@ -2,10 +2,13 @@
 
 ## 定位
 
-容错是"底层 OSS + 薄集成"的典型领域：Resilience4j 本身就是事实标准（状态机、事件流、指标、Actuator 生态齐全），LoadUp 不自研也不重新抽象 API，只解决三件事：
+容错是"底层 OSS + 薄集成"的典型领域：Resilience4j 本身就是事实标准（状态机、事件流、指标、Actuator 生态齐全），LoadUp 不自研也不重新抽象
+API，只解决三件事：
 
 1. **标准装配**：把五个 Registry + AOP aspects + Micrometer 指标按标准 `resilience4j.*` 配置装配好；
-2. **Boot 4 兼容**：官方 `resilience4j-spring-boot3` 尚未声明支持 Spring Boot 4（[issue #2371](https://github.com/resilience4j/resilience4j/issues/2371)），因此用 `resilience4j-spring6` + 自写 AutoConfiguration 装配，绕开 Boot 3 starter 的自动配置；
+2. **Boot 4 兼容**：官方 `resilience4j-spring-boot3` 尚未声明支持 Spring Boot
+   4（[issue #2371](https://github.com/resilience4j/resilience4j/issues/2371)），因此用 `resilience4j-spring6` + 自写
+   AutoConfiguration 装配，绕开 Boot 3 starter 的自动配置；
 3. **binder 可切换**：默认 `binder-core`（内存态）；未来 `binder-redis` 提供分布式熔断/限流状态，业务代码零修改。
 
 ## 模块结构
@@ -26,7 +29,8 @@ loadup-components-resilience4j/
 
 `Resilience4jCoreAutoConfiguration` 通过 `@Import` 复用 resilience4j-spring6 的五个官方 `*Configuration`：
 
-- 创建 `CircuitBreakerRegistry` / `RetryRegistry` / `RateLimiterRegistry` / `BulkheadRegistry` / `TimeLimiterRegistry`，并预创建 `resilience4j.*.instances.*` 中声明的实例；
+- 创建 `CircuitBreakerRegistry` / `RetryRegistry` / `RateLimiterRegistry` / `BulkheadRegistry` / `TimeLimiterRegistry`
+  ，并预创建 `resilience4j.*.instances.*` 中声明的实例；
 - 注册五个注解 aspects（`@CircuitBreaker` 等），切面顺序可配 `resilience4j.*.aspect-order`；
 - 注册 `ResilienceRegistries` 聚合 bean（消费者只注入这一个）；
 - micrometer 存在时注册 5 个 `MeterBinder`（`Tagged*Metrics`）。
@@ -51,8 +55,8 @@ resilience4j:
 
 ## 内部消费者
 
-| 消费者 | 用法 | 实例命名 |
-|--------|------|---------|
+| 消费者        | 用法                         | 实例命名                              |
+|---------------|------------------------------|---------------------------------------|
 | gotone-engine | provider 级熔断 + 重试装饰器 | `gotone-<channelType>-<providerName>` |
 
 ## 扩展点：Redis binder（规划）
@@ -63,6 +67,7 @@ resilience4j:
 
 ## 版本与兼容性
 
-- resilience4j 版本由 `loadup-dependencies` BOM 统一管理（`resilience4j.version=2.3.0`，与 Spring Cloud 2025.1.x 管理版本一致，避免 first-declared-wins 覆盖）；
+- resilience4j 版本由 `loadup-dependencies` BOM 统一管理（`resilience4j.version=2.3.0`，与 Spring Cloud 2025.1.x 管理版本一致，避免
+  first-declared-wins 覆盖）；
 - 本项目 Spring Boot 4.1 将 `spring-boot-starter-aop` 更名为 `spring-boot-starter-aspectj`，binder 使用后者；
 - 若 Resilience4j 官方发布 `spring-boot4` 模块，评估后可直接替换 binder 内部装配，facade 不变。

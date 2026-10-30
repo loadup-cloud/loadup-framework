@@ -1,6 +1,7 @@
 # LoadUp Resilience4j
 
-容错组件：以 **Resilience4j** 为底座的薄集成。facade 直接采用业界标准 API（`@CircuitBreaker` / `@Retry` / `@RateLimiter` / `@Bulkhead` / `@TimeLimiter` + 各 `Registry`），不自创平行接口；组件只负责装配（registries + AOP aspects + Micrometer 指标）。
+容错组件：以 **Resilience4j** 为底座的薄集成。facade 直接采用业界标准 API（`@CircuitBreaker` / `@Retry` / `@RateLimiter` /
+`@Bulkhead` / `@TimeLimiter` + 各 `Registry`），不自创平行接口；组件只负责装配（registries + AOP aspects + Micrometer 指标）。
 
 ## 引入
 
@@ -39,14 +40,14 @@ resilience4j:
 
 ## 能力矩阵
 
-| 能力 | 业务 API | 底层 OSS | 状态存储 |
-|------|---------|---------|---------|
+| 能力 | 业务 API                                     | 底层 OSS                    | 状态存储            |
+|------|----------------------------------------------|-----------------------------|---------------------|
 | 熔断 | `@CircuitBreaker` / `CircuitBreakerRegistry` | resilience4j-circuitbreaker | 内存（core binder） |
-| 重试 | `@Retry` / `RetryRegistry` | resilience4j-retry | 内存 |
-| 限流 | `@RateLimiter` / `RateLimiterRegistry` | resilience4j-ratelimiter | 内存 |
-| 舱壁 | `@Bulkhead` / `BulkheadRegistry` | resilience4j-bulkhead | 内存 |
-| 超时 | `@TimeLimiter` / `TimeLimiterRegistry` | resilience4j-timelimiter | 内存 |
-| 指标 | Micrometer | resilience4j-micrometer | 自动绑定 |
+| 重试 | `@Retry` / `RetryRegistry`                   | resilience4j-retry          | 内存                |
+| 限流 | `@RateLimiter` / `RateLimiterRegistry`       | resilience4j-ratelimiter    | 内存                |
+| 舱壁 | `@Bulkhead` / `BulkheadRegistry`             | resilience4j-bulkhead       | 内存                |
+| 超时 | `@TimeLimiter` / `TimeLimiterRegistry`       | resilience4j-timelimiter    | 内存                |
+| 指标 | Micrometer                                   | resilience4j-micrometer     | 自动绑定            |
 
 ## 设计说明
 

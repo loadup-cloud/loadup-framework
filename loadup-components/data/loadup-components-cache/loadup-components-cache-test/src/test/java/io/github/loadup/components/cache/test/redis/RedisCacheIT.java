@@ -25,7 +25,9 @@ import io.github.loadup.components.testcontainers.annotation.EnableTestContainer
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.test.context.TestPropertySource;
 
-/** Spring Cache facade on Spring Data Redis (Testcontainers). */
+/**
+ * Spring Cache facade on Spring Data Redis (Testcontainers).
+ */
 @EnableTestContainers(ContainerType.REDIS)
 @TestPropertySource(properties = "loadup.cache.type=redis")
 class RedisCacheIT extends AbstractCacheBinderIT {

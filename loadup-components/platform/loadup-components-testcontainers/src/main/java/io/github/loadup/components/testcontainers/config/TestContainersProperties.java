@@ -89,6 +89,78 @@ public class TestContainersProperties {
 
     private boolean reusable;
 
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public ContainerConfig getMysql() {
+        return mysql;
+    }
+
+    public void setMysql(ContainerConfig mysql) {
+        this.mysql = mysql;
+    }
+
+    public ContainerConfig getPostgresql() {
+        return postgresql;
+    }
+
+    public void setPostgresql(ContainerConfig postgresql) {
+        this.postgresql = postgresql;
+    }
+
+    public ContainerConfig getMongodb() {
+        return mongodb;
+    }
+
+    public void setMongodb(ContainerConfig mongodb) {
+        this.mongodb = mongodb;
+    }
+
+    public ContainerConfig getRedis() {
+        return redis;
+    }
+
+    public void setRedis(ContainerConfig redis) {
+        this.redis = redis;
+    }
+
+    public ContainerConfig getKafka() {
+        return kafka;
+    }
+
+    public void setKafka(ContainerConfig kafka) {
+        this.kafka = kafka;
+    }
+
+    public ContainerConfig getElasticsearch() {
+        return elasticsearch;
+    }
+
+    public void setElasticsearch(ContainerConfig elasticsearch) {
+        this.elasticsearch = elasticsearch;
+    }
+
+    public ContainerConfig getLocalstack() {
+        return localstack;
+    }
+
+    public void setLocalstack(ContainerConfig localstack) {
+        this.localstack = localstack;
+    }
+
+    public boolean isReusable() {
+        return reusable;
+    }
+
+    public void setReusable(boolean reusable) {
+        this.reusable = reusable;
+    }
+
     /**
      * Configuration for a specific container type.
      *
@@ -170,77 +242,5 @@ public class TestContainersProperties {
         public void setReusable(boolean reusable) {
             this.reusable = reusable;
         }
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public ContainerConfig getMysql() {
-        return mysql;
-    }
-
-    public void setMysql(ContainerConfig mysql) {
-        this.mysql = mysql;
-    }
-
-    public ContainerConfig getPostgresql() {
-        return postgresql;
-    }
-
-    public void setPostgresql(ContainerConfig postgresql) {
-        this.postgresql = postgresql;
-    }
-
-    public ContainerConfig getMongodb() {
-        return mongodb;
-    }
-
-    public void setMongodb(ContainerConfig mongodb) {
-        this.mongodb = mongodb;
-    }
-
-    public ContainerConfig getRedis() {
-        return redis;
-    }
-
-    public void setRedis(ContainerConfig redis) {
-        this.redis = redis;
-    }
-
-    public ContainerConfig getKafka() {
-        return kafka;
-    }
-
-    public void setKafka(ContainerConfig kafka) {
-        this.kafka = kafka;
-    }
-
-    public ContainerConfig getElasticsearch() {
-        return elasticsearch;
-    }
-
-    public void setElasticsearch(ContainerConfig elasticsearch) {
-        this.elasticsearch = elasticsearch;
-    }
-
-    public ContainerConfig getLocalstack() {
-        return localstack;
-    }
-
-    public void setLocalstack(ContainerConfig localstack) {
-        this.localstack = localstack;
-    }
-
-    public boolean isReusable() {
-        return reusable;
-    }
-
-    public void setReusable(boolean reusable) {
-        this.reusable = reusable;
     }
 }

@@ -20,22 +20,23 @@
 package io.github.loadup.modules.file.infrastructure.autoconfigure;
 
 import io.github.loadup.modules.file.domain.gateway.FileResourceGateway;
-import io.github.loadup.modules.file.infrastructure.repository.FileReferenceRepository;
+import io.github.loadup.modules.file.infrastructure.mapper.FileReferenceRowMapper;
+import io.github.loadup.modules.file.infrastructure.mapper.FileResourceInsertMapper;
 import io.github.loadup.modules.file.infrastructure.repository.FileResourceGatewayImpl;
-import io.github.loadup.modules.file.infrastructure.repository.FileResourceRepository;
 import java.time.Clock;
 import javax.sql.DataSource;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.*;
-import org.springframework.context.annotation.*;
-import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @AutoConfiguration(
         afterName = {
             "org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration",
-            "org.springframework.boot.data.jdbc.autoconfigure.DataJdbcRepositoriesAutoConfiguration",
+            "com.mybatisflex.spring.boot.v4.MybatisFlexAutoConfiguration",
             "io.github.loadup.components.database.autoconfigure.DatabaseCoreAutoConfiguration"
         })
 @ConditionalOnSingleCandidate(DataSource.class)
@@ -47,11 +48,10 @@ public class FilePersistenceAutoConfiguration {
         @Bean
         public FileResourceGateway fileGateway(
                 JdbcTemplate jdbc,
-                JdbcAggregateTemplate aggregates,
-                FileResourceRepository resources,
-                FileReferenceRepository references,
-                @Qualifier("databaseClock") Clock clock) {
-            return new FileResourceGatewayImpl(jdbc, aggregates, resources, references, clock);
+                FileResourceInsertMapper mapper,
+                FileReferenceRowMapper referenceMapper,
+                Clock clock) {
+            return new FileResourceGatewayImpl(jdbc, mapper, referenceMapper, clock);
         }
     }
 }

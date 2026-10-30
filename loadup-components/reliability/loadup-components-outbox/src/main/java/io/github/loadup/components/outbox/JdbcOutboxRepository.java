@@ -34,7 +34,9 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
-/** PostgreSQL durable queue. Claim and acknowledgement transactions never enclose handlers. */
+/**
+ * PostgreSQL durable queue. Claim and acknowledgement transactions never enclose handlers.
+ */
 public class JdbcOutboxRepository implements OutboxTemplate {
     private final DataSource dataSource;
     private final JdbcTemplate jdbc;
@@ -53,8 +55,10 @@ public class JdbcOutboxRepository implements OutboxTemplate {
     }
 
     static void requireManager(DataSource dataSource, PlatformTransactionManager manager) {
-        if (!(manager instanceof DataSourceTransactionManager jdbcManager) || jdbcManager.getDataSource() != dataSource)
+        if (!(manager instanceof DataSourceTransactionManager jdbcManager)
+                || jdbcManager.getDataSource() != dataSource) {
             throw new IllegalArgumentException("Outbox requires a JDBC transaction manager for its DataSource");
+        }
     }
 
     static void requireTransaction(DataSource dataSource) {
@@ -65,8 +69,9 @@ public class JdbcOutboxRepository implements OutboxTemplate {
         }
         var connection = DataSourceUtils.getConnection(dataSource);
         try {
-            if (connection.getAutoCommit())
+            if (connection.getAutoCommit()) {
                 throw new IllegalStateException("Outbox DataSource is not participating in the transaction");
+            }
         } catch (SQLException failure) {
             throw new IllegalStateException("Cannot inspect outbox transaction", failure);
         } finally {
@@ -74,19 +79,44 @@ public class JdbcOutboxRepository implements OutboxTemplate {
         }
     }
 
+    private static OutboxEvent event(ResultSet rs) throws SQLException {
+        return new OutboxEvent(
+                rs.getString("id"),
+                new OutboxMessage(
+                        rs.getString("event_type"),
+                        rs.getInt("payload_version"),
+                        rs.getString("business_id"),
+                        rs.getString("payload")),
+                rs.getTimestamp("created_at").toInstant(),
+                rs.getString("trace_id"));
+    }
+
+    private static OutboxRecord record(ResultSet rs, int ignoredRow) throws SQLException {
+        return new OutboxRecord(
+                rs.getString("id"),
+                rs.getString("event_type"),
+                rs.getString("business_id"),
+                rs.getString("status"),
+                rs.getInt("attempts"),
+                rs.getString("last_error"));
+    }
+
     @Override
     public String publish(OutboxMessage message) {
         requireTransaction(dataSource);
-        if (message == null) throw new IllegalArgumentException("message is required");
+        if (message == null) {
+            throw new IllegalArgumentException("message is required");
+        }
         String id = UUID.randomUUID().toString();
         String traceId = MDC.get("traceId");
-        if (traceId != null && !traceId.matches("[a-fA-F0-9]{16,32}")) traceId = null;
+        if (traceId != null && !traceId.matches("[a-fA-F0-9]{16,32}")) {
+            traceId = null;
+        }
         jdbc.update(
-                "INSERT INTO loadup_outbox_event (id, tenant_id, created_at, updated_at, event_type, "
+                "INSERT INTO loadup_outbox_event (id, created_at, updated_at, event_type, "
                         + "payload_version, business_id, payload, trace_id, status, available_at) "
-                        + "VALUES (?, ?, clock_timestamp(), clock_timestamp(), ?, ?, ?, ?, ?, 'PENDING', clock_timestamp())",
+                        + "VALUES (?, clock_timestamp(), clock_timestamp(), ?, ?, ?, ?, ?, 'PENDING', clock_timestamp())",
                 id,
-                message.tenantId(),
                 message.type(),
                 message.version(),
                 message.businessId(),
@@ -103,27 +133,31 @@ public class JdbcOutboxRepository implements OutboxTemplate {
                             + "(status = 'PROCESSING' AND lease_until <= clock_timestamp())) "
                             + "ORDER BY created_at, id LIMIT 1 FOR UPDATE SKIP LOCKED",
                     (rs, row) -> new Claim(event(rs), UUID.randomUUID().toString(), rs.getInt("attempts") + 1));
-            if (rows.isEmpty()) return Optional.empty();
+            if (rows.isEmpty()) {
+                return Optional.empty();
+            }
             Claim claim = rows.getFirst();
             if (claim.attempt() > properties.getMaxAttempts()) {
                 int changed = jdbc.update(
                         "UPDATE loadup_outbox_event SET status = 'FAILED', claim_token = NULL, lease_until = NULL, "
-                                + "last_error = 'LeaseExpired', updated_at = clock_timestamp() WHERE id = ? AND tenant_id = ? AND deleted = FALSE",
-                        claim.event().id(),
-                        claim.event().message().tenantId());
-                if (changed != 1) throw new IllegalStateException("Locked outbox event changed during recovery");
+                                + "last_error = 'LeaseExpired', updated_at = clock_timestamp() WHERE id = ? AND deleted = FALSE",
+                        claim.event().id());
+                if (changed != 1) {
+                    throw new IllegalStateException("Locked outbox event changed during recovery");
+                }
                 return Optional.empty();
             }
             int changed = jdbc.update(
                     "UPDATE loadup_outbox_event SET status = 'PROCESSING', attempts = ?, claim_token = ?, "
                             + "lease_until = (clock_timestamp() + ? * INTERVAL '1 microsecond'), updated_at = clock_timestamp() "
-                            + "WHERE id = ? AND tenant_id = ? AND deleted = FALSE",
+                            + "WHERE id = ? AND deleted = FALSE",
                     claim.attempt(),
                     claim.token(),
                     properties.getLease().toMillis() * 1000,
-                    claim.event().id(),
-                    claim.event().message().tenantId());
-            if (changed != 1) throw new IllegalStateException("Locked outbox event changed during claim");
+                    claim.event().id());
+            if (changed != 1) {
+                throw new IllegalStateException("Locked outbox event changed during claim");
+            }
             return Optional.of(claim);
         });
     }
@@ -132,9 +166,8 @@ public class JdbcOutboxRepository implements OutboxTemplate {
         return Boolean.TRUE.equals(transactions.execute(status -> jdbc.update(
                         "UPDATE loadup_outbox_event SET status = 'SUCCEEDED', claim_token = NULL, lease_until = NULL, "
                                 + "last_error = NULL, updated_at = clock_timestamp() "
-                                + "WHERE id = ? AND tenant_id = ? AND deleted = FALSE AND status = 'PROCESSING' AND claim_token = ? AND lease_until > clock_timestamp()",
+                                + "WHERE id = ? AND deleted = FALSE AND status = 'PROCESSING' AND claim_token = ? AND lease_until > clock_timestamp()",
                         claim.event().id(),
-                        claim.event().message().tenantId(),
                         claim.token())
                 == 1));
     }
@@ -143,51 +176,49 @@ public class JdbcOutboxRepository implements OutboxTemplate {
         long delayMillis =
                 Math.min(86400000L, properties.getRetryDelay().toMillis() * (1L << Math.min(20, claim.attempt() - 1)));
         String error = failure.getClass().getSimpleName();
-        if (error.length() > 256) error = error.substring(0, 256);
+        if (error.length() > 256) {
+            error = error.substring(0, 256);
+        }
         String errorCode = error;
         return Boolean.TRUE.equals(transactions.execute(status -> jdbc.update(
                         "UPDATE loadup_outbox_event SET status = ?, claim_token = NULL, lease_until = NULL, last_error = ?, "
                                 + "available_at = (clock_timestamp() + ? * INTERVAL '1 microsecond'), updated_at = clock_timestamp() "
-                                + "WHERE id = ? AND tenant_id = ? AND deleted = FALSE AND status = 'PROCESSING' AND claim_token = ? AND lease_until > clock_timestamp()",
+                                + "WHERE id = ? AND deleted = FALSE AND status = 'PROCESSING' AND claim_token = ? AND lease_until > clock_timestamp()",
                         claim.attempt() >= properties.getMaxAttempts() ? "FAILED" : "PENDING",
                         errorCode,
                         delayMillis * 1000,
                         claim.event().id(),
-                        claim.event().message().tenantId(),
                         claim.token())
                 == 1));
     }
 
     @Override
-    public Optional<OutboxRecord> find(String tenantId, String eventId) {
-        OutboxMessage.required(tenantId, "tenantId", 64);
+    public Optional<OutboxRecord> find(String eventId) {
         OutboxMessage.required(eventId, "eventId", 64);
         return jdbc
                 .query(
-                        "SELECT id, tenant_id, event_type, business_id, status, attempts, last_error "
-                                + "FROM loadup_outbox_event WHERE tenant_id = ? AND id = ? AND deleted = FALSE",
+                        "SELECT id, event_type, business_id, status, attempts, last_error "
+                                + "FROM loadup_outbox_event WHERE id = ? AND deleted = FALSE",
                         JdbcOutboxRepository::record,
-                        tenantId,
                         eventId)
                 .stream()
                 .findFirst();
     }
 
     @Override
-    public List<OutboxRecord> failures(String tenantId, int limit) {
-        OutboxMessage.required(tenantId, "tenantId", 64);
-        if (limit < 1 || limit > 1000) throw new IllegalArgumentException("limit must be between 1 and 1000");
+    public List<OutboxRecord> failures(int limit) {
+        if (limit < 1 || limit > 1000) {
+            throw new IllegalArgumentException("limit must be between 1 and 1000");
+        }
         return jdbc.query(
-                "SELECT id, tenant_id, event_type, business_id, status, attempts, last_error "
-                        + "FROM loadup_outbox_event WHERE tenant_id = ? AND deleted = FALSE AND status = 'FAILED' ORDER BY created_at, id LIMIT ?",
+                "SELECT id, event_type, business_id, status, attempts, last_error "
+                        + "FROM loadup_outbox_event WHERE deleted = FALSE AND status = 'FAILED' ORDER BY created_at, id LIMIT ?",
                 JdbcOutboxRepository::record,
-                tenantId,
                 limit);
     }
 
     @Override
-    public boolean replay(String tenantId, String eventId, String operatorId, String reason) {
-        OutboxMessage.required(tenantId, "tenantId", 64);
+    public boolean replay(String eventId, String operatorId, String reason) {
         OutboxMessage.required(eventId, "eventId", 64);
         OutboxMessage.required(operatorId, "operatorId", 64);
         OutboxMessage.required(reason, "reason", 512);
@@ -195,15 +226,15 @@ public class JdbcOutboxRepository implements OutboxTemplate {
             int changed = jdbc.update(
                     "UPDATE loadup_outbox_event SET status = 'PENDING', attempts = 0, last_error = NULL, "
                             + "available_at = clock_timestamp(), updated_at = clock_timestamp() "
-                            + "WHERE tenant_id = ? AND id = ? AND deleted = FALSE AND status = 'FAILED'",
-                    tenantId,
+                            + "WHERE id = ? AND deleted = FALSE AND status = 'FAILED'",
                     eventId);
-            if (changed == 0) return false;
+            if (changed == 0) {
+                return false;
+            }
             jdbc.update(
-                    "INSERT INTO loadup_outbox_replay (id, tenant_id, created_at, updated_at, event_id, operator_id, reason) "
-                            + "VALUES (?, ?, clock_timestamp(), clock_timestamp(), ?, ?, ?)",
+                    "INSERT INTO loadup_outbox_replay (id, created_at, updated_at, event_id, operator_id, reason) "
+                            + "VALUES (?, clock_timestamp(), clock_timestamp(), ?, ?, ?)",
                     UUID.randomUUID().toString(),
-                    tenantId,
                     eventId,
                     operatorId,
                     reason);
@@ -230,30 +261,6 @@ public class JdbcOutboxRepository implements OutboxTemplate {
                         + "FROM loadup_outbox_event WHERE deleted = FALSE AND status IN ('PENDING', 'PROCESSING')",
                 Long.class);
         return age == null ? 0 : Math.max(0, age);
-    }
-
-    private static OutboxEvent event(ResultSet rs) throws SQLException {
-        return new OutboxEvent(
-                rs.getString("id"),
-                new OutboxMessage(
-                        rs.getString("tenant_id"),
-                        rs.getString("event_type"),
-                        rs.getInt("payload_version"),
-                        rs.getString("business_id"),
-                        rs.getString("payload")),
-                rs.getTimestamp("created_at").toInstant(),
-                rs.getString("trace_id"));
-    }
-
-    private static OutboxRecord record(ResultSet rs, int ignoredRow) throws SQLException {
-        return new OutboxRecord(
-                rs.getString("id"),
-                rs.getString("tenant_id"),
-                rs.getString("event_type"),
-                rs.getString("business_id"),
-                rs.getString("status"),
-                rs.getInt("attempts"),
-                rs.getString("last_error"));
     }
 
     record Claim(OutboxEvent event, String token, int attempt) {}

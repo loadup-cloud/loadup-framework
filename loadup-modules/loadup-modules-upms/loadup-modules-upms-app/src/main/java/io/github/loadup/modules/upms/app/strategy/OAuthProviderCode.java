@@ -29,19 +29,18 @@ import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
  */
 public final class OAuthProviderCode {
 
-    private OAuthProviderCode() {
-        throw new CommonException(UpmsResultCodeEnum.UTILITY_CLASS);
-    }
-
     /**
      * GitHub
      */
     public static final String GITHUB = "github";
 
     public static final String WECHAT = "wechat";
-
     /**
      * Google
      */
     public static final String GOOGLE = "google";
+
+    private OAuthProviderCode() {
+        throw new CommonException(UpmsResultCodeEnum.UTILITY_CLASS);
+    }
 }

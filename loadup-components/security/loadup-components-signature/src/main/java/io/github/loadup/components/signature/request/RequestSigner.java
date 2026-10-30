@@ -26,7 +26,9 @@ import java.time.Clock;
 import java.util.Base64;
 import java.util.Objects;
 
-/** Signs exact requests through KMS using an explicit, trusted key version. */
+/**
+ * Signs exact requests through KMS using an explicit, trusted key version.
+ */
 public final class RequestSigner {
     private final KmsTemplate kms;
     private final Clock clock;

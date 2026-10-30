@@ -79,72 +79,77 @@ public class AuthenticatedUserDTO implements Serializable {
 
     public AuthenticatedUserDTO() {}
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public String getUserId() {
         return this.userId;
-    }
-
-    public String getUsername() {
-        return this.username;
-    }
-
-    public String getNickname() {
-        return this.nickname;
-    }
-
-    public String getAvatar() {
-        return this.avatar;
-    }
-
-    public String getEmail() {
-        return this.email;
-    }
-
-    public String getMobile() {
-        return this.mobile;
-    }
-
-    public boolean isNewUser() {
-        return this.newUser;
-    }
-
-    public Map<String, Object> getAttributes() {
-        return this.attributes;
     }
 
     public void setUserId(String userId) {
         this.userId = userId;
     }
 
+    public String getUsername() {
+        return this.username;
+    }
+
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getNickname() {
+        return this.nickname;
     }
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
     }
 
+    public String getAvatar() {
+        return this.avatar;
+    }
+
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public String getEmail() {
+        return this.email;
     }
 
     public void setEmail(String email) {
         this.email = email;
     }
 
+    public String getMobile() {
+        return this.mobile;
+    }
+
     public void setMobile(String mobile) {
         this.mobile = mobile;
+    }
+
+    public boolean isNewUser() {
+        return this.newUser;
     }
 
     public void setNewUser(boolean newUser) {
         this.newUser = newUser;
     }
 
+    public Map<String, Object> getAttributes() {
+        return this.attributes;
+    }
+
     public void setAttributes(Map<String, Object> attributes) {
         this.attributes = attributes;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
     }
 
     public static class Builder {
@@ -208,10 +213,5 @@ public class AuthenticatedUserDTO implements Serializable {
                     this.newUser,
                     this.attributes);
         }
-    }
-
-    @Override
-    public String toString() {
-        return ToStringAsJson.reflectionToString(this);
     }
 }

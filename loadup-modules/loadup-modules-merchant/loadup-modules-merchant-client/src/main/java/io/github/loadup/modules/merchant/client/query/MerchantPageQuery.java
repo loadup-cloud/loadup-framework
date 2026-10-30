@@ -22,9 +22,9 @@ package io.github.loadup.modules.merchant.client.query;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.modules.merchant.client.error.MerchantResultCodeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 
 public record MerchantPageQuery(
         @Schema(description = "Merchant code") @Size(max = 64)

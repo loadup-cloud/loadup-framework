@@ -19,14 +19,14 @@
  */
 package io.github.loadup.components.gotone.store.config;
 
+import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.commons.log.LogUtil;
-import io.github.loadup.components.database.tenant.DatabaseTenant;
 import io.github.loadup.components.gotone.config.ChannelConfigProvider;
 import io.github.loadup.components.gotone.store.dataobject.ServiceChannelRow;
-import io.github.loadup.components.gotone.store.repository.ServiceChannelRepository;
+import io.github.loadup.components.gotone.store.mapper.ServiceChannelRowMapper;
+import io.github.loadup.components.gotone.store.table.Tables;
 import java.util.List;
 import java.util.Map;
-import org.springframework.data.domain.Sort;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
@@ -35,30 +35,32 @@ import tools.jackson.databind.ObjectMapper;
  */
 public class JdbcChannelConfigProvider implements ChannelConfigProvider {
 
-    private final ServiceChannelRepository channels;
-    private final DatabaseTenant tenant;
+    private final ServiceChannelRowMapper channels;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public JdbcChannelConfigProvider(ServiceChannelRepository channels, DatabaseTenant tenant) {
+    public JdbcChannelConfigProvider(ServiceChannelRowMapper channels) {
         this.channels = channels;
-        this.tenant = tenant;
     }
 
     @Override
     public List<ChannelConfig> findEnabledByServiceCode(String serviceCode) {
-        if (serviceCode == null) return List.of();
-        return channels.findEnabledByServiceCode(serviceCode, Sort.by("priority")).stream()
-                .map(this::toConfig)
-                .toList();
+        if (serviceCode == null) {
+            return List.of();
+        }
+        var query = QueryWrapper.create()
+                .where(Tables.SERVICE_CHANNEL_ROW.SERVICE_CODE.eq(serviceCode))
+                .and(Tables.SERVICE_CHANNEL_ROW.ENABLED.eq(true))
+                .orderBy(Tables.SERVICE_CHANNEL_ROW.PRIORITY.asc());
+        return channels.selectListByQuery(query).stream().map(this::toConfig).toList();
     }
 
     private ChannelConfig toConfig(ServiceChannelRow entity) {
         return new ChannelConfig(
-                entity.channel(),
-                entity.provider(),
-                parseJsonList(entity.fallbackProviders()),
-                entity.templateContent(),
-                parseJsonMap(entity.channelConfig()));
+                entity.getChannel(),
+                entity.getProvider(),
+                parseJsonList(entity.getFallbackProviders()),
+                entity.getTemplateContent(),
+                parseJsonMap(entity.getChannelConfig()));
     }
 
     private Map<String, Object> parseJsonMap(String json) {

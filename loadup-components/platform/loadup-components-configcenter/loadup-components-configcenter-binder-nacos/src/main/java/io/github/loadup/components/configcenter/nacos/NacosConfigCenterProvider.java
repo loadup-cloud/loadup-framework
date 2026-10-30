@@ -62,8 +62,12 @@ public class NacosConfigCenterProvider implements ConfigCenterProvider {
         if (config.getNamespace() != null && !config.getNamespace().isBlank()) {
             props.setProperty("namespace", config.getNamespace());
         }
-        if (config.getUsername() != null) props.setProperty("username", config.getUsername());
-        if (config.getPassword() != null) props.setProperty("password", config.getPassword());
+        if (config.getUsername() != null) {
+            props.setProperty("username", config.getUsername());
+        }
+        if (config.getPassword() != null) {
+            props.setProperty("password", config.getPassword());
+        }
         try {
             this.configService = NacosFactory.createConfigService(props);
         } catch (Exception e) {

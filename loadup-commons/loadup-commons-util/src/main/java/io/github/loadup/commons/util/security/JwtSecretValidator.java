@@ -25,7 +25,9 @@ import java.util.Set;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-/** Validates shared secrets used for HMAC JWT signing and verification. */
+/**
+ * Validates shared secrets used for HMAC JWT signing and verification.
+ */
 public final class JwtSecretValidator {
     private static final int MINIMUM_BYTES = 32;
     private static final Set<String> KNOWN_WEAK_VALUES =
@@ -38,7 +40,7 @@ public final class JwtSecretValidator {
      * Returns an HS256 key after rejecting missing, short, or known weak secrets.
      *
      * @param propertyName configuration property used in the validation message
-     * @param secret configured secret
+     * @param secret       configured secret
      * @return validated HMAC key
      */
     public static SecretKey requireStrong(String propertyName, String secret) {

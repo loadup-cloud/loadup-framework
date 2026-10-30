@@ -22,15 +22,15 @@ package io.github.loadup.modules.merchant.client.error;
 import io.github.loadup.commons.enums.ResultStatusEnum;
 import io.github.loadup.commons.result.ResultCode;
 
-/** Stable public error codes for the merchant module. */
+/**
+ * Stable public error codes for the merchant module.
+ */
 public enum MerchantResultCodeEnum implements ResultCode {
     NOT_FOUND("MERCHANT_NOT_FOUND", "Merchant not found"),
     CONFLICT("MERCHANT_CONFLICT", "Merchant code exists or version changed"),
-    TENANT_AND_ID_REQUIRED("MERCHANT_TENANT_AND_ID_REQUIRED", "Tenant and id required"),
+    ID_REQUIRED("MERCHANT_ID_REQUIRED", "Merchant id required"),
     MERCHANT_IDENTITY_MISMATCH("MERCHANT_MERCHANT_IDENTITY_MISMATCH", "Merchant identity mismatch"),
     INVALID_PAGE("MERCHANT_INVALID_PAGE", "Invalid page"),
-    MERCHANT_LOOKUP_TENANT_MISMATCH("MERCHANT_MERCHANT_LOOKUP_TENANT_MISMATCH", "Merchant lookup tenant mismatch"),
-    TRUSTED_TENANT_REQUIRED("MERCHANT_TRUSTED_TENANT_REQUIRED", "Trusted tenant required"),
     AUTHENTICATED_ACTOR_REQUIRED("MERCHANT_AUTHENTICATED_ACTOR_REQUIRED", "Authenticated actor required"),
     REQUIRED_MERCHANT_FIELD_MISSING("MERCHANT_REQUIRED_MERCHANT_FIELD_MISSING", "Required merchant field missing"),
     INVALID_MERCHANT_CLASSIFICATION(

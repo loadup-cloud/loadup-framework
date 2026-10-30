@@ -29,7 +29,9 @@ import io.github.loadup.modules.file.domain.model.FileResource;
 import java.util.List;
 import org.mapstruct.Mapper;
 
-/** Maps application results without exposing persistence or domain models. */
+/**
+ * Maps application results without exposing persistence or domain models.
+ */
 @Mapper(config = LoadUpMapStructConfig.class)
 public interface FileDTOConverter {
     FileResourceDTO toDTO(FileResource value);

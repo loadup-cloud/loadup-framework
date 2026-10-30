@@ -25,7 +25,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/** Created by SalesPlanCompiler; its constructor is deliberately package-private. */
+/**
+ * Created by SalesPlanCompiler; its constructor is deliberately package-private.
+ */
 public final class SalesPlanVersion {
     private final String planCode;
     private final int version;
@@ -70,6 +72,11 @@ public final class SalesPlanVersion {
                 .collect(Collectors.toUnmodifiableSet());
     }
 
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
+    }
+
     public record Item(
             ProductVersion product,
             boolean required,
@@ -81,10 +88,5 @@ public final class SalesPlanVersion {
         public Item {
             merchantPolicies = Map.copyOf(merchantPolicies);
         }
-    }
-
-    @Override
-    public String toString() {
-        return ToStringAsJson.reflectionToString(this);
     }
 }

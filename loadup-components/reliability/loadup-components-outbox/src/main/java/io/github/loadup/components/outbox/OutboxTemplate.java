@@ -22,13 +22,15 @@ package io.github.loadup.components.outbox;
 import java.util.List;
 import java.util.Optional;
 
-/** Publishes transactionally and exposes tenant-scoped operational access. */
+/**
+ * Publishes transactionally and exposes schema-scoped operational access.
+ */
 public interface OutboxTemplate {
     String publish(OutboxMessage message);
 
-    Optional<OutboxRecord> find(String tenantId, String eventId);
+    Optional<OutboxRecord> find(String eventId);
 
-    List<OutboxRecord> failures(String tenantId, int limit);
+    List<OutboxRecord> failures(int limit);
 
-    boolean replay(String tenantId, String eventId, String operatorId, String reason);
+    boolean replay(String eventId, String operatorId, String reason);
 }

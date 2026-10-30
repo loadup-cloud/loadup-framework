@@ -27,7 +27,9 @@ import java.math.BigDecimal;
 import java.util.Currency;
 import java.util.Objects;
 
-/** Immutable signed amount in the currency's smallest decimal unit. */
+/**
+ * Immutable signed amount in the currency's smallest decimal unit.
+ */
 public final class Money implements Comparable<Money> {
     private final long cent;
     private final Currency currency;
@@ -88,8 +90,9 @@ public final class Money implements Comparable<Money> {
     @Override
     public int compareTo(Money other) {
         Objects.requireNonNull(other, "other");
-        if (!currency.equals(other.currency))
+        if (!currency.equals(other.currency)) {
             throw new IllegalArgumentException("Different currencies cannot be compared");
+        }
         return Long.compare(cent, other.cent);
     }
 

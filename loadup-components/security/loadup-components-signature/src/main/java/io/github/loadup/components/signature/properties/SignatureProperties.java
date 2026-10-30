@@ -29,24 +29,47 @@ import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
-/** Signature component configuration ({@code loadup.components.signature.*}). */
+/**
+ * Signature component configuration ({@code loadup.components.signature.*}).
+ */
 @Validated
 @ConfigurationProperties(prefix = "loadup.components.signature")
 public class SignatureProperties {
 
-    /** Whether the signature component is enabled. */
+    /**
+     * Whether the signature component is enabled.
+     */
     private boolean enabled = true;
 
-    /** The default signature algorithm. */
+    /**
+     * The default signature algorithm.
+     */
     @NotNull
     private SignatureAlgorithm defaultSignatureAlgorithm = SignatureAlgorithm.SHA256_WITH_RSA;
 
-    /** The default digest algorithm. */
+    /**
+     * The default digest algorithm.
+     */
     @NotNull
     private DigestAlgorithm defaultDigestAlgorithm = DigestAlgorithm.SHA256;
 
-    /** Per-algorithm key sizes in bits. */
+    /**
+     * Per-algorithm key sizes in bits.
+     */
     private Map<String, Integer> keySize = createDefaultKeySizeMap();
+
+    public SignatureProperties(
+            boolean enabled,
+            SignatureAlgorithm defaultSignatureAlgorithm,
+            DigestAlgorithm defaultDigestAlgorithm,
+            Map<String, Integer> keySize) {
+        this.enabled = enabled;
+        this.defaultSignatureAlgorithm = defaultSignatureAlgorithm;
+        this.defaultDigestAlgorithm = defaultDigestAlgorithm;
+        this.keySize = keySize;
+    }
+
+    public SignatureProperties() {}
 
     private static Map<String, Integer> createDefaultKeySizeMap() {
         Map<String, Integer> map = new HashMap<>();
@@ -66,49 +89,36 @@ public class SignatureProperties {
         return keySize.getOrDefault(algorithm.toLowerCase(Locale.ROOT), 2048);
     }
 
-    public SignatureProperties(
-            boolean enabled,
-            SignatureAlgorithm defaultSignatureAlgorithm,
-            DigestAlgorithm defaultDigestAlgorithm,
-            Map<String, Integer> keySize) {
-        this.enabled = enabled;
-        this.defaultSignatureAlgorithm = defaultSignatureAlgorithm;
-        this.defaultDigestAlgorithm = defaultDigestAlgorithm;
-        this.keySize = keySize;
+    public boolean isEnabled() {
+        return this.enabled;
     }
-
-    public SignatureProperties() {}
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-    }
-
-    public void setDefaultSignatureAlgorithm(SignatureAlgorithm defaultSignatureAlgorithm) {
-        this.defaultSignatureAlgorithm = defaultSignatureAlgorithm;
-    }
-
-    public void setDefaultDigestAlgorithm(DigestAlgorithm defaultDigestAlgorithm) {
-        this.defaultDigestAlgorithm = defaultDigestAlgorithm;
-    }
-
-    public void setKeySize(Map<String, Integer> keySize) {
-        this.keySize = keySize;
-    }
-
-    public boolean isEnabled() {
-        return this.enabled;
     }
 
     public SignatureAlgorithm getDefaultSignatureAlgorithm() {
         return this.defaultSignatureAlgorithm;
     }
 
+    public void setDefaultSignatureAlgorithm(SignatureAlgorithm defaultSignatureAlgorithm) {
+        this.defaultSignatureAlgorithm = defaultSignatureAlgorithm;
+    }
+
     public DigestAlgorithm getDefaultDigestAlgorithm() {
         return this.defaultDigestAlgorithm;
     }
 
+    public void setDefaultDigestAlgorithm(DigestAlgorithm defaultDigestAlgorithm) {
+        this.defaultDigestAlgorithm = defaultDigestAlgorithm;
+    }
+
     public Map<String, Integer> getKeySize() {
         return this.keySize;
+    }
+
+    public void setKeySize(Map<String, Integer> keySize) {
+        this.keySize = keySize;
     }
 
     @Override

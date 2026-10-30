@@ -52,10 +52,16 @@ Both styles delegate to SLF4J parameterized logging. Direct calls resolve the ca
 
 ## 统一入口与输出
 
-框架源码的日志打印统一走 `LogUtil` 显式来源类重载，保留 SLF4J 的级别、参数化和末尾 Throwable 语义。第三方日志适配可通过 `LogUtil.getLogger` 获得原生 Logger。调用入口不创建 Trace 或 MeterRegistry，也不修改 MDC 的 traceId/spanId。
+框架源码的日志打印统一走 `LogUtil` 显式来源类重载，保留 SLF4J 的级别、参数化和末尾 Throwable 语义。第三方日志适配可通过
+`LogUtil.getLogger` 获得原生 Logger。调用入口不创建 Trace 或 MeterRegistry，也不修改 MDC 的 traceId/spanId。
 
-EnvironmentPostProcessor 同时提供 console/file 默认 pattern，file 未单独配置时沿用 LoadUp console pattern。标准 `logging.pattern.*` 属性优先于组件默认值。JSON 使用 Boot `logging.structured.format.*`，启动器不再维护重复的 Logback 配置。
+EnvironmentPostProcessor 同时提供 console/file 默认 pattern，file 未单独配置时沿用 LoadUp console pattern。标准
+`logging.pattern.*` 属性优先于组件默认值。JSON 使用 Boot `logging.structured.format.*`，启动器不再维护重复的 Logback 配置。
 
 ## Service digest annotation
 
-`annotation.ServiceDigest` is a runtime, inherited marker for classes, methods and composed annotations. It has no Spring AOP dependency. The Observability component owns advisor registration, Stopwatch timing and invocation logging; commons-log only supplies the marker, LogUtil and existing MDC conventions. Neither arguments nor return values are captured by this contract. Spring proxy interception and asynchronous completion semantics are documented in the Observability README.
+`annotation.ServiceDigest` is a runtime, inherited marker for classes, methods and composed annotations. It has no
+Spring AOP dependency. The Observability component owns advisor registration, Stopwatch timing and invocation logging;
+commons-log only supplies the marker, LogUtil and existing MDC conventions. Neither arguments nor return values are
+captured by this contract. Spring proxy interception and asynchronous completion semantics are documented in the
+Observability README.

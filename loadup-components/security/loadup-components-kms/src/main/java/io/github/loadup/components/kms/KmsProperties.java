@@ -23,7 +23,9 @@ import java.net.URI;
 import java.time.Duration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/** No token or key material is stored in ordinary configuration. */
+/**
+ * No token or key material is stored in ordinary configuration.
+ */
 @ConfigurationProperties("loadup.kms")
 public record KmsProperties(
         URI endpoint,
@@ -53,9 +55,10 @@ public record KmsProperties(
             throw new IllegalArgumentException(
                     "KMS endpoint requires HTTPS and an origin URL; HTTP is opt-in for development");
         }
-        if ("/".equals(endpoint.getPath()))
+        if ("/".equals(endpoint.getPath())) {
             endpoint = URI.create(
                     endpoint.toString().substring(0, endpoint.toString().length() - 1));
+        }
         if (mount.length() > 128
                 || mount.isEmpty()
                 || mount.startsWith("/")

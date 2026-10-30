@@ -72,10 +72,6 @@ class Resilience4jCoreAutoConfigurationTest {
                 });
     }
 
-    @Configuration(proxyBeanMethods = false)
-    @EnableConfigurationProperties(Resilience4jProperties.class)
-    static class ConsumerSettings {}
-
     @Test
     void createsConfiguredCircuitBreakerInstance() {
         contextRunner
@@ -101,7 +97,9 @@ class Resilience4jCoreAutoConfigurationTest {
 
         var attempts = new java.util.concurrent.atomic.AtomicInteger();
         assertThat(policies.retryRegistry().retry("notifications").executeSupplier(() -> {
-                    if (attempts.incrementAndGet() == 1) throw new IllegalStateException("synthetic transient failure");
+                    if (attempts.incrementAndGet() == 1) {
+                        throw new IllegalStateException("synthetic transient failure");
+                    }
                     return "delivered";
                 }))
                 .isEqualTo("delivered");
@@ -119,4 +117,8 @@ class Resilience4jCoreAutoConfigurationTest {
                                 () -> java.util.concurrent.CompletableFuture.completedFuture("completed")))
                 .isEqualTo("completed");
     }
+
+    @Configuration(proxyBeanMethods = false)
+    @EnableConfigurationProperties(Resilience4jProperties.class)
+    static class ConsumerSettings {}
 }

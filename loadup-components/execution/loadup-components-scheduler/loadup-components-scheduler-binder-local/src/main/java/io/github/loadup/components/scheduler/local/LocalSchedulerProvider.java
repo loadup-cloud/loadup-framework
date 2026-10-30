@@ -20,10 +20,13 @@
 package io.github.loadup.components.scheduler.local;
 
 import io.github.loadup.commons.log.LogUtil;
-import io.github.loadup.components.scheduler.*;
+import io.github.loadup.components.scheduler.SchedulerProvider;
+import io.github.loadup.components.scheduler.SchedulerTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 
-/** Uses Spring's scheduler thread; failures in one scanner do not suppress other scanners. */
+/**
+ * Uses Spring's scheduler thread; failures in one scanner do not suppress other scanners.
+ */
 public class LocalSchedulerProvider implements SchedulerProvider {
     private volatile SchedulerTemplate scheduler;
 
@@ -42,7 +45,9 @@ public class LocalSchedulerProvider implements SchedulerProvider {
             initialDelayString = "${loadup.scheduler.local.initial-delay:PT1M}")
     public void wakeUp() {
         var current = scheduler;
-        if (current == null) return;
+        if (current == null) {
+            return;
+        }
         for (String task : current.taskNames()) {
             try {
                 current.trigger(task);

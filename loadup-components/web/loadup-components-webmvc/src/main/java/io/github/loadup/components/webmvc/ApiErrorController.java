@@ -33,7 +33,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.ServletWebRequest;
 
-/** Handles API errors while preserving ordinary HTTP status codes outside the API prefix. */
+/**
+ * Handles API errors while preserving ordinary HTTP status codes outside the API prefix.
+ */
 @RestController
 public class ApiErrorController implements ErrorController {
 

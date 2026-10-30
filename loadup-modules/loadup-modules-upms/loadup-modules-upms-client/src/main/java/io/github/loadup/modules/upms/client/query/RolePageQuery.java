@@ -92,20 +92,40 @@ public class RolePageQuery {
 
     public RolePageQuery() {}
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public String getRoleName() {
         return this.roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 
     public String getRoleCode() {
         return this.roleCode;
     }
 
+    public void setRoleCode(String roleCode) {
+        this.roleCode = roleCode;
+    }
+
     public String getParentId() {
         return this.parentId;
     }
 
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
     public Short getStatus() {
         return this.status;
+    }
+
+    public void setStatus(Short status) {
+        this.status = status;
     }
 
     public Boolean isDeleted() {
@@ -116,52 +136,36 @@ public class RolePageQuery {
         return this.page;
     }
 
-    public Integer getSize() {
-        return this.size;
-    }
-
-    public String getSortBy() {
-        return this.sortBy;
-    }
-
-    public String getSortOrder() {
-        return this.sortOrder;
-    }
-
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
-    }
-
-    public void setRoleCode(String roleCode) {
-        this.roleCode = roleCode;
-    }
-
-    public void setParentId(String parentId) {
-        this.parentId = parentId;
-    }
-
-    public void setStatus(Short status) {
-        this.status = status;
-    }
-
-    public void setDeleted(Boolean deleted) {
-        this.deleted = deleted;
-    }
-
     public void setPage(Integer page) {
         this.page = page;
+    }
+
+    public Integer getSize() {
+        return this.size;
     }
 
     public void setSize(Integer size) {
         this.size = size;
     }
 
+    public String getSortBy() {
+        return this.sortBy;
+    }
+
     public void setSortBy(String sortBy) {
         this.sortBy = sortBy;
     }
 
+    public String getSortOrder() {
+        return this.sortOrder;
+    }
+
     public void setSortOrder(String sortOrder) {
         this.sortOrder = sortOrder;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 
     public io.github.loadup.commons.dto.PageQuery pagination() {
@@ -169,8 +173,9 @@ public class RolePageQuery {
                 page, size, io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum.INVALID_PAGE);
     }
 
-    public static Builder builder() {
-        return new Builder();
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
     }
 
     public static class Builder {
@@ -248,10 +253,5 @@ public class RolePageQuery {
                     this.sortBy,
                     this.sortOrder);
         }
-    }
-
-    @Override
-    public String toString() {
-        return ToStringAsJson.reflectionToString(this);
     }
 }

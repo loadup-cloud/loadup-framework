@@ -23,12 +23,11 @@ import io.github.loadup.commons.json.ToStringAsJson;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
-/** One recipient's copy of an in-app notification. */
+/**
+ * One recipient's copy of an in-app notification.
+ */
 public record InboxMessageDTO(
         @Schema(description = "Resource identifier") String id,
-
-        @Schema(description = "Tenant identifier resolved from trusted context")
-        String tenantId,
 
         @Schema(description = "Recipient user identifier") String recipientId,
         @Schema(description = "Sender id") String senderId,

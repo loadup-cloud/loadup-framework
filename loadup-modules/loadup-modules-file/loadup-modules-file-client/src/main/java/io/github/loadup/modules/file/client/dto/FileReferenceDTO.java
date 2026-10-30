@@ -23,12 +23,11 @@ import io.github.loadup.commons.json.ToStringAsJson;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
-/** A business object's claim on a file; claims prevent deletion. */
+/**
+ * A business object's claim on a file; claims prevent deletion.
+ */
 public record FileReferenceDTO(
         @Schema(description = "Resource identifier") String id,
-
-        @Schema(description = "Tenant identifier resolved from trusted context")
-        String tenantId,
 
         @Schema(description = "File id") String fileId,
         @Schema(description = "Reference type") String referenceType,

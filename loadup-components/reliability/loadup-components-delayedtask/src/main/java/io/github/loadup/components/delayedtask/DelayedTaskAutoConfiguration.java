@@ -19,35 +19,32 @@
  */
 package io.github.loadup.components.delayedtask;
 
-import io.github.loadup.components.database.config.DatabaseProperties;
+import io.github.loadup.components.database.autoconfigure.DatabaseCoreAutoConfiguration;
+import io.github.loadup.components.database.autoconfigure.IdGeneratorAutoConfiguration;
 import io.github.loadup.components.database.id.IdGenerator;
 import io.micrometer.observation.ObservationRegistry;
 import java.time.Clock;
 import java.util.List;
 import javax.sql.DataSource;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.*;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @AutoConfiguration(
-        afterName = {
-            "org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration",
-            "io.github.loadup.components.database.autoconfigure.IdGeneratorAutoConfiguration"
-        })
+        after = {IdGeneratorAutoConfiguration.class, DatabaseCoreAutoConfiguration.class},
+        afterName = "org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration")
 @ConditionalOnSingleCandidate(DataSource.class)
 @ConditionalOnBean({JdbcTemplate.class, IdGenerator.class})
 @ConditionalOnProperty(prefix = "loadup.delayedtask", name = "enabled", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(DelayedTaskProperties.class)
 @Import(DelayedTaskConverterImpl.class)
 public class DelayedTaskAutoConfiguration {
-    @Bean
-    @ConditionalOnMissingBean(name = "delayedTaskClock")
-    public Clock delayedTaskClock() {
-        return Clock.systemDefaultZone();
-    }
 
     @Bean
     @ConditionalOnMissingBean
@@ -61,10 +58,9 @@ public class DelayedTaskAutoConfiguration {
             DelayedTaskStore store,
             DelayedTaskConverter converter,
             DelayedTaskProperties properties,
-            DatabaseProperties database,
-            @Qualifier("delayedTaskClock") Clock clock,
+            Clock clock,
             DataSource dataSource) {
-        return new DelayedTaskTemplate(store, converter, properties, database, clock, dataSource);
+        return new DelayedTaskTemplate(store, converter, properties, clock, dataSource);
     }
 
     @Bean
@@ -73,7 +69,7 @@ public class DelayedTaskAutoConfiguration {
             DelayedTaskStore store,
             DelayedTaskConverter converter,
             DelayedTaskProperties props,
-            @Qualifier("delayedTaskClock") Clock clock,
+            Clock clock,
             org.springframework.beans.factory.ObjectProvider<ObservationRegistry> registry,
             List<DelayedTaskHandler> handlers) {
         return new DelayedTaskDispatcher(

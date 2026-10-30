@@ -22,7 +22,9 @@ package io.github.loadup.modules.dictionary.client.error;
 import io.github.loadup.commons.enums.ResultStatusEnum;
 import io.github.loadup.commons.result.ResultCode;
 
-/** Stable public error codes for the dictionary module. */
+/**
+ * Stable public error codes for the dictionary module.
+ */
 public enum DictionaryResultCodeEnum implements ResultCode {
     INVALID_PAGE("DICTIONARY_INVALID_PAGE", "Page must be positive and size must be between 1 and 100"),
     TYPE_IS_REQUIRED("DICTIONARY_TYPE_IS_REQUIRED", "type is required"),

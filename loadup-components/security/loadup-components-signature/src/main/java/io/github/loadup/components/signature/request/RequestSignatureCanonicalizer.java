@@ -24,15 +24,18 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
 
-/** LoadUp request v1 uses fixed-order ASCII fields, LF separators and a trailing LF. */
+/**
+ * LoadUp request v1 uses fixed-order ASCII fields, LF separators and a trailing LF.
+ */
 public final class RequestSignatureCanonicalizer {
     public static final String PROTOCOL = "loadup-request-v1";
 
     private RequestSignatureCanonicalizer() {}
 
     public static byte[] canonicalize(RequestContent content, RequestSignatureParameters parameters) {
-        if (content == null || parameters == null)
+        if (content == null || parameters == null) {
             throw new RequestSignatureException(RequestSignatureException.Code.MALFORMED);
+        }
         String canonical = PROTOCOL + "\n"
                 + "app-id:" + parameters.appId() + "\n"
                 + "audience:" + parameters.audience() + "\n"

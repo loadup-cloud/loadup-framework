@@ -49,13 +49,16 @@ import tools.jackson.databind.ObjectMapper;
 @ConditionalOnProperty(prefix = "loadup.modules.upms.security.oauth.github", name = "enabled", havingValue = "true")
 public class GitHubOAuthProvider implements OAuthProvider {
 
+    private static final String AUTHORIZE_URL = "https://github.com/login/oauth/authorize";
+    private static final String TOKEN_URL = "https://github.com/login/oauth/access_token";
+    private static final String USER_INFO_URL = "https://api.github.com/user";
     private final UpmsSecurityProperties securityProperties;
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private static final String AUTHORIZE_URL = "https://github.com/login/oauth/authorize";
-    private static final String TOKEN_URL = "https://github.com/login/oauth/access_token";
-    private static final String USER_INFO_URL = "https://api.github.com/user";
+    public GitHubOAuthProvider(UpmsSecurityProperties securityProperties) {
+        this.securityProperties = securityProperties;
+    }
 
     @Override
     public String getProviderName() {
@@ -138,9 +141,5 @@ public class GitHubOAuthProvider implements OAuthProvider {
             LogUtil.error(GitHubOAuthProvider.class, "Failed to get GitHub user info", e);
             throw new CommonException(UpmsResultCodeEnum.OPERATION_FAILED);
         }
-    }
-
-    public GitHubOAuthProvider(UpmsSecurityProperties securityProperties) {
-        this.securityProperties = securityProperties;
     }
 }

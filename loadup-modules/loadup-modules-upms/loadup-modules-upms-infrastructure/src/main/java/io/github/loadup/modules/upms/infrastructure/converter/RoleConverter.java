@@ -23,7 +23,6 @@ import io.github.loadup.commons.mapping.LoadUpMapStructConfig;
 import io.github.loadup.modules.upms.domain.model.Role;
 import io.github.loadup.modules.upms.infrastructure.dataobject.RoleDO;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 /**
  * Role Converter
@@ -33,7 +32,6 @@ import org.mapstruct.Mapping;
  */
 @Mapper(config = LoadUpMapStructConfig.class, uses = AuditMappingSupport.class)
 public interface RoleConverter {
-    @Mapping(target = "tenantId", ignore = true)
     RoleDO toDataObject(Role role);
 
     Role toEntity(RoleDO roleDO);

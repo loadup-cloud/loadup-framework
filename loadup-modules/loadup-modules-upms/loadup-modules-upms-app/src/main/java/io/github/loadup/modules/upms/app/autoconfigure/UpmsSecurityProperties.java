@@ -30,6 +30,22 @@ public class UpmsSecurityProperties {
     private LoginConfig login = new LoginConfig();
     private OAuthProvidersConfig oauth = new OAuthProvidersConfig();
 
+    public LoginConfig getLogin() {
+        return login;
+    }
+
+    public void setLogin(LoginConfig login) {
+        this.login = login;
+    }
+
+    public OAuthProvidersConfig getOauth() {
+        return oauth;
+    }
+
+    public void setOauth(OAuthProvidersConfig oauth) {
+        this.oauth = oauth;
+    }
+
     public static class LoginConfig {
         /**
          * Enable login failure tracking
@@ -153,21 +169,5 @@ public class UpmsSecurityProperties {
         public void setRedirectUri(String redirectUri) {
             this.redirectUri = redirectUri;
         }
-    }
-
-    public LoginConfig getLogin() {
-        return login;
-    }
-
-    public void setLogin(LoginConfig login) {
-        this.login = login;
-    }
-
-    public OAuthProvidersConfig getOauth() {
-        return oauth;
-    }
-
-    public void setOauth(OAuthProvidersConfig oauth) {
-        this.oauth = oauth;
     }
 }

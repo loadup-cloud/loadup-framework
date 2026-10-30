@@ -22,7 +22,9 @@ package io.github.loadup.modules.audit.client.error;
 import io.github.loadup.commons.enums.ResultStatusEnum;
 import io.github.loadup.commons.result.ResultCode;
 
-/** Stable public error codes for the audit module. */
+/**
+ * Stable public error codes for the audit module.
+ */
 public enum AuditResultCodeEnum implements ResultCode {
     INVALID_TIME_RANGE("AUDIT_INVALID_TIME_RANGE", "from must not be after to"),
     INVALID_PAGE("AUDIT_INVALID_PAGE", "Page must be positive and size must be between 1 and 100"),

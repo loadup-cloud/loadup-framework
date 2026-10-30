@@ -56,53 +56,51 @@ public final class SharedMySQLContainer {
      * Default MySQL version to use
      */
     public static final String DEFAULT_MYSQL_VERSION = "mysql:8.0";
-
+    /**
+     * JDBC driver class name
+     */
+    public static final String DRIVER_CLASS_NAME = "com.mysql.cj.jdbc.Driver";
     /**
      * Default database name
      */
     private static final String DEFAULT_DATABASE_NAME = "testdb";
-
     /**
      * Default username
      */
     private static final String DEFAULT_USERNAME = "test";
-
     /**
      * Default password
      */
     private static final String DEFAULT_PASSWORD = "test";
 
+    private static final AtomicBoolean STARTED = new AtomicBoolean(false);
     /**
      * The shared MySQL container instance
      */
     private static MySQLContainer mysqlContainer;
-
-    private static final AtomicBoolean STARTED = new AtomicBoolean(false);
-
     /**
      * JDBC URL for the shared MySQL container
      */
     private static String jdbcUrl;
-
     /**
      * Username for the shared MySQL container
      */
     private static String username;
-
     /**
      * Password for the shared MySQL container
      */
     private static String password;
-
     /**
      * Database name for the shared MySQL container
      */
     private static String databaseName;
 
     /**
-     * JDBC driver class name
+     * Private constructor to prevent instantiation
      */
-    public static final String DRIVER_CLASS_NAME = "com.mysql.cj.jdbc.Driver";
+    private SharedMySQLContainer() {
+        throw new UnsupportedOperationException("Utility class cannot be instantiated");
+    }
 
     public static void startContainer(ContainerConfig config) {
         if (STARTED.get()) {
@@ -249,13 +247,6 @@ public final class SharedMySQLContainer {
                 "spring.datasource.username", getUsername(),
                 "spring.datasource.password", getPassword(),
                 "spring.datasource.driver-class-name", getDriverClassName());
-    }
-
-    /**
-     * Private constructor to prevent instantiation
-     */
-    private SharedMySQLContainer() {
-        throw new UnsupportedOperationException("Utility class cannot be instantiated");
     }
 
     public static boolean isStarted() {

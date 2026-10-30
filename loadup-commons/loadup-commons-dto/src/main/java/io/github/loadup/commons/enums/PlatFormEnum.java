@@ -48,13 +48,13 @@ public enum PlatFormEnum implements IEnum {
     private String code;
     private String description;
 
-    public static PlatFormEnum getByCode(String code) {
-        return IEnum.EnumLookup.fromCode(PlatFormEnum.class, code);
-    }
-
     PlatFormEnum(String code, String description) {
         this.code = code;
         this.description = description;
+    }
+
+    public static PlatFormEnum getByCode(String code) {
+        return IEnum.EnumLookup.fromCode(PlatFormEnum.class, code);
     }
 
     public String getCode() {

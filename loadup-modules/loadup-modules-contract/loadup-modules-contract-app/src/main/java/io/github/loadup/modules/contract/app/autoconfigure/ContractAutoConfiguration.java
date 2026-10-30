@@ -32,7 +32,8 @@ import io.github.loadup.modules.contract.infrastructure.repository.CatalogGatewa
 import io.github.loadup.modules.contract.infrastructure.repository.MerchantContractGatewayImpl;
 import javax.sql.DataSource;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.*;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.context.annotation.Import;
 
 @AutoConfiguration(
@@ -59,10 +60,4 @@ import org.springframework.context.annotation.Import;
     CatalogGatewayImpl.class,
     MerchantContractGatewayImpl.class
 })
-public class ContractAutoConfiguration {
-    @org.springframework.context.annotation.Bean
-    @ConditionalOnMissingBean(name = "contractClock")
-    public java.time.Clock contractClock() {
-        return java.time.Clock.systemDefaultZone();
-    }
-}
+public class ContractAutoConfiguration {}

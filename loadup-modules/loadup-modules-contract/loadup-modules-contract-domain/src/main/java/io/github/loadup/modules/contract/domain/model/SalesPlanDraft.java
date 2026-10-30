@@ -27,7 +27,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-/** Values and permissions are keyed by qualified bundleAlias.itemKey. */
+/**
+ * Values and permissions are keyed by qualified bundleAlias.itemKey.
+ */
 public record SalesPlanDraft(
         String planCode,
         int version,
@@ -42,8 +44,9 @@ public record SalesPlanDraft(
         planCode = ContractChecks.code(planCode);
         version = ContractChecks.version(version);
         bundles = List.copyOf(bundles);
-        if (bundles.isEmpty() || bundles.size() > 128)
+        if (bundles.isEmpty() || bundles.size() > 128) {
             throw new CommonException(ContractResultCodeEnum.INVALID_BUNDLE_COUNT);
+        }
         values = copyNested(values);
         merchantPolicies = copyNested(merchantPolicies);
         new ConditionEvaluator().validate(eligibilityCondition);
@@ -57,15 +60,15 @@ public record SalesPlanDraft(
         return Map.copyOf(result);
     }
 
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
+    }
+
     public record BundleSelection(String alias, BundleVersion bundle) {
         public BundleSelection {
             alias = ContractChecks.code(alias);
             Objects.requireNonNull(bundle, "bundle");
         }
-    }
-
-    @Override
-    public String toString() {
-        return ToStringAsJson.reflectionToString(this);
     }
 }

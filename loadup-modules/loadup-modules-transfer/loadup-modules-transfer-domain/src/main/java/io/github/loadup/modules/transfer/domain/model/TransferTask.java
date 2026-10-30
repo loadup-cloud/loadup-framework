@@ -22,10 +22,11 @@ package io.github.loadup.modules.transfer.domain.model;
 import io.github.loadup.commons.json.ToStringAsJson;
 import java.time.LocalDateTime;
 
-/** Durable state of one import or export job. */
+/**
+ * Durable state of one import or export job.
+ */
 public record TransferTask(
         String id,
-        String tenantId,
         String ownerId,
         TransferKind kind,
         String handlerKey,

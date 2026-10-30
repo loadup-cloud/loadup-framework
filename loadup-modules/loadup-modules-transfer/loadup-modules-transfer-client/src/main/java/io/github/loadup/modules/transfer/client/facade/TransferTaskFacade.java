@@ -24,19 +24,16 @@ import io.github.loadup.modules.transfer.client.dto.TransferTaskDTO;
 import io.github.loadup.modules.transfer.client.enums.TransferKind;
 import java.util.Map;
 
-/** Public business contract for TransferTaskService. */
+/**
+ * Public business contract for TransferTaskService.
+ */
 public interface TransferTaskFacade {
     TransferTaskDTO submit(
-            String tenantId,
-            String ownerId,
-            TransferKind kind,
-            String handlerKey,
-            String sourceFileId,
-            Map<String, String> options);
+            String ownerId, TransferKind kind, String handlerKey, String sourceFileId, Map<String, String> options);
 
-    TransferTaskDTO get(String tenantId, String id, String actorId, boolean admin);
+    TransferTaskDTO get(String id, String actorId, boolean admin);
 
-    PageDTO<TransferTaskDTO> list(String tenantId, String actorId, boolean admin, String ownerId, int page, int size);
+    PageDTO<TransferTaskDTO> list(String actorId, boolean admin, String ownerId, int page, int size);
 
-    TransferTaskDTO retry(String tenantId, String id, String actorId, boolean admin);
+    TransferTaskDTO retry(String id, String actorId, boolean admin);
 }

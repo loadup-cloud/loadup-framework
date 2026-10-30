@@ -31,26 +31,31 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 
-/** Delivery to a private, persistent inbox and recipient-owned read operations. */
+/**
+ * Delivery to a private, persistent inbox and recipient-owned read operations.
+ */
 public class InboxService implements io.github.loadup.modules.notification.client.facade.InboxFacade {
     private final Clock clock;
-    private static final String DEFAULT_TENANT = "__default__";
     private final NotificationDTOConverter converter;
     private final InboxGateway repository;
 
-    public InboxService(
-            InboxGateway repository, NotificationDTOConverter converter, @Qualifier("notificationClock") Clock clock) {
+    public InboxService(InboxGateway repository, NotificationDTOConverter converter, Clock clock) {
         this.clock = clock;
         this.converter = converter;
         this.repository = repository;
     }
 
+    private static String required(String value, int max) {
+        if (value == null || value.isBlank() || value.trim().length() > max) {
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
+        }
+        return value.trim();
+    }
+
     @Transactional
     public int publish(
-            String tenantId,
             String senderId,
             List<String> recipients,
             String category,
@@ -58,7 +63,6 @@ public class InboxService implements io.github.loadup.modules.notification.clien
             String body,
             String actionUrl,
             String requestKey) {
-        String tenant = tenant(tenantId);
         if (recipients == null || recipients.isEmpty() || recipients.size() > 100) {
             throw new CommonException(NotificationResultCodeEnum.RECIPIENTS_MUST_CONTAIN_1_TO_100_USERS);
         }
@@ -79,53 +83,34 @@ public class InboxService implements io.github.loadup.modules.notification.clien
         int inserted = 0;
         for (String recipient : recipients.stream().distinct().toList()) {
             InboxMessage message = new InboxMessage(
-                    UUID.randomUUID().toString(),
-                    tenant,
-                    required(recipient, 64),
-                    sender,
-                    kind,
-                    heading,
-                    text,
-                    url,
-                    null,
-                    now);
+                    UUID.randomUUID().toString(), required(recipient, 64), sender, kind, heading, text, url, null, now);
             inserted += repository.insert(message, key);
         }
         return inserted;
     }
 
-    public PageDTO<InboxMessageDTO> list(String tenantId, String recipientId, boolean unreadOnly, int page, int size) {
+    public PageDTO<InboxMessageDTO> list(String recipientId, boolean unreadOnly, int page, int size) {
         io.github.loadup.commons.dto.PageQuery.normalized(page, size, NotificationResultCodeEnum.INVALID_PAGE);
-        return converter.toPageDTO(
-                repository.list(tenant(tenantId), required(recipientId, 64), unreadOnly, page, size));
+        return converter.toPageDTO(repository.list(required(recipientId, 64), unreadOnly, page, size));
     }
 
-    public long unreadCount(String tenantId, String recipientId) {
-        return repository.unreadCount(tenant(tenantId), required(recipientId, 64));
+    public long unreadCount(String recipientId) {
+        return repository.unreadCount(required(recipientId, 64));
     }
 
-    public void markRead(String tenantId, String recipientId, String id) {
-        if (repository.markRead(tenant(tenantId), required(recipientId, 64), required(id, 64)) == 0)
+    public void markRead(String recipientId, String id) {
+        if (repository.markRead(required(recipientId, 64), required(id, 64)) == 0) {
             throw new CommonException(NotificationResultCodeEnum.NOTIFICATION_NOT_FOUND);
-    }
-
-    public int markAllRead(String tenantId, String recipientId) {
-        return repository.markAllRead(tenant(tenantId), required(recipientId, 64));
-    }
-
-    public void archive(String tenantId, String recipientId, String id) {
-        if (repository.archive(tenant(tenantId), required(recipientId, 64), required(id, 64)) == 0)
-            throw new CommonException(NotificationResultCodeEnum.NOTIFICATION_NOT_FOUND);
-    }
-
-    private static String tenant(String value) {
-        return value == null || value.isBlank() ? DEFAULT_TENANT : required(value, 64);
-    }
-
-    private static String required(String value, int max) {
-        if (value == null || value.isBlank() || value.trim().length() > max) {
-            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
         }
-        return value.trim();
+    }
+
+    public int markAllRead(String recipientId) {
+        return repository.markAllRead(required(recipientId, 64));
+    }
+
+    public void archive(String recipientId, String id) {
+        if (repository.archive(required(recipientId, 64), required(id, 64)) == 0) {
+            throw new CommonException(NotificationResultCodeEnum.NOTIFICATION_NOT_FOUND);
+        }
     }
 }

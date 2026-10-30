@@ -27,7 +27,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
 import java.util.TreeMap;
 
-/** Length-prefixed canonical encoding; never relies on unordered Map.toString or locale formatting. */
+/**
+ * Length-prefixed canonical encoding; never relies on unordered Map.toString or locale formatting.
+ */
 final class SnapshotDigest {
     private final MessageDigest digest;
 
@@ -42,7 +44,6 @@ final class SnapshotDigest {
     static String hash(MerchantContractRevision revision) {
         var writer = new SnapshotDigest();
         writer.token("contract-terms-v1");
-        writer.token(revision.tenantId());
         writer.token(revision.merchantId());
         writer.token(revision.scopeKey());
         writer.token(revision.contractId());

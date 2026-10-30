@@ -22,7 +22,9 @@ package io.github.loadup.modules.transfer.client.error;
 import io.github.loadup.commons.enums.ResultStatusEnum;
 import io.github.loadup.commons.result.ResultCode;
 
-/** Stable public error codes for the transfer module. */
+/**
+ * Stable public error codes for the transfer module.
+ */
 public enum TransferResultCodeEnum implements ResultCode {
     REQUEST_IS_REQUIRED("TRANSFER_REQUEST_IS_REQUIRED", "request is required"),
     TASK_HAS_NO_RESULT_FILE("TRANSFER_TASK_HAS_NO_RESULT_FILE", "task has no result file"),

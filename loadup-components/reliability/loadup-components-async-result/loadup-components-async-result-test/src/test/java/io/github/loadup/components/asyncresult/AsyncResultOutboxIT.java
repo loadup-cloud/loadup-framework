@@ -19,11 +19,18 @@
  */
 package io.github.loadup.components.asyncresult;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.loadup.components.asyncresult.local.LocalAsyncResultProvider;
-import io.github.loadup.components.outbox.*;
-import io.github.loadup.components.testcontainers.annotation.*;
+import io.github.loadup.components.outbox.JdbcOutboxRepository;
+import io.github.loadup.components.outbox.OutboxDispatcher;
+import io.github.loadup.components.outbox.OutboxEvent;
+import io.github.loadup.components.outbox.OutboxHandler;
+import io.github.loadup.components.outbox.OutboxMessage;
+import io.github.loadup.components.outbox.OutboxProperties;
+import io.github.loadup.components.testcontainers.annotation.ContainerType;
+import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
 import io.github.loadup.components.testcontainers.database.SharedPostgreSQLContainer;
 import java.time.Duration;
 import java.util.List;
@@ -43,9 +50,6 @@ import tools.jackson.databind.json.JsonMapper;
 @ActiveProfiles("test")
 @EnableTestContainers(value = ContainerType.POSTGRESQL, reuse = false)
 class AsyncResultOutboxIT {
-    @SpringBootConfiguration
-    static class Application {}
-
     @Test
     void outboxBecomesVisibleAfterCommitAndCompletesAnAlreadyRegisteredWaiter() {
         var ds = new DriverManagerDataSource(
@@ -74,13 +78,13 @@ class AsyncResultOutboxIT {
             };
             var dispatcher = new OutboxDispatcher(outbox, props, List.of(handler), null);
             String result = template.execute(AsyncResultTest.options(), String.class, key -> {
-                tx.executeWithoutResult(status -> eventId.set(outbox.publish(new OutboxMessage(
-                        key.tenantId(), handler.eventType(), 1, key.businessId(), mapper.writeValueAsString(key)))));
+                tx.executeWithoutResult(status -> eventId.set(outbox.publish(
+                        new OutboxMessage(handler.eventType(), 1, key.businessId(), mapper.writeValueAsString(key)))));
                 assertThat(dispatcher.dispatchBatch()).isEqualTo(1);
                 return AsyncResultTest.sent();
             });
             assertThat(result).isEqualTo("committed");
-            assertThat(outbox.find("tenant", eventId.get())).isPresent();
+            assertThat(outbox.find(eventId.get())).isPresent();
             tx.executeWithoutResult(status -> assertThatThrownBy(
                             () -> template.execute(AsyncResultTest.options(), String.class, k -> {
                                 throw new AssertionError("must not dispatch inside transaction");
@@ -88,4 +92,7 @@ class AsyncResultOutboxIT {
                     .isInstanceOf(io.github.loadup.commons.error.CommonException.class));
         }
     }
+
+    @SpringBootConfiguration
+    static class Application {}
 }

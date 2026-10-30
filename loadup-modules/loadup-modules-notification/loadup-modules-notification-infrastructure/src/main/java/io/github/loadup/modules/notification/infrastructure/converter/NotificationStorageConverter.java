@@ -20,8 +20,8 @@
 package io.github.loadup.modules.notification.infrastructure.converter;
 
 import io.github.loadup.commons.mapping.LoadUpMapStructConfig;
-import io.github.loadup.modules.notification.domain.model.*;
-import io.github.loadup.modules.notification.infrastructure.dataobject.*;
+import io.github.loadup.modules.notification.domain.model.InboxMessage;
+import io.github.loadup.modules.notification.infrastructure.dataobject.InboxMessageDO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

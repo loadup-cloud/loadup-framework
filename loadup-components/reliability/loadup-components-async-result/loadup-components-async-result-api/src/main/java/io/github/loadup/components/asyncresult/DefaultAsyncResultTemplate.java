@@ -30,12 +30,24 @@ import io.micrometer.core.instrument.MeterRegistry;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.*;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import tools.jackson.databind.ObjectMapper;
 
-/** Bounded waiters; backend notifications never execute user continuations on network threads. */
+/**
+ * Bounded waiters; backend notifications never execute user continuations on network threads.
+ */
 public final class DefaultAsyncResultTemplate implements AsyncResultTemplate {
     private final AsyncResultProvider provider;
     private final AsyncResultProperties properties;
@@ -67,7 +79,9 @@ public final class DefaultAsyncResultTemplate implements AsyncResultTemplate {
         try {
             subscription = provider.subscribe(owner, key -> {
                 var p = pending.get(key);
-                if (p != null) check(p);
+                if (p != null) {
+                    check(p);
+                }
             });
         } catch (RuntimeException failure) {
             workers.shutdownNow();
@@ -79,7 +93,9 @@ public final class DefaultAsyncResultTemplate implements AsyncResultTemplate {
                 properties.fallbackPollInterval().toMillis(),
                 properties.fallbackPollInterval().toMillis(),
                 TimeUnit.MILLISECONDS);
-        if (metrics != null) metrics.gauge("loadup.async_result.pending", pending, ConcurrentHashMap::size);
+        if (metrics != null) {
+            metrics.gauge("loadup.async_result.pending", pending, ConcurrentHashMap::size);
+        }
     }
 
     @Override
@@ -92,8 +108,12 @@ public final class DefaultAsyncResultTemplate implements AsyncResultTemplate {
             Thread.currentThread().interrupt();
             throw new CommonException(AsyncResultCodeEnum.INTERRUPTED, failure);
         } catch (ExecutionException failure) {
-            if (failure.getCause() instanceof RuntimeException cause) throw cause;
-            if (failure.getCause() instanceof Error cause) throw cause;
+            if (failure.getCause() instanceof RuntimeException cause) {
+                throw cause;
+            }
+            if (failure.getCause() instanceof Error cause) {
+                throw cause;
+            }
             throw new CommonException(AsyncResultCodeEnum.UNAVAILABLE, failure.getCause());
         }
     }
@@ -103,11 +123,13 @@ public final class DefaultAsyncResultTemplate implements AsyncResultTemplate {
         Objects.requireNonNull(options);
         Objects.requireNonNull(type);
         Objects.requireNonNull(dispatch);
-        if (TransactionSynchronizationManager.isActualTransactionActive())
+        if (TransactionSynchronizationManager.isActualTransactionActive()) {
             throw new CommonException(AsyncResultCodeEnum.ACTIVE_TRANSACTION);
+        }
         var timeout = options.waitTimeout() == null ? properties.waitTimeout() : options.waitTimeout();
-        if (timeout.toMillis() < 1 || timeout.compareTo(properties.maxWaitTimeout()) > 0)
+        if (timeout.toMillis() < 1 || timeout.compareTo(properties.maxWaitTimeout()) > 0) {
             throw new IllegalArgumentException("waitTimeout exceeds configured bounds");
+        }
         var key = new AsyncReplyKey(
                 options.tenantId(),
                 options.operation(),
@@ -115,8 +137,12 @@ public final class DefaultAsyncResultTemplate implements AsyncResultTemplate {
                 UUID.randomUUID().toString());
         var p = new Pending<T>(key, type);
         synchronized (lifecycle) {
-            if (closed) throw new CommonException(AsyncResultCodeEnum.CLOSED);
-            if (!slots.tryAcquire()) throw new CommonException(AsyncResultCodeEnum.CAPACITY_EXCEEDED);
+            if (closed) {
+                throw new CommonException(AsyncResultCodeEnum.CLOSED);
+            }
+            if (!slots.tryAcquire()) {
+                throw new CommonException(AsyncResultCodeEnum.CAPACITY_EXCEEDED);
+            }
             if (!dispatchSlots.tryAcquire()) {
                 slots.release();
                 throw new CommonException(AsyncResultCodeEnum.CAPACITY_EXCEEDED);
@@ -125,7 +151,9 @@ public final class DefaultAsyncResultTemplate implements AsyncResultTemplate {
             p.future.whenComplete((value, failure) -> {
                 pending.remove(key, p);
                 slots.release();
-                if (p.timeout != null) p.timeout.cancel(false);
+                if (p.timeout != null) {
+                    p.timeout.cancel(false);
+                }
                 record(p, failure);
             });
             p.timeout = timer.schedule(
@@ -133,14 +161,18 @@ public final class DefaultAsyncResultTemplate implements AsyncResultTemplate {
                             p, () -> p.future.completeExceptionally(new CommonException(AsyncResultCodeEnum.TIMEOUT))),
                     timeout.toNanos(),
                     TimeUnit.NANOSECONDS);
-            if (!submit(p, () -> dispatch(p, dispatch))) dispatchSlots.release();
+            if (!submit(p, () -> dispatch(p, dispatch))) {
+                dispatchSlots.release();
+            }
         }
         return p.future;
     }
 
     private void dispatch(Pending<?> p, AsyncDispatch dispatch) {
         try {
-            if (p.future.isDone()) return;
+            if (p.future.isDone()) {
+                return;
+            }
             try {
                 try {
                     provider.register(p.key, owner, properties.resultRetention());
@@ -148,15 +180,18 @@ public final class DefaultAsyncResultTemplate implements AsyncResultTemplate {
                     p.future.completeExceptionally(new CommonException(AsyncResultCodeEnum.UNAVAILABLE));
                     return;
                 }
-                if (p.future.isDone()) return;
+                if (p.future.isDone()) {
+                    return;
+                }
                 var sent = Objects.requireNonNull(
                         dispatch.send(p.key), "Dispatch must return a send acknowledgement stage");
                 sent.whenComplete((ignored, failure) -> {
-                    if (failure != null)
+                    if (failure != null) {
                         submit(
                                 p,
                                 () -> p.future.completeExceptionally(
                                         new CommonException(AsyncResultCodeEnum.DISPATCH_FAILED)));
+                    }
                 });
                 check(p);
             } catch (Exception failure) {
@@ -171,14 +206,16 @@ public final class DefaultAsyncResultTemplate implements AsyncResultTemplate {
     }
 
     private <T> void check(Pending<T> p) {
-        if (p.future.isDone() || !p.reading.compareAndSet(false, true)) return;
+        if (p.future.isDone() || !p.reading.compareAndSet(false, true)) {
+            return;
+        }
         submit(p, () -> {
             try {
                 provider.find(p.key).ifPresent(value -> {
                     try {
-                        if (value.failureCode() != null)
+                        if (value.failureCode() != null) {
                             p.future.completeExceptionally(new AsyncResultFailureException(value.failureCode()));
-                        else {
+                        } else {
                             checkSize(value.payload());
                             p.future.complete(mapper.readValue(value.payload(), p.type));
                         }
@@ -188,8 +225,9 @@ public final class DefaultAsyncResultTemplate implements AsyncResultTemplate {
                 });
             } catch (RuntimeException failure) {
                 // The next notification or poll can recover a temporary backend read failure.
-                if (metrics != null)
+                if (metrics != null) {
                     metrics.counter("loadup.async_result.read_failures").increment();
+                }
             } finally {
                 p.reading.set(false);
             }
@@ -228,16 +266,19 @@ public final class DefaultAsyncResultTemplate implements AsyncResultTemplate {
 
     private AsyncCompletionStatus finish(AsyncReplyKey key, AsyncResultValue value) {
         synchronized (lifecycle) {
-            if (closed) throw new CommonException(AsyncResultCodeEnum.CLOSED);
+            if (closed) {
+                throw new CommonException(AsyncResultCodeEnum.CLOSED);
+            }
         }
         try {
             var status = provider.complete(key, value);
-            if (metrics != null)
+            if (metrics != null) {
                 metrics.counter(
                                 "loadup.async_result.completions",
                                 "outcome",
                                 status.name().toLowerCase(java.util.Locale.ROOT))
                         .increment();
+            }
             return status;
         } catch (CommonException failure) {
             throw failure;
@@ -247,12 +288,15 @@ public final class DefaultAsyncResultTemplate implements AsyncResultTemplate {
     }
 
     private void checkSize(String payload) {
-        if (payload.getBytes(StandardCharsets.UTF_8).length > properties.maxResultBytes())
+        if (payload.getBytes(StandardCharsets.UTF_8).length > properties.maxResultBytes()) {
             throw new CommonException(AsyncResultCodeEnum.INVALID_REPLY);
+        }
     }
 
     private void record(Pending<?> p, Throwable failure) {
-        if (metrics == null) return;
+        if (metrics == null) {
+            return;
+        }
         String outcome = failure == null
                 ? "success"
                 : failure instanceof CancellationException
@@ -267,7 +311,9 @@ public final class DefaultAsyncResultTemplate implements AsyncResultTemplate {
     @Override
     public void close() {
         synchronized (lifecycle) {
-            if (closed) return;
+            if (closed) {
+                return;
+            }
             closed = true;
         }
         try {

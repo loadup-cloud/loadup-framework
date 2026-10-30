@@ -46,6 +46,14 @@ class LocalCryptographyContractTest {
     private final SignatureServiceImpl signatures = new SignatureServiceImpl(keys);
     private final DigestServiceImpl digests = new DigestServiceImpl();
 
+    private static void assertCode(Runnable operation, SignatureException.SignatureErrorCode expected) {
+        assertThatThrownBy(operation::run).isInstanceOfSatisfying(SignatureException.class, error -> {
+            assertThat(error.getErrorCode()).isEqualTo(expected);
+            assertThat(error.getCause()).isNotNull();
+            assertThat(error.getMessage()).isEqualTo(expected.getMessage());
+        });
+    }
+
     @ParameterizedTest
     @EnumSource(SignatureAlgorithm.class)
     void encodedAndJcaKeysInteroperateAndRejectTamperedPayloads(SignatureAlgorithm algorithm) {
@@ -153,13 +161,5 @@ class LocalCryptographyContractTest {
         assertCode(
                 () -> DigestUtils.hmac("payload", "", DigestAlgorithm.HMAC_SHA256),
                 SignatureException.SignatureErrorCode.DIGEST_FAILED);
-    }
-
-    private static void assertCode(Runnable operation, SignatureException.SignatureErrorCode expected) {
-        assertThatThrownBy(operation::run).isInstanceOfSatisfying(SignatureException.class, error -> {
-            assertThat(error.getErrorCode()).isEqualTo(expected);
-            assertThat(error.getCause()).isNotNull();
-            assertThat(error.getMessage()).isEqualTo(expected.getMessage());
-        });
     }
 }

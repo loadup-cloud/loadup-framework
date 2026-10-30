@@ -45,6 +45,26 @@ class ResilientNotificationChannelProviderTest {
     private static final ChannelSendRequest REQUEST =
             new ChannelSendRequest(List.of("receiver-1"), "content", Map.of(), Map.of());
 
+    private static ResilienceRegistries registries() {
+        CircuitBreakerRegistry circuitBreakerRegistry = CircuitBreakerRegistry.of(CircuitBreakerConfig.custom()
+                .failureRateThreshold(50)
+                .slidingWindowSize(4)
+                .minimumNumberOfCalls(2)
+                .waitDurationInOpenState(Duration.ofSeconds(1))
+                .permittedNumberOfCallsInHalfOpenState(1)
+                .build());
+        RetryRegistry retryRegistry = RetryRegistry.of(RetryConfig.custom()
+                .maxAttempts(3)
+                .waitDuration(Duration.ofMillis(10))
+                .build());
+        return new ResilienceRegistries(
+                circuitBreakerRegistry,
+                retryRegistry,
+                RateLimiterRegistry.ofDefaults(),
+                BulkheadRegistry.ofDefaults(),
+                TimeLimiterRegistry.ofDefaults());
+    }
+
     @Test
     void retriesTheSameProviderBeforeFallingThrough() {
         FlakyProvider delegate = new FlakyProvider(2);
@@ -94,26 +114,6 @@ class ResilientNotificationChannelProviderTest {
     void instanceNameFollowsTheProviderConvention() {
         FlakyProvider delegate = new FlakyProvider(0);
         assertThat(ResilientNotificationChannelProvider.instanceName(delegate)).isEqualTo("gotone-sms-stub");
-    }
-
-    private static ResilienceRegistries registries() {
-        CircuitBreakerRegistry circuitBreakerRegistry = CircuitBreakerRegistry.of(CircuitBreakerConfig.custom()
-                .failureRateThreshold(50)
-                .slidingWindowSize(4)
-                .minimumNumberOfCalls(2)
-                .waitDurationInOpenState(Duration.ofSeconds(1))
-                .permittedNumberOfCallsInHalfOpenState(1)
-                .build());
-        RetryRegistry retryRegistry = RetryRegistry.of(RetryConfig.custom()
-                .maxAttempts(3)
-                .waitDuration(Duration.ofMillis(10))
-                .build());
-        return new ResilienceRegistries(
-                circuitBreakerRegistry,
-                retryRegistry,
-                RateLimiterRegistry.ofDefaults(),
-                BulkheadRegistry.ofDefaults(),
-                TimeLimiterRegistry.ofDefaults());
     }
 
     private static final class FlakyProvider implements NotificationChannelProvider {

@@ -19,21 +19,30 @@
  */
 package io.github.loadup.modules.merchant;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.commons.util.TenantUtil;
-import io.github.loadup.components.testcontainers.annotation.*;
-import io.github.loadup.modules.contract.app.service.*;
-import io.github.loadup.modules.contract.client.command.*;
+import io.github.loadup.components.testcontainers.annotation.ContainerType;
+import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
+import io.github.loadup.modules.contract.app.service.CatalogService;
+import io.github.loadup.modules.contract.app.service.ContractResolveService;
+import io.github.loadup.modules.contract.app.service.MerchantContractService;
+import io.github.loadup.modules.contract.client.command.CatalogActionCommand;
+import io.github.loadup.modules.contract.client.command.CatalogSaveCommand;
+import io.github.loadup.modules.contract.client.command.ContractSignCommand;
 import io.github.loadup.modules.contract.client.query.ContractResolveQuery;
 import io.github.loadup.modules.contract.client.spi.MerchantFactsProvider;
 import io.github.loadup.modules.merchant.app.service.MerchantService;
-import io.github.loadup.modules.merchant.client.command.*;
+import io.github.loadup.modules.merchant.client.command.MerchantCreateCommand;
+import io.github.loadup.modules.merchant.client.command.MerchantStatusCommand;
+import io.github.loadup.modules.merchant.client.command.MerchantUpdateCommand;
 import io.github.loadup.modules.merchant.client.facade.MerchantQueryFacade;
 import io.github.loadup.modules.merchant.client.query.MerchantPageQuery;
 import java.time.Instant;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
@@ -67,106 +76,82 @@ class MerchantContractIT {
     }
 
     @Test
-    void merchantCrudEnforcesTenantUniqueCodeAndOptimisticVersion() {
-        String tenant = UUID.randomUUID().toString();
-        String id = TenantUtil.callWithTenant(tenant, () -> {
-            var created = merchants.create(command(), "operator");
-            assertThatThrownBy(() -> merchants.create(command(), "operator")).isInstanceOf(CommonException.class);
-            var updated = merchants.update(
-                    new MerchantUpdateCommand(
-                            created.id(),
-                            created.rowVersion(),
-                            "M001",
-                            "Updated",
-                            null,
-                            "ENTERPRISE",
-                            "SERVICES",
-                            "CN",
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null),
-                    "operator");
-            assertThat(updated.contactPhone()).isEqualTo("13800138000");
-            assertThat(facts.load(tenant, created.id())
-                            .facts()
-                            .get("merchant.industry")
-                            .value())
-                    .isEqualTo("SERVICES");
-            assertThatThrownBy(() -> merchants.changeStatus(
-                            new MerchantStatusCommand(created.id(), created.rowVersion(), "INACTIVE"), "operator"))
-                    .isInstanceOf(CommonException.class);
-            assertThat(merchants
-                            .page(new MerchantPageQuery(null, null, null, 1, 20))
-                            .getPageInfo()
-                            .totalCount())
-                    .isEqualTo(1);
-            return created.id();
-        });
-        String other = UUID.randomUUID().toString();
-        TenantUtil.runWithTenant(other, () -> {
-            assertThat(lookup.find(other, id)).isEmpty();
-            assertThatThrownBy(() -> lookup.find(tenant, id))
-                    .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
-            assertThatThrownBy(() -> merchants.detail(id)).isInstanceOf(CommonException.class);
-            assertThat(merchants.create(command(), "operator").id()).isNotEqualTo(id);
-        });
+    void merchantCrudEnforcesUniqueCodeAndOptimisticVersion() {
+        var created = merchants.create(command(), "operator");
+        assertThatThrownBy(() -> merchants.create(command(), "operator")).isInstanceOf(CommonException.class);
+        var updated = merchants.update(
+                new MerchantUpdateCommand(
+                        created.id(),
+                        created.rowVersion(),
+                        "M001",
+                        "Updated",
+                        null,
+                        "ENTERPRISE",
+                        "SERVICES",
+                        "CN",
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null),
+                "operator");
+        assertThat(updated.contactPhone()).isEqualTo("13800138000");
+        assertThat(facts.load(created.id()).facts().get("merchant.industry").value())
+                .isEqualTo("SERVICES");
+        assertThatThrownBy(() -> merchants.changeStatus(
+                        new MerchantStatusCommand(created.id(), created.rowVersion(), "INACTIVE"), "operator"))
+                .isInstanceOf(CommonException.class);
+        assertThat(merchants
+                        .page(new MerchantPageQuery(null, null, null, 1, 20))
+                        .getPageInfo()
+                        .totalCount())
+                .isEqualTo(1);
+        assertThat(lookup.find(created.id())).isPresent();
     }
 
     @Test
     void contractUsesPersistedIndustryAndDisabledMerchantIsRejected() {
-        String tenant = UUID.randomUUID().toString();
-        TenantUtil.runWithTenant(tenant, () -> {
-            var merchant = merchants.create(command(), "operator");
-            String plan = plan();
-            var sign = new ContractSignCommand(
-                    merchant.id(), "store", plan, "request", Set.of("basic.scan"), Map.of(), null, null);
-            var signed = contracts.sign(sign, "operator");
-            var query = new ContractResolveQuery(merchant.id(), "store", "basic.scan", Map.of());
-            assertThat(runtime.resolve(query).allowed()).isTrue();
-            var inactive = merchants.changeStatus(
-                    new MerchantStatusCommand(merchant.id(), merchant.rowVersion(), "INACTIVE"), "operator");
-            assertThatThrownBy(() -> contracts.preview(
-                            new ContractSignCommand(
-                                    merchant.id(),
-                                    "second",
-                                    plan,
-                                    "second",
-                                    Set.of("basic.scan"),
-                                    Map.of(),
-                                    null,
-                                    null),
-                            "operator"))
-                    .isInstanceOf(CommonException.class);
-            assertThatThrownBy(() -> runtime.resolve(query)).isInstanceOf(CommonException.class);
-            assertThat(contracts.sign(sign, "operator").id()).isEqualTo(signed.id());
-            var active = merchants.changeStatus(
-                    new MerchantStatusCommand(merchant.id(), inactive.rowVersion(), "ACTIVE"), "operator");
-            assertThat(runtime.resolve(query).allowed()).isTrue();
-            merchants.update(
-                    new MerchantUpdateCommand(
-                            merchant.id(),
-                            active.rowVersion(),
-                            "M001",
-                            "Retail",
-                            null,
-                            "ENTERPRISE",
-                            "SERVICES",
-                            "CN",
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null),
-                    "operator");
-            assertThat(runtime.resolve(query).allowed()).isFalse();
-            assertThat(contracts.detail(signed.id()).snapshotHash()).isEqualTo(signed.snapshotHash());
-        });
+        var merchant = merchants.create(command(), "operator");
+        String plan = plan();
+        var sign = new ContractSignCommand(
+                merchant.id(), "store", plan, "request", Set.of("basic.scan"), Map.of(), null, null);
+        var signed = contracts.sign(sign, "operator");
+        var query = new ContractResolveQuery(merchant.id(), "store", "basic.scan", Map.of());
+        assertThat(runtime.resolve(query).allowed()).isTrue();
+        var inactive = merchants.changeStatus(
+                new MerchantStatusCommand(merchant.id(), merchant.rowVersion(), "INACTIVE"), "operator");
+        assertThatThrownBy(() -> contracts.preview(
+                        new ContractSignCommand(
+                                merchant.id(), "second", plan, "second", Set.of("basic.scan"), Map.of(), null, null),
+                        "operator"))
+                .isInstanceOf(CommonException.class);
+        assertThatThrownBy(() -> runtime.resolve(query)).isInstanceOf(CommonException.class);
+        assertThat(contracts.sign(sign, "operator").id()).isEqualTo(signed.id());
+        var active = merchants.changeStatus(
+                new MerchantStatusCommand(merchant.id(), inactive.rowVersion(), "ACTIVE"), "operator");
+        assertThat(runtime.resolve(query).allowed()).isTrue();
+        merchants.update(
+                new MerchantUpdateCommand(
+                        merchant.id(),
+                        active.rowVersion(),
+                        "M001",
+                        "Retail",
+                        null,
+                        "ENTERPRISE",
+                        "SERVICES",
+                        "CN",
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null),
+                "operator");
+        assertThat(runtime.resolve(query).allowed()).isFalse();
+        assertThat(contracts.detail(signed.id()).snapshotHash()).isEqualTo(signed.snapshotHash());
     }
 
     private MerchantCreateCommand command() {

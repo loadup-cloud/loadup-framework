@@ -20,6 +20,7 @@
 package io.github.loadup.components.database.flyway;
 
 import io.github.loadup.commons.log.LogUtil;
+import io.github.loadup.components.database.config.DatabaseProperties;
 import java.util.ArrayList;
 import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
@@ -62,7 +63,7 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration(before = FlywayAutoConfiguration.class)
 @ConditionalOnClass(Flyway.class)
 @ConditionalOnProperty(prefix = "loadup.flyway", name = "enabled", havingValue = "true", matchIfMissing = true)
-@EnableConfigurationProperties(FlywayProperties.class)
+@EnableConfigurationProperties({FlywayProperties.class, DatabaseProperties.class})
 public class LoadUpFlywayAutoConfiguration {
 
     /**
@@ -71,16 +72,21 @@ public class LoadUpFlywayAutoConfiguration {
      * <p>Registered before Spring Boot's own {@link FlywayAutoConfiguration}
      * so our configuration takes precedence via {@link ConditionalOnMissingBean}.
      *
-     * @param dataSource the primary DataSource
-     * @param properties LoadUp Flyway properties
+     * @param dataSource         the primary DataSource
+     * @param properties         LoadUp Flyway properties
+     * @param databaseProperties LoadUp database properties, including the default tenant schema
      * @return configured Flyway instance
      */
     @Bean
     @ConditionalOnMissingBean
-    public Flyway flyway(DataSource dataSource, FlywayProperties properties) {
+    public Flyway flyway(DataSource dataSource, FlywayProperties properties, DatabaseProperties databaseProperties) {
         LogUtil.info(LoadUpFlywayAutoConfiguration.class, ">>> [FLYWAY] Configuring Flyway with LoadUp properties");
 
         FluentConfiguration config = Flyway.configure().dataSource(dataSource);
+        String schema = databaseProperties.getMultiTenant().getDefaultSchema();
+        config.defaultSchema(schema);
+        config.schemas(schema);
+        LogUtil.info(LoadUpFlywayAutoConfiguration.class, ">>> [FLYWAY] Default schema: {}", schema);
 
         // Migration locations
         if (properties.getLocations() != null && properties.getLocations().length > 0) {
@@ -163,7 +169,7 @@ public class LoadUpFlywayAutoConfiguration {
      * initializer) is skipped when a custom {@link Flyway} bean already exists. Re-registering the
      * initializer here restores the Boot 3 behavior so migrations run automatically.
      *
-     * @param flyway the configured Flyway instance
+     * @param flyway            the configured Flyway instance
      * @param migrationStrategy the LoadUp migration strategy
      * @return the migration initializer
      */

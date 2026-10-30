@@ -35,6 +35,8 @@ public class StringUtils {
      */
     public static final String EMPTY = "";
 
+    private static final char BACKSLASH = '\\';
+
     private StringUtils() {}
 
     /**
@@ -64,8 +66,6 @@ public class StringUtils {
     public static boolean isNotEmpty(CharSequence cs) {
         return !isEmpty(cs);
     }
-
-    private static final char BACKSLASH = '\\';
 
     public static String format(String strPattern, Object... argArray) {
         return formatWith(strPattern, "{}", argArray);

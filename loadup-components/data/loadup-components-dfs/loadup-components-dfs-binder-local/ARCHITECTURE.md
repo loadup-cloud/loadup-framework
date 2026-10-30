@@ -19,7 +19,8 @@
 
 主要入口文件：
 
-- [`LocalDfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/local/autoconfig/LocalDfsAutoConfiguration.java)
+- [
+  `LocalDfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/local/autoconfig/LocalDfsAutoConfiguration.java)
 - [`LocalDfsProvider`](src/main/java/io/github/loadup/components/dfs/local/LocalDfsProvider.java)
 
 ## 分层与调用路径
@@ -29,17 +30,22 @@
 ```text
 业务代码 → API/facade → 当前 binder → 第三方引擎或基础设施
 ```
+
 binder 实现框架契约，把实现库及其配置隔离在业务 API 之外。
 
 ## 装配规则
 
-- [`LocalDfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/local/autoconfig/LocalDfsAutoConfiguration.java) 是自动配置入口。
-  - `@ConditionalOnProperty(prefix = "loadup.dfs", name = "binder-type", havingValue = "local", matchIfMissing = true)`
-  - `@ConditionalOnMissingBean(DfsProvider.class)`
+- [
+  `LocalDfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/local/autoconfig/LocalDfsAutoConfiguration.java)
+  是自动配置入口。
+    -
+    `@ConditionalOnProperty(prefix = "loadup.dfs", name = "binder-type", havingValue = "local", matchIfMissing = true)`
+    - `@ConditionalOnMissingBean(DfsProvider.class)`
 
 ## 配置归属
 
-- [`LocalDfsProperties`](src/main/java/io/github/loadup/components/dfs/local/LocalDfsProperties.java) 绑定 `loadup.dfs.binder.local`。
+- [`LocalDfsProperties`](src/main/java/io/github/loadup/components/dfs/local/LocalDfsProperties.java) 绑定
+  `loadup.dfs.binder.local`。
 
 ## 设计取舍
 

@@ -63,9 +63,13 @@ public class UserSensitiveReadService implements io.github.loadup.modules.upms.c
         var subject = users.findById(query.id()).orElseThrow(() -> new AccessDeniedException("Sensitive read denied"));
         var decision =
                 decisions.decide(actorId, PERMISSION, new ResourceAttributes(subject.getId(), subject.getDeptId()));
-        if (!decision.allowed()) throw new AccessDeniedException("Sensitive read denied");
+        if (!decision.allowed()) {
+            throw new AccessDeniedException("Sensitive read denied");
+        }
         var audit = audits.getIfAvailable();
-        if (audit == null) throw new CommonException(CommonResultCodeEnum.SYS_ERROR);
+        if (audit == null) {
+            throw new CommonException(CommonResultCodeEnum.SYS_ERROR);
+        }
         audit.record(actorId, subject.getId(), query.purpose());
         return converter.toDTO(subject);
     }

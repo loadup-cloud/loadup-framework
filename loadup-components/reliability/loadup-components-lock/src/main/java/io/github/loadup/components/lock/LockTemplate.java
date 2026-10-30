@@ -19,7 +19,9 @@
  */
 package io.github.loadup.components.lock;
 
-/** Synchronous critical sections. Acquire, callback and release all run on the caller thread. */
+/**
+ * Synchronous critical sections. Acquire, callback and release all run on the caller thread.
+ */
 public interface LockTemplate {
     <T, X extends Throwable> T execute(LockKey key, ScopedValue.CallableOp<T, X> action) throws X, InterruptedException;
 

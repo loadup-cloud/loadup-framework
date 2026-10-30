@@ -1,1 +1,2 @@
 io.github.loadup.commons.log.autoconfigure.LoadupLogAutoConfiguration
+io.github.loadup.commons.time.autoconfigure.ClockAutoConfiguration

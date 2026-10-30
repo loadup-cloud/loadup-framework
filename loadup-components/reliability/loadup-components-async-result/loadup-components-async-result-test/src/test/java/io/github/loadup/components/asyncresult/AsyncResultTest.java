@@ -19,17 +19,32 @@
  */
 package io.github.loadup.components.asyncresult;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
-import io.github.loadup.commons.context.*;
+import io.github.loadup.commons.context.ContextHolder;
+import io.github.loadup.commons.context.ContextKey;
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.components.asyncresult.local.LocalAsyncResultProvider;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.time.Duration;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -64,8 +79,9 @@ class AsyncResultTest {
 
     static void awaitCleanup(SimpleMeterRegistry metrics) throws Exception {
         long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(3);
-        while (metrics.get("loadup.async_result.pending").gauge().value() != 0 && System.nanoTime() < deadline)
+        while (metrics.get("loadup.async_result.pending").gauge().value() != 0 && System.nanoTime() < deadline) {
             Thread.sleep(1);
+        }
         assertThat(metrics.get("loadup.async_result.pending").gauge().value()).isZero();
     }
 
@@ -254,7 +270,9 @@ class AsyncResultTest {
             doAnswer(i -> (AutoCloseable) () -> {}).when(provider).subscribe(anyString(), any());
             var first = new java.util.concurrent.atomic.AtomicBoolean(true);
             doAnswer(i -> {
-                        if (first.getAndSet(false)) throw new IllegalStateException("offline");
+                        if (first.getAndSet(false)) {
+                            throw new IllegalStateException("offline");
+                        }
                         return actual.find(i.getArgument(0));
                     })
                     .when(provider)
@@ -309,9 +327,12 @@ class AsyncResultTest {
                 }));
             }
             assertThat(ready.await(2, TimeUnit.SECONDS)).isTrue();
-            for (int i = 39; i >= 0; i--) template.complete(keys.get(i), i);
-            for (int i = 0; i < 40; i++)
+            for (int i = 39; i >= 0; i--) {
+                template.complete(keys.get(i), i);
+            }
+            for (int i = 0; i < 40; i++) {
                 assertThat(futures.get(i).get(2, TimeUnit.SECONDS)).isEqualTo(i);
+            }
         }
     }
 
@@ -355,12 +376,6 @@ class AsyncResultTest {
         }
     }
 
-    static final class BrokenReply {
-        public String getValue() {
-            throw new IllegalStateException("private-payload");
-        }
-    }
-
     @Test
     void stalledDispatchRemainsBoundedAfterItsWaiterTimesOut() throws Exception {
         var release = new CountDownLatch(1);
@@ -380,6 +395,12 @@ class AsyncResultTest {
                     .isEqualTo(AsyncResultCodeEnum.CAPACITY_EXCEEDED);
         } finally {
             release.countDown();
+        }
+    }
+
+    static final class BrokenReply {
+        public String getValue() {
+            throw new IllegalStateException("private-payload");
         }
     }
 }

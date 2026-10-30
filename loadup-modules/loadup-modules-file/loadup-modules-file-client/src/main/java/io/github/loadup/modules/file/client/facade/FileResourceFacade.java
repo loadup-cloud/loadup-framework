@@ -26,27 +26,27 @@ import io.github.loadup.modules.file.client.dto.FileResourceDTO;
 import java.io.InputStream;
 import java.util.List;
 
-/** Public business contract for FileResourceService. */
+/**
+ * Public business contract for FileResourceService.
+ */
 public interface FileResourceFacade {
-    FileResourceDTO upload(
-            String tenantId, String ownerId, String filename, String contentType, long size, InputStream content);
+    FileResourceDTO upload(String ownerId, String filename, String contentType, long size, InputStream content);
 
-    FileResourceDTO get(String tenantId, String id, String actorId, boolean admin);
+    FileResourceDTO get(String id, String actorId, boolean admin);
 
-    FileDownloadResponse download(String tenantId, String id, String actorId, boolean admin);
+    FileDownloadResponse download(String id, String actorId, boolean admin);
 
-    PageDTO<FileResourceDTO> list(String tenantId, String actorId, boolean admin, String ownerId, int page, int size);
+    PageDTO<FileResourceDTO> list(String actorId, boolean admin, String ownerId, int page, int size);
 
-    FileReferenceDTO attach(
-            String tenantId, String id, String actorId, boolean admin, String referenceType, String referenceId);
+    FileReferenceDTO attach(String id, String actorId, boolean admin, String referenceType, String referenceId);
 
-    void detach(String tenantId, String id, String actorId, boolean admin, String referenceType, String referenceId);
+    void detach(String id, String actorId, boolean admin, String referenceType, String referenceId);
 
-    List<FileReferenceDTO> references(String tenantId, String id, String actorId, boolean admin);
+    List<FileReferenceDTO> references(String id, String actorId, boolean admin);
 
-    void requestDeletion(String tenantId, String id, String actorId, boolean admin);
+    void requestDeletion(String id, String actorId, boolean admin);
 
     int cleanupPending(int limit);
 
-    void cleanup(String tenantId, String id);
+    void cleanup(String id);
 }

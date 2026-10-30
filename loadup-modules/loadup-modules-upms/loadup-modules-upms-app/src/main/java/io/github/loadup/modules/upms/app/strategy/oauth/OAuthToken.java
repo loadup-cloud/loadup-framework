@@ -51,40 +51,45 @@ public class OAuthToken implements Serializable {
 
     public OAuthToken() {}
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public String getAccessToken() {
         return this.accessToken;
-    }
-
-    public String getRefreshToken() {
-        return this.refreshToken;
-    }
-
-    public Long getExpiresIn() {
-        return this.expiresIn;
-    }
-
-    public String getScope() {
-        return this.scope;
     }
 
     public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
     }
 
+    public String getRefreshToken() {
+        return this.refreshToken;
+    }
+
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+    public Long getExpiresIn() {
+        return this.expiresIn;
     }
 
     public void setExpiresIn(Long expiresIn) {
         this.expiresIn = expiresIn;
     }
 
+    public String getScope() {
+        return this.scope;
+    }
+
     public void setScope(String scope) {
         this.scope = scope;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
     }
 
     public static class Builder {
@@ -116,10 +121,5 @@ public class OAuthToken implements Serializable {
         public OAuthToken build() {
             return new OAuthToken(this.accessToken, this.refreshToken, this.expiresIn, this.scope);
         }
-    }
-
-    @Override
-    public String toString() {
-        return ToStringAsJson.reflectionToString(this);
     }
 }

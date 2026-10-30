@@ -19,17 +19,20 @@
  */
 package io.github.loadup.modules.upms.infrastructure.repository;
 
-import io.github.loadup.components.database.tenant.DatabaseTenant;
+import com.mybatisflex.core.query.QueryWrapper;
+import com.mybatisflex.spring.service.impl.ServiceImpl;
 import io.github.loadup.modules.upms.domain.gateway.DepartmentGateway;
 import io.github.loadup.modules.upms.domain.model.Department;
 import io.github.loadup.modules.upms.infrastructure.converter.DepartmentConverter;
 import io.github.loadup.modules.upms.infrastructure.dataobject.DepartmentDO;
+import io.github.loadup.modules.upms.infrastructure.mapper.DepartmentMapper;
+import io.github.loadup.modules.upms.infrastructure.mapper.UserMapper;
+import io.github.loadup.modules.upms.infrastructure.table.Tables;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -37,26 +40,22 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-public class DepartmentGatewayImpl implements DepartmentGateway {
+public class DepartmentGatewayImpl extends ServiceImpl<DepartmentMapper, DepartmentDO> implements DepartmentGateway {
     private final NamedParameterJdbcTemplate jdbc;
-    private final DepartmentRepository departments;
-    private final UserRepository users;
+    private final UserMapper userMapper;
     private final Clock clock;
-    private final DatabaseTenant tenant;
     private final DepartmentConverter converter;
 
     public DepartmentGatewayImpl(
             NamedParameterJdbcTemplate jdbc,
-            DepartmentRepository departments,
-            UserRepository users,
+            DepartmentMapper mapper,
+            UserMapper userMapper,
             DepartmentConverter converter,
-            @Qualifier("databaseClock") Clock clock,
-            DatabaseTenant tenant) {
+            Clock clock) {
         this.jdbc = jdbc;
-        this.departments = departments;
-        this.users = users;
+        this.mapper = mapper;
+        this.userMapper = userMapper;
         this.clock = clock;
-        this.tenant = tenant;
         this.converter = converter;
     }
 
@@ -65,19 +64,22 @@ public class DepartmentGatewayImpl implements DepartmentGateway {
     public Department save(Department department) {
         DepartmentDO row = converter.toDataObject(department);
         lockParent(row.getParentId());
-        if (row.getId() == null) row.setId(UUID.randomUUID().toString());
+        if (row.getId() == null) {
+            row.setId(UUID.randomUUID().toString());
+        }
         var now = LocalDateTime.now(clock);
-        if (row.getCreatedAt() == null) row.setCreatedAt(now);
+        if (row.getCreatedAt() == null) {
+            row.setCreatedAt(now);
+        }
         row.setUpdatedAt(now);
-        row.setTenantId(tenant.current());
         jdbc.update("""
-                INSERT INTO upms_department (id, tenant_id, parent_id, dept_name, dept_code, dept_level,
-                    sort_order, leader_user_id, phone, email, status, remark, created_by, updated_by,
-                    created_at, updated_at, deleted)
-                VALUES (:id, :tenantId, :parentId, :deptName, :deptCode, COALESCE(:deptLevel, 1),
-                    COALESCE(:sortOrder, 0), :leaderUserId, :mobile, :email, COALESCE(:status, 1),
-                    :remark, :createdBy, :updatedBy, :createdAt, :updatedAt, FALSE)
-                """, new BeanPropertySqlParameterSource(row));
+            INSERT INTO upms_department (id, parent_id, dept_name, dept_code, dept_level,
+                sort_order, leader_user_id, phone, email, status, remark, created_by, updated_by,
+                created_at, updated_at, deleted)
+            VALUES (:id, :parentId, :deptName, :deptCode, COALESCE(:deptLevel, 1),
+                COALESCE(:sortOrder, 0), :leaderUserId, :mobile, :email, COALESCE(:status, 1),
+                :remark, :createdBy, :updatedBy, :createdAt, :updatedAt, FALSE)
+            """, new BeanPropertySqlParameterSource(row));
         return converter.toEntity(row);
     }
 
@@ -86,18 +88,19 @@ public class DepartmentGatewayImpl implements DepartmentGateway {
     public Department update(Department department) {
         DepartmentDO row = converter.toDataObject(department);
         lockParent(row.getParentId());
-        row.setTenantId(tenant.current());
         row.setUpdatedAt(LocalDateTime.now(clock));
         int changed = jdbc.update("""
-                UPDATE upms_department SET parent_id = COALESCE(:parentId, parent_id),
-                    dept_name = COALESCE(:deptName, dept_name), dept_code = COALESCE(:deptCode, dept_code),
-                    dept_level = COALESCE(:deptLevel, dept_level), sort_order = COALESCE(:sortOrder, sort_order),
-                    leader_user_id = COALESCE(:leaderUserId, leader_user_id), phone = COALESCE(:mobile, phone),
-                    email = COALESCE(:email, email), status = COALESCE(:status, status),
-                    remark = COALESCE(:remark, remark), updated_by = COALESCE(:updatedBy, updated_by), updated_at = :updatedAt
-                WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenantId AND deleted = FALSE
-                """, new BeanPropertySqlParameterSource(row));
-        if (changed != 1) throw new org.springframework.dao.IncorrectResultSizeDataAccessException(1, changed);
+            UPDATE upms_department SET parent_id = COALESCE(:parentId, parent_id),
+                dept_name = COALESCE(:deptName, dept_name), dept_code = COALESCE(:deptCode, dept_code),
+                dept_level = COALESCE(:deptLevel, dept_level), sort_order = COALESCE(:sortOrder, sort_order),
+                leader_user_id = COALESCE(:leaderUserId, leader_user_id), phone = COALESCE(:mobile, phone),
+                email = COALESCE(:email, email), status = COALESCE(:status, status),
+                remark = COALESCE(:remark, remark), updated_by = COALESCE(:updatedBy, updated_by), updated_at = :updatedAt
+            WHERE id = :id AND deleted = FALSE
+            """, new BeanPropertySqlParameterSource(row));
+        if (changed != 1) {
+            throw new org.springframework.dao.IncorrectResultSizeDataAccessException(1, changed);
+        }
         return converter.toEntity(row);
     }
 
@@ -106,44 +109,46 @@ public class DepartmentGatewayImpl implements DepartmentGateway {
     public void deleteById(String id) {
         var values = params().addValue("id", id).addValue("now", LocalDateTime.now(clock));
         jdbc.queryForList(
-                "SELECT id FROM upms_department WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE FOR UPDATE",
-                values,
-                String.class);
-        if (hasChildren(id) || hasUsers(id))
+                "SELECT id FROM upms_department WHERE id = :id AND deleted = FALSE FOR UPDATE", values, String.class);
+        if (hasChildren(id) || hasUsers(id)) {
             throw new IllegalStateException("Department still has users or child departments");
+        }
         jdbc.update(
-                "UPDATE upms_role_department SET deleted = TRUE, updated_at = :now WHERE dept_id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE",
+                "UPDATE upms_role_department SET deleted = TRUE, updated_at = :now WHERE dept_id = :id AND deleted = FALSE",
                 values);
         jdbc.update(
-                "UPDATE upms_department SET deleted = TRUE, updated_at = :now WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE",
+                "UPDATE upms_department SET deleted = TRUE, updated_at = :now WHERE id = :id AND deleted = FALSE",
                 values);
     }
 
     @Override
     public Optional<Department> findById(String id) {
-        return departments.findById(id).map(converter::toEntity);
+        return getByIdOpt(id).map(converter::toEntity);
     }
 
     @Override
     public Optional<Department> findByDeptCode(String deptCode) {
-        return departments.findByDeptCode(deptCode).map(converter::toEntity);
+        return getOneOpt(QueryWrapper.create().where(Tables.DEPARTMENT.DEPT_CODE.eq(deptCode)))
+                .map(converter::toEntity);
     }
 
     @Override
     public List<Department> findByParentId(String parentId) {
-        return departments.findByParentId(parentId).stream()
+        return list(QueryWrapper.create().where(Tables.DEPARTMENT.PARENT_ID.eq(parentId))).stream()
                 .map(converter::toEntity)
                 .toList();
     }
 
     @Override
     public List<Department> findAll() {
-        return departments.findAll().stream().map(converter::toEntity).toList();
+        return list().stream().map(converter::toEntity).toList();
     }
 
     @Override
     public List<Department> findAllEnabled() {
-        return departments.findAllEnabled().stream().map(converter::toEntity).toList();
+        return list(QueryWrapper.create().where(Tables.DEPARTMENT.STATUS.eq((short) 1))).stream()
+                .map(converter::toEntity)
+                .toList();
     }
 
     @Override
@@ -155,17 +160,17 @@ public class DepartmentGatewayImpl implements DepartmentGateway {
 
     @Override
     public boolean existsByDeptCode(String deptCode) {
-        return departments.existsByDeptCode(deptCode);
+        return exists(QueryWrapper.create().where(Tables.DEPARTMENT.DEPT_CODE.eq(deptCode)));
     }
 
     @Override
     public boolean hasChildren(String deptId) {
-        return !departments.findByParentId(deptId).isEmpty();
+        return exists(QueryWrapper.create().where(Tables.DEPARTMENT.PARENT_ID.eq(deptId)));
     }
 
     @Override
     public boolean hasUsers(String deptId) {
-        return users.countByDeptId(deptId) > 0;
+        return userMapper.selectCountByQuery(QueryWrapper.create().where(Tables.USER.DEPT_ID.eq(deptId))) > 0;
     }
 
     @Override
@@ -185,9 +190,11 @@ public class DepartmentGatewayImpl implements DepartmentGateway {
     }
 
     private void lockParent(String parentId) {
-        if (parentId == null || "0".equals(parentId)) return;
+        if (parentId == null || "0".equals(parentId)) {
+            return;
+        }
         if (jdbc.queryForList(
-                        "SELECT id FROM upms_department WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE AND status = 1 FOR UPDATE",
+                        "SELECT id FROM upms_department WHERE id = :id AND deleted = FALSE AND status = 1 FOR UPDATE",
                         params().addValue("id", parentId),
                         String.class)
                 .isEmpty()) {
@@ -196,6 +203,6 @@ public class DepartmentGatewayImpl implements DepartmentGateway {
     }
 
     private MapSqlParameterSource params() {
-        return new MapSqlParameterSource("tenant", tenant.current());
+        return new MapSqlParameterSource();
     }
 }

@@ -24,12 +24,15 @@ import io.github.loadup.modules.notification.domain.gateway.InboxGateway;
 import io.github.loadup.modules.notification.infrastructure.converter.NotificationStorageConverter;
 import io.github.loadup.modules.notification.infrastructure.converter.NotificationStorageConverterImpl;
 import io.github.loadup.modules.notification.infrastructure.repository.InboxGatewayImpl;
-import io.github.loadup.modules.notification.infrastructure.repository.InboxMessageRepository;
 import javax.sql.DataSource;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.*;
-import org.springframework.context.annotation.*;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.core.simple.JdbcClient;
 
 @AutoConfiguration(
         afterName = {
@@ -44,11 +47,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
         havingValue = "true",
         matchIfMissing = true)
 public class NotificationPersistenceAutoConfiguration {
-    @Bean("notificationStorageClock")
-    @ConditionalOnMissingBean(name = "notificationStorageClock")
-    public java.time.Clock storageClock() {
-        return java.time.Clock.systemDefaultZone();
-    }
 
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnMissingBean(InboxGateway.class)
@@ -56,13 +54,13 @@ public class NotificationPersistenceAutoConfiguration {
     static class DefaultPersistence {
         @Bean
         public InboxGateway notificationGateway(
-                NamedParameterJdbcTemplate jdbc,
-                InboxMessageRepository inbox,
+                org.springframework.beans.factory.ObjectProvider<JdbcClient> jdbcClient,
+                DataSource dataSource,
                 IdGenerator ids,
                 NotificationStorageConverter converter,
-                @org.springframework.beans.factory.annotation.Qualifier("notificationStorageClock")
-                        java.time.Clock clock) {
-            return new InboxGatewayImpl(jdbc, inbox, converter, clock, ids);
+                java.time.Clock clock) {
+            return new InboxGatewayImpl(
+                    jdbcClient.getIfAvailable(() -> JdbcClient.create(dataSource)), converter, clock, ids);
         }
     }
 }

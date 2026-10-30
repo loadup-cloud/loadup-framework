@@ -21,7 +21,9 @@ package io.github.loadup.modules.upms.app.service;
 
 import io.github.loadup.modules.upms.client.query.SensitiveReadPurpose;
 
-/** Must durably record access before returning; failures must propagate. No plaintext is accepted. */
+/**
+ * Must durably record access before returning; failures must propagate. No plaintext is accepted.
+ */
 @FunctionalInterface
 public interface SensitiveReadAudit {
     void record(String actorId, String subjectId, SensitiveReadPurpose purpose);

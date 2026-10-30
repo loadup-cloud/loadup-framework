@@ -23,12 +23,11 @@ import io.github.loadup.commons.json.ToStringAsJson;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
-/** Value and display label within a dictionary type. */
+/**
+ * Value and display label within a dictionary type.
+ */
 public record DictionaryItemDTO(
         @Schema(description = "Resource identifier") String id,
-
-        @Schema(description = "Tenant identifier resolved from trusted context")
-        String tenantId,
 
         @Schema(description = "Type id") String typeId,
         @Schema(description = "Value") String value,

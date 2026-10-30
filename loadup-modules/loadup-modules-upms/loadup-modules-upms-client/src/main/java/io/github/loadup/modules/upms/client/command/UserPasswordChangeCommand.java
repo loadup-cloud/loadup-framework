@@ -71,28 +71,28 @@ public class UserPasswordChangeCommand {
         return this.userId;
     }
 
-    public String getOldPassword() {
-        return this.oldPassword;
-    }
-
-    public String getNewPassword() {
-        return this.newPassword;
-    }
-
-    public String getConfirmPassword() {
-        return this.confirmPassword;
-    }
-
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getOldPassword() {
+        return this.oldPassword;
     }
 
     public void setOldPassword(String oldPassword) {
         this.oldPassword = oldPassword;
     }
 
+    public String getNewPassword() {
+        return this.newPassword;
+    }
+
     public void setNewPassword(String newPassword) {
         this.newPassword = newPassword;
+    }
+
+    public String getConfirmPassword() {
+        return this.confirmPassword;
     }
 
     public void setConfirmPassword(String confirmPassword) {

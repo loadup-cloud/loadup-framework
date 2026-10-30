@@ -21,7 +21,9 @@ package io.github.loadup.components.signature.exception;
 
 import io.github.loadup.commons.error.CommonException;
 
-/** Unchecked exception thrown by the signature and digest services. */
+/**
+ * Unchecked exception thrown by the signature and digest services.
+ */
 public class SignatureException extends CommonException {
 
     private final SignatureErrorCode errorCode;
@@ -36,7 +38,13 @@ public class SignatureException extends CommonException {
         this.errorCode = errorCode;
     }
 
-    /** Categorized signature errors. */
+    public SignatureErrorCode getErrorCode() {
+        return this.errorCode;
+    }
+
+    /**
+     * Categorized signature errors.
+     */
     public enum SignatureErrorCode implements io.github.loadup.commons.result.ResultCode {
         INVALID_KEY("Invalid key"),
         INVALID_ALGORITHM("Unsupported algorithm"),
@@ -63,9 +71,5 @@ public class SignatureException extends CommonException {
         public String getMessage() {
             return message;
         }
-    }
-
-    public SignatureErrorCode getErrorCode() {
-        return this.errorCode;
     }
 }

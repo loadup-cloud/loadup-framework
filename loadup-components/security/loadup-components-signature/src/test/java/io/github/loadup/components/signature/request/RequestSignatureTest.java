@@ -68,6 +68,21 @@ class RequestSignatureTest {
     private RequestVerifier verifier;
     private KeyPair pair;
 
+    private static Map<String, List<String>> headers(RequestSignature signature) {
+        Map<String, List<String>> headers = new HashMap<>();
+        signature.toHeaders().forEach((name, value) -> headers.put(name, List.of(value)));
+        return headers;
+    }
+
+    private static Signature signature(KmsSignatureAlgorithm algorithm) throws Exception {
+        var signature = Signature.getInstance(
+                algorithm == KmsSignatureAlgorithm.RSA_SHA256_PSS ? "RSASSA-PSS" : "SHA256withRSA");
+        if (algorithm == KmsSignatureAlgorithm.RSA_SHA256_PSS) {
+            signature.setParameter(new PSSParameterSpec("SHA-256", "MGF1", MGF1ParameterSpec.SHA256, 32, 1));
+        }
+        return signature;
+    }
+
     @BeforeEach
     void start() throws Exception {
         var generator = KeyPairGenerator.getInstance("RSA");
@@ -248,7 +263,7 @@ class RequestSignatureTest {
         var signed = signer.sign(identity, content);
         try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
             List<Callable<Boolean>> tasks = new ArrayList<>();
-            for (int i = 0; i < 12; i++)
+            for (int i = 0; i < 12; i++) {
                 tasks.add(() -> {
                     try {
                         verifier.verify(identity, content, signed);
@@ -258,8 +273,13 @@ class RequestSignatureTest {
                         return false;
                     }
                 });
+            }
             int accepted = 0;
-            for (var result : executor.invokeAll(tasks)) if (result.get()) accepted++;
+            for (var result : executor.invokeAll(tasks)) {
+                if (result.get()) {
+                    accepted++;
+                }
+            }
             assertThat(accepted).isEqualTo(1);
         }
     }
@@ -301,20 +321,6 @@ class RequestSignatureTest {
         huge.put("X-Key-Version", List.of("9999999999"));
         assertThatThrownBy(() -> RequestSignature.fromHeaders(huge))
                 .hasMessage("Request signature rejected: MALFORMED");
-    }
-
-    private static Map<String, List<String>> headers(RequestSignature signature) {
-        Map<String, List<String>> headers = new HashMap<>();
-        signature.toHeaders().forEach((name, value) -> headers.put(name, List.of(value)));
-        return headers;
-    }
-
-    private static Signature signature(KmsSignatureAlgorithm algorithm) throws Exception {
-        var signature = Signature.getInstance(
-                algorithm == KmsSignatureAlgorithm.RSA_SHA256_PSS ? "RSASSA-PSS" : "SHA256withRSA");
-        if (algorithm == KmsSignatureAlgorithm.RSA_SHA256_PSS)
-            signature.setParameter(new PSSParameterSpec("SHA-256", "MGF1", MGF1ParameterSpec.SHA256, 32, 1));
-        return signature;
     }
 
     private static final class MutableClock extends Clock {

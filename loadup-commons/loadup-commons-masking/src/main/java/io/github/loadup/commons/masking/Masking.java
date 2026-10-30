@@ -21,7 +21,9 @@ package io.github.loadup.commons.masking;
 
 import java.util.Objects;
 
-/** Stateless, Unicode code-point-aware rules for API output, explicit logs and exports. */
+/**
+ * Stateless, Unicode code-point-aware rules for API output, explicit logs and exports.
+ */
 public final class Masking {
     private static final String HIDDEN = "******";
 
@@ -29,8 +31,12 @@ public final class Masking {
 
     public static String mask(String value, MaskType type) {
         Objects.requireNonNull(type, "mask type");
-        if (type == MaskType.CUSTOM) throw new IllegalArgumentException("CUSTOM requires explicit prefix and suffix");
-        if (value == null || value.isEmpty()) return value;
+        if (type == MaskType.CUSTOM) {
+            throw new IllegalArgumentException("CUSTOM requires explicit prefix and suffix");
+        }
+        if (value == null || value.isEmpty()) {
+            return value;
+        }
         return switch (type) {
             case PHONE -> value.matches("\\+?[0-9]{8,15}") ? keep(value, 3, 4) : HIDDEN;
             case EMAIL -> email(value);
@@ -44,18 +50,25 @@ public final class Masking {
     }
 
     public static String keep(String value, int prefix, int suffix) {
-        if (prefix < 0 || suffix < 0 || prefix > 32 || suffix > 32)
+        if (prefix < 0 || suffix < 0 || prefix > 32 || suffix > 32) {
             throw new IllegalArgumentException("Invalid masking lengths");
-        if (value == null || value.isEmpty()) return value;
+        }
+        if (value == null || value.isEmpty()) {
+            return value;
+        }
         int length = value.codePointCount(0, value.length());
-        if (length <= prefix + suffix || value.codePoints().anyMatch(Character::isISOControl)) return HIDDEN;
+        if (length <= prefix + suffix || value.codePoints().anyMatch(Character::isISOControl)) {
+            return HIDDEN;
+        }
         return value.substring(0, value.offsetByCodePoints(0, prefix))
                 + "*".repeat(length - prefix - suffix)
                 + value.substring(value.offsetByCodePoints(0, length - suffix));
     }
 
     private static String email(String value) {
-        if (!value.matches("[^\\s@\\p{Cntrl}]+@[^\\s@\\p{Cntrl}]+\\.[^\\s@\\p{Cntrl}.]+")) return HIDDEN;
+        if (!value.matches("[^\\s@\\p{Cntrl}]+@[^\\s@\\p{Cntrl}]+\\.[^\\s@\\p{Cntrl}.]+")) {
+            return HIDDEN;
+        }
         int at = value.indexOf('@');
         String local = value.substring(0, at);
         int length = local.codePointCount(0, local.length());

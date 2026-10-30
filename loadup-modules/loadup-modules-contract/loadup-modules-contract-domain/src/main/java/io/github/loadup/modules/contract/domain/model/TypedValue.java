@@ -26,12 +26,16 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Objects;
 
-/** Canonical scalar representation; decimal values never pass through binary floating point. */
+/**
+ * Canonical scalar representation; decimal values never pass through binary floating point.
+ */
 public record TypedValue(ValueType type, String value) {
     public TypedValue {
         Objects.requireNonNull(type, "value type");
         Objects.requireNonNull(value, "value");
-        if (value.length() > 1024) throw new CommonException(ContractResultCodeEnum.VALUE_EXCEEDS_SIZE_LIMIT);
+        if (value.length() > 1024) {
+            throw new CommonException(ContractResultCodeEnum.VALUE_EXCEEDS_SIZE_LIMIT);
+        }
         value = switch (type) {
             case STRING -> value;
             case INTEGER -> new BigInteger(value).toString();
@@ -72,7 +76,9 @@ public record TypedValue(ValueType type, String value) {
     }
 
     public BigDecimal number() {
-        if (!numeric()) throw new CommonException(ContractResultCodeEnum.NOT_A_NUMERIC_VALUE);
+        if (!numeric()) {
+            throw new CommonException(ContractResultCodeEnum.NOT_A_NUMERIC_VALUE);
+        }
         return new BigDecimal(value);
     }
 

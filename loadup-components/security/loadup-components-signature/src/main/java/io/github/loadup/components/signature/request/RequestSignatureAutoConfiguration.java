@@ -22,7 +22,6 @@ package io.github.loadup.components.signature.request;
 import io.github.loadup.components.kms.KmsAutoConfiguration;
 import io.github.loadup.components.kms.KmsTemplate;
 import java.time.Clock;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -33,7 +32,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
-/** Enabling request verification requires a real atomic nonce store; no local fallback. */
+/**
+ * Enabling request verification requires a real atomic nonce store; no local fallback.
+ */
 @AutoConfiguration(
         after = KmsAutoConfiguration.class,
         afterName = "org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfiguration")
@@ -47,9 +48,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 public class RequestSignatureAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
-    public RequestSigner requestSigner(
-            KmsTemplate kms, ObjectProvider<Clock> clock, RequestSignatureProperties properties) {
-        return new RequestSigner(kms, clock.getIfUnique(Clock::systemDefaultZone), properties);
+    public RequestSigner requestSigner(KmsTemplate kms, Clock clock, RequestSignatureProperties properties) {
+        return new RequestSigner(kms, clock, properties);
     }
 
     @Bean
@@ -60,11 +60,8 @@ public class RequestSignatureAutoConfiguration {
             havingValue = "true",
             matchIfMissing = true)
     public RequestVerifier requestVerifier(
-            KmsTemplate kms,
-            RequestNonceStore nonces,
-            ObjectProvider<Clock> clock,
-            RequestSignatureProperties properties) {
-        return new RequestVerifier(kms, nonces, clock.getIfUnique(Clock::systemDefaultZone), properties);
+            KmsTemplate kms, RequestNonceStore nonces, Clock clock, RequestSignatureProperties properties) {
+        return new RequestVerifier(kms, nonces, clock, properties);
     }
 
     @Configuration(proxyBeanMethods = false)

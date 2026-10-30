@@ -114,116 +114,116 @@ public class RoleDTO {
         return this.id;
     }
 
-    public String getRoleName() {
-        return this.roleName;
-    }
-
-    public String getRoleCode() {
-        return this.roleCode;
-    }
-
-    public String getParentId() {
-        return this.parentId;
-    }
-
-    public String getParentRoleName() {
-        return this.parentRoleName;
-    }
-
-    public Integer getRoleLevel() {
-        return this.roleLevel;
-    }
-
-    public Short getDataScope() {
-        return this.dataScope;
-    }
-
-    public Integer getSortOrder() {
-        return this.sortOrder;
-    }
-
-    public Short getStatus() {
-        return this.status;
-    }
-
-    public List<PermissionDTO> getPermissions() {
-        return this.permissions;
-    }
-
-    public List<String> getDepartmentIds() {
-        return this.departmentIds;
-    }
-
-    public List<RoleDTO> getChildren() {
-        return this.children;
-    }
-
-    public String getRemark() {
-        return this.remark;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return this.createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return this.updatedAt;
-    }
-
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getRoleName() {
+        return this.roleName;
     }
 
     public void setRoleName(String roleName) {
         this.roleName = roleName;
     }
 
+    public String getRoleCode() {
+        return this.roleCode;
+    }
+
     public void setRoleCode(String roleCode) {
         this.roleCode = roleCode;
+    }
+
+    public String getParentId() {
+        return this.parentId;
     }
 
     public void setParentId(String parentId) {
         this.parentId = parentId;
     }
 
+    public String getParentRoleName() {
+        return this.parentRoleName;
+    }
+
     public void setParentRoleName(String parentRoleName) {
         this.parentRoleName = parentRoleName;
+    }
+
+    public Integer getRoleLevel() {
+        return this.roleLevel;
     }
 
     public void setRoleLevel(Integer roleLevel) {
         this.roleLevel = roleLevel;
     }
 
+    public Short getDataScope() {
+        return this.dataScope;
+    }
+
     public void setDataScope(Short dataScope) {
         this.dataScope = dataScope;
+    }
+
+    public Integer getSortOrder() {
+        return this.sortOrder;
     }
 
     public void setSortOrder(Integer sortOrder) {
         this.sortOrder = sortOrder;
     }
 
+    public Short getStatus() {
+        return this.status;
+    }
+
     public void setStatus(Short status) {
         this.status = status;
+    }
+
+    public List<PermissionDTO> getPermissions() {
+        return this.permissions;
     }
 
     public void setPermissions(List<PermissionDTO> permissions) {
         this.permissions = permissions;
     }
 
+    public List<String> getDepartmentIds() {
+        return this.departmentIds;
+    }
+
     public void setDepartmentIds(List<String> departmentIds) {
         this.departmentIds = departmentIds;
+    }
+
+    public List<RoleDTO> getChildren() {
+        return this.children;
     }
 
     public void setChildren(List<RoleDTO> children) {
         this.children = children;
     }
 
+    public String getRemark() {
+        return this.remark;
+    }
+
     public void setRemark(String remark) {
         this.remark = remark;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return this.createdAt;
+    }
+
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return this.updatedAt;
     }
 
     public void setUpdatedAt(LocalDateTime updatedAt) {

@@ -22,7 +22,9 @@ package io.github.loadup.modules.upms.client.error;
 import io.github.loadup.commons.enums.ResultStatusEnum;
 import io.github.loadup.commons.result.ResultCode;
 
-/** Stable public error codes for the upms module. */
+/**
+ * Stable public error codes for the upms module.
+ */
 public enum UpmsResultCodeEnum implements ResultCode {
     UNSUPPORTED_USER_SORT_FIELD("UPMS_UNSUPPORTED_USER_SORT_FIELD", "Unsupported user sort field"),
     USERNAME_ALREADY_EXISTS("UPMS_USERNAME_ALREADY_EXISTS", "Username already exists"),

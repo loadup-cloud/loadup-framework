@@ -25,7 +25,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
-/** Optional Spring MVC surface for the data dictionary. */
+/**
+ * Optional Spring MVC surface for the data dictionary.
+ */
 @Import(DictionaryWebConverterImpl.class)
 @AutoConfiguration(afterName = "io.github.loadup.modules.dictionary.app.autoconfigure.DictionaryAutoConfiguration")
 @ConditionalOnBean(DictionaryFacade.class)

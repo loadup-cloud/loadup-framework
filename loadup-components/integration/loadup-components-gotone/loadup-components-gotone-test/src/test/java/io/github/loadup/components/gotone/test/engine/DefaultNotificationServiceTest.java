@@ -33,7 +33,6 @@ import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import io.github.loadup.components.gotone.model.NotificationRequest;
 import io.github.loadup.components.gotone.model.NotificationResponse;
 import io.github.loadup.components.gotone.record.RecordHandler;
-import io.github.loadup.components.gotone.record.RecordHandler.SendAttemptResult;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -44,6 +43,54 @@ import org.springframework.core.task.TaskExecutor;
 class DefaultNotificationServiceTest {
 
     private static final TaskExecutor SYNC_EXECUTOR = Runnable::run;
+
+    private static NotificationChannelProvider alwaysSucceedingEmailProvider() {
+        return new NotificationChannelProvider() {
+            @Override
+            public String getChannelType() {
+                return "EMAIL";
+            }
+
+            @Override
+            public String getProviderName() {
+                return "smtp";
+            }
+
+            @Override
+            public ChannelSendResponse send(ChannelSendRequest request) {
+                return new ChannelSendResponse(request.content(), 1, 0, Map.of("a@example.com", true), Map.of());
+            }
+
+            @Override
+            public boolean isAvailable() {
+                return true;
+            }
+        };
+    }
+
+    private static NotificationChannelProvider alwaysFailingEmailProvider() {
+        return new NotificationChannelProvider() {
+            @Override
+            public String getChannelType() {
+                return "EMAIL";
+            }
+
+            @Override
+            public String getProviderName() {
+                return "smtp";
+            }
+
+            @Override
+            public ChannelSendResponse send(ChannelSendRequest request) {
+                throw new IllegalStateException("smtp down");
+            }
+
+            @Override
+            public boolean isAvailable() {
+                return true;
+            }
+        };
+    }
 
     @Test
     void sendsThroughResolvedChannelConfig() {
@@ -137,54 +184,6 @@ class DefaultNotificationServiceTest {
                 Optional.of(new SimpleTemplateRenderer()),
                 Optional.ofNullable(recordHandler),
                 Optional.of(SYNC_EXECUTOR));
-    }
-
-    private static NotificationChannelProvider alwaysSucceedingEmailProvider() {
-        return new NotificationChannelProvider() {
-            @Override
-            public String getChannelType() {
-                return "EMAIL";
-            }
-
-            @Override
-            public String getProviderName() {
-                return "smtp";
-            }
-
-            @Override
-            public ChannelSendResponse send(ChannelSendRequest request) {
-                return new ChannelSendResponse(request.content(), 1, 0, Map.of("a@example.com", true), Map.of());
-            }
-
-            @Override
-            public boolean isAvailable() {
-                return true;
-            }
-        };
-    }
-
-    private static NotificationChannelProvider alwaysFailingEmailProvider() {
-        return new NotificationChannelProvider() {
-            @Override
-            public String getChannelType() {
-                return "EMAIL";
-            }
-
-            @Override
-            public String getProviderName() {
-                return "smtp";
-            }
-
-            @Override
-            public ChannelSendResponse send(ChannelSendRequest request) {
-                throw new IllegalStateException("smtp down");
-            }
-
-            @Override
-            public boolean isAvailable() {
-                return true;
-            }
-        };
     }
 
     private static final class CapturingRecordHandler implements RecordHandler {

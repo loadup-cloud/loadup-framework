@@ -19,23 +19,27 @@
  */
 package io.github.loadup.commons.dataobject;
 
+import com.mybatisflex.annotation.Id;
+import com.mybatisflex.annotation.KeyType;
 import io.github.loadup.commons.json.ToStringAsJson;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import org.springframework.data.annotation.Id;
 
-/** Common persistent fields for data objects. */
+/**
+ * Common persistent fields for data objects.
+ */
 public abstract class BaseDO implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @Id
+    /**
+     * Application-assigned business identifier; MyBatis-Flex never generates this value.
+     */
+    @Id(keyType = KeyType.None)
     private String id;
 
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
-
-    private String tenantId;
 
     private Boolean deleted;
 
@@ -48,36 +52,28 @@ public abstract class BaseDO implements Serializable {
         return this.id;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return this.createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return this.updatedAt;
-    }
-
-    public String getTenantId() {
-        return this.tenantId;
-    }
-
-    public Boolean getDeleted() {
-        return this.deleted;
-    }
-
     public void setId(String id) {
         this.id = id;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return this.createdAt;
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
+    public LocalDateTime getUpdatedAt() {
+        return this.updatedAt;
+    }
+
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    public void setTenantId(String tenantId) {
-        this.tenantId = tenantId;
+    public Boolean getDeleted() {
+        return this.deleted;
     }
 
     public void setDeleted(Boolean deleted) {

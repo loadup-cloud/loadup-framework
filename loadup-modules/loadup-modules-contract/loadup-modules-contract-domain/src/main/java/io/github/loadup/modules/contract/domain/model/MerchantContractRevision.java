@@ -26,9 +26,10 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.Objects;
 
-/** Immutable signed terms. Time schedules and lifecycle mutations belong to transactional application services. */
+/**
+ * Immutable signed terms. Time schedules and lifecycle mutations belong to transactional application services.
+ */
 public record MerchantContractRevision(
-        String tenantId,
         String merchantId,
         String scopeKey,
         String contractId,
@@ -40,7 +41,6 @@ public record MerchantContractRevision(
         Instant effectiveTo,
         Map<String, ResolvedContractItem> items) {
     public MerchantContractRevision {
-        tenantId = ContractChecks.code(tenantId);
         merchantId = ContractChecks.code(merchantId);
         scopeKey = ContractChecks.code(scopeKey);
         contractId = ContractChecks.code(contractId);
@@ -49,10 +49,13 @@ public record MerchantContractRevision(
         planVersion = ContractChecks.version(planVersion);
         Objects.requireNonNull(signedAt, "signedAt");
         ContractChecks.interval(effectiveFrom, effectiveTo);
-        if (effectiveFrom.isBefore(signedAt))
+        if (effectiveFrom.isBefore(signedAt)) {
             throw new CommonException(ContractResultCodeEnum.BACKDATED_ACTIVATION_UNSUPPORTED);
+        }
         items = ContractChecks.map(items);
-        if (items.isEmpty()) throw new CommonException(ContractResultCodeEnum.EMPTY_SIGNED_CONTRACT);
+        if (items.isEmpty()) {
+            throw new CommonException(ContractResultCodeEnum.EMPTY_SIGNED_CONTRACT);
+        }
     }
 
     public boolean effectiveAt(Instant time) {

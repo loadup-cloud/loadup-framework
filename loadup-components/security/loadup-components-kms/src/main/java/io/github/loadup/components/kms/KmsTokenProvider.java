@@ -19,7 +19,9 @@
  */
 package io.github.loadup.components.kms;
 
-/** Supplies a runtime token at call time; custom providers own authentication and renewal. */
+/**
+ * Supplies a runtime token at call time; custom providers own authentication and renewal.
+ */
 @FunctionalInterface
 public interface KmsTokenProvider {
     String token();

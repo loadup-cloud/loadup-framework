@@ -34,14 +34,17 @@ public record PageInfo(
                 || pageSize == null
                 || pageSize < 1
                 || pageIndex == null
-                || pageIndex < 1)
+                || pageIndex < 1) {
             throw new io.github.loadup.commons.error.CommonException(
                     io.github.loadup.commons.enums.CommonResultCodeEnum.PARAM_ILLEGAL);
+        }
     }
 
     @Schema(description = "Total page count")
     public Long getTotalPages() {
-        if (pageSize == null || pageSize <= 0) return 0L;
+        if (pageSize == null || pageSize <= 0) {
+            return 0L;
+        }
         return totalCount == 0 ? 0L : 1 + (totalCount - 1) / pageSize;
     }
 

@@ -1,25 +1,34 @@
 # File Resources
 
-文件资源模块在 DFS 存储之上管理文件的业务元数据、归属、引用和删除生命周期。DFS 决定文件字节存在哪里；本模块提供可被业务引用的稳定文件 ID。适用于单体应用中的附件、头像和导出文件。
+文件资源模块在 DFS 存储之上管理文件的业务元数据、归属、引用和删除生命周期。DFS 决定文件字节存在哪里；本模块提供可被业务引用的稳定文件
+ID。适用于单体应用中的附件、头像和导出文件。
 
 ## 引入
 
-引入 `loadup-modules-file-app` 和一个 DFS binder，例如 `loadup-components-dfs-binder-local`。应用需要 PostgreSQL `DataSource`；Flyway 会执行 `V20261002000003__create_file_resource.sql`。可设置 `loadup.modules.file.enabled: false` 停用自动装配。HTTP API 另需 `loadup-modules-file-web`。
+引入 `loadup-modules-file-app` 和一个 DFS binder，例如 `loadup-components-dfs-binder-local`。应用需要 PostgreSQL
+`DataSource`；Flyway 会执行 `V20261002000003__create_file_resource.sql`。可设置 `loadup.modules.file.enabled: false`
+停用自动装配。HTTP API 另需 `loadup-modules-file-web`。
 
 ```xml
 <dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-modules-file-app</artifactId></dependency>
 <dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-components-dfs-binder-local</artifactId></dependency>
 ```
 
-本地 binder 配置 `loadup.dfs.binder.local.base-path`；生产多节点环境请选择共享存储 binder，并配置其凭据和容量策略。本地启动器示例路径为 `./data/files`。
+本地 binder 配置 `loadup.dfs.binder.local.base-path`；生产多节点环境请选择共享存储 binder，并配置其凭据和容量策略。本地启动器示例路径为
+`./data/files`。
 
 ## 业务 API
 
-注入 `FileResourceService`。`upload(tenantId, ownerId, filename, contentType, size, InputStream)` 上传并记录元数据，调用者关闭输入流。返回的 `FileResource.id` 是业务文件 ID，`storageId` 仅供内部定位 DFS 对象。`get`、`list` 和 `download` 均校验租户及所有者，管理员权限由调用方传入；下载返回的 `FileDownloadResponse` 必须关闭。
+注入 `FileResourceService`。`upload(tenantId, ownerId, filename, contentType, size, InputStream)` 上传并记录元数据，调用者关闭输入流。返回的
+`FileResource.id` 是业务文件 ID，`storageId` 仅供内部定位 DFS 对象。`get`、`list` 和 `download` 均校验租户及所有者，管理员权限由调用方传入；下载返回的
+`FileDownloadResponse` 必须关闭。
 
-业务记录落库后可调用 `attach(tenantId, fileId, actorId, admin, referenceType, referenceId)` 建立引用。业务记录删除时调用 `detach`。有引用的文件不能删除。引用类型和引用 ID 只用于记录关联；业务系统负责确认引用对象的真实性及访问授权，不应把任意用户输入直接传给这两个 API。
+业务记录落库后可调用 `attach(tenantId, fileId, actorId, admin, referenceType, referenceId)` 建立引用。业务记录删除时调用
+`detach`。有引用的文件不能删除。引用类型和引用 ID 只用于记录关联；业务系统负责确认引用对象的真实性及访问授权，不应把任意用户输入直接传给这两个
+API。
 
-`requestDeletion` 将无引用文件置为 `PENDING_DELETE`，事务提交后调用 `cleanup` 删除 DFS 对象并标记 `DELETED`。DFS 清理失败时可调用 `cleanupPending(limit)` 重试。需要自动清理的应用可用已有调度组件定期调用它。没有租户上下文时使用 `__default__`。
+`requestDeletion` 将无引用文件置为 `PENDING_DELETE`，事务提交后调用 `cleanup` 删除 DFS 对象并标记 `DELETED`。DFS 清理失败时可调用
+`cleanupPending(limit)` 重试。需要自动清理的应用可用已有调度组件定期调用它。没有租户上下文时使用 `__default__`。
 
 Web API 与配置见 [Web 适配说明](loadup-modules-file-web/README.md)，设计见 [ARCHITECTURE.md](ARCHITECTURE.md)。
 
@@ -27,16 +36,18 @@ Web API 与配置见 [Web 适配说明](loadup-modules-file-web/README.md)，设
 
 本目录的 Maven 坐标 `loadup-modules-file` 为聚合 POM。业务接入选择具体 jar，版本由根 BOM 管理：
 
-| 子模块 | 用途 |
-| --- | --- |
-| [`client`](loadup-modules-file-client/README.md) | 对外 DTO、请求契约；不依赖 Spring 或持久化实现 |
-| [`domain`](loadup-modules-file-domain/README.md) | 纯 Java 领域模型、分页值与 Gateway 接口 |
+| 子模块                                                           | 用途                                              |
+|------------------------------------------------------------------|---------------------------------------------------|
+| [`client`](loadup-modules-file-client/README.md)                 | 对外 DTO、请求契约；不依赖 Spring 或持久化实现    |
+| [`domain`](loadup-modules-file-domain/README.md)                 | 纯 Java 领域模型、分页值与 Gateway 接口           |
 | [`infrastructure`](loadup-modules-file-infrastructure/README.md) | 默认 Spring JDBC Gateway、Flyway 迁移与持久化装配 |
-| [`app`](loadup-modules-file-app/README.md) | 用例服务、DTO 映射与应用装配；程序化接入入口 |
-| [`web`](loadup-modules-file-web/README.md) | 可选 Spring MVC 适配；自动引入 app |
-| [`test`](loadup-modules-file-test/README.md) | 自动装配回归源码，不作为生产依赖 |
+| [`app`](loadup-modules-file-app/README.md)                       | 用例服务、DTO 映射与应用装配；程序化接入入口      |
+| [`web`](loadup-modules-file-web/README.md)                       | 可选 Spring MVC 适配；自动引入 app                |
+| [`test`](loadup-modules-file-test/README.md)                     | 自动装配回归源码，不作为生产依赖                  |
 
-`FileResourceService` 现在位于 `io.github.loadup.modules.file.app.service`；公开结果位于 `io.github.loadup.modules.file.client.dto`。领域 Gateway 不引用客户端 DTO，也不引用数据库或 Spring API。HTTP 适配使用客户端契约，接口路径及 JSON 字段保持一致。
+`FileResourceService` 现在位于 `io.github.loadup.modules.file.app.service`；公开结果位于
+`io.github.loadup.modules.file.client.dto`。领域 Gateway 不引用客户端 DTO，也不引用数据库或 Spring API。HTTP
+适配使用客户端契约，接口路径及 JSON 字段保持一致。
 
 配置统一归入 `loadup.modules.file`：
 
@@ -49,30 +60,51 @@ loadup:
         enabled: true
 ```
 
-仅引入 app 时不注册 Controller；关闭 web 开关保留程序化服务，关闭模块 enabled 开关同时停止默认应用与持久化 Bean 装配。配置开关不控制 Flyway 对已在 classpath 上的脚本执行。不要在已有数据库重复复制迁移脚本。
+仅引入 app 时不注册 Controller；关闭 web 开关保留程序化服务，关闭模块 enabled 开关同时停止默认应用与持久化 Bean 装配。配置开关不控制
+Flyway 对已在 classpath 上的脚本执行。不要在已有数据库重复复制迁移脚本。
 
 ## 统一接入契约
 
-Java 消费方通过 `client.facade.XxxFacade` 注入公开业务入口；默认应用 Service 直接实现接口。引入 `*-app` 装配业务能力，引入 `*-web` 才提供 Controller，Web 适配不再提供独立 enabled 开关。模块整体启停仍使用 `loadup.modules.file.enabled`。
+Java 消费方通过 `client.facade.XxxFacade` 注入公开业务入口；默认应用 Service 直接实现接口。引入 `*-app` 装配业务能力，引入
+`*-web` 才提供 Controller，Web 适配不再提供独立 enabled 开关。模块整体启停仍使用 `loadup.modules.file.enabled`。
 
-JSON Controller 显式返回 SuccessResponse，分页保留已有分页报文契约；异常由全局 WebMVC 处理。下载仍为流式响应。请求与 DTO 字段声明 OpenAPI，凭证只写。持久化使用 Spring JDBC 和明确的数据映射；数据库连接与可信租户来源由消费工程配置。新 schema 迁移与本轮 clean 编译、运行验证仍需本地执行。
+JSON Controller 显式返回 SuccessResponse，分页保留已有分页报文契约；异常由全局 WebMVC 处理。下载仍为流式响应。请求与 DTO
+字段声明 OpenAPI，凭证只写。持久化使用 Spring JDBC 和明确的数据映射；数据库连接与可信租户来源由消费工程配置。新 schema 迁移与本轮
+clean 编译、运行验证仍需本地执行。
 
 ## 入参与分页约定
 
-写操作入参采用业务动作 Command，查询入参采用 Query，分页查询使用 PageQuery 后缀；纯 ID 查询复用公共 IdQuery。Facade 分页统一返回 `PageDTO<T>`，HTTP 分页统一返回 `PageResponse<T>`：`result` 表示结果，`data` 为当前页数组，顶层 `pageInfo` 提供 totalCount/pageIndex/pageSize。不再提供模块专用分页 DTO。完整规则与示例见 [commons-dto](../../loadup-commons/loadup-commons-dto/README.md)。
+写操作入参采用业务动作 Command，查询入参采用 Query，分页查询使用 PageQuery 后缀；纯 ID 查询复用公共 IdQuery。Facade 分页统一返回
+`PageDTO<T>`，HTTP 分页统一返回 `PageResponse<T>`：`result` 表示结果，`data` 为当前页数组，顶层 `pageInfo` 提供
+totalCount/pageIndex/pageSize。不再提供模块专用分页
+DTO。完整规则与示例见 [commons-dto](../../loadup-commons/loadup-commons-dto/README.md)。
 
 ## 通用输入与时间约定
 
-分页缺省 page=1、size=20，size 上限 100；非法输入使用稳定业务错误码。业务时间使用具名 `fileClock` 并使用 Clock 所绑定的时区（默认系统本地时区）；持久化审计字段由 database 填充。可在测试或消费工程提供同名 Clock Bean。
+分页缺省 page=1、size=20，size 上限 100；非法输入使用稳定业务错误码。业务时间与持久化使用 Spring 共享的
+Clock，默认采用系统本地时区；测试或消费工程可提供 Clock Bean 覆盖默认值。
 
 ## 错误码契约
 
-公开错误枚举位于 `io.github.loadup.modules.file.client.error.FileResultCodeEnum`，错误码以 `FILE_` 开头。服务/领域/仓储使用 `CommonException(enum)`；系统原因可作为 cause 保留，响应文案仅来自枚举。WebMVC 统一返回 HTTP 200 的 result/data。枚举码按稳定公开契约维护，不用字符串消息覆盖。
+公开错误枚举位于 `io.github.loadup.modules.file.client.error.FileResultCodeEnum`，错误码以 `FILE_` 开头。服务/领域/仓储使用
+`CommonException(enum)`；系统原因可作为 cause 保留，响应文案仅来自枚举。WebMVC 统一返回 HTTP 200 的
+result/data。枚举码按稳定公开契约维护，不用字符串消息覆盖。
 
 ## Unified pagination contract
 
-Pure pagination inputs reuse `io.github.loadup.commons.dto.PageQuery`. HTTP fields remain `page` and `size`, with omitted/null values defaulting to 1 and 20; explicit invalid bounds are rejected and size is capped at 100. Business queries retain their filter fields and flat pagination fields but delegate policy to `PageQuery.normalized`, preserving their declared module error code. Mutable UPMS queries expose `pagination()` for validation at the service boundary. Sort whitelists remain business-specific.
+Pure pagination inputs reuse `io.github.loadup.commons.dto.PageQuery`. HTTP fields remain `page` and `size`, with
+omitted/null values defaulting to 1 and 20; explicit invalid bounds are rejected and size is capped at 100. Business
+queries retain their filter fields and flat pagination fields but delegate policy to `PageQuery.normalized`, preserving
+their declared module error code. Mutable UPMS queries expose `pagination()` for validation at the service boundary.
+Sort whitelists remain business-specific.
 
-Domain Gateway results use `io.github.loadup.commons.domain.PageResult<T>`, shared with UPMS. Seven duplicate business Page wrappers have been removed. Application mapping uses the injected Spring MapStruct item converter and `PageResult.map`; `PageDTO.of(result)` adapts the unchanged total/page/size metadata. Facades return PageDTO, and Controllers return PageResponse. No HTTP envelope enters a Gateway.
+Domain Gateway results use `io.github.loadup.commons.domain.PageResult<T>`, shared with UPMS. Seven duplicate business
+Page wrappers have been removed. Application mapping uses the injected Spring MapStruct item converter and
+`PageResult.map`; `PageDTO.of(result)` adapts the unchanged total/page/size metadata. Facades return PageDTO, and
+Controllers return PageResponse. No HTTP envelope enters a Gateway.
 
-The response remains `{result, data: [...], pageInfo: {totalCount, pageIndex, pageSize, ...}}`; data is the current-page array. SuccessResponse serves ordinary success data only; its duplicate pagination field and ofPage factories have been removed. Empty PageDTO defaults to an empty array and metadata 0/1/20. Existing consumer code referencing removed business Page wrappers, DictionaryTypePageQuery, AccountLoginPageQuery or SuccessResponse.ofPage must use the shared contracts. No URL or frontend payload-field migration is required.
+The response remains `{result, data: [...], pageInfo: {totalCount, pageIndex, pageSize, ...}}`; data is the current-page
+array. SuccessResponse serves ordinary success data only; its duplicate pagination field and ofPage factories have been
+removed. Empty PageDTO defaults to an empty array and metadata 0/1/20. Existing consumer code referencing removed
+business Page wrappers, DictionaryTypePageQuery, AccountLoginPageQuery or SuccessResponse.ofPage must use the shared
+contracts. No URL or frontend payload-field migration is required.

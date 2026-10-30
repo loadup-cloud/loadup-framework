@@ -22,7 +22,9 @@ package io.github.loadup.commons.error;
 import io.github.loadup.commons.result.ResultCode;
 import java.io.Serial;
 
-/** Coded unchecked failure; outward messages come exclusively from the enum. */
+/**
+ * Coded unchecked failure; outward messages come exclusively from the enum.
+ */
 public class CommonException extends RuntimeException {
     @Serial
     private static final long serialVersionUID = 2713503013175560520L;
@@ -38,6 +40,14 @@ public class CommonException extends RuntimeException {
         this.resultCode = resultCode;
     }
 
+    private static String escape(String value) {
+        return value.replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
+    }
+
     public ResultCode getResultCode() {
         return resultCode;
     }
@@ -45,13 +55,5 @@ public class CommonException extends RuntimeException {
     @Override
     public String toString() {
         return "{\"code\":\"" + resultCode.getCode() + "\",\"message\":\"" + escape(resultCode.getMessage()) + "\"}";
-    }
-
-    private static String escape(String value) {
-        return value.replace("\\", "\\\\")
-                .replace("\"", "\\\"")
-                .replace("\n", "\\n")
-                .replace("\r", "\\r")
-                .replace("\t", "\\t");
     }
 }

@@ -30,19 +30,19 @@ rpc (pom)
 
 ## 能力矩阵
 
-| 能力 | Dubbo binder |
-|---|---|
-| 客户端 | 原生 `@DubboReference`（字段或 setter 注入）引用生成的 `<Service>Rpc` |
-| 服务端 | 原生 `@DubboService` 实现生成的 `Dubbo<Service>Triple.<Service>ImplBase` |
-| 服务契约 | Protobuf `.proto` + 生成存根 + Wire↔DTO mapper |
-| 配置 | `dubbo.*` |
-| 注册发现 | Dubbo 原生能力；无注册中心时使用 `registry.address: N/A` + 显式 URL |
-| 超时、TLS、过滤器 | 原生配置与扩展点 |
-| 流式调用 | 支持 protobuf streaming，当前业务只使用 unary |
-| 重试 | 保留 Dubbo 原生语义，应用显式选择 |
-| 身份上下文透传 | `RpcTokenContext` + `RpcIdentityProviderFilter` |
-| 业务错误码透传 | `RpcExceptionCodes` |
-| 运行验证 | 未执行 |
+| 能力              | Dubbo binder                                                             |
+|-------------------|--------------------------------------------------------------------------|
+| 客户端            | 原生 `@DubboReference`（字段或 setter 注入）引用生成的 `<Service>Rpc`    |
+| 服务端            | 原生 `@DubboService` 实现生成的 `Dubbo<Service>Triple.<Service>ImplBase` |
+| 服务契约          | Protobuf `.proto` + 生成存根 + Wire↔DTO mapper                           |
+| 配置              | `dubbo.*`                                                                |
+| 注册发现          | Dubbo 原生能力；无注册中心时使用 `registry.address: N/A` + 显式 URL      |
+| 超时、TLS、过滤器 | 原生配置与扩展点                                                         |
+| 流式调用          | 支持 protobuf streaming，当前业务只使用 unary                            |
+| 重试              | 保留 Dubbo 原生语义，应用显式选择                                        |
+| 身份上下文透传    | `RpcTokenContext` + `RpcIdentityProviderFilter`                          |
+| 业务错误码透传    | `RpcExceptionCodes`                                                      |
+| 运行验证          | 未执行                                                                   |
 
 ## 身份与错误
 

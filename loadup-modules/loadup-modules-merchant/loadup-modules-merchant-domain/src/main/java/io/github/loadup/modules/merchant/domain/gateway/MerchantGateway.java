@@ -20,18 +20,18 @@
 package io.github.loadup.modules.merchant.domain.gateway;
 
 import io.github.loadup.commons.domain.PageResult;
-import io.github.loadup.modules.merchant.domain.model.*;
+import io.github.loadup.modules.merchant.domain.model.Merchant;
+import io.github.loadup.modules.merchant.domain.model.MerchantStatus;
 import java.util.Optional;
 
 public interface MerchantGateway {
-    Optional<Merchant> find(String tenantId, String id);
+    Optional<Merchant> find(String id);
 
-    Optional<Merchant> lock(String tenantId, String id);
+    Optional<Merchant> lock(String id);
 
     void insert(Merchant merchant);
 
     void update(Merchant merchant, long expectedRowVersion);
 
-    PageResult<Merchant> page(
-            String tenantId, String merchantCode, String name, MerchantStatus status, int page, int size);
+    PageResult<Merchant> page(String merchantCode, String name, MerchantStatus status, int page, int size);
 }

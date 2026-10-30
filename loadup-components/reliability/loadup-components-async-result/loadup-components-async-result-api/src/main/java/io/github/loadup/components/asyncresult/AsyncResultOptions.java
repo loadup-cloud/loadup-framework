@@ -27,8 +27,9 @@ public record AsyncResultOptions(String tenantId, String operation, String busin
         AsyncReplyKey.required(tenantId, 64);
         AsyncReplyKey.required(operation, 128);
         AsyncReplyKey.required(businessId, 128);
-        if (waitTimeout != null && (waitTimeout.isNegative() || waitTimeout.isZero()))
+        if (waitTimeout != null && (waitTimeout.isNegative() || waitTimeout.isZero())) {
             throw new IllegalArgumentException("Positive waitTimeout is required");
+        }
     }
 
     @Override

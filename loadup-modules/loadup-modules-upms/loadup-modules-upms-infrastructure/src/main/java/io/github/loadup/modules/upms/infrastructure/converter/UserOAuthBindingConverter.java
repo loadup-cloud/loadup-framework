@@ -25,12 +25,13 @@ import io.github.loadup.modules.upms.infrastructure.dataobject.UserOAuthBindingD
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-/** Maps OAuth bindings without copying fields in the domain model. */
+/**
+ * Maps OAuth bindings without copying fields in the domain model.
+ */
 @Mapper(config = LoadUpMapStructConfig.class)
 public interface UserOAuthBindingConverter {
     UserOAuthBinding toEntity(UserOAuthBindingDO value);
 
-    @Mapping(target = "tenantId", ignore = true)
     @Mapping(target = "deleted", ignore = true)
     UserOAuthBindingDO toDO(UserOAuthBinding value);
 }

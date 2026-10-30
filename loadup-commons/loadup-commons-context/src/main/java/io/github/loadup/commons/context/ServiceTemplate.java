@@ -21,17 +21,13 @@ package io.github.loadup.commons.context;
 
 import java.util.Objects;
 
-/** Optional application-entry lifecycle; transaction, authorization and observation remain external. */
+/**
+ * Optional application-entry lifecycle; transaction, authorization and observation remain external.
+ */
 public final class ServiceTemplate {
     private static final Lifecycle NOOP = new Lifecycle() {};
 
     private ServiceTemplate() {}
-
-    public interface Lifecycle {
-        default void init() {}
-
-        default void clean() {}
-    }
 
     public static <T, X extends Throwable> T execute(ScopedValue.CallableOp<T, X> action) throws X {
         return execute(ContextHolder.current(), NOOP, action);
@@ -42,7 +38,9 @@ public final class ServiceTemplate {
         return execute(context, NOOP, action);
     }
 
-    /** Cleanup also runs on partial initialization failure and cannot hide a primary exception. */
+    /**
+     * Cleanup also runs on partial initialization failure and cannot hide a primary exception.
+     */
     public static <T, X extends Throwable> T execute(
             ExecutionContext context, Lifecycle lifecycle, ScopedValue.CallableOp<T, X> action) throws X {
         Objects.requireNonNull(lifecycle, "lifecycle");
@@ -69,6 +67,12 @@ public final class ServiceTemplate {
             action.run();
             return null;
         });
+    }
+
+    public interface Lifecycle {
+        default void init() {}
+
+        default void clean() {}
     }
 
     private record Cleanup(Lifecycle lifecycle) implements AutoCloseable {

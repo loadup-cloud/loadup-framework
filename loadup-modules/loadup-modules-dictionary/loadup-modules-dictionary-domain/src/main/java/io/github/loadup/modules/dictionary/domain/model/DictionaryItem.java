@@ -22,10 +22,11 @@ package io.github.loadup.modules.dictionary.domain.model;
 import io.github.loadup.commons.json.ToStringAsJson;
 import java.time.LocalDateTime;
 
-/** Value and display label within a dictionary type. */
+/**
+ * Value and display label within a dictionary type.
+ */
 public record DictionaryItem(
         String id,
-        String tenantId,
         String typeId,
         String value,
         String label,

@@ -22,7 +22,9 @@ package io.github.loadup.components.observability;
 import io.github.loadup.commons.context.ContextHolder;
 import org.springframework.core.task.TaskDecorator;
 
-/** Captures immutable business metadata; Boot composes this with standard Micrometer propagation. */
+/**
+ * Captures immutable business metadata; Boot composes this with standard Micrometer propagation.
+ */
 public final class LoadUpContextTaskDecorator implements TaskDecorator {
     @Override
     public Runnable decorate(Runnable runnable) {

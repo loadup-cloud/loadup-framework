@@ -30,7 +30,9 @@ import org.aspectj.lang.annotation.Aspect;
 import tech.powerjob.worker.core.processor.ProcessResult;
 import tech.powerjob.worker.core.processor.TaskContext;
 
-/** Instruments Spring processors while retaining native PowerJob result and exception semantics. */
+/**
+ * Instruments Spring processors while retaining native PowerJob result and exception semantics.
+ */
 @Aspect
 public class PowerJobProcessorAspect {
     private final ObservationRegistry observations;
@@ -56,10 +58,13 @@ public class PowerJobProcessorAspect {
                     .start();
             try (var _ = observation.openScope()) {
                 ProcessResult result = (ProcessResult) invocation.proceed();
-                if (result == null) throw new CommonException(PowerJobResultCodeEnum.INVALID_PROCESSOR_RESULT);
+                if (result == null) {
+                    throw new CommonException(PowerJobResultCodeEnum.INVALID_PROCESSOR_RESULT);
+                }
                 observation.lowCardinalityKeyValue("outcome", result.isSuccess() ? "success" : "failure");
-                if (!result.isSuccess())
+                if (!result.isSuccess()) {
                     observation.error(new CommonException(PowerJobResultCodeEnum.PROCESSOR_FAILED));
+                }
                 return result;
             } catch (Throwable failure) {
                 observation.lowCardinalityKeyValue("outcome", "failure");

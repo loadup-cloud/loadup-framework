@@ -19,7 +19,9 @@
  */
 package io.github.loadup.components.dfs.model;
 
-/** ETag returned for one uploaded multipart part. */
+/**
+ * ETag returned for one uploaded multipart part.
+ */
 public record MultipartPart(int partNumber, String eTag) {
 
     public MultipartPart {

@@ -19,6 +19,9 @@
  */
 package io.github.loadup.modules.file.infrastructure.repository;
 
+import com.mybatisflex.core.paginate.Page;
+import com.mybatisflex.core.query.QueryWrapper;
+import com.mybatisflex.spring.service.impl.ServiceImpl;
 import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.file.client.error.FileResultCodeEnum;
@@ -27,45 +30,67 @@ import io.github.loadup.modules.file.domain.model.FileReference;
 import io.github.loadup.modules.file.domain.model.FileResource;
 import io.github.loadup.modules.file.infrastructure.dataobject.FileReferenceRow;
 import io.github.loadup.modules.file.infrastructure.dataobject.FileResourceInsert;
+import io.github.loadup.modules.file.infrastructure.mapper.FileReferenceRowMapper;
+import io.github.loadup.modules.file.infrastructure.mapper.FileResourceInsertMapper;
+import io.github.loadup.modules.file.infrastructure.table.Tables;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-public class FileResourceGatewayImpl implements FileResourceGateway {
+public class FileResourceGatewayImpl extends ServiceImpl<FileResourceInsertMapper, FileResourceInsert>
+        implements FileResourceGateway {
     private final JdbcTemplate jdbc;
-    private final JdbcAggregateTemplate aggregates;
-    private final FileResourceRepository resources;
-    private final FileReferenceRepository references;
+    private final FileReferenceRowMapper referenceMapper;
     private final Clock clock;
 
     public FileResourceGatewayImpl(
-            JdbcTemplate jdbc,
-            JdbcAggregateTemplate aggregates,
-            FileResourceRepository resources,
-            FileReferenceRepository references,
-            Clock clock) {
+            JdbcTemplate jdbc, FileResourceInsertMapper mapper, FileReferenceRowMapper referenceMapper, Clock clock) {
         this.jdbc = jdbc;
-        this.aggregates = aggregates;
-        this.resources = resources;
-        this.references = references;
+        this.mapper = mapper;
+        this.referenceMapper = referenceMapper;
         this.clock = clock;
+    }
+
+    private static FileResource toResource(FileResourceInsert row) {
+        return new FileResource(
+                row.getId(),
+                row.getOwnerId(),
+                row.getStorageId(),
+                row.getFilename(),
+                row.getContentType(),
+                row.getContentLength(),
+                row.getProvider(),
+                row.getState(),
+                row.getCreatedAt(),
+                row.getUpdatedAt());
+    }
+
+    private static FileResource file(ResultSet rs, int index) throws SQLException {
+        return new FileResource(
+                rs.getString("id"),
+                rs.getString("owner_id"),
+                rs.getString("storage_id"),
+                rs.getString("filename"),
+                rs.getString("content_type"),
+                rs.getLong("content_length"),
+                rs.getString("provider"),
+                rs.getString("state"),
+                rs.getObject("created_at", LocalDateTime.class),
+                rs.getObject("updated_at", LocalDateTime.class));
     }
 
     @Override
     public void insert(FileResource file) {
         LocalDateTime now = LocalDateTime.now(clock);
-        aggregates.insert(new FileResourceInsert(
+        save(new FileResourceInsert(
                 file.id(),
-                file.tenantId(),
                 file.ownerId(),
                 file.storageId(),
                 file.filename(),
@@ -79,77 +104,88 @@ public class FileResourceGatewayImpl implements FileResourceGateway {
     }
 
     @Override
-    public Optional<FileResource> find(String tenant, String id) {
-        return resources.find(id).map(FileResourceGatewayImpl::toResource);
+    public Optional<FileResource> find(String id) {
+        return getByIdOpt(id).map(FileResourceGatewayImpl::toResource);
     }
 
     @Override
-    public Optional<FileResource> lock(String tenant, String id) {
+    public Optional<FileResource> lock(String id) {
         var dataSource = jdbc.getDataSource();
         if (!TransactionSynchronizationManager.isActualTransactionActive()
                 || TransactionSynchronizationManager.isCurrentTransactionReadOnly()
                 || dataSource == null
-                || !TransactionSynchronizationManager.hasResource(dataSource))
+                || !TransactionSynchronizationManager.hasResource(dataSource)) {
             throw new IllegalStateException("File lock requires a writable transaction on its data source");
+        }
         return jdbc
                 .query(
-                        "SELECT * FROM file_resource WHERE tenant_id = ? AND id = ? AND deleted = FALSE FOR UPDATE",
+                        "SELECT * FROM file_resource WHERE id = ? AND deleted = FALSE FOR UPDATE",
                         FileResourceGatewayImpl::file,
-                        io.github.loadup.components.database.tenant.TenantContext.tenantId(),
                         id)
                 .stream()
                 .findFirst();
     }
 
     @Override
-    public PageResult<FileResource> list(String tenant, String owner, int page, int size) {
-        var result = resources.listOwned(
-                owner,
-                org.springframework.data.domain.PageRequest.of(
-                        page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt", "id")));
+    public PageResult<FileResource> list(String owner, int page, int size) {
+        var result = page(
+                new Page<>(page, size),
+                QueryWrapper.create()
+                        .where(Tables.FILE_RESOURCE_INSERT.OWNER_ID.eq(owner))
+                        .and(Tables.FILE_RESOURCE_INSERT.STATE.eq("ACTIVE"))
+                        .orderBy(Tables.FILE_RESOURCE_INSERT.CREATED_AT.desc(), Tables.FILE_RESOURCE_INSERT.ID.desc()));
         return new PageResult<>(
-                result.stream().map(FileResourceGatewayImpl::toResource).toList(),
-                result.getTotalElements(),
+                result.getRecords().stream()
+                        .map(FileResourceGatewayImpl::toResource)
+                        .toList(),
+                result.getTotalRow(),
                 page,
                 size);
     }
 
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
-    public void markPending(String tenant, String id) {
-        lock(tenant, id)
-                .filter(file -> "ACTIVE".equals(file.state()))
+    public void markPending(String id) {
+        lock(id).filter(file -> "ACTIVE".equals(file.state()))
                 .orElseThrow(() -> new CommonException(FileResultCodeEnum.FILE_NOT_FOUND));
-        if (countReferences(tenant, id) > 0)
+        if (countReferences(id) > 0) {
             throw new CommonException(FileResultCodeEnum.FILE_IS_REFERENCED_BY_A_BUSINESS_OBJECT);
+        }
         int changed = jdbc.update(
                 "UPDATE file_resource SET state = 'PENDING_DELETE', updated_at = ? "
-                        + "WHERE tenant_id = ? AND id = ? AND state = 'ACTIVE' AND deleted = FALSE",
+                        + "WHERE id = ? AND state = 'ACTIVE' AND deleted = FALSE",
                 LocalDateTime.now(clock),
-                tenant,
                 id);
-        if (changed != 1) throw new CommonException(FileResultCodeEnum.FILE_NOT_FOUND);
+        if (changed != 1) {
+            throw new CommonException(FileResultCodeEnum.FILE_NOT_FOUND);
+        }
     }
 
     @Override
-    public void markDeleted(String tenant, String id) {
+    public void markDeleted(String id) {
         int changed = jdbc.update(
                 "UPDATE file_resource SET state = 'DELETED', updated_at = ? "
-                        + "WHERE tenant_id = ? AND id = ? AND state = 'PENDING_DELETE' AND deleted = FALSE",
+                        + "WHERE id = ? AND state = 'PENDING_DELETE' AND deleted = FALSE",
                 LocalDateTime.now(clock),
-                tenant,
                 id);
         if (changed == 0
-                && find(tenant, id)
-                        .filter(file -> "DELETED".equals(file.state()))
-                        .isPresent()) return;
-        if (changed != 1) throw new CommonException(FileResultCodeEnum.FILE_IS_NOT_PENDING_DELETION);
+                && find(id).filter(file -> "DELETED".equals(file.state())).isPresent()) {
+            return;
+        }
+        if (changed != 1) {
+            throw new CommonException(FileResultCodeEnum.FILE_IS_NOT_PENDING_DELETION);
+        }
     }
 
-    /** Authorized system maintenance scan across tenants. */
+    /**
+     * Authorized system maintenance scan across the current tenant schema.
+     */
     @Override
     public List<FileResource> pending(int limit) {
-        return resources.pending(Sort.by("updatedAt", "id")).stream()
+        var query = QueryWrapper.create()
+                .where(Tables.FILE_RESOURCE_INSERT.STATE.eq("PENDING_DELETE"))
+                .orderBy(Tables.FILE_RESOURCE_INSERT.UPDATED_AT.asc(), Tables.FILE_RESOURCE_INSERT.ID.asc());
+        return list(query).stream()
                 .limit(limit)
                 .map(FileResourceGatewayImpl::toResource)
                 .toList();
@@ -158,13 +194,12 @@ public class FileResourceGatewayImpl implements FileResourceGateway {
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
     public void addReference(FileReference ref) {
-        FileResource parent = lock(ref.tenantId(), ref.fileId())
+        FileResource parent = lock(ref.fileId())
                 .filter(file -> "ACTIVE".equals(file.state()))
                 .orElseThrow(() -> new CommonException(FileResultCodeEnum.FILE_NOT_FOUND));
         LocalDateTime now = LocalDateTime.now(clock);
-        aggregates.insert(new FileReferenceRow(
+        referenceMapper.insert(new FileReferenceRow(
                 ref.id(),
-                parent.tenantId(),
                 parent.id(),
                 ref.referenceType(),
                 ref.referenceId(),
@@ -175,64 +210,32 @@ public class FileResourceGatewayImpl implements FileResourceGateway {
 
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
-    public void removeReference(String tenant, String file, String type, String id) {
-        lock(tenant, file)
+    public void removeReference(String file, String type, String id) {
+        lock(file)
                 .filter(parent -> "ACTIVE".equals(parent.state()))
                 .orElseThrow(() -> new CommonException(FileResultCodeEnum.FILE_NOT_FOUND));
         jdbc.update(
-                "DELETE FROM file_resource_reference WHERE tenant_id = ? AND file_id = ? "
+                "DELETE FROM file_resource_reference WHERE file_id = ? "
                         + "AND reference_type = ? AND reference_id = ?",
-                tenant,
                 file,
                 type,
                 id);
     }
 
     @Override
-    public long countReferences(String tenant, String file) {
-        return references.countReferences(file);
+    public long countReferences(String file) {
+        return referenceMapper.selectCountByQuery(
+                QueryWrapper.create().where(Tables.FILE_REFERENCE_ROW.FILE_ID.eq(file)));
     }
 
     @Override
-    public List<FileReference> references(String tenant, String file) {
-        return references.references(file, Sort.by("createdAt", "id")).stream()
+    public List<FileReference> references(String file) {
+        var query = QueryWrapper.create()
+                .where(Tables.FILE_REFERENCE_ROW.FILE_ID.eq(file))
+                .orderBy(Tables.FILE_REFERENCE_ROW.CREATED_AT.asc(), Tables.FILE_REFERENCE_ROW.ID.asc());
+        return referenceMapper.selectListByQuery(query).stream()
                 .map(row -> new FileReference(
-                        row.id(),
-                        row.tenantId(),
-                        row.fileId(),
-                        row.referenceType(),
-                        row.referenceId(),
-                        row.createdAt()))
+                        row.getId(), row.getFileId(), row.getReferenceType(), row.getReferenceId(), row.getCreatedAt()))
                 .toList();
-    }
-
-    private static FileResource toResource(FileResourceInsert row) {
-        return new FileResource(
-                row.id(),
-                row.tenantId(),
-                row.ownerId(),
-                row.storageId(),
-                row.filename(),
-                row.contentType(),
-                row.contentLength(),
-                row.provider(),
-                row.state(),
-                row.createdAt(),
-                row.updatedAt());
-    }
-
-    private static FileResource file(ResultSet rs, int index) throws SQLException {
-        return new FileResource(
-                rs.getString("id"),
-                rs.getString("tenant_id"),
-                rs.getString("owner_id"),
-                rs.getString("storage_id"),
-                rs.getString("filename"),
-                rs.getString("content_type"),
-                rs.getLong("content_length"),
-                rs.getString("provider"),
-                rs.getString("state"),
-                rs.getObject("created_at", LocalDateTime.class),
-                rs.getObject("updated_at", LocalDateTime.class));
     }
 }

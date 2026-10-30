@@ -21,7 +21,9 @@ package io.github.loadup.components.scheduler.powerjob;
 
 import io.github.loadup.commons.context.ContextKey;
 
-/** Execution identifiers only; job payloads and authentication are not propagated implicitly. */
+/**
+ * Execution identifiers only; job payloads and authentication are not propagated implicitly.
+ */
 public final class PowerJobExecutionContext {
     public static final ContextKey<Long> JOB_ID = new ContextKey<>("powerjob.jobId", Long.class);
     public static final ContextKey<Long> INSTANCE_ID = new ContextKey<>("powerjob.instanceId", Long.class);

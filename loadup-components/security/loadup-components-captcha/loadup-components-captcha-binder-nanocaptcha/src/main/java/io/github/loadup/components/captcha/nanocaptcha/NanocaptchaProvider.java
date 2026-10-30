@@ -53,6 +53,16 @@ public class NanocaptchaProvider implements CaptchaProvider {
         this.properties = properties;
     }
 
+    private static String toDataUri(BufferedImage image) {
+        try {
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            ImageIO.write(image, "png", output);
+            return "data:image/png;base64," + Base64.getEncoder().encodeToString(output.toByteArray());
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to encode captcha image", e);
+        }
+    }
+
     @Override
     public CaptchaResponse generate(String type) {
         if (type != null && !CaptchaType.WORD.equals(type)) {
@@ -109,16 +119,6 @@ public class NanocaptchaProvider implements CaptchaProvider {
             default ->
                 throw new IllegalArgumentException("Unsupported nanocaptcha content: " + properties.getContent());
         };
-    }
-
-    private static String toDataUri(BufferedImage image) {
-        try {
-            ByteArrayOutputStream output = new ByteArrayOutputStream();
-            ImageIO.write(image, "png", output);
-            return "data:image/png;base64," + Base64.getEncoder().encodeToString(output.toByteArray());
-        } catch (Exception e) {
-            throw new IllegalStateException("Failed to encode captcha image", e);
-        }
     }
 
     private void purgeIfNeeded() {

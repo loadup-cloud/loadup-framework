@@ -21,7 +21,9 @@ package io.github.loadup.components.database.id;
 
 import java.util.UUID;
 
-/** Generates RFC 4122 version 4 UUID identifiers. */
+/**
+ * Generates RFC 4122 version 4 UUID identifiers.
+ */
 public final class UuidV4IdGenerator implements IdGenerator {
     private final boolean withHyphens;
 

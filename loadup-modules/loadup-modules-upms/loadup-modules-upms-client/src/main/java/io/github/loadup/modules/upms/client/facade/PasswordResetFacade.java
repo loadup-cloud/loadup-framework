@@ -21,7 +21,9 @@ package io.github.loadup.modules.upms.client.facade;
 
 import io.github.loadup.modules.upms.client.command.UserPasswordResetCommand;
 
-/** Public business contract for PasswordResetService. */
+/**
+ * Public business contract for PasswordResetService.
+ */
 public interface PasswordResetFacade {
     void sendEmailVerificationCode(String email);
 

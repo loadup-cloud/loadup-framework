@@ -30,7 +30,9 @@ public final class DomainViolation extends IllegalArgumentException {
     }
 
     public static void require(boolean condition, Reason reason) {
-        if (!condition) throw new DomainViolation(reason);
+        if (!condition) {
+            throw new DomainViolation(reason);
+        }
     }
 
     public Reason reason() {

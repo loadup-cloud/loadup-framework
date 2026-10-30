@@ -30,11 +30,18 @@ import org.springframework.context.annotation.Bean;
 import tech.powerjob.client.PowerJobClient;
 import tech.powerjob.worker.autoconfigure.PowerJobProperties;
 
-/** Adds client lifecycle and observations without replacing the official worker lifecycle. */
+/**
+ * Adds client lifecycle and observations without replacing the official worker lifecycle.
+ */
 @AutoConfiguration(
         afterName = "org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration")
 @EnableConfigurationProperties({PowerJobClientProperties.class, PowerJobProperties.class})
 public class LoadUpPowerJobAutoConfiguration {
+    private static String value(String supplied, String fallback) {
+        String value = supplied == null || supplied.isBlank() ? fallback : supplied;
+        return value == null || value.isBlank() ? null : value.trim();
+    }
+
     @Bean
     @ConditionalOnMissingBean
     public PowerJobProcessorAspect powerJobProcessorAspect(
@@ -49,16 +56,13 @@ public class LoadUpPowerJobAutoConfiguration {
         String address = value(client.getServerAddress(), properties.getWorker().getServerAddress());
         String appName = value(client.getAppName(), properties.getWorker().getAppName());
         String password = client.getPassword();
-        if (address == null || appName == null || password == null || password.isBlank())
+        if (address == null || appName == null || password == null || password.isBlank()) {
             throw new CommonException(PowerJobResultCodeEnum.INVALID_CLIENT_CONFIGURATION);
+        }
         var addresses = Arrays.stream(address.split(",", -1)).map(String::trim).toList();
-        if (addresses.stream().anyMatch(item -> item.isBlank() || item.contains("://")))
+        if (addresses.stream().anyMatch(item -> item.isBlank() || item.contains("://"))) {
             throw new CommonException(PowerJobResultCodeEnum.INVALID_CLIENT_CONFIGURATION);
+        }
         return new PowerJobClient(addresses, appName, password);
-    }
-
-    private static String value(String supplied, String fallback) {
-        String value = supplied == null || supplied.isBlank() ? fallback : supplied;
-        return value == null || value.isBlank() ? null : value.trim();
     }
 }

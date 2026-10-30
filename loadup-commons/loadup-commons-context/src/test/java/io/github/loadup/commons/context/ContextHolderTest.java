@@ -19,7 +19,9 @@
  */
 package io.github.loadup.commons.context;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.IOException;
 import java.util.concurrent.Executors;
@@ -108,8 +110,9 @@ class ContextHolderTest {
                                 return ContextHolder.get(ORDER);
                             })));
                 }
-                for (int i = 0; i < tasks.size(); i++)
+                for (int i = 0; i < tasks.size(); i++) {
                     assertThat(tasks.get(i).get()).isEqualTo("order-" + i);
+                }
                 assertThat(ContextHolder.get(ORDER)).isEqualTo("caller");
                 return null;
             });

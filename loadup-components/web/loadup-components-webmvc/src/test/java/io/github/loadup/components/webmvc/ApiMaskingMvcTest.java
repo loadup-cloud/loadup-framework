@@ -53,61 +53,6 @@ import org.springframework.web.bind.annotation.RestController;
 import tools.jackson.databind.json.JsonMapper;
 
 class ApiMaskingMvcTest {
-    public record Contact(@Masked(MaskType.PHONE) String phone) {}
-
-    @RestController
-    static class Controller {
-        @PostMapping("/api/contact")
-        public Contact contact() {
-            return new Contact("13812345678");
-        }
-
-        @PostMapping("/api/envelope")
-        public SuccessResponse<List<Contact>> envelope() {
-            return SuccessResponse.of(List.of(contact()));
-        }
-
-        @PostMapping("/api/page")
-        public PageDTO<String> page() {
-            return PageDTO.of(List.of("one"), 21L, 2, 20);
-        }
-
-        @PostMapping("/api/null")
-        public Object empty() {
-            return null;
-        }
-
-        @PostMapping("/api/failure")
-        public FailureResponse<Void> failure() {
-            return FailureResponse.of(CommonResultCodeEnum.CONFLICT);
-        }
-
-        @PostMapping(value = "/api/binary", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-        public byte[] binary() {
-            return new byte[] {1, 2, 3};
-        }
-
-        @PostMapping(value = "/api/resource", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-        public ByteArrayResource resource() {
-            return new ByteArrayResource(new byte[] {4, 5});
-        }
-
-        @PostMapping(value = "/api/vendor", produces = "application/vnd.loadup+json")
-        public Contact vendor() {
-            return contact();
-        }
-
-        @PostMapping("/protocol/contact")
-        public Contact protocol() {
-            return contact();
-        }
-
-        @PostMapping("/api/text")
-        public String text() {
-            return "hello";
-        }
-    }
-
     @Test
     void masksPlainAndPreWrappedApiResponses() throws Exception {
         var masking = new ApiMaskingJson(JsonMapper.builder().build());
@@ -229,6 +174,61 @@ class ApiMaskingMvcTest {
                     });
         } finally {
             registry.close();
+        }
+    }
+
+    public record Contact(@Masked(MaskType.PHONE) String phone) {}
+
+    @RestController
+    static class Controller {
+        @PostMapping("/api/contact")
+        public Contact contact() {
+            return new Contact("13812345678");
+        }
+
+        @PostMapping("/api/envelope")
+        public SuccessResponse<List<Contact>> envelope() {
+            return SuccessResponse.of(List.of(contact()));
+        }
+
+        @PostMapping("/api/page")
+        public PageDTO<String> page() {
+            return PageDTO.of(List.of("one"), 21L, 2, 20);
+        }
+
+        @PostMapping("/api/null")
+        public Object empty() {
+            return null;
+        }
+
+        @PostMapping("/api/failure")
+        public FailureResponse<Void> failure() {
+            return FailureResponse.of(CommonResultCodeEnum.CONFLICT);
+        }
+
+        @PostMapping(value = "/api/binary", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+        public byte[] binary() {
+            return new byte[] {1, 2, 3};
+        }
+
+        @PostMapping(value = "/api/resource", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+        public ByteArrayResource resource() {
+            return new ByteArrayResource(new byte[] {4, 5});
+        }
+
+        @PostMapping(value = "/api/vendor", produces = "application/vnd.loadup+json")
+        public Contact vendor() {
+            return contact();
+        }
+
+        @PostMapping("/protocol/contact")
+        public Contact protocol() {
+            return contact();
+        }
+
+        @PostMapping("/api/text")
+        public String text() {
+            return "hello";
         }
     }
 }

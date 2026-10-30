@@ -117,44 +117,88 @@ public class PermissionDTO {
 
     public PermissionDTO() {}
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public String getId() {
         return this.id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getParentId() {
         return this.parentId;
     }
 
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
     public String getPermissionName() {
         return this.permissionName;
+    }
+
+    public void setPermissionName(String permissionName) {
+        this.permissionName = permissionName;
     }
 
     public String getPermissionCode() {
         return this.permissionCode;
     }
 
+    public void setPermissionCode(String permissionCode) {
+        this.permissionCode = permissionCode;
+    }
+
     public Short getPermissionType() {
         return this.permissionType;
+    }
+
+    public void setPermissionType(Short permissionType) {
+        this.permissionType = permissionType;
     }
 
     public String getResourcePath() {
         return this.resourcePath;
     }
 
+    public void setResourcePath(String resourcePath) {
+        this.resourcePath = resourcePath;
+    }
+
     public String getHttpMethod() {
         return this.httpMethod;
+    }
+
+    public void setHttpMethod(String httpMethod) {
+        this.httpMethod = httpMethod;
     }
 
     public String getIcon() {
         return this.icon;
     }
 
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
     public String getComponentPath() {
         return this.componentPath;
     }
 
+    public void setComponentPath(String componentPath) {
+        this.componentPath = componentPath;
+    }
+
     public Integer getSortOrder() {
         return this.sortOrder;
+    }
+
+    public void setSortOrder(Integer sortOrder) {
+        this.sortOrder = sortOrder;
     }
 
     public Boolean isVisible() {
@@ -165,88 +209,49 @@ public class PermissionDTO {
         return this.status;
     }
 
-    public List<PermissionDTO> getChildren() {
-        return this.children;
-    }
-
-    public String getRemark() {
-        return this.remark;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return this.createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return this.updatedAt;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setParentId(String parentId) {
-        this.parentId = parentId;
-    }
-
-    public void setPermissionName(String permissionName) {
-        this.permissionName = permissionName;
-    }
-
-    public void setPermissionCode(String permissionCode) {
-        this.permissionCode = permissionCode;
-    }
-
-    public void setPermissionType(Short permissionType) {
-        this.permissionType = permissionType;
-    }
-
-    public void setResourcePath(String resourcePath) {
-        this.resourcePath = resourcePath;
-    }
-
-    public void setHttpMethod(String httpMethod) {
-        this.httpMethod = httpMethod;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
-    public void setComponentPath(String componentPath) {
-        this.componentPath = componentPath;
-    }
-
-    public void setSortOrder(Integer sortOrder) {
-        this.sortOrder = sortOrder;
-    }
-
-    public void setVisible(Boolean visible) {
-        this.visible = visible;
-    }
-
     public void setStatus(Short status) {
         this.status = status;
+    }
+
+    public List<PermissionDTO> getChildren() {
+        return this.children;
     }
 
     public void setChildren(List<PermissionDTO> children) {
         this.children = children;
     }
 
+    public String getRemark() {
+        return this.remark;
+    }
+
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return this.createdAt;
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
+    public LocalDateTime getUpdatedAt() {
+        return this.updatedAt;
+    }
+
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public void setVisible(Boolean visible) {
+        this.visible = visible;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
     }
 
     public static class Builder {
@@ -366,10 +371,5 @@ public class PermissionDTO {
                     this.createdAt,
                     this.updatedAt);
         }
-    }
-
-    @Override
-    public String toString() {
-        return ToStringAsJson.reflectionToString(this);
     }
 }

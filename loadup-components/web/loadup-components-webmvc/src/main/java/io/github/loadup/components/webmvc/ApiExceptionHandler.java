@@ -32,7 +32,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
-/** Preserves business result codes while keeping non-API protocol behavior intact. */
+/**
+ * Preserves business result codes while keeping non-API protocol behavior intact.
+ */
 @RestControllerAdvice
 public final class ApiExceptionHandler {
     private final ApiPathMatcher paths;
@@ -70,7 +72,9 @@ public final class ApiExceptionHandler {
         // Record constructors can reject a request before Jackson finishes binding.
         Throwable cause = failure;
         for (int depth = 0; cause != null && depth < 16; depth++, cause = cause.getCause()) {
-            if (cause instanceof CommonException business) return business(business, request);
+            if (cause instanceof CommonException business) {
+                return business(business, request);
+            }
         }
         return ResponseEntity.ok(FailureResponse.of(CommonResultCodeEnum.PARAM_ILLEGAL));
     }
@@ -79,7 +83,9 @@ public final class ApiExceptionHandler {
     public ResponseEntity<FailureResponse<Void>> system(Exception failure, HttpServletRequest request)
             throws Exception {
         requireApi(request, failure);
-        if (isSecurityFailure(failure)) throw failure;
+        if (isSecurityFailure(failure)) {
+            throw failure;
+        }
         LogUtil.error(
                 ApiExceptionHandler.class,
                 "API request failed; failureType={}",
@@ -92,12 +98,16 @@ public final class ApiExceptionHandler {
     private boolean isSecurityFailure(Exception failure) {
         for (Class<?> type = failure.getClass(); type != null; type = type.getSuperclass()) {
             if (type.getName().equals("org.springframework.security.access.AccessDeniedException")
-                    || type.getName().equals("org.springframework.security.core.AuthenticationException")) return true;
+                    || type.getName().equals("org.springframework.security.core.AuthenticationException")) {
+                return true;
+            }
         }
         return false;
     }
 
     private void requireApi(HttpServletRequest request, Exception failure) throws Exception {
-        if (!paths.matches(request, request.getRequestURI())) throw failure;
+        if (!paths.matches(request, request.getRequestURI())) {
+            throw failure;
+        }
     }
 }

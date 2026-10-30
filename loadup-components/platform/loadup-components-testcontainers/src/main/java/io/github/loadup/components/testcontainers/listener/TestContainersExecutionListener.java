@@ -73,6 +73,15 @@ public class TestContainersExecutionListener extends AbstractTestExecutionListen
      */
     private static final ThreadLocal<Class<?>> PROCESSED_TEST_CLASS = new ThreadLocal<>();
 
+    /**
+     * Get stored container properties (for use by ApplicationContextInitializer).
+     *
+     * @return map of container properties, or null if no properties stored
+     */
+    public static Map<String, String> getStoredProperties() {
+        return CONTAINER_PROPERTIES.get();
+    }
+
     @Override
     public int getOrder() {
         // Highest precedence to ensure containers start before any other listeners
@@ -174,15 +183,6 @@ public class TestContainersExecutionListener extends AbstractTestExecutionListen
         LogUtil.info(
                 TestContainersExecutionListener.class,
                 ">>> [TESTCONTAINERS] ========== Container Startup Complete ==========");
-    }
-
-    /**
-     * Get stored container properties (for use by ApplicationContextInitializer).
-     *
-     * @return map of container properties, or null if no properties stored
-     */
-    public static Map<String, String> getStoredProperties() {
-        return CONTAINER_PROPERTIES.get();
     }
 
     @Override

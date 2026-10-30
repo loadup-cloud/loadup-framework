@@ -87,60 +87,60 @@ public class UserRegisterCommand {
         return this.username;
     }
 
-    public String getPassword() {
-        return this.password;
-    }
-
-    public String getNickname() {
-        return this.nickname;
-    }
-
-    public String getEmail() {
-        return this.email;
-    }
-
-    public String getMobile() {
-        return this.mobile;
-    }
-
-    public String getCaptchaKey() {
-        return this.captchaKey;
-    }
-
-    public String getCaptchaCode() {
-        return this.captchaCode;
-    }
-
-    public String getSmsCode() {
-        return this.smsCode;
-    }
-
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getPassword() {
+        return this.password;
     }
 
     public void setPassword(String password) {
         this.password = password;
     }
 
+    public String getNickname() {
+        return this.nickname;
+    }
+
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public String getEmail() {
+        return this.email;
     }
 
     public void setEmail(String email) {
         this.email = email;
     }
 
+    public String getMobile() {
+        return this.mobile;
+    }
+
     public void setMobile(String mobile) {
         this.mobile = mobile;
+    }
+
+    public String getCaptchaKey() {
+        return this.captchaKey;
     }
 
     public void setCaptchaKey(String captchaKey) {
         this.captchaKey = captchaKey;
     }
 
+    public String getCaptchaCode() {
+        return this.captchaCode;
+    }
+
     public void setCaptchaCode(String captchaCode) {
         this.captchaCode = captchaCode;
+    }
+
+    public String getSmsCode() {
+        return this.smsCode;
     }
 
     public void setSmsCode(String smsCode) {

@@ -23,7 +23,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import org.apache.hc.client5.http.SystemDefaultDnsResolver;
 
-/** Enforces address policy on every connection's DNS resolution, not just configuration loading. */
+/**
+ * Enforces address policy on every connection's DNS resolution, not just configuration loading.
+ */
 final class HttpTargetPolicy extends SystemDefaultDnsResolver {
     private final boolean allowPrivate;
 
@@ -31,26 +33,33 @@ final class HttpTargetPolicy extends SystemDefaultDnsResolver {
         this.allowPrivate = allowPrivate;
     }
 
-    @Override
-    public InetAddress[] resolve(String host) throws UnknownHostException {
-        InetAddress[] addresses = super.resolve(host);
-        if (!allowPrivate)
-            for (InetAddress address : addresses) {
-                if (blocked(address)) throw new UnknownHostException("HTTP target address is not allowed");
-            }
-        return addresses;
-    }
-
     static boolean blocked(InetAddress address) {
         if (address.isAnyLocalAddress()
                 || address.isLoopbackAddress()
                 || address.isLinkLocalAddress()
                 || address.isSiteLocalAddress()
-                || address.isMulticastAddress()) return true;
+                || address.isMulticastAddress()) {
+            return true;
+        }
         byte[] bytes = address.getAddress();
-        if (bytes.length == 16) return (bytes[0] & 0xfe) == 0xfc;
+        if (bytes.length == 16) {
+            return (bytes[0] & 0xfe) == 0xfc;
+        }
         int a = bytes[0] & 255;
         int b = bytes[1] & 255;
         return a == 0 || a >= 224 || (a == 100 && b >= 64 && b <= 127) || (a == 198 && (b == 18 || b == 19));
+    }
+
+    @Override
+    public InetAddress[] resolve(String host) throws UnknownHostException {
+        InetAddress[] addresses = super.resolve(host);
+        if (!allowPrivate) {
+            for (InetAddress address : addresses) {
+                if (blocked(address)) {
+                    throw new UnknownHostException("HTTP target address is not allowed");
+                }
+            }
+        }
+        return addresses;
     }
 }

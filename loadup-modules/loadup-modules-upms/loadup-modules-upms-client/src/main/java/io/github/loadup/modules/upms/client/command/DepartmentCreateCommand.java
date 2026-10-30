@@ -103,76 +103,76 @@ public class DepartmentCreateCommand {
         return this.parentId;
     }
 
-    public String getDeptName() {
-        return this.deptName;
-    }
-
-    public String getDeptCode() {
-        return this.deptCode;
-    }
-
-    public Integer getSortOrder() {
-        return this.sortOrder;
-    }
-
-    public String getLeaderUserId() {
-        return this.leaderUserId;
-    }
-
-    public String getMobile() {
-        return this.mobile;
-    }
-
-    public String getEmail() {
-        return this.email;
-    }
-
-    public Short getStatus() {
-        return this.status;
-    }
-
-    public String getRemark() {
-        return this.remark;
-    }
-
-    public String getCreatedBy() {
-        return this.createdBy;
-    }
-
     public void setParentId(String parentId) {
         this.parentId = parentId;
+    }
+
+    public String getDeptName() {
+        return this.deptName;
     }
 
     public void setDeptName(String deptName) {
         this.deptName = deptName;
     }
 
+    public String getDeptCode() {
+        return this.deptCode;
+    }
+
     public void setDeptCode(String deptCode) {
         this.deptCode = deptCode;
+    }
+
+    public Integer getSortOrder() {
+        return this.sortOrder;
     }
 
     public void setSortOrder(Integer sortOrder) {
         this.sortOrder = sortOrder;
     }
 
+    public String getLeaderUserId() {
+        return this.leaderUserId;
+    }
+
     public void setLeaderUserId(String leaderUserId) {
         this.leaderUserId = leaderUserId;
+    }
+
+    public String getMobile() {
+        return this.mobile;
     }
 
     public void setMobile(String mobile) {
         this.mobile = mobile;
     }
 
+    public String getEmail() {
+        return this.email;
+    }
+
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Short getStatus() {
+        return this.status;
     }
 
     public void setStatus(Short status) {
         this.status = status;
     }
 
+    public String getRemark() {
+        return this.remark;
+    }
+
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public String getCreatedBy() {
+        return this.createdBy;
     }
 
     public void setCreatedBy(String createdBy) {

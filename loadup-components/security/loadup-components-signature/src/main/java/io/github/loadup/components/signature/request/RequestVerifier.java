@@ -29,7 +29,9 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.Objects;
 
-/** Verifies identity, time and signature before consuming a nonce atomically. */
+/**
+ * Verifies identity, time and signature before consuming a nonce atomically.
+ */
 public final class RequestVerifier {
     private final KmsTemplate kms;
     private final RequestNonceStore nonces;
@@ -47,7 +49,9 @@ public final class RequestVerifier {
     public void verify(RequestSigningIdentity trusted, RequestContent content, RequestSignature signature) {
         Objects.requireNonNull(trusted, "trusted identity");
         properties.validateContent(content);
-        if (signature == null) throw new RequestSignatureException(RequestSignatureException.Code.MALFORMED);
+        if (signature == null) {
+            throw new RequestSignatureException(RequestSignatureException.Code.MALFORMED);
+        }
         var parameters = signature.parameters();
         if (!trusted.appId().equals(parameters.appId())
                 || !trusted.audience().equals(parameters.audience())
@@ -66,8 +70,9 @@ public final class RequestVerifier {
         }
         validateTime(parameters);
         Duration ttl = Duration.between(clock.instant(), expiresAt);
-        if (ttl.isNegative() || ttl.isZero())
+        if (ttl.isNegative() || ttl.isZero()) {
             throw new RequestSignatureException(RequestSignatureException.Code.EXPIRED);
+        }
         // Retain claims beyond expiry for nodes whose clocks lag within the configured tolerance.
         ttl = ttl.plus(properties.futureSkew());
         String replayKey = RequestSignatureCanonicalizer.sha256(
@@ -79,17 +84,22 @@ public final class RequestVerifier {
         } catch (RuntimeException failure) {
             throw new RequestSignatureException(RequestSignatureException.Code.REPLAY_STORE_UNAVAILABLE);
         }
-        if (!claimed) throw new RequestSignatureException(RequestSignatureException.Code.REPLAY);
+        if (!claimed) {
+            throw new RequestSignatureException(RequestSignatureException.Code.REPLAY);
+        }
     }
 
     private Instant validateTime(RequestSignatureParameters parameters) {
         try {
             Instant now = clock.instant();
             Instant timestamp = Instant.ofEpochSecond(parameters.timestamp());
-            if (timestamp.isAfter(now.plus(properties.futureSkew())))
+            if (timestamp.isAfter(now.plus(properties.futureSkew()))) {
                 throw new RequestSignatureException(RequestSignatureException.Code.FUTURE_TIMESTAMP);
+            }
             Instant expires = timestamp.plus(properties.maxAge());
-            if (!now.isBefore(expires)) throw new RequestSignatureException(RequestSignatureException.Code.EXPIRED);
+            if (!now.isBefore(expires)) {
+                throw new RequestSignatureException(RequestSignatureException.Code.EXPIRED);
+            }
             return expires;
         } catch (DateTimeException invalid) {
             throw new RequestSignatureException(RequestSignatureException.Code.MALFORMED);

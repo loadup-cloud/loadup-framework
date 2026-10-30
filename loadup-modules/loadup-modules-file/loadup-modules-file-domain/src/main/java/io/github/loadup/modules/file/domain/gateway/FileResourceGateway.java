@@ -28,23 +28,23 @@ import java.util.Optional;
 public interface FileResourceGateway {
     void insert(FileResource file);
 
-    Optional<FileResource> find(String tenantId, String id);
+    Optional<FileResource> find(String id);
 
-    Optional<FileResource> lock(String tenantId, String id);
+    Optional<FileResource> lock(String id);
 
-    PageResult<FileResource> list(String tenantId, String ownerId, int page, int size);
+    PageResult<FileResource> list(String ownerId, int page, int size);
 
-    void markPending(String tenantId, String id);
+    void markPending(String id);
 
-    void markDeleted(String tenantId, String id);
+    void markDeleted(String id);
 
     List<FileResource> pending(int limit);
 
     void addReference(FileReference reference);
 
-    void removeReference(String tenantId, String fileId, String referenceType, String referenceId);
+    void removeReference(String fileId, String referenceType, String referenceId);
 
-    long countReferences(String tenantId, String fileId);
+    long countReferences(String fileId);
 
-    List<FileReference> references(String tenantId, String fileId);
+    List<FileReference> references(String fileId);
 }

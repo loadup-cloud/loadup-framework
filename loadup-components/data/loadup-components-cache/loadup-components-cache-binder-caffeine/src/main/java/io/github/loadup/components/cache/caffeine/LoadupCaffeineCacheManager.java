@@ -62,7 +62,9 @@ public class LoadupCaffeineCacheManager extends CaffeineCacheManager {
         return builder.build();
     }
 
-    /** Caffeine {@link Expiry} that adds a random jitter on top of the configured TTL per entry. */
+    /**
+     * Caffeine {@link Expiry} that adds a random jitter on top of the configured TTL per entry.
+     */
     private static final class RandomExpiry implements Expiry<Object, Object> {
 
         private static final long MAX_NANOS = Long.MAX_VALUE;

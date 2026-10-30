@@ -19,9 +19,11 @@
  */
 package io.github.loadup.modules.file.app.service;
 
+import io.github.loadup.commons.constant.CommonConstants;
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.PageDTO;
+import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.dfs.DfsService;
 import io.github.loadup.components.dfs.model.FileDownloadResponse;
 import io.github.loadup.components.dfs.model.FileMetadata;
@@ -39,31 +41,52 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 
-/** File lifecycle and business references; DFS remains responsible for bytes. */
+/**
+ * File lifecycle and business references; DFS remains responsible for bytes.
+ */
 public class FileResourceService implements io.github.loadup.modules.file.client.facade.FileResourceFacade {
     private final Clock clock;
-    private static final String DEFAULT_TENANT = "__default__";
     private final FileDTOConverter converter;
     private final FileResourceGateway repository;
     private final DfsService dfs;
 
     public FileResourceService(
-            FileResourceGateway repository,
-            DfsService dfs,
-            FileDTOConverter converter,
-            @Qualifier("fileClock") Clock clock) {
+            FileResourceGateway repository, DfsService dfs, FileDTOConverter converter, Clock clock) {
         this.clock = clock;
         this.converter = converter;
         this.repository = repository;
         this.dfs = dfs;
     }
 
-    public FileResourceDTO upload(
-            String tenantId, String ownerId, String filename, String contentType, long size, InputStream content) {
-        String tenant = tenant(tenantId);
+    private static void authorize(FileResource file, String actorId, boolean admin) {
+        if (!admin && !file.ownerId().equals(actorId)) {
+            throw new CommonException(FileResultCodeEnum.FILE_NOT_FOUND);
+        }
+    }
+
+    private static String storageTenant() {
+        String tenant = TenantUtil.getTenantId();
+        return tenant == null || tenant.isBlank() ? CommonConstants.DEFAULT_TENANT_ID : tenant.trim();
+    }
+
+    private static String key(String value) {
+        String result = required(value, 128);
+        if (!result.matches("[A-Za-z0-9_.:-]+")) {
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
+        }
+        return result;
+    }
+
+    private static String required(String value, int max) {
+        if (value == null || value.isBlank() || value.trim().length() > max) {
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
+        }
+        return value.trim();
+    }
+
+    public FileResourceDTO upload(String ownerId, String filename, String contentType, long size, InputStream content) {
         String owner = required(ownerId, 64);
         String safeName = required(filename, 255);
         if (safeName.contains("/")
@@ -71,17 +94,18 @@ public class FileResourceService implements io.github.loadup.modules.file.client
                 || safeName.chars().anyMatch(Character::isISOControl)) {
             throw new CommonException(FileResultCodeEnum.FILENAME_CONTAINS_INVALID_CHARACTERS);
         }
-        if (content == null || size < 0) throw new CommonException(FileResultCodeEnum.INVALID_FILE_CONTENT);
+        if (content == null || size < 0) {
+            throw new CommonException(FileResultCodeEnum.INVALID_FILE_CONTENT);
+        }
         String type =
                 contentType == null || contentType.isBlank() ? "application/octet-stream" : required(contentType, 255);
-        FileMetadata stored = io.github.loadup.commons.util.TenantUtil.callWithTenant(
-                tenant,
+        FileMetadata stored = TenantUtil.callWithTenant(
+                storageTenant(),
                 () -> dfs.upload(new FileUploadRequest(
                         safeName, content, size, type, "resources/" + UUID.randomUUID(), Map.of())));
         LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), clock.getZone());
         FileResource file = new FileResource(
                 UUID.randomUUID().toString(),
-                tenant,
                 owner,
                 stored.fileId(),
                 safeName,
@@ -95,7 +119,7 @@ public class FileResourceService implements io.github.loadup.modules.file.client
             repository.insert(file);
         } catch (RuntimeException failure) {
             try {
-                io.github.loadup.commons.util.TenantUtil.runWithTenant(tenant, () -> dfs.delete(stored.fileId()));
+                TenantUtil.runWithTenant(storageTenant(), () -> dfs.delete(stored.fileId()));
             } catch (RuntimeException cleanupFailure) {
                 failure.addSuppressed(cleanupFailure);
             }
@@ -104,40 +128,35 @@ public class FileResourceService implements io.github.loadup.modules.file.client
         return converter.toDTO(file);
     }
 
-    public FileResourceDTO get(String tenantId, String id, String actorId, boolean admin) {
-        return converter.toDTO(requireFile(tenantId, id, actorId, admin));
+    public FileResourceDTO get(String id, String actorId, boolean admin) {
+        return converter.toDTO(requireFile(id, actorId, admin));
     }
 
-    private FileResource requireFile(String tenantId, String id, String actorId, boolean admin) {
+    private FileResource requireFile(String id, String actorId, boolean admin) {
         FileResource file = repository
-                .find(tenant(tenantId), required(id, 64))
+                .find(required(id, 64))
                 .filter(item -> "ACTIVE".equals(item.state()))
                 .orElseThrow(() -> new CommonException(FileResultCodeEnum.FILE_NOT_FOUND));
         authorize(file, actorId, admin);
         return file;
     }
 
-    public FileDownloadResponse download(String tenantId, String id, String actorId, boolean admin) {
-        FileResource file = requireFile(tenantId, id, actorId, admin);
-        return io.github.loadup.commons.util.TenantUtil.callWithTenant(
-                file.tenantId(), () -> dfs.download(file.storageId()));
+    public FileDownloadResponse download(String id, String actorId, boolean admin) {
+        FileResource file = requireFile(id, actorId, admin);
+        return TenantUtil.callWithTenant(storageTenant(), () -> dfs.download(file.storageId()));
     }
 
-    public PageDTO<FileResourceDTO> list(
-            String tenantId, String actorId, boolean admin, String ownerId, int page, int size) {
+    public PageDTO<FileResourceDTO> list(String actorId, boolean admin, String ownerId, int page, int size) {
         io.github.loadup.commons.dto.PageQuery.normalized(page, size, FileResultCodeEnum.INVALID_PAGE);
         String owner = admin && ownerId != null && !ownerId.isBlank() ? required(ownerId, 64) : required(actorId, 64);
-        return converter.toPageDTO(repository.list(tenant(tenantId), owner, page, size));
+        return converter.toPageDTO(repository.list(owner, page, size));
     }
 
     @Transactional
-    public FileReferenceDTO attach(
-            String tenantId, String id, String actorId, boolean admin, String referenceType, String referenceId) {
-        String tenant = tenant(tenantId);
-        FileResource file = lockActive(tenant, id, actorId, admin);
+    public FileReferenceDTO attach(String id, String actorId, boolean admin, String referenceType, String referenceId) {
+        FileResource file = lockActive(id, actorId, admin);
         FileReference reference = new FileReference(
                 UUID.randomUUID().toString(),
-                tenant,
                 file.id(),
                 key(referenceType),
                 key(referenceId),
@@ -147,87 +166,72 @@ public class FileResourceService implements io.github.loadup.modules.file.client
     }
 
     @Transactional
-    public void detach(
-            String tenantId, String id, String actorId, boolean admin, String referenceType, String referenceId) {
-        String tenant = tenant(tenantId);
-        lockActive(tenant, id, actorId, admin);
-        repository.removeReference(tenant, id, key(referenceType), key(referenceId));
+    public void detach(String id, String actorId, boolean admin, String referenceType, String referenceId) {
+        lockActive(id, actorId, admin);
+        repository.removeReference(id, key(referenceType), key(referenceId));
     }
 
-    public List<FileReferenceDTO> references(String tenantId, String id, String actorId, boolean admin) {
-        FileResource file = requireFile(tenantId, id, actorId, admin);
-        return converter.toReferenceDTOs(repository.references(file.tenantId(), file.id()));
+    public List<FileReferenceDTO> references(String id, String actorId, boolean admin) {
+        FileResource file = requireFile(id, actorId, admin);
+        return converter.toReferenceDTOs(repository.references(file.id()));
     }
 
-    /** Commit the pending state before calling DFS; retry cleanupPending after storage failure. */
+    /**
+     * Commit the pending state before calling DFS; retry cleanupPending after storage failure.
+     */
     @Transactional
-    public void requestDeletion(String tenantId, String id, String actorId, boolean admin) {
-        String tenant = tenant(tenantId);
-        FileResource file = lockActive(tenant, id, actorId, admin);
-        if (repository.countReferences(tenant, file.id()) > 0) {
+    public void requestDeletion(String id, String actorId, boolean admin) {
+        FileResource file = lockActive(id, actorId, admin);
+        if (repository.countReferences(file.id()) > 0) {
             throw new CommonException(FileResultCodeEnum.FILE_IS_REFERENCED_BY_A_BUSINESS_OBJECT);
         }
-        repository.markPending(tenant, file.id());
+        repository.markPending(file.id());
     }
 
-    /** Idempotent cleanup entry point for operators or a scheduler. */
+    /**
+     * Idempotent cleanup entry point for operators or a scheduler.
+     */
     public int cleanupPending(int limit) {
-        if (limit < 1 || limit > 1000) throw new CommonException(FileResultCodeEnum.LIMIT_MUST_BE_BETWEEN_1_AND_1000);
+        if (limit < 1 || limit > 1000) {
+            throw new CommonException(FileResultCodeEnum.LIMIT_MUST_BE_BETWEEN_1_AND_1000);
+        }
         int cleaned = 0;
         RuntimeException failure = null;
         for (FileResource file : repository.pending(limit)) {
             try {
-                io.github.loadup.commons.util.TenantUtil.runWithTenant(file.tenantId(), () -> {
+                TenantUtil.runWithTenant(storageTenant(), () -> {
                     dfs.delete(file.storageId());
-                    repository.markDeleted(file.tenantId(), file.id());
+                    repository.markDeleted(file.id());
                 });
                 cleaned++;
             } catch (RuntimeException ex) {
-                if (failure == null)
+                if (failure == null) {
                     failure = new CommonException(FileResultCodeEnum.SOME_PENDING_FILE_DELETIONS_FAILED);
+                }
                 failure.addSuppressed(ex);
             }
         }
-        if (failure != null) throw failure;
+        if (failure != null) {
+            throw failure;
+        }
         return cleaned;
     }
 
-    public void cleanup(String tenantId, String id) {
+    public void cleanup(String id) {
         FileResource file = repository
-                .find(tenant(tenantId), required(id, 64))
+                .find(required(id, 64))
                 .filter(item -> "PENDING_DELETE".equals(item.state()))
                 .orElseThrow(() -> new CommonException(FileResultCodeEnum.FILE_IS_NOT_PENDING_DELETION));
-        io.github.loadup.commons.util.TenantUtil.runWithTenant(file.tenantId(), () -> dfs.delete(file.storageId()));
-        repository.markDeleted(file.tenantId(), file.id());
+        TenantUtil.runWithTenant(storageTenant(), () -> dfs.delete(file.storageId()));
+        repository.markDeleted(file.id());
     }
 
-    private FileResource lockActive(String tenant, String id, String actorId, boolean admin) {
+    private FileResource lockActive(String id, String actorId, boolean admin) {
         FileResource file = repository
-                .lock(tenant, required(id, 64))
+                .lock(required(id, 64))
                 .filter(item -> "ACTIVE".equals(item.state()))
                 .orElseThrow(() -> new CommonException(FileResultCodeEnum.FILE_NOT_FOUND));
         authorize(file, actorId, admin);
         return file;
-    }
-
-    private static void authorize(FileResource file, String actorId, boolean admin) {
-        if (!admin && !file.ownerId().equals(actorId)) throw new CommonException(FileResultCodeEnum.FILE_NOT_FOUND);
-    }
-
-    private static String tenant(String tenantId) {
-        return tenantId == null || tenantId.isBlank() ? DEFAULT_TENANT : required(tenantId, 64);
-    }
-
-    private static String key(String value) {
-        String result = required(value, 128);
-        if (!result.matches("[A-Za-z0-9_.:-]+")) throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
-        return result;
-    }
-
-    private static String required(String value, int max) {
-        if (value == null || value.isBlank() || value.trim().length() > max) {
-            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
-        }
-        return value.trim();
     }
 }

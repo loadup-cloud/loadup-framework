@@ -16,7 +16,8 @@
 
 主要入口文件：
 
-- [`CaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/autoconfig/CaptchaAutoConfiguration.java)
+- [
+  `CaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/autoconfig/CaptchaAutoConfiguration.java)
 - [`CaptchaProvider`](src/main/java/io/github/loadup/components/captcha/CaptchaProvider.java)
 - [`CaptchaTemplate`](src/main/java/io/github/loadup/components/captcha/CaptchaTemplate.java)
 - [`DefaultCaptchaTemplate`](src/main/java/io/github/loadup/components/captcha/DefaultCaptchaTemplate.java)
@@ -28,13 +29,16 @@
 ```text
 业务调用 → CaptchaTemplate → SPI/领域契约 → 运行时实现
 ```
+
 接口模块固定业务侧依赖方向；实现与基础设施通过独立模块接入。
 
 ## 装配规则
 
-- [`CaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/autoconfig/CaptchaAutoConfiguration.java) 是自动配置入口。
-  - `@ConditionalOnSingleCandidate(CaptchaProvider.class)`
-  - `@ConditionalOnMissingBean(CaptchaTemplate.class)`
+- [
+  `CaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/autoconfig/CaptchaAutoConfiguration.java)
+  是自动配置入口。
+    - `@ConditionalOnSingleCandidate(CaptchaProvider.class)`
+    - `@ConditionalOnMissingBean(CaptchaTemplate.class)`
 
 ## 扩展契约
 

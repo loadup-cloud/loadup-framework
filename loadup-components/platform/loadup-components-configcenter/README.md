@@ -1,6 +1,6 @@
 # loadup-components-configcenter
 
-统一配置中心组件：**facade = `ConfigCenterTemplate`（key-value 读 / 写 / 监听）**，binder 屏蔽
+统一配置中心组件： **facade = `ConfigCenterTemplate`（key-value 读 / 写 / 监听）**，binder 屏蔽
 Nacos / Apollo / 本地内存等底层 SDK 差异，切换后端只改依赖与配置，业务代码零修改。
 
 ## 模块结构
@@ -71,14 +71,14 @@ public class FeatureService {
 
 ## 能力矩阵
 
-| 能力 | Local | Nacos | Apollo |
-|------|-------|-------|--------|
-| 读配置 `getConfig(key[, default])` | ✓ | ✓ | ✓ |
-| 写配置 `setConfig(key, value)` | ✓ | ✓（整文件读改写） | ✗（需 Portal OpenAPI） |
-| 删配置 `removeConfig(key)` | ✓ | ✓（整文件读改写） | ✗（需 Portal OpenAPI） |
-| 列出键 `listKeys(prefix)` | ✓ | ✓（文件快照） | ✓（`getPropertyNames()`） |
-| 变更监听 `addListener(key, consumer)` | ✓（同步回调） | ✓（长轮询推送） | ✓（实时推送） |
-| 部署拓扑 | 进程内 | Nacos Server | Apollo 配置中心 |
+| 能力                                  | Local          | Nacos              | Apollo                     |
+|---------------------------------------|----------------|--------------------|----------------------------|
+| 读配置 `getConfig(key[, default])`    | ✓             | ✓                 | ✓                         |
+| 写配置 `setConfig(key, value)`        | ✓             | ✓（整文件读改写） | ✗（需 Portal OpenAPI）    |
+| 删配置 `removeConfig(key)`            | ✓             | ✓（整文件读改写） | ✗（需 Portal OpenAPI）    |
+| 列出键 `listKeys(prefix)`             | ✓             | ✓（文件快照）     | ✓（`getPropertyNames()`） |
+| 变更监听 `addListener(key, consumer)` | ✓（同步回调） | ✓（长轮询推送）   | ✓（实时推送）             |
+| 部署拓扑                              | 进程内         | Nacos Server       | Apollo 配置中心            |
 
 > Nacos 以 `dataId + group` 为单位存储整个文件，`setConfig/removeConfig` 为整文件读改写
 > （last-writer-wins 按文件粒度）；业务上高频写场景建议使用 Nacos OpenAPI 或独立 dataId。

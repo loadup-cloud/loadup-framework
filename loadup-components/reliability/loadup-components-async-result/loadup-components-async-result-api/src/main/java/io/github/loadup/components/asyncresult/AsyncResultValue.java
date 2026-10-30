@@ -24,10 +24,12 @@ import io.github.loadup.commons.json.ToStringAsJson;
 
 public record AsyncResultValue(@DiagnosticHidden String payload, String failureCode) {
     public AsyncResultValue {
-        if ((payload == null) == (failureCode == null))
+        if ((payload == null) == (failureCode == null)) {
             throw new IllegalArgumentException("Exactly one reply representation is required");
-        if (failureCode != null && !failureCode.matches("[A-Z][A-Z0-9_]{0,63}"))
+        }
+        if (failureCode != null && !failureCode.matches("[A-Z][A-Z0-9_]{0,63}")) {
             throw new IllegalArgumentException("Invalid failure code");
+        }
     }
 
     @Override

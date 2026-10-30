@@ -22,20 +22,21 @@ package io.github.loadup.modules.transfer.client.spi;
 import io.github.loadup.commons.json.ToStringAsJson;
 import java.util.Map;
 
-/** Stable task identity, validated options, and progress callback for business handlers. */
-public record TransferContext(
-        String taskId, String tenantId, String ownerId, Map<String, String> options, ProgressReporter progress) {
+/**
+ * Stable task identity, validated options, and progress callback for business handlers.
+ */
+public record TransferContext(String taskId, String ownerId, Map<String, String> options, ProgressReporter progress) {
     public void report(long processed, long total) {
         progress.report(processed, total);
-    }
-
-    @FunctionalInterface
-    public interface ProgressReporter {
-        void report(long processed, long total);
     }
 
     @Override
     public String toString() {
         return ToStringAsJson.reflectionToString(this);
+    }
+
+    @FunctionalInterface
+    public interface ProgressReporter {
+        void report(long processed, long total);
     }
 }

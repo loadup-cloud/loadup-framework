@@ -52,6 +52,17 @@ public class LoadUpJwtTokenCustomizer implements OAuth2TokenCustomizer<JwtEncodi
         this.audience = audience;
     }
 
+    private static String resolveUsername(Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof UserDetails userDetails) {
+            return userDetails.getUsername();
+        }
+        if (principal instanceof String name) {
+            return name;
+        }
+        return authentication.getName();
+    }
+
     @Override
     public void customize(JwtEncodingContext context) {
         if (!OAuth2TokenType.ACCESS_TOKEN.equals(context.getTokenType())) {
@@ -101,16 +112,5 @@ public class LoadUpJwtTokenCustomizer implements OAuth2TokenCustomizer<JwtEncodi
         if (principal.getPrincipal() instanceof LoadUpSubject subject) {
             context.getClaims().subject(subject.subjectId());
         }
-    }
-
-    private static String resolveUsername(Authentication authentication) {
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof UserDetails userDetails) {
-            return userDetails.getUsername();
-        }
-        if (principal instanceof String name) {
-            return name;
-        }
-        return authentication.getName();
     }
 }

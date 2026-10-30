@@ -27,13 +27,20 @@ import io.github.loadup.modules.notification.app.service.InboxService;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/** Gotone IN_APP channel backed by the persistent inbox. */
+/**
+ * Gotone IN_APP channel backed by the persistent inbox.
+ */
 public class InAppChannelProvider implements NotificationChannelProvider {
 
     private final InboxService inbox;
 
     public InAppChannelProvider(InboxService inbox) {
         this.inbox = inbox;
+    }
+
+    private static String string(Map<String, Object> values, String key) {
+        Object value = values.get(key);
+        return value == null ? null : String.valueOf(value);
     }
 
     @Override
@@ -58,7 +65,6 @@ public class InAppChannelProvider implements NotificationChannelProvider {
         String body = request.content().isBlank() ? string(params, "body") : request.content();
         try {
             inbox.publish(
-                    string(params, "tenantId"),
                     string(params, "senderId"),
                     request.receivers(),
                     string(params, "category"),
@@ -79,10 +85,5 @@ public class InAppChannelProvider implements NotificationChannelProvider {
             });
             return new ChannelSendResponse(body, 0, status.size(), status, errors);
         }
-    }
-
-    private static String string(Map<String, Object> values, String key) {
-        Object value = values.get(key);
-        return value == null ? null : String.valueOf(value);
     }
 }

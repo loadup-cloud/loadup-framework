@@ -31,7 +31,6 @@ import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import io.github.loadup.modules.upms.domain.model.User;
 import java.time.Clock;
 import java.time.LocalDateTime;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,6 +48,17 @@ public class PasswordResetService implements io.github.loadup.modules.upms.clien
     private final UserGateway userGateway;
     private final VerificationCodeService verificationCodeService;
     private final PasswordEncoder passwordEncoder;
+
+    public PasswordResetService(
+            UserGateway userGateway,
+            VerificationCodeService verificationCodeService,
+            PasswordEncoder passwordEncoder,
+            Clock clock) {
+        this.clock = clock;
+        this.userGateway = userGateway;
+        this.verificationCodeService = verificationCodeService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     /**
      * Send verification code via email
@@ -103,7 +113,9 @@ public class PasswordResetService implements io.github.loadup.modules.upms.clien
      */
     @Transactional
     public void resetPassword(UserPasswordResetCommand command) {
-        if (command == null) throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
+        if (command == null) {
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
+        }
         PasswordPolicy.requireValid(command.getNewPassword());
         // Check new password confirmation
         if (!command.getNewPassword().equals(command.getConfirmPassword())) {
@@ -144,16 +156,5 @@ public class PasswordResetService implements io.github.loadup.modules.upms.clien
 
         userGateway.update(user);
         LogUtil.info(PasswordResetService.class, "Password reset successful for user: {}", user.getUsername());
-    }
-
-    public PasswordResetService(
-            UserGateway userGateway,
-            VerificationCodeService verificationCodeService,
-            PasswordEncoder passwordEncoder,
-            @Qualifier("upmsClock") Clock clock) {
-        this.clock = clock;
-        this.userGateway = userGateway;
-        this.verificationCodeService = verificationCodeService;
-        this.passwordEncoder = passwordEncoder;
     }
 }

@@ -19,7 +19,8 @@
 
 主要入口文件：
 
-- [`CaffeineCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/caffeine/autoconfig/CaffeineCacheAutoConfiguration.java)
+- [
+  `CaffeineCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/caffeine/autoconfig/CaffeineCacheAutoConfiguration.java)
 
 ## 分层与调用路径
 
@@ -28,18 +29,23 @@ Spring Cache 调用进入当前 `CacheManager`，由选中的 binder 处理缓�
 ```text
 业务代码 → API/facade → 当前 binder → 第三方引擎或基础设施
 ```
+
 binder 实现框架契约，把实现库及其配置隔离在业务 API 之外。
 
 ## 装配规则
 
-- [`CaffeineCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/caffeine/autoconfig/CaffeineCacheAutoConfiguration.java) 是自动配置入口。
-  - `@ConditionalOnClass(Caffeine.class)`
-  - `@ConditionalOnProperty( prefix = "loadup.cache", name = "type", havingValue = CacheBackendType.CAFFEINE, matchIfMissing = true)`
-  - `@ConditionalOnMissingBean(CacheManager.class)`
+- [
+  `CaffeineCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/caffeine/autoconfig/CaffeineCacheAutoConfiguration.java)
+  是自动配置入口。
+    - `@ConditionalOnClass(Caffeine.class)`
+    -
+    `@ConditionalOnProperty( prefix = "loadup.cache", name = "type", havingValue = CacheBackendType.CAFFEINE, matchIfMissing = true)`
+    - `@ConditionalOnMissingBean(CacheManager.class)`
 
 ## 配置归属
 
-- [`CaffeineCacheProperties`](src/main/java/io/github/loadup/components/cache/caffeine/CaffeineCacheProperties.java) 绑定 `loadup.cache.binder.caffeine`。
+- [`CaffeineCacheProperties`](src/main/java/io/github/loadup/components/cache/caffeine/CaffeineCacheProperties.java) 绑定
+  `loadup.cache.binder.caffeine`。
 
 ## 设计取舍
 

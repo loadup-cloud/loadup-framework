@@ -2,10 +2,10 @@
 
 ## 1. 设计定位
 
-Gotone 是 LoadUp 的**统一通知组件**，采用 **Mode B（多后端共存模式）**：多个通知渠道
+Gotone 是 LoadUp 的 **统一通知组件**，采用 **Mode B（多后端共存模式）**：多个通知渠道
 Provider 同时活跃，由运行时配置（serviceCode → channel mapping）驱动路由，存储可选。
 
-设计目标与项目总纲一致：**底层 OSS + 薄集成**。业务代码只依赖
+设计目标与项目总纲一致： **底层 OSS + 薄集成**。业务代码只依赖
 `loadup-components-gotone-api` 的 `NotificationService`，不感知具体渠道 SDK（Spring Mail、
 厂商短信 SDK、webhook 协议）。存储（发送记录）通过可选 SPI 接入，引擎本身零存储、零 DB。
 
@@ -106,13 +106,14 @@ loadup-components-gotone/
 
 ### 4.3 降级链 + resilience4j
 
-降级链是**进程内、按 provider 顺序**的快速失败切换；resilience4j 提供**跨调用窗口**的熔断
+降级链是 **进程内、按 provider 顺序**的快速失败切换；resilience4j 提供 **跨调用窗口**的熔断
 与重试。二者正交：熔断打开只跳过当前 provider，由降级链切到备用 provider。instance 命名
 `gotone-<channel>-<provider>` 允许按 provider 用标准 `resilience4j.*` 配置。
 
 ### 4.4 与后台任务的分工
 
-通知的进程内降级与重试由 Gotone 引擎处理；跨实例的最终一致性补偿由消费方的 PowerJob/Outbox 编排，业务需保证幂等。执行历史和平台告警使用 PowerJob 原生能力，Gotone 不反向依赖调度组件。API 模型继续使用不可变 record。
+通知的进程内降级与重试由 Gotone 引擎处理；跨实例的最终一致性补偿由消费方的 PowerJob/Outbox 编排，业务需保证幂等。执行历史和平台告警使用
+PowerJob 原生能力，Gotone 不反向依赖调度组件。API 模型继续使用不可变 record。
 
 ## 5. 扩展点
 

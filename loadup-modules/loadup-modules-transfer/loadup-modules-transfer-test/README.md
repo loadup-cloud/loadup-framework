@@ -14,9 +14,9 @@ mvn -pl loadup-modules/loadup-modules-transfer/loadup-modules-transfer-test clea
 
 ## 能力契约
 
-| 能力 | 本层提供 |
-| --- | --- |
-| 应用与持久化组合装配的定向回归测试。 | 是 |
-| HTTP 适配 | 由同一业务目录下可选 web 提供 |
+| 能力                                 | 本层提供                      |
+|--------------------------------------|-------------------------------|
+| 应用与持久化组合装配的定向回归测试。 | 是                            |
+| HTTP 适配                            | 由同一业务目录下可选 web 提供 |
 
 完整业务 API、配置及使用示例见 [模块接入手册](../README.md)；内部职责见 [ARCHITECTURE.md](ARCHITECTURE.md)。

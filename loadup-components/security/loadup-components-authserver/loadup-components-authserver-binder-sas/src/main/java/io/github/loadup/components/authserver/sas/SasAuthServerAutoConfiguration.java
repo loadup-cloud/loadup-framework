@@ -87,6 +87,72 @@ import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 @EnableConfigurationProperties(LoadUpAuthServerProperties.class)
 public class SasAuthServerAutoConfiguration {
 
+    private static RegisteredClient toRegisteredClient(Client client) {
+        if (StringUtils.isBlank(client.getClientId())) {
+            throw new IllegalArgumentException("loadup.security.auth-server.clients[].client-id is required");
+        }
+        RegisteredClient.Builder builder = RegisteredClient.withId(
+                        UUID.randomUUID().toString())
+                .clientId(client.getClientId())
+                .clientSecret(encodeClientSecret(client.getClientSecret()))
+                .clientSettings(ClientSettings.builder()
+                        .requireAuthorizationConsent(client.isRequireAuthorizationConsent())
+                        .build())
+                .tokenSettings(TokenSettings.builder()
+                        .accessTokenTimeToLive(client.getAccessTokenTtl())
+                        .build());
+        if (client.getGrantTypes() != null) {
+            client.getGrantTypes().forEach(g -> builder.authorizationGrantType(new AuthorizationGrantType(g)));
+        }
+        if (client.getRedirectUris() != null) {
+            client.getRedirectUris().forEach(builder::redirectUri);
+        }
+        if (client.getScopes() != null) {
+            client.getScopes().forEach(builder::scope);
+        }
+        return builder.build();
+    }
+
+    private static RSAKey buildRsaKey(LoadUpAuthServerProperties properties) {
+        String privateKeyBase64 = properties.getJwk().getRsaPrivateKeyBase64();
+        String kid = properties.getJwk().getKid();
+        try {
+            RSAPrivateCrtKey privateKey;
+            if (StringUtils.isNotBlank(privateKeyBase64)) {
+                PrivateKey decoded = KeyFactory.getInstance("RSA")
+                        .generatePrivate(
+                                new PKCS8EncodedKeySpec(Base64.getDecoder().decode(privateKeyBase64)));
+                privateKey = (RSAPrivateCrtKey) decoded;
+            } else {
+                LogUtil.warn(
+                        SasAuthServerAutoConfiguration.class,
+                        "loadup.security.auth-server.jwk.rsa-private-key-base64 is not configured; "
+                                + "an ephemeral RSA key will be generated. Tokens become invalid after restart.");
+                KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
+                generator.initialize(2048);
+                KeyPair keyPair = generator.generateKeyPair();
+                privateKey = (RSAPrivateCrtKey) keyPair.getPrivate();
+            }
+            RSAPublicKey publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
+                    .generatePublic(new RSAPublicKeySpec(privateKey.getModulus(), privateKey.getPublicExponent()));
+            return new RSAKey.Builder(publicKey)
+                    .privateKey(privateKey)
+                    .keyID(kid)
+                    .keyUse(KeyUse.SIGNATURE)
+                    .algorithm(JWSAlgorithm.RS256)
+                    .build();
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to build the authorization server JWK", e);
+        }
+    }
+
+    private static String encodeClientSecret(String secret) {
+        if (StringUtils.isBlank(secret)) {
+            throw new IllegalArgumentException("loadup.security.auth-server.clients[].client-secret is required");
+        }
+        return "{bcrypt}" + new BCryptPasswordEncoder().encode(secret);
+    }
+
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
     @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
@@ -166,71 +232,5 @@ public class SasAuthServerAutoConfiguration {
             throw new IllegalArgumentException("loadup.security.auth-server.audience is required");
         }
         return new LoadUpJwtTokenCustomizer(properties.getAudience());
-    }
-
-    private static RegisteredClient toRegisteredClient(Client client) {
-        if (StringUtils.isBlank(client.getClientId())) {
-            throw new IllegalArgumentException("loadup.security.auth-server.clients[].client-id is required");
-        }
-        RegisteredClient.Builder builder = RegisteredClient.withId(
-                        UUID.randomUUID().toString())
-                .clientId(client.getClientId())
-                .clientSecret(encodeClientSecret(client.getClientSecret()))
-                .clientSettings(ClientSettings.builder()
-                        .requireAuthorizationConsent(client.isRequireAuthorizationConsent())
-                        .build())
-                .tokenSettings(TokenSettings.builder()
-                        .accessTokenTimeToLive(client.getAccessTokenTtl())
-                        .build());
-        if (client.getGrantTypes() != null) {
-            client.getGrantTypes().forEach(g -> builder.authorizationGrantType(new AuthorizationGrantType(g)));
-        }
-        if (client.getRedirectUris() != null) {
-            client.getRedirectUris().forEach(builder::redirectUri);
-        }
-        if (client.getScopes() != null) {
-            client.getScopes().forEach(builder::scope);
-        }
-        return builder.build();
-    }
-
-    private static RSAKey buildRsaKey(LoadUpAuthServerProperties properties) {
-        String privateKeyBase64 = properties.getJwk().getRsaPrivateKeyBase64();
-        String kid = properties.getJwk().getKid();
-        try {
-            RSAPrivateCrtKey privateKey;
-            if (StringUtils.isNotBlank(privateKeyBase64)) {
-                PrivateKey decoded = KeyFactory.getInstance("RSA")
-                        .generatePrivate(
-                                new PKCS8EncodedKeySpec(Base64.getDecoder().decode(privateKeyBase64)));
-                privateKey = (RSAPrivateCrtKey) decoded;
-            } else {
-                LogUtil.warn(
-                        SasAuthServerAutoConfiguration.class,
-                        "loadup.security.auth-server.jwk.rsa-private-key-base64 is not configured; "
-                                + "an ephemeral RSA key will be generated. Tokens become invalid after restart.");
-                KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
-                generator.initialize(2048);
-                KeyPair keyPair = generator.generateKeyPair();
-                privateKey = (RSAPrivateCrtKey) keyPair.getPrivate();
-            }
-            RSAPublicKey publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
-                    .generatePublic(new RSAPublicKeySpec(privateKey.getModulus(), privateKey.getPublicExponent()));
-            return new RSAKey.Builder(publicKey)
-                    .privateKey(privateKey)
-                    .keyID(kid)
-                    .keyUse(KeyUse.SIGNATURE)
-                    .algorithm(JWSAlgorithm.RS256)
-                    .build();
-        } catch (Exception e) {
-            throw new IllegalStateException("Failed to build the authorization server JWK", e);
-        }
-    }
-
-    private static String encodeClientSecret(String secret) {
-        if (StringUtils.isBlank(secret)) {
-            throw new IllegalArgumentException("loadup.security.auth-server.clients[].client-secret is required");
-        }
-        return "{bcrypt}" + new BCryptPasswordEncoder().encode(secret);
     }
 }

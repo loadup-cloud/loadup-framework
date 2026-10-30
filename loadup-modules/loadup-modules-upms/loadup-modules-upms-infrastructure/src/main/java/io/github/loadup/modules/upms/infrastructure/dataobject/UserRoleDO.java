@@ -19,8 +19,8 @@
  */
 package io.github.loadup.modules.upms.infrastructure.dataobject;
 
+import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
-import org.springframework.data.relational.core.mapping.Table;
 
 @Table("upms_user_role")
 public class UserRoleDO extends BaseDO {

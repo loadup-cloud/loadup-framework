@@ -71,6 +71,24 @@ public class JetCacheSpringCache extends AbstractValueAdaptingCache {
         this.remoteKeyPrefix = remoteKeyPrefix;
     }
 
+    private static void clearLocalLevel(Cache<?, ?> level) {
+        if (level instanceof CaffeineCache caffeineCache) {
+            @SuppressWarnings("unchecked")
+            com.github.benmanes.caffeine.cache.Cache<Object, Object> nativeCache =
+                    (com.github.benmanes.caffeine.cache.Cache<Object, Object>)
+                            caffeineCache.unwrap(com.github.benmanes.caffeine.cache.Cache.class);
+            nativeCache.invalidateAll();
+        }
+    }
+
+    private static Object load(Object key, Callable<?> valueLoader) {
+        try {
+            return valueLoader.call();
+        } catch (Exception ex) {
+            throw new ValueRetrievalException(key, valueLoader, ex);
+        }
+    }
+
     @Override
     public String getName() {
         return name;
@@ -113,7 +131,9 @@ public class JetCacheSpringCache extends AbstractValueAdaptingCache {
                         TimeUnit.MILLISECONDS);
             }
         } catch (CacheInvokeException failure) {
-            if (failure.getCause() instanceof ValueRetrievalException retrieval) throw retrieval;
+            if (failure.getCause() instanceof ValueRetrievalException retrieval) {
+                throw retrieval;
+            }
             throw failure;
         }
         return (T) fromStoreValue(loaded);
@@ -164,24 +184,6 @@ public class JetCacheSpringCache extends AbstractValueAdaptingCache {
             return delegate.putIfAbsent(key, value) ? CacheResult.SUCCESS_WITHOUT_MSG : CacheResult.EXISTS_WITHOUT_MSG;
         }
         return delegate.PUT_IF_ABSENT(key, value, effective.toMillis(), TimeUnit.MILLISECONDS);
-    }
-
-    private static void clearLocalLevel(Cache<?, ?> level) {
-        if (level instanceof CaffeineCache caffeineCache) {
-            @SuppressWarnings("unchecked")
-            com.github.benmanes.caffeine.cache.Cache<Object, Object> nativeCache =
-                    (com.github.benmanes.caffeine.cache.Cache<Object, Object>)
-                            caffeineCache.unwrap(com.github.benmanes.caffeine.cache.Cache.class);
-            nativeCache.invalidateAll();
-        }
-    }
-
-    private static Object load(Object key, Callable<?> valueLoader) {
-        try {
-            return valueLoader.call();
-        } catch (Exception ex) {
-            throw new ValueRetrievalException(key, valueLoader, ex);
-        }
     }
 
     private void deleteRemoteKeys() {

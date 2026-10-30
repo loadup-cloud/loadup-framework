@@ -8,11 +8,11 @@
 
 ## 能力矩阵
 
-| 能力 | 契约 |
-|---|---|
-| 模块职责 | 提供单元测试及真实 Redis、Kafka、MySQL 集成测试，不是生产业务模块。 |
-| 配置与示例 | [组件接入手册](../README.md) |
-| 架构边界 | [ARCHITECTURE.md](ARCHITECTURE.md) |
+| 能力       | 契约                                                                |
+|------------|---------------------------------------------------------------------|
+| 模块职责   | 提供单元测试及真实 Redis、Kafka、MySQL 集成测试，不是生产业务模块。 |
+| 配置与示例 | [组件接入手册](../README.md)                                        |
+| 架构边界   | [ARCHITECTURE.md](ARCHITECTURE.md)                                  |
 
 ## 验证
 
@@ -27,18 +27,22 @@ mvnd clean license:update-file-header spotless:apply verify \
   -Dfailsafe.failIfNoSpecifiedTests=false -Dskip.spotbugs=false
 ```
 
-Kafka 用例创建独立 request/reply Topic，两个消费者完成真实双向通信，结果接收端通过另一 Redis 客户端完成等待。Outbox 用例使用真实 MySQL，验证事务提交后的处理与事务中等待拒绝。容器 reuse=false，测试不连接业务数据库。原生 Kafka 客户端及 Outbox 仅为 test scope。
+Kafka 用例创建独立 request/reply Topic，两个消费者完成真实双向通信，结果接收端通过另一 Redis 客户端完成等待。Outbox 用例使用真实
+MySQL，验证事务提交后的处理与事务中等待拒绝。容器 reuse=false，测试不连接业务数据库。原生 Kafka 客户端及 Outbox 仅为 test
+scope。
 
 ## 本次验收
 
-2026-10-16：21 项单测、4 项真实环境 IT 全部通过，无失败/错误/跳过；SpotBugs、PMD、Checkstyle、License、Spotless 和 Enforcer 通过。应用另外执行的 23 项架构/源码/错误码检查通过。
+2026-10-16：21 项单测、4 项真实环境 IT 全部通过，无失败/错误/跳过；SpotBugs、PMD、Checkstyle、License、Spotless 和 Enforcer
+通过。应用另外执行的 23 项架构/源码/错误码检查通过。
 
-`verify` 自动生成 `target/site/jacoco-aggregate/index.html` 与 `jacoco.xml`，按运行时 jar 展示兄弟测试模块产生的单测及 IT 覆盖；未排除手写 DTO、配置或异常。
+`verify` 自动生成 `target/site/jacoco-aggregate/index.html` 与 `jacoco.xml`，按运行时 jar 展示兄弟测试模块产生的单测及 IT
+覆盖；未排除手写 DTO、配置或异常。
 
-| jar | 行覆盖率 | 分支覆盖率 |
-|---|---:|---:|
-| api | 96.85% | 93.55% |
-| binder-local | 98.04% | 96.15% |
-| binder-redis | 90.70% | 91.67% |
+| jar          | 行覆盖率 | 分支覆盖率 |
+|--------------|---------:|-----------:|
+| api          |   96.85% |     93.55% |
+| binder-local |   98.04% |     96.15% |
+| binder-redis |   90.70% |     91.67% |
 
 这些是新组件独立定向运行的结果，不替代其他组件的整批覆盖率报告。负载测试、K8s 故障与 Redis 故障转移验收仍见根 ROADMAP。

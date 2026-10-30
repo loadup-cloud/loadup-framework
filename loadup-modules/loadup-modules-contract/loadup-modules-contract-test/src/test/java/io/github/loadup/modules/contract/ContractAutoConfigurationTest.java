@@ -29,6 +29,9 @@ import io.github.loadup.modules.contract.app.service.ContractResolveService;
 import io.github.loadup.modules.contract.app.service.MerchantContractService;
 import io.github.loadup.modules.contract.domain.gateway.CatalogGateway;
 import io.github.loadup.modules.contract.domain.gateway.MerchantContractGateway;
+import io.github.loadup.modules.contract.infrastructure.mapper.CatalogVersionRowMapper;
+import io.github.loadup.modules.contract.infrastructure.mapper.ContractRevisionRowMapper;
+import io.github.loadup.modules.contract.infrastructure.mapper.MerchantContractRowMapper;
 import java.time.Clock;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
@@ -38,15 +41,19 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import tools.jackson.databind.json.JsonMapper;
 
-/** Checks bean registration only; real persistence behavior is covered by ContractPersistenceIT. */
+/**
+ * Checks bean registration only; real persistence behavior is covered by ContractPersistenceIT.
+ */
 class ContractAutoConfigurationTest {
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(ContractAutoConfiguration.class))
             .withBean("contractClock", Clock.class, Clock::systemUTC)
-            .withBean("databaseClock", Clock.class, Clock::systemUTC)
             .withBean(JsonMapper.class, () -> JsonMapper.builder().build())
             .withBean(PlatformTransactionManager.class, () -> mock(PlatformTransactionManager.class))
-            .withBean(NamedParameterJdbcTemplate.class, () -> mock(NamedParameterJdbcTemplate.class));
+            .withBean(NamedParameterJdbcTemplate.class, () -> mock(NamedParameterJdbcTemplate.class))
+            .withBean(CatalogVersionRowMapper.class, () -> mock(CatalogVersionRowMapper.class))
+            .withBean(MerchantContractRowMapper.class, () -> mock(MerchantContractRowMapper.class))
+            .withBean(ContractRevisionRowMapper.class, () -> mock(ContractRevisionRowMapper.class));
 
     @Test
     void registersServicesRepositoriesAndGeneratedConvertersWithSingleDataSource() {

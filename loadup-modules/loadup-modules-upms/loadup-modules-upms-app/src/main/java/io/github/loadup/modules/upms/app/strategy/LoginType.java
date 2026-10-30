@@ -29,15 +29,12 @@ import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
  */
 public final class LoginType {
 
+    public static final String PASSWORD = "PASSWORD";
+    public static final String MOBILE = "MOBILE";
+    public static final String EMAIL = "EMAIL";
+    public static final String OAUTH = "OAUTH";
+
     private LoginType() {
         throw new CommonException(UpmsResultCodeEnum.UTILITY_CLASS);
     }
-
-    public static final String PASSWORD = "PASSWORD";
-
-    public static final String MOBILE = "MOBILE";
-
-    public static final String EMAIL = "EMAIL";
-
-    public static final String OAUTH = "OAUTH";
 }

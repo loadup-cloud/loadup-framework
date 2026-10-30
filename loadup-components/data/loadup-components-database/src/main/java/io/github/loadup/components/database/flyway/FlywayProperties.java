@@ -186,132 +186,132 @@ public class FlywayProperties {
         return this.enabled;
     }
 
-    public String[] getLocations() {
-        return this.locations;
-    }
-
-    public String getTable() {
-        return this.table;
-    }
-
-    public boolean isBaselineOnMigrate() {
-        return this.baselineOnMigrate;
-    }
-
-    public String getBaselineVersion() {
-        return this.baselineVersion;
-    }
-
-    public String getBaselineDescription() {
-        return this.baselineDescription;
-    }
-
-    public boolean isValidateOnMigrate() {
-        return this.validateOnMigrate;
-    }
-
-    public boolean isOutOfOrder() {
-        return this.outOfOrder;
-    }
-
-    public boolean isCleanDisabled() {
-        return this.cleanDisabled;
-    }
-
-    public String getEncoding() {
-        return this.encoding;
-    }
-
-    public Map<String, String> getPlaceholders() {
-        return this.placeholders;
-    }
-
-    public String getPlaceholderPrefix() {
-        return this.placeholderPrefix;
-    }
-
-    public String getPlaceholderSuffix() {
-        return this.placeholderSuffix;
-    }
-
-    public boolean isPlaceholderReplacement() {
-        return this.placeholderReplacement;
-    }
-
-    public String[] getInitSqls() {
-        return this.initSqls;
-    }
-
-    public String getTarget() {
-        return this.target;
-    }
-
-    public boolean isMigrateAtStart() {
-        return this.migrateAtStart;
-    }
-
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public String[] getLocations() {
+        return this.locations;
     }
 
     public void setLocations(String[] locations) {
         this.locations = locations;
     }
 
+    public String getTable() {
+        return this.table;
+    }
+
     public void setTable(String table) {
         this.table = table;
+    }
+
+    public boolean isBaselineOnMigrate() {
+        return this.baselineOnMigrate;
     }
 
     public void setBaselineOnMigrate(boolean baselineOnMigrate) {
         this.baselineOnMigrate = baselineOnMigrate;
     }
 
+    public String getBaselineVersion() {
+        return this.baselineVersion;
+    }
+
     public void setBaselineVersion(String baselineVersion) {
         this.baselineVersion = baselineVersion;
+    }
+
+    public String getBaselineDescription() {
+        return this.baselineDescription;
     }
 
     public void setBaselineDescription(String baselineDescription) {
         this.baselineDescription = baselineDescription;
     }
 
+    public boolean isValidateOnMigrate() {
+        return this.validateOnMigrate;
+    }
+
     public void setValidateOnMigrate(boolean validateOnMigrate) {
         this.validateOnMigrate = validateOnMigrate;
+    }
+
+    public boolean isOutOfOrder() {
+        return this.outOfOrder;
     }
 
     public void setOutOfOrder(boolean outOfOrder) {
         this.outOfOrder = outOfOrder;
     }
 
+    public boolean isCleanDisabled() {
+        return this.cleanDisabled;
+    }
+
     public void setCleanDisabled(boolean cleanDisabled) {
         this.cleanDisabled = cleanDisabled;
+    }
+
+    public String getEncoding() {
+        return this.encoding;
     }
 
     public void setEncoding(String encoding) {
         this.encoding = encoding;
     }
 
+    public Map<String, String> getPlaceholders() {
+        return this.placeholders;
+    }
+
     public void setPlaceholders(Map<String, String> placeholders) {
         this.placeholders = placeholders;
+    }
+
+    public String getPlaceholderPrefix() {
+        return this.placeholderPrefix;
     }
 
     public void setPlaceholderPrefix(String placeholderPrefix) {
         this.placeholderPrefix = placeholderPrefix;
     }
 
+    public String getPlaceholderSuffix() {
+        return this.placeholderSuffix;
+    }
+
     public void setPlaceholderSuffix(String placeholderSuffix) {
         this.placeholderSuffix = placeholderSuffix;
+    }
+
+    public boolean isPlaceholderReplacement() {
+        return this.placeholderReplacement;
     }
 
     public void setPlaceholderReplacement(boolean placeholderReplacement) {
         this.placeholderReplacement = placeholderReplacement;
     }
 
+    public String[] getInitSqls() {
+        return this.initSqls;
+    }
+
     public void setInitSqls(String[] initSqls) {
         this.initSqls = initSqls;
     }
 
+    public String getTarget() {
+        return this.target;
+    }
+
     public void setTarget(String target) {
         this.target = target;
+    }
+
+    public boolean isMigrateAtStart() {
+        return this.migrateAtStart;
     }
 
     public void setMigrateAtStart(boolean migrateAtStart) {

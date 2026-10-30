@@ -19,7 +19,8 @@
  */
 package io.github.loadup.components.webmvc;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.loadup.commons.context.ContextHolder;
 import io.github.loadup.commons.context.ContextKeys;

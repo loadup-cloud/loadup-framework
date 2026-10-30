@@ -20,7 +20,10 @@
 package io.github.loadup.components.asyncresult.redis;
 
 import io.github.loadup.commons.log.LogUtil;
-import io.github.loadup.components.asyncresult.*;
+import io.github.loadup.components.asyncresult.AsyncCompletionStatus;
+import io.github.loadup.components.asyncresult.AsyncReplyKey;
+import io.github.loadup.components.asyncresult.AsyncResultProvider;
+import io.github.loadup.components.asyncresult.AsyncResultValue;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Base64;
@@ -32,7 +35,9 @@ import org.redisson.api.RedissonClient;
 import org.redisson.client.codec.StringCodec;
 import tools.jackson.databind.json.JsonMapper;
 
-/** Uses string-only protocol data and a single-key CAS; caller owns the Redisson client. */
+/**
+ * Uses string-only protocol data and a single-key CAS; caller owns the Redisson client.
+ */
 public final class RedisAsyncResultProvider implements AsyncResultProvider {
     private static final String REGISTER = """
         if redis.call('EXISTS', KEYS[1]) == 1 then return 0 end
@@ -74,8 +79,9 @@ public final class RedisAsyncResultProvider implements AsyncResultProvider {
     @Override
     public void register(AsyncReplyKey key, String owner, Duration retention) {
         AsyncReplyKey.required(owner, 128);
-        if (retention.toMillis() < 1 || retention.compareTo(Duration.ofDays(7)) > 0)
+        if (retention.toMillis() < 1 || retention.compareTo(Duration.ofDays(7)) > 0) {
             throw new IllegalArgumentException("Invalid result retention");
+        }
         Number result = client.getScript(StringCodec.INSTANCE)
                 .eval(
                         RScript.Mode.READ_WRITE,
@@ -84,7 +90,9 @@ public final class RedisAsyncResultProvider implements AsyncResultProvider {
                         List.of(key(key)),
                         owner,
                         retention.toMillis());
-        if (result.intValue() != 1) throw new IllegalArgumentException("Reply key is already registered");
+        if (result.intValue() != 1) {
+            throw new IllegalArgumentException("Reply key is already registered");
+        }
     }
 
     @Override

@@ -28,17 +28,23 @@ import io.github.loadup.modules.dictionary.app.converter.DictionaryDTOConverter;
 import io.github.loadup.modules.dictionary.app.service.DictionaryService;
 import io.github.loadup.modules.dictionary.domain.gateway.DictionaryGateway;
 import io.github.loadup.modules.dictionary.infrastructure.autoconfigure.DictionaryPersistenceAutoConfiguration;
+import io.github.loadup.modules.dictionary.infrastructure.mapper.DictionaryItemMapper;
+import io.github.loadup.modules.dictionary.infrastructure.mapper.DictionaryTypeMapper;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
-/** Exercises auto-configuration composition; no persistence operations are executed. */
+/**
+ * Exercises auto-configuration composition; no persistence operations are executed.
+ */
 class DictionaryAutoConfigurationTest {
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
             .withBean(DataSource.class, () -> mock(DataSource.class))
             .withBean(NamedParameterJdbcTemplate.class, () -> mock(NamedParameterJdbcTemplate.class))
+            .withBean(DictionaryTypeMapper.class, () -> mock(DictionaryTypeMapper.class))
+            .withBean(DictionaryItemMapper.class, () -> mock(DictionaryItemMapper.class))
             .withBean(IdGenerator.class, () -> () -> "dictionary-id")
             .withBean("databaseClock", java.time.Clock.class, java.time.Clock::systemDefaultZone)
             .withConfiguration(AutoConfigurations.of(

@@ -21,7 +21,9 @@ package io.github.loadup.modules.transfer.app.service;
 
 import io.github.loadup.components.scheduler.ScheduledTask;
 
-/** Backend-neutral scanner for the durable transfer queue. */
+/**
+ * Backend-neutral scanner for the durable transfer queue.
+ */
 public class TransferTaskProcessor implements ScheduledTask {
     private final TransferTaskService service;
 

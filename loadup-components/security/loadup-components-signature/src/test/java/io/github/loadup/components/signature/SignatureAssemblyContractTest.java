@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import io.github.loadup.commons.time.autoconfigure.ClockAutoConfiguration;
 import io.github.loadup.components.kms.KmsKeyRef;
 import io.github.loadup.components.kms.KmsSignature;
 import io.github.loadup.components.kms.KmsSignatureAlgorithm;
@@ -49,8 +50,10 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 class SignatureAssemblyContractTest {
     private final ApplicationContextRunner contexts = new ApplicationContextRunner()
-            .withConfiguration(
-                    AutoConfigurations.of(SignatureAutoConfiguration.class, RequestSignatureAutoConfiguration.class));
+            .withConfiguration(AutoConfigurations.of(
+                    ClockAutoConfiguration.class,
+                    SignatureAutoConfiguration.class,
+                    RequestSignatureAutoConfiguration.class));
 
     @Test
     void disabledComponentRemovesLocalAndRequestServices() {

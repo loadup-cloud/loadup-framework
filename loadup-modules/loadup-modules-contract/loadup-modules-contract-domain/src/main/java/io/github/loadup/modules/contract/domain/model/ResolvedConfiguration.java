@@ -28,8 +28,9 @@ public record ResolvedConfiguration(Map<String, TypedValue> values, Map<String, 
     public ResolvedConfiguration {
         values = ContractChecks.map(values);
         origins = ContractChecks.map(origins);
-        if (!values.keySet().equals(origins.keySet()))
+        if (!values.keySet().equals(origins.keySet())) {
             throw new CommonException(ContractResultCodeEnum.MISSING_VALUE_PROVENANCE);
+        }
     }
 
     @Override

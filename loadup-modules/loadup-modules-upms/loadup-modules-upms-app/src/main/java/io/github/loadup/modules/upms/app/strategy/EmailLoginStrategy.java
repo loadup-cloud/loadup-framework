@@ -40,6 +40,13 @@ public class EmailLoginStrategy implements LoginStrategy {
     private final UserGateway userGateway;
     private final VerificationCodeService verificationCodeService;
 
+    public EmailLoginStrategy(
+            UserGateway userGateway, VerificationCodeService verificationCodeService, java.time.Clock clock) {
+        this.clock = clock;
+        this.userGateway = userGateway;
+        this.verificationCodeService = verificationCodeService;
+    }
+
     @Override
     public String getLoginType() {
         return LoginType.EMAIL;
@@ -81,14 +88,5 @@ public class EmailLoginStrategy implements LoginStrategy {
                 .mobile(user.getMobile())
                 .newUser(false)
                 .build();
-    }
-
-    public EmailLoginStrategy(
-            UserGateway userGateway,
-            VerificationCodeService verificationCodeService,
-            @org.springframework.beans.factory.annotation.Qualifier("upmsClock") java.time.Clock clock) {
-        this.clock = clock;
-        this.userGateway = userGateway;
-        this.verificationCodeService = verificationCodeService;
     }
 }

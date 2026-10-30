@@ -32,7 +32,9 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
-/** Static asymmetric sign / verify helpers backed by JCA {@link Signature}. */
+/**
+ * Static asymmetric sign / verify helpers backed by JCA {@link Signature}.
+ */
 public final class SignatureUtils {
 
     private SignatureUtils() {
@@ -42,7 +44,7 @@ public final class SignatureUtils {
     /**
      * Quick RSA signing with SHA256withRSA.
      *
-     * @param data the input string
+     * @param data             the input string
      * @param privateKeyBase64 the Base64-encoded RSA private key
      * @return the Base64-encoded signature
      */
@@ -53,8 +55,8 @@ public final class SignatureUtils {
     /**
      * Quick RSA verification with SHA256withRSA.
      *
-     * @param data the original string
-     * @param signature the Base64-encoded signature
+     * @param data            the original string
+     * @param signature       the Base64-encoded signature
      * @param publicKeyBase64 the Base64-encoded RSA public key
      * @return {@code true} when the signature is valid
      */
@@ -65,9 +67,9 @@ public final class SignatureUtils {
     /**
      * Signs the given string with the given algorithm.
      *
-     * @param data the input string
+     * @param data             the input string
      * @param privateKeyBase64 the Base64-encoded private key
-     * @param algorithm the signature algorithm
+     * @param algorithm        the signature algorithm
      * @return the Base64-encoded signature
      */
     public static String sign(String data, String privateKeyBase64, SignatureAlgorithm algorithm) {
@@ -90,10 +92,10 @@ public final class SignatureUtils {
     /**
      * Verifies the signature with the given algorithm.
      *
-     * @param data the original string
+     * @param data            the original string
      * @param signatureBase64 the Base64-encoded signature
      * @param publicKeyBase64 the Base64-encoded public key
-     * @param algorithm the signature algorithm
+     * @param algorithm       the signature algorithm
      * @return {@code true} when the signature is valid
      */
     public static boolean verify(

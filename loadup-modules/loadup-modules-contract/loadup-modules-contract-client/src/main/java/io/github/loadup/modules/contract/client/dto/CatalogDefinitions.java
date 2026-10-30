@@ -26,9 +26,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/** Wire definitions use decimal strings and stable references to stored versions. */
+/**
+ * Wire definitions use decimal strings and stable references to stored versions.
+ */
 public final class CatalogDefinitions {
     private CatalogDefinitions() {}
+
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
+    }
 
     public record Parameter(
             @Schema(description = "Key") String key,
@@ -80,9 +87,4 @@ public final class CatalogDefinitions {
             String usageConditionId,
             Instant saleStartsAt,
             Instant saleEndsAt) {}
-
-    @Override
-    public String toString() {
-        return ToStringAsJson.reflectionToString(this);
-    }
 }

@@ -36,7 +36,8 @@ DTO / JsonUtil   ← SmartInitializingSingleton   ← Boot ObjectMapper
 
 `ApiPathMatcher` 只匹配 `/api` 和 `/api/**`（考虑 Servlet context path）。
 
-`LoadUpWebMvcAutoConfiguration` 使用 `WebMvcConfigurer#configurePathMatch` 为 `io.github.loadup.modules` 下的 Controller 统一添加 `/api`。各业务模块只声明相对路径；文档、Actuator、错误 Controller 和消费工程自有包不在匹配范围内。
+`LoadUpWebMvcAutoConfiguration` 使用 `WebMvcConfigurer#configurePathMatch` 为 `io.github.loadup.modules` 下的 Controller
+统一添加 `/api`。各业务模块只声明相对路径；文档、Actuator、错误 Controller 和消费工程自有包不在匹配范围内。
 `ApiResponseAdvice` 对 JSON 与字符串响应设置 HTTP 200；已有 `IResponse` 保持原报文，
 `PageDTO` 使用分页报文，字节响应不包装。`ApiErrorController` 接管错误路径，
 将业务 API 的 400/401/403/404 等状态映射到 `FailureResponse`；非 API 请求保留原 HTTP 状态。
@@ -49,10 +50,11 @@ DTO / JsonUtil   ← SmartInitializingSingleton   ← Boot ObjectMapper
 
 ## 装配规则
 
-- [`LoadUpWebMvcAutoConfiguration`](src/main/java/io/github/loadup/components/webmvc/LoadUpWebMvcAutoConfiguration.java) 是自动配置入口。
-  - `@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)`
-  - `@ConditionalOnMissingBean(ApiResponseAdvice.class)`
-  - `@ConditionalOnMissingBean(ErrorController.class)`
+- [`LoadUpWebMvcAutoConfiguration`](src/main/java/io/github/loadup/components/webmvc/LoadUpWebMvcAutoConfiguration.java)
+  是自动配置入口。
+    - `@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)`
+    - `@ConditionalOnMissingBean(ApiResponseAdvice.class)`
+    - `@ConditionalOnMissingBean(ErrorController.class)`
 
 集成方式与配置示例见 [README.md](README.md)。
 
@@ -66,16 +68,24 @@ Controller → ApiResponseAdvice(result/data) → @Masked property serializer �
 全局 JsonUtil / DTO / RestClient / 缓存 → 原 Boot Mapper
 ```
 
-`ApiMaskingJson` 是普通包装 Bean，内部 Mapper 与 SimpleModule 均不作为 Bean 注册；否则 Boot 会把模块装配到全局 JSON 和出站调用。服务端转换器也不注册为全局 Bean，而由服务器专用 customizer 安装。Jackson 3 `ValueSerializerModifier` 为带注解的 String 属性安装 serializer；不通过 JSON tree 重写数据，因此保留 JsonView 与其他 MVC 序列化提示。
+`ApiMaskingJson` 是普通包装 Bean，内部 Mapper 与 SimpleModule 均不作为 Bean 注册；否则 Boot 会把模块装配到全局 JSON
+和出站调用。服务端转换器也不注册为全局 Bean，而由服务器专用 customizer 安装。Jackson 3 `ValueSerializerModifier` 为带注解的
+String 属性安装 serializer；不通过 JSON tree 重写数据，因此保留 JsonView 与其他 MVC 序列化提示。
 
-MVC 输入使用同一转换器，但模块只修改 serializer，反序列化不变。String converter 的报文包装使用响应专用 Mapper。二进制、手工拼接 JSON 和 Map 内无注解的值不在自动处理范围。没有 KMS RPC、权限 ThreadLocal 或原对象突变。
+MVC 输入使用同一转换器，但模块只修改 serializer，反序列化不变。String converter 的报文包装使用响应专用 Mapper。二进制、手工拼接
+JSON 和 Map 内无注解的值不在自动处理范围。没有 KMS RPC、权限 ThreadLocal 或原对象突变。
 
-错误注解直接使序列化失败；不得捕获后返回原 DTO 明文。`ApiMaskingJsonTest`、`ApiMaskingMvcTest` 覆盖隔离、嵌套与已包装响应、输入原值、JsonView 和错误声明。
+错误注解直接使序列化失败；不得捕获后返回原 DTO 明文。`ApiMaskingJsonTest`、`ApiMaskingMvcTest` 覆盖隔离、嵌套与已包装响应、输入原值、JsonView
+和错误声明。
 
 ## 业务执行上下文生命周期
 
-`ExecutionContextFilter` 在 Boot HTTP Observation 和 Security 之前通过 ServiceTemplate 绑定不可变 ExecutionContext，作用域由 JDK 25 ScopedValue 自动结束；Servlet 重新分派通过 `ExecutionContext.class.getName()` 请求属性恢复显式绑定。可信租户适配器使用相同属性并包裹自己的 FilterChain；临时覆盖不回写父请求。嵌套 error 分派沿用当前作用域。业务数据不会写到 MDC、响应或指标中；Filter 不承担认证、授权或租户解析。
+`ExecutionContextFilter` 在 Boot HTTP Observation 和 Security 之前通过 ServiceTemplate 绑定不可变 ExecutionContext，作用域由
+JDK 25 ScopedValue 自动结束；Servlet 重新分派通过 `ExecutionContext.class.getName()` 请求属性恢复显式绑定。可信租户适配器使用相同属性并包裹自己的
+FilterChain；临时覆盖不回写父请求。嵌套 error 分派沿用当前作用域。业务数据不会写到 MDC、响应或指标中；Filter 不承担认证、授权或租户解析。
 
 ## 失败响应契约
 
-`/api` 下的 CommonException 保留 ResultCode，并返回 HTTP 200 的 FailureResponse（result、data）；输入绑定和 Validation 错误返回 PARAM_ILLEGAL，未知异常返回 SYS_ERROR。异常日志只记录类型，不记录可能携带请求明文的消息或异常链。Spring Security 异常交回认证/鉴权过滤器，非 API 协议端点保留原协议行为。
+`/api` 下的 CommonException 保留 ResultCode，并返回 HTTP 200 的 FailureResponse（result、data）；输入绑定和 Validation 错误返回
+PARAM_ILLEGAL，未知异常返回 SYS_ERROR。异常日志只记录类型，不记录可能携带请求明文的消息或异常链。Spring Security
+异常交回认证/鉴权过滤器，非 API 协议端点保留原协议行为。

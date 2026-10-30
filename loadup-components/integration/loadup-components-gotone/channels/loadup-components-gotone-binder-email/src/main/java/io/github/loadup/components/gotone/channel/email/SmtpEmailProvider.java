@@ -45,6 +45,24 @@ public class SmtpEmailProvider implements NotificationChannelProvider {
         this.defaultFrom = defaultFrom;
     }
 
+    private static String configValue(Map<String, Object> config, String key, String defaultValue) {
+        if (!config.containsKey(key)) {
+            return defaultValue;
+        }
+        return config.get(key).toString();
+    }
+
+    private static String maskEmail(String email) {
+        if (email.length() < 4) {
+            return "***";
+        }
+        int at = email.indexOf('@');
+        if (at <= 1) {
+            return "***";
+        }
+        return email.substring(0, 2) + "***" + email.substring(at);
+    }
+
     @Override
     public String getChannelType() {
         return "EMAIL";
@@ -94,23 +112,5 @@ public class SmtpEmailProvider implements NotificationChannelProvider {
     @Override
     public boolean isAvailable() {
         return mailSender != null;
-    }
-
-    private static String configValue(Map<String, Object> config, String key, String defaultValue) {
-        if (!config.containsKey(key)) {
-            return defaultValue;
-        }
-        return config.get(key).toString();
-    }
-
-    private static String maskEmail(String email) {
-        if (email.length() < 4) {
-            return "***";
-        }
-        int at = email.indexOf('@');
-        if (at <= 1) {
-            return "***";
-        }
-        return email.substring(0, 2) + "***" + email.substring(at);
     }
 }

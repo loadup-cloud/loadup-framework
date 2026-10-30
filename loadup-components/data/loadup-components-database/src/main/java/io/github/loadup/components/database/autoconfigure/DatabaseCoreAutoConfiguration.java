@@ -4,7 +4,6 @@ package io.github.loadup.components.database.autoconfigure;
 import io.github.loadup.components.database.config.DatabaseProperties;
 import io.github.loadup.components.database.tenant.DatabaseTenant;
 import io.github.loadup.components.database.tenant.TenantContext;
-import java.time.Clock;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -19,11 +18,5 @@ public class DatabaseCoreAutoConfiguration {
         var databaseTenant = new DatabaseTenant(properties);
         TenantContext.bind(databaseTenant);
         return databaseTenant;
-    }
-
-    @Bean("databaseClock")
-    @ConditionalOnMissingBean(name = "databaseClock")
-    public Clock databaseClock() {
-        return Clock.systemDefaultZone();
     }
 }

@@ -19,13 +19,29 @@
  */
 package io.github.loadup.modules.merchant.infrastructure.dataobject;
 
+import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
 import io.github.loadup.commons.json.ToStringAsJson;
-import org.springframework.data.relational.core.mapping.Table;
 
 @Table("merchant_profile")
 public class MerchantDO extends BaseDO {
     private String merchantCode;
+    private String name;
+    private String shortName;
+    private String type;
+    private String industry;
+    private String country;
+    private String province;
+    private String city;
+    private String address;
+    private String registrationNo;
+    private String contactName;
+    private String contactPhone;
+    private String contactEmail;
+    private String status;
+    private Long rowVersion;
+    private String createdBy;
+    private String updatedBy;
 
     public String getMerchantCode() {
         return merchantCode;
@@ -35,8 +51,6 @@ public class MerchantDO extends BaseDO {
         merchantCode = value;
     }
 
-    private String name;
-
     public String getName() {
         return name;
     }
@@ -44,8 +58,6 @@ public class MerchantDO extends BaseDO {
     public void setName(String value) {
         name = value;
     }
-
-    private String shortName;
 
     public String getShortName() {
         return shortName;
@@ -55,8 +67,6 @@ public class MerchantDO extends BaseDO {
         shortName = value;
     }
 
-    private String type;
-
     public String getType() {
         return type;
     }
@@ -64,8 +74,6 @@ public class MerchantDO extends BaseDO {
     public void setType(String value) {
         type = value;
     }
-
-    private String industry;
 
     public String getIndustry() {
         return industry;
@@ -75,8 +83,6 @@ public class MerchantDO extends BaseDO {
         industry = value;
     }
 
-    private String country;
-
     public String getCountry() {
         return country;
     }
@@ -84,8 +90,6 @@ public class MerchantDO extends BaseDO {
     public void setCountry(String value) {
         country = value;
     }
-
-    private String province;
 
     public String getProvince() {
         return province;
@@ -95,8 +99,6 @@ public class MerchantDO extends BaseDO {
         province = value;
     }
 
-    private String city;
-
     public String getCity() {
         return city;
     }
@@ -104,8 +106,6 @@ public class MerchantDO extends BaseDO {
     public void setCity(String value) {
         city = value;
     }
-
-    private String address;
 
     public String getAddress() {
         return address;
@@ -115,8 +115,6 @@ public class MerchantDO extends BaseDO {
         address = value;
     }
 
-    private String registrationNo;
-
     public String getRegistrationNo() {
         return registrationNo;
     }
@@ -124,8 +122,6 @@ public class MerchantDO extends BaseDO {
     public void setRegistrationNo(String value) {
         registrationNo = value;
     }
-
-    private String contactName;
 
     public String getContactName() {
         return contactName;
@@ -135,8 +131,6 @@ public class MerchantDO extends BaseDO {
         contactName = value;
     }
 
-    private String contactPhone;
-
     public String getContactPhone() {
         return contactPhone;
     }
@@ -144,8 +138,6 @@ public class MerchantDO extends BaseDO {
     public void setContactPhone(String value) {
         contactPhone = value;
     }
-
-    private String contactEmail;
 
     public String getContactEmail() {
         return contactEmail;
@@ -155,8 +147,6 @@ public class MerchantDO extends BaseDO {
         contactEmail = value;
     }
 
-    private String status;
-
     public String getStatus() {
         return status;
     }
@@ -164,8 +154,6 @@ public class MerchantDO extends BaseDO {
     public void setStatus(String value) {
         status = value;
     }
-
-    private Long rowVersion;
 
     public Long getRowVersion() {
         return rowVersion;
@@ -175,8 +163,6 @@ public class MerchantDO extends BaseDO {
         rowVersion = value;
     }
 
-    private String createdBy;
-
     public String getCreatedBy() {
         return createdBy;
     }
@@ -184,8 +170,6 @@ public class MerchantDO extends BaseDO {
     public void setCreatedBy(String value) {
         createdBy = value;
     }
-
-    private String updatedBy;
 
     public String getUpdatedBy() {
         return updatedBy;

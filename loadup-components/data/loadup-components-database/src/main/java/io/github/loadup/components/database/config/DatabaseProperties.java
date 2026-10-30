@@ -19,15 +19,17 @@
  */
 package io.github.loadup.components.database.config;
 
+import io.github.loadup.commons.constant.CommonConstants;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
-/** Configuration properties for the LoadUp database component. */
+/**
+ * Configuration properties for the LoadUp database component.
+ */
 @ConfigurationProperties(prefix = "loadup.database")
 @Validated
 public class DatabaseProperties {
@@ -43,16 +45,21 @@ public class DatabaseProperties {
         this.multiTenant = multiTenant;
     }
 
+    /**
+     * Schema-per-tenant policy. The tenant identity selects the schema; business tables never carry
+     * a tenant column.
+     */
     public static class MultiTenant {
         private boolean enabled = false;
         private boolean required = true;
 
         @NotBlank
         @Size(max = 64)
-        private String defaultTenantId = "__default__";
+        private String defaultTenantId = CommonConstants.DEFAULT_TENANT_ID;
 
-        private List<String> ignoreTables = new ArrayList<>();
-        private Request request = new Request();
+        @NotBlank
+        @Pattern(regexp = "[a-z_][a-z0-9_]{0,62}")
+        private String defaultSchema = CommonConstants.DEFAULT_SCHEMA;
 
         public boolean isEnabled() {
             return enabled;
@@ -78,59 +85,12 @@ public class DatabaseProperties {
             this.defaultTenantId = defaultTenantId;
         }
 
-        public List<String> getIgnoreTables() {
-            return ignoreTables;
+        public String getDefaultSchema() {
+            return defaultSchema;
         }
 
-        public void setIgnoreTables(List<String> ignoreTables) {
-            this.ignoreTables = ignoreTables;
-        }
-
-        public Request getRequest() {
-            return request;
-        }
-
-        public void setRequest(Request request) {
-            this.request = request;
-        }
-    }
-
-    public static class Request {
-        private String headerName = "X-Tenant-Id";
-        private String parameterName;
-        private boolean subdomainEnabled;
-        private List<String> excludedSubdomains = new ArrayList<>(List.of("www", "api"));
-
-        public String getHeaderName() {
-            return headerName;
-        }
-
-        public void setHeaderName(String headerName) {
-            this.headerName = headerName;
-        }
-
-        public String getParameterName() {
-            return parameterName;
-        }
-
-        public void setParameterName(String parameterName) {
-            this.parameterName = parameterName;
-        }
-
-        public boolean isSubdomainEnabled() {
-            return subdomainEnabled;
-        }
-
-        public void setSubdomainEnabled(boolean subdomainEnabled) {
-            this.subdomainEnabled = subdomainEnabled;
-        }
-
-        public List<String> getExcludedSubdomains() {
-            return excludedSubdomains;
-        }
-
-        public void setExcludedSubdomains(List<String> excludedSubdomains) {
-            this.excludedSubdomains = excludedSubdomains;
+        public void setDefaultSchema(String defaultSchema) {
+            this.defaultSchema = defaultSchema;
         }
     }
 }

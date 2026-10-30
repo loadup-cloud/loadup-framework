@@ -36,7 +36,9 @@ import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
-/** Applies the common result envelope to every JSON API controller. */
+/**
+ * Applies the common result envelope to every JSON API controller.
+ */
 @RestControllerAdvice
 public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
     private final ApiPathMatcher pathMatcher;
@@ -80,7 +82,9 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
                 && ResultStatusEnum.SUCCESS
                         .getCode()
                         .equals(envelope.getResult().getStatus()));
-        if (body instanceof IResponse<?>) return body;
+        if (body instanceof IResponse<?>) {
+            return body;
+        }
         response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
         if (StringHttpMessageConverter.class.isAssignableFrom(selectedConverterType)) {
             return masking.write(envelope);

@@ -24,7 +24,9 @@ import java.util.Collection;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-/** Authenticated UPMS identity used by Spring Authorization Server. */
+/**
+ * Authenticated UPMS identity used by Spring Authorization Server.
+ */
 public record UpmsPrincipal(String subjectId, String username, Collection<? extends GrantedAuthority> authorities)
         implements UserDetails, LoadUpSubject {
 

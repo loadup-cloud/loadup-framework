@@ -22,7 +22,9 @@ package io.github.loadup.modules.merchant.client.facade;
 import io.github.loadup.modules.merchant.client.dto.MerchantProfileDTO;
 import java.util.Optional;
 
-/** Public business facade. */
+/**
+ * Public business facade.
+ */
 public interface MerchantQueryFacade {
-    Optional<MerchantProfileDTO> find(String tenantId, String merchantId);
+    Optional<MerchantProfileDTO> find(String merchantId);
 }

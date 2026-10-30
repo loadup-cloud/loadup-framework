@@ -25,13 +25,13 @@ import io.github.loadup.modules.notification.domain.model.InboxMessage;
 public interface InboxGateway {
     int insert(InboxMessage message, String requestKey);
 
-    PageResult<InboxMessage> list(String tenantId, String recipientId, boolean unreadOnly, int page, int size);
+    PageResult<InboxMessage> list(String recipientId, boolean unreadOnly, int page, int size);
 
-    long unreadCount(String tenantId, String recipientId);
+    long unreadCount(String recipientId);
 
-    int markRead(String tenantId, String recipientId, String id);
+    int markRead(String recipientId, String id);
 
-    int markAllRead(String tenantId, String recipientId);
+    int markAllRead(String recipientId);
 
-    int archive(String tenantId, String recipientId, String id);
+    int archive(String recipientId, String id);
 }

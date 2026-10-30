@@ -19,14 +19,17 @@
  */
 package io.github.loadup.components.asyncresult;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.loadup.components.asyncresult.redis.RedisAsyncResultProvider;
-import io.github.loadup.components.testcontainers.annotation.*;
+import io.github.loadup.components.testcontainers.annotation.ContainerType;
+import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
 import io.github.loadup.components.testcontainers.cache.SharedRedisContainer;
 import java.time.Duration;
 import java.util.UUID;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
@@ -39,9 +42,6 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 @EnableTestContainers(value = ContainerType.REDIS, reuse = false)
 class RedisAsyncResultIT {
-    @SpringBootConfiguration
-    static class Application {}
-
     static RedissonClient client() {
         var config = new Config();
         config.useSingleServer().setAddress(SharedRedisContainer.getUrl());
@@ -108,4 +108,7 @@ class RedisAsyncResultIT {
             client.shutdown();
         }
     }
+
+    @SpringBootConfiguration
+    static class Application {}
 }

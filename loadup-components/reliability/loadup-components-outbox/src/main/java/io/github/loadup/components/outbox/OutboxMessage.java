@@ -21,13 +21,16 @@ package io.github.loadup.components.outbox;
 
 import java.nio.charset.StandardCharsets;
 
-/** A versioned business event; the tenant must originate from a trusted identity. */
-public record OutboxMessage(String tenantId, String type, int version, String businessId, String payload) {
+/**
+ * A versioned business event published inside the current tenant schema.
+ */
+public record OutboxMessage(String type, int version, String businessId, String payload) {
     public OutboxMessage {
-        tenantId = required(tenantId, "tenantId", 64);
         type = required(type, "type", 128);
         businessId = required(businessId, "businessId", 128);
-        if (version < 1) throw new IllegalArgumentException("version must be positive");
+        if (version < 1) {
+            throw new IllegalArgumentException("version must be positive");
+        }
         if (payload == null || payload.getBytes(StandardCharsets.UTF_8).length > 1024 * 1024) {
             throw new IllegalArgumentException("payload must contain at most 1 MiB");
         }

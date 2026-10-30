@@ -22,7 +22,9 @@ package io.github.loadup.components.http;
 import java.util.List;
 import java.util.Map;
 
-/** Values are encoded as URI variables; byte[] and String bodies are sent without JSON wrapping. */
+/**
+ * Values are encoded as URI variables; byte[] and String bodies are sent without JSON wrapping.
+ */
 public record HttpCall(
         Map<String, ?> pathVariables, Map<String, List<String>> query, Map<String, String> headers, Object body) {
     public HttpCall {

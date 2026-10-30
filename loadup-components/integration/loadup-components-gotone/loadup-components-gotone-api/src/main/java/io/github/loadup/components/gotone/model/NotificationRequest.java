@@ -50,8 +50,8 @@ public record NotificationRequest(
     /**
      * Creates a request with only the mandatory fields.
      *
-     * @param serviceCode the service code
-     * @param receivers the receivers
+     * @param serviceCode    the service code
+     * @param receivers      the receivers
      * @param templateParams the template params
      * @return the request
      */
@@ -64,7 +64,9 @@ public record NotificationRequest(
         return new Builder();
     }
 
-    /** Fluent builder for {@link NotificationRequest}. */
+    /**
+     * Fluent builder for {@link NotificationRequest}.
+     */
     public static final class Builder {
         private String serviceCode;
         private List<String> receivers;

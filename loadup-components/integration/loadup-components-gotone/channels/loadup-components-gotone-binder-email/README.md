@@ -36,11 +36,11 @@ loadup:
 
 ## 渠道级参数（ChannelConfig.channelConfig）
 
-| key | 默认 | 说明 |
-|-----|------|------|
-| `subject` | `Notification` | 邮件主题 |
-| `from` | `spring.mail.username` | 发件人 |
-| `html` | `true` | 内容是否按 HTML 渲染 |
+| key       | 默认                   | 说明                 |
+|-----------|------------------------|----------------------|
+| `subject` | `Notification`         | 邮件主题             |
+| `from`    | `spring.mail.username` | 发件人               |
+| `html`    | `true`                 | 内容是否按 HTML 渲染 |
 
 ## 状态
 

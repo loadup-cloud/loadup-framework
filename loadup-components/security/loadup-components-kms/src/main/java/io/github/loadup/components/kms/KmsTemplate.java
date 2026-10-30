@@ -19,7 +19,9 @@
  */
 package io.github.loadup.components.kms;
 
-/** Cryptographic operations authorized by the runtime OpenBao identity. */
+/**
+ * Cryptographic operations authorized by the runtime OpenBao identity.
+ */
 public interface KmsTemplate {
     KmsCiphertext encrypt(KmsKeyRef key, byte[] plaintext);
 

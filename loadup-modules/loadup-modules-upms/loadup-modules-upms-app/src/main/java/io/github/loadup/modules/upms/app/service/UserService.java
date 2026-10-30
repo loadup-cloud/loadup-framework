@@ -44,7 +44,6 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,12 +64,37 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
     private final DepartmentGateway departmentGateway;
     private final PasswordEncoder passwordEncoder;
 
+    public UserService(
+            UserGateway userGateway,
+            RoleGateway roleGateway,
+            DepartmentGateway departmentGateway,
+            PasswordEncoder passwordEncoder,
+            UpmsDTOConverter dtoConverter,
+            Clock clock) {
+        this.clock = clock;
+        this.dtoConverter = dtoConverter;
+        this.userGateway = userGateway;
+        this.roleGateway = roleGateway;
+        this.departmentGateway = departmentGateway;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    private static void rejectMaskedValues(String... values) {
+        for (String value : values) {
+            if (value != null && value.contains("*")) {
+                throw new CommonException(UpmsResultCodeEnum.MASKED_VALUES_CANNOT_BE_SAVED);
+            }
+        }
+    }
+
     /**
      * Create user
      */
     @Transactional
     public UserDetailDTO createUser(UserCreateCommand command) {
-        if (command == null) throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
+        if (command == null) {
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
+        }
         PasswordPolicy.requireValid(command.getPassword());
         rejectMaskedValues(command.getRealName(), command.getEmail(), command.getMobile());
         // Validate username uniqueness
@@ -159,7 +183,9 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
             user.setRealName(command.getRealName());
         }
         if (command.getDeptId() != null) {
-            if (!command.getDeptId().isBlank()) validateDepartment(command.getDeptId());
+            if (!command.getDeptId().isBlank()) {
+                validateDepartment(command.getDeptId());
+            }
             user.setDeptId(command.getDeptId().isBlank() ? null : command.getDeptId());
         }
         if (command.getEmail() != null) {
@@ -219,13 +245,6 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
         userGateway.deleteById(id);
     }
 
-    private static void rejectMaskedValues(String... values) {
-        for (String value : values) {
-            if (value != null && value.contains("*"))
-                throw new CommonException(UpmsResultCodeEnum.MASKED_VALUES_CANNOT_BE_SAVED);
-        }
-    }
-
     private void validateDepartment(String deptId) {
         if (deptId != null
                 && departmentGateway
@@ -237,7 +256,9 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
     }
 
     private void validateRoles(List<String> roleIds) {
-        if (roleIds == null) return;
+        if (roleIds == null) {
+            return;
+        }
         for (String roleId : roleIds) {
             if (roleGateway.findById(roleId).filter(Role::isEnabled).isEmpty()) {
                 throw new CommonException(UpmsResultCodeEnum.ROLE_DOES_NOT_EXIST_OR_IS_DISABLED);
@@ -305,7 +326,9 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
                 .findById(command.getUserId())
                 .orElseThrow(() -> new CommonException(UpmsResultCodeEnum.USER_NOT_FOUND));
 
-        if (!user.isActive()) throw new CommonException(UpmsResultCodeEnum.ACCOUNT_IS_NOT_ACTIVE);
+        if (!user.isActive()) {
+            throw new CommonException(UpmsResultCodeEnum.ACCOUNT_IS_NOT_ACTIVE);
+        }
 
         // Verify old password
         if (!passwordEncoder.matches(command.getOldPassword(), user.getPassword())) {
@@ -364,21 +387,6 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
                         .map(Department::getDeptName)
                         .orElse(null);
         return dtoConverter.toUser(user, departmentName, roles);
-    }
-
-    public UserService(
-            UserGateway userGateway,
-            RoleGateway roleGateway,
-            DepartmentGateway departmentGateway,
-            PasswordEncoder passwordEncoder,
-            UpmsDTOConverter dtoConverter,
-            @Qualifier("upmsClock") Clock clock) {
-        this.clock = clock;
-        this.dtoConverter = dtoConverter;
-        this.userGateway = userGateway;
-        this.roleGateway = roleGateway;
-        this.departmentGateway = departmentGateway;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Override

@@ -25,12 +25,11 @@ import io.github.loadup.modules.transfer.client.enums.TransferStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
-/** Durable state of one import or export job. */
+/**
+ * Durable state of one import or export job.
+ */
 public record TransferTaskDTO(
         @Schema(description = "Resource identifier") String id,
-
-        @Schema(description = "Tenant identifier resolved from trusted context")
-        String tenantId,
 
         @Schema(description = "Owner user identifier") String ownerId,
         @Schema(description = "Task or catalog category") TransferKind kind,

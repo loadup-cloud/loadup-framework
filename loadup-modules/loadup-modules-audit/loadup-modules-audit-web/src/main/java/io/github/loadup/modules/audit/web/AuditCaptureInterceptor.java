@@ -20,7 +20,6 @@
 package io.github.loadup.modules.audit.web;
 
 import io.github.loadup.commons.log.LogUtil;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.modules.audit.client.command.AuditRecordCommand;
 import io.github.loadup.modules.audit.client.facade.AuditFacade;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,7 +31,9 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 
-/** Captures configured MVC operations without collecting bodies, query strings or credentials. */
+/**
+ * Captures configured MVC operations without collecting bodies, query strings or credentials.
+ */
 public class AuditCaptureInterceptor implements HandlerInterceptor {
 
     private final AuditFacade service;
@@ -46,7 +47,9 @@ public class AuditCaptureInterceptor implements HandlerInterceptor {
     @Override
     public void afterCompletion(
             HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-        if (!properties.getIncludeMethods().contains(request.getMethod())) return;
+        if (!properties.getIncludeMethods().contains(request.getMethod())) {
+            return;
+        }
         String path = request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE) instanceof String pattern
                 ? pattern
                 : request.getRequestURI().substring(request.getContextPath().length());
@@ -66,8 +69,8 @@ public class AuditCaptureInterceptor implements HandlerInterceptor {
                 ? "FAILURE"
                 : "SUCCESS";
         try {
-            service.record(new AuditRecordCommand(
-                    TenantUtil.getTenantId(), actorId, action, request.getMethod(), path, outcome, MDC.get("traceId")));
+            service.record(
+                    new AuditRecordCommand(actorId, action, request.getMethod(), path, outcome, MDC.get("traceId")));
         } catch (RuntimeException failure) {
             LogUtil.error(
                     AuditCaptureInterceptor.class,

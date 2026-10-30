@@ -23,7 +23,9 @@ import java.util.Currency;
 import java.util.Locale;
 import java.util.Objects;
 
-/** JDK 25 ISO 4217 catalog snapshot, including historical and special-purpose codes. */
+/**
+ * JDK 25 ISO 4217 catalog snapshot, including historical and special-purpose codes.
+ */
 public enum CurrencyEnum {
     ADP("ADP", "020", "ADP"),
     AED("AED", "784", "AED"),
@@ -269,6 +271,10 @@ public enum CurrencyEnum {
         this.symbol = symbol;
     }
 
+    public static CurrencyEnum fromCode(String code) {
+        return valueOf(Objects.requireNonNull(code, "currency code"));
+    }
+
     public String getCode() {
         return code;
     }
@@ -291,9 +297,5 @@ public enum CurrencyEnum {
 
     public int getFractionDigits() {
         return toCurrency().getDefaultFractionDigits();
-    }
-
-    public static CurrencyEnum fromCode(String code) {
-        return valueOf(Objects.requireNonNull(code, "currency code"));
     }
 }

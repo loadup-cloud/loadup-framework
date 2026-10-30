@@ -26,8 +26,8 @@ loadup-components-configcenter-api          (facade + SPI + 自动装配)
 Nacos 以文件（`dataId + group`）为单位存储配置，LoadUp facade 是 key-value，因此：
 
 - **解析**：`NacosConfigContent` 把整文件解析为扁平 `Map<String, String>`。
-  - `properties`：`java.util.Properties` 解析；
-  - `yaml/yml`：SnakeYAML 解析，嵌套 map 展开为点号键，集合序列化为 JSON 字符串；
+    - `properties`：`java.util.Properties` 解析；
+    - `yaml/yml`：SnakeYAML 解析，嵌套 map 展开为点号键，集合序列化为 JSON 字符串；
 - **快照**：构造时加载一次，`getConfig(key)` 读内存快照，不每次访问 Nacos；
 - **写**：读取最新文件 → 修改目标键 → 整文件发布（并发语义：last-writer-wins 按文件粒度）；
 - **监听**：对 `dataId` 注册一个共享 Nacos `Listener`，收到推送后全量重解析，与旧快照逐键

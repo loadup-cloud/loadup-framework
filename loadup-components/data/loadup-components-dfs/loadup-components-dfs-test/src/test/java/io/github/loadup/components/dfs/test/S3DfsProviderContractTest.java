@@ -22,7 +22,10 @@ package io.github.loadup.components.dfs.test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 import io.github.loadup.components.dfs.DfsObjectNotFoundException;
 import io.github.loadup.components.dfs.DfsStorageException;
@@ -39,10 +42,23 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.*;
+import software.amazon.awssdk.services.s3.model.AbortMultipartUploadRequest;
+import software.amazon.awssdk.services.s3.model.CompleteMultipartUploadRequest;
+import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
+import software.amazon.awssdk.services.s3.model.CreateMultipartUploadRequest;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
+import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
+import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Exception;
+import software.amazon.awssdk.services.s3.model.UploadPartRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
-/** SDK boundary tests complement the real S3-compatible container tests. */
+/**
+ * SDK boundary tests complement the real S3-compatible container tests.
+ */
 class S3DfsProviderContractTest {
     private final S3Client client = mock(S3Client.class);
     private final S3Presigner presigner = mock(S3Presigner.class);
@@ -84,9 +100,12 @@ class S3DfsProviderContractTest {
                 var uploaded = provider.upload(new FileUploadRequest(
                         "file.txt", new ByteArrayInputStream(new byte[0]), 0, null, path, Map.of()));
                 assertThat(uploaded.fileId()).doesNotContain("//");
-                if (prefix != null && !prefix.isBlank())
+                if (prefix != null && !prefix.isBlank()) {
                     assertThat(uploaded.fileId()).startsWith("root/");
-                if ("/documents/".equals(path)) assertThat(uploaded.fileId()).contains("documents/");
+                }
+                if ("/documents/".equals(path)) {
+                    assertThat(uploaded.fileId()).contains("documents/");
+                }
             }
             for (String path : new String[] {"..", "../bad", "folder/../bad"}) {
                 assertThatThrownBy(() -> provider.upload(new FileUploadRequest(

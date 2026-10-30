@@ -21,18 +21,22 @@ package io.github.loadup.modules.transfer.infrastructure.autoconfigure;
 
 import io.github.loadup.components.database.id.IdGenerator;
 import io.github.loadup.modules.transfer.domain.gateway.TransferGateway;
+import io.github.loadup.modules.transfer.infrastructure.mapper.TransferTaskOptionRowMapper;
+import io.github.loadup.modules.transfer.infrastructure.mapper.TransferTaskRowMapper;
 import io.github.loadup.modules.transfer.infrastructure.repository.TransferGatewayImpl;
-import io.github.loadup.modules.transfer.infrastructure.repository.TransferTaskOptionRepository;
-import io.github.loadup.modules.transfer.infrastructure.repository.TransferTaskRepository;
 import javax.sql.DataSource;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.*;
-import org.springframework.context.annotation.*;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @AutoConfiguration(
         afterName = {
             "org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration",
+            "com.mybatisflex.spring.boot.v4.MybatisFlexAutoConfiguration",
             "io.github.loadup.components.database.autoconfigure.IdGeneratorAutoConfiguration"
         })
 @ConditionalOnSingleCandidate(DataSource.class)
@@ -42,11 +46,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
         havingValue = "true",
         matchIfMissing = true)
 public class TransferPersistenceAutoConfiguration {
-    @Bean("transferStorageClock")
-    @ConditionalOnMissingBean(name = "transferStorageClock")
-    public java.time.Clock storageClock() {
-        return java.time.Clock.systemDefaultZone();
-    }
 
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnMissingBean(TransferGateway.class)
@@ -54,11 +53,11 @@ public class TransferPersistenceAutoConfiguration {
         @Bean
         public TransferGateway transferGateway(
                 JdbcTemplate jdbc,
-                TransferTaskRepository tasks,
-                TransferTaskOptionRepository options,
+                TransferTaskRowMapper mapper,
+                TransferTaskOptionRowMapper optionMapper,
                 IdGenerator ids,
-                @org.springframework.beans.factory.annotation.Qualifier("transferStorageClock") java.time.Clock clock) {
-            return new TransferGatewayImpl(jdbc, tasks, options, ids, clock);
+                java.time.Clock clock) {
+            return new TransferGatewayImpl(jdbc, mapper, optionMapper, ids, clock);
         }
     }
 }

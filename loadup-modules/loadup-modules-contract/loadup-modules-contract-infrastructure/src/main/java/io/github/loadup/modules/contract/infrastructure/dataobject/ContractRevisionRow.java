@@ -1,19 +1,69 @@
 package io.github.loadup.modules.contract.infrastructure.dataobject;
 
+import com.mybatisflex.annotation.Table;
+import io.github.loadup.commons.dataobject.BaseDO;
 import java.time.LocalDateTime;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
 
-/** Row model for immutable contract revisions, read through Spring Data JDBC. */
+/**
+ * Row model for immutable contract revisions.
+ */
 @Table("merchant_contract_revision")
-public record ContractRevisionRow(
-        @Id @Column("id") String id,
-        @Column("tenant_id") String tenantId,
-        @Column("contract_id") String contractId,
-        @Column("revision") int revision,
-        @Column("snapshot") String snapshot,
-        @Column("snapshot_hash") String snapshotHash,
-        @Column("created_at") LocalDateTime createdAt,
-        @Column("updated_at") LocalDateTime updatedAt,
-        @Column("deleted") boolean deleted) {}
+public class ContractRevisionRow extends BaseDO {
+    private String contractId;
+    private int revision;
+    private String snapshot;
+    private String snapshotHash;
+
+    public ContractRevisionRow() {}
+
+    public ContractRevisionRow(
+            String id,
+            String contractId,
+            int revision,
+            String snapshot,
+            String snapshotHash,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt,
+            boolean deleted) {
+        setId(id);
+        this.contractId = contractId;
+        this.revision = revision;
+        this.snapshot = snapshot;
+        this.snapshotHash = snapshotHash;
+        setCreatedAt(createdAt);
+        setUpdatedAt(updatedAt);
+        setDeleted(deleted);
+    }
+
+    public String getContractId() {
+        return contractId;
+    }
+
+    public void setContractId(String value) {
+        this.contractId = value;
+    }
+
+    public int getRevision() {
+        return revision;
+    }
+
+    public void setRevision(int value) {
+        this.revision = value;
+    }
+
+    public String getSnapshot() {
+        return snapshot;
+    }
+
+    public void setSnapshot(String value) {
+        this.snapshot = value;
+    }
+
+    public String getSnapshotHash() {
+        return snapshotHash;
+    }
+
+    public void setSnapshotHash(String value) {
+        this.snapshotHash = value;
+    }
+}

@@ -24,21 +24,30 @@ import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import java.util.List;
 import java.util.Objects;
 
-/** A bounded, data-only rule tree. A null root is not a valid rule. */
+/**
+ * A bounded, data-only rule tree. A null root is not a valid rule.
+ */
 public sealed interface Condition
         permits Condition.All, Condition.Any, Condition.Not, Condition.Exists, Condition.Compare {
+    static Condition always() {
+        return new All(List.of());
+    }
+
     record All(List<Condition> children) implements Condition {
         public All {
             children = List.copyOf(children);
-            if (children.size() > 128) throw new CommonException(ContractResultCodeEnum.TOO_MANY_CHILDREN);
+            if (children.size() > 128) {
+                throw new CommonException(ContractResultCodeEnum.TOO_MANY_CHILDREN);
+            }
         }
     }
 
     record Any(List<Condition> children) implements Condition {
         public Any {
             children = List.copyOf(children);
-            if (children.isEmpty() || children.size() > 128)
+            if (children.isEmpty() || children.size() > 128) {
                 throw new CommonException(ContractResultCodeEnum.INVALID_OR_CHILDREN);
+            }
         }
     }
 
@@ -65,33 +74,34 @@ public sealed interface Condition
                 if (!expected.isEmpty()
                         || operator == ComparisonOperator.IN
                         || operator == ComparisonOperator.NOT_IN
-                        || operator == ComparisonOperator.BETWEEN)
+                        || operator == ComparisonOperator.BETWEEN) {
                     throw new CommonException(ContractResultCodeEnum.INVALID_CONFIGURATION_OPERAND);
+                }
             } else {
                 int size = expected.size();
                 if (operator == ComparisonOperator.IN || operator == ComparisonOperator.NOT_IN) {
-                    if (size < 1 || size > 100) throw new CommonException(ContractResultCodeEnum.INVALID_SET_SIZE);
+                    if (size < 1 || size > 100) {
+                        throw new CommonException(ContractResultCodeEnum.INVALID_SET_SIZE);
+                    }
                 } else if (size != (operator == ComparisonOperator.BETWEEN ? 2 : 1)) {
                     throw new CommonException(ContractResultCodeEnum.INVALID_OPERAND_COUNT);
                 }
                 TypedValue first = expected.getFirst();
-                if (expected.stream().anyMatch(v -> v.type() != first.type()))
+                if (expected.stream().anyMatch(v -> v.type() != first.type())) {
                     throw new CommonException(ContractResultCodeEnum.MIXED_OPERAND_TYPES);
+                }
                 if (operator != ComparisonOperator.EQ
                         && operator != ComparisonOperator.NE
                         && operator != ComparisonOperator.IN
                         && operator != ComparisonOperator.NOT_IN
-                        && first.type() == ValueType.BOOLEAN)
+                        && first.type() == ValueType.BOOLEAN) {
                     throw new CommonException(ContractResultCodeEnum.BOOLEAN_ORDERING_UNSUPPORTED);
+                }
                 if (operator == ComparisonOperator.BETWEEN
                         && ConditionEvaluator.compare(first, expected.getLast()) > 0) {
                     throw new CommonException(ContractResultCodeEnum.INVERTED_COMPARISON_RANGE);
                 }
             }
         }
-    }
-
-    static Condition always() {
-        return new All(List.of());
     }
 }

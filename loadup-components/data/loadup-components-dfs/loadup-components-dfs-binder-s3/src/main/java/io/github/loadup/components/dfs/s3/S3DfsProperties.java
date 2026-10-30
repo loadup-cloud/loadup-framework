@@ -21,7 +21,9 @@ package io.github.loadup.components.dfs.s3;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/** AWS S3 and S3-compatible binder settings. */
+/**
+ * AWS S3 and S3-compatible binder settings.
+ */
 @ConfigurationProperties(prefix = "loadup.dfs.binder.s3")
 public class S3DfsProperties {
     private String endpoint;

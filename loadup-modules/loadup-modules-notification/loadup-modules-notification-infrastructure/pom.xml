@@ -45,6 +45,8 @@
                         <annotationProcessor>org.mapstruct.ap.MappingProcessor</annotationProcessor>
                         <annotationProcessor>org.springframework.boot.configurationprocessor.ConfigurationMetadataAnnotationProcessor</annotationProcessor>
 
+                        <annotationProcessor>com.mybatisflex.processor.MybatisFlexProcessor</annotationProcessor>
+
                     </annotationProcessors>
                 </configuration>
             </plugin>

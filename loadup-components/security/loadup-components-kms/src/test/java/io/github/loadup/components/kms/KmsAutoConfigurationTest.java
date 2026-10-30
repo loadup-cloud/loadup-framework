@@ -38,6 +38,17 @@ class KmsAutoConfigurationTest {
             .withBean(RestClient.Builder.class, RestClient::builder)
             .withBean(ObjectMapper.class, () -> JsonMapper.builder().build());
 
+    private static KmsProperties settings(
+            URI endpoint,
+            String mount,
+            String namespace,
+            String tokenEnv,
+            String managementTokenEnv,
+            Integer maxInput) {
+        return new KmsProperties(
+                endpoint, mount, namespace, tokenEnv, managementTokenEnv, false, null, null, null, maxInput);
+    }
+
     @Test
     void remainsDisabledWithoutExplicitConfiguration() {
         context.run(application -> {
@@ -171,17 +182,6 @@ class KmsAutoConfigurationTest {
                         "loadup.kms.endpoint=https://bao.example.test",
                         "loadup.kms.read-timeout=0ms")
                 .run(application -> assertThat(application).hasFailed());
-    }
-
-    private static KmsProperties settings(
-            URI endpoint,
-            String mount,
-            String namespace,
-            String tokenEnv,
-            String managementTokenEnv,
-            Integer maxInput) {
-        return new KmsProperties(
-                endpoint, mount, namespace, tokenEnv, managementTokenEnv, false, null, null, null, maxInput);
     }
 
     @Test

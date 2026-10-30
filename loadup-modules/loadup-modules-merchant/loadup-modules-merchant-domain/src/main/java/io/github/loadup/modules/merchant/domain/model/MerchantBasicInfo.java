@@ -49,14 +49,17 @@ public record MerchantBasicInfo(
         @io.github.loadup.commons.masking.Masked(io.github.loadup.commons.masking.MaskType.EMAIL)
         String contactEmail) {
     public MerchantBasicInfo {
-        for (String value : new String[] {merchantCode, name, industry, country})
-            if (value == null || value.isBlank())
+        for (String value : new String[] {merchantCode, name, industry, country}) {
+            if (value == null || value.isBlank()) {
                 throw new CommonException(MerchantResultCodeEnum.REQUIRED_MERCHANT_FIELD_MISSING);
+            }
+        }
         Objects.requireNonNull(type, "Merchant type");
         if (!merchantCode.matches("[A-Za-z0-9][A-Za-z0-9_.-]{0,63}")
                 || !industry.matches("[A-Za-z0-9][A-Za-z0-9_.-]{0,63}")
-                || !country.matches("[A-Z]{2}"))
+                || !country.matches("[A-Z]{2}")) {
             throw new CommonException(MerchantResultCodeEnum.INVALID_MERCHANT_CLASSIFICATION);
+        }
         bounded(merchantCode, 64);
         bounded(name, 200);
         bounded(shortName, 100);
@@ -70,15 +73,18 @@ public record MerchantBasicInfo(
         bounded(contactPhone, 32);
         bounded(contactEmail, 200);
 
-        if (contactPhone != null && !contactPhone.isEmpty() && !contactPhone.matches("\\+?[0-9]{8,15}"))
+        if (contactPhone != null && !contactPhone.isEmpty() && !contactPhone.matches("\\+?[0-9]{8,15}")) {
             throw new CommonException(MerchantResultCodeEnum.INVALID_CONTACT_PHONE);
-        if (contactEmail != null && !contactEmail.isEmpty() && !contactEmail.matches("[^\\s@]+@[^\\s@]+\\.[^\\s@.]+"))
+        }
+        if (contactEmail != null && !contactEmail.isEmpty() && !contactEmail.matches("[^\\s@]+@[^\\s@]+\\.[^\\s@.]+")) {
             throw new CommonException(MerchantResultCodeEnum.INVALID_CONTACT_EMAIL);
+        }
     }
 
     private static void bounded(String value, int max) {
-        if (value != null && (value.length() > max || value.codePoints().anyMatch(Character::isISOControl)))
+        if (value != null && (value.length() > max || value.codePoints().anyMatch(Character::isISOControl))) {
             throw new CommonException(MerchantResultCodeEnum.INVALID_MERCHANT_FIELD);
+        }
     }
 
     @Override

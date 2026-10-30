@@ -19,7 +19,9 @@
  */
 package io.github.loadup.commons.domain;
 
-/** Base type for domain entities with a stable identity. */
+/**
+ * Base type for domain entities with a stable identity.
+ */
 public abstract class BaseEntity {
 
     private String id;

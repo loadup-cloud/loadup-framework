@@ -24,7 +24,9 @@ import io.github.loadup.modules.transfer.client.dto.TransferTaskDTO;
 import io.github.loadup.modules.transfer.client.dto.TransferViewDTO;
 import org.mapstruct.Mapper;
 
-/** Produces the public HTTP projection from the application contract. */
+/**
+ * Produces the public HTTP projection from the application contract.
+ */
 @Mapper(config = LoadUpMapStructConfig.class)
 public interface TransferWebConverter {
     TransferViewDTO toView(TransferTaskDTO value);

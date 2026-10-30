@@ -32,11 +32,13 @@ API 承载调用契约；binder-core 创建 Resilience4j 注册表并按实例�
 ```text
 业务注解/配置 → ResilienceRegistries → binder-core 注册表 → Resilience4j 实例
 ```
+
 接口模块固定业务侧依赖方向；实现与基础设施通过独立模块接入。
 
 ## 配置归属
 
-- [`Resilience4jProperties`](src/main/java/io/github/loadup/components/resilience4j/Resilience4jProperties.java) 绑定 `loadup.resilience4j`。
+- [`Resilience4jProperties`](src/main/java/io/github/loadup/components/resilience4j/Resilience4jProperties.java) 绑定
+  `loadup.resilience4j`。
 
 ## 设计取舍
 

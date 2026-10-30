@@ -34,7 +34,17 @@ public final class RpcIdentityProviderFilter implements Filter {
     private final LoadUpJwtAuthenticationConverter converter = new LoadUpJwtAuthenticationConverter();
     private Validator validator;
 
-    /** Injected by Dubbo from the Spring context when a {@link Validator} bean is available. */
+    private static Jwt parse(String token) {
+        try {
+            return RpcJwtClaims.parse(token);
+        } catch (RuntimeException invalid) {
+            throw new RpcException(RpcException.AUTHORIZATION_EXCEPTION, "Valid access token required");
+        }
+    }
+
+    /**
+     * Injected by Dubbo from the Spring context when a {@link Validator} bean is available.
+     */
     public void setValidator(Validator validator) {
         this.validator = validator;
     }
@@ -74,16 +84,10 @@ public final class RpcIdentityProviderFilter implements Filter {
         return context;
     }
 
-    private static Jwt parse(String token) {
-        try {
-            return RpcJwtClaims.parse(token);
-        } catch (RuntimeException invalid) {
-            throw new RpcException(RpcException.AUTHORIZATION_EXCEPTION, "Valid access token required");
-        }
-    }
-
     private void validate(Invocation invocation) {
-        if (validator == null) return;
+        if (validator == null) {
+            return;
+        }
         for (Object argument : invocation.getArguments()) {
             if (argument != null && !validator.validate(argument).isEmpty()) {
                 throw new RpcException(RpcException.VALIDATION_EXCEPTION, "Invalid RPC command");

@@ -22,10 +22,11 @@ package io.github.loadup.modules.contract.domain.model;
 import io.github.loadup.commons.json.ToStringAsJson;
 import java.time.LocalDateTime;
 
-/** Version metadata and opaque validated storage content, independent of JSON implementation. */
+/**
+ * Version metadata and opaque validated storage content, independent of JSON implementation.
+ */
 public record CatalogEntry(
         String id,
-        String tenantId,
         CatalogKind kind,
         String code,
         int version,

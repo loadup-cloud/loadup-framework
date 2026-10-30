@@ -18,7 +18,9 @@ public final class RpcScalarMapper {
     private RpcScalarMapper() {}
 
     public static Timestamp timestamp(OffsetDateTime value) {
-        if (value == null) return null;
+        if (value == null) {
+            return null;
+        }
         return Timestamps.checkValid(Timestamp.newBuilder()
                 .setSeconds(value.toEpochSecond())
                 .setNanos(value.getNano())
@@ -26,14 +28,18 @@ public final class RpcScalarMapper {
     }
 
     public static OffsetDateTime offset(Timestamp value) {
-        if (value == null) return null;
+        if (value == null) {
+            return null;
+        }
         Timestamps.checkValid(value);
         return OffsetDateTime.ofInstant(
                 Instant.ofEpochSecond(value.getSeconds(), value.getNanos()), ZoneId.systemDefault());
     }
 
     public static Timestamp timestamp(Instant value) {
-        if (value == null) return null;
+        if (value == null) {
+            return null;
+        }
         return Timestamps.checkValid(Timestamp.newBuilder()
                 .setSeconds(value.getEpochSecond())
                 .setNanos(value.getNano())
@@ -41,7 +47,9 @@ public final class RpcScalarMapper {
     }
 
     public static Instant instant(Timestamp value) {
-        if (value == null) return null;
+        if (value == null) {
+            return null;
+        }
         Timestamps.checkValid(value);
         return Instant.ofEpochSecond(value.getSeconds(), value.getNanos());
     }

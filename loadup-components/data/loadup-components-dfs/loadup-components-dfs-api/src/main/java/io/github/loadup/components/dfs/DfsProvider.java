@@ -30,7 +30,9 @@ import java.net.URI;
 import java.time.Duration;
 import java.util.List;
 
-/** Storage SPI implemented by one binder selected at build and deployment time. */
+/**
+ * Storage SPI implemented by one binder selected at build and deployment time.
+ */
 public interface DfsProvider {
 
     FileMetadata upload(FileUploadRequest request);

@@ -23,16 +23,34 @@ import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.contract.app.converter.ContractConverter;
-import io.github.loadup.modules.contract.app.support.*;
-import io.github.loadup.modules.contract.client.command.*;
-import io.github.loadup.modules.contract.client.dto.*;
+import io.github.loadup.modules.contract.app.support.CatalogAssembler;
+import io.github.loadup.modules.contract.app.support.ContractCodec;
+import io.github.loadup.modules.contract.app.support.ContractIdentity;
+import io.github.loadup.modules.contract.app.support.MerchantFacts;
+import io.github.loadup.modules.contract.client.command.ContractSignCommand;
+import io.github.loadup.modules.contract.client.command.ContractStatusCommand;
+import io.github.loadup.modules.contract.client.dto.MerchantContractDTO;
 import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import io.github.loadup.modules.contract.client.query.MerchantContractPageQuery;
-import io.github.loadup.modules.contract.domain.gateway.*;
+import io.github.loadup.modules.contract.domain.gateway.CatalogGateway;
+import io.github.loadup.modules.contract.domain.gateway.MerchantContractGateway;
 import io.github.loadup.modules.contract.domain.gateway.RequestKeyConflictException;
-import io.github.loadup.modules.contract.domain.model.*;
-import java.time.*;
-import java.util.*;
+import io.github.loadup.modules.contract.domain.model.CatalogEntry;
+import io.github.loadup.modules.contract.domain.model.CatalogKind;
+import io.github.loadup.modules.contract.domain.model.CatalogStatus;
+import io.github.loadup.modules.contract.domain.model.ContractRecord;
+import io.github.loadup.modules.contract.domain.model.ContractRevisionRecord;
+import io.github.loadup.modules.contract.domain.model.ContractSigner;
+import io.github.loadup.modules.contract.domain.model.ContractStatus;
+import io.github.loadup.modules.contract.domain.model.MerchantContractRevision;
+import io.github.loadup.modules.contract.domain.model.TypedValue;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -57,7 +75,7 @@ public class MerchantContractService implements io.github.loadup.modules.contrac
             ContractCodec codec,
             ContractConverter converter,
             MerchantFacts facts,
-            @org.springframework.beans.factory.annotation.Qualifier("contractClock") Clock clock,
+            Clock clock,
             PlatformTransactionManager transactionManager) {
         this.catalog = catalog;
         this.gateway = gateway;
@@ -71,41 +89,42 @@ public class MerchantContractService implements io.github.loadup.modules.contrac
     }
 
     public MerchantContractDTO preview(ContractSignCommand command, String actor) {
-        String tenant = ContractIdentity.tenant();
         validate(command, actor);
-        var profile = facts.load(tenant, command.merchantId());
-        var entry = catalog.find(tenant, command.planVersionId())
+        var profile = facts.load(command.merchantId());
+        var entry = catalog.find(command.planVersionId())
                 .orElseThrow(() -> new CommonException(ContractResultCodeEnum.NOT_FOUND));
         requirePlan(entry);
         Instant now = clock.instant();
         String id = UUID.randomUUID().toString();
-        var snapshot = sign(tenant, id, entry, command, profile, now);
-        return converter.toContract(header(tenant, id, command, "preview", actor, now), snapshot);
+        var snapshot = sign(id, entry, command, profile, now);
+        return converter.toContract(header(id, command, "preview", actor, now), snapshot);
     }
 
     public MerchantContractDTO sign(ContractSignCommand command, String actor) {
-        String tenant = ContractIdentity.tenant();
         validate(command, actor);
         String digest = requestDigest(command);
-        var existing = gateway.findByRequest(tenant, command.requestKey());
-        if (existing.isPresent()) return replay(existing.get(), digest);
+        var existing = gateway.findByRequest(command.requestKey());
+        if (existing.isPresent()) {
+            return replay(existing.get(), digest);
+        }
         // External merchant lookup completes before the transaction acquires catalog/database locks.
-        var profile = facts.load(tenant, command.merchantId());
+        var profile = facts.load(command.merchantId());
         try {
             return Objects.requireNonNull(transactions.execute(status -> {
-                var entry = catalog.lock(tenant, command.planVersionId())
+                var entry = catalog.lock(command.planVersionId())
                         .orElseThrow(() -> new CommonException(ContractResultCodeEnum.NOT_FOUND));
                 // Recheck after the lock; a competing signer may have committed while we waited.
-                var replay = gateway.findByRequest(tenant, command.requestKey());
-                if (replay.isPresent()) return replay(replay.get(), digest);
+                var replay = gateway.findByRequest(command.requestKey());
+                if (replay.isPresent()) {
+                    return replay(replay.get(), digest);
+                }
                 requirePlan(entry);
                 Instant now = clock.instant();
                 String id = UUID.randomUUID().toString();
-                var snapshot = sign(tenant, id, entry, command, profile, now);
-                var header = header(tenant, id, command, digest, actor, now);
+                var snapshot = sign(id, entry, command, profile, now);
+                var header = header(id, command, digest, actor, now);
                 var revision = new ContractRevisionRecord(
                         UUID.randomUUID().toString(),
-                        tenant,
                         id,
                         1,
                         codec.write(snapshot),
@@ -117,8 +136,10 @@ public class MerchantContractService implements io.github.loadup.modules.contrac
             }));
         } catch (RequestKeyConflictException e) {
             // Roll back both inserts before reading the winner in a fresh session.
-            var winner = gateway.findByRequest(tenant, command.requestKey());
-            if (winner.isPresent()) return replay(winner.get(), digest);
+            var winner = gateway.findByRequest(command.requestKey());
+            if (winner.isPresent()) {
+                return replay(winner.get(), digest);
+            }
             throw new CommonException(ContractResultCodeEnum.CONFLICT, e);
         }
     }
@@ -128,26 +149,22 @@ public class MerchantContractService implements io.github.loadup.modules.contrac
         ContractIdentity.code(command.merchantId(), 64);
         ContractIdentity.code(command.scopeKey(), 128);
         ContractIdentity.code(command.requestKey(), 128);
-        if (command.selectedItems() == null || command.values() == null)
+        if (command.selectedItems() == null || command.values() == null) {
             throw new CommonException(ContractResultCodeEnum.SELECTION_AND_VALUES_REQUIRED);
+        }
     }
 
     private void requirePlan(CatalogEntry entry) {
-        if (entry.kind() != CatalogKind.SALES_PLAN || entry.status() != CatalogStatus.PUBLISHED)
+        if (entry.kind() != CatalogKind.SALES_PLAN || entry.status() != CatalogStatus.PUBLISHED) {
             throw new CommonException(ContractResultCodeEnum.PLAN_MUST_BE_PUBLISHED_AND_ON_SALE);
+        }
     }
 
     private MerchantContractRevision sign(
-            String tenant,
-            String id,
-            CatalogEntry entry,
-            ContractSignCommand command,
-            Map<String, TypedValue> profile,
-            Instant now) {
+            String id, CatalogEntry entry, ContractSignCommand command, Map<String, TypedValue> profile, Instant now) {
         var plan = assembler.plan(entry, false);
         return new ContractSigner()
                 .sign(
-                        tenant,
                         command.merchantId(),
                         command.scopeKey(),
                         id,
@@ -161,12 +178,10 @@ public class MerchantContractService implements io.github.loadup.modules.contrac
                         command.effectiveTo());
     }
 
-    private ContractRecord header(
-            String tenant, String id, ContractSignCommand command, String digest, String actor, Instant now) {
+    private ContractRecord header(String id, ContractSignCommand command, String digest, String actor, Instant now) {
         LocalDateTime at = LocalDateTime.ofInstant(now, clock.getZone());
         return new ContractRecord(
                 id,
-                tenant,
                 command.merchantId(),
                 command.scopeKey(),
                 command.planVersionId(),
@@ -198,17 +213,17 @@ public class MerchantContractService implements io.github.loadup.modules.contrac
     private MerchantContractDTO replay(ContractRecord existing, String digest) {
         if (!java.security.MessageDigest.isEqual(
                 existing.requestDigest().getBytes(java.nio.charset.StandardCharsets.UTF_8),
-                digest.getBytes(java.nio.charset.StandardCharsets.UTF_8)))
+                digest.getBytes(java.nio.charset.StandardCharsets.UTF_8))) {
             throw new CommonException(ContractResultCodeEnum.IDEMPOTENCY_CONFLICT);
+        }
         return toDTO(existing);
     }
 
     public MerchantContractRevision snapshot(ContractRecord header) {
-        var stored = gateway.revision(header.tenantId(), header.id(), 1)
+        var stored = gateway.revision(header.id(), 1)
                 .orElseThrow(() -> new CommonException(ContractResultCodeEnum.NOT_FOUND));
         var snapshot = codec.read(stored.snapshot(), MerchantContractRevision.class);
         if (!snapshot.snapshotHash().equals(stored.snapshotHash())
-                || !snapshot.tenantId().equals(header.tenantId())
                 || !snapshot.merchantId().equals(header.merchantId())
                 || !snapshot.scopeKey().equals(header.scopeKey())
                 || !snapshot.contractId().equals(header.id())
@@ -224,29 +239,31 @@ public class MerchantContractService implements io.github.loadup.modules.contrac
 
     @Transactional(readOnly = true)
     public MerchantContractDTO detail(String id) {
-        return toDTO(gateway.find(ContractIdentity.tenant(), id)
-                .orElseThrow(() -> new CommonException(ContractResultCodeEnum.NOT_FOUND)));
+        return toDTO(gateway.find(id).orElseThrow(() -> new CommonException(ContractResultCodeEnum.NOT_FOUND)));
     }
 
     @Transactional(readOnly = true)
     public PageDTO<MerchantContractDTO> page(MerchantContractPageQuery query) {
         ContractIdentity.page(query.page(), query.size());
-        var page = gateway.page(ContractIdentity.tenant(), query.merchantId(), query.page(), query.size());
+        var page = gateway.page(query.merchantId(), query.page(), query.size());
         return PageDTO.of(page.records().stream().map(this::toDTO).toList(), page.total(), query.page(), query.size());
     }
 
     @Transactional
     public MerchantContractDTO changeStatus(ContractStatusCommand command, String actor) {
         ContractIdentity.actor(actor);
-        String tenant = ContractIdentity.tenant();
         ContractStatus target = ContractStatus.valueOf(command.status());
-        var header = gateway.find(tenant, command.id())
-                .orElseThrow(() -> new CommonException(ContractResultCodeEnum.NOT_FOUND));
-        if (header.status() == ContractStatus.TERMINATED)
+        var header =
+                gateway.find(command.id()).orElseThrow(() -> new CommonException(ContractResultCodeEnum.NOT_FOUND));
+        if (header.status() == ContractStatus.TERMINATED) {
             throw new CommonException(ContractResultCodeEnum.INVALID_STATE);
-        if (header.generation() != command.expectedGeneration())
+        }
+        if (header.generation() != command.expectedGeneration()) {
             throw new CommonException(ContractResultCodeEnum.CONFLICT);
-        if (header.status() != target) gateway.updateStatus(tenant, header.id(), header.generation(), target);
+        }
+        if (header.status() != target) {
+            gateway.updateStatus(header.id(), header.generation(), target);
+        }
         return detail(command.id());
     }
 }

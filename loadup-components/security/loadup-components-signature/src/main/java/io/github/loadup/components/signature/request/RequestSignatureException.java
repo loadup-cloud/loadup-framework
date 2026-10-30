@@ -21,8 +21,21 @@ package io.github.loadup.components.signature.request;
 
 import io.github.loadup.commons.error.CommonException;
 
-/** Safe request verification failure without payloads, headers or backend details. */
+/**
+ * Safe request verification failure without payloads, headers or backend details.
+ */
 public final class RequestSignatureException extends CommonException {
+    private final Code code;
+
+    public RequestSignatureException(Code code) {
+        super(code);
+        this.code = code;
+    }
+
+    public Code getCode() {
+        return code;
+    }
+
     public enum Code implements io.github.loadup.commons.result.ResultCode {
         MALFORMED,
         IDENTITY_MISMATCH,
@@ -44,16 +57,5 @@ public final class RequestSignatureException extends CommonException {
         public String getMessage() {
             return "Request signature rejected: " + name();
         }
-    }
-
-    private final Code code;
-
-    public RequestSignatureException(Code code) {
-        super(code);
-        this.code = code;
-    }
-
-    public Code getCode() {
-        return code;
     }
 }

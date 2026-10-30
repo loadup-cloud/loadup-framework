@@ -24,8 +24,9 @@ import io.github.loadup.commons.json.ToStringAsJson;
 
 public record SequenceRange(long first, long last) {
     public SequenceRange {
-        if (first < 1 || last < first || last == Long.MAX_VALUE)
+        if (first < 1 || last < first || last == Long.MAX_VALUE) {
             throw new CommonException(DatabaseResultCodeEnum.CORRUPT_STATE);
+        }
     }
 
     @Override

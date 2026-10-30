@@ -127,6 +127,13 @@ public class TimeParser {
         "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     };
 
+    public static boolean isValidTimestamp(long timestamp) {
+
+        long min = 978307200000L; // 2001-01-01
+        long max = 2145916800000L; // 2038-01-19
+        return timestamp >= min && timestamp <= max;
+    }
+
     public long toMillis(Object value) {
         if (value == null) {
             throw new IllegalArgumentException("时间值不能为空");
@@ -390,12 +397,5 @@ public class TimeParser {
             return sb.toString();
         }
         return dateStr;
-    }
-
-    public static boolean isValidTimestamp(long timestamp) {
-
-        long min = 978307200000L; // 2001-01-01
-        long max = 2145916800000L; // 2038-01-19
-        return timestamp >= min && timestamp <= max;
     }
 }

@@ -23,7 +23,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.ctrip.framework.apollo.Config;
 import com.ctrip.framework.apollo.ConfigChangeListener;
@@ -35,7 +39,11 @@ import io.github.loadup.components.configcenter.ConfigCenterProvider;
 import io.github.loadup.components.configcenter.apollo.ApolloConfigCenterProperties;
 import io.github.loadup.components.configcenter.apollo.ApolloConfigCenterProvider;
 import io.github.loadup.components.configcenter.apollo.autoconfigure.ApolloConfigCenterAutoConfiguration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,22 +53,28 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
-/** Unit contracts at the Apollo SDK boundary; no Apollo server is contacted. */
+/**
+ * Unit contracts at the Apollo SDK boundary; no Apollo server is contacted.
+ */
 @ResourceLock(Resources.SYSTEM_PROPERTIES)
 class ApolloConfigCenterProviderTest {
     private final Map<String, String> previous = new HashMap<>();
 
     @BeforeEach
     void saveSystemProperties() {
-        for (String key : List.of("app.id", "apollo.meta", "env", "apollo.cluster"))
+        for (String key : List.of("app.id", "apollo.meta", "env", "apollo.cluster")) {
             previous.put(key, System.getProperty(key));
+        }
     }
 
     @AfterEach
     void restoreSystemProperties() {
         previous.forEach((key, value) -> {
-            if (value == null) System.clearProperty(key);
-            else System.setProperty(key, value);
+            if (value == null) {
+                System.clearProperty(key);
+            } else {
+                System.setProperty(key, value);
+            }
         });
     }
 
@@ -109,21 +123,21 @@ class ApolloConfigCenterProviderTest {
                             "application",
                             Map.of(
                                     "key",
-                                            new ConfigChange(
-                                                    "unit-app",
-                                                    "application",
-                                                    "key",
-                                                    "old",
-                                                    "new",
-                                                    PropertyChangeType.MODIFIED),
+                                    new ConfigChange(
+                                            "unit-app",
+                                            "application",
+                                            "key",
+                                            "old",
+                                            "new",
+                                            PropertyChangeType.MODIFIED),
                                     "unwatched",
-                                            new ConfigChange(
-                                                    "unit-app",
-                                                    "application",
-                                                    "unwatched",
-                                                    null,
-                                                    "value",
-                                                    PropertyChangeType.ADDED))));
+                                    new ConfigChange(
+                                            "unit-app",
+                                            "application",
+                                            "unwatched",
+                                            null,
+                                            "value",
+                                            PropertyChangeType.ADDED))));
             assertThat(first).containsExactly("new");
             assertThat(second).containsExactly("new");
             capture.getValue()

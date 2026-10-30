@@ -27,13 +27,13 @@ public enum PowerJobResultCodeEnum implements ResultCode {
     INVALID_PROCESSOR_RESULT("PowerJob processor returned no result");
     private final String message;
 
+    PowerJobResultCodeEnum(String message) {
+        this.message = message;
+    }
+
     @Override
     public String getStatus() {
         return io.github.loadup.commons.enums.ResultStatusEnum.FAIL.getCode();
-    }
-
-    PowerJobResultCodeEnum(String message) {
-        this.message = message;
     }
 
     @Override

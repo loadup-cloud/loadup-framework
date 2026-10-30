@@ -29,12 +29,15 @@ Web → App → Domain Gateway → Infrastructure；认证适配连接 UPMS 凭�
 ```text
 业务调用 → AuthenticationService → SPI/领域契约 → 运行时实现
 ```
+
 接口模块固定业务侧依赖方向；实现与基础设施通过独立模块接入。
 
 ## 扩展契约
 
-- [`AccessCheckFacade`](src/main/java/io/github/loadup/modules/upms/client/facade/AccessCheckFacade.java)：由实现方或调用方按接口定义对接。
-- [`AuthenticationFacade`](src/main/java/io/github/loadup/modules/upms/client/facade/AuthenticationFacade.java)：由实现方或调用方按接口定义对接。
+- [`AccessCheckFacade`](src/main/java/io/github/loadup/modules/upms/client/facade/AccessCheckFacade.java)
+  ：由实现方或调用方按接口定义对接。
+- [`AuthenticationFacade`](src/main/java/io/github/loadup/modules/upms/client/facade/AuthenticationFacade.java)
+  ：由实现方或调用方按接口定义对接。
 - [`UserQueryFacade`](src/main/java/io/github/loadup/modules/upms/client/facade/UserQueryFacade.java)：由实现方或调用方按接口定义对接。
 
 ## 设计取舍
@@ -45,4 +48,5 @@ Web → App → Domain Gateway → Infrastructure；认证适配连接 UPMS 凭�
 
 ## 敏感输出契约
 
-仅展示 DTO 依赖纯 Java `commons-masking` 注解，client 不依赖 WebMVC/Jackson 脱敏实现。查询入参、Command 与原值 DTO 不使用展示注解，避免入参或签名内容被修改。普通与明文输出类型分离，禁止通过权限动态切换同一 DTO 的 serializer。
+仅展示 DTO 依赖纯 Java `commons-masking` 注解，client 不依赖 WebMVC/Jackson 脱敏实现。查询入参、Command 与原值 DTO
+不使用展示注解，避免入参或签名内容被修改。普通与明文输出类型分离，禁止通过权限动态切换同一 DTO 的 serializer。

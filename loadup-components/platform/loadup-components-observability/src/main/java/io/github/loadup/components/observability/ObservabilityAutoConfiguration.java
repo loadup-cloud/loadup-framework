@@ -24,7 +24,9 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
-/** Uses Spring Boot's MeterRegistry and tracing auto-configuration as the single backend. */
+/**
+ * Uses Spring Boot's MeterRegistry and tracing auto-configuration as the single backend.
+ */
 @AutoConfiguration
 public class ObservabilityAutoConfiguration {
     @Bean

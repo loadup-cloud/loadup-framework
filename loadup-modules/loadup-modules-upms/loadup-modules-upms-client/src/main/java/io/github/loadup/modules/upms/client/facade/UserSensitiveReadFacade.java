@@ -22,7 +22,9 @@ package io.github.loadup.modules.upms.client.facade;
 import io.github.loadup.modules.upms.client.dto.UserSensitiveDTO;
 import io.github.loadup.modules.upms.client.query.UserSensitiveQuery;
 
-/** Public business contract for UserSensitiveReadService. */
+/**
+ * Public business contract for UserSensitiveReadService.
+ */
 public interface UserSensitiveReadFacade {
     UserSensitiveDTO read(String actorId, UserSensitiveQuery query);
 }

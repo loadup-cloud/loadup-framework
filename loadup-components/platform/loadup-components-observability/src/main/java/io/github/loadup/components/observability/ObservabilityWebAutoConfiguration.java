@@ -28,7 +28,9 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 
-/** Runs after Boot's server observation filter and before the security filter chain. */
+/**
+ * Runs after Boot's server observation filter and before the security filter chain.
+ */
 @AutoConfiguration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass(name = "jakarta.servlet.Filter")

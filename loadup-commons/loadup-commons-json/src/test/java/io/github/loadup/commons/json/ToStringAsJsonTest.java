@@ -21,8 +21,10 @@ package io.github.loadup.commons.json;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.loadup.commons.masking.*;
-import java.util.*;
+import io.github.loadup.commons.masking.MaskType;
+import io.github.loadup.commons.masking.Masked;
+import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.json.JsonMapper;
 

@@ -21,7 +21,8 @@ package io.github.loadup.modules.contract.client.command;
 
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 
 public record ContractStatusCommand(
         @Schema(description = "Resource identifier") @NotBlank

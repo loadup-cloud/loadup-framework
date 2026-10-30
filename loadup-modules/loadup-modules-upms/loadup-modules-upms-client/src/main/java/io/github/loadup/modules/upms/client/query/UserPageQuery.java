@@ -107,32 +107,64 @@ public class UserPageQuery {
 
     public UserPageQuery() {}
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public String getUsername() {
         return this.username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getNickname() {
         return this.nickname;
     }
 
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
     public String getRealName() {
         return this.realName;
+    }
+
+    public void setRealName(String realName) {
+        this.realName = realName;
     }
 
     public String getEmail() {
         return this.email;
     }
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getMobile() {
         return this.mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 
     public String getDeptId() {
         return this.deptId;
     }
 
+    public void setDeptId(String deptId) {
+        this.deptId = deptId;
+    }
+
     public Short getStatus() {
         return this.status;
+    }
+
+    public void setStatus(Short status) {
+        this.status = status;
     }
 
     public Boolean isDeleted() {
@@ -143,64 +175,36 @@ public class UserPageQuery {
         return this.page;
     }
 
-    public Integer getSize() {
-        return this.size;
-    }
-
-    public String getSortBy() {
-        return this.sortBy;
-    }
-
-    public String getSortOrder() {
-        return this.sortOrder;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public void setRealName(String realName) {
-        this.realName = realName;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
-
-    public void setDeptId(String deptId) {
-        this.deptId = deptId;
-    }
-
-    public void setStatus(Short status) {
-        this.status = status;
-    }
-
-    public void setDeleted(Boolean deleted) {
-        this.deleted = deleted;
-    }
-
     public void setPage(Integer page) {
         this.page = page;
+    }
+
+    public Integer getSize() {
+        return this.size;
     }
 
     public void setSize(Integer size) {
         this.size = size;
     }
 
+    public String getSortBy() {
+        return this.sortBy;
+    }
+
     public void setSortBy(String sortBy) {
         this.sortBy = sortBy;
     }
 
+    public String getSortOrder() {
+        return this.sortOrder;
+    }
+
     public void setSortOrder(String sortOrder) {
         this.sortOrder = sortOrder;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 
     public io.github.loadup.commons.dto.PageQuery pagination() {
@@ -208,8 +212,9 @@ public class UserPageQuery {
                 page, size, io.github.loadup.commons.enums.CommonResultCodeEnum.PARAM_ILLEGAL);
     }
 
-    public static Builder builder() {
-        return new Builder();
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
     }
 
     public static class Builder {
@@ -308,10 +313,5 @@ public class UserPageQuery {
                     this.sortBy,
                     this.sortOrder);
         }
-    }
-
-    @Override
-    public String toString() {
-        return ToStringAsJson.reflectionToString(this);
     }
 }

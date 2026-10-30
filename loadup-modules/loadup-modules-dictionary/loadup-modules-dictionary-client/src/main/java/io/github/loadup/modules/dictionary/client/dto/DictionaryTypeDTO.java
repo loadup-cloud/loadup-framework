@@ -23,12 +23,11 @@ import io.github.loadup.commons.json.ToStringAsJson;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
-/** Named collection of business dictionary items. */
+/**
+ * Named collection of business dictionary items.
+ */
 public record DictionaryTypeDTO(
         @Schema(description = "Resource identifier") String id,
-
-        @Schema(description = "Tenant identifier resolved from trusted context")
-        String tenantId,
 
         @Schema(description = "Business code") String code,
         @Schema(description = "Name") String name,

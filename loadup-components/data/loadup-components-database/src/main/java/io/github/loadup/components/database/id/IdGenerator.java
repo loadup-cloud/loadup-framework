@@ -19,7 +19,9 @@
  */
 package io.github.loadup.components.database.id;
 
-/** Generates string identifiers for persistent entities. */
+/**
+ * Generates string identifiers for persistent entities.
+ */
 @FunctionalInterface
 public interface IdGenerator {
     /**

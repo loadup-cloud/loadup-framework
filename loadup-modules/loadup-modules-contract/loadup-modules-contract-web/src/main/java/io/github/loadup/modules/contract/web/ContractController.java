@@ -22,16 +22,28 @@ package io.github.loadup.modules.contract.web;
 import io.github.loadup.commons.request.query.IdQuery;
 import io.github.loadup.commons.result.PageResponse;
 import io.github.loadup.commons.result.SuccessResponse;
-import io.github.loadup.modules.contract.client.command.*;
-import io.github.loadup.modules.contract.client.dto.*;
-import io.github.loadup.modules.contract.client.facade.*;
-import io.github.loadup.modules.contract.client.query.*;
+import io.github.loadup.modules.contract.client.command.CatalogActionCommand;
+import io.github.loadup.modules.contract.client.command.CatalogSaveCommand;
+import io.github.loadup.modules.contract.client.command.ContractSignCommand;
+import io.github.loadup.modules.contract.client.command.ContractStatusCommand;
+import io.github.loadup.modules.contract.client.dto.CatalogVersionDTO;
+import io.github.loadup.modules.contract.client.dto.ContractDecisionDTO;
+import io.github.loadup.modules.contract.client.dto.MerchantContractDTO;
+import io.github.loadup.modules.contract.client.facade.CatalogFacade;
+import io.github.loadup.modules.contract.client.facade.ContractResolveFacade;
+import io.github.loadup.modules.contract.client.facade.MerchantContractFacade;
+import io.github.loadup.modules.contract.client.query.CatalogPageQuery;
+import io.github.loadup.modules.contract.client.query.ContractResolveQuery;
+import io.github.loadup.modules.contract.client.query.MerchantContractPageQuery;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/contract")

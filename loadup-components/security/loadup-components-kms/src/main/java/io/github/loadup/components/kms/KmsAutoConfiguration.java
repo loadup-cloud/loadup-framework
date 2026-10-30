@@ -30,7 +30,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestClient;
 import tools.jackson.databind.ObjectMapper;
 
-/** Opt-in Transit integration with distinct runtime and management identities. */
+/**
+ * Opt-in Transit integration with distinct runtime and management identities.
+ */
 @AutoConfiguration(
         afterName = {
             "org.springframework.boot.restclient.autoconfigure.RestClientAutoConfiguration",

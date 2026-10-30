@@ -26,7 +26,9 @@ public final class RpcExceptionCodes {
         return new RpcException(RpcException.BIZ_EXCEPTION, MARKER + code);
     }
 
-    /** Returns the declared result code, or an empty string when the failure is not a business rejection. */
+    /**
+     * Returns the declared result code, or an empty string when the failure is not a business rejection.
+     */
     public static String resultCode(Throwable failure) {
         Throwable current = failure;
         for (int depth = 0; current != null && depth < MAX_CAUSE_DEPTH; depth++) {
@@ -34,10 +36,14 @@ public final class RpcExceptionCodes {
                 int index = current.getMessage().indexOf(MARKER);
                 if (index >= 0) {
                     Matcher matcher = CODE.matcher(current.getMessage().substring(index + MARKER.length()));
-                    if (matcher.lookingAt()) return matcher.group();
+                    if (matcher.lookingAt()) {
+                        return matcher.group();
+                    }
                 }
             }
-            if (current.getCause() == current) return "";
+            if (current.getCause() == current) {
+                return "";
+            }
             current = current.getCause();
         }
         return "";

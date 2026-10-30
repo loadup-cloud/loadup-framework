@@ -23,7 +23,9 @@ import io.github.loadup.commons.json.ToStringAsJson;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 
-/** Default metadata for automatic persistence identifiers. */
+/**
+ * Default metadata for automatic persistence identifiers.
+ */
 @ConfigurationProperties("loadup.database.business-id")
 public record BusinessIdProperties(
         @DefaultValue("0") int dataVersion,

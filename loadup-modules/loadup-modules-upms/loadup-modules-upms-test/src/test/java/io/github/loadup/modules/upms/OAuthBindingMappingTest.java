@@ -30,12 +30,11 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 class OAuthBindingMappingTest {
     @Test
-    void springMapperPreservesBindingAndAuditFieldsWithoutCopyingTenantAuthority() {
+    void springMapperPreservesBindingAndAuditFields() {
         try (var context = new AnnotationConfigApplicationContext(UserOAuthBindingConverterImpl.class)) {
             var converter = context.getBean(UserOAuthBindingConverter.class);
             var stored = new UserOAuthBindingDO();
             stored.setId("binding");
-            stored.setTenantId("trusted-tenant");
             stored.setDeleted(false);
             stored.setUserId("user");
             stored.setProvider("test");
@@ -49,9 +48,8 @@ class OAuthBindingMappingTest {
             var roundtrip = converter.toDO(converter.toEntity(stored));
             assertThat(roundtrip)
                     .usingRecursiveComparison()
-                    .ignoringFields("tenantId", "deleted")
+                    .ignoringFields("deleted")
                     .isEqualTo(stored);
-            assertThat(roundtrip.getTenantId()).isNull();
         }
     }
 }

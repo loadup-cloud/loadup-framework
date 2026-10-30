@@ -27,19 +27,29 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "loadup.captcha.binder.nanocaptcha")
 public class NanocaptchaProperties {
 
-    /** Image width in pixels. */
+    /**
+     * Image width in pixels.
+     */
     private int width = 130;
 
-    /** Image height in pixels. */
+    /**
+     * Image height in pixels.
+     */
     private int height = 48;
 
-    /** Number of characters. */
+    /**
+     * Number of characters.
+     */
     private int length = 4;
 
-    /** Character set: {@code numbers} (default) / {@code latin}. */
+    /**
+     * Character set: {@code numbers} (default) / {@code latin}.
+     */
     private String content = "numbers";
 
-    /** Answer expiration in seconds; default 5 minutes. */
+    /**
+     * Answer expiration in seconds; default 5 minutes.
+     */
     private long expirationSeconds = 300;
 
     public int getWidth() {

@@ -22,7 +22,8 @@ package io.github.loadup.modules.merchant.web;
 import io.github.loadup.modules.merchant.app.autoconfigure.MerchantAutoConfiguration;
 import io.github.loadup.modules.merchant.client.facade.MerchantFacade;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.*;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Import;
 
 @AutoConfiguration(after = MerchantAutoConfiguration.class)

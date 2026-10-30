@@ -3,6 +3,7 @@ package io.github.loadup.components.database.autoconfigure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.loadup.commons.time.autoconfigure.ClockAutoConfiguration;
 import io.github.loadup.components.database.tenant.DatabaseTenant;
 import java.time.Clock;
 import java.time.Instant;
@@ -13,24 +14,24 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 class DatabaseCoreAutoConfigurationTest {
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
-            .withConfiguration(AutoConfigurations.of(DatabaseCoreAutoConfiguration.class));
+            .withConfiguration(
+                    AutoConfigurations.of(DatabaseCoreAutoConfiguration.class, ClockAutoConfiguration.class));
 
     @Test
-    void suppliesTenantResolverAndDatabaseClock() {
+    void suppliesTenantResolverAndClock() {
         runner.run(context -> {
             assertThat(context).hasNotFailed().hasSingleBean(DatabaseTenant.class);
-            assertThat(context).hasBean("databaseClock");
-            assertThat(context.getBean("databaseClock", Clock.class).getZone())
-                    .isEqualTo(java.time.ZoneId.systemDefault());
+            assertThat(context).hasSingleBean(Clock.class);
+            assertThat(context.getBean("clock", Clock.class).getZone()).isEqualTo(java.time.ZoneId.systemDefault());
         });
     }
 
     @Test
-    void usesApplicationSuppliedDatabaseClock() {
+    void usesApplicationSuppliedClock() {
         Clock fixed = Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC);
-        runner.withBean("databaseClock", Clock.class, () -> fixed).run(context -> {
-            assertThat(context).hasNotFailed();
-            assertThat(context.getBean("databaseClock", Clock.class)).isSameAs(fixed);
+        runner.withBean("clock", Clock.class, () -> fixed).run(context -> {
+            assertThat(context).hasNotFailed().hasSingleBean(Clock.class);
+            assertThat(context.getBean(Clock.class)).isSameAs(fixed);
         });
     }
 }

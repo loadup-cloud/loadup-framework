@@ -42,6 +42,10 @@ public class KeyPairServiceImpl implements KeyPairService {
 
     private final SignatureProperties properties;
 
+    public KeyPairServiceImpl(SignatureProperties properties) {
+        this.properties = properties;
+    }
+
     @Override
     public KeyPairInfo generateKeyPair(KeyAlgorithm algorithm, int keySize) {
         try {
@@ -112,9 +116,5 @@ public class KeyPairServiceImpl implements KeyPairService {
                     e);
             throw new SignatureException(SignatureException.SignatureErrorCode.INVALID_KEY, e);
         }
-    }
-
-    public KeyPairServiceImpl(SignatureProperties properties) {
-        this.properties = properties;
     }
 }

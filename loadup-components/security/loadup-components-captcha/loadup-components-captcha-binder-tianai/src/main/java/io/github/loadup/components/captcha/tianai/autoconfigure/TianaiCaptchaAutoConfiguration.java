@@ -61,6 +61,28 @@ import org.springframework.context.annotation.Bean;
 @EnableConfigurationProperties(TianaiCaptchaProperties.class)
 public class TianaiCaptchaAutoConfiguration {
 
+    private static Map<String, Long> toExpireMap(TianaiCaptchaProperties properties) {
+        Map<String, Long> expire = new LinkedHashMap<>();
+        if (properties.getExpireSeconds().isEmpty()) {
+            expire.put("default", 120L);
+        } else {
+            expire.putAll(properties.getExpireSeconds());
+        }
+        return expire;
+    }
+
+    /**
+     * Register the background image bundled in the tianai jar for the captcha types that need
+     * one. tianai's {@code DefaultBuiltInResources} only ships templates and fonts; without an
+     * explicit background resource the generators fail at runtime.
+     */
+    private static void registerDefaultBackgroundResources(TACBuilder builder) {
+        Resource background = new Resource("classpath", "META-INF/cut-image/resource/1.jpg");
+        builder.addResource(CaptchaTypeConstant.SLIDER, background);
+        builder.addResource(CaptchaTypeConstant.ROTATE, background);
+        builder.addResource(CaptchaTypeConstant.CONCAT, background);
+    }
+
     @Bean
     @ConditionalOnMissingBean
     public ResourceStore tianaiResourceStore() {
@@ -122,27 +144,5 @@ public class TianaiCaptchaAutoConfiguration {
     public CaptchaProvider tianaiCaptchaProvider(
             ImageCaptchaApplication application, TianaiCaptchaProperties properties) {
         return new TianaiCaptchaProvider(application, properties.getDefaultType());
-    }
-
-    private static Map<String, Long> toExpireMap(TianaiCaptchaProperties properties) {
-        Map<String, Long> expire = new LinkedHashMap<>();
-        if (properties.getExpireSeconds().isEmpty()) {
-            expire.put("default", 120L);
-        } else {
-            expire.putAll(properties.getExpireSeconds());
-        }
-        return expire;
-    }
-
-    /**
-     * Register the background image bundled in the tianai jar for the captcha types that need
-     * one. tianai's {@code DefaultBuiltInResources} only ships templates and fonts; without an
-     * explicit background resource the generators fail at runtime.
-     */
-    private static void registerDefaultBackgroundResources(TACBuilder builder) {
-        Resource background = new Resource("classpath", "META-INF/cut-image/resource/1.jpg");
-        builder.addResource(CaptchaTypeConstant.SLIDER, background);
-        builder.addResource(CaptchaTypeConstant.ROTATE, background);
-        builder.addResource(CaptchaTypeConstant.CONCAT, background);
     }
 }

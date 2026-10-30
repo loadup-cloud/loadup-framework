@@ -57,10 +57,6 @@ public class LoginLog extends BaseEntity {
 
     private String provider;
 
-    public boolean isSuccess() {
-        return loginStatus != null && loginStatus == 1;
-    }
-
     public LoginLog(
             String id,
             String userId,
@@ -92,99 +88,103 @@ public class LoginLog extends BaseEntity {
 
     public LoginLog() {}
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setLoginTime(LocalDateTime loginTime) {
-        this.loginTime = loginTime;
-    }
-
-    public void setLogoutTime(LocalDateTime logoutTime) {
-        this.logoutTime = logoutTime;
-    }
-
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
-    }
-
-    public void setLoginLocation(String loginLocation) {
-        this.loginLocation = loginLocation;
-    }
-
-    public void setBrowser(String browser) {
-        this.browser = browser;
-    }
-
-    public void setOs(String os) {
-        this.os = os;
-    }
-
-    public void setLoginStatus(Short loginStatus) {
-        this.loginStatus = loginStatus;
-    }
-
-    public void setLoginMessage(String loginMessage) {
-        this.loginMessage = loginMessage;
-    }
-
-    public void setLoginType(String loginType) {
-        this.loginType = loginType;
-    }
-
-    public void setProvider(String provider) {
-        this.provider = provider;
+    public boolean isSuccess() {
+        return loginStatus != null && loginStatus == 1;
     }
 
     public String getUserId() {
         return userId;
     }
 
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     public String getUsername() {
         return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public LocalDateTime getLoginTime() {
         return loginTime;
     }
 
+    public void setLoginTime(LocalDateTime loginTime) {
+        this.loginTime = loginTime;
+    }
+
     public LocalDateTime getLogoutTime() {
         return logoutTime;
+    }
+
+    public void setLogoutTime(LocalDateTime logoutTime) {
+        this.logoutTime = logoutTime;
     }
 
     public String getIpAddress() {
         return ipAddress;
     }
 
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
     public String getLoginLocation() {
         return loginLocation;
+    }
+
+    public void setLoginLocation(String loginLocation) {
+        this.loginLocation = loginLocation;
     }
 
     public String getBrowser() {
         return browser;
     }
 
+    public void setBrowser(String browser) {
+        this.browser = browser;
+    }
+
     public String getOs() {
         return os;
+    }
+
+    public void setOs(String os) {
+        this.os = os;
     }
 
     public Short getLoginStatus() {
         return loginStatus;
     }
 
+    public void setLoginStatus(Short loginStatus) {
+        this.loginStatus = loginStatus;
+    }
+
     public String getLoginMessage() {
         return loginMessage;
+    }
+
+    public void setLoginMessage(String loginMessage) {
+        this.loginMessage = loginMessage;
     }
 
     public String getLoginType() {
         return loginType;
     }
 
+    public void setLoginType(String loginType) {
+        this.loginType = loginType;
+    }
+
     public String getProvider() {
         return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
     }
 }

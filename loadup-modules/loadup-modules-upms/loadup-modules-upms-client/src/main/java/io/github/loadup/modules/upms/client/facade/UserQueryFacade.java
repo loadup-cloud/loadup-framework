@@ -21,9 +21,13 @@ package io.github.loadup.modules.upms.client.facade;
 
 import io.github.loadup.modules.upms.client.dto.UserDetailDTO;
 
-/** Public business facade. */
+/**
+ * Public business facade.
+ */
 public interface UserQueryFacade {
 
-    /** Public business facade. */
+    /**
+     * Public business facade.
+     */
     UserDetailDTO getUserById(String userId);
 }

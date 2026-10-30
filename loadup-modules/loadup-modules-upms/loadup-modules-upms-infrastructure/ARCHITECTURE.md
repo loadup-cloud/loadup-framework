@@ -40,11 +40,16 @@ Web → App → Domain Gateway → Infrastructure；认证适配连接 UPMS 凭�
 
 ## 扩展契约
 
-- [`DepartmentConverter`](src/main/java/io/github/loadup/modules/upms/infrastructure/converter/DepartmentConverter.java)：由实现方或调用方按接口定义对接。
-- [`LoginLogConverter`](src/main/java/io/github/loadup/modules/upms/infrastructure/converter/LoginLogConverter.java)：由实现方或调用方按接口定义对接。
-- [`PermissionConverter`](src/main/java/io/github/loadup/modules/upms/infrastructure/converter/PermissionConverter.java)：由实现方或调用方按接口定义对接。
-- [`UserConverter`](src/main/java/io/github/loadup/modules/upms/infrastructure/converter/UserConverter.java)：由实现方或调用方按接口定义对接。
-- [`RoleConverter`](src/main/java/io/github/loadup/modules/upms/infrastructure/converter/RoleConverter.java)：由实现方或调用方按接口定义对接。
+- [`DepartmentConverter`](src/main/java/io/github/loadup/modules/upms/infrastructure/converter/DepartmentConverter.java)
+  ：由实现方或调用方按接口定义对接。
+- [`LoginLogConverter`](src/main/java/io/github/loadup/modules/upms/infrastructure/converter/LoginLogConverter.java)
+  ：由实现方或调用方按接口定义对接。
+- [`PermissionConverter`](src/main/java/io/github/loadup/modules/upms/infrastructure/converter/PermissionConverter.java)
+  ：由实现方或调用方按接口定义对接。
+- [`UserConverter`](src/main/java/io/github/loadup/modules/upms/infrastructure/converter/UserConverter.java)
+  ：由实现方或调用方按接口定义对接。
+- [`RoleConverter`](src/main/java/io/github/loadup/modules/upms/infrastructure/converter/RoleConverter.java)
+  ：由实现方或调用方按接口定义对接。
 
 ## 设计取舍
 

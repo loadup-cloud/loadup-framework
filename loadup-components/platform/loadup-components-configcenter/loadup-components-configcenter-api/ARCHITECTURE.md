@@ -16,10 +16,12 @@
 
 主要入口文件：
 
-- [`ConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/autoconfig/ConfigCenterAutoConfiguration.java)
+- [
+  `ConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/autoconfig/ConfigCenterAutoConfiguration.java)
 - [`ConfigCenterProvider`](src/main/java/io/github/loadup/components/configcenter/ConfigCenterProvider.java)
 - [`ConfigCenterTemplate`](src/main/java/io/github/loadup/components/configcenter/ConfigCenterTemplate.java)
-- [`DefaultConfigCenterTemplate`](src/main/java/io/github/loadup/components/configcenter/DefaultConfigCenterTemplate.java)
+- [
+  `DefaultConfigCenterTemplate`](src/main/java/io/github/loadup/components/configcenter/DefaultConfigCenterTemplate.java)
 
 ## 分层与调用路径
 
@@ -28,22 +30,28 @@
 ```text
 业务调用 → ConfigCenterTemplate → SPI/领域契约 → 运行时实现
 ```
+
 接口模块固定业务侧依赖方向；实现与基础设施通过独立模块接入。
 
 ## 装配规则
 
-- [`ConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/autoconfig/ConfigCenterAutoConfiguration.java) 是自动配置入口。
-  - `@ConditionalOnSingleCandidate(ConfigCenterProvider.class)`
-  - `@ConditionalOnMissingBean(ConfigCenterTemplate.class)`
+- [
+  `ConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/autoconfig/ConfigCenterAutoConfiguration.java)
+  是自动配置入口。
+    - `@ConditionalOnSingleCandidate(ConfigCenterProvider.class)`
+    - `@ConditionalOnMissingBean(ConfigCenterTemplate.class)`
 
 ## 扩展契约
 
-- [`ConfigCenterProvider`](src/main/java/io/github/loadup/components/configcenter/ConfigCenterProvider.java)：由实现方或调用方按接口定义对接。
-- [`ConfigCenterTemplate`](src/main/java/io/github/loadup/components/configcenter/ConfigCenterTemplate.java)：由实现方或调用方按接口定义对接。
+- [`ConfigCenterProvider`](src/main/java/io/github/loadup/components/configcenter/ConfigCenterProvider.java)
+  ：由实现方或调用方按接口定义对接。
+- [`ConfigCenterTemplate`](src/main/java/io/github/loadup/components/configcenter/ConfigCenterTemplate.java)
+  ：由实现方或调用方按接口定义对接。
 
 ## 配置归属
 
-- [`ConfigCenterProperties`](src/main/java/io/github/loadup/components/configcenter/ConfigCenterProperties.java) 绑定 `loadup.configcenter`。
+- [`ConfigCenterProperties`](src/main/java/io/github/loadup/components/configcenter/ConfigCenterProperties.java) 绑定
+  `loadup.configcenter`。
 
 ## 设计取舍
 

@@ -75,6 +75,15 @@ class SpringDocHttpIT {
         }
     }
 
+    private static HttpResponse<String> get(String path) throws Exception {
+        return client.send(
+                HttpRequest.newBuilder(URI.create(baseUrl + path))
+                        .timeout(Duration.ofSeconds(10))
+                        .GET()
+                        .build(),
+                HttpResponse.BodyHandlers.ofString());
+    }
+
     @Test
     void generatedDocumentCombinesMetadataSecurityAndControllerOperations() throws Exception {
         HttpResponse<String> response = get("/v3/api-docs");
@@ -121,15 +130,6 @@ class SpringDocHttpIT {
     @Test
     void unknownDocumentationGroupReturnsHttpNotFound() throws Exception {
         assertThat(get("/v3/api-docs/nonexistent-group").statusCode()).isEqualTo(404);
-    }
-
-    private static HttpResponse<String> get(String path) throws Exception {
-        return client.send(
-                HttpRequest.newBuilder(URI.create(baseUrl + path))
-                        .timeout(Duration.ofSeconds(10))
-                        .GET()
-                        .build(),
-                HttpResponse.BodyHandlers.ofString());
     }
 
     @SpringBootConfiguration

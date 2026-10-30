@@ -38,11 +38,12 @@ loadup:
 
 ## 配置入口
 
-| 前缀 | 配置类 |
-|---|---|
+| 前缀                                | 配置类                                                                                                                            |
+|-------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
 | `loadup.configcenter.binder.apollo` | [`ApolloConfigCenterProperties`](src/main/java/io/github/loadup/components/configcenter/apollo/ApolloConfigCenterProperties.java) |
 
 ## 自动装配
 
-- [`ApolloConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/apollo/autoconfig/ApolloConfigCenterAutoConfiguration.java)
-  - 启用条件：`@ConditionalOnProperty(prefix = "loadup.configcenter", name = "binder-type", havingValue = "apollo")`。
+- [
+  `ApolloConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/apollo/autoconfig/ApolloConfigCenterAutoConfiguration.java)
+    - 启用条件：`@ConditionalOnProperty(prefix = "loadup.configcenter", name = "binder-type", havingValue = "apollo")`。

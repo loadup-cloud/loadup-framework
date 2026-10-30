@@ -49,13 +49,13 @@ public enum LoggerLevelEnum implements IEnum {
 
     private final String description;
 
-    public static LoggerLevelEnum getByCode(String code) {
-        return IEnum.EnumLookup.fromCode(LoggerLevelEnum.class, code);
-    }
-
     LoggerLevelEnum(String code, String description) {
         this.code = code;
         this.description = description;
+    }
+
+    public static LoggerLevelEnum getByCode(String code) {
+        return IEnum.EnumLookup.fromCode(LoggerLevelEnum.class, code);
     }
 
     public String getCode() {

@@ -19,7 +19,8 @@
  */
 package io.github.loadup.modules.audit.test;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.audit.client.query.AuditPageQuery;

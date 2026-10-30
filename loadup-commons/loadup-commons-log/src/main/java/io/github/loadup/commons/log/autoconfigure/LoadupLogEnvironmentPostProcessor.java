@@ -27,7 +27,9 @@ import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 
-/** Adds logging defaults while preserving application-provided logging settings. */
+/**
+ * Adds logging defaults while preserving application-provided logging settings.
+ */
 public class LoadupLogEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
 
     private static final String PROPERTY_SOURCE_NAME = "loadupLogDefaults";

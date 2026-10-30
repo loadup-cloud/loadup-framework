@@ -39,6 +39,13 @@ public class UserStatus {
 
     private String description;
 
+    public UserStatus(short status, String description) {
+        this.status = status;
+        this.description = description;
+    }
+
+    public UserStatus() {}
+
     public static UserStatus normal() {
         return new UserStatus(NORMAL, "正常");
     }
@@ -72,23 +79,16 @@ public class UserStatus {
         return status == LOCKED;
     }
 
-    public UserStatus(short status, String description) {
-        this.status = status;
-        this.description = description;
-    }
-
-    public UserStatus() {}
-
     public void setStatus(short status) {
         this.status = status;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public String getDescription() {
         return this.description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override

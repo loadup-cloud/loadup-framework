@@ -41,17 +41,19 @@ public final class SharedKafkaContainer {
      */
     public static final String DEFAULT_KAFKA_VERSION = "apache/kafka:4.1.1";
 
+    private static final AtomicBoolean STARTED = new AtomicBoolean(false);
     /**
      * The shared Kafka container instance
      */
     private static KafkaContainer kafkaContainer;
-
-    private static final AtomicBoolean STARTED = new AtomicBoolean(false);
-
     /**
      * Kafka bootstrap servers
      */
     private static String bootstrapServers;
+
+    private SharedKafkaContainer() {
+        throw new UnsupportedOperationException("Utility class cannot be instantiated");
+    }
 
     public static void startContainer(ContainerConfig config) {
         if (STARTED.get()) {
@@ -147,10 +149,6 @@ public final class SharedKafkaContainer {
      */
     public static java.util.Map<String, String> getProperties() {
         return java.util.Map.of("spring.kafka.bootstrap-servers", getBootstrapServers());
-    }
-
-    private SharedKafkaContainer() {
-        throw new UnsupportedOperationException("Utility class cannot be instantiated");
     }
 
     public static boolean isStarted() {

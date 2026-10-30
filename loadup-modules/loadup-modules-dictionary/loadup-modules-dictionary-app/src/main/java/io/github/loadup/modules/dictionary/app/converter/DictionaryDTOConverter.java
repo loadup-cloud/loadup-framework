@@ -29,7 +29,9 @@ import io.github.loadup.modules.dictionary.domain.model.DictionaryType;
 import java.util.List;
 import org.mapstruct.Mapper;
 
-/** Maps application results without exposing persistence or domain models. */
+/**
+ * Maps application results without exposing persistence or domain models.
+ */
 @Mapper(config = LoadUpMapStructConfig.class)
 public interface DictionaryDTOConverter {
     DictionaryTypeDTO toDTO(DictionaryType value);

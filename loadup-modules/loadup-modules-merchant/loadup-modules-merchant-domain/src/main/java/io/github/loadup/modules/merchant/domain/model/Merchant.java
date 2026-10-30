@@ -27,7 +27,6 @@ import java.util.Objects;
 
 public record Merchant(
         String id,
-        String tenantId,
         MerchantBasicInfo info,
         MerchantStatus status,
         long rowVersion,
@@ -38,18 +37,20 @@ public record Merchant(
     public Merchant {
         Objects.requireNonNull(info);
         Objects.requireNonNull(status);
-        if (rowVersion < 1) throw new CommonException(MerchantResultCodeEnum.INVALID_MERCHANT_VERSION);
+        if (rowVersion < 1) {
+            throw new CommonException(MerchantResultCodeEnum.INVALID_MERCHANT_VERSION);
+        }
     }
 
     public Merchant update(MerchantBasicInfo changes, String actor, LocalDateTime now) {
-        if (!info.merchantCode().equals(changes.merchantCode()))
+        if (!info.merchantCode().equals(changes.merchantCode())) {
             throw new CommonException(MerchantResultCodeEnum.MERCHANT_CODE_IS_IMMUTABLE);
-        return new Merchant(
-                id, tenantId, changes, status, Math.addExact(rowVersion, 1), createdBy, actor, createdAt, now);
+        }
+        return new Merchant(id, changes, status, Math.addExact(rowVersion, 1), createdBy, actor, createdAt, now);
     }
 
     public Merchant changeStatus(MerchantStatus target, String actor, LocalDateTime now) {
-        return new Merchant(id, tenantId, info, target, Math.addExact(rowVersion, 1), createdBy, actor, createdAt, now);
+        return new Merchant(id, info, target, Math.addExact(rowVersion, 1), createdBy, actor, createdAt, now);
     }
 
     @Override

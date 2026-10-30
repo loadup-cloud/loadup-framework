@@ -19,7 +19,8 @@
  */
 package io.github.loadup.components.webmvc;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -33,74 +34,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.webmvc.error.ErrorAttributes;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import tools.jackson.databind.json.JsonMapper;
 
 class ApiExceptionHandlerTest {
-    record Input(int value) {
-        Input {
-            if (value < 0) throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
-        }
-    }
-
-    @RestController
-    static class Controller {
-        @PostMapping("/api/business")
-        Object business() {
-            throw new CommonException(CommonResultCodeEnum.CONFLICT, new IllegalStateException("private-secret"));
-        }
-
-        @PostMapping("/api/system-code")
-        Object systemCode() {
-            throw new CommonException(CommonResultCodeEnum.SYS_ERROR);
-        }
-
-        @PostMapping("/api/not-found")
-        Object notFound() {
-            throw new CommonException(CommonResultCodeEnum.NOT_FOUND);
-        }
-
-        @PostMapping("/api/invalid")
-        Object invalid() {
-            throw new IllegalArgumentException("private-secret");
-        }
-
-        @PostMapping("/api/constraint")
-        Object constraint() {
-            throw new jakarta.validation.ConstraintViolationException(java.util.Set.of());
-        }
-
-        @PostMapping("/api/nested")
-        Object nested() {
-            throw new IllegalArgumentException("binding failed", new CommonException(CommonResultCodeEnum.CONFLICT));
-        }
-
-        @PostMapping("/api/unknown")
-        Object unknown() {
-            throw new IllegalStateException("private-secret");
-        }
-
-        @PostMapping("/api/input")
-        Object input(@RequestBody Input input) {
-            return input;
-        }
-
-        @PostMapping("/api/denied")
-        Object denied() {
-            throw new org.springframework.security.access.AccessDeniedException("denied");
-        }
-
-        @PostMapping("/api/unauthenticated")
-        Object unauthenticated() {
-            throw new org.springframework.security.authentication.BadCredentialsException("invalid");
-        }
-
-        @PostMapping("/protocol")
-        Object protocol() {
-            throw new CommonException(CommonResultCodeEnum.CONFLICT);
-        }
-    }
-
     @Test
     void preservesBusinessCodesAndHidesUnexpectedFailureDetails() throws Exception {
         var mvc = MockMvcBuilders.standaloneSetup(new Controller())
@@ -223,5 +162,71 @@ class ApiExceptionHandlerTest {
                 .getResponse();
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getContentAsString()).contains("SYS_ERROR").doesNotContain("private-secret");
+    }
+
+    record Input(int value) {
+        Input {
+            if (value < 0) {
+                throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
+            }
+        }
+    }
+
+    @RestController
+    static class Controller {
+        @PostMapping("/api/business")
+        Object business() {
+            throw new CommonException(CommonResultCodeEnum.CONFLICT, new IllegalStateException("private-secret"));
+        }
+
+        @PostMapping("/api/system-code")
+        Object systemCode() {
+            throw new CommonException(CommonResultCodeEnum.SYS_ERROR);
+        }
+
+        @PostMapping("/api/not-found")
+        Object notFound() {
+            throw new CommonException(CommonResultCodeEnum.NOT_FOUND);
+        }
+
+        @PostMapping("/api/invalid")
+        Object invalid() {
+            throw new IllegalArgumentException("private-secret");
+        }
+
+        @PostMapping("/api/constraint")
+        Object constraint() {
+            throw new jakarta.validation.ConstraintViolationException(java.util.Set.of());
+        }
+
+        @PostMapping("/api/nested")
+        Object nested() {
+            throw new IllegalArgumentException("binding failed", new CommonException(CommonResultCodeEnum.CONFLICT));
+        }
+
+        @PostMapping("/api/unknown")
+        Object unknown() {
+            throw new IllegalStateException("private-secret");
+        }
+
+        @PostMapping("/api/input")
+        Object input(@RequestBody Input input) {
+            return input;
+        }
+
+        @PostMapping("/api/denied")
+        Object denied() {
+            throw new org.springframework.security.access.AccessDeniedException("denied");
+        }
+
+        @PostMapping("/api/unauthenticated")
+        Object unauthenticated() {
+            throw new org.springframework.security.authentication.BadCredentialsException("invalid");
+        }
+
+        @PostMapping("/protocol")
+        Object protocol() {
+            throw new CommonException(CommonResultCodeEnum.CONFLICT);
+        }
     }
 }

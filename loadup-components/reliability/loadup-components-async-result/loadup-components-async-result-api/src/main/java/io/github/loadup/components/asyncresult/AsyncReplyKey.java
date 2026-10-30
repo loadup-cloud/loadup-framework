@@ -27,13 +27,15 @@ public record AsyncReplyKey(String tenantId, String operation, String businessId
         required(tenantId, 64);
         required(operation, 128);
         required(businessId, 128);
-        if (!UUID.fromString(correlationId).toString().equals(correlationId))
+        if (!UUID.fromString(correlationId).toString().equals(correlationId)) {
             throw new IllegalArgumentException("Canonical UUID correlationId is required");
+        }
     }
 
     public static void required(String value, int max) {
-        if (value == null || value.isBlank() || value.length() > max)
+        if (value == null || value.isBlank() || value.length() > max) {
             throw new IllegalArgumentException("Invalid coordination identifier");
+        }
     }
 
     @Override

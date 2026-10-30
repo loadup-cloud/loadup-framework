@@ -97,76 +97,76 @@ public class RoleUpdateCommand {
         return this.id;
     }
 
-    public String getRoleName() {
-        return this.roleName;
-    }
-
-    public String getParentId() {
-        return this.parentId;
-    }
-
-    public Short getDataScope() {
-        return this.dataScope;
-    }
-
-    public Integer getSortOrder() {
-        return this.sortOrder;
-    }
-
-    public Short getStatus() {
-        return this.status;
-    }
-
-    public List<String> getPermissionIds() {
-        return this.permissionIds;
-    }
-
-    public List<String> getDepartmentIds() {
-        return this.departmentIds;
-    }
-
-    public String getRemark() {
-        return this.remark;
-    }
-
-    public String getUpdatedBy() {
-        return this.updatedBy;
-    }
-
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getRoleName() {
+        return this.roleName;
     }
 
     public void setRoleName(String roleName) {
         this.roleName = roleName;
     }
 
+    public String getParentId() {
+        return this.parentId;
+    }
+
     public void setParentId(String parentId) {
         this.parentId = parentId;
+    }
+
+    public Short getDataScope() {
+        return this.dataScope;
     }
 
     public void setDataScope(Short dataScope) {
         this.dataScope = dataScope;
     }
 
+    public Integer getSortOrder() {
+        return this.sortOrder;
+    }
+
     public void setSortOrder(Integer sortOrder) {
         this.sortOrder = sortOrder;
+    }
+
+    public Short getStatus() {
+        return this.status;
     }
 
     public void setStatus(Short status) {
         this.status = status;
     }
 
+    public List<String> getPermissionIds() {
+        return this.permissionIds;
+    }
+
     public void setPermissionIds(List<String> permissionIds) {
         this.permissionIds = permissionIds;
+    }
+
+    public List<String> getDepartmentIds() {
+        return this.departmentIds;
     }
 
     public void setDepartmentIds(List<String> departmentIds) {
         this.departmentIds = departmentIds;
     }
 
+    public String getRemark() {
+        return this.remark;
+    }
+
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public String getUpdatedBy() {
+        return this.updatedBy;
     }
 
     public void setUpdatedBy(String updatedBy) {

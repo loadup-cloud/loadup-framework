@@ -30,7 +30,9 @@ import java.net.URI;
 import java.time.Duration;
 import java.util.List;
 
-/** Business-facing facade for the selected file storage binder. */
+/**
+ * Business-facing facade for the selected file storage binder.
+ */
 public interface DfsService {
 
     FileMetadata upload(FileUploadRequest request);

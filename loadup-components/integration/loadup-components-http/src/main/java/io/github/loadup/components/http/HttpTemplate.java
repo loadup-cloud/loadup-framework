@@ -51,7 +51,9 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import tools.jackson.databind.ObjectMapper;
 
-/** Named synchronous operations with bounded bodies, explicit credentials and atomic configuration. */
+/**
+ * Named synchronous operations with bounded bodies, explicit credentials and atomic configuration.
+ */
 public final class HttpTemplate implements AutoCloseable {
     private final Supplier<RestClient.Builder> builders;
     private final ObjectMapper mapper;
@@ -78,23 +80,122 @@ public final class HttpTemplate implements AutoCloseable {
         refresh(properties);
     }
 
-    /** Builds first, swaps only after active calls finish, then closes the previous pools. */
+    static URI uri(URI base, String path, HttpCall call) {
+        var builder = UriComponentsBuilder.fromUriString(base.toString()).path(path);
+        Map<String, Object> values = new HashMap<>(call.pathVariables());
+        int index = 0;
+        for (var entry : call.query().entrySet()) {
+            for (String value : entry.getValue()) {
+                String key;
+                do {
+                    key = "loadupQuery" + index++;
+                } while (values.containsKey(key));
+                builder.queryParam(entry.getKey(), "{" + key + "}");
+                values.put(key, value);
+            }
+        }
+        URI uri = builder.encode().buildAndExpand(values).toUri();
+        if (!base.getHost().equals(uri.getHost())
+                || !base.getScheme().equals(uri.getScheme())
+                || base.getPort() != uri.getPort()) {
+            throw new IllegalArgumentException("HTTP operation cannot change origin");
+        }
+        return uri;
+    }
+
+    private static long copy(InputStream input, OutputStream output, long limit) throws IOException {
+        byte[] buffer = new byte[8192];
+        long total = 0;
+        int read;
+        while ((read = input.read(buffer)) != -1) {
+            total += read;
+            if (total > limit) {
+                throw new HttpCallException(HttpCallException.Kind.SIZE_LIMIT);
+            }
+            output.write(buffer, 0, read);
+        }
+        return total;
+    }
+
+    private static HttpCallException classify(Throwable failure) {
+        for (Throwable cause = failure; cause != null; cause = cause.getCause()) {
+            if (cause instanceof java.net.SocketTimeoutException
+                    || cause instanceof java.net.http.HttpTimeoutException
+                    || cause.getClass().getSimpleName().contains("Timeout")) {
+                return new HttpCallException(HttpCallException.Kind.TIMEOUT);
+            }
+            if (cause instanceof java.net.ConnectException || cause instanceof java.net.UnknownHostException) {
+                return new HttpCallException(HttpCallException.Kind.CONNECTION);
+            }
+        }
+        return new HttpCallException(HttpCallException.Kind.TRANSPORT);
+    }
+
+    private static Map<String, String> headers(Map<String, String> headers) {
+        if (headers == null) {
+            throw new IllegalArgumentException("HTTP headers must not be null");
+        }
+        for (var entry : headers.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            if (!key.matches("[!#$%&'*+.^_`|~0-9A-Za-z-]+")
+                    || value.indexOf('\r') >= 0
+                    || value.indexOf('\n') >= 0
+                    || List.of(
+                                    "host",
+                                    "content-length",
+                                    "transfer-encoding",
+                                    "connection",
+                                    "upgrade",
+                                    "te",
+                                    "trailer",
+                                    "proxy-authorization",
+                                    "keep-alive")
+                            .contains(key.toLowerCase(java.util.Locale.ROOT))) {
+                throw new IllegalArgumentException("Invalid or transport-owned HTTP header");
+            }
+        }
+        return headers;
+    }
+
+    private static void name(String name) {
+        if (name == null || !name.matches("[A-Za-z0-9_-]{1,64}")) {
+            throw new IllegalArgumentException("Invalid HTTP configuration name");
+        }
+    }
+
+    private static void release(Map<String, RuntimeClient> clients) {
+        for (RuntimeClient client : clients.values()) {
+            try {
+                client.transport.close();
+            } catch (IOException ignored) {
+            }
+        }
+    }
+
+    /**
+     * Builds first, swaps only after active calls finish, then closes the previous pools.
+     */
     public synchronized long refresh(HttpProperties properties) {
-        if (properties == null || properties.clients().size() > 256)
+        if (properties == null || properties.clients().size() > 256) {
             throw new IllegalArgumentException("Invalid HTTP clients");
+        }
         Map<String, RuntimeClient> replacement = new HashMap<>();
         try {
             for (var entry : properties.clients().entrySet()) {
                 name(entry.getKey());
                 HttpProperties.Client config = entry.getValue();
-                if (config.operations().size() > 256) throw new IllegalArgumentException("Too many HTTP operations");
+                if (config.operations().size() > 256) {
+                    throw new IllegalArgumentException("Too many HTTP operations");
+                }
                 config.operations().forEach((operation, settings) -> {
                     name(operation);
                     headers(settings.headers());
                 });
                 headers(config.headers());
-                if (config.credentialRef() != null && credentials == null)
+                if (config.credentialRef() != null && credentials == null) {
                     throw new IllegalArgumentException("HTTP credentials require a provider");
+                }
                 replacement.put(entry.getKey(), create(config));
             }
         } catch (RuntimeException failure) {
@@ -121,7 +222,9 @@ public final class HttpTemplate implements AutoCloseable {
         return exchange(client, operation, call, (HttpRequestSigner) null);
     }
 
-    /** The signer observes the same resolved target and wire bytes used by this exchange. */
+    /**
+     * The signer observes the same resolved target and wire bytes used by this exchange.
+     */
     public ResponseEntity<byte[]> exchange(String client, String operation, HttpCall call, HttpRequestSigner signer) {
         return execute(client, operation, call, signer, (response, limit) -> {
             ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -141,15 +244,21 @@ public final class HttpTemplate implements AutoCloseable {
         }
     }
 
-    /** Does not close the caller's output; failed transfers may have written partial data. */
+    /**
+     * Does not close the caller's output; failed transfers may have written partial data.
+     */
     public ResponseEntity<Long> download(String client, String operation, HttpCall call, OutputStream output) {
         return download(client, operation, call, output, null);
     }
 
-    /** Signs the exact resolved URI and empty/body wire bytes before a bounded streamed download. Does not close output. */
+    /**
+     * Signs the exact resolved URI and empty/body wire bytes before a bounded streamed download. Does not close output.
+     */
     public ResponseEntity<Long> download(
             String client, String operation, HttpCall call, OutputStream output, HttpRequestSigner signer) {
-        if (output == null) throw new IllegalArgumentException("output is required");
+        if (output == null) {
+            throw new IllegalArgumentException("output is required");
+        }
         return execute(client, operation, call, signer, (response, limit) -> copy(response, output, limit));
     }
 
@@ -160,13 +269,21 @@ public final class HttpTemplate implements AutoCloseable {
         String outcome = "failure";
         boolean configured = false;
         try {
-            if (closed) throw new IllegalStateException("HTTP template is closed");
+            if (closed) {
+                throw new IllegalStateException("HTTP template is closed");
+            }
             RuntimeClient runtime = clients.get(name);
-            if (runtime == null) throw new IllegalArgumentException("Unknown HTTP client");
+            if (runtime == null) {
+                throw new IllegalArgumentException("Unknown HTTP client");
+            }
             HttpProperties.Operation definition = runtime.config.operations().get(operation);
-            if (definition == null) throw new IllegalArgumentException("Unknown HTTP operation");
+            if (definition == null) {
+                throw new IllegalArgumentException("Unknown HTTP operation");
+            }
             configured = true;
-            if (call == null) throw new IllegalArgumentException("call is required");
+            if (call == null) {
+                throw new IllegalArgumentException("call is required");
+            }
             URI uri = uri(runtime.config.baseUrl(), definition.path(), call);
             try {
                 runtime.policy.resolve(uri.getHost());
@@ -194,7 +311,9 @@ public final class HttpTemplate implements AutoCloseable {
             }
             RestClient.RequestBodySpec request =
                     runtime.client.method(definition.method()).uri(uri).headers(h -> h.addAll(requestHeaders));
-            if (body != null) request.body(body);
+            if (body != null) {
+                request.body(body);
+            }
             ResponseEntity<T> result = request.exchange((sent, response) -> {
                 if (response.getHeaders().getContentLength() > runtime.config.maxResponseBytes()) {
                     throw new HttpCallException(HttpCallException.Kind.SIZE_LIMIT);
@@ -210,36 +329,14 @@ public final class HttpTemplate implements AutoCloseable {
             throw classify(failure);
         } finally {
             try {
-                if (configured && metrics != null)
+                if (configured && metrics != null) {
                     metrics.timer("loadup.http.calls", "client", name, "operation", operation, "outcome", outcome)
                             .record(System.nanoTime() - started, TimeUnit.NANOSECONDS);
+                }
             } finally {
                 lock.readLock().unlock();
             }
         }
-    }
-
-    static URI uri(URI base, String path, HttpCall call) {
-        var builder = UriComponentsBuilder.fromUriString(base.toString()).path(path);
-        Map<String, Object> values = new HashMap<>(call.pathVariables());
-        int index = 0;
-        for (var entry : call.query().entrySet()) {
-            for (String value : entry.getValue()) {
-                String key;
-                do {
-                    key = "loadupQuery" + index++;
-                } while (values.containsKey(key));
-                builder.queryParam(entry.getKey(), "{" + key + "}");
-                values.put(key, value);
-            }
-        }
-        URI uri = builder.encode().buildAndExpand(values).toUri();
-        if (!base.getHost().equals(uri.getHost())
-                || !base.getScheme().equals(uri.getScheme())
-                || base.getPort() != uri.getPort()) {
-            throw new IllegalArgumentException("HTTP operation cannot change origin");
-        }
-        return uri;
     }
 
     private RuntimeClient create(HttpProperties.Client config) {
@@ -257,7 +354,9 @@ public final class HttpTemplate implements AutoCloseable {
                                 Timeout.ofMilliseconds(config.readTimeout().toMillis()))
                         .build());
         if (config.sslBundle() != null) {
-            if (sslBundles == null) throw new IllegalArgumentException("HTTP SSL bundle registry is unavailable");
+            if (sslBundles == null) {
+                throw new IllegalArgumentException("HTTP SSL bundle registry is unavailable");
+            }
             poolBuilder.setTlsSocketStrategy(ClientTlsStrategyBuilder.create()
                     .setSslContext(sslBundles.getBundle(config.sslBundle()).createSslContext())
                     .buildClassic());
@@ -275,11 +374,12 @@ public final class HttpTemplate implements AutoCloseable {
                         .setResponseTimeout(
                                 Timeout.ofMilliseconds(config.readTimeout().toMillis()))
                         .build());
-        if (config.proxy() != null)
+        if (config.proxy() != null) {
             transportBuilder.setProxy(new HttpHost(
                     config.proxy().getScheme(),
                     config.proxy().getHost(),
                     config.proxy().getPort()));
+        }
         CloseableHttpClient transport;
         try {
             transport = transportBuilder.build();
@@ -303,7 +403,9 @@ public final class HttpTemplate implements AutoCloseable {
     }
 
     private byte[] encode(Object body, int limit) {
-        if (body == null) return null;
+        if (body == null) {
+            return null;
+        }
         byte[] bytes;
         try {
             bytes = body instanceof byte[] raw
@@ -314,72 +416,10 @@ public final class HttpTemplate implements AutoCloseable {
         } catch (RuntimeException failure) {
             throw new HttpCallException(HttpCallException.Kind.SERIALIZATION);
         }
-        if (bytes.length > limit) throw new HttpCallException(HttpCallException.Kind.SIZE_LIMIT);
+        if (bytes.length > limit) {
+            throw new HttpCallException(HttpCallException.Kind.SIZE_LIMIT);
+        }
         return bytes;
-    }
-
-    private static long copy(InputStream input, OutputStream output, long limit) throws IOException {
-        byte[] buffer = new byte[8192];
-        long total = 0;
-        int read;
-        while ((read = input.read(buffer)) != -1) {
-            total += read;
-            if (total > limit) throw new HttpCallException(HttpCallException.Kind.SIZE_LIMIT);
-            output.write(buffer, 0, read);
-        }
-        return total;
-    }
-
-    private static HttpCallException classify(Throwable failure) {
-        for (Throwable cause = failure; cause != null; cause = cause.getCause()) {
-            if (cause instanceof java.net.SocketTimeoutException
-                    || cause instanceof java.net.http.HttpTimeoutException
-                    || cause.getClass().getSimpleName().contains("Timeout"))
-                return new HttpCallException(HttpCallException.Kind.TIMEOUT);
-            if (cause instanceof java.net.ConnectException || cause instanceof java.net.UnknownHostException) {
-                return new HttpCallException(HttpCallException.Kind.CONNECTION);
-            }
-        }
-        return new HttpCallException(HttpCallException.Kind.TRANSPORT);
-    }
-
-    private static Map<String, String> headers(Map<String, String> headers) {
-        if (headers == null) throw new IllegalArgumentException("HTTP headers must not be null");
-        for (var entry : headers.entrySet()) {
-            String key = entry.getKey();
-            String value = entry.getValue();
-            if (!key.matches("[!#$%&'*+.^_`|~0-9A-Za-z-]+")
-                    || value.indexOf('\r') >= 0
-                    || value.indexOf('\n') >= 0
-                    || List.of(
-                                    "host",
-                                    "content-length",
-                                    "transfer-encoding",
-                                    "connection",
-                                    "upgrade",
-                                    "te",
-                                    "trailer",
-                                    "proxy-authorization",
-                                    "keep-alive")
-                            .contains(key.toLowerCase(java.util.Locale.ROOT))) {
-                throw new IllegalArgumentException("Invalid or transport-owned HTTP header");
-            }
-        }
-        return headers;
-    }
-
-    private static void name(String name) {
-        if (name == null || !name.matches("[A-Za-z0-9_-]{1,64}"))
-            throw new IllegalArgumentException("Invalid HTTP configuration name");
-    }
-
-    private static void release(Map<String, RuntimeClient> clients) {
-        for (RuntimeClient client : clients.values()) {
-            try {
-                client.transport.close();
-            } catch (IOException ignored) {
-            }
-        }
     }
 
     @Override
@@ -394,11 +434,11 @@ public final class HttpTemplate implements AutoCloseable {
         }
     }
 
-    private record RuntimeClient(
-            HttpProperties.Client config, RestClient client, CloseableHttpClient transport, HttpTargetPolicy policy) {}
-
     @FunctionalInterface
     private interface BodyReader<T> {
         T read(InputStream body, long limit) throws IOException;
     }
+
+    private record RuntimeClient(
+            HttpProperties.Client config, RestClient client, CloseableHttpClient transport, HttpTargetPolicy policy) {}
 }

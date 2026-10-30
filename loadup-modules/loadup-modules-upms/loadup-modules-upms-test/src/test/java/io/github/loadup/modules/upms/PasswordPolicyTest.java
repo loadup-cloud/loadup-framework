@@ -19,10 +19,13 @@
  */
 package io.github.loadup.modules.upms;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.modules.upms.client.validation.*;
+import io.github.loadup.modules.upms.client.validation.PasswordPolicy;
+import io.github.loadup.modules.upms.client.validation.PasswordPolicyValidator;
+import io.github.loadup.modules.upms.client.validation.ValidPassword;
 import org.junit.jupiter.api.Test;
 
 class PasswordPolicyTest {

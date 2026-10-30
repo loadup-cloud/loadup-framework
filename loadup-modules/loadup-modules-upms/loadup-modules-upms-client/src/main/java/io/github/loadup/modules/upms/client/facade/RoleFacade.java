@@ -26,7 +26,9 @@ import io.github.loadup.modules.upms.client.dto.RoleDTO;
 import io.github.loadup.modules.upms.client.query.RolePageQuery;
 import java.util.List;
 
-/** Public business contract for RoleService. */
+/**
+ * Public business contract for RoleService.
+ */
 public interface RoleFacade {
     RoleDTO createRole(RoleCreateCommand command);
 

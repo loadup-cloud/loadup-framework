@@ -23,7 +23,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-/** Immutable bindings; values must themselves be immutable when shared between threads. */
+/**
+ * Immutable bindings; values must themselves be immutable when shared between threads.
+ */
 public final class ExecutionContext {
     private static final ExecutionContext EMPTY = new ExecutionContext(Map.of());
     private final Map<ContextKey<?>, Object> values;
@@ -45,12 +47,17 @@ public final class ExecutionContext {
         return key.type().cast(values.get(key));
     }
 
-    /** Creates new bindings without changing this context. A null value removes the key in the copy. */
+    /**
+     * Creates new bindings without changing this context. A null value removes the key in the copy.
+     */
     public <T> ExecutionContext with(ContextKey<T> key, T value) {
         Objects.requireNonNull(key, "context key");
         var copy = new HashMap<>(values);
-        if (value == null) copy.remove(key);
-        else copy.put(key, key.type().cast(value));
+        if (value == null) {
+            copy.remove(key);
+        } else {
+            copy.put(key, key.type().cast(value));
+        }
         return copy.isEmpty() ? EMPTY : new ExecutionContext(copy);
     }
 

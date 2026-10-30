@@ -32,7 +32,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/** Reuses an application-owned client or creates a client from explicitly supplied native configuration. */
+/**
+ * Reuses an application-owned client or creates a client from explicitly supplied native configuration.
+ */
 @AutoConfiguration(
         afterName = {
             "org.redisson.spring.starter.RedissonAutoConfigurationV2",
@@ -56,8 +58,9 @@ public class LockAutoConfiguration {
         RedissonClient loadUpLockRedissonClient(LockProperties properties) throws IOException {
             LockKey.required(properties.namespace(), "namespace", 128);
             properties.options();
-            if (properties.redissonConfig() == null)
+            if (properties.redissonConfig() == null) {
                 throw new IllegalArgumentException("Provide a RedissonClient bean or loadup.lock.redisson-config");
+            }
             try (var input = properties.redissonConfig().getInputStream()) {
                 return Redisson.create(Config.fromYAML(input));
             }

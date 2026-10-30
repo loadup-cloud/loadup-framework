@@ -18,15 +18,25 @@
 </dependencyManagement>
 ```
 
-然后在消费工程中按需声明具体组件或业务模块，不需要为受 BOM 管理的坐标重复写版本。版本调整及依赖边界见 [ARCHITECTURE.md](ARCHITECTURE.md)。
+然后在消费工程中按需声明具体组件或业务模块，不需要为受 BOM
+管理的坐标重复写版本。版本调整及依赖边界见 [ARCHITECTURE.md](ARCHITECTURE.md)。
 
 测试栈使用 Spring Boot 4.1.1 BOM 管理的 JUnit 6.0.3，Jupiter 与 Platform 版本保持一致。
 架构规则在普通 Jupiter 测试中通过 `com.tngtech.archunit:archunit` 执行，版本由本 BOM 管理。
 
-当前管理 PowerJob 5.1.7、Groovy / Groovy JSON 6.0.0 和 commons-text 1.15.0；Awaitility 使用 Spring Boot BOM 的 4.3.0，消费模块不再单独固定旧版本。Groovy 当前仅提供依赖版本管理，仓库没有直接使用它的运行时代码；采用自定义脚本的消费工程需按 [Groovy 6 变更说明](https://groovy-lang.org/releasenotes/groovy-6.0.html)验证语法和行为。
+当前管理 PowerJob 5.1.7、Groovy / Groovy JSON 6.0.0 和 commons-text 1.15.0；Awaitility 使用 Spring Boot BOM 的
+4.3.0，消费模块不再单独固定旧版本。Groovy
+当前仅提供依赖版本管理，仓库没有直接使用它的运行时代码；采用自定义脚本的消费工程需按 [Groovy 6 变更说明](https://groovy-lang.org/releasenotes/groovy-6.0.html)
+验证语法和行为。
 
-嵌入式 Tomcat 统一固定为 11.0.27，满足 ≥11.0.25 的最低版本要求。BOM 通过 `tomcat.version` 同步管理 core、EL、WebSocket 和 Jasper，避免只覆盖 core 导致版本混用；固定版本保证构建可复现，不使用无上界的 Maven 版本区间。版本信息见 [Tomcat 官方变更记录](https://tomcat.apache.org/tomcat-11.0-doc/changelog.html)。
+嵌入式 Tomcat 统一固定为 11.0.27，满足 ≥11.0.25 的最低版本要求。BOM 通过 `tomcat.version` 同步管理 core、EL、WebSocket 和
+Jasper，避免只覆盖 core 导致版本混用；固定版本保证构建可复现，不使用无上界的 Maven
+版本区间。版本信息见 [Tomcat 官方变更记录](https://tomcat.apache.org/tomcat-11.0-doc/changelog.html)。
 
-Jackson 两代版本独立管理：业务侧 `tools.jackson` 使用 3.2.3；SpringDoc / Swagger 等第三方所需的 Jackson 2 通过 `jackson-2-bom.version=2.21.7` 统一升级，覆盖 core、databind、YAML 与 JSR310。共享 `jackson-annotations` 保持 2.22。两代 JSON API 不能互换，但可在不同依赖链共存，详见 [SpringDoc 接入说明](../loadup-components/web/loadup-components-springdoc/README.md)。
+Jackson 两代版本独立管理：业务侧 `tools.jackson` 使用 3.2.3；SpringDoc / Swagger 等第三方所需的 Jackson 2 通过
+`jackson-2-bom.version=2.21.7` 统一升级，覆盖 core、databind、YAML 与 JSR310。共享 `jackson-annotations` 保持 2.22。两代 JSON
+API
+不能互换，但可在不同依赖链共存，详见 [SpringDoc 接入说明](../loadup-components/web/loadup-components-springdoc/README.md)。
 
-`at.yawk.lz4:lz4-java` 统一管理为 1.11.4，覆盖 Kafka 客户端等传递依赖中的旧版本。此项仅管理版本，不主动引入 Redisson 的可选 LZ4 codec 依赖；消费方需要时按坐标声明，无需重复写版本。
+`at.yawk.lz4:lz4-java` 统一管理为 1.11.4，覆盖 Kafka 客户端等传递依赖中的旧版本。此项仅管理版本，不主动引入 Redisson 的可选
+LZ4 codec 依赖；消费方需要时按坐标声明，无需重复写版本。

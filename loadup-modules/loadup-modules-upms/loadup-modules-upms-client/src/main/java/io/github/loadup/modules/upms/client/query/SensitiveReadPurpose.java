@@ -19,7 +19,9 @@
  */
 package io.github.loadup.modules.upms.client.query;
 
-/** Controlled audit purposes; never accept arbitrary text containing personal data. */
+/**
+ * Controlled audit purposes; never accept arbitrary text containing personal data.
+ */
 public enum SensitiveReadPurpose {
     PROFILE_CORRECTION,
     CUSTOMER_SUPPORT,

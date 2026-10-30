@@ -22,7 +22,9 @@ package io.github.loadup.components.signature.request;
 import io.github.loadup.components.kms.KmsKeyRef;
 import io.github.loadup.components.kms.KmsSignatureAlgorithm;
 
-/** Trusted application binding; never construct it from unverified signature headers alone. */
+/**
+ * Trusted application binding; never construct it from unverified signature headers alone.
+ */
 public record RequestSigningIdentity(String appId, String audience, KmsKeyRef key, KmsSignatureAlgorithm algorithm) {
     public RequestSigningIdentity {
         RequestSignatureParameters.validateIdentifier(appId);

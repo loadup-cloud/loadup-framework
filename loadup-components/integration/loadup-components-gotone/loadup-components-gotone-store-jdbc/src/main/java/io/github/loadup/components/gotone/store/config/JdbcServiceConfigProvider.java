@@ -19,9 +19,10 @@
  */
 package io.github.loadup.components.gotone.store.config;
 
-import io.github.loadup.components.database.tenant.DatabaseTenant;
+import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.components.gotone.config.ServiceConfigProvider;
-import io.github.loadup.components.gotone.store.repository.NotificationServiceRepository;
+import io.github.loadup.components.gotone.store.mapper.NotificationServiceRowMapper;
+import io.github.loadup.components.gotone.store.table.Tables;
 import java.util.Optional;
 
 /**
@@ -29,18 +30,21 @@ import java.util.Optional;
  */
 public class JdbcServiceConfigProvider implements ServiceConfigProvider {
 
-    private final NotificationServiceRepository services;
-    private final DatabaseTenant tenant;
+    private final NotificationServiceRowMapper services;
 
-    public JdbcServiceConfigProvider(NotificationServiceRepository services, DatabaseTenant tenant) {
+    public JdbcServiceConfigProvider(NotificationServiceRowMapper services) {
         this.services = services;
-        this.tenant = tenant;
     }
 
     @Override
     public Optional<ServiceConfig> findByServiceCode(String serviceCode) {
-        if (serviceCode == null) return Optional.empty();
-        return services.findByServiceCode(serviceCode)
-                .map(row -> new ServiceConfig(row.serviceCode(), row.serviceName(), row.enabled()));
+        if (serviceCode == null) {
+            return Optional.empty();
+        }
+        var query = QueryWrapper.create()
+                .where(Tables.NOTIFICATION_SERVICE_ROW.SERVICE_CODE.eq(serviceCode))
+                .and(Tables.NOTIFICATION_SERVICE_ROW.ENABLED.eq(true));
+        return Optional.ofNullable(services.selectOneByQuery(query))
+                .map(row -> new ServiceConfig(row.getServiceCode(), row.getServiceName(), row.isEnabled()));
     }
 }

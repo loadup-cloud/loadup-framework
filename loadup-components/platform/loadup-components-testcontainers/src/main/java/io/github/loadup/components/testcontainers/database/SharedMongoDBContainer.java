@@ -47,13 +47,11 @@ public final class SharedMongoDBContainer {
      */
     private static final String DEFAULT_DATABASE_NAME = "testdb";
 
+    private static final AtomicBoolean STARTED = new AtomicBoolean(false);
     /**
      * The shared MongoDB container instance
      */
     private static MongoDBContainer mongodbContainer;
-
-    private static final AtomicBoolean STARTED = new AtomicBoolean(false);
-
     /**
      * MongoDB connection string
      */
@@ -73,6 +71,10 @@ public final class SharedMongoDBContainer {
      * MongoDB replica set URL
      */
     private static String replicaSetUrl;
+
+    private SharedMongoDBContainer() {
+        throw new UnsupportedOperationException("Utility class cannot be instantiated");
+    }
 
     public static void startContainer(ContainerConfig config) {
         if (STARTED.get()) {
@@ -180,10 +182,6 @@ public final class SharedMongoDBContainer {
                 getHost(),
                 "spring.data.mongodb.port",
                 getMappedPort().toString());
-    }
-
-    private SharedMongoDBContainer() {
-        throw new UnsupportedOperationException("Utility class cannot be instantiated");
     }
 
     public static boolean isStarted() {

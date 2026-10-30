@@ -81,7 +81,9 @@ public class DigestServiceImpl implements DigestService {
         return hmac(dataBytes, keyBytes, algorithm);
     }
 
-    /** Converts a byte array into a lowercase hex string. */
+    /**
+     * Converts a byte array into a lowercase hex string.
+     */
     private String bytesToHex(byte[] bytes) {
         StringBuilder hexString = new StringBuilder();
         for (byte b : bytes) {

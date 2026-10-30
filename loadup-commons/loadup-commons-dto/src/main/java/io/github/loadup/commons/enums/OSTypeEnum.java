@@ -63,13 +63,13 @@ public enum OSTypeEnum implements IEnum {
 
     private final String description;
 
-    public static OSTypeEnum getByCode(String code) {
-        return IEnum.EnumLookup.fromCode(OSTypeEnum.class, code);
-    }
-
     OSTypeEnum(String code, String description) {
         this.code = code;
         this.description = description;
+    }
+
+    public static OSTypeEnum getByCode(String code) {
+        return IEnum.EnumLookup.fromCode(OSTypeEnum.class, code);
     }
 
     public String getCode() {

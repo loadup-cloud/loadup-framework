@@ -19,7 +19,9 @@
  */
 package io.github.loadup.components.globalunique.model;
 
-/** Data required to claim one tenant-scoped business key. */
+/**
+ * Data required to claim one tenant-scoped business key.
+ */
 public record GlobalUniqueClaim(String bizType, String uniqueKey, String bizId, String requestData) {
     private static final int BIZ_TYPE_MAX_LENGTH = 64;
     private static final int UNIQUE_KEY_MAX_LENGTH = 255;

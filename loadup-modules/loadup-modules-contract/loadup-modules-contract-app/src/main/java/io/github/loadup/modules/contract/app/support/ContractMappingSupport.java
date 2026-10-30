@@ -19,7 +19,9 @@
  */
 package io.github.loadup.modules.contract.app.support;
 
-import io.github.loadup.modules.contract.domain.model.*;
+import io.github.loadup.modules.contract.domain.model.ConfigurationLayer;
+import io.github.loadup.modules.contract.domain.model.TypedValue;
+import io.github.loadup.modules.contract.domain.model.ValueType;
 import java.math.BigDecimal;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,10 +35,6 @@ public class ContractMappingSupport {
         this.codec = codec;
     }
 
-    public java.util.Map<String, Object> definition(String content) {
-        return codec.definition(content);
-    }
-
     public static TypedValue value(String type, String value) {
         return value == null ? null : new TypedValue(ValueType.valueOf(type), value);
     }
@@ -48,7 +46,9 @@ public class ContractMappingSupport {
     }
 
     public static BigDecimal decimal(String value) {
-        if (value == null || value.isBlank()) return null;
+        if (value == null || value.isBlank()) {
+            return null;
+        }
         return TypedValue.decimal(value).number();
     }
 
@@ -56,5 +56,9 @@ public class ContractMappingSupport {
         return values == null
                 ? Set.of()
                 : values.stream().map(ConfigurationLayer::valueOf).collect(Collectors.toUnmodifiableSet());
+    }
+
+    public java.util.Map<String, Object> definition(String content) {
+        return codec.definition(content);
     }
 }

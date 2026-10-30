@@ -56,38 +56,32 @@ public final class SharedLocalStackContainer {
      * Default LocalStack version to use
      */
     public static final String DEFAULT_LOCALSTACK_VERSION = "localstack/localstack:3.0";
-
-    /**
-     * Default access key for LocalStack
-     */
-    private static String accessKey = "test";
-
-    /**
-     * Default secret key for LocalStack
-     */
-    private static String secretKey = "test";
-
-    /**
-     * Default region
-     */
-    private static String region = "us-east-1";
-
     /**
      * Enable flag for TestContainers
      */
     private static final boolean ENABLED;
 
+    private static final AtomicBoolean STARTED = new AtomicBoolean(false);
+    /**
+     * Default access key for LocalStack
+     */
+    private static String accessKey = "test";
+    /**
+     * Default secret key for LocalStack
+     */
+    private static String secretKey = "test";
+    /**
+     * Default region
+     */
+    private static String region = "us-east-1";
     /**
      * The shared LocalStack container instance
      */
     private static LocalStackContainer localstackContainer;
-
     /**
      * S3 endpoint URL
      */
     private static String s3Endpoint;
-
-    private static final AtomicBoolean STARTED = new AtomicBoolean(false);
 
     static {
         // Check if TestContainers is enabled (global switch AND individual switch)
@@ -102,6 +96,13 @@ public final class SharedLocalStackContainer {
                     SharedLocalStackContainer.class,
                     "LocalStack TestContainer is DISABLED. Using real AWS S3 from configuration.");
         }
+    }
+
+    /**
+     * Private constructor to prevent instantiation
+     */
+    private SharedLocalStackContainer() {
+        throw new UnsupportedOperationException("Utility class cannot be instantiated");
     }
 
     /**
@@ -163,13 +164,6 @@ public final class SharedLocalStackContainer {
      */
     public static String getRegion() {
         return region;
-    }
-
-    /**
-     * Private constructor to prevent instantiation
-     */
-    private SharedLocalStackContainer() {
-        throw new UnsupportedOperationException("Utility class cannot be instantiated");
     }
 
     public static void startContainer(TestContainersProperties.ContainerConfig config) {

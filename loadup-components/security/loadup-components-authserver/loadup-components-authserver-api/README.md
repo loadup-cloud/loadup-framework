@@ -22,8 +22,8 @@ OAuth2 授权服务器与令牌签发的业务契约与接口模块；实现由�
 
 ## 配置入口
 
-| 前缀 | 配置类 |
-|---|---|
+| 前缀                          | 配置类                                                                                                                          |
+|-------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
 | `loadup.security.auth-server` | [`LoadUpAuthServerProperties`](src/main/java/io/github/loadup/components/authserver/properties/LoadUpAuthServerProperties.java) |
 
 ## 对外契约

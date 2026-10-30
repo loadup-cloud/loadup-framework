@@ -39,10 +39,6 @@ public class ApplicationContextUtils implements ApplicationContextAware {
         return applicationContext;
     }
 
-    public static Environment getEnvironment() {
-        return applicationContext.getEnvironment();
-    }
-
     /**
      *
      * @throws BeansException
@@ -50,6 +46,10 @@ public class ApplicationContextUtils implements ApplicationContextAware {
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         ApplicationContextUtils.applicationContext = applicationContext;
+    }
+
+    public static Environment getEnvironment() {
+        return applicationContext.getEnvironment();
     }
 
     /**

@@ -41,6 +41,13 @@ class LoadUpJwtTokenCustomizerTest {
 
     private final LoadUpJwtTokenCustomizer customizer = new LoadUpJwtTokenCustomizer("loadup-api");
 
+    private static RegisteredClient testClient() {
+        return RegisteredClient.withId("test")
+                .clientId("test-client")
+                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+                .build();
+    }
+
     @Test
     @DisplayName("writes roles, permissions and username claims from the principal authorities")
     void writesClaimsContract() {
@@ -115,12 +122,5 @@ class LoadUpJwtTokenCustomizerTest {
 
         assertThat(claims.build().getClaimAsString("username")).isEqualTo("ada");
         assertThat(claims.build().getClaimAsStringList("roles")).containsExactly("ADMIN");
-    }
-
-    private static RegisteredClient testClient() {
-        return RegisteredClient.withId("test")
-                .clientId("test-client")
-                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                .build();
     }
 }

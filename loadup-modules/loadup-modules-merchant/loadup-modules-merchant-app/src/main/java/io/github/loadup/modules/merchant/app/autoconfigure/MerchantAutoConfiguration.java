@@ -27,7 +27,8 @@ import io.github.loadup.modules.merchant.infrastructure.converter.MerchantStorag
 import io.github.loadup.modules.merchant.infrastructure.repository.MerchantGatewayImpl;
 import javax.sql.DataSource;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.*;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.context.annotation.Import;
 
 @AutoConfiguration(
@@ -49,10 +50,4 @@ import org.springframework.context.annotation.Import;
     MerchantStorageConverterImpl.class,
     MerchantGatewayImpl.class
 })
-public class MerchantAutoConfiguration {
-    @org.springframework.context.annotation.Bean
-    @ConditionalOnMissingBean(name = "merchantClock")
-    public java.time.Clock merchantClock() {
-        return java.time.Clock.systemDefaultZone();
-    }
-}
+public class MerchantAutoConfiguration {}

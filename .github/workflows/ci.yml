@@ -2,9 +2,9 @@ name: Build and Test
 
 on:
   push:
-    branches: [main, develop, dev]
+    branches: [ main, develop, dev ]
   pull_request:
-    branches: [main, develop, dev]
+    branches: [ main, develop, dev ]
   workflow_dispatch:
 
 permissions:
@@ -67,9 +67,10 @@ jobs:
       - uses: ./.github/actions/setup-build
       - name: Check formatting, licenses, dependency rules and Checkstyle without compilation
         run: |
-          versions=$(python3 -c 'import xml.etree.ElementTree as E; p=E.parse("pom.xml").find("{*}properties"); print(p.findtext("{*}license-plugin.version"), p.findtext("{*}maven-checkstyle-plugin.version"))')
-          read -r license_version checkstyle_version <<< "$versions"
+          versions=$(python3 -c 'import xml.etree.ElementTree as E; p=E.parse("pom.xml").find("{*}properties"); print(p.findtext("{*}license-plugin.version"), p.findtext("{*}maven-checkstyle-plugin.version"), p.findtext("{*}spotless-plugin.version"))')
+          read -r license_version checkstyle_version spotless_version <<< "$versions"
           mvn -B -ntp -U -T 1 validate \
+            "com.diffplug.spotless:spotless-maven-plugin:$spotless_version:check" \
             "org.codehaus.mojo:license-maven-plugin:$license_version:check-file-header" \
             "org.apache.maven.plugins:maven-checkstyle-plugin:$checkstyle_version:check" \
             -Dskip.spotless=false -Dskip.enforcer=false \
@@ -106,7 +107,7 @@ jobs:
         run: |
           mvn -B -ntp -U -T 1 -Pcomponent-coverage clean install pmd:check \
             -DskipTests=false -Dskip.unit.tests=false -Dskip.integration.tests=false \
-            -Dskip.spotbugs=false -Dskip.spotless=true \
+            -Dskip.spotbugs=false \
             -Dlicense.skipUpdateLicense=true -Dlicense.skipCheckLicense=true \
             -Dskip.enforcer=true \
             -Dtestcontainers.reuse.enable=false -Dspring.profiles.active=ci
@@ -142,7 +143,7 @@ jobs:
 
   quality-gate:
     name: Tests, Quality and Coverage
-    needs: [changes, lint, verify]
+    needs: [ changes, lint, verify ]
     if: always()
     runs-on: ubuntu-24.04
     timeout-minutes: 5
@@ -169,7 +170,7 @@ jobs:
 
   publish:
     name: Publish GitHub Packages
-    needs: [changes, quality-gate]
+    needs: [ changes, quality-gate ]
     if: >-
       needs.changes.outputs.backend == 'true' &&
       github.event_name == 'push' && vars.PUBLISH_PACKAGES == 'true' &&

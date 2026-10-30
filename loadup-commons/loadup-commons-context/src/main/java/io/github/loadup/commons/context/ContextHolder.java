@@ -22,7 +22,9 @@ package io.github.loadup.commons.context;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 
-/** Read-only execution metadata bound for the dynamic extent of a callback. */
+/**
+ * Read-only execution metadata bound for the dynamic extent of a callback.
+ */
 public final class ContextHolder {
     private static final ScopedValue<ExecutionContext> CURRENT = ScopedValue.newInstance();
 
@@ -57,7 +59,9 @@ public final class ContextHolder {
         return ScopedValue.where(CURRENT, context).call(action);
     }
 
-    /** Captures the immutable bindings now; ordinary executors do not inherit ScopedValue bindings. */
+    /**
+     * Captures the immutable bindings now; ordinary executors do not inherit ScopedValue bindings.
+     */
     public static Runnable wrap(Runnable action) {
         Objects.requireNonNull(action, "action");
         ExecutionContext captured = current();

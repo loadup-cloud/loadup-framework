@@ -2,7 +2,7 @@
 
 ## 1. 概述
 
-`loadup-components-pipeline` 是一个**流程编排组件**，将业务逻辑按 **verify → prepare → process → assemble**
+`loadup-components-pipeline` 是一个 **流程编排组件**，将业务逻辑按 **verify → prepare → process → assemble**
 四个固定阶段拆解，通过声明式 DSL 组合，由统一的 `PipelineExecutor` 驱动执行。
 
 设计目标：
@@ -69,7 +69,7 @@ PipelineContext
 └── properties: Map<String,Object>  ← 跨 Stage 透传的自定义属性
 ```
 
-所有 `set*` 方法为 `public`，但约定**只有 PipelineExecutor 调用**，Stage 只调用 `get*` 方法。
+所有 `set*` 方法为 `public`，但约定 **只有 PipelineExecutor 调用**，Stage 只调用 `get*` 方法。
 
 ### 3.2 PipelineSpec — 不可变流程描述
 
@@ -103,7 +103,7 @@ PipelineBuilder.builder()
     └── .process(...)       → ProcessBuilder  (跳过 verify/prepare)
 ```
 
-每个 Builder 步骤只暴露**当前阶段合法**的方法，编译期杜绝顺序错误。
+每个 Builder 步骤只暴露 **当前阶段合法**的方法，编译期杜绝顺序错误。
 
 ### 3.4 PipelineExecutor — 执行引擎
 
@@ -127,7 +127,7 @@ execute(definition, request):
 
 Stage 解析优先级：
 
-1. `InnerXxx.class` → 从 `*IndexMap` 取函数，**构造新实例**（不走 Spring 容器）
+1. `InnerXxx.class` → 从 `*IndexMap` 取函数， **构造新实例**（不走 Spring 容器）
 2. 其他 → `applicationContext.getBean(stageClass)`（Spring 单例）
 
 ### 3.5 ExceptionHandlerBus — 异常路由
@@ -164,7 +164,7 @@ IStage  (marker)
 
 ### 4.2 Lambda Stage 内置适配器
 
-| 内置类                                  | 实现接口                     | Lambda 类型                           |
+| 内置类                               | 实现接口                 | Lambda 类型                         |
 |--------------------------------------|--------------------------|-------------------------------------|
 | `InnerParamVerifyConsumerStage<REQ>` | `IParamVerifyStage<REQ>` | `Consumer<REQ>`                     |
 | `InnerDataPrepareFunctionStage`      | `IDataPrepareStage`      | `Function<PipelineContext, DATA>`   |
@@ -221,7 +221,7 @@ OrderDTO result = pipelineExecutor.execute(def, cmd);
 
 ## 7. 与 Extension 组件的集成模式
 
-Pipeline 和 Extension 是**互补**的，常见的集成方式：
+Pipeline 和 Extension 是 **互补**的，常见的集成方式：
 
 ```
 PipelineDefinition
@@ -231,10 +231,10 @@ PipelineDefinition
                     └── 路由到正确的 ExtensionPoint 实现
 ```
 
-| 组件            | 解决的问题           | 使用场景                |
-|---------------|-----------------|---------------------|
-| **Pipeline**  | 流程顺序编排，消除大方法    | 一个业务操作对应一套步骤        |
-| **Extension** | 实现路由，消除 if-else | 同一步骤按 bizCode 有不同实现 |
+| 组件          | 解决的问题               | 使用场景                      |
+|---------------|--------------------------|-------------------------------|
+| **Pipeline**  | 流程顺序编排，消除大方法 | 一个业务操作对应一套步骤      |
+| **Extension** | 实现路由，消除 if-else   | 同一步骤按 bizCode 有不同实现 |
 
 ---
 
@@ -272,9 +272,9 @@ loadup-components-pipeline
 
 ## 10. 质量门
 
-| 检查项            | 工具                              | 要求           |
-|----------------|---------------------------------|--------------|
-| 代码格式           | Spotless (Palantir Java Format) | 全部通过         |
-| 静态分析           | SpotBugs                        | 0 bugs       |
-| License 头      | license-maven-plugin            | Apache-2.0 自动插入 |
-| 核心 Service 覆盖率 | JaCoCo                          | ≥ 80%        |
+| 检查项              | 工具                            | 要求                |
+|---------------------|---------------------------------|---------------------|
+| 代码格式            | Spotless (Palantir Java Format) | 全部通过            |
+| 静态分析            | SpotBugs                        | 0 bugs              |
+| License 头          | license-maven-plugin            | Apache-2.0 自动插入 |
+| 核心 Service 覆盖率 | JaCoCo                          | ≥ 80%               |

@@ -112,128 +112,133 @@ public class DepartmentDTO {
 
     public DepartmentDTO() {}
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public String getId() {
         return this.id;
-    }
-
-    public String getParentId() {
-        return this.parentId;
-    }
-
-    public String getDeptName() {
-        return this.deptName;
-    }
-
-    public String getDeptCode() {
-        return this.deptCode;
-    }
-
-    public Integer getDeptLevel() {
-        return this.deptLevel;
-    }
-
-    public Integer getSortOrder() {
-        return this.sortOrder;
-    }
-
-    public String getLeaderUserId() {
-        return this.leaderUserId;
-    }
-
-    public String getLeaderUserName() {
-        return this.leaderUserName;
-    }
-
-    public String getMobile() {
-        return this.mobile;
-    }
-
-    public String getEmail() {
-        return this.email;
-    }
-
-    public Short getStatus() {
-        return this.status;
-    }
-
-    public List<DepartmentDTO> getChildren() {
-        return this.children;
-    }
-
-    public String getRemark() {
-        return this.remark;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return this.createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return this.updatedAt;
     }
 
     public void setId(String id) {
         this.id = id;
     }
 
+    public String getParentId() {
+        return this.parentId;
+    }
+
     public void setParentId(String parentId) {
         this.parentId = parentId;
+    }
+
+    public String getDeptName() {
+        return this.deptName;
     }
 
     public void setDeptName(String deptName) {
         this.deptName = deptName;
     }
 
+    public String getDeptCode() {
+        return this.deptCode;
+    }
+
     public void setDeptCode(String deptCode) {
         this.deptCode = deptCode;
+    }
+
+    public Integer getDeptLevel() {
+        return this.deptLevel;
     }
 
     public void setDeptLevel(Integer deptLevel) {
         this.deptLevel = deptLevel;
     }
 
+    public Integer getSortOrder() {
+        return this.sortOrder;
+    }
+
     public void setSortOrder(Integer sortOrder) {
         this.sortOrder = sortOrder;
+    }
+
+    public String getLeaderUserId() {
+        return this.leaderUserId;
     }
 
     public void setLeaderUserId(String leaderUserId) {
         this.leaderUserId = leaderUserId;
     }
 
+    public String getLeaderUserName() {
+        return this.leaderUserName;
+    }
+
     public void setLeaderUserName(String leaderUserName) {
         this.leaderUserName = leaderUserName;
+    }
+
+    public String getMobile() {
+        return this.mobile;
     }
 
     public void setMobile(String mobile) {
         this.mobile = mobile;
     }
 
+    public String getEmail() {
+        return this.email;
+    }
+
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Short getStatus() {
+        return this.status;
     }
 
     public void setStatus(Short status) {
         this.status = status;
     }
 
+    public List<DepartmentDTO> getChildren() {
+        return this.children;
+    }
+
     public void setChildren(List<DepartmentDTO> children) {
         this.children = children;
+    }
+
+    public String getRemark() {
+        return this.remark;
     }
 
     public void setRemark(String remark) {
         this.remark = remark;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return this.createdAt;
+    }
+
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return this.updatedAt;
     }
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
     }
 
     public static class Builder {
@@ -346,10 +351,5 @@ public class DepartmentDTO {
                     this.createdAt,
                     this.updatedAt);
         }
-    }
-
-    @Override
-    public String toString() {
-        return ToStringAsJson.reflectionToString(this);
     }
 }

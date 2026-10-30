@@ -56,7 +56,16 @@ public final class CacheJsonCodec {
         this.mapper = typedCopy(source);
     }
 
-    /** Serializes a cached value (or the JetCache value holder) to JSON bytes. */
+    private static ObjectMapper typedCopy(ObjectMapper source) {
+        return source.rebuild()
+                .activateDefaultTypingAsProperty(CACHE_TYPE_VALIDATOR, DefaultTyping.NON_FINAL_AND_RECORDS, "@class")
+                .addModule(new SimpleModule().addSerializer(NullValue.class, new NullValueSerializer()))
+                .build();
+    }
+
+    /**
+     * Serializes a cached value (or the JetCache value holder) to JSON bytes.
+     */
     public byte[] serialize(Object value) {
         try {
             return mapper.writeValueAsBytes(value);
@@ -65,7 +74,9 @@ public final class CacheJsonCodec {
         }
     }
 
-    /** Deserializes JSON bytes back to the concrete type recorded in the {@code @class} hint. */
+    /**
+     * Deserializes JSON bytes back to the concrete type recorded in the {@code @class} hint.
+     */
     public Object deserialize(byte[] bytes) {
         try {
             return mapper.readValue(bytes, Object.class);
@@ -74,16 +85,11 @@ public final class CacheJsonCodec {
         }
     }
 
-    /** The internal typed {@link ObjectMapper}, e.g. to build a Spring Data Redis serializer. */
+    /**
+     * The internal typed {@link ObjectMapper}, e.g. to build a Spring Data Redis serializer.
+     */
     public ObjectMapper objectMapper() {
         return mapper;
-    }
-
-    private static ObjectMapper typedCopy(ObjectMapper source) {
-        return source.rebuild()
-                .activateDefaultTypingAsProperty(CACHE_TYPE_VALIDATOR, DefaultTyping.NON_FINAL_AND_RECORDS, "@class")
-                .addModule(new SimpleModule().addSerializer(NullValue.class, new NullValueSerializer()))
-                .build();
     }
 
     private static final class NullValueSerializer extends StdSerializer<NullValue> {

@@ -85,6 +85,70 @@ public class SpringDocProperties {
      */
     private License license = new License();
 
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public boolean isJwtEnabled() {
+        return jwtEnabled;
+    }
+
+    public void setJwtEnabled(boolean jwtEnabled) {
+        this.jwtEnabled = jwtEnabled;
+    }
+
+    public String getJwtSchemeName() {
+        return jwtSchemeName;
+    }
+
+    public void setJwtSchemeName(String jwtSchemeName) {
+        this.jwtSchemeName = jwtSchemeName;
+    }
+
+    public Contact getContact() {
+        return contact;
+    }
+
+    public void setContact(Contact contact) {
+        this.contact = contact;
+    }
+
+    public License getLicense() {
+        return license;
+    }
+
+    public void setLicense(License license) {
+        this.license = license;
+    }
+
     /**
      * Contact sub-properties.
      */
@@ -155,69 +219,5 @@ public class SpringDocProperties {
         public void setUrl(String url) {
             this.url = url;
         }
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public boolean isJwtEnabled() {
-        return jwtEnabled;
-    }
-
-    public void setJwtEnabled(boolean jwtEnabled) {
-        this.jwtEnabled = jwtEnabled;
-    }
-
-    public String getJwtSchemeName() {
-        return jwtSchemeName;
-    }
-
-    public void setJwtSchemeName(String jwtSchemeName) {
-        this.jwtSchemeName = jwtSchemeName;
-    }
-
-    public Contact getContact() {
-        return contact;
-    }
-
-    public void setContact(Contact contact) {
-        this.contact = contact;
-    }
-
-    public License getLicense() {
-        return license;
-    }
-
-    public void setLicense(License license) {
-        this.license = license;
     }
 }

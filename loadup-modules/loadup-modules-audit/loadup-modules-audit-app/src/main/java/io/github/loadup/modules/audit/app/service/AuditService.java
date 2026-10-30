@@ -31,15 +31,16 @@ import io.github.loadup.modules.audit.domain.model.AuditEvent;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.UUID;
-import org.springframework.beans.factory.annotation.Qualifier;
 
-/** Records and searches immutable audit events. */
+/**
+ * Records and searches immutable audit events.
+ */
 public class AuditService implements io.github.loadup.modules.audit.client.facade.AuditFacade {
     private final Clock clock;
     private final AuditDTOConverter converter;
     private final AuditGateway repository;
 
-    public AuditService(AuditGateway repository, AuditDTOConverter converter, @Qualifier("auditClock") Clock clock) {
+    public AuditService(AuditGateway repository, AuditDTOConverter converter, Clock clock) {
         this.clock = clock;
         this.converter = converter;
         this.repository = repository;
@@ -51,7 +52,6 @@ public class AuditService implements io.github.loadup.modules.audit.client.facad
         }
         repository.insert(new AuditEvent(
                 UUID.randomUUID().toString(),
-                write.tenantId(),
                 write.actorId(),
                 write.action(),
                 write.method(),
@@ -62,7 +62,6 @@ public class AuditService implements io.github.loadup.modules.audit.client.facad
     }
 
     public PageDTO<AuditEventDTO> search(AuditPageQuery query) {
-        return converter.toPageDTO(
-                repository.search(converter.toDomain(query, io.github.loadup.commons.util.TenantUtil.getTenantId())));
+        return converter.toPageDTO(repository.search(converter.toDomain(query)));
     }
 }

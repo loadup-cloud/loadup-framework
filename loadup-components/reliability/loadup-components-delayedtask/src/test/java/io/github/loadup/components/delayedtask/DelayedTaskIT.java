@@ -19,16 +19,29 @@
  */
 package io.github.loadup.components.delayedtask;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.github.loadup.commons.context.*;
+import io.github.loadup.commons.context.ContextHolder;
+import io.github.loadup.commons.context.ContextKeys;
+import io.github.loadup.commons.context.ExecutionContext;
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.components.testcontainers.annotation.*;
-import java.time.*;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-import org.junit.jupiter.api.*;
+import io.github.loadup.components.testcontainers.annotation.ContainerType;
+import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -41,6 +54,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 @SpringBootTest(classes = DelayedTaskIT.Application.class)
 @EnableTestContainers(value = ContainerType.POSTGRESQL, reuse = false)
 class DelayedTaskIT {
+    private static final AtomicInteger calls = new AtomicInteger();
+    private static final AtomicInteger failures = new AtomicInteger();
     private final DelayedTaskTemplate tasks;
     private final DelayedTaskStore store;
     private final DelayedTaskDispatcher dispatcher;
@@ -48,8 +63,6 @@ class DelayedTaskIT {
     private final MutableClock clock;
     private final TransactionTemplate transactions;
     private final JdbcTemplate jdbc;
-    private static final AtomicInteger calls = new AtomicInteger();
-    private static final AtomicInteger failures = new AtomicInteger();
 
     @Autowired
     DelayedTaskIT(
@@ -81,12 +94,12 @@ class DelayedTaskIT {
         return ContextHolder.callWith(ExecutionContext.empty().with(ContextKeys.TENANT_ID, tenant), action::get);
     }
 
-    private DelayedTask register(String tenant, String id, LocalDateTime time) {
-        return tenant(tenant, () -> transactions.execute(status -> tasks.register("close-order", id, time)));
+    private DelayedTask register(String id, LocalDateTime time) {
+        return transactions.execute(status -> tasks.register("close-order", id, time));
     }
 
-    private DelayedTask get(String tenant, String id) {
-        return tenant(tenant, () -> tasks.find("close-order", id).orElseThrow());
+    private DelayedTask get(String id) {
+        return tasks.find("close-order", id).orElseThrow();
     }
 
     private LocalDateTime now() {
@@ -97,7 +110,7 @@ class DelayedTaskIT {
     void dispatcherProxySuspendsAndRestoresTheCallerTransaction() {
         assertThat(org.springframework.aop.support.AopUtils.isAopProxy(dispatcher))
                 .isTrue();
-        register("a", "transaction-suspension", now());
+        register("transaction-suspension", now());
         transactions.executeWithoutResult(
                 status -> {
                     assertThat(org.springframework.transaction.support.TransactionSynchronizationManager
@@ -109,11 +122,11 @@ class DelayedTaskIT {
                             .isTrue();
                 });
         assertThat(calls).hasValue(1);
-        assertThat(get("a", "transaction-suspension").status()).isEqualTo(DelayedTaskStatus.SUCCEEDED);
+        assertThat(get("transaction-suspension").status()).isEqualTo(DelayedTaskStatus.SUCCEEDED);
     }
 
     @Test
-    void deadlineTransactionDeduplicationAndTenantIsolation() {
+    void deadlineTransactionDeduplication() {
         assertThatThrownBy(() -> tenant("a", () -> tasks.register("close-order", "no-tx", now())))
                 .isInstanceOf(CommonException.class);
         tenant(
@@ -125,17 +138,15 @@ class DelayedTaskIT {
                 }));
         assertThat(tenant("a", () -> tasks.find("close-order", "rollback"))).isEmpty();
         var deadline = now().plusDays(30);
-        var first = register("a", "order", deadline);
-        assertThat(register("a", "order", deadline).id()).isEqualTo(first.id());
-        assertThatThrownBy(() -> register("a", "order", deadline.plusSeconds(1)))
-                .isInstanceOf(CommonException.class);
-        assertThat(register("b", "order", deadline).id()).isNotEqualTo(first.id());
+        var first = register("order", deadline);
+        assertThat(register("order", deadline).id()).isEqualTo(first.id());
+        assertThatThrownBy(() -> register("order", deadline.plusSeconds(1))).isInstanceOf(CommonException.class);
         dispatcher.execute();
         assertThat(calls).hasValue(0);
         clock.advance(Duration.ofDays(30).plusSeconds(2));
         dispatcher.execute();
         assertThat(calls).hasValue(2);
-        assertThat(get("a", "order").status()).isEqualTo(DelayedTaskStatus.SUCCEEDED);
+        assertThat(get("order").status()).isEqualTo(DelayedTaskStatus.SUCCEEDED);
         assertThat(first.toString()).contains("order");
     }
 
@@ -150,28 +161,28 @@ class DelayedTaskIT {
                     tasks.register("close-order", "after-duplicate", now());
                     return null;
                 }));
-        assertThat(get("a", "after-duplicate").status()).isEqualTo(DelayedTaskStatus.PENDING);
+        assertThat(get("after-duplicate").status()).isEqualTo(DelayedTaskStatus.PENDING);
     }
 
     @Test
     void retryDelayFinalFailureAndExplicitRecovery() {
         failures.set(5);
-        register("a", "retry", now());
+        register("retry", now());
         dispatcher.execute();
-        assertThat(get("a", "retry").attempts()).isEqualTo(1);
-        assertThat(get("a", "retry").status()).isEqualTo(DelayedTaskStatus.PENDING);
+        assertThat(get("retry").attempts()).isEqualTo(1);
+        assertThat(get("retry").status()).isEqualTo(DelayedTaskStatus.PENDING);
         dispatcher.execute();
         assertThat(calls).hasValue(1);
         clock.advance(properties.getRetryDelay().plusSeconds(1));
         dispatcher.execute();
-        assertThat(get("a", "retry").status()).isEqualTo(DelayedTaskStatus.FAILED);
+        assertThat(get("retry").status()).isEqualTo(DelayedTaskStatus.FAILED);
         tenant("a", () -> {
             tasks.retryFailed("close-order", "retry");
             return null;
         });
         failures.set(0);
         dispatcher.execute();
-        assertThat(get("a", "retry").status()).isEqualTo(DelayedTaskStatus.SUCCEEDED);
+        assertThat(get("retry").status()).isEqualTo(DelayedTaskStatus.SUCCEEDED);
         assertThatThrownBy(() -> tenant("a", () -> {
                     tasks.retryFailed("close-order", "retry");
                     return null;
@@ -181,7 +192,7 @@ class DelayedTaskIT {
 
     @Test
     void cancellationRescheduleAndStaleCompletionAreFenced() {
-        register("a", "cancel", now());
+        register("cancel", now());
         var old = store.claim(LocalDateTime.now(clock), properties).orElseThrow();
         assertThat(tenant("a", () -> tasks.cancel("close-order", "cancel"))).isTrue();
         assertThat(store.finish(old, LocalDateTime.now(clock), true, properties))
@@ -194,13 +205,13 @@ class DelayedTaskIT {
         assertThat(calls).hasValue(0);
         clock.advance(Duration.ofDays(1).plusSeconds(2));
         dispatcher.execute();
-        assertThat(get("a", "cancel").status()).isEqualTo(DelayedTaskStatus.SUCCEEDED);
+        assertThat(get("cancel").status()).isEqualTo(DelayedTaskStatus.SUCCEEDED);
         assertThat(tenant("a", () -> tasks.cancel("close-order", "cancel"))).isFalse();
     }
 
     @Test
     void expiredLeasesRecoverAndOldOwnersCannotAcknowledge() {
-        register("a", "lease", now());
+        register("lease", now());
         var first = store.claim(LocalDateTime.now(clock), properties).orElseThrow();
         assertThat(store.claim(LocalDateTime.now(clock), properties)).isEmpty();
         clock.advance(properties.getLease().plusSeconds(1));
@@ -210,25 +221,27 @@ class DelayedTaskIT {
                 .isFalse();
         assertThat(store.finish(second, LocalDateTime.now(clock), true, properties))
                 .isTrue();
-        register("a", "exhausted", now());
+        register("exhausted", now());
         store.claim(LocalDateTime.now(clock), properties).orElseThrow();
         clock.advance(properties.getLease().plusSeconds(1));
         store.claim(LocalDateTime.now(clock), properties).orElseThrow();
         clock.advance(properties.getLease().plusSeconds(1));
         store.recoverExhausted(LocalDateTime.now(clock));
         assertThat(store.claim(LocalDateTime.now(clock), properties)).isEmpty();
-        assertThat(get("a", "exhausted").status()).isEqualTo(DelayedTaskStatus.FAILED);
+        assertThat(get("exhausted").status()).isEqualTo(DelayedTaskStatus.FAILED);
     }
 
     @Test
     void concurrentWorkersClaimOnce() throws Exception {
-        register("a", "concurrent", now());
+        register("concurrent", now());
         var ready = new CountDownLatch(2);
         var start = new CountDownLatch(1);
         try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
             Callable<Boolean> claim = () -> {
                 ready.countDown();
-                if (!start.await(5, TimeUnit.SECONDS)) throw new AssertionError("Timeout");
+                if (!start.await(5, TimeUnit.SECONDS)) {
+                    throw new AssertionError("Timeout");
+                }
                 return store.claim(LocalDateTime.now(clock), properties).isPresent();
             };
             var a = executor.submit(claim);
@@ -244,20 +257,18 @@ class DelayedTaskIT {
 
     @Test
     void lockedDueTaskDoesNotBlockClaimOfAnotherTask() throws Exception {
-        register("a", "locked", now().minusSeconds(2));
-        register("a", "available", now().minusSeconds(1));
+        register("locked", now().minusSeconds(2));
+        register("available", now().minusSeconds(1));
         var locked = new CountDownLatch(1);
         var release = new CountDownLatch(1);
         try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
             var holder = executor.submit(() -> transactions.executeWithoutResult(status -> {
-                jdbc.queryForObject(
-                        "SELECT id FROM delayed_task WHERE tenant_id = ? AND biz_id = ? FOR UPDATE",
-                        String.class,
-                        "a",
-                        "locked");
+                jdbc.queryForObject("SELECT id FROM delayed_task WHERE biz_id = ? FOR UPDATE", String.class, "locked");
                 locked.countDown();
                 try {
-                    if (!release.await(5, TimeUnit.SECONDS)) throw new AssertionError("Timeout waiting for release");
+                    if (!release.await(5, TimeUnit.SECONDS)) {
+                        throw new AssertionError("Timeout waiting for release");
+                    }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     throw new IllegalStateException(e);
@@ -331,9 +342,10 @@ class DelayedTaskIT {
                     assertThat(org.springframework.transaction.support.TransactionSynchronizationManager
                                     .isActualTransactionActive())
                             .isFalse();
-                    assertThat(ContextHolder.get(ContextKeys.TENANT_ID)).isEqualTo(task.tenantId());
                     calls.incrementAndGet();
-                    if (failures.getAndDecrement() > 0) throw new IllegalStateException("Synthetic failure");
+                    if (failures.getAndDecrement() > 0) {
+                        throw new IllegalStateException("Synthetic failure");
+                    }
                 }
             };
         }

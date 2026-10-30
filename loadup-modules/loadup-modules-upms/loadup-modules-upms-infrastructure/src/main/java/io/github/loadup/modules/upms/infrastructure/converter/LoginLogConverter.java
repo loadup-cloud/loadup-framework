@@ -40,7 +40,6 @@ public interface LoginLogConverter {
      * @param loginLog domain entity
      * @return data object
      */
-    @Mapping(target = "tenantId", ignore = true)
     @Mapping(target = "deleted", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)

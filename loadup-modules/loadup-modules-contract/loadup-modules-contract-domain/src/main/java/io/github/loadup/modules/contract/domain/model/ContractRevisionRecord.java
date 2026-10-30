@@ -24,7 +24,6 @@ import java.time.LocalDateTime;
 
 public record ContractRevisionRecord(
         String id,
-        String tenantId,
         String contractId,
         int revision,
         String snapshot,

@@ -19,7 +19,8 @@
  */
 package io.github.loadup.components.asyncresult;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.loadup.components.asyncresult.local.LocalAsyncResultAutoConfiguration;
 import io.github.loadup.components.asyncresult.redis.RedisAsyncResultAutoConfiguration;
@@ -69,12 +70,13 @@ class AsyncResultAutoConfigurationTest {
             "wait-timeout=31s",
             "result-retention=1s",
             "fallback-poll-interval=0ms"
-        })
+        }) {
             runner.withPropertyValues(
                             "loadup.components.async-result.enabled=true",
                             "loadup.components.async-result.namespace=test",
                             "loadup.components.async-result." + setting)
                     .run(c -> assertThat(c).hasFailed());
+        }
         runner.withPropertyValues(
                         "loadup.components.async-result.enabled=true",
                         "loadup.components.async-result.namespace=test",

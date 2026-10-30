@@ -47,6 +47,13 @@ public class DepartmentService implements io.github.loadup.modules.upms.client.f
     private final DepartmentGateway departmentGateway;
     private final UserGateway userGateway;
 
+    public DepartmentService(
+            DepartmentGateway departmentGateway, UserGateway userGateway, UpmsDTOConverter dtoConverter) {
+        this.dtoConverter = dtoConverter;
+        this.departmentGateway = departmentGateway;
+        this.userGateway = userGateway;
+    }
+
     /**
      * Create department
      */
@@ -290,12 +297,5 @@ public class DepartmentService implements io.github.loadup.modules.upms.client.f
             }
         }
         return tree;
-    }
-
-    public DepartmentService(
-            DepartmentGateway departmentGateway, UserGateway userGateway, UpmsDTOConverter dtoConverter) {
-        this.dtoConverter = dtoConverter;
-        this.departmentGateway = departmentGateway;
-        this.userGateway = userGateway;
     }
 }

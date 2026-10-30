@@ -22,7 +22,9 @@ package io.github.loadup.components.dfs.model;
 import java.time.Instant;
 import java.util.Map;
 
-/** Immutable metadata returned by every DFS binder. */
+/**
+ * Immutable metadata returned by every DFS binder.
+ */
 public record FileMetadata(
         String fileId,
         String filename,

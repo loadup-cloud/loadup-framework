@@ -122,116 +122,116 @@ public class UserLoginCommand {
         return this.loginType;
     }
 
-    public String getUsername() {
-        return this.username;
-    }
-
-    public String getPassword() {
-        return this.password;
-    }
-
-    public String getMobile() {
-        return this.mobile;
-    }
-
-    public String getSmsCode() {
-        return this.smsCode;
-    }
-
-    public String getEmail() {
-        return this.email;
-    }
-
-    public String getEmailCode() {
-        return this.emailCode;
-    }
-
-    public String getProvider() {
-        return this.provider;
-    }
-
-    public String getCode() {
-        return this.code;
-    }
-
-    public String getState() {
-        return this.state;
-    }
-
-    public String getRedirectUri() {
-        return this.redirectUri;
-    }
-
-    public String getCaptchaKey() {
-        return this.captchaKey;
-    }
-
-    public String getCaptchaCode() {
-        return this.captchaCode;
-    }
-
-    public String getIpAddress() {
-        return this.ipAddress;
-    }
-
-    public String getUserAgent() {
-        return this.userAgent;
-    }
-
     public void setLoginType(String loginType) {
         this.loginType = loginType;
+    }
+
+    public String getUsername() {
+        return this.username;
     }
 
     public void setUsername(String username) {
         this.username = username;
     }
 
+    public String getPassword() {
+        return this.password;
+    }
+
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getMobile() {
+        return this.mobile;
     }
 
     public void setMobile(String mobile) {
         this.mobile = mobile;
     }
 
+    public String getSmsCode() {
+        return this.smsCode;
+    }
+
     public void setSmsCode(String smsCode) {
         this.smsCode = smsCode;
+    }
+
+    public String getEmail() {
+        return this.email;
     }
 
     public void setEmail(String email) {
         this.email = email;
     }
 
+    public String getEmailCode() {
+        return this.emailCode;
+    }
+
     public void setEmailCode(String emailCode) {
         this.emailCode = emailCode;
+    }
+
+    public String getProvider() {
+        return this.provider;
     }
 
     public void setProvider(String provider) {
         this.provider = provider;
     }
 
+    public String getCode() {
+        return this.code;
+    }
+
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public String getState() {
+        return this.state;
     }
 
     public void setState(String state) {
         this.state = state;
     }
 
+    public String getRedirectUri() {
+        return this.redirectUri;
+    }
+
     public void setRedirectUri(String redirectUri) {
         this.redirectUri = redirectUri;
+    }
+
+    public String getCaptchaKey() {
+        return this.captchaKey;
     }
 
     public void setCaptchaKey(String captchaKey) {
         this.captchaKey = captchaKey;
     }
 
+    public String getCaptchaCode() {
+        return this.captchaCode;
+    }
+
     public void setCaptchaCode(String captchaCode) {
         this.captchaCode = captchaCode;
     }
 
+    public String getIpAddress() {
+        return this.ipAddress;
+    }
+
     public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
+    }
+
+    public String getUserAgent() {
+        return this.userAgent;
     }
 
     public void setUserAgent(String userAgent) {

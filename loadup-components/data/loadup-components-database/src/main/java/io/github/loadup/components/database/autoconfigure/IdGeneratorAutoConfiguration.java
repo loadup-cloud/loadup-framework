@@ -26,14 +26,15 @@ import io.github.loadup.components.database.id.BusinessIdGenerator;
 import io.github.loadup.components.database.id.IdGenerator;
 import io.github.loadup.components.database.sequence.Sequence;
 import java.time.Clock;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-/** Configures the business ID strategy when a sequence allocator is available. */
+/**
+ * Configures the business ID strategy when a sequence allocator is available.
+ */
 @AutoConfiguration(after = SequenceAutoConfiguration.class)
 @EnableConfigurationProperties(BusinessIdProperties.class)
 public class IdGeneratorAutoConfiguration {
@@ -41,10 +42,7 @@ public class IdGeneratorAutoConfiguration {
     @ConditionalOnBean(Sequence.class)
     @ConditionalOnMissingBean(IdGenerator.class)
     public BusinessIdGenerator businessIdGenerator(
-            Sequence sequence,
-            @Qualifier("databaseClock") Clock clock,
-            BusinessIdProperties properties,
-            BusinessIdFormatter formatter) {
+            Sequence sequence, Clock clock, BusinessIdProperties properties, BusinessIdFormatter formatter) {
         BusinessIdCommand defaults = new BusinessIdCommand(
                 properties.dataVersion(),
                 properties.systemVersion(),

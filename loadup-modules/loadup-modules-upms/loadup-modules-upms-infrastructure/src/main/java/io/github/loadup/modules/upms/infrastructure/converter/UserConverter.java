@@ -40,7 +40,6 @@ public interface UserConverter {
      * @param user domain entity
      * @return data object
      */
-    @Mapping(target = "tenantId", ignore = true)
     UserDO toDataObject(User user);
 
     /**

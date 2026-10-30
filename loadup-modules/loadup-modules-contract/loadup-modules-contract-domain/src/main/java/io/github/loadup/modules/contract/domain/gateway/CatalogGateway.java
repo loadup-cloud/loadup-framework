@@ -20,18 +20,19 @@
 package io.github.loadup.modules.contract.domain.gateway;
 
 import io.github.loadup.commons.domain.PageResult;
-import io.github.loadup.modules.contract.domain.model.*;
+import io.github.loadup.modules.contract.domain.model.CatalogEntry;
+import io.github.loadup.modules.contract.domain.model.CatalogKind;
+import io.github.loadup.modules.contract.domain.model.CatalogStatus;
 import java.util.Optional;
 
 public interface CatalogGateway {
-    Optional<CatalogEntry> find(String tenantId, String id);
+    Optional<CatalogEntry> find(String id);
 
-    Optional<CatalogEntry> lock(String tenantId, String id);
+    Optional<CatalogEntry> lock(String id);
 
     void insert(CatalogEntry entry);
 
     void update(CatalogEntry entry, long expectedRowVersion);
 
-    PageResult<CatalogEntry> page(
-            String tenantId, CatalogKind kind, CatalogStatus status, String code, int page, int size);
+    PageResult<CatalogEntry> page(CatalogKind kind, CatalogStatus status, String code, int page, int size);
 }

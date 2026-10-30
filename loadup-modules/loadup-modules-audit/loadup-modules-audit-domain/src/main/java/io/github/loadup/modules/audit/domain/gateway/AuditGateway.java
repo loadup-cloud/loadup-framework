@@ -23,7 +23,9 @@ import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.modules.audit.domain.model.AuditEvent;
 import io.github.loadup.modules.audit.domain.model.AuditQuery;
 
-/** Append-only event persistence with tenant-scoped searches. */
+/**
+ * Append-only event persistence with tenant-scoped searches.
+ */
 public interface AuditGateway {
     void insert(AuditEvent event);
 

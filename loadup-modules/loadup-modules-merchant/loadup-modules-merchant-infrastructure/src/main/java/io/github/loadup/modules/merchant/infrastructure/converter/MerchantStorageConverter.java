@@ -20,7 +20,8 @@
 package io.github.loadup.modules.merchant.infrastructure.converter;
 
 import io.github.loadup.commons.mapping.LoadUpMapStructConfig;
-import io.github.loadup.modules.merchant.domain.model.*;
+import io.github.loadup.modules.merchant.domain.model.Merchant;
+import io.github.loadup.modules.merchant.domain.model.MerchantBasicInfo;
 import io.github.loadup.modules.merchant.infrastructure.dataobject.MerchantDO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

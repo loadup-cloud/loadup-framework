@@ -40,7 +40,9 @@ public class AccessCheckService implements AccessCheckFacade {
 
     @Override
     public AccessDecisionDTO check(AccessCheckCommand command) {
-        if (command == null) return new AccessDecisionDTO(false, "INVALID_REQUEST", null);
+        if (command == null) {
+            return new AccessDecisionDTO(false, "INVALID_REQUEST", null);
+        }
         AccessDecision decision = decisionService.decide(
                 command.userId(),
                 command.permissionCode(),

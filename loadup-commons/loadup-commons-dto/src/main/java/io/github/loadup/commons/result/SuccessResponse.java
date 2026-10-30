@@ -36,17 +36,17 @@ public record SuccessResponse<T>(
         T data)
         implements IResponse<T> {
 
-    @Override
-    public Result getResult() {
-        return result;
-    }
-
     public static <T> SuccessResponse<T> of(T data) {
         return new SuccessResponse<>(Result.buildSuccess(), data);
     }
 
     public static SuccessResponse<Void> success() {
         return new SuccessResponse<>(Result.buildSuccess(), null);
+    }
+
+    @Override
+    public Result getResult() {
+        return result;
     }
 
     @Override

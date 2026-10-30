@@ -83,7 +83,9 @@ class ConditionEvaluatorTest {
     @Test
     void validatesDepthAndNodeBudgetBeforeEvaluation() {
         Condition deep = equal("answer");
-        for (int i = 0; i < 9; i++) deep = new Condition.Not(deep);
+        for (int i = 0; i < 9; i++) {
+            deep = new Condition.Not(deep);
+        }
         Condition overBudget = deep;
         assertThatThrownBy(() -> evaluator.evaluate(overBudget, Map.of(), Map.of()))
                 .isInstanceOf(io.github.loadup.commons.error.CommonException.class);

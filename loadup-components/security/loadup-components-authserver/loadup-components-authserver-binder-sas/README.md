@@ -28,5 +28,7 @@ OAuth2 授权服务器与令牌签发的具体后端适配模块；由集成方�
 
 ## 自动装配
 
-- [`SasAuthServerAutoConfiguration`](src/main/java/io/github/loadup/components/authserver/sas/SasAuthServerAutoConfiguration.java)
-  - 启用条件：`@ConditionalOnProperty( prefix = "loadup.security.auth-server", name = "protocol-endpoints-enabled", havingValue = "true", matchIfMissing = true)`。
+- [
+  `SasAuthServerAutoConfiguration`](src/main/java/io/github/loadup/components/authserver/sas/SasAuthServerAutoConfiguration.java)
+    - 启用条件：
+      `@ConditionalOnProperty( prefix = "loadup.security.auth-server", name = "protocol-endpoints-enabled", havingValue = "true", matchIfMissing = true)`。

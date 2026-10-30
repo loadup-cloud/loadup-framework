@@ -34,24 +34,6 @@ public class PageDTO<T> implements DTO {
     @Schema(description = "Pagination metadata")
     private PageInfo pageInfo;
 
-    public static <T> PageDTO<T> of(List<T> records, Long total, Integer page, Integer size) {
-        return PageDTO.<T>builder()
-                .data(records)
-                .pageInfo(new PageInfo(total, size.longValue(), page.longValue()))
-                .build();
-    }
-
-    /** Adapts neutral pagination metadata; entry conversion belongs to the caller's MapStruct converter. */
-    public static <T> PageDTO<T> of(io.github.loadup.commons.domain.PageResult<T> page) {
-        return of(page.records(), page.total(), page.page(), page.size());
-    }
-
-    /** Maps entries while preserving pagination metadata. */
-    public <R> PageDTO<R> map(Function<? super T, ? extends R> mapper) {
-        List<R> entries = data.stream().<R>map(mapper).toList();
-        return new PageDTO<>(entries, pageInfo);
-    }
-
     public PageDTO(Collection<T> data, PageInfo pageInfo) {
         this.data = data;
         this.pageInfo = pageInfo;
@@ -61,16 +43,42 @@ public class PageDTO<T> implements DTO {
         this(List.of(), new PageInfo(0L, 20L, 1L));
     }
 
+    public static <T> PageDTO<T> of(List<T> records, Long total, Integer page, Integer size) {
+        return PageDTO.<T>builder()
+                .data(records)
+                .pageInfo(new PageInfo(total, size.longValue(), page.longValue()))
+                .build();
+    }
+
+    /**
+     * Adapts neutral pagination metadata; entry conversion belongs to the caller's MapStruct converter.
+     */
+    public static <T> PageDTO<T> of(io.github.loadup.commons.domain.PageResult<T> page) {
+        return of(page.records(), page.total(), page.page(), page.size());
+    }
+
+    public static <T> Builder<T> builder() {
+        return new Builder<>();
+    }
+
+    /**
+     * Maps entries while preserving pagination metadata.
+     */
+    public <R> PageDTO<R> map(Function<? super T, ? extends R> mapper) {
+        List<R> entries = data.stream().<R>map(mapper).toList();
+        return new PageDTO<>(entries, pageInfo);
+    }
+
     public Collection<T> getData() {
         return this.data;
     }
 
-    public PageInfo getPageInfo() {
-        return this.pageInfo;
-    }
-
     public void setData(Collection<T> data) {
         this.data = data;
+    }
+
+    public PageInfo getPageInfo() {
+        return this.pageInfo;
     }
 
     public void setPageInfo(PageInfo pageInfo) {
@@ -80,10 +88,6 @@ public class PageDTO<T> implements DTO {
     @Override
     public String toString() {
         return ToStringAsJson.reflectionToString(this);
-    }
-
-    public static <T> Builder<T> builder() {
-        return new Builder<>();
     }
 
     public static class Builder<T> {

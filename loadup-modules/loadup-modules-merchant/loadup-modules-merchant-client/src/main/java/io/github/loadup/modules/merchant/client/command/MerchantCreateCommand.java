@@ -21,7 +21,8 @@ package io.github.loadup.modules.merchant.client.command;
 
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public record MerchantCreateCommand(
         @Schema(description = "Merchant code") @NotBlank @Size(max = 64)

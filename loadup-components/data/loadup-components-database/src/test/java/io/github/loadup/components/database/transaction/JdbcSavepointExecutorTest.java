@@ -15,8 +15,18 @@
  */
 package io.github.loadup.components.database.transaction;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -36,8 +46,9 @@ class JdbcSavepointExecutorTest {
 
     @AfterEach
     void clearTransaction() {
-        if (TransactionSynchronizationManager.hasResource(dataSource))
+        if (TransactionSynchronizationManager.hasResource(dataSource)) {
             TransactionSynchronizationManager.unbindResource(dataSource);
+        }
         TransactionSynchronizationManager.setActualTransactionActive(false);
     }
 

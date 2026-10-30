@@ -25,7 +25,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import org.springframework.context.SmartLifecycle;
 
-/** A dedicated single-thread poller; no global scheduling configuration is installed. */
+/**
+ * A dedicated single-thread poller; no global scheduling configuration is installed.
+ */
 public class OutboxWorker implements SmartLifecycle {
 
     private final OutboxDispatcher dispatcher;
@@ -39,7 +41,9 @@ public class OutboxWorker implements SmartLifecycle {
 
     @Override
     public synchronized void start() {
-        if (isRunning()) return;
+        if (isRunning()) {
+            return;
+        }
         executor = Executors.newSingleThreadScheduledExecutor(runnable -> {
             Thread thread = new Thread(runnable, "loadup-outbox");
             thread.setDaemon(true);
@@ -63,7 +67,9 @@ public class OutboxWorker implements SmartLifecycle {
 
     @Override
     public synchronized void stop() {
-        if (executor != null) executor.shutdownNow();
+        if (executor != null) {
+            executor.shutdownNow();
+        }
         executor = null;
     }
 

@@ -43,9 +43,15 @@ public class ApolloConfigCenterProvider implements ConfigCenterProvider {
 
     public ApolloConfigCenterProvider(ApolloConfigCenterProperties config) {
         System.setProperty("app.id", config.getAppId());
-        if (config.getMeta() != null) System.setProperty("apollo.meta", config.getMeta());
-        if (config.getEnv() != null) System.setProperty("env", config.getEnv());
-        if (config.getCluster() != null) System.setProperty("apollo.cluster", config.getCluster());
+        if (config.getMeta() != null) {
+            System.setProperty("apollo.meta", config.getMeta());
+        }
+        if (config.getEnv() != null) {
+            System.setProperty("env", config.getEnv());
+        }
+        if (config.getCluster() != null) {
+            System.setProperty("apollo.cluster", config.getCluster());
+        }
         this.apolloConfig = ConfigService.getConfig(config.getNamespace());
 
         this.apolloConfig.addChangeListener(changeEvent -> {

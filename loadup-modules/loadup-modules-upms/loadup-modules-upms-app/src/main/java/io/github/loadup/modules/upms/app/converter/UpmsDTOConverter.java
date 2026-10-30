@@ -20,11 +20,23 @@
 package io.github.loadup.modules.upms.app.converter;
 
 import io.github.loadup.commons.mapping.LoadUpMapStructConfig;
-import io.github.loadup.modules.upms.client.dto.*;
-import io.github.loadup.modules.upms.domain.model.*;
+import io.github.loadup.modules.upms.client.dto.AccessDecisionDTO;
+import io.github.loadup.modules.upms.client.dto.DepartmentDTO;
+import io.github.loadup.modules.upms.client.dto.LoginEntryDTO;
+import io.github.loadup.modules.upms.client.dto.PermissionDTO;
+import io.github.loadup.modules.upms.client.dto.RoleDTO;
+import io.github.loadup.modules.upms.client.dto.SecurityOverviewDTO;
+import io.github.loadup.modules.upms.client.dto.UserDetailDTO;
+import io.github.loadup.modules.upms.domain.model.Department;
+import io.github.loadup.modules.upms.domain.model.LoginLog;
+import io.github.loadup.modules.upms.domain.model.Permission;
+import io.github.loadup.modules.upms.domain.model.Role;
+import io.github.loadup.modules.upms.domain.model.User;
 import io.github.loadup.modules.upms.domain.valueobject.AccessDecision;
 import java.util.List;
-import org.mapstruct.*;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(config = LoadUpMapStructConfig.class)
 public interface UpmsDTOConverter {

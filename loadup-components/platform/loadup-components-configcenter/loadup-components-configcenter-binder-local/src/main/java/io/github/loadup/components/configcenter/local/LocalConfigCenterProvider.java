@@ -38,7 +38,9 @@ public class LocalConfigCenterProvider implements ConfigCenterProvider {
     public boolean setConfig(String key, String value) {
         configs.put(key, value);
         List<Consumer<String>> ls = listeners.get(key);
-        if (ls != null) ls.forEach(l -> l.accept(value));
+        if (ls != null) {
+            ls.forEach(l -> l.accept(value));
+        }
         return true;
     }
 
@@ -46,7 +48,9 @@ public class LocalConfigCenterProvider implements ConfigCenterProvider {
     public boolean removeConfig(String key) {
         configs.remove(key);
         List<Consumer<String>> ls = listeners.get(key);
-        if (ls != null) ls.forEach(l -> l.accept(null));
+        if (ls != null) {
+            ls.forEach(l -> l.accept(null));
+        }
         return true;
     }
 

@@ -27,9 +27,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
-/** Read-only aggregate assembled from a tenant-scoped, authoritative repository query. */
+/**
+ * Read-only aggregate assembled from an authoritative repository query in the current schema.
+ */
 public record MerchantContract(
-        String tenantId,
         String merchantId,
         String scopeKey,
         String contractId,
@@ -37,28 +38,30 @@ public record MerchantContract(
         long generation,
         List<MerchantContractRevision> revisions) {
     public MerchantContract {
-        tenantId = ContractChecks.code(tenantId);
         merchantId = ContractChecks.code(merchantId);
         scopeKey = ContractChecks.code(scopeKey);
         contractId = ContractChecks.code(contractId);
         Objects.requireNonNull(status, "status");
-        if (generation < 1) throw new CommonException(ContractResultCodeEnum.GENERATION_MUST_BE_POSITIVE);
+        if (generation < 1) {
+            throw new CommonException(ContractResultCodeEnum.GENERATION_MUST_BE_POSITIVE);
+        }
         revisions = revisions.stream()
                 .sorted(Comparator.comparing(MerchantContractRevision::effectiveFrom))
                 .toList();
-        if (revisions.isEmpty() || revisions.size() > 256)
+        if (revisions.isEmpty() || revisions.size() > 256) {
             throw new CommonException(ContractResultCodeEnum.INVALID_REVISION_COUNT);
+        }
         var versions = new HashSet<Integer>();
         MerchantContractRevision previous = null;
         for (var revision : revisions) {
-            if (!revision.tenantId().equals(tenantId)
-                    || !revision.merchantId().equals(merchantId)
+            if (!revision.merchantId().equals(merchantId)
                     || !revision.scopeKey().equals(scopeKey)
                     || !revision.contractId().equals(contractId)) {
                 throw new CommonException(ContractResultCodeEnum.CONTRACT_IDENTITY_MISMATCH);
             }
-            if (!versions.add(revision.revision()))
+            if (!versions.add(revision.revision())) {
                 throw new CommonException(ContractResultCodeEnum.DUPLICATE_REVISION);
+            }
             if (previous != null
                     && (previous.effectiveTo() == null
                             || revision.effectiveFrom().isBefore(previous.effectiveTo()))) {

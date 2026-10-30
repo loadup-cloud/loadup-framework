@@ -25,7 +25,9 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
-/** Minimal application that exercises the SAS binder auto-configuration. */
+/**
+ * Minimal application that exercises the SAS binder auto-configuration.
+ */
 @SpringBootApplication
 public class AuthServerTestApplication {
     @Bean

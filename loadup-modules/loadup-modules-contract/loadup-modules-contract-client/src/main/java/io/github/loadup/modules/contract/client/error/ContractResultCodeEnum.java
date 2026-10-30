@@ -22,7 +22,9 @@ package io.github.loadup.modules.contract.client.error;
 import io.github.loadup.commons.enums.ResultStatusEnum;
 import io.github.loadup.commons.result.ResultCode;
 
-/** Stable public error codes for the contract module. */
+/**
+ * Stable public error codes for the contract module.
+ */
 public enum ContractResultCodeEnum implements ResultCode {
     NOT_FOUND("CONTRACT_NOT_FOUND", "Contract resource not found"),
     CONFLICT("CONTRACT_CONFLICT", "Contract resource changed or already exists"),
@@ -109,7 +111,6 @@ public enum ContractResultCodeEnum implements ResultCode {
             "CONTRACT_MERCHANT_PROVIDER_UNAVAILABLE", "Configure a trusted MerchantFactsProvider"),
     TOO_MANY_MERCHANT_FACTS("CONTRACT_TOO_MANY_MERCHANT_FACTS", "Too many merchant facts"),
     UNTRUSTED_FACT_NAMESPACE("CONTRACT_UNTRUSTED_FACT_NAMESPACE", "Untrusted fact namespace"),
-    TRUSTED_TENANT_CONTEXT_REQUIRED("CONTRACT_TRUSTED_TENANT_CONTEXT_REQUIRED", "Trusted tenant context required"),
     AUTHENTICATED_ACTOR_REQUIRED("CONTRACT_AUTHENTICATED_ACTOR_REQUIRED", "Authenticated actor required"),
     INVALID_IDENTIFIER_2E6368("CONTRACT_INVALID_IDENTIFIER_2E6368", "Invalid identifier"),
     CONTRACT_CONTENT_EXCEEDS_LIMIT("CONTRACT_CONTRACT_CONTENT_EXCEEDS_LIMIT", "Contract content exceeds limit"),

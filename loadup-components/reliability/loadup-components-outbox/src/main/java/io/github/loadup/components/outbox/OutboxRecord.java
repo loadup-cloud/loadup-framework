@@ -19,6 +19,7 @@
  */
 package io.github.loadup.components.outbox;
 
-/** An operational view; payloads are deliberately excluded. */
-public record OutboxRecord(
-        String id, String tenantId, String type, String businessId, String status, int attempts, String lastError) {}
+/**
+ * An operational view; payloads are deliberately excluded.
+ */
+public record OutboxRecord(String id, String type, String businessId, String status, int attempts, String lastError) {}

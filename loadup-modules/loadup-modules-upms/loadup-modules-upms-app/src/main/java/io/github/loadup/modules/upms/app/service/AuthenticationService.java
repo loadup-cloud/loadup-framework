@@ -42,7 +42,6 @@ import io.github.loadup.modules.upms.domain.model.User;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,6 +63,25 @@ public class AuthenticationService implements AuthenticationFacade {
     private final PasswordEncoder passwordEncoder;
     private final LoginStrategyManager loginStrategyManager;
     private final UserQueryFacade userQueryService;
+
+    public AuthenticationService(
+            UserGateway userGateway,
+            RoleGateway roleGateway,
+            LoginLogGateway loginLogGateway,
+            PasswordEncoder passwordEncoder,
+            LoginStrategyManager loginStrategyManager,
+            UserQueryFacade userQueryService,
+            UpmsDTOConverter dtoConverter,
+            Clock clock) {
+        this.clock = clock;
+        this.dtoConverter = dtoConverter;
+        this.userGateway = userGateway;
+        this.roleGateway = roleGateway;
+        this.loginLogGateway = loginLogGateway;
+        this.passwordEncoder = passwordEncoder;
+        this.loginStrategyManager = loginStrategyManager;
+        this.userQueryService = userQueryService;
+    }
 
     /**
      * User login
@@ -114,7 +132,9 @@ public class AuthenticationService implements AuthenticationFacade {
     @Transactional
     @Override
     public UserDetailDTO register(UserRegisterCommand command) {
-        if (command == null) throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
+        if (command == null) {
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
+        }
         PasswordPolicy.requireValid(command.getPassword());
         // Check if username exists
         if (userGateway.existsByUsername(command.getUsername())) {
@@ -178,7 +198,9 @@ public class AuthenticationService implements AuthenticationFacade {
     private void recordLoginFailure(UserLoginCommand command, String message, String loginType) {
         LoginLog loginLog = new LoginLog();
         String loginIdentity = command.getUsername() != null ? command.getUsername() : command.getMobile();
-        if (loginIdentity == null) loginIdentity = command.getEmail();
+        if (loginIdentity == null) {
+            loginIdentity = command.getEmail();
+        }
         loginLog.setUsername(loginIdentity != null ? loginIdentity : "unknown");
         if (command.getUsername() != null) {
             userGateway.findByUsername(command.getUsername()).ifPresent(user -> loginLog.setUserId(user.getId()));
@@ -202,24 +224,5 @@ public class AuthenticationService implements AuthenticationFacade {
                 .findByRoleCode("ROLE_USER")
                 .filter(role -> role.isEnabled())
                 .ifPresent(role -> roleGateway.assignRoleToUser(userId, role.getId(), "0"));
-    }
-
-    public AuthenticationService(
-            UserGateway userGateway,
-            RoleGateway roleGateway,
-            LoginLogGateway loginLogGateway,
-            PasswordEncoder passwordEncoder,
-            LoginStrategyManager loginStrategyManager,
-            UserQueryFacade userQueryService,
-            UpmsDTOConverter dtoConverter,
-            @Qualifier("upmsClock") Clock clock) {
-        this.clock = clock;
-        this.dtoConverter = dtoConverter;
-        this.userGateway = userGateway;
-        this.roleGateway = roleGateway;
-        this.loginLogGateway = loginLogGateway;
-        this.passwordEncoder = passwordEncoder;
-        this.loginStrategyManager = loginStrategyManager;
-        this.userQueryService = userQueryService;
     }
 }

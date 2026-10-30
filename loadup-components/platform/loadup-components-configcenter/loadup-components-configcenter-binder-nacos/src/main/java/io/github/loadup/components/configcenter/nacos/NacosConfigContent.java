@@ -49,7 +49,7 @@ public final class NacosConfigContent {
     /**
      * Parse file content into a flat key-value map.
      *
-     * @param content raw file content; may be {@code null} or blank
+     * @param content       raw file content; may be {@code null} or blank
      * @param fileExtension properties / yaml / yml; anything else is treated as properties
      * @return ordered key-value map, never {@code null}
      */
@@ -66,7 +66,7 @@ public final class NacosConfigContent {
     /**
      * Render a key-value map back to file content.
      *
-     * @param configs key-value map
+     * @param configs       key-value map
      * @param fileExtension properties / yaml / yml; anything else is rendered as properties
      * @return file content
      */

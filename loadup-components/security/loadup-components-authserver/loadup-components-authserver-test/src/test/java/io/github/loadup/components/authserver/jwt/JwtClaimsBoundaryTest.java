@@ -20,7 +20,10 @@
 package io.github.loadup.components.authserver.jwt;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -38,6 +41,27 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 
 class JwtClaimsBoundaryTest {
+    private static JwtClaimsSet customize(Authentication authentication, String audience, boolean withAuthorization) {
+        RegisteredClient client = RegisteredClient.withId("client-id")
+                .clientId("client")
+                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+                .build();
+        JwtClaimsSet.Builder claims = JwtClaimsSet.builder();
+        var builder = JwtEncodingContext.with(JwsHeader.with(SignatureAlgorithm.RS256), claims)
+                .registeredClient(client)
+                .principal(authentication)
+                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+                .tokenType(OAuth2TokenType.ACCESS_TOKEN);
+        if (withAuthorization) {
+            builder.authorization(OAuth2Authorization.withRegisteredClient(client)
+                    .principalName("merchant")
+                    .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+                    .build());
+        }
+        new LoadUpJwtTokenCustomizer(audience).customize(builder.build());
+        return claims.build();
+    }
+
     @Test
     void refreshTokensAreNotCustomized() {
         JwtEncodingContext context = mock(JwtEncodingContext.class);
@@ -90,26 +114,5 @@ class JwtClaimsBoundaryTest {
         when(authentication.getPrincipal()).thenReturn(new Object());
         when(authentication.getAuthorities()).thenReturn(List.of());
         assertThat(customize(authentication, null, false).getClaims()).containsOnlyKeys("token_use");
-    }
-
-    private static JwtClaimsSet customize(Authentication authentication, String audience, boolean withAuthorization) {
-        RegisteredClient client = RegisteredClient.withId("client-id")
-                .clientId("client")
-                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                .build();
-        JwtClaimsSet.Builder claims = JwtClaimsSet.builder();
-        var builder = JwtEncodingContext.with(JwsHeader.with(SignatureAlgorithm.RS256), claims)
-                .registeredClient(client)
-                .principal(authentication)
-                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                .tokenType(OAuth2TokenType.ACCESS_TOKEN);
-        if (withAuthorization) {
-            builder.authorization(OAuth2Authorization.withRegisteredClient(client)
-                    .principalName("merchant")
-                    .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                    .build());
-        }
-        new LoadUpJwtTokenCustomizer(audience).customize(builder.build());
-        return claims.build();
     }
 }

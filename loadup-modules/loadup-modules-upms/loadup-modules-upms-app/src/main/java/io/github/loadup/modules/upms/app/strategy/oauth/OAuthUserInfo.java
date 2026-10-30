@@ -56,56 +56,61 @@ public class OAuthUserInfo implements Serializable {
 
     public OAuthUserInfo() {}
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public String getOpenId() {
         return this.openId;
-    }
-
-    public String getUnionId() {
-        return this.unionId;
-    }
-
-    public String getNickname() {
-        return this.nickname;
-    }
-
-    public String getAvatar() {
-        return this.avatar;
-    }
-
-    public String getEmail() {
-        return this.email;
-    }
-
-    public String getMobile() {
-        return this.mobile;
     }
 
     public void setOpenId(String openId) {
         this.openId = openId;
     }
 
+    public String getUnionId() {
+        return this.unionId;
+    }
+
     public void setUnionId(String unionId) {
         this.unionId = unionId;
+    }
+
+    public String getNickname() {
+        return this.nickname;
     }
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
     }
 
+    public String getAvatar() {
+        return this.avatar;
+    }
+
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public String getEmail() {
+        return this.email;
     }
 
     public void setEmail(String email) {
         this.email = email;
     }
 
+    public String getMobile() {
+        return this.mobile;
+    }
+
     public void setMobile(String mobile) {
         this.mobile = mobile;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
     }
 
     public static class Builder {
@@ -149,10 +154,5 @@ public class OAuthUserInfo implements Serializable {
         public OAuthUserInfo build() {
             return new OAuthUserInfo(this.openId, this.unionId, this.nickname, this.avatar, this.email, this.mobile);
         }
-    }
-
-    @Override
-    public String toString() {
-        return ToStringAsJson.reflectionToString(this);
     }
 }

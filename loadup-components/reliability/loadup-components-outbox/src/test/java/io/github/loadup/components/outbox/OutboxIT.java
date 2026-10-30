@@ -95,8 +95,7 @@ class OutboxIT {
                 .isInstanceOf(IllegalStateException.class);
         assertThat(repository.pendingCount()).isZero();
         String id = publish();
-        assertThat(repository.find("tenant", id)).isPresent();
-        assertThat(repository.find("other", id)).isEmpty();
+        assertThat(repository.find(id)).isPresent();
     }
 
     @Test
@@ -115,7 +114,7 @@ class OutboxIT {
     }
 
     @Test
-    void exhaustedLeaseBecomesFailedAndReplayIsTenantScopedAndAudited() {
+    void exhaustedLeaseBecomesFailedAndReplayIsAudited() {
         String id = publish();
         repository.claim().orElseThrow();
         jdbc.update(
@@ -123,9 +122,8 @@ class OutboxIT {
                 properties.getMaxAttempts(),
                 id);
         assertThat(repository.claim()).isEmpty();
-        assertThat(repository.failures("tenant", 10)).hasSize(1);
-        assertThat(repository.replay("other", id, "operator", "reviewed")).isFalse();
-        assertThat(repository.replay("tenant", id, "operator", "reviewed")).isTrue();
+        assertThat(repository.failures(10)).hasSize(1);
+        assertThat(repository.replay(id, "operator", "reviewed")).isTrue();
         assertThat(repository.claim().orElseThrow().event().id()).isEqualTo(id);
         assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM loadup_outbox_replay", Integer.class))
                 .isEqualTo(1);
@@ -161,7 +159,7 @@ class OutboxIT {
     }
 
     @Test
-    void committedEventDrivesHttpAndRestoresTenantContext() throws Exception {
+    void committedEventDrivesHttpAndPreservesCallerContext() throws Exception {
         AtomicInteger calls = new AtomicInteger();
         var accepted = ConcurrentHashMap.<String>newKeySet();
         HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
@@ -203,7 +201,7 @@ class OutboxIT {
                 }
 
                 public void handle(OutboxEvent event) {
-                    assertThat(TenantUtil.getTenantId()).isEqualTo("tenant");
+                    assertThat(TenantUtil.getTenantId()).isEqualTo("previous");
                     var response = http.exchange(
                             "merchant",
                             "notify",
@@ -212,9 +210,12 @@ class OutboxIT {
                                     null,
                                     Map.of("Idempotency-Key", event.id(), "Content-Type", "application/json"),
                                     event.message().payload()));
-                    if (!response.getStatusCode().is2xxSuccessful())
+                    if (!response.getStatusCode().is2xxSuccessful()) {
                         throw new IllegalStateException("Notification rejected");
-                    if (calls.get() == 1) throw new IllegalStateException("Simulated response loss after acceptance");
+                    }
+                    if (calls.get() == 1) {
+                        throw new IllegalStateException("Simulated response loss after acceptance");
+                    }
                 }
             };
             TenantUtil.runWithTenant("previous", () -> {
@@ -225,7 +226,7 @@ class OutboxIT {
                 assertThat(dispatcher.dispatchBatch()).isZero();
                 assertThat(calls).hasValue(2);
                 assertThat(accepted).containsExactly(id);
-                assertThat(repository.find("tenant", id).orElseThrow().status()).isEqualTo("SUCCEEDED");
+                assertThat(repository.find(id).orElseThrow().status()).isEqualTo("SUCCEEDED");
                 assertThat(TenantUtil.getTenantId()).isEqualTo("previous");
             });
         } finally {
@@ -273,36 +274,35 @@ class OutboxIT {
                             "SELECT trace_id FROM loadup_outbox_event WHERE id = ?", String.class, absent))
                     .isNull();
         } finally {
-            if (previous == null) MDC.remove("traceId");
-            else MDC.put("traceId", previous);
+            if (previous == null) {
+                MDC.remove("traceId");
+            } else {
+                MDC.put("traceId", previous);
+            }
         }
     }
 
     @Test
-    void administrativeQueriesEnforceBoundsAndReplayOnlyFailedTenantEvents() {
+    void administrativeQueriesEnforceBoundsAndReplayOnlyFailedEvents() {
         assertThat(repository.failedCount()).isZero();
         assertThat(repository.oldestPendingSeconds()).isZero();
-        assertThat(repository.find("tenant", "missing")).isEmpty();
-        assertThatThrownBy(() -> repository.failures("tenant", 0)).isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> repository.failures("tenant", 1001)).isInstanceOf(IllegalArgumentException.class);
+        assertThat(repository.find("missing")).isEmpty();
+        assertThatThrownBy(() -> repository.failures(0)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> repository.failures(1001)).isInstanceOf(IllegalArgumentException.class);
         String pending = publish();
-        assertThat(repository.replay("tenant", pending, "operator", "reviewed")).isFalse();
+        assertThat(repository.replay(pending, "operator", "reviewed")).isFalse();
         var claim = repository.claim().orElseThrow();
         assertThat(repository.complete(claim)).isTrue();
-        assertThat(repository.replay("tenant", pending, "operator", "reviewed")).isFalse();
+        assertThat(repository.replay(pending, "operator", "reviewed")).isFalse();
         String failed = publish();
         jdbc.update(
                 "UPDATE loadup_outbox_event SET status = 'FAILED', attempts = ? WHERE id = ?",
                 properties.getMaxAttempts(),
                 failed);
         assertThat(repository.failedCount()).isEqualTo(1);
-        assertThat(repository.failures("tenant", 1))
-                .extracting(OutboxRecord::id)
-                .containsExactly(failed);
-        assertThat(repository.failures("other", 1000)).isEmpty();
-        assertThat(repository.replay("tenant", failed, "operator", "approved retry"))
-                .isTrue();
-        assertThat(repository.find("tenant", failed).orElseThrow().attempts()).isZero();
+        assertThat(repository.failures(1)).extracting(OutboxRecord::id).containsExactly(failed);
+        assertThat(repository.replay(failed, "operator", "approved retry")).isTrue();
+        assertThat(repository.find(failed).orElseThrow().attempts()).isZero();
         assertThat(repository.failedCount()).isZero();
         assertThat(repository.pendingCount()).isEqualTo(1);
         jdbc.update(
@@ -327,22 +327,18 @@ class OutboxIT {
     }
 
     @Test
-    void inboxDeduplicationIsScopedToBothTenantAndConsumer() {
+    void inboxDeduplicationIsScopedToConsumerAndEvent() {
         String eventId = "shared-event-id";
-        OutboxEvent first = new OutboxEvent(eventId, message(), Instant.now(), null);
-        OutboxEvent other = new OutboxEvent(
-                eventId, new OutboxMessage("other", "test.created", 1, "business", "{}"), Instant.now(), null);
+        OutboxEvent event = new OutboxEvent(eventId, message(), Instant.now(), null);
         AtomicInteger calls = new AtomicInteger();
-        Boolean consumed = transactions.execute(status -> inbox.consume("consumer", first, calls::incrementAndGet));
+        Boolean consumed = transactions.execute(status -> inbox.consume("consumer", event, calls::incrementAndGet));
         Boolean secondConsumer =
-                transactions.execute(status -> inbox.consume("other-consumer", first, calls::incrementAndGet));
-        Boolean secondTenant = transactions.execute(status -> inbox.consume("consumer", other, calls::incrementAndGet));
-        Boolean duplicate = transactions.execute(status -> inbox.consume("consumer", first, calls::incrementAndGet));
+                transactions.execute(status -> inbox.consume("other-consumer", event, calls::incrementAndGet));
+        Boolean duplicate = transactions.execute(status -> inbox.consume("consumer", event, calls::incrementAndGet));
         assertThat(consumed).isTrue();
         assertThat(secondConsumer).isTrue();
-        assertThat(secondTenant).isTrue();
         assertThat(duplicate).isFalse();
-        assertThat(calls).hasValue(3);
+        assertThat(calls).hasValue(2);
     }
 
     @Test
@@ -350,7 +346,7 @@ class OutboxIT {
         String id = publish();
         var first = repository.claim().orElseThrow();
         repository.fail(first, new IllegalStateException("sensitive detail"));
-        OutboxRecord retry = repository.find("tenant", id).orElseThrow();
+        OutboxRecord retry = repository.find(id).orElseThrow();
         assertThat(retry.status()).isEqualTo("PENDING");
         assertThat(retry.attempts()).isEqualTo(1);
         assertThat(retry.lastError()).isEqualTo("IllegalStateException");
@@ -361,7 +357,7 @@ class OutboxIT {
                 id);
         var last = repository.claim().orElseThrow();
         repository.fail(last, new IllegalArgumentException("sensitive detail"));
-        assertThat(repository.find("tenant", id).orElseThrow().status()).isEqualTo("FAILED");
+        assertThat(repository.find(id).orElseThrow().status()).isEqualTo("FAILED");
         assertThat(repository.failedCount()).isEqualTo(1);
         assertThat(repository.pendingCount()).isZero();
     }
@@ -371,7 +367,7 @@ class OutboxIT {
     }
 
     private OutboxMessage message() {
-        return new OutboxMessage("tenant", "test.created", 1, UUID.randomUUID().toString(), "{}");
+        return new OutboxMessage("test.created", 1, UUID.randomUUID().toString(), "{}");
     }
 
     @SpringBootConfiguration

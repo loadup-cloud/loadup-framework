@@ -21,11 +21,15 @@ package io.github.loadup.components.scheduler.powerjob;
 
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.components.scheduler.*;
-import tech.powerjob.worker.core.processor.*;
+import io.github.loadup.components.scheduler.SchedulerProvider;
+import io.github.loadup.components.scheduler.SchedulerTemplate;
+import tech.powerjob.worker.core.processor.ProcessResult;
+import tech.powerjob.worker.core.processor.TaskContext;
 import tech.powerjob.worker.core.processor.sdk.BasicProcessor;
 
-/** Set jobParams to a registered scanner name in the PowerJob job definition. */
+/**
+ * Set jobParams to a registered scanner name in the PowerJob job definition.
+ */
 public class PowerJobSchedulerProvider implements SchedulerProvider, BasicProcessor {
     private volatile SchedulerTemplate scheduler;
 
@@ -42,7 +46,9 @@ public class PowerJobSchedulerProvider implements SchedulerProvider, BasicProces
     @Override
     public ProcessResult process(TaskContext task) throws Exception {
         var current = scheduler;
-        if (current == null) throw new CommonException(CommonResultCodeEnum.INVALID_STATE);
+        if (current == null) {
+            throw new CommonException(CommonResultCodeEnum.INVALID_STATE);
+        }
         current.trigger(task.getJobParams());
         return new ProcessResult(true);
     }

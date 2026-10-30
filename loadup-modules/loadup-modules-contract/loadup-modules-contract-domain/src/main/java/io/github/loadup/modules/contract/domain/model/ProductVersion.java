@@ -25,7 +25,9 @@ import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import java.util.Map;
 import java.util.Set;
 
-/** Published product contents. Storage adapters must enforce tenant ownership of all references. */
+/**
+ * Published product contents. Storage adapters must enforce tenant ownership of all references.
+ */
 public record ProductVersion(
         String productCode,
         int version,
@@ -40,8 +42,9 @@ public record ProductVersion(
         capabilityCode = ContractChecks.code(capabilityCode);
         parameters = ContractChecks.map(parameters);
         for (var entry : parameters.entrySet()) {
-            if (!entry.getKey().equals(entry.getValue().key()))
+            if (!entry.getKey().equals(entry.getValue().key())) {
                 throw new CommonException(ContractResultCodeEnum.PARAMETER_KEY_MISMATCH);
+            }
         }
         dependencies = Set.copyOf(dependencies);
         exclusions = Set.copyOf(exclusions);
@@ -49,8 +52,9 @@ public record ProductVersion(
         exclusions.forEach(ContractChecks::code);
         if (dependencies.contains(productCode)
                 || exclusions.contains(productCode)
-                || dependencies.stream().anyMatch(exclusions::contains))
+                || dependencies.stream().anyMatch(exclusions::contains)) {
             throw new CommonException(ContractResultCodeEnum.CONFLICTING_PRODUCT_RELATIONSHIPS);
+        }
         new ConditionEvaluator().validateConfigurationReferences(usageCondition, parameters.keySet());
     }
 

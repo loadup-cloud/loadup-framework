@@ -22,19 +22,19 @@ package io.github.loadup.components.lock;
 import java.time.Duration;
 import java.util.Objects;
 
-/** Waiting and lease are separate policies. Fixed leases deliberately disable Redisson watchdog renewal. */
+/**
+ * Waiting and lease are separate policies. Fixed leases deliberately disable Redisson watchdog renewal.
+ */
 public record LockOptions(Duration waitTimeout, LeaseMode leaseMode, Duration leaseTime) {
-    public enum LeaseMode {
-        WATCHDOG,
-        FIXED
-    }
-
     public LockOptions {
         Objects.requireNonNull(leaseMode, "leaseMode");
         millis(waitTimeout, true, "waitTimeout");
-        if (leaseMode == LeaseMode.WATCHDOG && leaseTime != null)
+        if (leaseMode == LeaseMode.WATCHDOG && leaseTime != null) {
             throw new IllegalArgumentException("WATCHDOG must not specify leaseTime");
-        if (leaseMode == LeaseMode.FIXED) millis(leaseTime, false, "leaseTime");
+        }
+        if (leaseMode == LeaseMode.FIXED) {
+            millis(leaseTime, false, "leaseTime");
+        }
     }
 
     public static LockOptions watchdog(Duration waitTimeout) {
@@ -49,12 +49,18 @@ public record LockOptions(Duration waitTimeout, LeaseMode leaseMode, Duration le
         Objects.requireNonNull(value, field);
         try {
             long millis = value.toMillis();
-            if (value.isNegative() || (!allowZero && millis == 0) || (!value.isZero() && millis == 0))
+            if (value.isNegative() || (!allowZero && millis == 0) || (!value.isZero() && millis == 0)) {
                 throw new IllegalArgumentException(
                         field + " must be " + (allowZero ? "zero or " : "") + "at least one millisecond");
+            }
             return millis;
         } catch (ArithmeticException overflow) {
             throw new IllegalArgumentException(field + " exceeds the supported millisecond range", overflow);
         }
+    }
+
+    public enum LeaseMode {
+        WATCHDOG,
+        FIXED
     }
 }

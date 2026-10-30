@@ -19,7 +19,8 @@
 
 主要入口文件：
 
-- [`SmsChannelAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/channel/sms/config/SmsChannelAutoConfiguration.java)
+- [
+  `SmsChannelAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/channel/sms/config/SmsChannelAutoConfiguration.java)
 - [`AliyunSmsProvider`](src/main/java/io/github/loadup/components/gotone/channel/sms/AliyunSmsProvider.java)
 - [`HuaweiSmsProvider`](src/main/java/io/github/loadup/components/gotone/channel/sms/HuaweiSmsProvider.java)
 - [`YunpianSmsProvider`](src/main/java/io/github/loadup/components/gotone/channel/sms/YunpianSmsProvider.java)
@@ -31,21 +32,29 @@
 ```text
 业务代码 → API/facade → 当前 binder → 第三方引擎或基础设施
 ```
+
 binder 实现框架契约，把实现库及其配置隔离在业务 API 之外。
 
 ## 装配规则
 
-- [`SmsChannelAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/channel/sms/config/SmsChannelAutoConfiguration.java) 是自动配置入口。
-  - `@ConditionalOnProperty( prefix = "loadup.gotone.binder.sms.aliyun", name = "enabled", havingValue = "true", matchIfMissing = true)`
-  - `@ConditionalOnMissingBean(name = "aliyunSmsProvider")`
-  - `@ConditionalOnProperty( prefix = "loadup.gotone.binder.sms.huawei", name = "enabled", havingValue = "true", matchIfMissing = true)`
-  - `@ConditionalOnMissingBean(name = "huaweiSmsProvider")`
+- [
+  `SmsChannelAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/channel/sms/config/SmsChannelAutoConfiguration.java)
+  是自动配置入口。
+    -
+    `@ConditionalOnProperty( prefix = "loadup.gotone.binder.sms.aliyun", name = "enabled", havingValue = "true", matchIfMissing = true)`
+    - `@ConditionalOnMissingBean(name = "aliyunSmsProvider")`
+    -
+    `@ConditionalOnProperty( prefix = "loadup.gotone.binder.sms.huawei", name = "enabled", havingValue = "true", matchIfMissing = true)`
+    - `@ConditionalOnMissingBean(name = "huaweiSmsProvider")`
 
 ## 配置归属
 
-- [`AliyunSmsConfig`](src/main/java/io/github/loadup/components/gotone/channel/sms/AliyunSmsConfig.java) 绑定 `loadup.gotone.binder.sms.aliyun`。
-- [`YunpianSmsConfig`](src/main/java/io/github/loadup/components/gotone/channel/sms/YunpianSmsConfig.java) 绑定 `loadup.gotone.binder.sms.yunpian`。
-- [`HuaweiSmsConfig`](src/main/java/io/github/loadup/components/gotone/channel/sms/HuaweiSmsConfig.java) 绑定 `loadup.gotone.binder.sms.huawei`。
+- [`AliyunSmsConfig`](src/main/java/io/github/loadup/components/gotone/channel/sms/AliyunSmsConfig.java) 绑定
+  `loadup.gotone.binder.sms.aliyun`。
+- [`YunpianSmsConfig`](src/main/java/io/github/loadup/components/gotone/channel/sms/YunpianSmsConfig.java) 绑定
+  `loadup.gotone.binder.sms.yunpian`。
+- [`HuaweiSmsConfig`](src/main/java/io/github/loadup/components/gotone/channel/sms/HuaweiSmsConfig.java) 绑定
+  `loadup.gotone.binder.sms.huawei`。
 
 ## 设计取舍
 
@@ -55,4 +64,6 @@ binder 实现框架契约，把实现库及其配置隔离在业务 API 之外�
 
 ## 未实现传输的失败语义
 
-内置厂商调用仍为占位实现，凭证缺失或传输尚未实现时使用 `CommonException(INVALID_STATE)`；`send` 捕获单个收件人的错误并汇总失败，不产生虚假的成功计数。业务调用 `NotificationService` 无需处理厂商 SDK 类型。`isAvailable` 目前只检查凭证配置，与实际发送成功分开。凭证管理接入不等于传输验收，后续应以真实厂商沙箱或受控账户验证。
+内置厂商调用仍为占位实现，凭证缺失或传输尚未实现时使用 `CommonException(INVALID_STATE)`；`send`
+捕获单个收件人的错误并汇总失败，不产生虚假的成功计数。业务调用 `NotificationService` 无需处理厂商 SDK 类型。`isAvailable`
+目前只检查凭证配置，与实际发送成功分开。凭证管理接入不等于传输验收，后续应以真实厂商沙箱或受控账户验证。

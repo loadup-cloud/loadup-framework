@@ -37,18 +37,24 @@ final class ContractChecks {
     }
 
     static int version(int value) {
-        if (value < 1) throw new CommonException(ContractResultCodeEnum.VERSION_MUST_BE_POSITIVE);
+        if (value < 1) {
+            throw new CommonException(ContractResultCodeEnum.VERSION_MUST_BE_POSITIVE);
+        }
         return value;
     }
 
     static void interval(Instant from, Instant to) {
         Objects.requireNonNull(from, "interval start");
-        if (to != null && !from.isBefore(to)) throw new CommonException(ContractResultCodeEnum.INVALID_INTERVAL);
+        if (to != null && !from.isBefore(to)) {
+            throw new CommonException(ContractResultCodeEnum.INVALID_INTERVAL);
+        }
     }
 
     static <T> Map<String, T> map(Map<String, T> values) {
         Objects.requireNonNull(values, "values");
-        if (values.size() > 256) throw new CommonException(ContractResultCodeEnum.TOO_MANY_ENTRIES);
+        if (values.size() > 256) {
+            throw new CommonException(ContractResultCodeEnum.TOO_MANY_ENTRIES);
+        }
         values.keySet().forEach(ContractChecks::code);
         return Map.copyOf(values);
     }

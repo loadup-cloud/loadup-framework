@@ -18,7 +18,8 @@
 
 主要入口文件：
 
-- [`EmailChannelAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/channel/email/config/EmailChannelAutoConfiguration.java)
+- [
+  `EmailChannelAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/channel/email/config/EmailChannelAutoConfiguration.java)
 - [`SmtpEmailProvider`](src/main/java/io/github/loadup/components/gotone/channel/email/SmtpEmailProvider.java)
 
 ## 分层与调用路径
@@ -28,14 +29,18 @@
 ```text
 业务代码 → API/facade → 当前 binder → 第三方引擎或基础设施
 ```
+
 binder 实现框架契约，把实现库及其配置隔离在业务 API 之外。
 
 ## 装配规则
 
-- [`EmailChannelAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/channel/email/config/EmailChannelAutoConfiguration.java) 是自动配置入口。
-  - `@ConditionalOnProperty( prefix = "loadup.gotone.binder.email.smtp", name = "enabled", havingValue = "true", matchIfMissing = true)`
-  - `@ConditionalOnMissingBean(JavaMailSender.class)`
-  - `@ConditionalOnMissingBean(name = "smtpEmailProvider")`
+- [
+  `EmailChannelAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/channel/email/config/EmailChannelAutoConfiguration.java)
+  是自动配置入口。
+    -
+    `@ConditionalOnProperty( prefix = "loadup.gotone.binder.email.smtp", name = "enabled", havingValue = "true", matchIfMissing = true)`
+    - `@ConditionalOnMissingBean(JavaMailSender.class)`
+    - `@ConditionalOnMissingBean(name = "smtpEmailProvider")`
 
 ## 设计取舍
 

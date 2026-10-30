@@ -143,32 +143,64 @@ public class UserDetailDTO {
 
     public UserDetailDTO() {}
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public String getId() {
         return this.id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getUsername() {
         return this.username;
     }
 
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public String getNickname() {
         return this.nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     public String getRealName() {
         return this.realName;
     }
 
+    public void setRealName(String realName) {
+        this.realName = realName;
+    }
+
     public String getDeptId() {
         return this.deptId;
+    }
+
+    public void setDeptId(String deptId) {
+        this.deptId = deptId;
     }
 
     public String getDeptName() {
         return this.deptName;
     }
 
+    public void setDeptName(String deptName) {
+        this.deptName = deptName;
+    }
+
     public String getEmail() {
         return this.email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public Boolean isEmailVerified() {
@@ -179,6 +211,10 @@ public class UserDetailDTO {
         return this.mobile;
     }
 
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
     public Boolean isMobileVerified() {
         return this.mobileVerified;
     }
@@ -187,124 +223,93 @@ public class UserDetailDTO {
         return this.avatar;
     }
 
-    public Short getGender() {
-        return this.gender;
-    }
-
-    public LocalDate getBirthday() {
-        return this.birthday;
-    }
-
-    public Short getStatus() {
-        return this.status;
-    }
-
-    public LocalDateTime getLastLoginTime() {
-        return this.lastLoginTime;
-    }
-
-    public String getLastLoginIp() {
-        return this.lastLoginIp;
-    }
-
-    public List<RoleDTO> getRoles() {
-        return this.roles;
-    }
-
-    public String getRemark() {
-        return this.remark;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return this.createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return this.updatedAt;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public void setRealName(String realName) {
-        this.realName = realName;
-    }
-
-    public void setDeptId(String deptId) {
-        this.deptId = deptId;
-    }
-
-    public void setDeptName(String deptName) {
-        this.deptName = deptName;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setEmailVerified(Boolean emailVerified) {
-        this.emailVerified = emailVerified;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
-
-    public void setMobileVerified(Boolean mobileVerified) {
-        this.mobileVerified = mobileVerified;
-    }
-
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public Short getGender() {
+        return this.gender;
     }
 
     public void setGender(Short gender) {
         this.gender = gender;
     }
 
+    public LocalDate getBirthday() {
+        return this.birthday;
+    }
+
     public void setBirthday(LocalDate birthday) {
         this.birthday = birthday;
+    }
+
+    public Short getStatus() {
+        return this.status;
     }
 
     public void setStatus(Short status) {
         this.status = status;
     }
 
+    public LocalDateTime getLastLoginTime() {
+        return this.lastLoginTime;
+    }
+
     public void setLastLoginTime(LocalDateTime lastLoginTime) {
         this.lastLoginTime = lastLoginTime;
+    }
+
+    public String getLastLoginIp() {
+        return this.lastLoginIp;
     }
 
     public void setLastLoginIp(String lastLoginIp) {
         this.lastLoginIp = lastLoginIp;
     }
 
+    public List<RoleDTO> getRoles() {
+        return this.roles;
+    }
+
     public void setRoles(List<RoleDTO> roles) {
         this.roles = roles;
+    }
+
+    public String getRemark() {
+        return this.remark;
     }
 
     public void setRemark(String remark) {
         this.remark = remark;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return this.createdAt;
+    }
+
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return this.updatedAt;
     }
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public void setEmailVerified(Boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+
+    public void setMobileVerified(Boolean mobileVerified) {
+        this.mobileVerified = mobileVerified;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
     }
 
     public static class Builder {
@@ -452,10 +457,5 @@ public class UserDetailDTO {
                     this.createdAt,
                     this.updatedAt);
         }
-    }
-
-    @Override
-    public String toString() {
-        return ToStringAsJson.reflectionToString(this);
     }
 }

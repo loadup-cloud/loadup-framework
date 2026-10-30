@@ -38,11 +38,12 @@ loadup:
 
 ## 配置入口
 
-| 前缀 | 配置类 |
-|---|---|
+| 前缀                                | 配置类                                                                                                              |
+|-------------------------------------|---------------------------------------------------------------------------------------------------------------------|
 | `loadup.captcha.binder.nanocaptcha` | [`NanocaptchaProperties`](src/main/java/io/github/loadup/components/captcha/nanocaptcha/NanocaptchaProperties.java) |
 
 ## 自动装配
 
-- [`NanocaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/nanocaptcha/autoconfig/NanocaptchaAutoConfiguration.java)
-  - 启用条件：`@ConditionalOnProperty(prefix = "loadup.captcha", name = "binder-type", havingValue = "nanocaptcha")`。
+- [
+  `NanocaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/nanocaptcha/autoconfig/NanocaptchaAutoConfiguration.java)
+    - 启用条件：`@ConditionalOnProperty(prefix = "loadup.captcha", name = "binder-type", havingValue = "nanocaptcha")`。

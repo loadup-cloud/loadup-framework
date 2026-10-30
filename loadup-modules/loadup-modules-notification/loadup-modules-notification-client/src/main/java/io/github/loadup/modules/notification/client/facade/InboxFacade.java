@@ -23,10 +23,11 @@ import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.notification.client.dto.InboxMessageDTO;
 import java.util.List;
 
-/** Public business contract for InboxService. */
+/**
+ * Public business contract for InboxService.
+ */
 public interface InboxFacade {
     int publish(
-            String tenantId,
             String senderId,
             List<String> recipients,
             String category,
@@ -35,13 +36,13 @@ public interface InboxFacade {
             String actionUrl,
             String requestKey);
 
-    PageDTO<InboxMessageDTO> list(String tenantId, String recipientId, boolean unreadOnly, int page, int size);
+    PageDTO<InboxMessageDTO> list(String recipientId, boolean unreadOnly, int page, int size);
 
-    long unreadCount(String tenantId, String recipientId);
+    long unreadCount(String recipientId);
 
-    void markRead(String tenantId, String recipientId, String id);
+    void markRead(String recipientId, String id);
 
-    int markAllRead(String tenantId, String recipientId);
+    int markAllRead(String recipientId);
 
-    void archive(String tenantId, String recipientId, String id);
+    void archive(String recipientId, String id);
 }

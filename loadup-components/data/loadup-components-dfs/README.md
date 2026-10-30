@@ -19,7 +19,8 @@ Import the LoadUp BOM, then add `loadup-components-dfs-api` and exactly one bind
 
 ## Configuration
 
-Set `loadup.dfs.binder-type` to `local`, `s3`, or `database`. Binder-specific settings live under `loadup.dfs.binder.<type>`.
+Set `loadup.dfs.binder-type` to `local`, `s3`, or `database`. Binder-specific settings live under
+`loadup.dfs.binder.<type>`.
 
 ```yaml
 loadup:
@@ -31,11 +32,12 @@ loadup:
 
 ## Capabilities
 
-| Capability | local | s3 | database |
-|---|---:|---:|---:|
-| Upload, download, delete, exists, metadata | ✓ | ✓ | ✓ |
-| Metadata survives process restart | ✓ | ✓ | ✓ |
-| Presigned download URL | ✗ | ✓ | ✗ |
-| Multipart upload | ✗ | ✓ | ✗ |
+| Capability                                 | local | s3 | database |
+|--------------------------------------------|------:|---:|---------:|
+| Upload, download, delete, exists, metadata |    ✓ | ✓ |       ✓ |
+| Metadata survives process restart          |    ✓ | ✓ |       ✓ |
+| Presigned download URL                     |    ✗ | ✓ |       ✗ |
+| Multipart upload                           |    ✗ | ✓ |       ✗ |
 
-S3 is the recommended production binder. Local is for development and single-node deployments; database is a transitional small-file binder.
+S3 is the recommended production binder. Local is for development and single-node deployments; database is a
+transitional small-file binder.

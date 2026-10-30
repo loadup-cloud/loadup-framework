@@ -19,15 +19,24 @@
  */
 package io.github.loadup.components.database.sequence;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.testcontainers.annotation.ContainerType;
 import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
-import java.time.*;
-import java.util.*;
-import java.util.concurrent.*;
+import java.time.Clock;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
@@ -41,10 +50,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 @ActiveProfiles("test")
 @EnableTestContainers(ContainerType.POSTGRESQL)
 class DatabaseSequenceIT {
-    @SpringBootConfiguration
-    @EnableAutoConfiguration
-    static class Application {}
-
     private final SequenceRangeAllocator allocator;
     private final PlatformTransactionManager manager;
 
@@ -64,13 +69,17 @@ class DatabaseSequenceIT {
         Set<Long> seen = ConcurrentHashMap.newKeySet();
         try (ExecutorService workers = Executors.newVirtualThreadPerTaskExecutor()) {
             List<Future<?>> tasks = new ArrayList<>();
-            for (int i = 0; i < 16; i++)
+            for (int i = 0; i < 16; i++) {
                 tasks.add(workers.submit(() -> {
                     SequenceRange r = allocator.reserve(scope, 50);
-                    for (long n = r.first(); n <= r.last(); n++)
+                    for (long n = r.first(); n <= r.last(); n++) {
                         assertThat(seen.add(n)).isTrue();
+                    }
                 }));
-            for (Future<?> f : tasks) f.get(20, TimeUnit.SECONDS);
+            }
+            for (Future<?> f : tasks) {
+                f.get(20, TimeUnit.SECONDS);
+            }
             assertThat(seen).hasSize(800);
         }
     }
@@ -118,13 +127,21 @@ class DatabaseSequenceIT {
             for (int i = 0; i < 8; i++) {
                 Sequence client = i % 2 == 0 ? a : b;
                 tasks.add(workers.submit(() -> {
-                    for (int round = 0; round < 20; round++)
-                        for (long id : client.nextBatch(scope, 37))
+                    for (int round = 0; round < 20; round++) {
+                        for (long id : client.nextBatch(scope, 37)) {
                             assertThat(seen.add(id)).isTrue();
+                        }
+                    }
                 }));
             }
-            for (Future<?> task : tasks) task.get(20, TimeUnit.SECONDS);
+            for (Future<?> task : tasks) {
+                task.get(20, TimeUnit.SECONDS);
+            }
             assertThat(seen).hasSize(5920);
         }
     }
+
+    @SpringBootConfiguration
+    @EnableAutoConfiguration
+    static class Application {}
 }

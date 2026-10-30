@@ -33,7 +33,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-/** Delegates user credential checks to UPMS without issuing tokens. */
+/**
+ * Delegates user credential checks to UPMS without issuing tokens.
+ */
 public final class UpmsAuthenticationProvider implements AuthenticationProvider {
     private final AuthenticationFacade authenticationService;
     private final RoleGateway roleGateway;
@@ -53,7 +55,9 @@ public final class UpmsAuthenticationProvider implements AuthenticationProvider 
         return authenticate(authentication, null);
     }
 
-    /** Authenticate a first-party HTTP login with its server-observed client address. */
+    /**
+     * Authenticate a first-party HTTP login with its server-observed client address.
+     */
     public Authentication authenticate(Authentication authentication, String ipAddress) {
         UserLoginCommand command = new UserLoginCommand();
         command.setUsername(authentication.getName());

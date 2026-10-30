@@ -128,108 +128,108 @@ public class UserCreateCommand {
         return this.username;
     }
 
-    public String getPassword() {
-        return this.password;
-    }
-
-    public String getNickname() {
-        return this.nickname;
-    }
-
-    public String getRealName() {
-        return this.realName;
-    }
-
-    public String getDeptId() {
-        return this.deptId;
-    }
-
-    public String getEmail() {
-        return this.email;
-    }
-
-    public String getMobile() {
-        return this.mobile;
-    }
-
-    public String getAvatar() {
-        return this.avatar;
-    }
-
-    public Short getGender() {
-        return this.gender;
-    }
-
-    public LocalDate getBirthday() {
-        return this.birthday;
-    }
-
-    public Short getStatus() {
-        return this.status;
-    }
-
-    public List<String> getRoleIds() {
-        return this.roleIds;
-    }
-
-    public String getRemark() {
-        return this.remark;
-    }
-
-    public String getCreatedBy() {
-        return this.createdBy;
-    }
-
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getPassword() {
+        return this.password;
     }
 
     public void setPassword(String password) {
         this.password = password;
     }
 
+    public String getNickname() {
+        return this.nickname;
+    }
+
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public String getRealName() {
+        return this.realName;
     }
 
     public void setRealName(String realName) {
         this.realName = realName;
     }
 
+    public String getDeptId() {
+        return this.deptId;
+    }
+
     public void setDeptId(String deptId) {
         this.deptId = deptId;
+    }
+
+    public String getEmail() {
+        return this.email;
     }
 
     public void setEmail(String email) {
         this.email = email;
     }
 
+    public String getMobile() {
+        return this.mobile;
+    }
+
     public void setMobile(String mobile) {
         this.mobile = mobile;
+    }
+
+    public String getAvatar() {
+        return this.avatar;
     }
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
     }
 
+    public Short getGender() {
+        return this.gender;
+    }
+
     public void setGender(Short gender) {
         this.gender = gender;
+    }
+
+    public LocalDate getBirthday() {
+        return this.birthday;
     }
 
     public void setBirthday(LocalDate birthday) {
         this.birthday = birthday;
     }
 
+    public Short getStatus() {
+        return this.status;
+    }
+
     public void setStatus(Short status) {
         this.status = status;
+    }
+
+    public List<String> getRoleIds() {
+        return this.roleIds;
     }
 
     public void setRoleIds(List<String> roleIds) {
         this.roleIds = roleIds;
     }
 
+    public String getRemark() {
+        return this.remark;
+    }
+
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public String getCreatedBy() {
+        return this.createdBy;
     }
 
     public void setCreatedBy(String createdBy) {

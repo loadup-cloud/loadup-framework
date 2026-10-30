@@ -19,7 +19,8 @@
  */
 package io.github.loadup.components.webmvc;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import io.github.loadup.commons.masking.MaskType;
@@ -36,58 +37,14 @@ import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
 class ApiMaskingJsonTest {
-    public record Contact(
-            @Masked(MaskType.PHONE) String phone,
-            @Masked(MaskType.EMAIL) String email) {}
-
-    public record Invalid(@Masked(MaskType.PHONE) int phone) {}
-
-    public record NegativePrefix(
-            @Masked(value = MaskType.CUSTOM, prefix = -1) String value) {}
-
-    public record NegativeSuffix(
-            @Masked(value = MaskType.CUSTOM, suffix = -1) String value) {}
-
-    public record OversizedPrefix(
-            @Masked(value = MaskType.CUSTOM, prefix = 33) String value) {}
-
-    public record OversizedSuffix(
-            @Masked(value = MaskType.CUSTOM, suffix = 33) String value) {}
-
-    public record NonCustomPrefix(
-            @Masked(value = MaskType.PHONE, prefix = 1) String value) {}
-
-    public record NonCustomSuffix(
-            @Masked(value = MaskType.PHONE, suffix = 1) String value) {}
-
-    public record CustomBoundary(
-            @Masked(value = MaskType.CUSTOM, prefix = 32, suffix = 32)
-            String value) {}
-
-    public static class PublicView {}
-
-    public static class InternalView extends PublicView {}
-
-    public record Viewed(
-            @JsonView(PublicView.class) @Masked(MaskType.PHONE)
-            String phone,
-
-            @JsonView(InternalView.class) String internal) {}
-
-    public static class GetterContact {
-        @Masked(MaskType.PHONE)
-        public String getPhone() {
-            return "13812345678";
-        }
-    }
-
-    public static class FieldContact {
-        @Masked(MaskType.PHONE)
-        private final String phone = "13812345678";
-
-        public String getPhone() {
-            return phone;
-        }
+    static Stream<Object> invalidDeclarations() {
+        return Stream.of(
+                new NegativePrefix("synthetic"),
+                new NegativeSuffix("synthetic"),
+                new OversizedPrefix("synthetic"),
+                new OversizedSuffix("synthetic"),
+                new NonCustomPrefix("13812345678"),
+                new NonCustomSuffix("13812345678"));
     }
 
     @Test
@@ -142,16 +99,6 @@ class ApiMaskingJsonTest {
         assertThatThrownBy(() -> masking.write(new Invalid(123))).isInstanceOf(RuntimeException.class);
     }
 
-    static Stream<Object> invalidDeclarations() {
-        return Stream.of(
-                new NegativePrefix("synthetic"),
-                new NegativeSuffix("synthetic"),
-                new OversizedPrefix("synthetic"),
-                new OversizedSuffix("synthetic"),
-                new NonCustomPrefix("13812345678"),
-                new NonCustomSuffix("13812345678"));
-    }
-
     @ParameterizedTest
     @MethodSource("invalidDeclarations")
     void rejectsInvalidMaskLengthsAndNonCustomOverridesWithoutReturningPlaintext(Object model) {
@@ -178,5 +125,59 @@ class ApiMaskingJsonTest {
         assertThatThrownBy(() -> new ApiMaskingJson(new ObjectMapper()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("API masking requires a Jackson 3 JsonMapper");
+    }
+
+    public record Contact(
+            @Masked(MaskType.PHONE) String phone,
+            @Masked(MaskType.EMAIL) String email) {}
+
+    public record Invalid(@Masked(MaskType.PHONE) int phone) {}
+
+    public record NegativePrefix(
+            @Masked(value = MaskType.CUSTOM, prefix = -1) String value) {}
+
+    public record NegativeSuffix(
+            @Masked(value = MaskType.CUSTOM, suffix = -1) String value) {}
+
+    public record OversizedPrefix(
+            @Masked(value = MaskType.CUSTOM, prefix = 33) String value) {}
+
+    public record OversizedSuffix(
+            @Masked(value = MaskType.CUSTOM, suffix = 33) String value) {}
+
+    public record NonCustomPrefix(
+            @Masked(value = MaskType.PHONE, prefix = 1) String value) {}
+
+    public record NonCustomSuffix(
+            @Masked(value = MaskType.PHONE, suffix = 1) String value) {}
+
+    public record CustomBoundary(
+            @Masked(value = MaskType.CUSTOM, prefix = 32, suffix = 32)
+            String value) {}
+
+    public static class PublicView {}
+
+    public static class InternalView extends PublicView {}
+
+    public record Viewed(
+            @JsonView(PublicView.class) @Masked(MaskType.PHONE)
+            String phone,
+
+            @JsonView(InternalView.class) String internal) {}
+
+    public static class GetterContact {
+        @Masked(MaskType.PHONE)
+        public String getPhone() {
+            return "13812345678";
+        }
+    }
+
+    public static class FieldContact {
+        @Masked(MaskType.PHONE)
+        private final String phone = "13812345678";
+
+        public String getPhone() {
+            return phone;
+        }
     }
 }

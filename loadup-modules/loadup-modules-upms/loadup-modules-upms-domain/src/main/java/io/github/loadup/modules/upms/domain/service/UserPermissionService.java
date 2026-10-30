@@ -43,15 +43,24 @@ public class UserPermissionService {
     private final RoleGateway roleGateway;
     private final PermissionGateway permissionGateway;
 
+    public UserPermissionService(RoleGateway roleGateway, PermissionGateway permissionGateway) {
+        this.roleGateway = roleGateway;
+        this.permissionGateway = permissionGateway;
+    }
+
     public List<Permission> getUserPermissions(String userId) {
         Map<String, Permission> granted = new LinkedHashMap<>();
         for (Role assigned : roleGateway.findByUserId(userId)) {
             Set<String> visited = new HashSet<>();
             Role role = assigned;
             while (role != null && role.getId() != null && visited.add(role.getId())) {
-                if (!role.isEnabled()) break;
+                if (!role.isEnabled()) {
+                    break;
+                }
                 for (Permission permission : permissionGateway.findByRoleId(role.getId())) {
-                    if (permission.isEnabled()) granted.put(permission.getId(), permission);
+                    if (permission.isEnabled()) {
+                        granted.put(permission.getId(), permission);
+                    }
                 }
                 role = role.getParentId() == null
                         ? null
@@ -116,10 +125,5 @@ public class UserPermissionService {
                     return Integer.compare(order1, order2);
                 })
                 .collect(Collectors.toList());
-    }
-
-    public UserPermissionService(RoleGateway roleGateway, PermissionGateway permissionGateway) {
-        this.roleGateway = roleGateway;
-        this.permissionGateway = permissionGateway;
     }
 }

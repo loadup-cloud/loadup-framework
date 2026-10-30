@@ -29,10 +29,21 @@ import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.temporal.TemporalAccessor;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Currency;
+import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import tools.jackson.databind.json.JsonMapper;
 
-/** Bounded JSON diagnostics; independent of HTTP serialization and never calls bean getters. */
+/**
+ * Bounded JSON diagnostics; independent of HTTP serialization and never calls bean getters.
+ */
 public final class ToStringAsJson {
     private static final JsonMapper MAPPER = JsonMapper.builder().build();
     private static final int MAX_DEPTH = 6;
@@ -50,27 +61,49 @@ public final class ToStringAsJson {
     }
 
     private static Object project(Object value, int depth, IdentityHashMap<Object, Boolean> path, Budget budget) {
-        if (value == null) return null;
-        if (--budget.remaining < 0) return "<truncated>";
-        if (value instanceof CharSequence text) return bounded(text.toString());
+        if (value == null) {
+            return null;
+        }
+        if (--budget.remaining < 0) {
+            return "<truncated>";
+        }
+        if (value instanceof CharSequence text) {
+            return bounded(text.toString());
+        }
         if (value instanceof Boolean
                 || value instanceof Byte
                 || value instanceof Short
                 || value instanceof Integer
                 || value instanceof Long
                 || value instanceof BigInteger
-                || value instanceof BigDecimal) return value;
-        if (value instanceof Double n) return Double.isFinite(n) ? n : n.toString();
-        if (value instanceof Float n) return Float.isFinite(n) ? n : n.toString();
+                || value instanceof BigDecimal) {
+            return value;
+        }
+        if (value instanceof Double n) {
+            return Double.isFinite(n) ? n : n.toString();
+        }
+        if (value instanceof Float n) {
+            return Float.isFinite(n) ? n : n.toString();
+        }
         if (value instanceof Character
                 || value instanceof UUID
                 || value instanceof Currency
-                || value instanceof TemporalAccessor) return bounded(value.toString());
-        if (value instanceof Enum<?> e) return e.name();
-        if (depth >= MAX_DEPTH) return "<depth-limit>";
-        if (path.put(value, Boolean.TRUE) != null) return "<cycle>";
+                || value instanceof TemporalAccessor) {
+            return bounded(value.toString());
+        }
+        if (value instanceof Enum<?> e) {
+            return e.name();
+        }
+        if (depth >= MAX_DEPTH) {
+            return "<depth-limit>";
+        }
+        if (path.put(value, Boolean.TRUE) != null) {
+            return "<cycle>";
+        }
         try {
-            if (value instanceof Optional<?> optional) return project(optional.orElse(null), depth + 1, path, budget);
+            if (value instanceof Optional<?> optional) {
+                return project(optional.orElse(null), depth + 1, path, budget);
+            }
             if (value instanceof Map<?, ?> map) {
                 Map<String, Object> result = new LinkedHashMap<>();
                 int count = 0;
@@ -99,22 +132,30 @@ public final class ToStringAsJson {
                 return result;
             }
             if (value.getClass().isArray()) {
-                if (value instanceof byte[] || value instanceof char[]) return "<binary-or-secret>";
+                if (value instanceof byte[] || value instanceof char[]) {
+                    return "<binary-or-secret>";
+                }
                 List<Object> result = new ArrayList<>();
                 int count = Math.min(Array.getLength(value), MAX_ITEMS);
-                for (int i = 0; i < count && budget.remaining > 0; i++)
+                for (int i = 0; i < count && budget.remaining > 0; i++) {
                     result.add(project(Array.get(value, i), depth + 1, path, budget));
-                if (Array.getLength(value) > result.size()) result.add("<truncated>");
+                }
+                if (Array.getLength(value) > result.size()) {
+                    result.add("<truncated>");
+                }
                 return result;
             }
-            if (!value.getClass().getPackageName().startsWith("io.github.loadup."))
+            if (!value.getClass().getPackageName().startsWith("io.github.loadup.")) {
                 return "<" + value.getClass().getSimpleName() + ">";
+            }
             Map<String, Object> result = new LinkedHashMap<>();
             for (Class<?> type = value.getClass(); type != null && type != Object.class; type = type.getSuperclass()) {
                 for (Field field : type.getDeclaredFields()) {
                     if (Modifier.isStatic(field.getModifiers())
                             || field.isSynthetic()
-                            || result.containsKey(field.getName())) continue;
+                            || result.containsKey(field.getName())) {
+                        continue;
+                    }
                     if (budget.remaining <= 0 || result.size() >= MAX_ITEMS) {
                         result.put("$truncated", true);
                         return result;

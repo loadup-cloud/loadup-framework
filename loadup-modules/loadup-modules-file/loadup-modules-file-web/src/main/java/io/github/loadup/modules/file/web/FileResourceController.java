@@ -23,7 +23,6 @@ import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.request.query.IdQuery;
 import io.github.loadup.commons.result.PageResponse;
 import io.github.loadup.commons.result.SuccessResponse;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.authorization.model.LoadUpUser;
 import io.github.loadup.modules.file.client.command.FileCleanupCommand;
 import io.github.loadup.modules.file.client.command.FileDeleteCommand;
@@ -92,7 +91,6 @@ public class FileResourceController {
             @RequestParam("file") MultipartFile file, Authentication authentication) throws IOException {
         try (var content = file.getInputStream()) {
             return SuccessResponse.of(converter.toView(service.upload(
-                    TenantUtil.getTenantId(),
                     actor(authentication),
                     file.getOriginalFilename(),
                     file.getContentType(),
@@ -106,7 +104,6 @@ public class FileResourceController {
     @PreAuthorize("isAuthenticated()")
     public PageResponse<FileResourceViewDTO> list(@RequestBody FilePageQuery request, Authentication authentication) {
         var result = service.list(
-                TenantUtil.getTenantId(),
                 actor(authentication),
                 admin(authentication),
                 request.ownerId(),
@@ -119,8 +116,8 @@ public class FileResourceController {
     @Operation(summary = "Read file metadata")
     @PreAuthorize("isAuthenticated()")
     public SuccessResponse<FileResourceViewDTO> get(@RequestBody IdQuery request, Authentication authentication) {
-        return SuccessResponse.of(converter.toView(
-                service.get(TenantUtil.getTenantId(), request.id(), actor(authentication), admin(authentication))));
+        return SuccessResponse.of(
+                converter.toView(service.get(request.id(), actor(authentication), admin(authentication))));
     }
 
     @PostMapping("/references")
@@ -128,20 +125,18 @@ public class FileResourceController {
     @PreAuthorize("isAuthenticated()")
     public SuccessResponse<List<FileReferenceDTO>> references(
             @RequestBody IdQuery request, Authentication authentication) {
-        return SuccessResponse.of(service.references(
-                TenantUtil.getTenantId(), request.id(), actor(authentication), admin(authentication)));
+        return SuccessResponse.of(service.references(request.id(), actor(authentication), admin(authentication)));
     }
 
     @GetMapping("/{id}/content")
     @Operation(summary = "Download file content")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<StreamingResponseBody> download(@PathVariable String id, Authentication authentication) {
-        String tenant = TenantUtil.getTenantId();
         String actor = actor(authentication);
         boolean admin = admin(authentication);
-        FileResourceDTO file = service.get(tenant, id, actor, admin);
+        FileResourceDTO file = service.get(id, actor, admin);
         StreamingResponseBody body = output -> {
-            try (var download = service.download(tenant, id, actor, admin)) {
+            try (var download = service.download(id, actor, admin)) {
                 download.content().transferTo(output);
             }
         };
@@ -162,9 +157,8 @@ public class FileResourceController {
     @Operation(summary = "Delete an unreferenced file; storage failures remain retryable")
     @PreAuthorize("isAuthenticated()")
     public SuccessResponse<Void> delete(@RequestBody FileDeleteCommand request, Authentication authentication) {
-        String tenant = TenantUtil.getTenantId();
-        service.requestDeletion(tenant, request.id(), actor(authentication), admin(authentication));
-        service.cleanup(tenant, request.id());
+        service.requestDeletion(request.id(), actor(authentication), admin(authentication));
+        service.cleanup(request.id());
         return SuccessResponse.success();
     }
 

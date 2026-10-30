@@ -42,6 +42,14 @@ public class LoadUpAuthServerProperties {
     private boolean protocolEndpointsEnabled = true;
 
     private Duration userAccessTokenTtl = Duration.ofMinutes(30);
+    /**
+     * Signing JWK configuration used by the SAS binder.
+     */
+    private Jwk jwk = new Jwk();
+    /**
+     * OAuth2 clients registered in the embedded authorization server.
+     */
+    private List<Client> clients = new ArrayList<>();
 
     public boolean isProtocolEndpointsEnabled() {
         return protocolEndpointsEnabled;
@@ -58,16 +66,6 @@ public class LoadUpAuthServerProperties {
     public void setUserAccessTokenTtl(Duration userAccessTokenTtl) {
         this.userAccessTokenTtl = userAccessTokenTtl;
     }
-
-    /**
-     * Signing JWK configuration used by the SAS binder.
-     */
-    private Jwk jwk = new Jwk();
-
-    /**
-     * OAuth2 clients registered in the embedded authorization server.
-     */
-    private List<Client> clients = new ArrayList<>();
 
     public String getIssuer() {
         return issuer;

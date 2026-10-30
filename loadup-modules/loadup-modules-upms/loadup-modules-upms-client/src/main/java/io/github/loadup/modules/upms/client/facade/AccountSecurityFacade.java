@@ -23,7 +23,9 @@ import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.upms.client.dto.LoginEntryDTO;
 import io.github.loadup.modules.upms.client.dto.SecurityOverviewDTO;
 
-/** Public business contract for AccountSecurityService. */
+/**
+ * Public business contract for AccountSecurityService.
+ */
 public interface AccountSecurityFacade {
     SecurityOverviewDTO overview(String userId);
 

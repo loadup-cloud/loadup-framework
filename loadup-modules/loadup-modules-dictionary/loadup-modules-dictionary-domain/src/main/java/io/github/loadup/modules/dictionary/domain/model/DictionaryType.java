@@ -22,10 +22,11 @@ package io.github.loadup.modules.dictionary.domain.model;
 import io.github.loadup.commons.json.ToStringAsJson;
 import java.time.LocalDateTime;
 
-/** Named collection of business dictionary items. */
+/**
+ * Named collection of business dictionary items.
+ */
 public record DictionaryType(
         String id,
-        String tenantId,
         String code,
         String name,
         String description,

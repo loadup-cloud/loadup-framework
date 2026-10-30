@@ -30,16 +30,20 @@ Web → App → Domain Gateway → Infrastructure；认证适配连接 UPMS 凭�
 ```text
 应用服务 → 领域服务与 Gateway 契约 → 基础设施 GatewayImpl
 ```
+
 接口模块固定业务侧依赖方向；实现与基础设施通过独立模块接入。
 
 ## 扩展契约
 
-- [`DepartmentGateway`](src/main/java/io/github/loadup/modules/upms/domain/gateway/DepartmentGateway.java)：由实现方或调用方按接口定义对接。
-- [`PermissionGateway`](src/main/java/io/github/loadup/modules/upms/domain/gateway/PermissionGateway.java)：由实现方或调用方按接口定义对接。
+- [`DepartmentGateway`](src/main/java/io/github/loadup/modules/upms/domain/gateway/DepartmentGateway.java)
+  ：由实现方或调用方按接口定义对接。
+- [`PermissionGateway`](src/main/java/io/github/loadup/modules/upms/domain/gateway/PermissionGateway.java)
+  ：由实现方或调用方按接口定义对接。
 - [`LoginLogGateway`](src/main/java/io/github/loadup/modules/upms/domain/gateway/LoginLogGateway.java)：由实现方或调用方按接口定义对接。
 - [`RoleGateway`](src/main/java/io/github/loadup/modules/upms/domain/gateway/RoleGateway.java)：由实现方或调用方按接口定义对接。
 - [`UserGateway`](src/main/java/io/github/loadup/modules/upms/domain/gateway/UserGateway.java)：由实现方或调用方按接口定义对接。
-- [`UserOAuthBindingGateway`](src/main/java/io/github/loadup/modules/upms/domain/gateway/UserOAuthBindingGateway.java)：由实现方或调用方按接口定义对接。
+- [`UserOAuthBindingGateway`](src/main/java/io/github/loadup/modules/upms/domain/gateway/UserOAuthBindingGateway.java)
+  ：由实现方或调用方按接口定义对接。
 
 ## 设计取舍
 

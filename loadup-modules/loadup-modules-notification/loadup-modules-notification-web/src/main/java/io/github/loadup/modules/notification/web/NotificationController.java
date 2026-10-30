@@ -22,7 +22,6 @@ package io.github.loadup.modules.notification.web;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.PageResponse;
 import io.github.loadup.commons.result.SuccessResponse;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.authorization.model.LoadUpUser;
 import io.github.loadup.modules.notification.client.command.NotificationArchiveCommand;
 import io.github.loadup.modules.notification.client.command.NotificationReadAllCommand;
@@ -45,7 +44,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/** A user-owned inbox with a separate administrator publishing entry point. */
+/**
+ * A user-owned inbox with a separate administrator publishing entry point.
+ */
 @RestController
 @RequestMapping("/notifications")
 @Tag(name = "In-App Notifications", description = "Private notification inbox")
@@ -58,13 +59,23 @@ public class NotificationController {
         this.inbox = inbox;
     }
 
+    private static String actor(Authentication authentication) {
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || !(authentication.getPrincipal() instanceof LoadUpUser user)
+                || user.getUserId() == null
+                || user.getUserId().isBlank()) {
+            throw new CommonException(NotificationResultCodeEnum.AUTHENTICATED_USER_IS_REQUIRED);
+        }
+        return user.getUserId();
+    }
+
     @PostMapping("/publish")
     @Operation(summary = "Publish a notification to selected users")
     @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
     public SuccessResponse<SendResultDTO> publish(
             @RequestBody NotificationSendCommand request, Authentication authentication) {
         int delivered = inbox.publish(
-                TenantUtil.getTenantId(),
                 actor(authentication),
                 request.recipients(),
                 request.category(),
@@ -81,7 +92,6 @@ public class NotificationController {
     public PageResponse<NotificationViewDTO> list(
             @RequestBody NotificationPageQuery request, Authentication authentication) {
         var result = inbox.list(
-                TenantUtil.getTenantId(),
                 actor(authentication),
                 Boolean.TRUE.equals(request.unreadOnly()),
                 request.page() == null ? 1 : request.page(),
@@ -94,15 +104,14 @@ public class NotificationController {
     @PreAuthorize("isAuthenticated()")
     public SuccessResponse<UnreadCountDTO> unreadCount(
             @RequestBody NotificationUnreadCountQuery request, Authentication authentication) {
-        return SuccessResponse.of(
-                new UnreadCountDTO(inbox.unreadCount(TenantUtil.getTenantId(), actor(authentication))));
+        return SuccessResponse.of(new UnreadCountDTO(inbox.unreadCount(actor(authentication))));
     }
 
     @PostMapping("/read")
     @Operation(summary = "Mark one notification as read")
     @PreAuthorize("isAuthenticated()")
     public SuccessResponse<Void> markRead(@RequestBody NotificationReadCommand request, Authentication authentication) {
-        inbox.markRead(TenantUtil.getTenantId(), actor(authentication), request.id());
+        inbox.markRead(actor(authentication), request.id());
         return SuccessResponse.success();
     }
 
@@ -111,8 +120,7 @@ public class NotificationController {
     @PreAuthorize("isAuthenticated()")
     public SuccessResponse<ReadResultDTO> markAllRead(
             @RequestBody NotificationReadAllCommand request, Authentication authentication) {
-        return SuccessResponse.of(
-                new ReadResultDTO(inbox.markAllRead(TenantUtil.getTenantId(), actor(authentication))));
+        return SuccessResponse.of(new ReadResultDTO(inbox.markAllRead(actor(authentication))));
     }
 
     @PostMapping("/archive")
@@ -120,18 +128,7 @@ public class NotificationController {
     @PreAuthorize("isAuthenticated()")
     public SuccessResponse<Void> archive(
             @RequestBody NotificationArchiveCommand request, Authentication authentication) {
-        inbox.archive(TenantUtil.getTenantId(), actor(authentication), request.id());
+        inbox.archive(actor(authentication), request.id());
         return SuccessResponse.success();
-    }
-
-    private static String actor(Authentication authentication) {
-        if (authentication == null
-                || !authentication.isAuthenticated()
-                || !(authentication.getPrincipal() instanceof LoadUpUser user)
-                || user.getUserId() == null
-                || user.getUserId().isBlank()) {
-            throw new CommonException(NotificationResultCodeEnum.AUTHENTICATED_USER_IS_REQUIRED);
-        }
-        return user.getUserId();
     }
 }

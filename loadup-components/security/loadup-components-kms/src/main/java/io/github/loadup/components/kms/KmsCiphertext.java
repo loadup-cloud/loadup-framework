@@ -21,7 +21,9 @@ package io.github.loadup.components.kms;
 
 import io.github.loadup.commons.json.ToStringAsJson;
 
-/** An opaque Transit ciphertext that must retain its key name and version. */
+/**
+ * An opaque Transit ciphertext that must retain its key name and version.
+ */
 public record KmsCiphertext(
         String keyName,
         int version,

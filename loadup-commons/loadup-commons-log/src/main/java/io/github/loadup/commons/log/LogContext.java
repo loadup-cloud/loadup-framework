@@ -21,7 +21,9 @@ package io.github.loadup.commons.log;
 
 import org.slf4j.MDC;
 
-/** Shared MDC contract used by logging and tracing integrations. */
+/**
+ * Shared MDC contract used by logging and tracing integrations.
+ */
 public final class LogContext {
 
     public static final String TRACE_ID = "traceId";

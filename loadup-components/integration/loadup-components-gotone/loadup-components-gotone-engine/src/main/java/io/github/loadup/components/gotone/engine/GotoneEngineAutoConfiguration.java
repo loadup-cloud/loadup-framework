@@ -40,6 +40,25 @@ import org.springframework.core.task.TaskExecutor;
 @EnableConfigurationProperties(GotoneResilienceProperties.class)
 public class GotoneEngineAutoConfiguration {
 
+    /**
+     * Resolve the executor used for asynchronous delivery.
+     *
+     * <p>Several {@link TaskExecutor} beans are commonly registered: Spring Boot's
+     * {@code applicationTaskExecutor} plus a {@code taskScheduler}, which also implements the
+     * {@link TaskExecutor} contract. Prefer the application executor, fall back to the only
+     * candidate when exactly one exists, and otherwise disable asynchronous delivery so the
+     * service sends synchronously.
+     */
+    private static Optional<TaskExecutor> selectTaskExecutor(Map<String, TaskExecutor> taskExecutors) {
+        TaskExecutor applicationExecutor = taskExecutors.get("applicationTaskExecutor");
+        if (applicationExecutor != null) {
+            return Optional.of(applicationExecutor);
+        }
+        return taskExecutors.size() == 1
+                ? Optional.of(taskExecutors.values().iterator().next())
+                : Optional.empty();
+    }
+
     @Bean
     @ConditionalOnMissingBean
     public NotificationChannelManager notificationChannelManager(
@@ -77,24 +96,5 @@ public class GotoneEngineAutoConfiguration {
                 templateRenderer,
                 recordHandler,
                 selectTaskExecutor(taskExecutors));
-    }
-
-    /**
-     * Resolve the executor used for asynchronous delivery.
-     *
-     * <p>Several {@link TaskExecutor} beans are commonly registered: Spring Boot's
-     * {@code applicationTaskExecutor} plus a {@code taskScheduler}, which also implements the
-     * {@link TaskExecutor} contract. Prefer the application executor, fall back to the only
-     * candidate when exactly one exists, and otherwise disable asynchronous delivery so the
-     * service sends synchronously.
-     */
-    private static Optional<TaskExecutor> selectTaskExecutor(Map<String, TaskExecutor> taskExecutors) {
-        TaskExecutor applicationExecutor = taskExecutors.get("applicationTaskExecutor");
-        if (applicationExecutor != null) {
-            return Optional.of(applicationExecutor);
-        }
-        return taskExecutors.size() == 1
-                ? Optional.of(taskExecutors.values().iterator().next())
-                : Optional.empty();
     }
 }

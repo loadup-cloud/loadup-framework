@@ -23,7 +23,9 @@ import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
 import java.nio.charset.StandardCharsets;
 
-/** Shared input policy compatible with the configured BCrypt encoder. */
+/**
+ * Shared input policy compatible with the configured BCrypt encoder.
+ */
 public final class PasswordPolicy {
     public static final int MIN_CHARACTERS = 8;
     public static final int MAX_UTF8_BYTES = 72;
@@ -39,6 +41,8 @@ public final class PasswordPolicy {
     }
 
     public static void requireValid(String value) {
-        if (!isValid(value)) throw new CommonException(UpmsResultCodeEnum.INVALID_PASSWORD);
+        if (!isValid(value)) {
+            throw new CommonException(UpmsResultCodeEnum.INVALID_PASSWORD);
+        }
     }
 }

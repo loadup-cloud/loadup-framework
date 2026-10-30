@@ -1,8 +1,8 @@
 # LoadUp Cache Component
 
 以 **Spring Cache 标准门面**（`@Cacheable` / `@CacheEvict` / `@CachePut`）提供缓存能力，
-底层中间件（Caffeine / Redis / JetCache）通过 binder 热插拔。业务代码只写 Spring Cache 注解，
-**不依赖任何 LoadUp 缓存类**；切换底层实现时业务代码零修改。
+底层中间件（Caffeine / Redis / JetCache）通过 binder 热插拔。业务代码只写 Spring Cache 注解， **不依赖任何 LoadUp 缓存类**
+；切换底层实现时业务代码零修改。
 
 ## 引入
 
@@ -62,15 +62,15 @@ loadup:
 
 ## 能力矩阵（契约）
 
-| 能力 | Spring Cache 注解 | caffeine | redis | jetcache |
-|------|------------------|----------|-------|----------|
-| 读/写/更新 | `@Cacheable` `@CachePut` | ✓ | ✓ | ✓ |
-| 失效 | `@CacheEvict`（单键/全清） | ✓ | ✓ | ✓ |
-| 空值缓存 | `allow-null-values` | ✓ | ✓ | ✓ |
-| 按 cache 名 TTL | `loadup.cache.caches.*.ttl` | ✓ | ✓ | ✓ |
-| 随机过期防雪崩 | `random-expiration-range` | ✓ | ✓ | ✓ |
-| 本地/分布式/多级 | `type` | 本地 | 分布式 | 多级（可选同步） |
-| 防击穿/防穿透 | JetCache 特有 | ✗ | ✗ | `penetration-protect` |
+| 能力             | Spring Cache 注解           | caffeine | redis  | jetcache              |
+|------------------|-----------------------------|----------|--------|-----------------------|
+| 读/写/更新       | `@Cacheable` `@CachePut`    | ✓       | ✓     | ✓                    |
+| 失效             | `@CacheEvict`（单键/全清）  | ✓       | ✓     | ✓                    |
+| 空值缓存         | `allow-null-values`         | ✓       | ✓     | ✓                    |
+| 按 cache 名 TTL  | `loadup.cache.caches.*.ttl` | ✓       | ✓     | ✓                    |
+| 随机过期防雪崩   | `random-expiration-range`   | ✓       | ✓     | ✓                    |
+| 本地/分布式/多级 | `type`                      | 本地     | 分布式 | 多级（可选同步）      |
+| 防击穿/防穿透    | JetCache 特有               | ✗       | ✗     | `penetration-protect` |
 
 > 集成方只承诺 ✓ 的能力；切换 binder 零代码修改的前提是业务只用契约内能力。
 

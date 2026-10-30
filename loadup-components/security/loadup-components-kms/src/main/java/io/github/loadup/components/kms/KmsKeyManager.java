@@ -19,7 +19,9 @@
  */
 package io.github.loadup.components.kms;
 
-/** Optional administrative operations, using a separate credential from runtime operations. */
+/**
+ * Optional administrative operations, using a separate credential from runtime operations.
+ */
 public interface KmsKeyManager {
     void create(String name, KmsKeyType type);
 

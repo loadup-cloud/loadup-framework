@@ -20,21 +20,14 @@
 package io.github.loadup.modules.merchant.app.service;
 
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.modules.merchant.client.error.MerchantResultCodeEnum;
 
 final class MerchantIdentity {
     private MerchantIdentity() {}
 
-    static String tenant() {
-        String id = TenantUtil.getTenantId();
-        if (id == null || id.isBlank() || id.length() > 64)
-            throw new CommonException(MerchantResultCodeEnum.TRUSTED_TENANT_REQUIRED);
-        return id;
-    }
-
     static void actor(String actor) {
-        if (actor == null || actor.isBlank() || actor.length() > 256)
+        if (actor == null || actor.isBlank() || actor.length() > 256) {
             throw new CommonException(MerchantResultCodeEnum.AUTHENTICATED_ACTOR_REQUIRED);
+        }
     }
 }

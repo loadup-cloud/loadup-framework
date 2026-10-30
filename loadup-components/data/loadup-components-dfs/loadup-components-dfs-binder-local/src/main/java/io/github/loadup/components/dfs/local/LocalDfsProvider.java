@@ -39,7 +39,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
-/** Local filesystem binder intended for development and single-node deployments. */
+/**
+ * Local filesystem binder intended for development and single-node deployments.
+ */
 public class LocalDfsProvider implements DfsProvider {
     private static final String METADATA_PREFIX = "metadata.";
 
@@ -58,6 +60,22 @@ public class LocalDfsProvider implements DfsProvider {
             Files.createDirectories(metadataRoot);
         } catch (IOException e) {
             throw new DfsStorageException(DfsStorageException.Code.OPERATION_FAILED, e);
+        }
+    }
+
+    private static Path resolve(Path root, String relativePath) {
+        Path resolved = root.resolve(relativePath).normalize();
+        if (!resolved.startsWith(root)) {
+            throw new IllegalArgumentException("Invalid DFS file identifier: " + relativePath);
+        }
+        return resolved;
+    }
+
+    private static void deleteQuietly(Path path) {
+        try {
+            Files.deleteIfExists(path);
+        } catch (IOException ignored) {
+            // Preserve the original storage failure.
         }
     }
 
@@ -192,21 +210,5 @@ public class LocalDfsProvider implements DfsProvider {
 
     private Path metadataPath(String fileId) {
         return resolve(metadataRoot, fileId + ".properties");
-    }
-
-    private static Path resolve(Path root, String relativePath) {
-        Path resolved = root.resolve(relativePath).normalize();
-        if (!resolved.startsWith(root)) {
-            throw new IllegalArgumentException("Invalid DFS file identifier: " + relativePath);
-        }
-        return resolved;
-    }
-
-    private static void deleteQuietly(Path path) {
-        try {
-            Files.deleteIfExists(path);
-        } catch (IOException ignored) {
-            // Preserve the original storage failure.
-        }
     }
 }

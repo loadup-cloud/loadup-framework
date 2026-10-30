@@ -19,9 +19,9 @@
  */
 package io.github.loadup.modules.dictionary.infrastructure.dataobject;
 
+import com.mybatisflex.annotation.Column;
+import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
 
 @Table("dictionary_type")
 public class DictionaryTypeDO extends BaseDO {

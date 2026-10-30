@@ -45,7 +45,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-/** First-party JSON login for frontend applications. */
+/**
+ * First-party JSON login for frontend applications.
+ */
 @RestController
 @Tag(name = "UPMS Authentication", description = "First-party JSON login")
 public class UpmsTokenController {
@@ -58,7 +60,7 @@ public class UpmsTokenController {
             UpmsAuthenticationProvider authenticationProvider,
             JwtEncoder jwtEncoder,
             LoadUpAuthServerProperties properties,
-            @org.springframework.beans.factory.annotation.Qualifier("upmsClock") java.time.Clock clock) {
+            java.time.Clock clock) {
         this.authenticationProvider = authenticationProvider;
         this.jwtEncoder = jwtEncoder;
         this.properties = properties;
@@ -90,7 +92,9 @@ public class UpmsTokenController {
             Set<String> permissions = new LinkedHashSet<>();
             for (GrantedAuthority authority : authentication.getAuthorities()) {
                 String name = authority.getAuthority();
-                if (name == null || name.isBlank()) continue;
+                if (name == null || name.isBlank()) {
+                    continue;
+                }
                 if (name.startsWith("ROLE_")) {
                     roles.add(name.substring("ROLE_".length()));
                 } else {

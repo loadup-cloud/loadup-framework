@@ -35,6 +35,13 @@ import org.junit.jupiter.api.Test;
 class BizScenarioInterceptorTest {
     private final BizScenarioInterceptor interceptor = new BizScenarioInterceptor();
 
+    private static MethodInvocation invocation(String method, Object[] args) throws Exception {
+        var call = mock(MethodInvocation.class);
+        when(call.getMethod()).thenReturn(Endpoints.class.getMethod(method));
+        when(call.getArguments()).thenReturn(args);
+        return call;
+    }
+
     @AfterEach
     void clearContext() {
         BizContextHolder.clear();
@@ -116,13 +123,6 @@ class BizScenarioInterceptorTest {
         BizContextHolder.set(BizScenario.valueOf("trade"));
         assertThat(BizContextHolder.getOrDefault(fallback).getUniqueIdentity())
                 .isEqualTo("trade.#defaultUseCase#.#defaultScenario#");
-    }
-
-    private static MethodInvocation invocation(String method, Object[] args) throws Exception {
-        var call = mock(MethodInvocation.class);
-        when(call.getMethod()).thenReturn(Endpoints.class.getMethod(method));
-        when(call.getArguments()).thenReturn(args);
-        return call;
     }
 
     public static class Endpoints {

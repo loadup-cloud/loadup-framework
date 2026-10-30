@@ -68,6 +68,23 @@ class RequestSignatureContractTest {
     private static final RequestContent CONTENT = new RequestContent("GET", "/api/balance", null, new byte[0]);
     private static final Clock CLOCK = Clock.fixed(Instant.ofEpochSecond(TIMESTAMP), ZoneId.systemDefault());
 
+    private static RequestSignature signature(RequestSignatureParameters parameters, int size) {
+        return new RequestSignature(parameters, Base64.getEncoder().encodeToString(new byte[size]));
+    }
+
+    private static Map<String, List<String>> headers(RequestSignature signature) {
+        var headers = new HashMap<String, List<String>>();
+        signature.toHeaders().forEach((key, value) -> headers.put(key, List.of(value)));
+        return headers;
+    }
+
+    private static void assertMalformed(Runnable operation) {
+        assertThatThrownBy(operation::run)
+                .isInstanceOf(RequestSignatureException.class)
+                .satisfies(error -> assertThat(((RequestSignatureException) error).getCode())
+                        .isEqualTo(RequestSignatureException.Code.MALFORMED));
+    }
+
     @Test
     void canonicalEmptyBodyHasStandardSha256AndPreservesNoQueryTarget() {
         String canonical =
@@ -255,22 +272,5 @@ class RequestSignatureContractTest {
                 .thenReturn(true);
         assertThat(store.claim("a".repeat(64), Duration.ofMillis(1))).isTrue();
         verify(values).setIfAbsent("loadup:signature:nonce:" + "a".repeat(64), "1", Duration.ofMillis(1));
-    }
-
-    private static RequestSignature signature(RequestSignatureParameters parameters, int size) {
-        return new RequestSignature(parameters, Base64.getEncoder().encodeToString(new byte[size]));
-    }
-
-    private static Map<String, List<String>> headers(RequestSignature signature) {
-        var headers = new HashMap<String, List<String>>();
-        signature.toHeaders().forEach((key, value) -> headers.put(key, List.of(value)));
-        return headers;
-    }
-
-    private static void assertMalformed(Runnable operation) {
-        assertThatThrownBy(operation::run)
-                .isInstanceOf(RequestSignatureException.class)
-                .satisfies(error -> assertThat(((RequestSignatureException) error).getCode())
-                        .isEqualTo(RequestSignatureException.Code.MALFORMED));
     }
 }

@@ -30,7 +30,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.Ordered;
 
-/** Adds one invocation summary outside transaction and method authorization advisors. */
+/**
+ * Adds one invocation summary outside transaction and method authorization advisors.
+ */
 @AutoConfiguration(after = AopAutoConfiguration.class)
 @ConditionalOnProperty(
         prefix = "loadup.observability.service-digest",

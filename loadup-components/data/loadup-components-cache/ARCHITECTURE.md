@@ -4,7 +4,7 @@
 
 LoadUp Cache 的 facade 就是 **Spring Cache 标准门面**：业务代码只用 `@Cacheable` /
 `@CacheEvict` / `@CachePut`，不 import 任何 LoadUp 缓存类。LoadUp 只补三类 Spring Cache
-表达不了的增量：**按 cache name 的 TTL、空值缓存开关、随机过期（防雪崩）**。底层中间件
+表达不了的增量： **按 cache name 的 TTL、空值缓存开关、随机过期（防雪崩）**。底层中间件
 （Caffeine / Redis / JetCache）全部以 binder 形式提供，集成方通过 pom 依赖 + 一个配置项切换，
 业务代码零修改。
 
@@ -49,7 +49,7 @@ loadup-components-cache-api（LoadupCacheProperties + CacheJsonCodec + 防雪崩
 
 ### 3.2 Redis binder：同步写保证 Spring Cache 契约
 
-Spring Data Redis 4.x 在 Lettuce（同时实现同步/响应式工厂）下默认启用**异步写**：
+Spring Data Redis 4.x 在 Lettuce（同时实现同步/响应式工厂）下默认启用 **异步写**：
 `put` / `evict` / `clear` 变成 fire-and-forget，`@CachePut` 后立即 `@Cacheable` 读可能读到旧值，
 `clear()` 后立刻读也可能命中残留。binder 显式构造 `RedisCacheWriter.create(connectionFactory,
 c -> c.immediateWrites(true))` 恢复同步语义，保证"写后立即可读"。
@@ -80,12 +80,12 @@ JetCache 用每次写入的 `expire` 参数，保证同一配置在不同底层�
 
 ## 5. 反绕过契约（防止直接对接中间件）
 
-| 约束 | 执行方式 |
-|------|---------|
-| 业务模块只依赖 `-cache-api` | binder 坐标只在集成方工程/`-test` 出现；BOM 单点管理版本 |
-| 业务代码只用 Spring Cache 注解 | `CacheJsonCodec` / JetCache 适配不暴露给业务；API 层不提供手写 CRUD 门面 |
-| 切 binder 零代码修改 | `AbstractCacheBinderIT` 同一业务服务在 caffeine/redis/jetcache 上跑同一套用例 |
-| 中间件 API 不泄漏 | binder 的配置走 `loadup.cache.*` / `loadup.cache.binder.*`，不要求业务感知实现细节 |
+| 约束                           | 执行方式                                                                           |
+|--------------------------------|------------------------------------------------------------------------------------|
+| 业务模块只依赖 `-cache-api`    | binder 坐标只在集成方工程/`-test` 出现；BOM 单点管理版本                           |
+| 业务代码只用 Spring Cache 注解 | `CacheJsonCodec` / JetCache 适配不暴露给业务；API 层不提供手写 CRUD 门面           |
+| 切 binder 零代码修改           | `AbstractCacheBinderIT` 同一业务服务在 caffeine/redis/jetcache 上跑同一套用例      |
+| 中间件 API 不泄漏              | binder 的配置走 `loadup.cache.*` / `loadup.cache.binder.*`，不要求业务感知实现细节 |
 
 ## 6. 测试
 

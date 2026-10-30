@@ -39,13 +39,13 @@ class NacosConfigContentTest {
     @Test
     void parseYaml_flattensNestedMapsAndCollections() {
         String yaml = """
-                app:
-                  name: loadup
-                  replicas: 2
-                tags:
-                  - a
-                  - b
-                """;
+            app:
+              name: loadup
+              replicas: 2
+            tags:
+              - a
+              - b
+            """;
 
         Map<String, String> configs = NacosConfigContent.parse(yaml, "yaml");
 

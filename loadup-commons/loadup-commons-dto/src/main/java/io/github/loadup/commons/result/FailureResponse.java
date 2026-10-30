@@ -38,17 +38,17 @@ public record FailureResponse<T>(
         String traceId)
         implements IResponse<T> {
 
-    @Override
-    public Result getResult() {
-        return result;
-    }
-
     public static <T> FailureResponse<T> of(ResultCode code) {
         return new FailureResponse<>(Result.buildFailure(code), null, null);
     }
 
     public static <T> FailureResponse<T> of(ResultCode code, String traceId) {
         return new FailureResponse<>(Result.buildFailure(code), null, traceId);
+    }
+
+    @Override
+    public Result getResult() {
+        return result;
     }
 
     @Override

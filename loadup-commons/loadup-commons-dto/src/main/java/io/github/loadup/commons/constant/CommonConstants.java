@@ -25,6 +25,7 @@ package io.github.loadup.commons.constant;
  */
 public interface CommonConstants {
     String DEFAULT_DATE_FORMAT = io.github.loadup.commons.json.JsonUtil.DEFAULT_DATE_FORMAT;
-    String DEFAULT_TENANT_ID = "default";
+    String DEFAULT_TENANT_ID = "__default__";
+    String DEFAULT_SCHEMA = "public";
     String DEFAULT_DATE_TIME_FORMAT = io.github.loadup.commons.json.JsonUtil.DEFAULT_DATE_TIME_FORMAT;
 }

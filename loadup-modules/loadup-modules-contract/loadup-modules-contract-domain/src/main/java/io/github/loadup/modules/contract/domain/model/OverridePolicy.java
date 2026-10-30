@@ -25,7 +25,9 @@ import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import java.math.BigDecimal;
 import java.util.Set;
 
-/** An explicit merchant permission that may narrow, but never widen, product constraints. */
+/**
+ * An explicit merchant permission that may narrow, but never widen, product constraints.
+ */
 public record OverridePolicy(BigDecimal minimum, BigDecimal maximum, Set<TypedValue> allowedValues) {
     public OverridePolicy {
         allowedValues = Set.copyOf(allowedValues);
@@ -42,7 +44,9 @@ public record OverridePolicy(BigDecimal minimum, BigDecimal maximum, Set<TypedVa
         if (definition.maximum() != null && maximum != null && maximum.compareTo(definition.maximum()) > 0) {
             throw new CommonException(ContractResultCodeEnum.MERCHANT_MAXIMUM_WIDENS_PRODUCT_BOUNDS);
         }
-        if (allowedValues.size() > 100) throw new CommonException(ContractResultCodeEnum.TOO_MANY_ALLOWED_VALUES);
+        if (allowedValues.size() > 100) {
+            throw new CommonException(ContractResultCodeEnum.TOO_MANY_ALLOWED_VALUES);
+        }
         for (TypedValue value : allowedValues) {
             definition.validate(value);
             ParameterDefinition.checkValue(definition.type(), value, minimum, maximum, Set.of());

@@ -19,8 +19,12 @@
  */
 package io.github.loadup.components.captcha.nanocaptcha;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 import io.github.loadup.components.captcha.CaptchaType;
 import java.awt.image.BufferedImage;
@@ -33,6 +37,18 @@ import org.mockito.Answers;
 import org.mockito.MockedConstruction;
 
 class NanocaptchaProviderTest {
+    private static MockedConstruction<ImageCaptcha.Factory.Builder> images(BufferedImage image) {
+        ImageCaptcha captcha = mock(ImageCaptcha.class);
+        when(captcha.getContent()).thenReturn("Ab12");
+        when(captcha.getImage()).thenReturn(image);
+        ImageCaptcha.Factory factory = mock(ImageCaptcha.Factory.class);
+        when(factory.create()).thenReturn(captcha);
+        return mockConstruction(
+                ImageCaptcha.Factory.Builder.class,
+                withSettings().defaultAnswer(Answers.RETURNS_SELF),
+                (builder, context) -> when(builder.build()).thenReturn(factory));
+    }
+
     @Test
     void successfulAndFailedAttemptsAreBothSingleUse() {
         var properties = new NanocaptchaProperties();
@@ -85,9 +101,13 @@ class NanocaptchaProviderTest {
         try (var ignored = images(new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB))) {
             properties.setExpirationSeconds(-1);
             String expired = provider.generate(null).captchaId();
-            for (int i = 1; i < 2500; i++) provider.generate(null);
+            for (int i = 1; i < 2500; i++) {
+                provider.generate(null);
+            }
             properties.setExpirationSeconds(300);
-            for (int i = 0; i < 2499; i++) provider.generate(null);
+            for (int i = 0; i < 2499; i++) {
+                provider.generate(null);
+            }
             String fresh = provider.generate(null).captchaId();
             assertThat(provider.verify(expired, "Ab12")).isFalse();
             assertThat(provider.verify(fresh, "Ab12")).isTrue();
@@ -112,17 +132,5 @@ class NanocaptchaProviderTest {
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("Unsupported nanocaptcha content: " + charset);
         }
-    }
-
-    private static MockedConstruction<ImageCaptcha.Factory.Builder> images(BufferedImage image) {
-        ImageCaptcha captcha = mock(ImageCaptcha.class);
-        when(captcha.getContent()).thenReturn("Ab12");
-        when(captcha.getImage()).thenReturn(image);
-        ImageCaptcha.Factory factory = mock(ImageCaptcha.Factory.class);
-        when(factory.create()).thenReturn(captcha);
-        return mockConstruction(
-                ImageCaptcha.Factory.Builder.class,
-                withSettings().defaultAnswer(Answers.RETURNS_SELF),
-                (builder, context) -> when(builder.build()).thenReturn(factory));
     }
 }

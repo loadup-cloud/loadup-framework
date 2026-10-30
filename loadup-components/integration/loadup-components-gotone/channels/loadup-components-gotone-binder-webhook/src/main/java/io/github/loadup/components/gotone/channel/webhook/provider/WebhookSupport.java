@@ -40,10 +40,10 @@ final class WebhookSupport {
     /**
      * POSTs a JSON body to the given webhook URL.
      *
-     * @param url the webhook URL
+     * @param url  the webhook URL
      * @param json the JSON payload
      * @return {@code true} when the endpoint answered with a 2xx status
-     * @throws IOException when the call fails
+     * @throws IOException          when the call fails
      * @throws InterruptedException when the call is interrupted
      */
     static boolean postJson(String url, String json) throws IOException, InterruptedException {

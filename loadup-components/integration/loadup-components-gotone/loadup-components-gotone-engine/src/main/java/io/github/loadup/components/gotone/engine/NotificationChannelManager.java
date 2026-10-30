@@ -84,13 +84,19 @@ public class NotificationChannelManager {
     private List<NotificationChannelProvider> buildProviderChain(
             String channelType, String primary, List<String> fallbackChain) {
         Map<String, NotificationChannelProvider> providers = providerMap.get(channelType);
-        if (providers == null || providers.isEmpty()) return List.of();
+        if (providers == null || providers.isEmpty()) {
+            return List.of();
+        }
 
         Set<String> ordered = new LinkedHashSet<>();
-        if (primary != null) ordered.add(primary);
+        if (primary != null) {
+            ordered.add(primary);
+        }
         if (fallbackChain != null) {
             for (String name : fallbackChain) {
-                if (!name.equals(primary)) ordered.add(name);
+                if (!name.equals(primary)) {
+                    ordered.add(name);
+                }
             }
         }
         providers.keySet().stream().filter(n -> !ordered.contains(n)).forEach(ordered::add);
@@ -104,7 +110,9 @@ public class NotificationChannelManager {
 
     public record SendResult(ChannelSendResponse response, List<Attempt> attempts, boolean success) {
         public String getSuccessfulProvider() {
-            if (!success || attempts.isEmpty()) return null;
+            if (!success || attempts.isEmpty()) {
+                return null;
+            }
             return attempts.get(attempts.size() - 1).providerName();
         }
     }

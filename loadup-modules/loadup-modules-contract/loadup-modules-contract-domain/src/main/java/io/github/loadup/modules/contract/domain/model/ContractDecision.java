@@ -28,6 +28,11 @@ public record ContractDecision(
         Integer revision,
         String snapshotHash,
         ResolvedConfiguration configuration) {
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
+    }
+
     public enum Reason {
         ALLOWED,
         SUSPENDED,
@@ -36,10 +41,5 @@ public record ContractDecision(
         PRODUCT_NOT_SIGNED,
         CONDITION_REJECTED,
         FACTS_INDETERMINATE
-    }
-
-    @Override
-    public String toString() {
-        return ToStringAsJson.reflectionToString(this);
     }
 }

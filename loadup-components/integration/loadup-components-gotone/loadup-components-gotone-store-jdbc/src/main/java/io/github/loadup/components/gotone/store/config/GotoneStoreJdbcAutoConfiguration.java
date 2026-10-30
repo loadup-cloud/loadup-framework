@@ -19,21 +19,19 @@
  */
 package io.github.loadup.components.gotone.store.config;
 
-import io.github.loadup.components.database.tenant.DatabaseTenant;
 import io.github.loadup.components.gotone.config.ChannelConfigProvider;
 import io.github.loadup.components.gotone.config.ServiceConfigProvider;
 import io.github.loadup.components.gotone.record.RecordHandler;
-import io.github.loadup.components.gotone.store.repository.NotificationServiceRepository;
-import io.github.loadup.components.gotone.store.repository.ServiceChannelRepository;
+import io.github.loadup.components.gotone.store.mapper.NotificationRecordRowMapper;
+import io.github.loadup.components.gotone.store.mapper.NotificationServiceRowMapper;
+import io.github.loadup.components.gotone.store.mapper.ServiceChannelRowMapper;
 import java.time.Clock;
 import javax.sql.DataSource;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
 
 /**
  * Auto-configuration for the default JDBC store of the gotone component.
@@ -46,28 +44,27 @@ import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
         afterName = {
             "io.github.loadup.components.database.autoconfigure.DatabaseCoreAutoConfiguration",
             "org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration",
-            "org.springframework.boot.data.jdbc.autoconfigure.DataJdbcRepositoriesAutoConfiguration"
+            "com.mybatisflex.spring.boot.v4.MybatisFlexAutoConfiguration"
         })
-@ConditionalOnClass({ChannelConfigProvider.class, JdbcAggregateTemplate.class})
+@ConditionalOnClass({ChannelConfigProvider.class, NotificationServiceRowMapper.class})
 @ConditionalOnSingleCandidate(DataSource.class)
 public class GotoneStoreJdbcAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ServiceConfigProvider serviceConfigProvider(NotificationServiceRepository services, DatabaseTenant tenant) {
-        return new JdbcServiceConfigProvider(services, tenant);
+    public ServiceConfigProvider serviceConfigProvider(NotificationServiceRowMapper services) {
+        return new JdbcServiceConfigProvider(services);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public ChannelConfigProvider channelConfigProvider(ServiceChannelRepository channels, DatabaseTenant tenant) {
-        return new JdbcChannelConfigProvider(channels, tenant);
+    public ChannelConfigProvider channelConfigProvider(ServiceChannelRowMapper channels) {
+        return new JdbcChannelConfigProvider(channels);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public RecordHandler recordHandler(
-            JdbcAggregateTemplate aggregates, DatabaseTenant tenant, @Qualifier("databaseClock") Clock clock) {
-        return new JdbcRecordHandler(aggregates, tenant, clock);
+    public RecordHandler recordHandler(NotificationRecordRowMapper records, Clock clock) {
+        return new JdbcRecordHandler(records, clock);
     }
 }

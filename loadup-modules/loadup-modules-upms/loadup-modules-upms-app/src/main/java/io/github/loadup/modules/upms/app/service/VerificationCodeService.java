@@ -29,7 +29,6 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 /**
@@ -40,15 +39,17 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class VerificationCodeService {
-    private final Clock clock;
-
     private static final int CODE_LENGTH = 6;
     private static final int CODE_EXPIRY_MINUTES = 5;
     private static final int MAX_ATTEMPTS = 5;
     private static final Random RANDOM = new SecureRandom();
-
+    private final Clock clock;
     // In-memory storage (for production, use Redis)
     private final Map<String, VerificationCode> codeStorage = new ConcurrentHashMap<>();
+
+    public VerificationCodeService(Clock clock) {
+        this.clock = clock;
+    }
 
     /**
      * Generate verification code
@@ -179,9 +180,5 @@ public class VerificationCodeService {
             code.append(RANDOM.nextInt(10));
         }
         return code.toString();
-    }
-
-    public VerificationCodeService(@Qualifier("upmsClock") Clock clock) {
-        this.clock = clock;
     }
 }

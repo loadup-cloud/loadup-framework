@@ -19,11 +19,19 @@
  */
 package io.github.loadup.components.scheduler;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 
 class SchedulerTemplateTest {
@@ -82,7 +90,9 @@ class SchedulerTemplateTest {
             public void execute() throws Exception {
                 calls.incrementAndGet();
                 entered.countDown();
-                if (!release.await(5, TimeUnit.SECONDS)) throw new AssertionError("Timeout");
+                if (!release.await(5, TimeUnit.SECONDS)) {
+                    throw new AssertionError("Timeout");
+                }
             }
         };
         var scheduler = new SchedulerTemplate(mock(SchedulerProvider.class), List.of(task));

@@ -33,7 +33,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandi
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
-/** Creates file metadata services when both JDBC and a DFS binder are present. */
+/**
+ * Creates file metadata services when both JDBC and a DFS binder are present.
+ */
 @Import(FileDTOConverterImpl.class)
 @AutoConfiguration(
         afterName = {
@@ -48,16 +50,7 @@ public class FileResourceAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(io.github.loadup.modules.file.client.facade.FileResourceFacade.class)
     public FileResourceService fileResourceService(
-            FileResourceGateway repository,
-            DfsService dfs,
-            FileDTOConverter converter,
-            @org.springframework.beans.factory.annotation.Qualifier("fileClock") java.time.Clock clock) {
+            FileResourceGateway repository, DfsService dfs, FileDTOConverter converter, java.time.Clock clock) {
         return new FileResourceService(repository, dfs, converter, clock);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(name = "fileClock")
-    public java.time.Clock fileClock() {
-        return java.time.Clock.systemDefaultZone();
     }
 }

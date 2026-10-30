@@ -30,15 +30,15 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 public class TestApplication {
 
+    public static void main(String[] args) {
+        SpringApplication.run(TestApplication.class, args);
+    }
+
     @Bean
     public FlywayMigrationStrategy cleanMigrateStrategy() {
         return flyway -> {
             flyway.clean();
             flyway.migrate();
         };
-    }
-
-    public static void main(String[] args) {
-        SpringApplication.run(TestApplication.class, args);
     }
 }

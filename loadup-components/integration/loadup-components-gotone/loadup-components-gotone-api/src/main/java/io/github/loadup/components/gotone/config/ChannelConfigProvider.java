@@ -41,11 +41,11 @@ public interface ChannelConfigProvider {
     /**
      * Channel configuration resolved for one service code.
      *
-     * @param channel the channel type, e.g. EMAIL or SMS
-     * @param provider the preferred provider name
+     * @param channel           the channel type, e.g. EMAIL or SMS
+     * @param provider          the preferred provider name
      * @param fallbackProviders the ordered fallback provider names
-     * @param templateContent the raw template content, or {@code null} when not templated
-     * @param channelConfig the channel-specific configuration map (subject, sign name, webhook URL)
+     * @param templateContent   the raw template content, or {@code null} when not templated
+     * @param channelConfig     the channel-specific configuration map (subject, sign name, webhook URL)
      */
     record ChannelConfig(
             String channel,

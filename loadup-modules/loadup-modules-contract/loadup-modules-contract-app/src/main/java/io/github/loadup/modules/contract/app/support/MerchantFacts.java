@@ -39,17 +39,23 @@ public class MerchantFacts {
         this.converter = converter;
     }
 
-    public Map<String, TypedValue> load(String tenant, String merchant) {
+    public Map<String, TypedValue> load(String merchant) {
         MerchantFactsProvider provider = providers.getIfAvailable();
-        if (provider == null) throw new CommonException(ContractResultCodeEnum.MERCHANT_PROVIDER_UNAVAILABLE);
-        var profile = provider.load(tenant, merchant);
-        if (profile == null || !merchant.equals(profile.merchantId()) || !profile.active() || profile.facts() == null)
+        if (provider == null) {
+            throw new CommonException(ContractResultCodeEnum.MERCHANT_PROVIDER_UNAVAILABLE);
+        }
+        var profile = provider.load(merchant);
+        if (profile == null || !merchant.equals(profile.merchantId()) || !profile.active() || profile.facts() == null) {
             throw new CommonException(ContractResultCodeEnum.MERCHANT_UNVERIFIED);
-        if (profile.facts().size() > 256) throw new CommonException(ContractResultCodeEnum.TOO_MANY_MERCHANT_FACTS);
+        }
+        if (profile.facts().size() > 256) {
+            throw new CommonException(ContractResultCodeEnum.TOO_MANY_MERCHANT_FACTS);
+        }
         Map<String, TypedValue> values = new HashMap<>();
         profile.facts().forEach((key, value) -> {
-            if (key == null || value == null || !key.startsWith("merchant."))
+            if (key == null || value == null || !key.startsWith("merchant.")) {
                 throw new CommonException(ContractResultCodeEnum.UNTRUSTED_FACT_NAMESPACE);
+            }
             values.put(key, converter.toValue(value));
         });
         return Map.copyOf(values);

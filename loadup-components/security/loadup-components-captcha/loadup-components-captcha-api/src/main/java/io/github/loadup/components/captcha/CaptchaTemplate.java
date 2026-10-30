@@ -27,15 +27,23 @@ package io.github.loadup.components.captcha;
  */
 public interface CaptchaTemplate {
 
-    /** Generate a captcha of the binder's default type. */
+    /**
+     * Generate a captcha of the binder's default type.
+     */
     CaptchaResponse generate();
 
-    /** Generate a captcha of the requested {@link CaptchaType}. */
+    /**
+     * Generate a captcha of the requested {@link CaptchaType}.
+     */
     CaptchaResponse generate(String type);
 
-    /** Verify a previously generated captcha; see {@link CaptchaProvider#verify}. */
+    /**
+     * Verify a previously generated captcha; see {@link CaptchaProvider#verify}.
+     */
     boolean verify(String captchaId, Object userInput);
 
-    /** Active binder type, one of {@code tianai} / {@code nanocaptcha}. */
+    /**
+     * Active binder type, one of {@code tianai} / {@code nanocaptcha}.
+     */
     String getBinderType();
 }

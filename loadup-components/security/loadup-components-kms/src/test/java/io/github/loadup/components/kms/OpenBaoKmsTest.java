@@ -45,7 +45,9 @@ import org.springframework.web.client.RestClient;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
-/** Protocol fixtures verify mapping and JCA interoperability, not a live OpenBao deployment. */
+/**
+ * Protocol fixtures verify mapping and JCA interoperability, not a live OpenBao deployment.
+ */
 class OpenBaoKmsTest {
     private final JsonMapper mapper = JsonMapper.builder().build();
     private final List<Request> requests = new CopyOnWriteArrayList<>();
@@ -88,9 +90,15 @@ class OpenBaoKmsTest {
 
     @AfterEach
     void stop() {
-        if (kms != null) kms.close();
-        if (manager != null) manager.close();
-        if (server != null) server.stop(0);
+        if (kms != null) {
+            kms.close();
+        }
+        if (manager != null) {
+            manager.close();
+        }
+        if (server != null) {
+            server.stop(0);
+        }
     }
 
     @Test
@@ -525,7 +533,9 @@ class OpenBaoKmsTest {
                                                 "2",
                                                 Map.of("public_key", publicPem())))));
             } else {
-                if (path.endsWith("/rotate")) latestVersion++;
+                if (path.endsWith("/rotate")) {
+                    latestVersion++;
+                }
                 exchange.sendResponseHeaders(204, -1);
                 exchange.close();
             }
@@ -545,7 +555,9 @@ class OpenBaoKmsTest {
         }
         assertThat(request.path("prehashed").asBoolean()).isFalse();
         Signature signature = Signature.getInstance(pss ? "RSASSA-PSS" : "SHA256withRSA");
-        if (pss) signature.setParameter(new PSSParameterSpec("SHA-256", "MGF1", MGF1ParameterSpec.SHA256, 32, 1));
+        if (pss) {
+            signature.setParameter(new PSSParameterSpec("SHA-256", "MGF1", MGF1ParameterSpec.SHA256, 32, 1));
+        }
         return signature;
     }
 

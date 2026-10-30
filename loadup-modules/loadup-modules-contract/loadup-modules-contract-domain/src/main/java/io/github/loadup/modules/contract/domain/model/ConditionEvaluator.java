@@ -26,6 +26,16 @@ import java.util.Map;
 import java.util.Objects;
 
 public final class ConditionEvaluator {
+    private static boolean compatible(TypedValue left, TypedValue right) {
+        return left.type() == right.type() || left.numeric() && right.numeric();
+    }
+
+    static int compare(TypedValue left, TypedValue right) {
+        return left.numeric() && right.numeric()
+                ? left.number().compareTo(right.number())
+                : left.value().compareTo(right.value());
+    }
+
     public void validate(Condition condition) {
         count(Objects.requireNonNull(condition), 1, new int[1]);
     }
@@ -48,7 +58,9 @@ public final class ConditionEvaluator {
     }
 
     private void count(Condition condition, int depth, int[] nodes) {
-        if (depth > 8 || ++nodes[0] > 128) throw new CommonException(ContractResultCodeEnum.RULE_TREE_EXCEEDS_BUDGET);
+        if (depth > 8 || ++nodes[0] > 128) {
+            throw new CommonException(ContractResultCodeEnum.RULE_TREE_EXCEEDS_BUDGET);
+        }
         switch (condition) {
             case Condition.All all -> all.children().forEach(child -> count(child, depth + 1, nodes));
             case Condition.Any any -> any.children().forEach(child -> count(child, depth + 1, nodes));
@@ -88,8 +100,12 @@ public final class ConditionEvaluator {
         boolean unknown = false;
         for (Condition child : children) {
             MatchResult result = evaluateNode(child, facts, configuration);
-            if (all && result == MatchResult.NO_MATCH) return result;
-            if (!all && result == MatchResult.MATCH) return result;
+            if (all && result == MatchResult.NO_MATCH) {
+                return result;
+            }
+            if (!all && result == MatchResult.MATCH) {
+                return result;
+            }
             unknown |= result == MatchResult.INDETERMINATE;
         }
         return unknown ? MatchResult.INDETERMINATE : all ? MatchResult.MATCH : MatchResult.NO_MATCH;
@@ -99,14 +115,20 @@ public final class ConditionEvaluator {
             Condition.Compare rule, Map<String, TypedValue> facts, Map<String, TypedValue> configuration) {
         TypedValue actual = facts.get(rule.field());
         TypedValue reference = rule.configurationKey() == null ? null : configuration.get(rule.configurationKey());
-        if (actual == null || rule.configurationKey() != null && reference == null) return MatchResult.INDETERMINATE;
+        if (actual == null || rule.configurationKey() != null && reference == null) {
+            return MatchResult.INDETERMINATE;
+        }
         List<TypedValue> expected = reference == null ? rule.expected() : List.of(reference);
-        if (expected.stream().anyMatch(v -> !compatible(actual, v))) return MatchResult.INDETERMINATE;
+        if (expected.stream().anyMatch(v -> !compatible(actual, v))) {
+            return MatchResult.INDETERMINATE;
+        }
         if (actual.type() == ValueType.BOOLEAN
                 && rule.operator() != ComparisonOperator.EQ
                 && rule.operator() != ComparisonOperator.NE
                 && rule.operator() != ComparisonOperator.IN
-                && rule.operator() != ComparisonOperator.NOT_IN) return MatchResult.INDETERMINATE;
+                && rule.operator() != ComparisonOperator.NOT_IN) {
+            return MatchResult.INDETERMINATE;
+        }
         int compared = compare(actual, expected.getFirst());
         boolean matches =
                 switch (rule.operator()) {
@@ -121,15 +143,5 @@ public final class ConditionEvaluator {
                     case BETWEEN -> compared >= 0 && compare(actual, expected.getLast()) <= 0;
                 };
         return matches ? MatchResult.MATCH : MatchResult.NO_MATCH;
-    }
-
-    private static boolean compatible(TypedValue left, TypedValue right) {
-        return left.type() == right.type() || left.numeric() && right.numeric();
-    }
-
-    static int compare(TypedValue left, TypedValue right) {
-        return left.numeric() && right.numeric()
-                ? left.number().compareTo(right.number())
-                : left.value().compareTo(right.value());
     }
 }

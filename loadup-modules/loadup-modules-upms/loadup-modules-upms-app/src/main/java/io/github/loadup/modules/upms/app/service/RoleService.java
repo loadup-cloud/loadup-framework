@@ -60,6 +60,19 @@ public class RoleService implements io.github.loadup.modules.upms.client.facade.
     private final DepartmentGateway departmentGateway;
     private final UserGateway userGateway;
 
+    public RoleService(
+            RoleGateway roleGateway,
+            PermissionGateway permissionGateway,
+            DepartmentGateway departmentGateway,
+            UserGateway userGateway,
+            UpmsDTOConverter dtoConverter) {
+        this.dtoConverter = dtoConverter;
+        this.roleGateway = roleGateway;
+        this.permissionGateway = permissionGateway;
+        this.departmentGateway = departmentGateway;
+        this.userGateway = userGateway;
+    }
+
     /**
      * Create role
      */
@@ -116,8 +129,12 @@ public class RoleService implements io.github.loadup.modules.upms.client.facade.
         boolean parentChanged =
                 command.getParentId() != null && !command.getParentId().equals(role.getParentId());
 
-        if (command.getParentId() != null) validateParent(command.getId(), command.getParentId());
-        if (command.getDataScope() != null) validateScope(command.getDataScope());
+        if (command.getParentId() != null) {
+            validateParent(command.getId(), command.getParentId());
+        }
+        if (command.getDataScope() != null) {
+            validateScope(command.getDataScope());
+        }
 
         // Update role fields
         if (command.getRoleName() != null) {
@@ -143,7 +160,9 @@ public class RoleService implements io.github.loadup.modules.upms.client.facade.
         role.setUpdatedBy(command.getUpdatedBy());
 
         role = roleGateway.update(role);
-        if (parentChanged) updateDescendantLevels(role, new HashSet<>());
+        if (parentChanged) {
+            updateDescendantLevels(role, new HashSet<>());
+        }
 
         // Update permissions
         if (command.getPermissionIds() != null) {
@@ -223,7 +242,9 @@ public class RoleService implements io.github.loadup.modules.upms.client.facade.
                         Comparator.comparing(Role::getSortOrder, Comparator.nullsLast(Comparator.naturalOrder()));
                     default -> throw new CommonException(UpmsResultCodeEnum.UNSUPPORTED_ROLE_SORT_FIELD);
                 };
-        if ("DESC".equalsIgnoreCase(query.getSortOrder())) order = order.reversed();
+        if ("DESC".equalsIgnoreCase(query.getSortOrder())) {
+            order = order.reversed();
+        }
         List<Role> matches = roleGateway.findAll().stream()
                 .filter(role -> query.getRoleName() == null
                         || role.getRoleName() != null && role.getRoleName().contains(query.getRoleName()))
@@ -258,7 +279,9 @@ public class RoleService implements io.github.loadup.modules.upms.client.facade.
             if (parent == null) {
                 roots.add(role);
             } else {
-                if (parent.getChildren() == null) parent.setChildren(new ArrayList<>());
+                if (parent.getChildren() == null) {
+                    parent.setChildren(new ArrayList<>());
+                }
                 parent.getChildren().add(role);
             }
         }
@@ -272,7 +295,9 @@ public class RoleService implements io.github.loadup.modules.upms.client.facade.
     public void assignRoleToUser(String roleId, String userId) {
         Role role =
                 roleGateway.findById(roleId).orElseThrow(() -> new CommonException(UpmsResultCodeEnum.ROLE_NOT_FOUND));
-        if (!role.isEnabled()) throw new CommonException(UpmsResultCodeEnum.ROLE_IS_DISABLED);
+        if (!role.isEnabled()) {
+            throw new CommonException(UpmsResultCodeEnum.ROLE_IS_DISABLED);
+        }
         userGateway.findById(userId).orElseThrow(() -> new CommonException(UpmsResultCodeEnum.USER_DOES_NOT_EXIST));
         roleGateway.assignRoleToUser(userId, roleId, "0");
     }
@@ -318,25 +343,14 @@ public class RoleService implements io.github.loadup.modules.upms.client.facade.
         return dtoConverter.toRole(role, parentName, permissions, departments);
     }
 
-    public RoleService(
-            RoleGateway roleGateway,
-            PermissionGateway permissionGateway,
-            DepartmentGateway departmentGateway,
-            UserGateway userGateway,
-            UpmsDTOConverter dtoConverter) {
-        this.dtoConverter = dtoConverter;
-        this.roleGateway = roleGateway;
-        this.permissionGateway = permissionGateway;
-        this.departmentGateway = departmentGateway;
-        this.userGateway = userGateway;
-    }
-
     private void validatePermissions(List<String> permissionIds) {
         for (String permissionId : permissionIds) {
             Permission permission = permissionGateway
                     .findById(permissionId)
                     .orElseThrow(() -> new CommonException(UpmsResultCodeEnum.PERMISSION_DOES_NOT_EXIST));
-            if (!permission.isEnabled()) throw new CommonException(UpmsResultCodeEnum.PERMISSION_IS_DISABLED);
+            if (!permission.isEnabled()) {
+                throw new CommonException(UpmsResultCodeEnum.PERMISSION_IS_DISABLED);
+            }
         }
     }
 
@@ -373,7 +387,9 @@ public class RoleService implements io.github.loadup.modules.upms.client.facade.
     }
 
     private int resolveRoleLevel(String parentId) {
-        if (parentId == null) return 1;
+        if (parentId == null) {
+            return 1;
+        }
         Role parent = roleGateway
                 .findById(parentId)
                 .orElseThrow(() -> new CommonException(UpmsResultCodeEnum.PARENT_ROLE_DOES_NOT_EXIST));
@@ -381,7 +397,9 @@ public class RoleService implements io.github.loadup.modules.upms.client.facade.
     }
 
     private void updateDescendantLevels(Role parent, Set<String> visited) {
-        if (!visited.add(parent.getId())) return;
+        if (!visited.add(parent.getId())) {
+            return;
+        }
         for (Role child : roleGateway.findByParentId(parent.getId())) {
             child.setRoleLevel(parent.getRoleLevel() + 1);
             roleGateway.update(child);

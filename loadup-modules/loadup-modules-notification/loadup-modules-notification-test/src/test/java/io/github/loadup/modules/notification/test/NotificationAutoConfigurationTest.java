@@ -22,6 +22,7 @@ package io.github.loadup.modules.notification.test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
+import io.github.loadup.commons.time.autoconfigure.ClockAutoConfiguration;
 import io.github.loadup.components.database.id.IdGenerator;
 import io.github.loadup.modules.notification.app.autoconfigure.NotificationAutoConfiguration;
 import io.github.loadup.modules.notification.app.converter.NotificationDTOConverter;
@@ -43,7 +44,9 @@ class NotificationAutoConfigurationTest {
             .withBean(NamedParameterJdbcTemplate.class, () -> mock(NamedParameterJdbcTemplate.class))
             .withBean(IdGenerator.class, () -> () -> "notification-id")
             .withConfiguration(AutoConfigurations.of(
-                    NotificationPersistenceAutoConfiguration.class, NotificationAutoConfiguration.class));
+                    ClockAutoConfiguration.class,
+                    NotificationPersistenceAutoConfiguration.class,
+                    NotificationAutoConfiguration.class));
 
     @Test
     void wiresDomainPortAndApplicationMapper() {

@@ -61,7 +61,6 @@ class PipelineExecutionIT {
         jdbc.execute("""
             CREATE TABLE IF NOT EXISTS pipeline_execution_test (
               id VARCHAR(64) NOT NULL PRIMARY KEY,
-              tenant_id VARCHAR(64),
               created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
               updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
               deleted TINYINT NOT NULL DEFAULT 0

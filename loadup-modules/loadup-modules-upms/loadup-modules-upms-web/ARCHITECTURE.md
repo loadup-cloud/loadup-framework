@@ -37,7 +37,8 @@ Web → App → Domain Gateway → Infrastructure；认证适配连接 UPMS 凭�
 HTTP /api/** → Controller → App Service → Client DTO 响应
 ```
 
-账号安全 Controller 只接受旧密码、新密码和确认值，用户 ID 取自 Resource Server 验证后的 `LoadUpUser`。登录记录查询按该 ID 过滤；管理员用户管理 API 与本人安全 API 分开授权。
+账号安全 Controller 只接受旧密码、新密码和确认值，用户 ID 取自 Resource Server 验证后的 `LoadUpUser`。登录记录查询按该 ID
+过滤；管理员用户管理 API 与本人安全 API 分开授权。
 
 ## 装配规则
 
@@ -51,4 +52,6 @@ HTTP /api/** → Controller → App Service → Client DTO 响应
 
 ## 可选审计桥接
 
-`UserSensitiveController` 使用方法权限和认证主体调用 app；`SensitiveReadAuditConfiguration` 在可选 AuditService 存在时装配默认 recorder。自动配置顺序在 UPMS app 和审计模块之后。默认 recorder 的独立事务先提交审计元数据，异常不吞掉；无 audit 依赖时不装配默认 recorder，app 对明文访问默认拒绝。
+`UserSensitiveController` 使用方法权限和认证主体调用 app；`SensitiveReadAuditConfiguration` 在可选 AuditService 存在时装配默认
+recorder。自动配置顺序在 UPMS app 和审计模块之后。默认 recorder 的独立事务先提交审计元数据，异常不吞掉；无 audit 依赖时不装配默认
+recorder，app 对明文访问默认拒绝。

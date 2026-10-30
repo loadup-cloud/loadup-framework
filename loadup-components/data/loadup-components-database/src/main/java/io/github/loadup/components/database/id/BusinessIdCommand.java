@@ -23,7 +23,9 @@ import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.components.database.sequence.DatabaseResultCodeEnum;
 
-/** Business metadata; shard is supplied by the event's registered routing policy. */
+/**
+ * Business metadata; shard is supplied by the event's registered routing policy.
+ */
 public record BusinessIdCommand(
         int dataVersion, int systemVersion, String eventCode, String extensionCode, int siteId, int shard) {
     public BusinessIdCommand {
@@ -38,7 +40,9 @@ public record BusinessIdCommand(
                 || siteId < 0
                 || siteId > 999
                 || shard < 0
-                || shard > 999) throw new CommonException(DatabaseResultCodeEnum.INVALID_INPUT);
+                || shard > 999) {
+            throw new CommonException(DatabaseResultCodeEnum.INVALID_INPUT);
+        }
     }
 
     @Override

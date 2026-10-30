@@ -1,147 +1,125 @@
-# Database Component Architecture (historical)
-
-> The notes below describe the former MyBatis-Flex implementation and are retained as historical design context. They do not describe the current JDBC implementation. See [README.md](README.md) for current configuration and persistence responsibilities.
+# Database Component Architecture
 
 ## Scope
 
-The component is a single-jar, thin MyBatis-Flex integration. It owns persistence conventions and auto-configuration; applications own datasource selection, JDBC drivers, table schemas, and repository code.
+`loadup-components-database` is a single-jar integration for MyBatis-Flex and Spring JDBC. It owns persistence
+conventions, generated mapper/table definitions, ID/sequence allocation, Flyway defaults and schema-per-tenant routing
+seams. Applications own datasource selection, JDBC drivers and deployment migrations.
+
+Spring Data JDBC is not part of the component. Simple aggregate reads use generated MyBatis-Flex mappers and
+`ServiceImpl`/`IService`; complex queries, locks, conditional writes and batches use parameterized Spring JDBC.
 
 ## Runtime flow
 
 ```text
 DO extends BaseDO
       │
-      ├─ MyBatis-Flex key generator ── IdGenerator (default BusinessIdGenerator)
-      ├─ BaseEntityListener ─────────── createdAt / updatedAt / tenantId / deleted
-      ├─ logic-delete metadata ──────── deleted = 0 / 1
-      └─ tenant metadata ────────────── tenant_id predicate + insert value
+      ├─ generated Mapper / ServiceImpl(IService) ── simple reads, paging, logical delete
+      ├─ QueryWrapper ───────────────────────────── fixed predicates and ordering
+      ├─ JdbcClient gateway ─────────────────────── complex/paginated/locking SQL
+      ├─ IdGenerator ────────────────────────────── application-assigned business IDs
+      └─ explicit audit fields ──────────────────── createdAt / updatedAt / deleted
 ```
 
-`BaseDO` remains in `loadup-commons-dto` because it is the common persistence contract consumed by components and modules. The database component supplies all MyBatis-Flex behavior around that contract.
+`BaseDO` lives in `loadup-commons-dto` and is shared by framework modules. Its `id` is marked with
+`@Id(keyType = KeyType.None)`, so MyBatis-Flex never generates or replaces an application-assigned identifier. Business
+tables no longer contain `tenant_id`; tenant identity selects the schema at the data-source boundary.
 
 ## Common fields
 
-| Java field | Database column | Type | Behavior |
-|---|---|---|---|
-| `id` | `id` | `VARCHAR(64)` | Generated only when blank |
-| `tenantId` | `tenant_id` | `VARCHAR(64)` | Filled and filtered when tenancy is enabled |
-| `createdAt` | `created_at` | `DATETIME` | Filled once on insert |
-| `updatedAt` | `updated_at` | `DATETIME` | Filled on insert and every entity update |
-| `deleted` | `deleted` | `TINYINT` | `0` normal, `1` deleted |
+| Java field  | Database column | Type           | Behavior                                                                             |
+|-------------|-----------------|----------------|--------------------------------------------------------------------------------------|
+| `id`        | `id`            | `VARCHAR(64)`  | Assigned explicitly or by `IdGenerator`; Flex key type `None`                        |
+| `createdAt` | `created_at`    | `TIMESTAMP(6)` | Set on insert                                                                        |
+| `updatedAt` | `updated_at`    | `TIMESTAMP(6)` | Set on insert and every update                                                       |
+| `deleted`   | `deleted`       | `BOOLEAN`      | `FALSE` normal, `TRUE` logically deleted; configured through `MyBatisFlexCustomizer` |
 
-Timestamps use the framework clock using the JVM system default time zone. Unit tests may construct a listener with a deterministic clock.
+Timestamps use the framework clock and the JVM system default time zone.
 
-## ID generation
+## Generated sources
 
-`IdGenerator` extends MyBatis-Flex's IKeyGenerator and supplies its entity-aware callback with a default bridge to generate(). It is registered under IdGenerator.KEY and shared with BaseEntityListener. BusinessIdGenerator is the default Spring bean; one application-supplied IdGenerator replaces it. Missing identifiers are filled before insertion; explicit identifiers are preserved.
+`mybatis-flex-processor` runs as an annotation processor in every module. For each `@Table` entity it generates:
 
-Flex configuration resolves the strategy through ObjectProvider only when generating the first key, then caches the singleton strategy with SingletonSupplier. This avoids the SqlSessionFactory → BusinessIdGenerator → Sequence → generated Mapper → SqlSessionFactory cycle. Sequence allocation rows explicitly receive UUIDs before insertion, so neither the key callback nor listener recursively invokes the business generator.
+- `{entityPackage.parent}.mapper.XxxMapper` annotated with `@Mapper` and extending `BaseMapper<XxxDO>`;
+- `{entityPackage.parent}.table.XxxTableDef` and an aggregate `Tables` class with type-safe `QueryColumn` constants.
 
-Automatic generation uses validated loadup.database.business-id metadata (default 0/1 versions, event 00000000, empty extension, site/shard 000). Generic event 00000000 shares capacity across all automatic entity IDs. Explicit command-based generation remains available. Audit/deletion defaults remain framework-owned; choosing an IdGenerator bean does not authorize custom Flex globals.
+The database auto-configuration scans `io.github.loadup` for `BaseMapper` subtypes so framework mappers are visible
+outside the consuming application's auto-configuration packages. Mapper beans are lazy; a mapper is only materialized
+when a gateway injects it and a single `DataSource` exists.
 
-## Business IDs and database sequences
+`MyBatisFlexCustomizer` installs the shared conventions on the Flex global configuration: logical-delete column/values,
+banner suppression and pagination defaults. Entity classes without a `deleted` column are unaffected.
 
-Implemented 2026-10-12 using MyBatis-Flex and independent Spring transactions. The automatic primary-key generator is now BusinessIdGenerator. Sequence auto-configuration is enabled by default via loadup.database.sequence.enabled; deployment migrations and site/routing policies remain integration responsibilities.
+Because gateways mix mapper reads with explicit JDBC writes in the same transaction, the MyBatis local cache scope is
+`STATEMENT`. A session-scoped cache would return stale entities after an explicit JDBC update that MyBatis cannot
+observe.
 
-### Existing implementations
+## Schema-per-tenant isolation
 
-| Candidate | Relevant capability | Integration assessment |
-|---|---|---|
-| [Meituan Leaf](https://github.com/Meituan-Dianping/Leaf) | Apache-2.0; database segment allocation by business tag; separate core and server modules | Preferred reference and first reuse candidate. Evaluate the segment core independently of the server and Snowflake path. |
-| [Didi TinyId](https://github.com/didi/tinyid) | Apache-2.0; ID service and Java client | Repository archived on 2026-04-15; an adoption requires accepting maintenance responsibility and its service deployment model. |
-| [ShardingSphere key generators](https://shardingsphere.apache.org/document/current/en/user-manual/common-config/builtin-algorithm/keygen/) | Built-in UUID/Snowflake and custom generator SPI | Suitable when ShardingSphere is already required; introducing it solely for database sequences adds unnecessary infrastructure. |
-| [MySQL sequence counter example](https://dev.mysql.com/doc/refman/8.4/en/information-functions.html) | Atomic counter update with connection-local LAST_INSERT_ID | A database primitive rather than an SDK; connection affinity and transaction ownership must be explicit. |
-
-Leaf is not assumed to be a verified Java 25 / Spring Boot 4 dependency. Its [core POM](https://github.com/Meituan-Dianping/Leaf/blob/master/leaf-core/pom.xml) declares legacy dependency coordinates, including the old MySQL connector, and exposes MyBatis and other dependencies. Its [segment implementation](https://github.com/Meituan-Dianping/Leaf/blob/master/leaf-core/src/main/java/com/sankuai/inf/leaf/segment/SegmentIDGenImpl.java) owns background refresh and buffer lifecycles that require extra consideration for date-scoped sequences. TinyId's Java client obtains ranges from a separate HTTP server rather than directly using a local DataSource; its [server POM](https://github.com/didi/tinyid/blob/master/tinyid-server/pom.xml) uses Boot 1.5.9. Based on these constraints, the recommended implementation is a small MyBatis-Flex segment allocator using the established segment approach; direct Leaf core reuse remains an option if dependency and lifecycle evaluation proves simpler. Any copied upstream source must retain Apache-2.0 attribution and notices. No standalone ID service is required for the first embedded implementation.
-
-### Responsibility and public contracts
-
-- `Sequence.next(scope)` supplies a positive numeric value unique within a documented scope. `nextBatch(scope, count)` returns a bounded primitive `long[]` of unique numbers from local committed ranges, with a maximum batch count of 10,000. A batch may cross ranges and need not be numerically contiguous; a failed call returns no partial batch and may consume numbers. The internal allocator reserves committed database ranges independently of the public batch count. A scope contains a registered name and optional business date. Different scopes may issue the same number.
-- `BusinessIdGenerator.generate(command)` owns validation, local-date selection, sequence scope, routing buckets and formatting. Callers supply business metadata, not a raw sequence value.
-- A pure formatter/parser supports fixed vectors and decoding, but does not promise uniqueness when callers supply arbitrary numbers.
-- Entities without explicit event/customer metadata use the configured automatic BusinessIdGenerator defaults. Command-based business numbers may also be assigned explicitly or stored separately. Previously supplied entity IDs are retained.
-
-### Encoding contract
+Tenant isolation is physical: each tenant owns a PostgreSQL schema. `TenantContext`/`DatabaseTenant` resolve the trusted
+tenant and its schema; business code, DTOs, facades, gateways and repositories never accept or expose a tenant
+parameter.
 
 ```text
-date(8) + dataVersion(1) + systemVersion(1) + eventCode(8)
-        + extension(0..32) + site(3) + shard(3) + sequence(8)
+request / worker entry
+        │
+        ▼
+TenantFilter / worker bootstrap ── binds TenantContext
+        │
+        ▼
+AbstractRoutingDataSource (planned) ── determineCurrentLookupKey() = TenantContext.tenantId()
+        │
+        ├─ schema mode: per-tenant DataSource (same DB, different currentSchema)
+        └─ database mode: independent DataSource
+        │
+        ▼
+single-tenant repository / explicit SQL (no tenant predicate)
 ```
 
-The fixed portion contains 32 characters. A 32-character extension therefore produces at most 64 characters and fits the existing VARCHAR(64) schema contract. Customer and random buckets are replaced by one three-digit logical shard field. No primary-key schema expansion is required; never truncate an identifier.
+Design rules:
 
-| Field | Validation and meaning |
-|---|---|
-| Date | Eight ASCII digits, calendar date from an injected Clock; default JVM local zone. Capture once for formatting and allocation. Use a common deployment zone across replicas. |
-| Versions | One ASCII decimal digit each, 0..9; changes define an explicit format/routing contract. |
-| Event code | Exactly eight ASCII digits; centrally registered and preserved as a string to retain leading zeros. |
-| Extension | Optional bounded ASCII alphanumeric value; exclude credentials and sensitive user data. Fixed tail length is 14, so variable extension boundaries remain parsable. |
-| Site | Three ASCII digits, 000..999; stable deployment identity, not pod IP or a random startup value. Independent allocation databases must use distinct sites or share one allocator. |
-| Shard | 000..999. Use a specified deterministic hash of the customer identifier when customer affinity is required; an event with no such requirement may derive a bucket from its sequence modulo 1,000 to distribute writes. Select and register one policy per event/version, preserve it across replicas and retries, and never encode the raw customer identifier. This is a logical routing hint, not a uniqueness source or a requirement to create 1,000 physical tables. Changing the physical bucket mapping requires a separate routing/migration contract. |
-| Sequence | Zero-padded eight digits, 1..99,999,999. Exhaustion fails explicitly; truncation, modulo wrap and silent fallback are forbidden. |
+- `loadup.database.multi-tenant.default-schema` defaults to `public`; `DatabaseTenant.currentSchema()` validates
+  `[a-z_][a-z0-9_]{0,62}` before any connection is selected.
+- `enabled=false` always resolves the configured default tenant/schema. `enabled=true, required=true` fails closed when
+  the execution context has no tenant.
+- The current phase serves only the default schema; routing, tenant registry lookup, per-tenant pools and per-tenant
+  Flyway are deliberately deferred.
+- Schema mode uses one pool per tenant so pooled `search_path` state cannot leak between tenants. Database mode is an
+  alternative target for the same routing key.
+- The tenant must be bound before the transaction starts. `TenantFilter` binds the default tenant in the current phase;
+  background workers bind their schema at the worker entry point.
+- Per-tenant Flyway: run the same schema-agnostic migrations with `defaultSchema`/`schemas` set to the tenant schema. A
+  control-plane tenant registry maps tenant codes to schema names; business tables never carry a tenant column.
 
-The business scope is `(date, dataVersion, systemVersion, eventCode, site)`, shared across shards and extensions. This makes the limit 99,999,999 allocated numbers per scope per day, including unused reservations. A namespace dimension that resets sequences independently must be encoded in the ID or share an allocation scope; an invisible tenant namespace can otherwise produce duplicate IDs. Business retries reuse the persisted ID through the application's idempotency contract. The generic Sequence is unique within its own scope; the complete encoded business ID is unique across these encoded scopes.
+Non-relational resources are outside schema isolation: Redis lock/async-result keys, DFS object paths and RPC identity
+continue to use `TenantUtil`/`MDCUtils`.
 
-### Allocation and persistence
+## Repository query style
 
-The allocation table includes the standard BaseDO fields plus a unique `scope_key`, `max_allocated` and immutable `max_value`. Segment step is a deployment setting, not persisted per scope. Sequence state is shared infrastructure: its repository must deliberately bypass business-tenant filtering and forbid logical deletion/reset that could recreate an already-used scope. A CHECK constraint and allocator validation reject logically deleted/corrupt rows; deployment permissions must restrict physical deletion and manual counter reset.
+Generated MyBatis-Flex mappers and `QueryWrapper` are used for simple aggregates (one or two fixed predicates), paging
+and logical deletion. `JdbcClient` is used in infrastructure gateways for complex queries: three or more predicates,
+optional filters, `FOR UPDATE`, `IN` lists, or explicit column lists. `JdbcClient` keeps SQL in infrastructure with
+named parameters and clear locking/pagination semantics.
 
-1. Resolve the scope, then obtain a row lock in a short independent `REQUIRES_NEW` transaction using a dedicated allocator bean/transaction template.
-2. Reserve a bounded range, update the maximum, and commit before publishing the range to any caller. Concurrent first-row creation uses a unique constraint; retry an initialization conflict in a fresh transaction.
-3. Serve the committed range with an atomic in-memory cursor. Provide an active range and at most one standby range per scope. Trigger asynchronous prefetch when active capacity drops below 20%, with a single in-flight refill per scope. Publish the standby range only after its database transaction commits. A CAS-based range claim must respect the inclusive upper bound before returning any number.
-4. Cap the final range at the configured maximum. Reject exhaustion with a database ResultCode; never issue a value beyond the eight-digit space.
-5. Create a new scope for a new date. Never reset an old row. Old dates revisited after clock changes continue from their persisted maximum, subject to bounded cache admission.
+Mappers expose tenant-free, single-tenant signatures. Gateways and facades do not accept tenant identifiers. Logical
+deletion is applied by the Flex global configuration for mapper operations and must be written explicitly in raw SQL.
 
-Repositories use MyBatis-Flex BaseMapper, generated Tables and QueryWrapper. No JdbcTemplate or handwritten SQL is introduced. The allocation table's operational metadata ID must be explicitly assigned a UUID to avoid sequence recursion. A REQUIRES_NEW allocator needs connection-pool headroom when called inside existing business transactions.
+## Flyway
 
-The guarantee is scope uniqueness, with gaps permitted. Business rollback and process death do not reclaim issued or reserved numbers. Parallel segments do not provide global chronological ordering or gapless accounting numbers. Cached ranges remain usable during a database outage until exhausted; then allocation fails explicitly. Cache eviction, restarts and unused reservations also consume capacity. At scope admission capacity, past-date states are removed; old references only consume their previously committed ranges and cannot be republished into the new state. If no past-date entry is available, admission fails. Bound active scopes and observe waste before choosing the default segment size.
+Flyway support is optional; consumers using migrations include Flyway and its PostgreSQL module. Migration scripts are
+schema-agnostic (no schema-qualified names) and assume a fresh schema. `LoadUpFlywayAutoConfiguration` applies the
+configured default schema from `loadup.database.multi-tenant.default-schema`; per-tenant execution is a
+deployment/routing responsibility.
 
-### Throughput and batch allocation
+## ID generation and sequences
 
-Initial defaults are a 10,000-number segment, 20% remaining-capacity prefetch trigger, and two committed ranges per active scope at most. Step size is a deployment capacity setting, not an ID-format field. Reduce it for low-volume scopes to avoid wasting the eight-digit space; evaluate increases using observed refill latency, throughput and restart waste. Automatic adaptive sizing is deferred until measurements justify it.
+`IdGenerator` supplies application-assigned IDs; `BusinessIdGenerator` is the default when Sequence is available.
+Sequence persistence uses Spring JDBC and an independent `REQUIRES_NEW` transaction. Allocation rows are per schema and
+use a unique `scope_key`; business rollback does not reclaim issued numbers. See README for encoding, capacity and
+operational rules.
 
-Steady-state `next` performs a scope-cache lookup and an atomic cursor claim, without database access or a process-wide lock. `nextBatch` claims multiple local numbers using a bounded CAS operation per range rather than repeatedly calling `next`; crossing a range uses another committed range. Public batches are bounded to protect memory. Neither issuance nor range transitions may reuse numbers or race a cache eviction.
+## Background workers
 
-Cold-start requests share one initialization task per scope. Prefetch uses a component-owned bounded executor, bounded queue and explicit shutdown. If no committed capacity remains, callers await a shared refill only up to a configured deadline; queue rejection and database failures are reported with stable database ResultCodes. A failed prefetch does not invalidate the remaining active range. A 250ms failure cooldown bounds repeated allocation attempts. Capacity exhaustion is terminal for that scope and must not create a retry storm. First-call cold start and refill latency are measured separately from the warm issuance path.
-
-Scope caching must have a bounded active-scope count, lifecycle-safe eviction and expiry appropriate to the date dimension. In-flight reservations and old cursors cannot be republished after eviction. Registered hot scopes may be warmed before traffic; do not scan every possible event/site combination or allocate new-day ranges for inactive scopes. Caller cancellation after commit wastes a range rather than reclaiming it.
-
-As an illustrative calculation, one instance issuing 100,000 numbers/second with a step of 10,000 needs about ten database range transactions/second in steady state. This is arithmetic, not a benchmark or promised throughput. Different scopes lock different rows; instances sharing one hot scope still serialize range reservations at the database. Performance acceptance measures single hot-scope contention, multiple scopes, multiple JVMs, virtual threads, batch sizes, P95/P99 latency, refill latency and database transaction rate in the actual deployment. Database capacity and the eight-digit daily limit remain independent constraints.
-
-Database failover and backup restoration must preserve committed allocation maxima. Restoring an older allocation table can reissue numbers even if the allocator itself is correct; recovery requires an established high-water mark or a new encoded site/version. Unique business-number constraints provide a final safeguard.
-
-### Verification and remaining acceptance
-
-The allocator uses Spring JDBC with PostgreSQL `ON CONFLICT (scope_key) DO NOTHING` and a row lock in an independent transaction. The PostgreSQL migration is packaged under `db/migration`; deployments include that location or apply the migration externally. UUID allocation-row primary keys prevent recursive business ID allocation. The allocation namespace is global, uses the reserved tenant `__sequence__`, and does not depend on the caller's tenant context. A deleted/corrupt allocation row fails explicitly.
-
-Unit tests cover fixed encoding vectors, maximum length, leading zeros, invalid dates and values, local-zone batch dates, virtual-thread single/batch concurrency, restart waste, range boundaries, cache admission, timeouts, prefetch failure and metrics. Real MySQL tests cover concurrent first creation, committed disjoint ranges, tenant independence, caller rollback, final-range truncation and maximum conflicts. Leaf dependencies were not introduced; source-compatible upstream reuse was not required.
-
-2026-10-12 verification passed 41 focused tests, including five real MySQL ITs. Coverage includes default strategy selection, metadata binding, custom strategy backoff, lazy initialization, automatic business IDs on real inserts, explicit ID preservation and sequence bootstrap without recursion. License and Spotless checks passed. This is correctness evidence, not a production throughput benchmark.
-
-Consumer acceptance still requires representative multi-JVM P95/P99 and capacity measurements, executor/pool sizing, event registry and routing policy integration, site ownership, and database failover/restore rehearsals. Eight-digit scope capacity includes prefetch/restart waste and is separate from throughput.
-
-## Logical deletion and ownership
-
-`BaseDO.deleted` is a nullable `Boolean` inherited by every mapped DO. The PostgreSQL schema stores `deleted BOOLEAN NOT NULL DEFAULT FALSE`. Repository derived queries and explicit SQL filters use `deleted = false`; physical lifecycle operations (such as removing dictionary items or unlinking references) are written explicitly and do not rely on an ORM-wide logic-delete switch.
-
-## Multi-tenancy
-
-`DatabaseTenant.current()` is the single source of the trusted tenant. It returns the configured default tenant in single-tenant mode and the ScopedValue tenant in multi-tenant mode; `required=true` fails closed when the context is missing. `TenantContext.tenantId()` exposes the same resolver to Spring Data JDBC repository default methods.
-
-Repositories expose tenant-free read methods (`findById`, `findByUsername`, `findByOrder`, ...) that resolve the tenant internally and delegate to derived `findByTenantId...` methods. Callers and repository method signatures never supply a tenant identifier, so a request cannot select another tenant by passing a parameter. Explicit SQL paths also bind `TenantContext.tenantId()` rather than a caller-provided value.
-
-The servlet filter always propagates request context. With multi-tenancy disabled, it binds the configured `default-tenant-id` and ignores headers, parameters and subdomains. With multi-tenancy enabled, header lookup is enabled by default; query-parameter lookup is enabled by configuring a name, and subdomain lookup is opt-in. Authentication and authorization layers remain responsible for validating that the caller may act as the supplied tenant.
-
-`TenantUtil` reads immutable ScopedValue bindings. Executor integrations use LoadUpContextTaskDecorator or ContextHolder.wrap; runWithTenant/callWithTenant establish callback scopes and automatically restore previous bindings.
-
-## Repository scanning
-
-`DataJdbcRepositoryPackagesAutoConfiguration` registers `io.github.loadup` as an auto-configuration package before Boot's Spring Data JDBC repository scanner runs. This makes repository interfaces in framework and Pay modules discoverable by Spring Boot's single repository registrar without enabling one registrar per module. Modules continue to declare `spring-boot-starter-data-jdbc` transitively through `loadup-components-database`.
-
-## Schema contract
-
-Every business table uses the five standard fields: `id VARCHAR(64)`, `tenant_id VARCHAR(64)`, `created_at`, `updated_at` and `deleted BOOLEAN NOT NULL DEFAULT FALSE`. Tenant-enabled query patterns should normally add a composite index beginning with `tenant_id` and `deleted`; business-selective columns can follow them.
-
-## 租户绑定生命周期
-
-TenantUtil 基于 commons-context 的不可变 ExecutionContext 与 JDK 25 ScopedValue。TenantFilter 显式派生租户上下文、写入同名请求属性并包裹 FilterChain；REQUEST/ASYNC/ERROR 分派受支持，异常/结束由 JDK 恢复此前绑定，不再 set/clear。单租户模式固定使用 `default-tenant-id`；多租户模式解析请求来源，客户端租户提取配置不替代认证授权，集成方必须验证可访问租户。
+Outbox, DelayedTask and Transfer workers scan only the schema they run in. A worker row has no tenant column;
+tenant/schema binding happens at the worker entry point. Deploy one worker per tenant schema (or a dispatcher that
+iterates schemas and switches context) when multiple tenants are active.

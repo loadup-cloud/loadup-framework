@@ -21,11 +21,11 @@ import java.time.ZoneId;
 import java.util.Objects;
 
 public final class BusinessTime {
+    private BusinessTime() {}
+
     public static ZoneId zone() {
         return ZoneId.systemDefault();
     }
-
-    private BusinessTime() {}
 
     public static LocalDateTime local(OffsetDateTime value) {
         return Objects.requireNonNull(value, "value").atZoneSameInstant(zone()).toLocalDateTime();

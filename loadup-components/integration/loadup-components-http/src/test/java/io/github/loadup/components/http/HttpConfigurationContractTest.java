@@ -36,6 +36,20 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpMethod;
 
 class HttpConfigurationContractTest {
+    private static HttpProperties.Client client(
+            URI url,
+            Duration connect,
+            Duration read,
+            Duration acquire,
+            Integer total,
+            Integer perRoute,
+            Integer request,
+            Long response,
+            URI proxy) {
+        return new HttpProperties.Client(
+                url, connect, read, acquire, total, perRoute, request, response, null, proxy, false, null, null, null);
+    }
+
     @ParameterizedTest
     @NullSource
     @ValueSource(
@@ -186,19 +200,5 @@ class HttpConfigurationContractTest {
         assertThat(properties.clients()).containsOnlyKeys("payments");
         assertThat(new HttpProperties(null).clients()).isEmpty();
         assertThatThrownBy(() -> properties.clients().clear()).isInstanceOf(UnsupportedOperationException.class);
-    }
-
-    private static HttpProperties.Client client(
-            URI url,
-            Duration connect,
-            Duration read,
-            Duration acquire,
-            Integer total,
-            Integer perRoute,
-            Integer request,
-            Long response,
-            URI proxy) {
-        return new HttpProperties.Client(
-                url, connect, read, acquire, total, perRoute, request, response, null, proxy, false, null, null, null);
     }
 }

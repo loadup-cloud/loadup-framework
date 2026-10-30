@@ -19,16 +19,16 @@
  */
 package io.github.loadup.modules.merchant.app.service;
 
-import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.merchant.app.converter.MerchantConverter;
 import io.github.loadup.modules.merchant.client.dto.MerchantProfileDTO;
-import io.github.loadup.modules.merchant.client.error.MerchantResultCodeEnum;
 import io.github.loadup.modules.merchant.client.facade.MerchantQueryFacade;
 import io.github.loadup.modules.merchant.domain.gateway.MerchantGateway;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 
-/** Uses the primary data source without a read-only replica-routing hint. */
+/**
+ * Uses the primary data source without a read-only replica-routing hint.
+ */
 @Service
 public class MerchantQueryService implements MerchantQueryFacade {
     private final MerchantGateway gateway;
@@ -39,9 +39,7 @@ public class MerchantQueryService implements MerchantQueryFacade {
         this.converter = converter;
     }
 
-    public Optional<MerchantProfileDTO> find(String tenant, String id) {
-        if (!MerchantIdentity.tenant().equals(tenant))
-            throw new CommonException(MerchantResultCodeEnum.MERCHANT_LOOKUP_TENANT_MISMATCH);
-        return gateway.find(tenant, id).map(converter::toProfile);
+    public Optional<MerchantProfileDTO> find(String id) {
+        return gateway.find(id).map(converter::toProfile);
     }
 }

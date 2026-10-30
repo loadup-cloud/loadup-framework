@@ -84,7 +84,9 @@ class ConfigCenterLocalContractTest {
         List<String> late = new ArrayList<>();
         AtomicBoolean registered = new AtomicBoolean();
         template.addListener("key", value -> {
-            if (registered.compareAndSet(false, true)) template.addListener("key", late::add);
+            if (registered.compareAndSet(false, true)) {
+                template.addListener("key", late::add);
+            }
         });
         template.setConfig("key", "one");
         assertThat(late).isEmpty();

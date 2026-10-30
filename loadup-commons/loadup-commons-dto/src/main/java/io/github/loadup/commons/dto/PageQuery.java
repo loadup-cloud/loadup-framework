@@ -26,7 +26,9 @@ import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.commons.result.ResultCode;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-/** Shared pagination bounds; HTTP field names remain page and size. */
+/**
+ * Shared pagination bounds; HTTP field names remain page and size.
+ */
 public record PageQuery(
         @jakarta.validation.constraints.Min(1)
         @JsonProperty("page")
@@ -50,7 +52,10 @@ public record PageQuery(
     public static PageQuery of(Integer page, Integer size) {
         return new PageQuery(page, size);
     }
-    /** Preserves the calling module's published error code while sharing all bounds. */
+
+    /**
+     * Preserves the calling module's published error code while sharing all bounds.
+     */
     public static PageQuery normalized(Integer page, Integer size, ResultCode code) {
         int index = page == null ? 1 : page;
         int count = size == null ? DEFAULT_PAGE_SIZE : size;
@@ -59,7 +64,9 @@ public record PageQuery(
     }
 
     private static void validate(int page, int size, ResultCode code) {
-        if (page < 1 || size < 1 || size > MAX_PAGE_SIZE) throw new CommonException(code);
+        if (page < 1 || size < 1 || size > MAX_PAGE_SIZE) {
+            throw new CommonException(code);
+        }
     }
 
     public int page() {

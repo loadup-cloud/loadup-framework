@@ -38,6 +38,10 @@ public class SignatureServiceImpl implements SignatureService {
 
     private final KeyPairService keyPairService;
 
+    public SignatureServiceImpl(KeyPairService keyPairService) {
+        this.keyPairService = keyPairService;
+    }
+
     @Override
     public String sign(byte[] data, PrivateKey privateKey, SignatureAlgorithm algorithm) {
         try {
@@ -98,9 +102,5 @@ public class SignatureServiceImpl implements SignatureService {
                     SignatureServiceImpl.class, "Verify failed: algorithm={}, error={}", algorithm, e.getMessage(), e);
             throw new SignatureException(SignatureException.SignatureErrorCode.VERIFY_FAILED, e);
         }
-    }
-
-    public SignatureServiceImpl(KeyPairService keyPairService) {
-        this.keyPairService = keyPairService;
     }
 }

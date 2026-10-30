@@ -32,13 +32,13 @@ public enum GenderEnum implements IEnum {
     private final String code;
     private final String description;
 
-    public static GenderEnum getByCode(String code) {
-        return IEnum.EnumLookup.fromCode(GenderEnum.class, code);
-    }
-
     GenderEnum(String code, String description) {
         this.code = code;
         this.description = description;
+    }
+
+    public static GenderEnum getByCode(String code) {
+        return IEnum.EnumLookup.fromCode(GenderEnum.class, code);
     }
 
     public String getCode() {

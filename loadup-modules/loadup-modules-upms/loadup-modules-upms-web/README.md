@@ -11,30 +11,36 @@
 </dependency>
 ```
 
-模块自动引入 UPMS app、方法授权组件和 `loadup-components-webmvc`。Controller 声明 `/auth/register`、`/upms/**` 和 `/account/security/**`，由 `loadup-components-webmvc` 统一添加 `/api` 前缀并处理 `result`、`data` 和错误报文；认证拒绝由 Resource Server 处理。用户名密码登录由 `loadup-modules-upms-authserver` 提供 `/api/auth/login`；在 `loadup.security.resource-server.permit-all` 中放行登录与注册。
+模块自动引入 UPMS app、方法授权组件和 `loadup-components-webmvc`。Controller 声明 `/auth/register`、`/upms/**` 和
+`/account/security/**`，由 `loadup-components-webmvc` 统一添加 `/api` 前缀并处理 `result`、`data` 和错误报文；认证拒绝由
+Resource Server 处理。用户名密码登录由 `loadup-modules-upms-authserver` 提供 `/api/auth/login`；在
+`loadup.security.resource-server.permit-all` 中放行登录与注册。
 
 ## HTTP 接口
 
 Controller 接口使用 POST + JSON body。路径如下：
 
-| 能力 | 路径与操作 |
-|---|---|
-| 用户注册 | `/api/auth/register` |
-| 用户 | `/api/upms/user/{create,update,delete,detail,list,change-password,lock,unlock}` |
-| 角色 | `/api/upms/role/{create,update,delete,detail,list,tree,assign-to-user,remove-from-user,assign-permissions}` |
-| 权限 | `/api/upms/permission/{create,update,delete,detail,tree,user-menu}` |
-| 部门 | `/api/upms/department/{create,update,delete,detail,tree,move}` |
-| 本人账号安全 | `/api/account/security/{overview,logins,password}` |
+| 能力         | 路径与操作                                                                                                  |
+|--------------|-------------------------------------------------------------------------------------------------------------|
+| 用户注册     | `/api/auth/register`                                                                                        |
+| 用户         | `/api/upms/user/{create,update,delete,detail,list,change-password,lock,unlock}`                             |
+| 角色         | `/api/upms/role/{create,update,delete,detail,list,tree,assign-to-user,remove-from-user,assign-permissions}` |
+| 权限         | `/api/upms/permission/{create,update,delete,detail,tree,user-menu}`                                         |
+| 部门         | `/api/upms/department/{create,update,delete,detail,tree,move}`                                              |
+| 本人账号安全 | `/api/account/security/{overview,logins,password}`                                                          |
 
 账号安全接口从认证主体取得用户 ID；改密请求只需 `oldPassword`、`newPassword`、`confirmPassword`。已签发 JWT 不会因改密立即失效。
 
-引入可选的 `loadup-components-springdoc` 后，在 `/scalar` 浏览这些 Controller 的 OpenAPI 文档，或从 `/v3/api-docs` 获取 JSON。接口返回的 `result`、`data` 以实际 HTTP 报文为准；SpringDoc 默认从 Controller 返回类型生成模型。
+引入可选的 `loadup-components-springdoc` 后，在 `/scalar` 浏览这些 Controller 的 OpenAPI 文档，或从 `/v3/api-docs` 获取
+JSON。接口返回的 `result`、`data` 以实际 HTTP 报文为准；SpringDoc 默认从 Controller 返回类型生成模型。
 
-各 Controller 使用 `@Tag` 分组、`@Operation` 说明操作；公开的注册接口覆盖全局 Bearer 要求。模块只依赖 Swagger 注解，页面仍由集成方按需引入。
+各 Controller 使用 `@Tag` 分组、`@Operation` 说明操作；公开的注册接口覆盖全局 Bearer 要求。模块只依赖 Swagger
+注解，页面仍由集成方按需引入。
 
 ## 配置
 
-本模块没有专属配置键。UPMS 登录策略使用 `loadup.modules.upms.security.login`；公开路径使用 `loadup.security.resource-server.permit-all`。
+本模块没有专属配置键。UPMS 登录策略使用 `loadup.modules.upms.security.login`；公开路径使用
+`loadup.security.resource-server.permit-all`。
 
 ## 接入步骤
 
@@ -48,8 +54,11 @@ Controller 接口使用 POST + JSON body。路径如下：
 
 ## 明文查看
 
-`POST /api/upms/user/sensitive`：JSON `{ "id": "target-user-id", "purpose": "CUSTOMER_SUPPORT" }`，返回原始姓名、邮箱和手机号。必须有 `upms:user:sensitive:read` authority 及角色数据范围授权；静态管理员角色本身不足以放行。请求不得缺少用途。
+`POST /api/upms/user/sensitive`：JSON `{ "id": "target-user-id", "purpose": "CUSTOMER_SUPPORT" }`，返回原始姓名、邮箱和手机号。必须有
+`upms:user:sensitive:read` authority 及角色数据范围授权；静态管理员角色本身不足以放行。请求不得缺少用途。
 
-消费工程按需引入 `loadup-modules-audit`，默认装配可靠审计桥接；也可自行提供 `SensitiveReadAudit`。审计缺失或失败拒绝返回原值。默认桥接以独立事务提交，记录元数据而非原文。HTTP body、网关/代理日志和浏览器缓存需要由集成方避免采集敏感原文；响应附带 `Cache-Control: no-store`。
+消费工程按需引入 `loadup-modules-audit`，默认装配可靠审计桥接；也可自行提供 `SensitiveReadAudit`
+。审计缺失或失败拒绝返回原值。默认桥接以独立事务提交，记录元数据而非原文。HTTP body、网关/代理日志和浏览器缓存需要由集成方避免采集敏感原文；响应附带
+`Cache-Control: no-store`。
 
 普通用户输出仍固定脱敏。编辑时省略敏感属性保持原值，不得回写掩码。完整约定见 [UPMS README](../README.md)。

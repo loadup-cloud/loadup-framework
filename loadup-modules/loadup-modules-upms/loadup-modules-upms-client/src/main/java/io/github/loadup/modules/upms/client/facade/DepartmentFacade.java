@@ -24,7 +24,9 @@ import io.github.loadup.modules.upms.client.command.DepartmentUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.DepartmentDTO;
 import java.util.List;
 
-/** Public business contract for DepartmentService. */
+/**
+ * Public business contract for DepartmentService.
+ */
 public interface DepartmentFacade {
     DepartmentDTO createDepartment(DepartmentCreateCommand command);
 

@@ -26,10 +26,10 @@ import java.util.Map;
 public record ConfigurationDTO(
         @Schema(description = "Values") Map<String, ValueDTO> values,
         @Schema(description = "Origins") Map<String, OriginDTO> origins) {
-    public record OriginDTO(String layer, String sourceCode, int sourceVersion) {}
-
     @Override
     public String toString() {
         return ToStringAsJson.reflectionToString(this);
     }
+
+    public record OriginDTO(String layer, String sourceCode, int sourceVersion) {}
 }

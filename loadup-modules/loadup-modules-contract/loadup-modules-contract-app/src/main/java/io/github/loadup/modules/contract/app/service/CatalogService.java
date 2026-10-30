@@ -22,14 +22,20 @@ package io.github.loadup.modules.contract.app.service;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.contract.app.converter.ContractConverter;
-import io.github.loadup.modules.contract.app.support.*;
-import io.github.loadup.modules.contract.client.command.*;
-import io.github.loadup.modules.contract.client.dto.*;
+import io.github.loadup.modules.contract.app.support.CatalogAssembler;
+import io.github.loadup.modules.contract.app.support.ContractCodec;
+import io.github.loadup.modules.contract.app.support.ContractIdentity;
+import io.github.loadup.modules.contract.client.command.CatalogActionCommand;
+import io.github.loadup.modules.contract.client.command.CatalogSaveCommand;
+import io.github.loadup.modules.contract.client.dto.CatalogVersionDTO;
 import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import io.github.loadup.modules.contract.client.query.CatalogPageQuery;
 import io.github.loadup.modules.contract.domain.gateway.CatalogGateway;
-import io.github.loadup.modules.contract.domain.model.*;
-import java.time.*;
+import io.github.loadup.modules.contract.domain.model.CatalogEntry;
+import io.github.loadup.modules.contract.domain.model.CatalogKind;
+import io.github.loadup.modules.contract.domain.model.CatalogStatus;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,7 +53,7 @@ public class CatalogService implements io.github.loadup.modules.contract.client.
             ContractCodec codec,
             CatalogAssembler assembler,
             ContractConverter converter,
-            @org.springframework.beans.factory.annotation.Qualifier("contractClock") Clock clock) {
+            Clock clock) {
         this.gateway = gateway;
         this.codec = codec;
         this.assembler = assembler;
@@ -57,17 +63,16 @@ public class CatalogService implements io.github.loadup.modules.contract.client.
 
     @Transactional
     public CatalogVersionDTO save(CatalogSaveCommand command, String actor) {
-        String tenant = ContractIdentity.tenant();
         ContractIdentity.actor(actor);
         String code = ContractIdentity.code(command.code(), 128);
         CatalogKind kind = CatalogKind.valueOf(command.kind());
-        if (command.version() < 1 || command.definition() == null)
+        if (command.version() < 1 || command.definition() == null) {
             throw new CommonException(ContractResultCodeEnum.INVALID_CATALOG_DEFINITION);
+        }
         LocalDateTime now = LocalDateTime.ofInstant(clock.instant(), clock.getZone());
         CatalogEntry previous = command.id() == null
                 ? null
-                : gateway.lock(tenant, command.id())
-                        .orElseThrow(() -> new CommonException(ContractResultCodeEnum.NOT_FOUND));
+                : gateway.lock(command.id()).orElseThrow(() -> new CommonException(ContractResultCodeEnum.NOT_FOUND));
         if (previous != null
                 && (previous.status() != CatalogStatus.DRAFT
                         || command.expectedRowVersion() == null
@@ -79,7 +84,6 @@ public class CatalogService implements io.github.loadup.modules.contract.client.
         }
         CatalogEntry entry = new CatalogEntry(
                 previous == null ? UUID.randomUUID().toString() : previous.id(),
-                tenant,
                 kind,
                 code,
                 command.version(),
@@ -90,8 +94,11 @@ public class CatalogService implements io.github.loadup.modules.contract.client.
                 previous == null ? now : previous.createdAt(),
                 now);
         assembler.validate(entry, false);
-        if (previous == null) gateway.insert(entry);
-        else gateway.update(entry, previous.rowVersion());
+        if (previous == null) {
+            gateway.insert(entry);
+        } else {
+            gateway.update(entry, previous.rowVersion());
+        }
         return converter.toCatalog(entry);
     }
 
@@ -107,17 +114,20 @@ public class CatalogService implements io.github.loadup.modules.contract.client.
 
     private CatalogVersionDTO transition(
             CatalogActionCommand command, String actor, CatalogStatus from, CatalogStatus to) {
-        String tenant = ContractIdentity.tenant();
         ContractIdentity.actor(actor);
-        CatalogEntry entry = gateway.lock(tenant, command.id())
-                .orElseThrow(() -> new CommonException(ContractResultCodeEnum.NOT_FOUND));
-        if (entry.rowVersion() != command.expectedRowVersion())
+        CatalogEntry entry =
+                gateway.lock(command.id()).orElseThrow(() -> new CommonException(ContractResultCodeEnum.NOT_FOUND));
+        if (entry.rowVersion() != command.expectedRowVersion()) {
             throw new CommonException(ContractResultCodeEnum.CONFLICT);
-        if (entry.status() != from) throw new CommonException(ContractResultCodeEnum.INVALID_STATE);
-        if (to == CatalogStatus.PUBLISHED) assembler.validate(entry, true);
+        }
+        if (entry.status() != from) {
+            throw new CommonException(ContractResultCodeEnum.INVALID_STATE);
+        }
+        if (to == CatalogStatus.PUBLISHED) {
+            assembler.validate(entry, true);
+        }
         var updated = new CatalogEntry(
                 entry.id(),
-                tenant,
                 entry.kind(),
                 entry.code(),
                 entry.version(),
@@ -133,15 +143,14 @@ public class CatalogService implements io.github.loadup.modules.contract.client.
 
     @Transactional(readOnly = true)
     public CatalogVersionDTO detail(String id) {
-        return converter.toCatalog(gateway.find(ContractIdentity.tenant(), id)
-                .orElseThrow(() -> new CommonException(ContractResultCodeEnum.NOT_FOUND)));
+        return converter.toCatalog(
+                gateway.find(id).orElseThrow(() -> new CommonException(ContractResultCodeEnum.NOT_FOUND)));
     }
 
     @Transactional(readOnly = true)
     public PageDTO<CatalogVersionDTO> page(CatalogPageQuery query) {
         ContractIdentity.page(query.page(), query.size());
         var page = gateway.page(
-                ContractIdentity.tenant(),
                 CatalogKind.valueOf(query.kind()),
                 query.status() == null ? null : CatalogStatus.valueOf(query.status()),
                 query.code(),

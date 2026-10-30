@@ -29,15 +29,15 @@ public enum ResultStatusEnum {
 
     private final String code;
 
+    ResultStatusEnum(String code) {
+        this.code = code;
+    }
+
     public static ResultStatusEnum getByCode(String code) {
         return Arrays.stream(values())
                 .filter(resultStatusEnum -> Objects.equals(resultStatusEnum.getCode(), code))
                 .findFirst()
                 .orElse(null);
-    }
-
-    ResultStatusEnum(String code) {
-        this.code = code;
     }
 
     public String getCode() {

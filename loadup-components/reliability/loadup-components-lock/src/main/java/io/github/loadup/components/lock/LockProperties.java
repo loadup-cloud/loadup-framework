@@ -23,7 +23,9 @@ import java.time.Duration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.Resource;
 
-/** Opt-in integration; Redis topology and credentials stay in native Redisson configuration. */
+/**
+ * Opt-in integration; Redis topology and credentials stay in native Redisson configuration.
+ */
 @ConfigurationProperties("loadup.lock")
 public record LockProperties(
         boolean enabled,
@@ -33,8 +35,12 @@ public record LockProperties(
         Duration leaseTime,
         Resource redissonConfig) {
     public LockProperties {
-        if (waitTimeout == null) waitTimeout = Duration.ofSeconds(3);
-        if (leaseMode == null) leaseMode = LockOptions.LeaseMode.WATCHDOG;
+        if (waitTimeout == null) {
+            waitTimeout = Duration.ofSeconds(3);
+        }
+        if (leaseMode == null) {
+            leaseMode = LockOptions.LeaseMode.WATCHDOG;
+        }
     }
 
     public LockOptions options() {

@@ -19,15 +19,20 @@
  */
 package io.github.loadup.modules.audit.infrastructure.dataobject;
 
+import com.mybatisflex.annotation.Column;
+import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
 import java.time.LocalDateTime;
 
+@Table("audit_event")
 public class AuditEventDO extends BaseDO {
     private String actorId;
     private String action;
 
+    @Column("http_method")
     private String method;
 
+    @Column("request_path")
     private String path;
 
     private String outcome;

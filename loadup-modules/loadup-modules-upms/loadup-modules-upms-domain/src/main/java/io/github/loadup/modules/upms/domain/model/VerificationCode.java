@@ -44,43 +44,43 @@ public class VerificationCode {
         this.expiryTime = expiryTime;
     }
 
-    public void setCode(String code) {
-        this.code = code;
-    }
-
     public String getCode() {
         return code;
     }
 
-    public void setTarget(String target) {
-        this.target = target;
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getTarget() {
         return target;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setTarget(String target) {
+        this.target = target;
     }
 
     public String getType() {
         return type;
     }
 
-    public void setAttempts(int attempts) {
-        this.attempts = attempts;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public int getAttempts() {
         return attempts;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setAttempts(int attempts) {
+        this.attempts = attempts;
     }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

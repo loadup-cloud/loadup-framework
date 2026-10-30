@@ -33,16 +33,21 @@ public final class SalesPlanCompiler {
         var items = new HashMap<String, SalesPlanVersion.Item>();
         var aliases = new java.util.HashSet<String>();
         for (var selection : draft.bundles()) {
-            if (!aliases.add(selection.alias()))
+            if (!aliases.add(selection.alias())) {
                 throw new CommonException(ContractResultCodeEnum.DUPLICATE_BUNDLE_ALIAS);
+            }
             for (var item : selection.bundle().items()) {
                 String key = ContractChecks.code(selection.alias() + "." + item.itemKey());
-                if (items.containsKey(key)) throw new CommonException(ContractResultCodeEnum.DUPLICATE_QUALIFIED_ITEM);
+                if (items.containsKey(key)) {
+                    throw new CommonException(ContractResultCodeEnum.DUPLICATE_QUALIFIED_ITEM);
+                }
                 var product = item.product();
                 var policies = draft.merchantPolicies().getOrDefault(key, Map.of());
                 policies.forEach((field, policy) -> {
                     ParameterDefinition definition = product.parameters().get(field);
-                    if (definition == null) throw new CommonException(ContractResultCodeEnum.UNKNOWN_PERMISSION_FIELD);
+                    if (definition == null) {
+                        throw new CommonException(ContractResultCodeEnum.UNKNOWN_PERMISSION_FIELD);
+                    }
                     policy.validateDefinition(definition);
                 });
                 var resolved = resolver.apply(
@@ -85,7 +90,9 @@ public final class SalesPlanCompiler {
                                         ConfigurationLayer.BUNDLE,
                                         selection.bundle().bundleCode(),
                                         selection.bundle().version())));
-                if (items.size() > 256) throw new CommonException(ContractResultCodeEnum.TOO_MANY_PLAN_ITEMS);
+                if (items.size() > 256) {
+                    throw new CommonException(ContractResultCodeEnum.TOO_MANY_PLAN_ITEMS);
+                }
             }
         }
         if (!items.keySet().containsAll(draft.values().keySet())

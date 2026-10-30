@@ -1,10 +1,7 @@
 package io.github.loadup.modules.contract.app.service;
 
-import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.modules.contract.app.support.ContractIdentity;
 import io.github.loadup.modules.contract.client.dto.ContractPersistenceHeader;
 import io.github.loadup.modules.contract.client.dto.ContractPersistenceRevision;
-import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import io.github.loadup.modules.contract.client.facade.ContractPersistenceFacade;
 import io.github.loadup.modules.contract.domain.gateway.MerchantContractGateway;
 import java.util.Optional;
@@ -20,12 +17,10 @@ public class ContractPersistenceService implements ContractPersistenceFacade {
 
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
-    public Optional<ContractPersistenceHeader> lockByScope(String tenant, String merchant, String scope) {
-        checkTenant(tenant);
-        return gateway.lockByScope(tenant, merchant, scope)
+    public Optional<ContractPersistenceHeader> lockByScope(String merchant, String scope) {
+        return gateway.lockByScope(merchant, scope)
                 .map(row -> new ContractPersistenceHeader(
                         row.id(),
-                        row.tenantId(),
                         row.merchantId(),
                         row.scopeKey(),
                         row.planVersionId(),
@@ -39,14 +34,8 @@ public class ContractPersistenceService implements ContractPersistenceFacade {
     }
 
     @Override
-    public Optional<ContractPersistenceRevision> revision(String tenant, String id, int revision) {
-        checkTenant(tenant);
-        return gateway.revision(tenant, id, revision)
+    public Optional<ContractPersistenceRevision> revision(String id, int revision) {
+        return gateway.revision(id, revision)
                 .map(row -> new ContractPersistenceRevision(row.revision(), row.snapshot(), row.snapshotHash()));
-    }
-
-    private static void checkTenant(String tenant) {
-        if (!ContractIdentity.tenant().equals(tenant))
-            throw new CommonException(ContractResultCodeEnum.CONTRACT_IDENTITY_MISMATCH);
     }
 }

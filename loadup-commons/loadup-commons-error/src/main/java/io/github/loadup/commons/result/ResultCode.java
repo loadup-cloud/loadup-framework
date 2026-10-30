@@ -19,27 +19,38 @@
  */
 package io.github.loadup.commons.result;
 
-/** Contract for result codes carried by {@link Result} and result enums. */
+/**
+ * Contract for result codes carried by {@link Result} and result enums.
+ */
 public interface ResultCode {
+    /**
+     * Validates the enum-only public error vocabulary at response/exception boundaries.
+     */
+    static ResultCode requireFailure(ResultCode value) {
+        java.util.Objects.requireNonNull(value, "resultCode");
+        if (!(value instanceof Enum<?>)) {
+            throw new IllegalArgumentException("ResultCode must be an enum");
+        }
+        if (value.getCode() == null || !value.getCode().matches("[A-Z][A-Z0-9_]{0,63}")) {
+            throw new IllegalArgumentException("Invalid result code format");
+        }
+        if (!io.github.loadup.commons.enums.ResultStatusEnum.FAIL.getCode().equals(value.getStatus())
+                && !io.github.loadup.commons.enums.ResultStatusEnum.UNKNOWN
+                        .getCode()
+                        .equals(value.getStatus())) {
+            throw new IllegalArgumentException("Failure result code must have failure or unknown status");
+        }
+        if (value.getMessage() == null
+                || value.getMessage().isBlank()
+                || value.getMessage().length() > 256) {
+            throw new IllegalArgumentException("Invalid result code message");
+        }
+        return value;
+    }
+
     String getCode();
 
     String getStatus();
 
     String getMessage();
-    /** Validates the enum-only public error vocabulary at response/exception boundaries. */
-    static ResultCode requireFailure(ResultCode value) {
-        java.util.Objects.requireNonNull(value, "resultCode");
-        if (!(value instanceof Enum<?>)) throw new IllegalArgumentException("ResultCode must be an enum");
-        if (value.getCode() == null || !value.getCode().matches("[A-Z][A-Z0-9_]{0,63}"))
-            throw new IllegalArgumentException("Invalid result code format");
-        if (!io.github.loadup.commons.enums.ResultStatusEnum.FAIL.getCode().equals(value.getStatus())
-                && !io.github.loadup.commons.enums.ResultStatusEnum.UNKNOWN
-                        .getCode()
-                        .equals(value.getStatus()))
-            throw new IllegalArgumentException("Failure result code must have failure or unknown status");
-        if (value.getMessage() == null
-                || value.getMessage().isBlank()
-                || value.getMessage().length() > 256) throw new IllegalArgumentException("Invalid result code message");
-        return value;
-    }
 }

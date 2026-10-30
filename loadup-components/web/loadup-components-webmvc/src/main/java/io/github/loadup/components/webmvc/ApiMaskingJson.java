@@ -34,13 +34,16 @@ import tools.jackson.databind.ser.BeanPropertyWriter;
 import tools.jackson.databind.ser.ValueSerializerModifier;
 import tools.jackson.databind.ser.std.StdSerializer;
 
-/** A private response mapper, never a global ObjectMapper or JacksonModule bean. */
+/**
+ * A private response mapper, never a global ObjectMapper or JacksonModule bean.
+ */
 public final class ApiMaskingJson {
     private final JsonMapper mapper;
 
     public ApiMaskingJson(ObjectMapper source) {
-        if (!(source instanceof JsonMapper json))
+        if (!(source instanceof JsonMapper json)) {
             throw new IllegalArgumentException("API masking requires a Jackson 3 JsonMapper");
+        }
         var module = new SimpleModule("loadup-api-masking").setSerializerModifier(new MaskedProperties());
         mapper = json.rebuild().addModule(module).build();
     }
@@ -59,7 +62,9 @@ public final class ApiMaskingJson {
                 SerializationConfig config, BeanDescription.Supplier bean, List<BeanPropertyWriter> properties) {
             for (var property : properties) {
                 Masked rule = property.getAnnotation(Masked.class);
-                if (rule == null) continue;
+                if (rule == null) {
+                    continue;
+                }
                 if (property.getType().getRawClass() != String.class
                         || rule.prefix() < 0
                         || rule.suffix() < 0
@@ -88,7 +93,9 @@ public final class ApiMaskingJson {
 
         @Override
         public void serialize(Object value, JsonGenerator generator, SerializationContext context) {
-            if (!(value instanceof String text)) throw new IllegalArgumentException("Masked value must be a String");
+            if (!(value instanceof String text)) {
+                throw new IllegalArgumentException("Masked value must be a String");
+            }
             generator.writeString(
                     type == MaskType.CUSTOM ? Masking.keep(text, prefix, suffix) : Masking.mask(text, type));
         }

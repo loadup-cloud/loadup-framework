@@ -19,14 +19,31 @@
  */
 package io.github.loadup.components.database.sequence;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.loadup.commons.error.CommonException;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import java.time.*;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 
 class SegmentSequenceTest {
@@ -42,20 +59,6 @@ class SegmentSequenceTest {
         return p;
     }
 
-    private static final class Store implements SequenceRangeAllocator {
-        private final Map<String, Long> maxima = new HashMap<>();
-        private final AtomicInteger calls = new AtomicInteger();
-
-        public synchronized SequenceRange reserve(SequenceScope scope, int step) {
-            calls.incrementAndGet();
-            long old = maxima.getOrDefault(scope.key(), 0L);
-            if (old >= scope.maximum()) throw new CommonException(DatabaseResultCodeEnum.EXHAUSTED);
-            long last = old + Math.min(step, scope.maximum() - old);
-            maxima.put(scope.key(), last);
-            return new SequenceRange(old + 1, last);
-        }
-    }
-
     @Test
     void concurrentVirtualThreadsAndBatchesRemainUnique() throws Exception {
         Store store = new Store();
@@ -64,15 +67,19 @@ class SegmentSequenceTest {
         try (SegmentSequence sequence = new SegmentSequence(store, properties(1000), clock);
                 ExecutorService workers = Executors.newVirtualThreadPerTaskExecutor()) {
             List<Future<?>> tasks = new ArrayList<>();
-            for (int t = 0; t < 32; t++)
+            for (int t = 0; t < 32; t++) {
                 tasks.add(workers.submit(() -> {
                     for (int n = 0; n < 100; n++) {
-                        for (long id : sequence.nextBatch(scope, 37))
+                        for (long id : sequence.nextBatch(scope, 37)) {
                             assertThat(seen.add(id)).isTrue();
+                        }
                         assertThat(seen.add(sequence.next(scope))).isTrue();
                     }
                 }));
-            for (Future<?> task : tasks) task.get(20, TimeUnit.SECONDS);
+            }
+            for (Future<?> task : tasks) {
+                task.get(20, TimeUnit.SECONDS);
+            }
             assertThat(seen).hasSize(121600);
             assertThat(store.calls.get()).isLessThan(130);
         }
@@ -85,12 +92,17 @@ class SegmentSequenceTest {
         Set<Long> seen = new HashSet<>();
         try (SegmentSequence a = new SegmentSequence(store, properties(10), clock);
                 SegmentSequence b = new SegmentSequence(store, properties(10), clock)) {
-            for (long id : a.nextBatch(scope, 27)) assertThat(seen.add(id)).isTrue();
-            for (long id : b.nextBatch(scope, 27)) assertThat(seen.add(id)).isTrue();
+            for (long id : a.nextBatch(scope, 27)) {
+                assertThat(seen.add(id)).isTrue();
+            }
+            for (long id : b.nextBatch(scope, 27)) {
+                assertThat(seen.add(id)).isTrue();
+            }
         }
         try (SegmentSequence restarted = new SegmentSequence(store, properties(10), clock)) {
-            for (long id : restarted.nextBatch(scope, 27))
+            for (long id : restarted.nextBatch(scope, 27)) {
                 assertThat(seen.add(id)).isTrue();
+            }
         }
     }
 
@@ -133,7 +145,9 @@ class SegmentSequenceTest {
         Set<Long> old = new HashSet<>();
         SequenceScope yesterday = new SequenceScope("day", LocalDate.of(2026, 10, 11), 1000);
         try (SegmentSequence sequence = new SegmentSequence(new Store(), p, clock)) {
-            for (long n : sequence.nextBatch(yesterday, 3)) old.add(n);
+            for (long n : sequence.nextBatch(yesterday, 3)) {
+                old.add(n);
+            }
             sequence.next(scope("day", 1000));
             assertThatThrownBy(() -> sequence.next(yesterday)).isInstanceOf(CommonException.class);
         }
@@ -174,7 +188,9 @@ class SegmentSequenceTest {
         Store store = new Store();
         try (SegmentSequence sequence = new SegmentSequence(
                 (scope, step) -> {
-                    if (attempts.incrementAndGet() > 1) throw new CommonException(DatabaseResultCodeEnum.UNAVAILABLE);
+                    if (attempts.incrementAndGet() > 1) {
+                        throw new CommonException(DatabaseResultCodeEnum.UNAVAILABLE);
+                    }
                     return store.reserve(scope, step);
                 },
                 properties(10),
@@ -359,7 +375,7 @@ class SegmentSequenceTest {
         try (SegmentSequence sequence = new SegmentSequence(new Store(), properties(10), clock);
                 ExecutorService workers = Executors.newVirtualThreadPerTaskExecutor()) {
             List<Future<?>> tasks = new ArrayList<>();
-            for (int i = 0; i < 64; i++)
+            for (int i = 0; i < 64; i++) {
                 tasks.add(workers.submit(() -> {
                     start.await();
                     try {
@@ -370,8 +386,11 @@ class SegmentSequenceTest {
                     }
                     return null;
                 }));
+            }
             start.countDown();
-            for (Future<?> task : tasks) task.get(5, TimeUnit.SECONDS);
+            for (Future<?> task : tasks) {
+                task.get(5, TimeUnit.SECONDS);
+            }
             assertThat(issued)
                     .containsExactlyInAnyOrderElementsOf(java.util.stream.LongStream.rangeClosed(1, 37)
                             .boxed()
@@ -425,9 +444,9 @@ class SegmentSequenceTest {
                     registry)) {
                 assertThatThrownBy(() -> sequence.next(scope("failure", 100)))
                         .isInstanceOfSatisfying(CommonException.class, error -> {
-                            if (failure instanceof CommonException)
+                            if (failure instanceof CommonException) {
                                 assertThat(error).isSameAs(failure);
-                            else {
+                            } else {
                                 assertThat(error.getResultCode()).isEqualTo(DatabaseResultCodeEnum.UNAVAILABLE);
                                 assertThat(error.getCause()).isSameAs(failure);
                             }
@@ -528,6 +547,22 @@ class SegmentSequenceTest {
                     .isInstanceOfSatisfying(
                             CommonException.class,
                             error -> assertThat(error.getResultCode()).isEqualTo(DatabaseResultCodeEnum.EXHAUSTED));
+        }
+    }
+
+    private static final class Store implements SequenceRangeAllocator {
+        private final Map<String, Long> maxima = new HashMap<>();
+        private final AtomicInteger calls = new AtomicInteger();
+
+        public synchronized SequenceRange reserve(SequenceScope scope, int step) {
+            calls.incrementAndGet();
+            long old = maxima.getOrDefault(scope.key(), 0L);
+            if (old >= scope.maximum()) {
+                throw new CommonException(DatabaseResultCodeEnum.EXHAUSTED);
+            }
+            long last = old + Math.min(step, scope.maximum() - old);
+            maxima.put(scope.key(), last);
+            return new SequenceRange(old + 1, last);
         }
     }
 }

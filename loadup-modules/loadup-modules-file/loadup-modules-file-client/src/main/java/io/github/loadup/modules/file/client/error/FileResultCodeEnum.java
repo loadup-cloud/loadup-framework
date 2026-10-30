@@ -22,7 +22,9 @@ package io.github.loadup.modules.file.client.error;
 import io.github.loadup.commons.enums.ResultStatusEnum;
 import io.github.loadup.commons.result.ResultCode;
 
-/** Stable public error codes for the file module. */
+/**
+ * Stable public error codes for the file module.
+ */
 public enum FileResultCodeEnum implements ResultCode {
     INVALID_PAGE("FILE_INVALID_PAGE", "Page must be positive and size must be between 1 and 100"),
     AUTHENTICATED_USER_IS_REQUIRED("FILE_AUTHENTICATED_USER_IS_REQUIRED", "authenticated user is required"),

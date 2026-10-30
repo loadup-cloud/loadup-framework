@@ -28,8 +28,8 @@
 
 ## 配置入口
 
-| 前缀 | 配置类 |
-|---|---|
+| 前缀             | 配置类                                                                                          |
+|------------------|-------------------------------------------------------------------------------------------------|
 | `loadup.captcha` | [`CaptchaProperties`](src/main/java/io/github/loadup/components/captcha/CaptchaProperties.java) |
 
 ## 对外契约
@@ -39,5 +39,6 @@
 
 ## 自动装配
 
-- [`CaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/autoconfig/CaptchaAutoConfiguration.java)
-  - 启用条件：`@ConditionalOnSingleCandidate(CaptchaProvider.class)`。
+- [
+  `CaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/autoconfig/CaptchaAutoConfiguration.java)
+    - 启用条件：`@ConditionalOnSingleCandidate(CaptchaProvider.class)`。

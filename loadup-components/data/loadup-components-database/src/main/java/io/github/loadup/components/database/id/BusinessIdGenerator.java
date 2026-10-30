@@ -26,7 +26,9 @@ import io.github.loadup.components.database.sequence.SequenceScope;
 import java.time.Clock;
 import java.time.LocalDate;
 
-/** Generates unique business IDs using a single captured local date per call. */
+/**
+ * Generates unique business IDs using a single captured local date per call.
+ */
 public final class BusinessIdGenerator implements IdGenerator {
     private final BusinessIdCommand defaults;
     private final Sequence sequence;
@@ -39,7 +41,9 @@ public final class BusinessIdGenerator implements IdGenerator {
 
     public BusinessIdGenerator(
             Sequence sequence, Clock clock, BusinessIdFormatter formatter, BusinessIdCommand defaults) {
-        if (defaults == null) throw new CommonException(DatabaseResultCodeEnum.INVALID_INPUT);
+        if (defaults == null) {
+            throw new CommonException(DatabaseResultCodeEnum.INVALID_INPUT);
+        }
         this.defaults = defaults;
         this.sequence = sequence;
         this.clock = clock;
@@ -62,13 +66,16 @@ public final class BusinessIdGenerator implements IdGenerator {
         SequenceScope scope = scope(command, date);
         long[] numbers = sequence.nextBatch(scope, count);
         String[] ids = new String[numbers.length];
-        for (int i = 0; i < ids.length; i++) ids[i] = formatter.format(new BusinessIdParts(date, command, numbers[i]));
+        for (int i = 0; i < ids.length; i++) {
+            ids[i] = formatter.format(new BusinessIdParts(date, command, numbers[i]));
+        }
         return ids;
     }
 
     private SequenceScope scope(BusinessIdCommand command, LocalDate date) {
-        if (command == null || date.getYear() < 1 || date.getYear() > 9999)
+        if (command == null || date.getYear() < 1 || date.getYear() > 9999) {
             throw new CommonException(DatabaseResultCodeEnum.INVALID_INPUT);
+        }
         return new SequenceScope(
                 "business-" + command.dataVersion() + command.systemVersion() + command.eventCode() + "-"
                         + command.siteId(),

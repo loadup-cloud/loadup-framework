@@ -19,10 +19,16 @@
  */
 package io.github.loadup.components.scheduler.powerjob;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import io.github.loadup.components.scheduler.*;
+import io.github.loadup.components.scheduler.ScheduledTask;
+import io.github.loadup.components.scheduler.SchedulerAutoConfiguration;
+import io.github.loadup.components.scheduler.SchedulerProvider;
+import io.github.loadup.components.scheduler.SchedulerTemplate;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;

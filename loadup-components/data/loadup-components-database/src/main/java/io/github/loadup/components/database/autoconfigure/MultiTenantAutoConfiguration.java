@@ -31,7 +31,9 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 
-/** Registers request tenant propagation for web applications. */
+/**
+ * Registers request tenant propagation for web applications.
+ */
 @AutoConfiguration
 @EnableConfigurationProperties(DatabaseProperties.class)
 @ConditionalOnClass(name = {"jakarta.servlet.Filter", "org.springframework.boot.web.servlet.FilterRegistrationBean"})

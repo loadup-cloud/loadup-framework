@@ -30,7 +30,9 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-/** Delegates lock ownership and lease renewal to Redisson; never silently skips release failures. */
+/**
+ * Delegates lock ownership and lease renewal to Redisson; never silently skips release failures.
+ */
 public final class RedissonLockTemplate implements LockTemplate {
     private final RedissonClient client;
     private final String namespace;
@@ -46,7 +48,38 @@ public final class RedissonLockTemplate implements LockTemplate {
         this.metrics = metrics;
         this.acquisitionTimers = timers(metrics, "loadup.lock.acquire", "acquired", "timeout", "interrupted", "error");
         this.holdTimers = timers(metrics, "loadup.lock.hold", "success", "failure");
-        if (metrics != null) metrics.counter("loadup.lock.release.failures");
+        if (metrics != null) {
+            metrics.counter("loadup.lock.release.failures");
+        }
+    }
+
+    private static Map<String, Timer> timers(MeterRegistry metrics, String name, String... outcomes) {
+        if (metrics == null) {
+            return Map.of();
+        }
+        var timers = new HashMap<String, Timer>();
+        for (String outcome : outcomes) {
+            boolean acquisition = name.equals("loadup.lock.acquire");
+            var builder = Timer.builder(name)
+                    .tag("outcome", acquisition ? (outcome.equals("acquired") ? "success" : "failure") : outcome);
+            if (acquisition) {
+                builder.tag("reason", outcome.equals("acquired") ? "none" : outcome);
+            }
+            timers.put(outcome, builder.register(metrics));
+        }
+        return Map.copyOf(timers);
+    }
+
+    private static void record(Map<String, Timer> timers, String outcome, long start) {
+        Timer timer = timers.get(outcome);
+        if (timer == null) {
+            return;
+        }
+        try {
+            timer.record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
+        } catch (RuntimeException failure) {
+            LogUtil.warn(RedissonLockTemplate.class, "Lock timer recording failed", failure);
+        }
     }
 
     @Override
@@ -61,14 +94,17 @@ public final class RedissonLockTemplate implements LockTemplate {
         Objects.requireNonNull(key, "lock key");
         Objects.requireNonNull(options, "lock options");
         Objects.requireNonNull(action, "action");
-        if (TransactionSynchronizationManager.isActualTransactionActive())
+        if (TransactionSynchronizationManager.isActualTransactionActive()) {
             throw new IllegalStateException(
                     "Acquire the lock before starting the transaction; release it after commit");
+        }
         long start = System.nanoTime();
         RLock lock;
         boolean acquired;
         try {
-            if (Thread.currentThread().isInterrupted()) throw new InterruptedException("Lock acquisition interrupted");
+            if (Thread.currentThread().isInterrupted()) {
+                throw new InterruptedException("Lock acquisition interrupted");
+            }
             lock = client.getLock(key.redisName(namespace));
             long waitMillis = options.waitTimeout().toMillis();
             acquired = options.leaseMode() == LockOptions.LeaseMode.WATCHDOG
@@ -121,29 +157,6 @@ public final class RedissonLockTemplate implements LockTemplate {
             } finally {
                 record(holdTimers, success && released ? "success" : "failure", start);
             }
-        }
-    }
-
-    private static Map<String, Timer> timers(MeterRegistry metrics, String name, String... outcomes) {
-        if (metrics == null) return Map.of();
-        var timers = new HashMap<String, Timer>();
-        for (String outcome : outcomes) {
-            boolean acquisition = name.equals("loadup.lock.acquire");
-            var builder = Timer.builder(name)
-                    .tag("outcome", acquisition ? (outcome.equals("acquired") ? "success" : "failure") : outcome);
-            if (acquisition) builder.tag("reason", outcome.equals("acquired") ? "none" : outcome);
-            timers.put(outcome, builder.register(metrics));
-        }
-        return Map.copyOf(timers);
-    }
-
-    private static void record(Map<String, Timer> timers, String outcome, long start) {
-        Timer timer = timers.get(outcome);
-        if (timer == null) return;
-        try {
-            timer.record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
-        } catch (RuntimeException failure) {
-            LogUtil.warn(RedissonLockTemplate.class, "Lock timer recording failed", failure);
         }
     }
 }

@@ -34,15 +34,6 @@ public class RowDiff {
 
     private Map<String, FieldDiff> fieldDiffs;
 
-    public static RowDiff missing(int index, String message, Map<String, Object> expectedRow) {
-        return new RowDiff(index, "MISSING", message, expectedRow, null);
-    }
-
-    public static RowDiff diff(
-            int index, String message, Map<String, Object> expectedRow, Map<String, FieldDiff> fieldDiffs) {
-        return new RowDiff(index, "DIFF", message, expectedRow, fieldDiffs);
-    }
-
     public RowDiff(
             int index,
             String type,
@@ -58,40 +49,49 @@ public class RowDiff {
 
     public RowDiff() {}
 
+    public static RowDiff missing(int index, String message, Map<String, Object> expectedRow) {
+        return new RowDiff(index, "MISSING", message, expectedRow, null);
+    }
+
+    public static RowDiff diff(
+            int index, String message, Map<String, Object> expectedRow, Map<String, FieldDiff> fieldDiffs) {
+        return new RowDiff(index, "DIFF", message, expectedRow, fieldDiffs);
+    }
+
     public int getIndex() {
         return this.index;
-    }
-
-    public String getType() {
-        return this.type;
-    }
-
-    public String getMessage() {
-        return this.message;
-    }
-
-    public Map<String, Object> getExpectedRow() {
-        return this.expectedRow;
-    }
-
-    public Map<String, FieldDiff> getFieldDiffs() {
-        return this.fieldDiffs;
     }
 
     public void setIndex(int index) {
         this.index = index;
     }
 
+    public String getType() {
+        return this.type;
+    }
+
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getMessage() {
+        return this.message;
     }
 
     public void setMessage(String message) {
         this.message = message;
     }
 
+    public Map<String, Object> getExpectedRow() {
+        return this.expectedRow;
+    }
+
     public void setExpectedRow(Map<String, Object> expectedRow) {
         this.expectedRow = expectedRow;
+    }
+
+    public Map<String, FieldDiff> getFieldDiffs() {
+        return this.fieldDiffs;
     }
 
     public void setFieldDiffs(Map<String, FieldDiff> fieldDiffs) {

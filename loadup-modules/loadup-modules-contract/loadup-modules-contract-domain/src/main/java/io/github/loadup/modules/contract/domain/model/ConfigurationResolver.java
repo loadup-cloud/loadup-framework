@@ -43,19 +43,25 @@ public final class ConfigurationResolver {
             Map<String, TypedValue> overrides,
             ValueOrigin origin,
             Map<String, OverridePolicy> merchantPolicies) {
-        if (origin.layer() == ConfigurationLayer.PRODUCT)
+        if (origin.layer() == ConfigurationLayer.PRODUCT) {
             throw new CommonException(ContractResultCodeEnum.INVALID_OVERRIDE_LAYER);
+        }
         var values = new HashMap<>(base.values());
         var origins = new HashMap<>(base.origins());
         for (var entry : ContractChecks.map(overrides).entrySet()) {
             ParameterDefinition definition = product.parameters().get(entry.getKey());
-            if (definition == null) throw new CommonException(ContractResultCodeEnum.UNKNOWN_PARAMETER);
-            if (!definition.editableLayers().contains(origin.layer()))
+            if (definition == null) {
+                throw new CommonException(ContractResultCodeEnum.UNKNOWN_PARAMETER);
+            }
+            if (!definition.editableLayers().contains(origin.layer())) {
                 throw new CommonException(ContractResultCodeEnum.OVERRIDE_FORBIDDEN);
+            }
             definition.validate(entry.getValue());
             if (origin.layer() == ConfigurationLayer.MERCHANT) {
                 OverridePolicy policy = merchantPolicies.get(entry.getKey());
-                if (policy == null) throw new CommonException(ContractResultCodeEnum.MERCHANT_PERMISSION_MISSING);
+                if (policy == null) {
+                    throw new CommonException(ContractResultCodeEnum.MERCHANT_PERMISSION_MISSING);
+                }
                 policy.validateDefinition(definition);
                 policy.validate(definition, entry.getValue());
             }
@@ -68,12 +74,15 @@ public final class ConfigurationResolver {
     public void validateComplete(ProductVersion product, ResolvedConfiguration configuration) {
         for (var entry : configuration.values().entrySet()) {
             ParameterDefinition definition = product.parameters().get(entry.getKey());
-            if (definition == null) throw new CommonException(ContractResultCodeEnum.UNKNOWN_RESOLVED_PARAMETER);
+            if (definition == null) {
+                throw new CommonException(ContractResultCodeEnum.UNKNOWN_RESOLVED_PARAMETER);
+            }
             definition.validate(entry.getValue());
         }
         product.parameters().forEach((key, definition) -> {
-            if (definition.required() && !configuration.values().containsKey(key))
+            if (definition.required() && !configuration.values().containsKey(key)) {
                 throw new CommonException(ContractResultCodeEnum.MISSING_REQUIRED_PARAMETER);
+            }
         });
     }
 }

@@ -19,7 +19,9 @@
  */
 package io.github.loadup.components.lock;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.fail;
 
 import io.github.loadup.components.testcontainers.annotation.ContainerType;
 import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
@@ -53,6 +55,13 @@ class LockTemplateIT {
         this.first = first;
     }
 
+    private static RedissonClient newClient() {
+        var config = new Config();
+        config.setLockWatchdogTimeout(2000);
+        config.useSingleServer().setAddress(SharedRedisContainer.getUrl());
+        return Redisson.create(config);
+    }
+
     @Test
     void independentClientContendsWithVirtualThreadAndCanAcquireAfterRelease() throws Exception {
         RedissonClient client = newClient();
@@ -65,7 +74,9 @@ class LockTemplateIT {
             var holder = executor.submit(() -> first.execute(key, () -> {
                 assertThat(Thread.currentThread().isVirtual()).isTrue();
                 acquired.countDown();
-                if (!finish.await(15, TimeUnit.SECONDS)) throw new IllegalStateException("test release timeout");
+                if (!finish.await(15, TimeUnit.SECONDS)) {
+                    throw new IllegalStateException("test release timeout");
+                }
                 return "done";
             }));
             try {
@@ -100,13 +111,6 @@ class LockTemplateIT {
         } finally {
             client.shutdown();
         }
-    }
-
-    private static RedissonClient newClient() {
-        var config = new Config();
-        config.setLockWatchdogTimeout(2000);
-        config.useSingleServer().setAddress(SharedRedisContainer.getUrl());
-        return Redisson.create(config);
     }
 
     @SpringBootConfiguration

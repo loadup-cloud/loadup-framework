@@ -22,7 +22,9 @@ package io.github.loadup.modules.upms.client.dto;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-/** Plaintext output reserved for the authorized and audited read operation. */
+/**
+ * Plaintext output reserved for the authorized and audited read operation.
+ */
 public record UserSensitiveDTO(
         @Schema(description = "Resource identifier") String id,
 

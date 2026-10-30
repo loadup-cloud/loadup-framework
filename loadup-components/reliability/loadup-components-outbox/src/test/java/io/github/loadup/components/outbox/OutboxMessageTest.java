@@ -32,43 +32,37 @@ class OutboxMessageTest {
     @NullSource
     @ValueSource(strings = {"", " ", "\t\n"})
     void identityFieldsCannotBeAbsentOrBlank(String invalid) {
-        assertThatThrownBy(() -> new OutboxMessage(invalid, "type", 1, "business", "{}"))
+        assertThatThrownBy(() -> new OutboxMessage(invalid, 1, "business", "{}"))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> new OutboxMessage("tenant", invalid, 1, "business", "{}"))
-                .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> new OutboxMessage("tenant", "type", 1, invalid, "{}"))
+        assertThatThrownBy(() -> new OutboxMessage("type", 1, invalid, "{}"))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void identityLimitsAreInclusiveAndVersionMustBePositive() {
-        OutboxMessage maximum = new OutboxMessage("t".repeat(64), "e".repeat(128), 1, "b".repeat(128), "");
+        OutboxMessage maximum = new OutboxMessage("e".repeat(128), 1, "b".repeat(128), "");
         assertThat(maximum.payload()).isEmpty();
-        assertThatThrownBy(() -> new OutboxMessage("t".repeat(65), "type", 1, "business", "{}"))
+        assertThatThrownBy(() -> new OutboxMessage("e".repeat(129), 1, "business", "{}"))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> new OutboxMessage("tenant", "e".repeat(129), 1, "business", "{}"))
+        assertThatThrownBy(() -> new OutboxMessage("type", 1, "b".repeat(129), "{}"))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> new OutboxMessage("tenant", "type", 1, "b".repeat(129), "{}"))
+        assertThatThrownBy(() -> new OutboxMessage("type", 0, "business", "{}"))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> new OutboxMessage("tenant", "type", 0, "business", "{}"))
-                .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> new OutboxMessage("tenant", "type", -1, "business", "{}"))
+        assertThatThrownBy(() -> new OutboxMessage("type", -1, "business", "{}"))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void payloadLimitCountsUtf8BytesRatherThanCharacters() {
         String ascii = "a".repeat(1024 * 1024);
-        assertThat(new OutboxMessage("tenant", "type", 1, "business", ascii).payload())
-                .isEqualTo(ascii);
-        assertThatThrownBy(() -> new OutboxMessage("tenant", "type", 1, "business", ascii + "a"))
+        assertThat(new OutboxMessage("type", 1, "business", ascii).payload()).isEqualTo(ascii);
+        assertThatThrownBy(() -> new OutboxMessage("type", 1, "business", ascii + "a"))
                 .isInstanceOf(IllegalArgumentException.class);
-        String unicode = "\u20ac".repeat(349525);
-        assertThat(new OutboxMessage("tenant", "type", 1, "business", unicode).payload())
-                .isEqualTo(unicode);
-        assertThatThrownBy(() -> new OutboxMessage("tenant", "type", 1, "business", unicode + "\u20ac"))
+        String unicode = "€".repeat(349525);
+        assertThat(new OutboxMessage("type", 1, "business", unicode).payload()).isEqualTo(unicode);
+        assertThatThrownBy(() -> new OutboxMessage("type", 1, "business", unicode + "€"))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> new OutboxMessage("tenant", "type", 1, "business", null))
+        assertThatThrownBy(() -> new OutboxMessage("type", 1, "business", null))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

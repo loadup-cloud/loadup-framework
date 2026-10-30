@@ -18,7 +18,10 @@
  * #L%
  */
 package io.github.loadup.components.database.sequence;
-/** Returns a range only after its independent allocation transaction commits. */
+
+/**
+ * Returns a range only after its independent allocation transaction commits.
+ */
 public interface SequenceRangeAllocator {
     SequenceRange reserve(SequenceScope scope, int step);
 }

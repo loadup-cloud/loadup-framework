@@ -19,11 +19,15 @@
  */
 package io.github.loadup.modules.merchant;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.loadup.modules.merchant.app.converter.MerchantConverter;
 import io.github.loadup.modules.merchant.app.converter.MerchantConverterImpl;
-import io.github.loadup.modules.merchant.domain.model.*;
+import io.github.loadup.modules.merchant.domain.model.Merchant;
+import io.github.loadup.modules.merchant.domain.model.MerchantBasicInfo;
+import io.github.loadup.modules.merchant.domain.model.MerchantStatus;
+import io.github.loadup.modules.merchant.domain.model.MerchantType;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -44,8 +48,7 @@ class MerchantBasicInfoTest {
     @Test
     void rejectsCodeMutationAndInvalidBasicValues() {
         var at = LocalDateTime.of(2026, 10, 10, 0, 0);
-        var merchant =
-                new Merchant("id", "tenant", info("M001", null), MerchantStatus.ACTIVE, 1, "actor", "actor", at, at);
+        var merchant = new Merchant("id", info("M001", null), MerchantStatus.ACTIVE, 1, "actor", "actor", at, at);
         assertThatThrownBy(() -> merchant.update(info("M002", null), "actor", at))
                 .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
         assertThatThrownBy(() -> info("M001", "138****8000"))

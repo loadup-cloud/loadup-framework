@@ -82,7 +82,6 @@ class ContractFlowTest {
             SalesPlanVersion plan, Map<String, TypedValue> custom, Instant from, Instant to) {
         return new ContractSigner()
                 .sign(
-                        "T1",
                         "M1",
                         "STORE1",
                         "C1",
@@ -97,7 +96,7 @@ class ContractFlowTest {
     }
 
     private MerchantContract contract(MerchantContractRevision revision, ContractStatus status) {
-        return new MerchantContract("T1", "M1", "STORE1", "C1", status, 1, List.of(revision));
+        return new MerchantContract("M1", "STORE1", "C1", status, 1, List.of(revision));
     }
 
     @Test
@@ -199,9 +198,8 @@ class ContractFlowTest {
                 START,
                 END);
         assertThat(revision.snapshotHash()).isEqualTo(same.snapshotHash()).startsWith("contract-terms-v1:");
-        var otherTenant = new MerchantContractRevision(
-                "T2",
-                "M1",
+        var otherMerchant = new MerchantContractRevision(
+                "M2",
                 "STORE1",
                 "C1",
                 1,
@@ -211,7 +209,7 @@ class ContractFlowTest {
                 START,
                 END,
                 revision.items());
-        assertThat(otherTenant.snapshotHash()).isNotEqualTo(revision.snapshotHash());
+        assertThat(otherMerchant.snapshotHash()).isNotEqualTo(revision.snapshotHash());
     }
 
     @Test
@@ -236,7 +234,7 @@ class ContractFlowTest {
     void productSelectionEnforcesRequiredDependenciesAndExclusions() {
         var required = plan(product(), Map.of(), Map.of(), Map.of());
         assertThatThrownBy(() -> new ContractSigner()
-                        .sign("T1", "M1", "STORE1", "C1", 1, required, Set.of(), Map.of(), Map.of(), START, START, END))
+                        .sign("M1", "STORE1", "C1", 1, required, Set.of(), Map.of(), Map.of(), START, START, END))
                 .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
         var dependent = new ProductVersion(
                 "WECHAT", 1, "payment.collect", Map.of(), Condition.always(), Set.of("ALIPAY"), Set.of());
@@ -264,7 +262,6 @@ class ContractFlowTest {
                         END));
         assertThatThrownBy(() -> new ContractSigner()
                         .sign(
-                                "T1",
                                 "M1",
                                 "STORE1",
                                 "C1",
@@ -304,7 +301,6 @@ class ContractFlowTest {
                 .hasMessageContaining("eligibility");
         assertThatThrownBy(() -> new ContractSigner()
                         .sign(
-                                "T1",
                                 "M1",
                                 "STORE1",
                                 "C1",
@@ -369,10 +365,9 @@ class ContractFlowTest {
     }
 
     @Test
-    void overlappingOrCrossTenantRevisionsCannotFormRuntimeView() {
+    void overlappingOrMismatchedIdentityRevisionsCannotFormRuntimeView() {
         var first = sign(plan(product(), Map.of(), Map.of(), Map.of()), Map.of(), START, END);
         var overlap = new MerchantContractRevision(
-                "T1",
                 "M1",
                 "STORE1",
                 "C1",
@@ -383,17 +378,16 @@ class ContractFlowTest {
                 START.plusSeconds(1),
                 null,
                 first.items());
-        assertThatThrownBy(() -> new MerchantContract(
-                        "T1", "M1", "STORE1", "C1", ContractStatus.NORMAL, 2, List.of(first, overlap)))
+        assertThatThrownBy(() ->
+                        new MerchantContract("M1", "STORE1", "C1", ContractStatus.NORMAL, 2, List.of(first, overlap)))
                 .isInstanceOf(io.github.loadup.commons.error.CommonException.class)
                 .hasMessageContaining("Overlapping");
-        assertThatThrownBy(() ->
-                        new MerchantContract("T2", "M1", "STORE1", "C1", ContractStatus.NORMAL, 1, List.of(first)))
+        assertThatThrownBy(() -> new MerchantContract("M2", "STORE1", "C1", ContractStatus.NORMAL, 1, List.of(first)))
                 .isInstanceOf(io.github.loadup.commons.error.CommonException.class)
                 .hasMessageContaining("identity");
         var adjacent = new MerchantContractRevision(
-                "T1", "M1", "STORE1", "C1", 2, first.planCode(), first.planVersion(), START, END, null, first.items());
-        var view = new MerchantContract("T1", "M1", "STORE1", "C1", ContractStatus.NORMAL, 2, List.of(adjacent, first));
+                "M1", "STORE1", "C1", 2, first.planCode(), first.planVersion(), START, END, null, first.items());
+        var view = new MerchantContract("M1", "STORE1", "C1", ContractStatus.NORMAL, 2, List.of(adjacent, first));
         assertThat(new ContractRuntimeResolver()
                         .resolve(view, ITEM, END, Map.of())
                         .revision())
@@ -432,9 +426,9 @@ class ContractFlowTest {
                 item.usageCondition(),
                 item.bundleOrigin());
         var first = new MerchantContractRevision(
-                "T1", "M1", "STORE1", "C1", 1, "STANDARD", 1, START, START, END, Map.of(ITEM, firstItem));
+                "M1", "STORE1", "C1", 1, "STANDARD", 1, START, START, END, Map.of(ITEM, firstItem));
         var second = new MerchantContractRevision(
-                "T1", "M1", "STORE1", "C1", 1, "STANDARD", 1, START, START, END, Map.of(ITEM, secondItem));
+                "M1", "STORE1", "C1", 1, "STANDARD", 1, START, START, END, Map.of(ITEM, secondItem));
         assertThat(first.snapshotHash()).isEqualTo(second.snapshotHash());
     }
 }

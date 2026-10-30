@@ -35,7 +35,9 @@ import io.github.loadup.modules.upms.domain.model.User;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
-/** Self-service account security queries and password updates. */
+/**
+ * Self-service account security queries and password updates.
+ */
 @Service
 public class AccountSecurityService implements io.github.loadup.modules.upms.client.facade.AccountSecurityFacade {
     private final UpmsDTOConverter dtoConverter;
@@ -49,6 +51,13 @@ public class AccountSecurityService implements io.github.loadup.modules.upms.cli
         this.users = users;
         this.logins = logins;
         this.userService = userService;
+    }
+
+    private static String requiredUser(String userId) {
+        if (userId == null || userId.isBlank()) {
+            throw new CommonException(UpmsResultCodeEnum.USERID_IS_REQUIRED);
+        }
+        return userId;
     }
 
     public SecurityOverviewDTO overview(String userId) {
@@ -68,10 +77,5 @@ public class AccountSecurityService implements io.github.loadup.modules.upms.cli
     public void changePassword(String userId, String oldPassword, String newPassword, String confirmPassword) {
         userService.changePassword(
                 new UserPasswordChangeCommand(requiredUser(userId), oldPassword, newPassword, confirmPassword));
-    }
-
-    private static String requiredUser(String userId) {
-        if (userId == null || userId.isBlank()) throw new CommonException(UpmsResultCodeEnum.USERID_IS_REQUIRED);
-        return userId;
     }
 }

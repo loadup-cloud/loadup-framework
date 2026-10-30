@@ -36,9 +36,12 @@ public record AsyncResultProperties(
         int maxRetained) {
     public AsyncResultProperties {
         binderType = binderType == null ? "local" : binderType;
-        if (!binderType.equals("local") && !binderType.equals("redis"))
+        if (!binderType.equals("local") && !binderType.equals("redis")) {
             throw new IllegalArgumentException("Unknown async result binder");
-        if (enabled) AsyncReplyKey.required(namespace, 128);
+        }
+        if (enabled) {
+            AsyncReplyKey.required(namespace, 128);
+        }
         waitTimeout = waitTimeout == null ? Duration.ofSeconds(5) : waitTimeout;
         maxWaitTimeout = maxWaitTimeout == null ? Duration.ofSeconds(30) : maxWaitTimeout;
         resultRetention = resultRetention == null ? Duration.ofMinutes(15) : resultRetention;
@@ -55,7 +58,9 @@ public record AsyncResultProperties(
                 || maxPending < 1
                 || maxResultBytes < 1
                 || maxResultBytes > 1024 * 1024
-                || maxRetained < maxPending) throw new IllegalArgumentException("Invalid async result limits");
+                || maxRetained < maxPending) {
+            throw new IllegalArgumentException("Invalid async result limits");
+        }
     }
 
     @Override

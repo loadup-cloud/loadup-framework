@@ -19,14 +19,16 @@
  */
 package io.github.loadup.modules.merchant;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 
 import io.github.loadup.modules.contract.client.spi.MerchantFactsProvider;
 import io.github.loadup.modules.merchant.client.dto.MerchantProfileDTO;
 import io.github.loadup.modules.merchant.client.facade.MerchantQueryFacade;
-import io.github.loadup.modules.merchant.contract.*;
-import java.util.*;
+import io.github.loadup.modules.merchant.contract.MerchantContractAutoConfiguration;
+import io.github.loadup.modules.merchant.contract.MerchantContractFactsProvider;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -34,9 +36,9 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 class MerchantFactsTest {
     @Test
     void basicFactsDoNotInventQualificationAndMissingRegionRemainsUnknown() {
-        MerchantQueryFacade lookup = (tenant, id) ->
-                Optional.of(new MerchantProfileDTO(id, tenant, "M001", "ENTERPRISE", "RETAIL", "CN", null, "", true));
-        var profile = new MerchantContractFactsProvider(lookup).load("tenant", "id");
+        MerchantQueryFacade lookup =
+                id -> Optional.of(new MerchantProfileDTO(id, "M001", "ENTERPRISE", "RETAIL", "CN", null, "", true));
+        var profile = new MerchantContractFactsProvider(lookup).load("id");
         assertThat(profile.active()).isTrue();
         assertThat(profile.facts())
                 .containsOnlyKeys("merchant.code", "merchant.type", "merchant.industry", "merchant.country");
@@ -45,18 +47,18 @@ class MerchantFactsTest {
 
     @Test
     void missingAndDisabledMerchantsAreNotPromotedToActive() {
-        assertThat(new MerchantContractFactsProvider((tenant, id) -> Optional.empty()).load("tenant", "missing"))
+        assertThat(new MerchantContractFactsProvider(id -> Optional.empty()).load("missing"))
                 .isNull();
-        var provider = new MerchantContractFactsProvider((tenant, id) -> Optional.of(
-                new MerchantProfileDTO(id, tenant, "M001", "ENTERPRISE", "RETAIL", "CN", null, null, false)));
-        assertThat(provider.load("tenant", "id").active()).isFalse();
+        var provider = new MerchantContractFactsProvider(
+                id -> Optional.of(new MerchantProfileDTO(id, "M001", "ENTERPRISE", "RETAIL", "CN", null, null, false)));
+        assertThat(provider.load("id").active()).isFalse();
     }
 
     @Test
-    void mismatchedTenantOrMerchantIdentityIsRejected() {
-        var provider = new MerchantContractFactsProvider((tenant, id) -> Optional.of(
-                new MerchantProfileDTO(id, "other", "M001", "ENTERPRISE", "RETAIL", "CN", null, null, true)));
-        assertThatThrownBy(() -> provider.load("tenant", "id"))
+    void mismatchedMerchantIdentityIsRejected() {
+        var provider = new MerchantContractFactsProvider(id ->
+                Optional.of(new MerchantProfileDTO("other", "M001", "ENTERPRISE", "RETAIL", "CN", null, null, true)));
+        assertThatThrownBy(() -> provider.load("id"))
                 .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
     }
 

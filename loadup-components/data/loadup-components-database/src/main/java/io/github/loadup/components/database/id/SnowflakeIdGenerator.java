@@ -19,7 +19,9 @@
  */
 package io.github.loadup.components.database.id;
 
-/** Generates Snowflake identifiers encoded as strings. */
+/**
+ * Generates Snowflake identifiers encoded as strings.
+ */
 public final class SnowflakeIdGenerator implements IdGenerator {
     private static final long EPOCH = 1_704_067_200_000L;
     private static final long MAX_WORKER_ID = 31L;

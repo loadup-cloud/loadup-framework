@@ -19,11 +19,15 @@
  */
 package io.github.loadup.components.kms;
 
-/** An OpenBao key name and version; zero selects the latest version for new operations. */
+/**
+ * An OpenBao key name and version; zero selects the latest version for new operations.
+ */
 public record KmsKeyRef(String name, int version) {
     public KmsKeyRef {
         validateName(name);
-        if (version < 0) throw new IllegalArgumentException("key version must not be negative");
+        if (version < 0) {
+            throw new IllegalArgumentException("key version must not be negative");
+        }
     }
 
     public static KmsKeyRef latest(String name) {

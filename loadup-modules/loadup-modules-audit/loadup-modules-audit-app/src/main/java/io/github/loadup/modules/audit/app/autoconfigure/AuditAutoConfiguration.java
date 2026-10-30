@@ -32,7 +32,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandi
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
-/** Activates the JDBC audit center when a data source is available. */
+/**
+ * Activates the JDBC audit center when a data source is available.
+ */
 @Import(AuditDTOConverterImpl.class)
 @AutoConfiguration(
         afterName = "io.github.loadup.modules.audit.infrastructure.autoconfigure.AuditPersistenceAutoConfiguration")
@@ -43,16 +45,7 @@ public class AuditAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public AuditService auditService(
-            AuditGateway repository,
-            AuditDTOConverter converter,
-            @org.springframework.beans.factory.annotation.Qualifier("auditClock") java.time.Clock clock) {
+    public AuditService auditService(AuditGateway repository, AuditDTOConverter converter, java.time.Clock clock) {
         return new AuditService(repository, converter, clock);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(name = "auditClock")
-    public java.time.Clock auditClock() {
-        return java.time.Clock.systemDefaultZone();
     }
 }

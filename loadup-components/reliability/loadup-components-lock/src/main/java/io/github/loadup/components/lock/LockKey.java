@@ -23,11 +23,15 @@ import io.github.loadup.commons.json.ToStringAsJson;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-/** Explicit tenant or global resource scope; external names are encoded to avoid delimiter collisions. */
+/**
+ * Explicit tenant or global resource scope; external names are encoded to avoid delimiter collisions.
+ */
 public record LockKey(String business, String tenantId, String resourceId) {
     public LockKey {
         business = required(business, "business", 64);
-        if (tenantId != null) tenantId = required(tenantId, "tenantId", 256);
+        if (tenantId != null) {
+            tenantId = required(tenantId, "tenantId", 256);
+        }
         resourceId = required(resourceId, "resourceId", 512);
     }
 
@@ -36,13 +40,10 @@ public record LockKey(String business, String tenantId, String resourceId) {
     }
 
     public static LockKey tenant(String business, String tenantId, String resourceId) {
-        if (tenantId == null) throw new IllegalArgumentException("tenantId is required for tenant scope");
+        if (tenantId == null) {
+            throw new IllegalArgumentException("tenantId is required for tenant scope");
+        }
         return new LockKey(business, tenantId, resourceId);
-    }
-
-    public String redisName(String namespace) {
-        String prefix = "loadup:lock:" + encode(required(namespace, "namespace", 128)) + ":" + encode(business);
-        return prefix + (tenantId == null ? ":g:" : ":t:" + encode(tenantId) + ":") + encode(resourceId);
     }
 
     static String required(String value, String field, int max) {
@@ -60,6 +61,11 @@ public record LockKey(String business, String tenantId, String resourceId) {
 
     private static String encode(String value) {
         return Base64.getUrlEncoder().withoutPadding().encodeToString(value.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public String redisName(String namespace) {
+        String prefix = "loadup:lock:" + encode(required(namespace, "namespace", 128)) + ":" + encode(business);
+        return prefix + (tenantId == null ? ":g:" : ":t:" + encode(tenantId) + ":") + encode(resourceId);
     }
 
     @Override

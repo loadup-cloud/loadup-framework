@@ -19,7 +19,9 @@
  */
 package io.github.loadup.components.kms;
 
-/** RSA signatures over original bytes using SHA-256; PSS uses a hash-length salt. */
+/**
+ * RSA signatures over original bytes using SHA-256; PSS uses a hash-length salt.
+ */
 public enum KmsSignatureAlgorithm {
     RSA_SHA256_PKCS1("pkcs1v15"),
     RSA_SHA256_PSS("pss");

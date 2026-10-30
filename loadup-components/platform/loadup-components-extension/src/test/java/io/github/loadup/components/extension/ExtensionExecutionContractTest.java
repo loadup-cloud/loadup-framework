@@ -36,6 +36,35 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.event.ContextRefreshedEvent;
 
 class ExtensionExecutionContractTest {
+    private static BizScenario scene(String useCase, String scenario) {
+        return BizScenario.valueOf("retail", useCase, scenario);
+    }
+
+    private static AnnotationConfigApplicationContext catalog() {
+        var context = new AnnotationConfigApplicationContext();
+        context.registerBean(ExtensionRegistry.class);
+        context.registerBean(Mobile.class);
+        context.registerBean(Secondary.class);
+        context.registerBean(Web.class);
+        context.registerBean(Default.class);
+        context.registerBean(OtherImpl.class);
+        context.registerBean(ExtensionProvider.class, () -> new ExtensionProvider() {
+            public Class<? extends IExtensionPoint> getExtensionType() {
+                return Greeting.class;
+            }
+
+            public String getBizCode() {
+                return "spi";
+            }
+
+            public IExtensionPoint createExtension() {
+                return (Greeting) () -> "spi";
+            }
+        });
+        context.refresh();
+        return context;
+    }
+
     @Test
     void exactMatchWinsThenUseCaseThenBusinessAndPriorityBreaksTies() {
         try (var context = catalog()) {
@@ -134,35 +163,6 @@ class ExtensionExecutionContractTest {
             assertThat(registry.getExtensionsByScenario(Greeting.class, scene("checkout", "mobile")))
                     .hasSize(2);
         }
-    }
-
-    private static BizScenario scene(String useCase, String scenario) {
-        return BizScenario.valueOf("retail", useCase, scenario);
-    }
-
-    private static AnnotationConfigApplicationContext catalog() {
-        var context = new AnnotationConfigApplicationContext();
-        context.registerBean(ExtensionRegistry.class);
-        context.registerBean(Mobile.class);
-        context.registerBean(Secondary.class);
-        context.registerBean(Web.class);
-        context.registerBean(Default.class);
-        context.registerBean(OtherImpl.class);
-        context.registerBean(ExtensionProvider.class, () -> new ExtensionProvider() {
-            public Class<? extends IExtensionPoint> getExtensionType() {
-                return Greeting.class;
-            }
-
-            public String getBizCode() {
-                return "spi";
-            }
-
-            public IExtensionPoint createExtension() {
-                return (Greeting) () -> "spi";
-            }
-        });
-        context.refresh();
-        return context;
     }
 
     public interface Greeting extends IExtensionPoint {

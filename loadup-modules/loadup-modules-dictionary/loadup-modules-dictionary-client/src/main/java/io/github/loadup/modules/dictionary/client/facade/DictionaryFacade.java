@@ -28,23 +28,25 @@ import io.github.loadup.modules.dictionary.client.dto.DictionaryItemDTO;
 import io.github.loadup.modules.dictionary.client.dto.DictionaryTypeDTO;
 import java.util.List;
 
-/** Public business contract for DictionaryService. */
+/**
+ * Public business contract for DictionaryService.
+ */
 public interface DictionaryFacade {
-    DictionaryTypeDTO createType(String tenantId, DictionaryTypeCreateCommand command);
+    DictionaryTypeDTO createType(DictionaryTypeCreateCommand command);
 
-    DictionaryTypeDTO updateType(String tenantId, DictionaryTypeUpdateCommand command);
+    DictionaryTypeDTO updateType(DictionaryTypeUpdateCommand command);
 
-    void deleteType(String tenantId, String id);
+    void deleteType(String id);
 
-    PageDTO<DictionaryTypeDTO> listTypes(String tenantId, int page, int size);
+    PageDTO<DictionaryTypeDTO> listTypes(int page, int size);
 
-    DictionaryItemDTO createItem(String tenantId, DictionaryItemCreateCommand command);
+    DictionaryItemDTO createItem(DictionaryItemCreateCommand command);
 
-    DictionaryItemDTO updateItem(String tenantId, DictionaryItemUpdateCommand command);
+    DictionaryItemDTO updateItem(DictionaryItemUpdateCommand command);
 
-    void deleteItem(String tenantId, String id);
+    void deleteItem(String id);
 
-    PageDTO<DictionaryItemDTO> listItems(String tenantId, String typeCode, int page, int size);
+    PageDTO<DictionaryItemDTO> listItems(String typeCode, int page, int size);
 
-    List<DictionaryItemDTO> listEnabledItems(String tenantId, String typeCode);
+    List<DictionaryItemDTO> listEnabledItems(String typeCode);
 }

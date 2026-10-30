@@ -21,4 +21,6 @@ loadup:
     binder.s3.path-style-access-enabled: false
 ```
 
-The binder persists filename and custom metadata in S3 object metadata, generates presigned GET URLs, and supports initiate/upload-part/complete/abort multipart operations. The bucket and credentials are external infrastructure; `create-bucket` is intended for development only.
+The binder persists filename and custom metadata in S3 object metadata, generates presigned GET URLs, and supports
+initiate/upload-part/complete/abort multipart operations. The bucket and credentials are external infrastructure;
+`create-bucket` is intended for development only.

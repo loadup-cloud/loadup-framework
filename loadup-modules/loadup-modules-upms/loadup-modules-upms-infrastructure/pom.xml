@@ -86,10 +86,6 @@
             <artifactId>HikariCP</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-commons</artifactId>
-        </dependency>
-        <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-modules-upms-client</artifactId>
             <scope>compile</scope>
@@ -106,6 +102,8 @@
                     <annotationProcessors>
                         <annotationProcessor>org.mapstruct.ap.MappingProcessor</annotationProcessor>
                         <annotationProcessor>org.springframework.boot.configurationprocessor.ConfigurationMetadataAnnotationProcessor</annotationProcessor>
+
+                        <annotationProcessor>com.mybatisflex.processor.MybatisFlexProcessor</annotationProcessor>
 
                     </annotationProcessors>
                 </configuration>

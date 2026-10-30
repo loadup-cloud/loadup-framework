@@ -38,11 +38,12 @@ loadup:
 
 ## 配置入口
 
-| 前缀 | 配置类 |
-|---|---|
+| 前缀                               | 配置类                                                                                                                         |
+|------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|
 | `loadup.configcenter.binder.nacos` | [`NacosConfigCenterProperties`](src/main/java/io/github/loadup/components/configcenter/nacos/NacosConfigCenterProperties.java) |
 
 ## 自动装配
 
-- [`NacosConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/nacos/autoconfig/NacosConfigCenterAutoConfiguration.java)
-  - 启用条件：`@ConditionalOnProperty(prefix = "loadup.configcenter", name = "binder-type", havingValue = "nacos")`。
+- [
+  `NacosConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/nacos/autoconfig/NacosConfigCenterAutoConfiguration.java)
+    - 启用条件：`@ConditionalOnProperty(prefix = "loadup.configcenter", name = "binder-type", havingValue = "nacos")`。

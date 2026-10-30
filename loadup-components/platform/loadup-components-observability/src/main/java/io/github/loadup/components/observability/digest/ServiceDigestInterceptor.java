@@ -28,23 +28,10 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.util.ClassUtils;
 
-/** Logs fixed metadata only; arguments, results and exception messages are never inspected. */
+/**
+ * Logs fixed metadata only; arguments, results and exception messages are never inspected.
+ */
 final class ServiceDigestInterceptor implements MethodInterceptor {
-    @Override
-    public Object invoke(MethodInvocation invocation) throws Throwable {
-        Stopwatch stopwatch = Stopwatch.createStarted();
-        Throwable failure = null;
-        try {
-            return invocation.proceed();
-        } catch (Throwable thrown) {
-            failure = thrown;
-            throw thrown;
-        } finally {
-            stopwatch.stop();
-            writeSummary(invocation, stopwatch.elapsed(TimeUnit.MILLISECONDS), failure);
-        }
-    }
-
     private static void writeSummary(MethodInvocation invocation, long elapsedMs, Throwable failure) {
         try {
             Class<?> serviceClass = ClassUtils.getUserClass(invocation.getThis());
@@ -64,6 +51,21 @@ final class ServiceDigestInterceptor implements MethodInterceptor {
                     failure == null ? "none" : failure.getClass().getName());
         } catch (RuntimeException ignored) {
             // A broken logging backend must not replace a business result or exception.
+        }
+    }
+
+    @Override
+    public Object invoke(MethodInvocation invocation) throws Throwable {
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        Throwable failure = null;
+        try {
+            return invocation.proceed();
+        } catch (Throwable thrown) {
+            failure = thrown;
+            throw thrown;
+        } finally {
+            stopwatch.stop();
+            writeSummary(invocation, stopwatch.elapsed(TimeUnit.MILLISECONDS), failure);
         }
     }
 }

@@ -19,7 +19,9 @@
  */
 package io.github.loadup.components.kms;
 
-/** Supplies a management token independently of runtime authentication. */
+/**
+ * Supplies a management token independently of runtime authentication.
+ */
 @FunctionalInterface
 public interface KmsManagementTokenProvider {
     String token();

@@ -70,13 +70,6 @@ public class JsonUtil {
     private static volatile ObjectMapper objectMapper = initObjectMapper();
 
     /**
-     * Use the application mapper when Spring configures one.
-     */
-    public static void setObjectMapper(ObjectMapper mapper) {
-        objectMapper = java.util.Objects.requireNonNull(mapper);
-    }
-
-    /**
      *
      *
      * <ul>
@@ -117,6 +110,13 @@ public class JsonUtil {
 
     public static ObjectMapper getObjectMapper() {
         return objectMapper;
+    }
+
+    /**
+     * Use the application mapper when Spring configures one.
+     */
+    public static void setObjectMapper(ObjectMapper mapper) {
+        objectMapper = java.util.Objects.requireNonNull(mapper);
     }
 
     public static String toJson(Object object) {

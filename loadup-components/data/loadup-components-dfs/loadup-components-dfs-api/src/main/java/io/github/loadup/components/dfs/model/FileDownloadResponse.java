@@ -23,7 +23,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
-/** Download response whose content stream must be closed by the caller. */
+/**
+ * Download response whose content stream must be closed by the caller.
+ */
 public record FileDownloadResponse(FileMetadata metadata, InputStream content, long contentLength)
         implements AutoCloseable {
 

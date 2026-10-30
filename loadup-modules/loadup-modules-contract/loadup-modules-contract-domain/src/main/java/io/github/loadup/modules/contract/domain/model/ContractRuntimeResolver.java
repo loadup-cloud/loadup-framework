@@ -33,29 +33,36 @@ public final class ContractRuntimeResolver {
         ContractChecks.code(itemKey);
         Objects.requireNonNull(trustedBusinessTime, "business time");
         Objects.requireNonNull(trustedFacts, "facts");
-        if (contract.status() == ContractStatus.SUSPENDED)
+        if (contract.status() == ContractStatus.SUSPENDED) {
             return denied(contract, null, ContractDecision.Reason.SUSPENDED);
-        if (contract.status() == ContractStatus.TERMINATED)
+        }
+        if (contract.status() == ContractStatus.TERMINATED) {
             return denied(contract, null, ContractDecision.Reason.TERMINATED);
+        }
         var revision = contract.revisions().stream()
                 .filter(r -> r.effectiveAt(trustedBusinessTime))
                 .findFirst()
                 .orElse(null);
-        if (revision == null) return denied(contract, null, ContractDecision.Reason.NO_EFFECTIVE_REVISION);
+        if (revision == null) {
+            return denied(contract, null, ContractDecision.Reason.NO_EFFECTIVE_REVISION);
+        }
         var item = revision.items().get(itemKey);
-        if (item == null) return denied(contract, revision, ContractDecision.Reason.PRODUCT_NOT_SIGNED);
+        if (item == null) {
+            return denied(contract, revision, ContractDecision.Reason.PRODUCT_NOT_SIGNED);
+        }
         MatchResult result = new ConditionEvaluator()
                 .evaluate(
                         item.usageCondition(),
                         trustedFacts,
                         item.configuration().values());
-        if (result != MatchResult.MATCH)
+        if (result != MatchResult.MATCH) {
             return denied(
                     contract,
                     revision,
                     result == MatchResult.INDETERMINATE
                             ? ContractDecision.Reason.FACTS_INDETERMINATE
                             : ContractDecision.Reason.CONDITION_REJECTED);
+        }
         return new ContractDecision(
                 true,
                 ContractDecision.Reason.ALLOWED,

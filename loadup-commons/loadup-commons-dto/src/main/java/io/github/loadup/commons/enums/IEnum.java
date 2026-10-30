@@ -36,7 +36,9 @@ public interface IEnum {
 
         @SuppressWarnings("unchecked")
         private static <T extends Enum<T> & IEnum> T get(Class<T> enumClass, String value, boolean isName) {
-            if (value == null || value.trim().isEmpty()) return null;
+            if (value == null || value.trim().isEmpty()) {
+                return null;
+            }
 
             Map<Class<?>, Map<String, Object>> targetRootCache = isName ? NAME_CACHE : CODE_CACHE;
 

@@ -20,9 +20,13 @@
 package io.github.loadup.modules.merchant.app.converter;
 
 import io.github.loadup.commons.mapping.LoadUpMapStructConfig;
-import io.github.loadup.modules.merchant.client.command.*;
-import io.github.loadup.modules.merchant.client.dto.*;
-import io.github.loadup.modules.merchant.domain.model.*;
+import io.github.loadup.modules.merchant.client.command.MerchantCreateCommand;
+import io.github.loadup.modules.merchant.client.command.MerchantUpdateCommand;
+import io.github.loadup.modules.merchant.client.dto.MerchantDTO;
+import io.github.loadup.modules.merchant.client.dto.MerchantProfileDTO;
+import io.github.loadup.modules.merchant.domain.model.Merchant;
+import io.github.loadup.modules.merchant.domain.model.MerchantBasicInfo;
+import io.github.loadup.modules.merchant.domain.model.MerchantStatus;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -32,7 +36,9 @@ public interface MerchantConverter {
 
     MerchantBasicInfo toInfo(MerchantUpdateCommand command);
 
-    /** Retains private values on null; an empty string explicitly clears a value. */
+    /**
+     * Retains private values on null; an empty string explicitly clears a value.
+     */
     @Mapping(target = "merchantCode", source = "update.merchantCode")
     @Mapping(target = "name", source = "update.name")
     @Mapping(target = "shortName", source = "update.shortName")

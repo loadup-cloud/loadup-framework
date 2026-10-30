@@ -22,7 +22,9 @@ package io.github.loadup.components.signature.request;
 import java.time.Duration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/** Independent request protocol settings; local JCA configuration remains separate. */
+/**
+ * Independent request protocol settings; local JCA configuration remains separate.
+ */
 @ConfigurationProperties("loadup.components.signature.request")
 public record RequestSignatureProperties(Duration maxAge, Duration futureSkew, Integer maxPayloadBytes) {
     public RequestSignatureProperties {
@@ -40,8 +42,11 @@ public record RequestSignatureProperties(Duration maxAge, Duration futureSkew, I
     }
 
     void validateContent(RequestContent content) {
-        if (content == null) throw new RequestSignatureException(RequestSignatureException.Code.MALFORMED);
-        if (content.payloadSize() > maxPayloadBytes)
+        if (content == null) {
+            throw new RequestSignatureException(RequestSignatureException.Code.MALFORMED);
+        }
+        if (content.payloadSize() > maxPayloadBytes) {
             throw new RequestSignatureException(RequestSignatureException.Code.PAYLOAD_TOO_LARGE);
+        }
     }
 }

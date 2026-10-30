@@ -21,5 +21,7 @@ package io.github.loadup.components.outbox;
 
 import java.time.Instant;
 
-/** The ID stays unchanged across retries and manual replay. */
+/**
+ * The ID stays unchanged across retries and manual replay.
+ */
 public record OutboxEvent(String id, OutboxMessage message, Instant occurredAt, String traceId) {}

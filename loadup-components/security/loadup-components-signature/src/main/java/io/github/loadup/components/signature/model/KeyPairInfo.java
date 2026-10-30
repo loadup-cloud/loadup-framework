@@ -22,21 +22,31 @@ package io.github.loadup.components.signature.model;
 import io.github.loadup.commons.json.ToStringAsJson;
 import java.io.Serializable;
 
-/** Immutable key pair container with Base64-encoded keys. */
+/**
+ * Immutable key pair container with Base64-encoded keys.
+ */
 public class KeyPairInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /** The Base64-encoded public key. */
+    /**
+     * The Base64-encoded public key.
+     */
     private String publicKey;
 
-    /** The Base64-encoded private key. */
+    /**
+     * The Base64-encoded private key.
+     */
     private String privateKey;
 
-    /** The key algorithm. */
+    /**
+     * The key algorithm.
+     */
     private String algorithm;
 
-    /** The key size in bits. */
+    /**
+     * The key size in bits.
+     */
     private Integer keySize;
 
     public KeyPairInfo(String publicKey, String privateKey, String algorithm, Integer keySize) {
@@ -48,40 +58,49 @@ public class KeyPairInfo implements Serializable {
 
     public KeyPairInfo() {}
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public String getPublicKey() {
         return this.publicKey;
-    }
-
-    public String getPrivateKey() {
-        return this.privateKey;
-    }
-
-    public String getAlgorithm() {
-        return this.algorithm;
-    }
-
-    public Integer getKeySize() {
-        return this.keySize;
     }
 
     public void setPublicKey(String publicKey) {
         this.publicKey = publicKey;
     }
 
+    public String getPrivateKey() {
+        return this.privateKey;
+    }
+
     public void setPrivateKey(String privateKey) {
         this.privateKey = privateKey;
+    }
+
+    public String getAlgorithm() {
+        return this.algorithm;
     }
 
     public void setAlgorithm(String algorithm) {
         this.algorithm = algorithm;
     }
 
+    public Integer getKeySize() {
+        return this.keySize;
+    }
+
     public void setKeySize(Integer keySize) {
         this.keySize = keySize;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public long getSerialVersionUID() {
+        return this.serialVersionUID;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
     }
 
     public static class Builder {
@@ -113,14 +132,5 @@ public class KeyPairInfo implements Serializable {
         public KeyPairInfo build() {
             return new KeyPairInfo(this.publicKey, this.privateKey, this.algorithm, this.keySize);
         }
-    }
-
-    public long getSerialVersionUID() {
-        return this.serialVersionUID;
-    }
-
-    @Override
-    public String toString() {
-        return ToStringAsJson.reflectionToString(this);
     }
 }

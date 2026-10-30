@@ -14,11 +14,6 @@ loadup:
     table: flyway_schema_history_globalunique
   global-unique:
     enabled: true
-  database:
-    multi-tenant:
-      enabled: true
-      required: true
-      default-tenant-id: test-tenant
 
 logging:
   level:

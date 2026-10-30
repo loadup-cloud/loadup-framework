@@ -4,7 +4,8 @@
 
 ## 运行条件
 
-需要 Java 25、Maven Daemon（`mvnd`）和可用的 Docker。`application.yml` 默认激活 `test` profile，`application-test.yml` 与 `application-ci.yml` 分别配置本地和 CI 环境。
+需要 Java 25、Maven Daemon（`mvnd`）和可用的 Docker。`application.yml` 默认激活 `test` profile，`application-test.yml` 与
+`application-ci.yml` 分别配置本地和 CI 环境。
 
 ## 执行测试
 
@@ -25,11 +26,13 @@ mvnd -B -ntp -T 1 clean verify \
   -Dfailsafe.failIfNoSpecifiedTests=false
 ```
 
-`test` 阶段只运行 Surefire 单测，`verify` 才会执行和检查 Failsafe 集成测试。报告分别位于 `target/surefire-reports` 与 `target/failsafe-reports`；Failsafe verify 失败时先查看具体用例异常。
+`test` 阶段只运行 Surefire 单测，`verify` 才会执行和检查 Failsafe 集成测试。报告分别位于 `target/surefire-reports` 与
+`target/failsafe-reports`；Failsafe verify 失败时先查看具体用例异常。
 
 ## 数据准备与装配
 
-- `TestApplication` 使用 `@SpringBootConfiguration` + `@EnableAutoConfiguration`，由正式自动配置提供服务、Gateway、Converter、Mapper 和 database 能力；不直接扫描 database 自动配置类。
+- `TestApplication` 使用 `@SpringBootConfiguration` + `@EnableAutoConfiguration`，由正式自动配置提供服务、Gateway、Converter、Mapper
+  和 database 能力；不直接扫描 database 自动配置类。
 - 公共 `application.yml` 先执行 `schema-test.sql`，再执行 database 组件提供的 Sequence 建表 SQL。本地及 CI 共用初始化顺序。
 - `schema-test.sql` 仅重置测试数据库，包含清理旧 Sequence 表；真实消费工程仍应通过迁移管理 Sequence。
 - 不配置 `mybatis-flex.global-config`，持久化约定由 database 代码统一维护；测试也不能绕过配置保护。

@@ -21,7 +21,9 @@ package io.github.loadup.components.http;
 
 import java.util.Map;
 
-/** Resolves secret references at call time; returned values must never be logged. */
+/**
+ * Resolves secret references at call time; returned values must never be logged.
+ */
 @FunctionalInterface
 public interface HttpCredentialProvider {
     Map<String, String> headers(String reference);

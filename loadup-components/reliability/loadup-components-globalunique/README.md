@@ -37,14 +37,15 @@ loadup:
     locations: classpath:db/migration
 ```
 
-唯一维度为 `tenant_id + biz_type + unique_key`。启用多租户后复用 database 的租户上下文；未启用时使用 database 的 `default-tenant-id`。组件显式设置 ID、审计时间和删除标记，并在查询中限定租户。
+唯一维度为 `tenant_id + biz_type + unique_key`。启用多租户后复用 database 的租户上下文；未启用时使用 database 的
+`default-tenant-id`。组件显式设置 ID、审计时间和删除标记，并在查询中限定租户。
 
 ## 能力矩阵
 
-| 能力 | 支持 |
-|---|---|
-| 租户内并发幂等 | ✓ PostgreSQL 唯一索引 |
-| 业务元数据、请求快照、记录查询 | ✓ |
-| 事务回滚后重试 | ✓ 同一 Spring 事务 |
-| ID、审计、逻辑删除、多租户 | ✓ database 组件统一提供 |
-| 过期、自动归档、缓存 | ✗ 由业务维护 |
+| 能力                           | 支持                     |
+|--------------------------------|--------------------------|
+| 租户内并发幂等                 | ✓ PostgreSQL 唯一索引   |
+| 业务元数据、请求快照、记录查询 | ✓                       |
+| 事务回滚后重试                 | ✓ 同一 Spring 事务      |
+| ID、审计、逻辑删除、多租户     | ✓ database 组件统一提供 |
+| 过期、自动归档、缓存           | ✗ 由业务维护            |

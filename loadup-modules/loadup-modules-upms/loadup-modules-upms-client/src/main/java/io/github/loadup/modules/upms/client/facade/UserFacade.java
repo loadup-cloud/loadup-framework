@@ -27,7 +27,9 @@ import io.github.loadup.modules.upms.client.command.UserUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.UserDetailDTO;
 import io.github.loadup.modules.upms.client.query.UserPageQuery;
 
-/** Public business contract for UserService. */
+/**
+ * Public business contract for UserService.
+ */
 public interface UserFacade extends UserQueryFacade {
     UserDetailDTO createUser(UserCreateCommand command);
 

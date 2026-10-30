@@ -26,7 +26,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
 
-/** Deduplicates local database work in the caller's transaction; not external HTTP effects. */
+/**
+ * Deduplicates local database work in the caller's transaction; not external HTTP effects.
+ */
 public class OutboxInbox {
     private final DataSource dataSource;
     private final JdbcTemplate jdbc;
@@ -42,20 +44,24 @@ public class OutboxInbox {
 
     public boolean consume(String consumerId, OutboxEvent event, Runnable databaseWork) {
         OutboxMessage.required(consumerId, "consumerId", 128);
-        if (event == null || databaseWork == null)
+        if (event == null || databaseWork == null) {
             throw new IllegalArgumentException("event and databaseWork are required");
+        }
         JdbcOutboxRepository.requireTransaction(dataSource);
         return Boolean.TRUE.equals(transactions.execute(status -> {
             int inserted = jdbc.update(
-                    "INSERT INTO loadup_outbox_inbox (id, tenant_id, created_at, updated_at, consumer_id, event_id) "
-                            + "VALUES (?, ?, statement_timestamp(), statement_timestamp(), ?, ?) "
-                            + "ON CONFLICT (tenant_id, consumer_id, event_id) DO NOTHING",
+                    "INSERT INTO loadup_outbox_inbox (id, created_at, updated_at, consumer_id, event_id) "
+                            + "VALUES (?, statement_timestamp(), statement_timestamp(), ?, ?) "
+                            + "ON CONFLICT (consumer_id, event_id) DO NOTHING",
                     UUID.randomUUID().toString(),
-                    event.message().tenantId(),
                     consumerId,
                     event.id());
-            if (inserted == 0) return false;
-            if (inserted != 1) throw new IllegalStateException("Unexpected inbox insert count");
+            if (inserted == 0) {
+                return false;
+            }
+            if (inserted != 1) {
+                throw new IllegalStateException("Unexpected inbox insert count");
+            }
             databaseWork.run();
             return true;
         }));

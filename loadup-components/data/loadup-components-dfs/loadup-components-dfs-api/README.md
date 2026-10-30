@@ -1,8 +1,11 @@
 # DFS API
 
-The facade module defines `DfsService`, `DfsProvider`, immutable file models, and the Spring Boot auto-configuration that wires one provider into `DefaultDfsService`.
+The facade module defines `DfsService`, `DfsProvider`, immutable file models, and the Spring Boot auto-configuration
+that wires one provider into `DefaultDfsService`.
 
-Business code should use only `DfsService` and `io.github.loadup.components.dfs.model` types. The API covers object CRUD, metadata, presigned download URLs, and the multipart upload lifecycle. Multipart and presigned operations are optional provider capabilities and report `UnsupportedOperationException` when unavailable.
+Business code should use only `DfsService` and `io.github.loadup.components.dfs.model` types. The API covers object
+CRUD, metadata, presigned download URLs, and the multipart upload lifecycle. Multipart and presigned operations are
+optional provider capabilities and report `UnsupportedOperationException` when unavailable.
 
 ## 接入步骤
 
@@ -17,8 +20,8 @@ Business code should use only `DfsService` and `io.github.loadup.components.dfs.
 
 ## 配置入口
 
-| 前缀 | 配置类 |
-|---|---|
+| 前缀         | 配置类                                                                              |
+|--------------|-------------------------------------------------------------------------------------|
 | `loadup.dfs` | [`DfsProperties`](src/main/java/io/github/loadup/components/dfs/DfsProperties.java) |
 
 ## 对外契约
@@ -33,6 +36,6 @@ Business code should use only `DfsService` and `io.github.loadup.components.dfs.
 ## 自动装配
 
 - [`DfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/autoconfig/DfsAutoConfiguration.java)
-  - 启用条件：`@ConditionalOnSingleCandidate(DfsProvider.class)`。
+    - 启用条件：`@ConditionalOnSingleCandidate(DfsProvider.class)`。
 
 设计边界与装配路径见 [ARCHITECTURE.md](ARCHITECTURE.md)。

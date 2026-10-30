@@ -61,13 +61,11 @@ public final class SharedRedisContainer {
      */
     public static final int REDIS_PORT = 6379;
 
+    private static final AtomicBoolean STARTED = new AtomicBoolean(false);
     /**
      * The shared Redis container instance
      */
     private static GenericContainer<?> redisContainer;
-
-    private static final AtomicBoolean STARTED = new AtomicBoolean(false);
-
     /**
      * Redis host for the shared container
      */
@@ -82,6 +80,13 @@ public final class SharedRedisContainer {
      * Redis connection URL
      */
     private static String url;
+
+    /**
+     * Private constructor to prevent instantiation
+     */
+    private SharedRedisContainer() {
+        throw new UnsupportedOperationException("Utility class cannot be instantiated");
+    }
 
     public static void startContainer(ContainerConfig config) {
         if (STARTED.get()) {
@@ -166,13 +171,6 @@ public final class SharedRedisContainer {
      */
     public static String getUrl() {
         return url;
-    }
-
-    /**
-     * Private constructor to prevent instantiation
-     */
-    private SharedRedisContainer() {
-        throw new UnsupportedOperationException("Utility class cannot be instantiated");
     }
 
     public static boolean isStarted() {

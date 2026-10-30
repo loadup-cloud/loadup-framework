@@ -1,6 +1,7 @@
 # AuthServer
 
-提供 RSA JWT 签发能力；可选启用内嵌 Spring Authorization Server 协议端点。UPMS 负责校验用户凭证，`loadup-modules-upms-authserver` 提供前后端分离的 JSON 登录接口。
+提供 RSA JWT 签发能力；可选启用内嵌 Spring Authorization Server 协议端点。UPMS 负责校验用户凭证，
+`loadup-modules-upms-authserver` 提供前后端分离的 JSON 登录接口。
 
 ## 引入
 
@@ -11,7 +12,8 @@
 </dependency>
 ```
 
-需要 UPMS 账号登录时，额外引入 `loadup-modules-upms-authserver`。`POST /api/auth/login` 接收 `{"username":"...","password":"..."}`，返回 `result` 和 `data`；`data.accessToken` 是 Bearer JWT。
+需要 UPMS 账号登录时，额外引入 `loadup-modules-upms-authserver`。`POST /api/auth/login` 接收
+`{"username":"...","password":"..."}`，返回 `result` 和 `data`；`data.accessToken` 是 Bearer JWT。
 
 ## 配置
 
@@ -33,8 +35,12 @@ loadup:
           scopes: [openid, profile]
 ```
 
-开发环境可省略 RSA 私钥，此时会生成临时密钥，重启后旧令牌失效。`protocol-endpoints-enabled: false` 关闭 OAuth2 交互端点；资源端使用同一公钥在本地校验 JWT。需要标准 OAuth2 客户端时可设为 `true` 并配置 `clients`，此时 `/oauth2/authorize`、`/oauth2/token` 与 `/oauth2/jwks` 按 OAuth2 协议响应，不使用 LoadUp 的业务报文格式。
+开发环境可省略 RSA 私钥，此时会生成临时密钥，重启后旧令牌失效。`protocol-endpoints-enabled: false` 关闭 OAuth2
+交互端点；资源端使用同一公钥在本地校验 JWT。需要标准 OAuth2 客户端时可设为 `true` 并配置 `clients`，此时
+`/oauth2/authorize`、`/oauth2/token` 与 `/oauth2/jwks` 按 OAuth2 协议响应，不使用 LoadUp 的业务报文格式。
 
-生产环境应从安全配置来源提供稳定私钥。若启用标准 OAuth2，客户端密钥由内存注册表以 BCrypt 存储，多实例部署还需持久化 `RegisteredClientRepository` 与 `OAuth2AuthorizationService`。
+生产环境应从安全配置来源提供稳定私钥。若启用标准 OAuth2，客户端密钥由内存注册表以 BCrypt 存储，多实例部署还需持久化
+`RegisteredClientRepository` 与 `OAuth2AuthorizationService`。
 
-访问令牌携带 `token_use=access`、`aud`、`username`、`roles`、`permissions`。UPMS 登录的 `sub` 为用户 ID。Resource Server 独立校验 issuer、audience、签名和 token_use。
+访问令牌携带 `token_use=access`、`aud`、`username`、`roles`、`permissions`。UPMS 登录的 `sub` 为用户 ID。Resource Server 独立校验
+issuer、audience、签名和 token_use。

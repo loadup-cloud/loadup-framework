@@ -4,7 +4,7 @@ Cache 组件的 facade 模块：启用 Spring Cache 注解（`@EnableCaching`）
 `loadup.cache.*` 配置（`type` / `default-ttl` / 按 cache name 的 TTL、空值与随机过期），
 并提供跨 binder 共享的 JSON 值编解码器 `CacheJsonCodec` 与防雪崩语义 `RandomExpiration`。
 
-本模块**不提供手写缓存 CRUD 门面**——业务代码直接使用 Spring Cache 标准注解，底层实现由
+本模块 **不提供手写缓存 CRUD 门面**——业务代码直接使用 Spring Cache 标准注解，底层实现由
 `-binder-{caffeine|redis|jetcache}` 提供。Maven 坐标与用法见上层
 [loadup-components-cache](../README.md)。
 
@@ -21,12 +21,13 @@ Cache 组件的 facade 模块：启用 Spring Cache 注解（`@EnableCaching`）
 
 ## 配置入口
 
-| 前缀 | 配置类 |
-|---|---|
+| 前缀           | 配置类                                                                                                |
+|----------------|-------------------------------------------------------------------------------------------------------|
 | `loadup.cache` | [`LoadupCacheProperties`](src/main/java/io/github/loadup/components/cache/LoadupCacheProperties.java) |
 
 ## 自动装配
 
-- [`LoadupCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/autoconfig/LoadupCacheAutoConfiguration.java)
+- [
+  `LoadupCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/autoconfig/LoadupCacheAutoConfiguration.java)
 
 设计边界与装配路径见 [ARCHITECTURE.md](ARCHITECTURE.md)。

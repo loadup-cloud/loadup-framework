@@ -19,18 +19,35 @@
  */
 package io.github.loadup.modules.upms;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.argThat;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.upms.app.converter.UpmsDTOConverter;
-import io.github.loadup.modules.upms.app.service.*;
+import io.github.loadup.modules.upms.app.service.AuthenticationService;
+import io.github.loadup.modules.upms.app.service.PasswordResetService;
+import io.github.loadup.modules.upms.app.service.UserService;
+import io.github.loadup.modules.upms.app.service.VerificationCodeService;
 import io.github.loadup.modules.upms.app.strategy.LoginStrategyManager;
-import io.github.loadup.modules.upms.client.command.*;
+import io.github.loadup.modules.upms.client.command.UserCreateCommand;
+import io.github.loadup.modules.upms.client.command.UserPasswordChangeCommand;
+import io.github.loadup.modules.upms.client.command.UserPasswordResetCommand;
+import io.github.loadup.modules.upms.client.command.UserRegisterCommand;
 import io.github.loadup.modules.upms.client.facade.UserQueryFacade;
 import io.github.loadup.modules.upms.client.query.UserPageQuery;
-import io.github.loadup.modules.upms.domain.gateway.*;
+import io.github.loadup.modules.upms.domain.gateway.DepartmentGateway;
+import io.github.loadup.modules.upms.domain.gateway.LoginLogGateway;
+import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
+import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import java.time.Clock;
 import java.util.List;
 import org.junit.jupiter.api.Test;

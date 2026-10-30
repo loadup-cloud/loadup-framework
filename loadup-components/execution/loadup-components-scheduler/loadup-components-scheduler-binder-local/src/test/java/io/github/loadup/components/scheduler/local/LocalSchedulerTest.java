@@ -19,12 +19,14 @@
  */
 package io.github.loadup.components.scheduler.local;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
-import io.github.loadup.components.scheduler.*;
+import io.github.loadup.components.scheduler.ScheduledTask;
+import io.github.loadup.components.scheduler.SchedulerAutoConfiguration;
+import io.github.loadup.components.scheduler.SchedulerTemplate;
 import java.time.Duration;
-import java.util.*;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;

@@ -24,10 +24,14 @@ import io.github.loadup.modules.upms.client.command.UserRegisterCommand;
 import io.github.loadup.modules.upms.client.dto.AuthenticatedUserDTO;
 import io.github.loadup.modules.upms.client.dto.UserDetailDTO;
 
-/** Public business facade. */
+/**
+ * Public business facade.
+ */
 public interface AuthenticationFacade {
 
-    /** Public business facade. */
+    /**
+     * Public business facade.
+     */
     AuthenticatedUserDTO login(UserLoginCommand command);
 
     UserDetailDTO register(UserRegisterCommand command);

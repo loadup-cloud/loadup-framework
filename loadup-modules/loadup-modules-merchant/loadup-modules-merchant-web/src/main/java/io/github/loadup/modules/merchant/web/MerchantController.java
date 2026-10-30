@@ -22,16 +22,21 @@ package io.github.loadup.modules.merchant.web;
 import io.github.loadup.commons.request.query.IdQuery;
 import io.github.loadup.commons.result.PageResponse;
 import io.github.loadup.commons.result.SuccessResponse;
-import io.github.loadup.modules.merchant.client.command.*;
-import io.github.loadup.modules.merchant.client.dto.*;
+import io.github.loadup.modules.merchant.client.command.MerchantCreateCommand;
+import io.github.loadup.modules.merchant.client.command.MerchantStatusCommand;
+import io.github.loadup.modules.merchant.client.command.MerchantUpdateCommand;
+import io.github.loadup.modules.merchant.client.dto.MerchantDTO;
 import io.github.loadup.modules.merchant.client.facade.MerchantFacade;
-import io.github.loadup.modules.merchant.client.query.*;
+import io.github.loadup.modules.merchant.client.query.MerchantPageQuery;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/merchants")

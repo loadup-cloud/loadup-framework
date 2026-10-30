@@ -24,7 +24,6 @@ import java.time.LocalDateTime;
 
 public record ContractRecord(
         String id,
-        String tenantId,
         String merchantId,
         String scopeKey,
         String planVersionId,

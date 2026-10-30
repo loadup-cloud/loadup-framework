@@ -181,10 +181,6 @@ public class Permission extends BaseEntity {
         return visible;
     }
 
-    public void setVisible(Boolean visible) {
-        this.visible = visible;
-    }
-
     public Short getStatus() {
         return status;
     }
@@ -243,6 +239,10 @@ public class Permission extends BaseEntity {
 
     public boolean isVisible() {
         return visible;
+    }
+
+    public void setVisible(Boolean visible) {
+        this.visible = visible;
     }
 
     public void setVisible(boolean visible) {

@@ -1,6 +1,6 @@
 # LoadUp Gotone API
 
-`loadup-components-gotone-api` 是 gotone 通知组件的契约层，**零框架依赖**（不依赖 Spring /
+`loadup-components-gotone-api` 是 gotone 通知组件的契约层， **零框架依赖**（不依赖 Spring /
 MyBatis / 渠道 SDK）。业务代码只依赖本模块。
 
 ## 内容

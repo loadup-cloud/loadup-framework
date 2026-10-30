@@ -29,9 +29,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 /**
- * @since 1.0.0
  * @author LoadUp Framework
- *     <p>User Update Command
+ * <p>User Update Command
+ * @since 1.0.0
  */
 public class UserUpdateCommand {
 
@@ -114,100 +114,100 @@ public class UserUpdateCommand {
         return this.updatedBy;
     }
 
-    public String getRemark() {
-        return this.remark;
-    }
-
-    public List<String> getRoleIds() {
-        return this.roleIds;
-    }
-
-    public Short getStatus() {
-        return this.status;
-    }
-
-    public LocalDate getBirthday() {
-        return this.birthday;
-    }
-
-    public Short getGender() {
-        return this.gender;
-    }
-
-    public String getAvatar() {
-        return this.avatar;
-    }
-
-    public String getMobile() {
-        return this.mobile;
-    }
-
-    public String getEmail() {
-        return this.email;
-    }
-
-    public String getDeptId() {
-        return this.deptId;
-    }
-
-    public String getRealName() {
-        return this.realName;
-    }
-
-    public String getNickname() {
-        return this.nickname;
-    }
-
-    public String getId() {
-        return this.id;
-    }
-
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
+    }
+
+    public String getRemark() {
+        return this.remark;
     }
 
     public void setRemark(String remark) {
         this.remark = remark;
     }
 
+    public List<String> getRoleIds() {
+        return this.roleIds;
+    }
+
     public void setRoleIds(List<String> roleIds) {
         this.roleIds = roleIds;
+    }
+
+    public Short getStatus() {
+        return this.status;
     }
 
     public void setStatus(Short status) {
         this.status = status;
     }
 
+    public LocalDate getBirthday() {
+        return this.birthday;
+    }
+
     public void setBirthday(LocalDate birthday) {
         this.birthday = birthday;
+    }
+
+    public Short getGender() {
+        return this.gender;
     }
 
     public void setGender(Short gender) {
         this.gender = gender;
     }
 
+    public String getAvatar() {
+        return this.avatar;
+    }
+
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public String getMobile() {
+        return this.mobile;
     }
 
     public void setMobile(String mobile) {
         this.mobile = mobile;
     }
 
+    public String getEmail() {
+        return this.email;
+    }
+
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getDeptId() {
+        return this.deptId;
     }
 
     public void setDeptId(String deptId) {
         this.deptId = deptId;
     }
 
+    public String getRealName() {
+        return this.realName;
+    }
+
     public void setRealName(String realName) {
         this.realName = realName;
     }
 
+    public String getNickname() {
+        return this.nickname;
+    }
+
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public String getId() {
+        return this.id;
     }
 
     public void setId(String id) {

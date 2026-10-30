@@ -50,7 +50,7 @@ public final class ResilientNotificationChannelProvider implements NotificationC
      * Wraps the given provider with registries-backed circuit breaker and retry instances named
      * {@code gotone-<channelType>-<providerName>}.
      *
-     * @param delegate the raw provider
+     * @param delegate   the raw provider
      * @param registries the resilience4j registries
      * @return the wrapped provider
      */

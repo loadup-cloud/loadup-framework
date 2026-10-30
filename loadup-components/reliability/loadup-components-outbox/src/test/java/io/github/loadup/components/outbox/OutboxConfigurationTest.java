@@ -44,16 +44,6 @@ class OutboxConfigurationTest {
             .withConfiguration(AutoConfigurations.of(OutboxAutoConfiguration.class))
             .withPropertyValues("loadup.outbox.worker-enabled=false");
 
-    @ParameterizedTest
-    @MethodSource("invalidSettings")
-    void invalidDeliverySettingsFailBeforeWorkerStarts(Consumer<OutboxProperties> mutation) {
-        OutboxProperties settings = new OutboxProperties();
-        mutation.accept(settings);
-        assertThatThrownBy(settings::validate)
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Invalid outbox delivery settings");
-    }
-
     static Stream<Consumer<OutboxProperties>> invalidSettings() {
         return Stream.of(
                 p -> p.setPollInterval(null),
@@ -67,6 +57,16 @@ class OutboxConfigurationTest {
                 p -> p.setMaxAttempts(101),
                 p -> p.setBatchSize(0),
                 p -> p.setBatchSize(1001));
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidSettings")
+    void invalidDeliverySettingsFailBeforeWorkerStarts(Consumer<OutboxProperties> mutation) {
+        OutboxProperties settings = new OutboxProperties();
+        mutation.accept(settings);
+        assertThatThrownBy(settings::validate)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Invalid outbox delivery settings");
     }
 
     @Test

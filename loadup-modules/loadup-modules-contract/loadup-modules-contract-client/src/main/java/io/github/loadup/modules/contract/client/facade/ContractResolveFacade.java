@@ -19,10 +19,12 @@
  */
 package io.github.loadup.modules.contract.client.facade;
 
-import io.github.loadup.modules.contract.client.dto.*;
+import io.github.loadup.modules.contract.client.dto.ContractDecisionDTO;
 import io.github.loadup.modules.contract.client.query.ContractResolveQuery;
 
-/** Public business contract for ContractResolveService. */
+/**
+ * Public business contract for ContractResolveService.
+ */
 public interface ContractResolveFacade {
     ContractDecisionDTO resolve(ContractResolveQuery query);
 }

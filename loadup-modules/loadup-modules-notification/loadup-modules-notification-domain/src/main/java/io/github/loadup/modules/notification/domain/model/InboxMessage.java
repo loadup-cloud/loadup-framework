@@ -22,10 +22,11 @@ package io.github.loadup.modules.notification.domain.model;
 import io.github.loadup.commons.json.ToStringAsJson;
 import java.time.LocalDateTime;
 
-/** One recipient's copy of an in-app notification. */
+/**
+ * One recipient's copy of an in-app notification.
+ */
 public record InboxMessage(
         String id,
-        String tenantId,
         String recipientId,
         String senderId,
         String category,

@@ -22,4 +22,5 @@ loadup:
         maximum-size: 10000
 ```
 
-`caffeine` 是默认缓存类型；`maximum-size` 限制每个缓存实例的条目数。默认 TTL、按缓存名称的 TTL、随机过期和空值策略使用公共的 `loadup.cache.*` 配置，详见 [Cache README](../README.md)。内部结构见 [ARCHITECTURE.md](ARCHITECTURE.md)。
+`caffeine` 是默认缓存类型；`maximum-size` 限制每个缓存实例的条目数。默认 TTL、按缓存名称的 TTL、随机过期和空值策略使用公共的
+`loadup.cache.*` 配置，详见 [Cache README](../README.md)。内部结构见 [ARCHITECTURE.md](ARCHITECTURE.md)。

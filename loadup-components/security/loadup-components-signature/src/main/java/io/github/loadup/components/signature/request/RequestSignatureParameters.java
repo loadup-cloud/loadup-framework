@@ -23,7 +23,9 @@ import io.github.loadup.components.kms.KmsSignatureAlgorithm;
 import java.time.DateTimeException;
 import java.time.Instant;
 
-/** All transmitted signature metadata is also covered by the signature. */
+/**
+ * All transmitted signature metadata is also covered by the signature.
+ */
 public record RequestSignatureParameters(
         String appId, String audience, int keyVersion, KmsSignatureAlgorithm algorithm, long timestamp, String nonce) {
     public RequestSignatureParameters {

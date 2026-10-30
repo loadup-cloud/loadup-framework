@@ -23,7 +23,8 @@
 
 主要入口文件：
 
-- [`JetCacheCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/jetcache/autoconfig/JetCacheCacheAutoConfiguration.java)
+- [
+  `JetCacheCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/jetcache/autoconfig/JetCacheCacheAutoConfiguration.java)
 
 ## 分层与调用路径
 
@@ -32,19 +33,23 @@ Spring Cache 调用进入当前 `CacheManager`，由选中的 binder 处理缓�
 ```text
 业务代码 → API/facade → 当前 binder → 第三方引擎或基础设施
 ```
+
 binder 实现框架契约，把实现库及其配置隔离在业务 API 之外。
 
 ## 装配规则
 
-- [`JetCacheCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/jetcache/autoconfig/JetCacheCacheAutoConfiguration.java) 是自动配置入口。
-  - `@ConditionalOnClass({SimpleCacheManager.class, CacheBuilderTemplate.class})`
-  - `@ConditionalOnProperty(prefix = "loadup.cache", name = "type", havingValue = CacheBackendType.JETCACHE)`
-  - `@ConditionalOnMissingBean(com.alicp.jetcache.CacheManager.class)`
-  - `@ConditionalOnMissingBean(CacheManager.class)`
+- [
+  `JetCacheCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/jetcache/autoconfig/JetCacheCacheAutoConfiguration.java)
+  是自动配置入口。
+    - `@ConditionalOnClass({SimpleCacheManager.class, CacheBuilderTemplate.class})`
+    - `@ConditionalOnProperty(prefix = "loadup.cache", name = "type", havingValue = CacheBackendType.JETCACHE)`
+    - `@ConditionalOnMissingBean(com.alicp.jetcache.CacheManager.class)`
+    - `@ConditionalOnMissingBean(CacheManager.class)`
 
 ## 配置归属
 
-- [`JetCacheCacheProperties`](src/main/java/io/github/loadup/components/cache/jetcache/JetCacheCacheProperties.java) 绑定 `loadup.cache.binder.jetcache`。
+- [`JetCacheCacheProperties`](src/main/java/io/github/loadup/components/cache/jetcache/JetCacheCacheProperties.java) 绑定
+  `loadup.cache.binder.jetcache`。
 
 ## 设计取舍
 
@@ -56,4 +61,5 @@ binder 实现框架契约，把实现库及其配置隔离在业务 API 之外�
 
 配置的缓存名称在 Spring CacheManager 初始化阶段注册，避免提前预热后被初始化流程覆盖。显式预热遵循同一缓存创建规则。
 
-带 loader 的读取将 JetCache 包装的 Spring `Cache.ValueRetrievalException` 恢复为原异常，保留 loader 和原始 cause；其他 JetCache 异常继续按后端异常传播。真实 Redis 与本地缓存集成测试分别验证加载、过期及预热行为。
+带 loader 的读取将 JetCache 包装的 Spring `Cache.ValueRetrievalException` 恢复为原异常，保留 loader 和原始 cause；其他
+JetCache 异常继续按后端异常传播。真实 Redis 与本地缓存集成测试分别验证加载、过期及预热行为。

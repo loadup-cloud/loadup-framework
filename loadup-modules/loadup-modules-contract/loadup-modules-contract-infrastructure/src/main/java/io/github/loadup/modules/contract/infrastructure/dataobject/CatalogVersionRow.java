@@ -1,22 +1,102 @@
 package io.github.loadup.modules.contract.infrastructure.dataobject;
 
+import com.mybatisflex.annotation.Table;
+import io.github.loadup.commons.dataobject.BaseDO;
 import java.time.LocalDateTime;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
 
-/** Row model for catalog versions, read through Spring Data JDBC. */
+/**
+ * Row model for catalog versions.
+ */
 @Table("contract_catalog_version")
-public record CatalogVersionRow(
-        @Id @Column("id") String id,
-        @Column("tenant_id") String tenantId,
-        @Column("kind") String kind,
-        @Column("code") String code,
-        @Column("version") int version,
-        @Column("status") String status,
-        @Column("row_version") long rowVersion,
-        @Column("content") String content,
-        @Column("updated_by") String updatedBy,
-        @Column("created_at") LocalDateTime createdAt,
-        @Column("updated_at") LocalDateTime updatedAt,
-        @Column("deleted") boolean deleted) {}
+public class CatalogVersionRow extends BaseDO {
+    private String kind;
+    private String code;
+    private int version;
+    private String status;
+    private long rowVersion;
+    private String content;
+    private String updatedBy;
+
+    public CatalogVersionRow() {}
+
+    public CatalogVersionRow(
+            String id,
+            String kind,
+            String code,
+            int version,
+            String status,
+            long rowVersion,
+            String content,
+            String updatedBy,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt,
+            boolean deleted) {
+        setId(id);
+        this.kind = kind;
+        this.code = code;
+        this.version = version;
+        this.status = status;
+        this.rowVersion = rowVersion;
+        this.content = content;
+        this.updatedBy = updatedBy;
+        setCreatedAt(createdAt);
+        setUpdatedAt(updatedAt);
+        setDeleted(deleted);
+    }
+
+    public String getKind() {
+        return kind;
+    }
+
+    public void setKind(String value) {
+        this.kind = value;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String value) {
+        this.code = value;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int value) {
+        this.version = value;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String value) {
+        this.status = value;
+    }
+
+    public long getRowVersion() {
+        return rowVersion;
+    }
+
+    public void setRowVersion(long value) {
+        this.rowVersion = value;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String value) {
+        this.content = value;
+    }
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String value) {
+        this.updatedBy = value;
+    }
+}

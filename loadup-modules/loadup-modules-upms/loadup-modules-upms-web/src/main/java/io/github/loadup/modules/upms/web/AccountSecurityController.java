@@ -39,7 +39,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Current user's security view; user ID is never accepted from the request. */
+/**
+ * Current user's security view; user ID is never accepted from the request.
+ */
 @RestController
 @RequestMapping("/account/security")
 @Tag(name = "Account Security", description = "Self-service password and login history")
@@ -48,6 +50,17 @@ public class AccountSecurityController {
 
     public AccountSecurityController(AccountSecurityFacade service) {
         this.service = service;
+    }
+
+    private static String actor(Authentication authentication) {
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || !(authentication.getPrincipal() instanceof LoadUpUser user)
+                || user.getUserId() == null
+                || user.getUserId().isBlank()) {
+            throw new CommonException(UpmsResultCodeEnum.AUTHENTICATED_USER_IS_REQUIRED);
+        }
+        return user.getUserId();
     }
 
     @PostMapping("/overview")
@@ -71,20 +84,11 @@ public class AccountSecurityController {
     @PreAuthorize("isAuthenticated()")
     public SuccessResponse<Void> changePassword(
             @RequestBody AccountPasswordChangeCommand request, Authentication authentication) {
-        if (request == null) throw new CommonException(UpmsResultCodeEnum.PASSWORD_CHANGE_REQUEST_IS_REQUIRED);
+        if (request == null) {
+            throw new CommonException(UpmsResultCodeEnum.PASSWORD_CHANGE_REQUEST_IS_REQUIRED);
+        }
         service.changePassword(
                 actor(authentication), request.oldPassword(), request.newPassword(), request.confirmPassword());
         return SuccessResponse.success();
-    }
-
-    private static String actor(Authentication authentication) {
-        if (authentication == null
-                || !authentication.isAuthenticated()
-                || !(authentication.getPrincipal() instanceof LoadUpUser user)
-                || user.getUserId() == null
-                || user.getUserId().isBlank()) {
-            throw new CommonException(UpmsResultCodeEnum.AUTHENTICATED_USER_IS_REQUIRED);
-        }
-        return user.getUserId();
     }
 }

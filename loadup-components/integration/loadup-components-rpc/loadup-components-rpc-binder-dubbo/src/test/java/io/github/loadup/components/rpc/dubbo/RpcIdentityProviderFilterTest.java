@@ -33,6 +33,18 @@ class RpcIdentityProviderFilterTest {
     private final Invoker<?> invoker = mock(Invoker.class);
     private final Invocation invocation = mock(Invocation.class);
 
+    private static String token(Instant expiresAt) {
+        String header = encode("{\"alg\":\"RS256\"}");
+        String claims = encode("{\"sub\":\"payment\",\"username\":\"service\",\"tenant_id\":\"tenant\","
+                + "\"roles\":[\"SERVICE\"],\"permissions\":[\"pay:test\"],"
+                + "\"exp\":" + expiresAt.getEpochSecond() + "}");
+        return header + "." + claims + ".c2lnbmF0dXJl";
+    }
+
+    private static String encode(String value) {
+        return ENCODER.encodeToString(value.getBytes(StandardCharsets.UTF_8));
+    }
+
     @AfterEach
     void clearContext() {
         SecurityContextHolder.clearContext();
@@ -109,17 +121,5 @@ class RpcIdentityProviderFilterTest {
 
         assertEquals(RpcException.VALIDATION_EXCEPTION, failure.getCode());
         verifyNoInteractions(invoker);
-    }
-
-    private static String token(Instant expiresAt) {
-        String header = encode("{\"alg\":\"RS256\"}");
-        String claims = encode("{\"sub\":\"payment\",\"username\":\"service\",\"tenant_id\":\"tenant\","
-                + "\"roles\":[\"SERVICE\"],\"permissions\":[\"pay:test\"],"
-                + "\"exp\":" + expiresAt.getEpochSecond() + "}");
-        return header + "." + claims + ".c2lnbmF0dXJl";
-    }
-
-    private static String encode(String value) {
-        return ENCODER.encodeToString(value.getBytes(StandardCharsets.UTF_8));
     }
 }

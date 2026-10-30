@@ -41,7 +41,9 @@ public record ChannelSendRequest(
         return new Builder();
     }
 
-    /** Fluent builder for {@link ChannelSendRequest}. */
+    /**
+     * Fluent builder for {@link ChannelSendRequest}.
+     */
     public static final class Builder {
         private List<String> receivers;
         private String content;

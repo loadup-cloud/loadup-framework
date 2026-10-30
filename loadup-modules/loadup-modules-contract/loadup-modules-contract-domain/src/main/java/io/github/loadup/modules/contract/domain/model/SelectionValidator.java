@@ -29,8 +29,9 @@ final class SelectionValidator {
     private SelectionValidator() {}
 
     static void validate(Map<String, SalesPlanVersion.Item> items, Set<String> selected) {
-        if (selected.isEmpty() || !items.keySet().containsAll(selected))
+        if (selected.isEmpty() || !items.keySet().containsAll(selected)) {
             throw new CommonException(ContractResultCodeEnum.INVALID_PRODUCT_SELECTION);
+        }
         if (items.entrySet().stream().anyMatch(e -> e.getValue().required() && !selected.contains(e.getKey()))) {
             throw new CommonException(ContractResultCodeEnum.REQUIRED_PRODUCT_OMITTED);
         }
@@ -39,10 +40,12 @@ final class SelectionValidator {
                 .collect(Collectors.toSet());
         for (String key : selected) {
             ProductVersion product = items.get(key).product();
-            if (!productCodes.containsAll(product.dependencies()))
+            if (!productCodes.containsAll(product.dependencies())) {
                 throw new CommonException(ContractResultCodeEnum.MISSING_PRODUCT_DEPENDENCY);
-            if (product.exclusions().stream().anyMatch(productCodes::contains))
+            }
+            if (product.exclusions().stream().anyMatch(productCodes::contains)) {
                 throw new CommonException(ContractResultCodeEnum.MUTUALLY_EXCLUSIVE_PRODUCTS);
+            }
         }
     }
 }

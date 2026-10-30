@@ -19,9 +19,14 @@
  */
 package io.github.loadup.commons.json;
 
-import java.lang.annotation.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-/** Redacts a field in diagnostics only; does not change HTTP serialization. */
+/**
+ * Redacts a field in diagnostics only; does not change HTTP serialization.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD, ElementType.RECORD_COMPONENT})
 public @interface DiagnosticHidden {}

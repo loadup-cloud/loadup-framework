@@ -23,7 +23,8 @@
 
 主要入口文件：
 
-- [`ResourceServerAutoConfiguration`](src/main/java/io/github/loadup/components/resourceserver/ResourceServerAutoConfiguration.java)
+- [
+  `ResourceServerAutoConfiguration`](src/main/java/io/github/loadup/components/resourceserver/ResourceServerAutoConfiguration.java)
 
 ## 分层与调用路径
 
@@ -46,14 +47,18 @@ Bearer Token → /api/** SecurityFilterChain → JwtDecoder → token_use/aud/is
 
 ## 装配规则
 
-- [`ResourceServerAutoConfiguration`](src/main/java/io/github/loadup/components/resourceserver/ResourceServerAutoConfiguration.java) 是自动配置入口。
-  - `@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)`
-  - `@ConditionalOnProperty(prefix = "loadup.security.resource-server", name = "enabled", havingValue = "true")`
-  - `@ConditionalOnMissingBean(JwtDecoder.class)`
-  - `@ConditionalOnProperty( prefix = "loadup.security.resource-server", name = "default-security-filter-chain", havingValue = "true", matchIfMissing = true)`
+- [
+  `ResourceServerAutoConfiguration`](src/main/java/io/github/loadup/components/resourceserver/ResourceServerAutoConfiguration.java)
+  是自动配置入口。
+    - `@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)`
+    - `@ConditionalOnProperty(prefix = "loadup.security.resource-server", name = "enabled", havingValue = "true")`
+    - `@ConditionalOnMissingBean(JwtDecoder.class)`
+    -
+    `@ConditionalOnProperty( prefix = "loadup.security.resource-server", name = "default-security-filter-chain", havingValue = "true", matchIfMissing = true)`
 
 ## 配置归属
 
-- [`ResourceServerProperties`](src/main/java/io/github/loadup/components/resourceserver/ResourceServerProperties.java) 绑定 `loadup.security.resource-server`。
+- [`ResourceServerProperties`](src/main/java/io/github/loadup/components/resourceserver/ResourceServerProperties.java)
+  绑定 `loadup.security.resource-server`。
 
 集成方式与配置示例见 [README.md](README.md)。

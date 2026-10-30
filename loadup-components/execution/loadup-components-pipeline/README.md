@@ -1,6 +1,6 @@
 # LoadUp Components Pipeline
 
-基于 Spring Boot 4 的**流程编排组件**，将业务逻辑拆分为`验参 → 准备 → 处理 → 组装`四个固定阶段，通过类型安全的 Fluent DSL
+基于 Spring Boot 4 的 **流程编排组件**，将业务逻辑拆分为`验参 → 准备 → 处理 → 组装`四个固定阶段，通过类型安全的 Fluent DSL
 声明式地定义和执行流程。
 
 ## 核心特性
@@ -190,21 +190,21 @@ public class OrderBizExceptionHandler implements IExceptionClassHandler<OrderDTO
 
 ## Stage 类型速查
 
-| 接口                          | 方法签名                                           | 场景           |
-|-----------------------------|------------------------------------------------|--------------|
-| `IParamVerifyStage<REQ>`    | `void verify(REQ req)`                         | 参数校验，抛异常即失败  |
-| `IDataPrepareStage<DATA>`   | `DATA prepare(PipelineContext ctx)`            | 加载领域模型       |
+| 接口                        | 方法签名                                       | 场景                     |
+|-----------------------------|------------------------------------------------|--------------------------|
+| `IParamVerifyStage<REQ>`    | `void verify(REQ req)`                         | 参数校验，抛异常即失败   |
+| `IDataPrepareStage<DATA>`   | `DATA prepare(PipelineContext ctx)`            | 加载领域模型             |
 | `IBizProcessStage`          | `void process(PipelineContext ctx)`            | 纯业务逻辑，无需模型引用 |
-| `IDataProcessStage<DATA>`   | `void process(DATA data, PipelineContext ctx)` | 对领域模型做变换/写操作 |
-| `IResultAssembleStage<RES>` | `RES assemble(PipelineContext ctx)`            | DO → DTO 映射  |
-| `IControlStage`             | `boolean shouldStop(PipelineContext ctx)`      | 条件性终止流程      |
-| `IFinallyStage`             | `void doFinally(PipelineContext ctx)`          | 清理，必然执行      |
+| `IDataProcessStage<DATA>`   | `void process(DATA data, PipelineContext ctx)` | 对领域模型做变换/写操作  |
+| `IResultAssembleStage<RES>` | `RES assemble(PipelineContext ctx)`            | DO → DTO 映射            |
+| `IControlStage`             | `boolean shouldStop(PipelineContext ctx)`      | 条件性终止流程           |
+| `IFinallyStage`             | `void doFinally(PipelineContext ctx)`          | 清理，必然执行           |
 
 ---
 
 ## 与 Extension 组件配合
 
-Pipeline 负责**流程顺序**，Extension 负责**实现路由**，两者正交互补：
+Pipeline 负责 **流程顺序**，Extension 负责 **实现路由**，两者正交互补：
 
 ```java
 // IBizProcessStage 内部通过 ExtensionExecutor 路由到正确的策略实现

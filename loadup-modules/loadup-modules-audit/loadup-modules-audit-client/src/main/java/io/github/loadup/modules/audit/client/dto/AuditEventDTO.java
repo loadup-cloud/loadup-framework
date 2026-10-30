@@ -23,12 +23,11 @@ import io.github.loadup.commons.json.ToStringAsJson;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
-/** Stored audit event. */
+/**
+ * Stored audit event.
+ */
 public record AuditEventDTO(
         @Schema(description = "Resource identifier") String id,
-
-        @Schema(description = "Tenant identifier resolved from trusted context")
-        String tenantId,
 
         @Schema(description = "Actor identifier") String actorId,
         @Schema(description = "Action") String action,

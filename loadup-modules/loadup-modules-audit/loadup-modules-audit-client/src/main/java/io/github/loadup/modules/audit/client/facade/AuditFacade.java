@@ -24,7 +24,9 @@ import io.github.loadup.modules.audit.client.command.AuditRecordCommand;
 import io.github.loadup.modules.audit.client.dto.AuditEventDTO;
 import io.github.loadup.modules.audit.client.query.AuditPageQuery;
 
-/** Public business contract for AuditService. */
+/**
+ * Public business contract for AuditService.
+ */
 public interface AuditFacade {
     void record(AuditRecordCommand write);
 

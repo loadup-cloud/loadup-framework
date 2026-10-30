@@ -36,7 +36,9 @@ import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 
-/** Private storage dialect derived from the shared mapper; never mutates the global mapper. */
+/**
+ * Private storage dialect derived from the shared mapper; never mutates the global mapper.
+ */
 @Component
 public class ContractCodec {
     private final JsonMapper mapper;
@@ -50,8 +52,9 @@ public class ContractCodec {
 
     public String write(Object value) {
         String content = mapper.writeValueAsString(value);
-        if (content.getBytes(StandardCharsets.UTF_8).length > 131072)
+        if (content.getBytes(StandardCharsets.UTF_8).length > 131072) {
             throw new CommonException(ContractResultCodeEnum.CONTRACT_CONTENT_EXCEEDS_LIMIT);
+        }
         return content;
     }
 
@@ -79,10 +82,12 @@ public class ContractCodec {
             map.forEach((key, item) -> sorted.put((String) key, canonical(item)));
             return sorted;
         }
-        if (value instanceof java.util.Set<?> set)
+        if (value instanceof java.util.Set<?> set) {
             return set.stream().map(Object::toString).sorted().toList();
-        if (value instanceof java.util.List<?> list)
+        }
+        if (value instanceof java.util.List<?> list) {
             return list.stream().map(this::canonical).toList();
+        }
         return value;
     }
 

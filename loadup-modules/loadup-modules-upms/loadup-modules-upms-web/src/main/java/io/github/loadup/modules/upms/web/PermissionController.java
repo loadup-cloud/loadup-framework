@@ -92,7 +92,9 @@ public class PermissionController {
     @PreAuthorize("isAuthenticated()")
     public SuccessResponse<List<PermissionDTO>> userMenu(@Valid @RequestBody PermissionMenuQuery request) {
         String userId = UserContext.getUserId();
-        if (userId == null) throw new CommonException(UpmsResultCodeEnum.AUTHENTICATED_USER_IS_REQUIRED_74D75F);
+        if (userId == null) {
+            throw new CommonException(UpmsResultCodeEnum.AUTHENTICATED_USER_IS_REQUIRED_74D75F);
+        }
         return SuccessResponse.of(service.getUserMenuTree(userId));
     }
 }

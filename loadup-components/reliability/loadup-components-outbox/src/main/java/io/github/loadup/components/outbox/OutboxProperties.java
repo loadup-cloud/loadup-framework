@@ -22,7 +22,9 @@ package io.github.loadup.components.outbox;
 import java.time.Duration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/** Delivery settings, validated before starting the worker. */
+/**
+ * Delivery settings, validated before starting the worker.
+ */
 @ConfigurationProperties("loadup.outbox")
 public class OutboxProperties {
     private boolean workerEnabled = true;

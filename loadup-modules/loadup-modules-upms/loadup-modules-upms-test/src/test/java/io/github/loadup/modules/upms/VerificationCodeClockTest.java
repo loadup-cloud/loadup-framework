@@ -19,33 +19,19 @@
  */
 package io.github.loadup.modules.upms;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.modules.upms.app.service.VerificationCodeService;
-import java.time.*;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 import org.junit.jupiter.api.Test;
 
 class VerificationCodeClockTest {
-    static class MutableClock extends Clock {
-        Instant now = Instant.parse("2026-10-11T00:00:00Z");
-
-        public ZoneId getZone() {
-            return ZoneId.of("Asia/Shanghai");
-        }
-
-        public Clock withZone(ZoneId zone) {
-            return this;
-        }
-
-        public Instant instant() {
-            return now;
-        }
-    }
-
     @Test
     void enforcesResendAndExpiryWithoutLeakingCodesOrRecipients() {
         var clock = new MutableClock();
@@ -72,6 +58,22 @@ class VerificationCodeClockTest {
         } finally {
             logger.detachAppender(appender);
             appender.stop();
+        }
+    }
+
+    static class MutableClock extends Clock {
+        Instant now = Instant.parse("2026-10-11T00:00:00Z");
+
+        public ZoneId getZone() {
+            return ZoneId.of("Asia/Shanghai");
+        }
+
+        public Clock withZone(ZoneId zone) {
+            return this;
+        }
+
+        public Instant instant() {
+            return now;
         }
     }
 }

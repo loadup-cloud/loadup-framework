@@ -20,4 +20,6 @@
 ## 接入步骤
 
 此模块用于验证组件契约，通常只在本项目的测试构建中使用；应用接入请选同级 API 与实现模块。
-需要单独执行时，可在仓库根目录使用 `mvn clean test -pl loadup-components/platform/loadup-components-configcenter/loadup-components-configcenter-test -am`；外部服务和容器要求以测试类及测试配置为准。
+需要单独执行时，可在仓库根目录使用
+`mvn clean test -pl loadup-components/platform/loadup-components-configcenter/loadup-components-configcenter-test -am`
+；外部服务和容器要求以测试类及测试配置为准。

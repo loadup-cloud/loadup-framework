@@ -23,9 +23,19 @@ import io.github.loadup.commons.enums.ResultStatusEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.ResultCode;
 
-/** Coded storage failure with a safe message and optional diagnostic cause. */
+/**
+ * Coded storage failure with a safe message and optional diagnostic cause.
+ */
 public class DfsStorageException extends CommonException {
     private static final long serialVersionUID = 1L;
+
+    public DfsStorageException(Code code) {
+        super(code);
+    }
+
+    public DfsStorageException(Code code, Throwable cause) {
+        super(code, cause);
+    }
 
     public enum Code implements ResultCode {
         OPERATION_FAILED,
@@ -42,13 +52,5 @@ public class DfsStorageException extends CommonException {
         public String getMessage() {
             return this == OBJECT_NOT_FOUND ? "Storage object not found" : "Storage operation failed";
         }
-    }
-
-    public DfsStorageException(Code code) {
-        super(code);
-    }
-
-    public DfsStorageException(Code code, Throwable cause) {
-        super(code, cause);
     }
 }

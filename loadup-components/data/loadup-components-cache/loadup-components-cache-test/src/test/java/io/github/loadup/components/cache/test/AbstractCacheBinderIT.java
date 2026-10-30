@@ -48,7 +48,9 @@ public abstract class AbstractCacheBinderIT {
     @Autowired
     protected CacheManager cacheManager;
 
-    /** Expected {@link CacheManager} implementation, proving the right binder was selected. */
+    /**
+     * Expected {@link CacheManager} implementation, proving the right binder was selected.
+     */
     protected abstract Class<?> expectedCacheManagerType();
 
     @BeforeEach

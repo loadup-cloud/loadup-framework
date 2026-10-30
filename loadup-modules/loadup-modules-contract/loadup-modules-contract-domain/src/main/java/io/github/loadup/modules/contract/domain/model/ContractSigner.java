@@ -28,7 +28,6 @@ import java.util.Set;
 
 public final class ContractSigner {
     public MerchantContractRevision sign(
-            String tenantId,
             String merchantId,
             String scopeKey,
             String contractId,
@@ -40,15 +39,18 @@ public final class ContractSigner {
             Instant signedAt,
             Instant effectiveFrom,
             Instant effectiveTo) {
-        if (!plan.canSellAt(signedAt)) throw new CommonException(ContractResultCodeEnum.PLAN_OUTSIDE_SALE_WINDOW);
+        if (!plan.canSellAt(signedAt)) {
+            throw new CommonException(ContractResultCodeEnum.PLAN_OUTSIDE_SALE_WINDOW);
+        }
         if (new ConditionEvaluator().evaluate(plan.eligibilityCondition(), trustedMerchantFacts, Map.of())
                 != MatchResult.MATCH) {
             throw new CommonException(ContractResultCodeEnum.MERCHANT_ELIGIBILITY_NOT_ESTABLISHED);
         }
         Set<String> selected = Set.copyOf(selectedItems);
         SelectionValidator.validate(plan.items(), selected);
-        if (!selected.containsAll(merchantValues.keySet()))
+        if (!selected.containsAll(merchantValues.keySet())) {
             throw new CommonException(ContractResultCodeEnum.OVERRIDE_FOR_UNSELECTED_PRODUCT);
+        }
         var resolvedItems = new HashMap<String, ResolvedContractItem>();
         var resolver = new ConfigurationResolver();
         var origin = new ValueOrigin(ConfigurationLayer.MERCHANT, contractId, revision);
@@ -72,7 +74,6 @@ public final class ContractSigner {
                             item.bundleOrigin()));
         }
         return new MerchantContractRevision(
-                tenantId,
                 merchantId,
                 scopeKey,
                 contractId,

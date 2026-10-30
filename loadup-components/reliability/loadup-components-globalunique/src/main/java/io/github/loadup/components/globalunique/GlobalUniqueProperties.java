@@ -21,7 +21,9 @@ package io.github.loadup.components.globalunique;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/** Global unique component configuration. */
+/**
+ * Global unique component configuration.
+ */
 @ConfigurationProperties(prefix = "loadup.global-unique")
 public class GlobalUniqueProperties {
     private boolean enabled = true;

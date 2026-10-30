@@ -22,7 +22,8 @@ package io.github.loadup.modules.merchant.contract;
 import io.github.loadup.modules.contract.client.spi.MerchantFactsProvider;
 import io.github.loadup.modules.merchant.client.facade.MerchantQueryFacade;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.*;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
 @AutoConfiguration(afterName = "io.github.loadup.modules.merchant.app.autoconfigure.MerchantAutoConfiguration")

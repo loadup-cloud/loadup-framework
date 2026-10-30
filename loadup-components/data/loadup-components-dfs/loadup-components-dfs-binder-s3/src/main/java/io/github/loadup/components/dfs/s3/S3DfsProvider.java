@@ -62,7 +62,9 @@ import software.amazon.awssdk.services.s3.model.UploadPartResponse;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 
-/** Thin adapter over the AWS SDK S3 client. */
+/**
+ * Thin adapter over the AWS SDK S3 client.
+ */
 public class S3DfsProvider implements DfsProvider {
     private static final String META_FILENAME = "loadup-filename";
     private static final String META_UPLOADED_AT = "loadup-uploaded-at";
@@ -84,6 +86,39 @@ public class S3DfsProvider implements DfsProvider {
         if (properties.isCreateBucket()) {
             createBucketIfMissing();
         }
+    }
+
+    private static Map<String, String> toS3Metadata(
+            String filename, Instant uploadedAt, Map<String, String> customMetadata) {
+        Map<String, String> result = new HashMap<>(customMetadata);
+        result.put(META_FILENAME, filename);
+        result.put(META_UPLOADED_AT, uploadedAt.toString());
+        return result;
+    }
+
+    private static String normalizePrefix(String value) {
+        if (value == null || value.isBlank()) {
+            return "";
+        }
+        return value.replace('\\', '/').replaceAll("^/+|/+$", "");
+    }
+
+    private static String requireText(String value, String propertyName) {
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException(propertyName + " must not be blank");
+        }
+        return value;
+    }
+
+    private static RuntimeException translate(String fileId, RuntimeException error) {
+        if (error instanceof S3Exception s3Exception && s3Exception.statusCode() == 404) {
+            return new DfsObjectNotFoundException(fileId);
+        }
+        return storageFailure(error);
+    }
+
+    private static DfsStorageException storageFailure(RuntimeException error) {
+        return new DfsStorageException(DfsStorageException.Code.OPERATION_FAILED, error);
     }
 
     @Override
@@ -311,14 +346,6 @@ public class S3DfsProvider implements DfsProvider {
                 uploadedAt);
     }
 
-    private static Map<String, String> toS3Metadata(
-            String filename, Instant uploadedAt, Map<String, String> customMetadata) {
-        Map<String, String> result = new HashMap<>(customMetadata);
-        result.put(META_FILENAME, filename);
-        result.put(META_UPLOADED_AT, uploadedAt.toString());
-        return result;
-    }
-
     private String createFileId(String requestedPath) {
         List<String> segments = new ArrayList<>();
         if (!keyPrefix.isBlank()) {
@@ -335,30 +362,5 @@ public class S3DfsProvider implements DfsProvider {
         }
         segments.add(UUID.randomUUID().toString().replace("-", ""));
         return String.join("/", segments);
-    }
-
-    private static String normalizePrefix(String value) {
-        if (value == null || value.isBlank()) {
-            return "";
-        }
-        return value.replace('\\', '/').replaceAll("^/+|/+$", "");
-    }
-
-    private static String requireText(String value, String propertyName) {
-        if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException(propertyName + " must not be blank");
-        }
-        return value;
-    }
-
-    private static RuntimeException translate(String fileId, RuntimeException error) {
-        if (error instanceof S3Exception s3Exception && s3Exception.statusCode() == 404) {
-            return new DfsObjectNotFoundException(fileId);
-        }
-        return storageFailure(error);
-    }
-
-    private static DfsStorageException storageFailure(RuntimeException error) {
-        return new DfsStorageException(DfsStorageException.Code.OPERATION_FAILED, error);
     }
 }

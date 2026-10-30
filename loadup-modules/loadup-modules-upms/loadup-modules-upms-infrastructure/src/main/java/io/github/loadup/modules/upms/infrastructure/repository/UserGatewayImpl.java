@@ -19,23 +19,25 @@
  */
 package io.github.loadup.modules.upms.infrastructure.repository;
 
+import com.mybatisflex.core.paginate.Page;
+import com.mybatisflex.core.query.QueryColumn;
+import com.mybatisflex.core.query.QueryWrapper;
+import com.mybatisflex.spring.service.impl.ServiceImpl;
 import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.dto.PageQuery;
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.components.database.tenant.DatabaseTenant;
 import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import io.github.loadup.modules.upms.domain.model.User;
 import io.github.loadup.modules.upms.infrastructure.converter.UserConverter;
 import io.github.loadup.modules.upms.infrastructure.dataobject.UserDO;
+import io.github.loadup.modules.upms.infrastructure.mapper.UserMapper;
+import io.github.loadup.modules.upms.infrastructure.table.Tables;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -44,27 +46,18 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-public class UserGatewayImpl implements UserGateway {
-    private static final String FROM =
-            " FROM upms_user WHERE deleted = FALSE AND tenant_id IS NOT DISTINCT FROM :tenant AND ";
+public class UserGatewayImpl extends ServiceImpl<UserMapper, UserDO> implements UserGateway {
+    private static final String FROM = " FROM upms_user WHERE deleted = FALSE AND ";
     private static final String COLUMNS =
-            "id, tenant_id, username, password, nickname, real_name, dept_id, email, email_verified, mobile, mobile_verified, avatar, gender, birthday, status, account_non_expired, account_non_locked, credentials_non_expired, last_login_time, last_login_ip, login_fail_count, locked_time, password_update_time, remark, created_by, updated_by, created_at, updated_at, deleted";
+            "id, username, password, nickname, real_name, dept_id, email, email_verified, mobile, mobile_verified, avatar, gender, birthday, status, account_non_expired, account_non_locked, credentials_non_expired, last_login_time, last_login_ip, login_fail_count, locked_time, password_update_time, remark, created_by, updated_by, created_at, updated_at, deleted";
     private final NamedParameterJdbcTemplate jdbc;
-    private final UserRepository users;
     private final Clock clock;
-    private final DatabaseTenant tenant;
     private final UserConverter converter;
 
-    public UserGatewayImpl(
-            NamedParameterJdbcTemplate jdbc,
-            UserRepository users,
-            UserConverter converter,
-            @Qualifier("databaseClock") Clock clock,
-            DatabaseTenant tenant) {
+    public UserGatewayImpl(NamedParameterJdbcTemplate jdbc, UserMapper mapper, UserConverter converter, Clock clock) {
         this.jdbc = jdbc;
-        this.users = users;
+        this.mapper = mapper;
         this.clock = clock;
-        this.tenant = tenant;
         this.converter = converter;
     }
 
@@ -73,23 +66,26 @@ public class UserGatewayImpl implements UserGateway {
     public User save(User user) {
         UserDO row = converter.toDataObject(user);
         lockDepartment(row.getDeptId());
-        if (row.getId() == null) row.setId(UUID.randomUUID().toString());
+        if (row.getId() == null) {
+            row.setId(UUID.randomUUID().toString());
+        }
         var now = LocalDateTime.now(clock);
-        if (row.getCreatedAt() == null) row.setCreatedAt(now);
+        if (row.getCreatedAt() == null) {
+            row.setCreatedAt(now);
+        }
         row.setUpdatedAt(now);
-        row.setTenantId(tenant.current());
         jdbc.update("""
-                INSERT INTO upms_user (id, tenant_id, username, password, nickname, real_name, dept_id, email,
-                    email_verified, mobile, mobile_verified, avatar, gender, birthday, status, account_non_expired,
-                    account_non_locked, credentials_non_expired, last_login_time, last_login_ip, login_fail_count,
-                    locked_time, password_update_time, remark, created_by, updated_by, created_at, updated_at, deleted)
-                VALUES (:id, :tenantId, :username, :password, :nickname, :realName, :deptId, :email,
-                    COALESCE(:emailVerified, FALSE), :mobile, COALESCE(:mobileVerified, FALSE), :avatar,
-                    COALESCE(:gender, 0), :birthday, COALESCE(:status, 1), COALESCE(:accountNonExpired, TRUE),
-                    COALESCE(:accountNonLocked, TRUE), COALESCE(:credentialsNonExpired, TRUE), :lastLoginTime,
-                    :lastLoginIp, COALESCE(:loginFailCount, 0), :lockedTime, :passwordUpdateTime, :remark,
-                    :createdBy, :updatedBy, :createdAt, :updatedAt, FALSE)
-                """, new BeanPropertySqlParameterSource(row));
+            INSERT INTO upms_user (id, username, password, nickname, real_name, dept_id, email,
+                email_verified, mobile, mobile_verified, avatar, gender, birthday, status, account_non_expired,
+                account_non_locked, credentials_non_expired, last_login_time, last_login_ip, login_fail_count,
+                locked_time, password_update_time, remark, created_by, updated_by, created_at, updated_at, deleted)
+            VALUES (:id, :username, :password, :nickname, :realName, :deptId, :email,
+                COALESCE(:emailVerified, FALSE), :mobile, COALESCE(:mobileVerified, FALSE), :avatar,
+                COALESCE(:gender, 0), :birthday, COALESCE(:status, 1), COALESCE(:accountNonExpired, TRUE),
+                COALESCE(:accountNonLocked, TRUE), COALESCE(:credentialsNonExpired, TRUE), :lastLoginTime,
+                :lastLoginIp, COALESCE(:loginFailCount, 0), :lockedTime, :passwordUpdateTime, :remark,
+                :createdBy, :updatedBy, :createdAt, :updatedAt, FALSE)
+            """, new BeanPropertySqlParameterSource(row));
         return converter.toEntity(row);
     }
 
@@ -97,26 +93,29 @@ public class UserGatewayImpl implements UserGateway {
     @Transactional
     public User update(User user) {
         UserDO row = converter.toDataObject(user);
-        if (row.getDeptId() != null) lockDepartment(row.getDeptId());
-        row.setTenantId(tenant.current());
+        if (row.getDeptId() != null) {
+            lockDepartment(row.getDeptId());
+        }
         row.setUpdatedAt(LocalDateTime.now(clock));
         int changed = jdbc.update("""
-                UPDATE upms_user SET username = COALESCE(:username, username), password = COALESCE(:password, password),
-                    nickname = COALESCE(:nickname, nickname), real_name = COALESCE(:realName, real_name),
-                    dept_id = COALESCE(:deptId, dept_id), email = COALESCE(:email, email),
-                    email_verified = COALESCE(:emailVerified, email_verified), mobile = COALESCE(:mobile, mobile),
-                    mobile_verified = COALESCE(:mobileVerified, mobile_verified), avatar = COALESCE(:avatar, avatar),
-                    gender = COALESCE(:gender, gender), birthday = COALESCE(:birthday, birthday), status = COALESCE(:status, status),
-                    account_non_expired = COALESCE(:accountNonExpired, account_non_expired),
-                    account_non_locked = COALESCE(:accountNonLocked, account_non_locked),
-                    credentials_non_expired = COALESCE(:credentialsNonExpired, credentials_non_expired),
-                    last_login_time = COALESCE(:lastLoginTime, last_login_time), last_login_ip = COALESCE(:lastLoginIp, last_login_ip),
-                    login_fail_count = COALESCE(:loginFailCount, login_fail_count), locked_time = COALESCE(:lockedTime, locked_time),
-                    password_update_time = COALESCE(:passwordUpdateTime, password_update_time), remark = COALESCE(:remark, remark),
-                    updated_by = COALESCE(:updatedBy, updated_by), updated_at = :updatedAt
-                WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenantId AND deleted = FALSE
-                """, new BeanPropertySqlParameterSource(row));
-        if (changed != 1) throw new org.springframework.dao.IncorrectResultSizeDataAccessException(1, changed);
+            UPDATE upms_user SET username = COALESCE(:username, username), password = COALESCE(:password, password),
+                nickname = COALESCE(:nickname, nickname), real_name = COALESCE(:realName, real_name),
+                dept_id = COALESCE(:deptId, dept_id), email = COALESCE(:email, email),
+                email_verified = COALESCE(:emailVerified, email_verified), mobile = COALESCE(:mobile, mobile),
+                mobile_verified = COALESCE(:mobileVerified, mobile_verified), avatar = COALESCE(:avatar, avatar),
+                gender = COALESCE(:gender, gender), birthday = COALESCE(:birthday, birthday), status = COALESCE(:status, status),
+                account_non_expired = COALESCE(:accountNonExpired, account_non_expired),
+                account_non_locked = COALESCE(:accountNonLocked, account_non_locked),
+                credentials_non_expired = COALESCE(:credentialsNonExpired, credentials_non_expired),
+                last_login_time = COALESCE(:lastLoginTime, last_login_time), last_login_ip = COALESCE(:lastLoginIp, last_login_ip),
+                login_fail_count = COALESCE(:loginFailCount, login_fail_count), locked_time = COALESCE(:lockedTime, locked_time),
+                password_update_time = COALESCE(:passwordUpdateTime, password_update_time), remark = COALESCE(:remark, remark),
+                updated_by = COALESCE(:updatedBy, updated_by), updated_at = :updatedAt
+            WHERE id = :id AND deleted = FALSE
+            """, new BeanPropertySqlParameterSource(row));
+        if (changed != 1) {
+            throw new org.springframework.dao.IncorrectResultSizeDataAccessException(1, changed);
+        }
         return converter.toEntity(row);
     }
 
@@ -125,60 +124,63 @@ public class UserGatewayImpl implements UserGateway {
     public void deleteById(String id) {
         var params = params().addValue("id", id).addValue("now", LocalDateTime.now(clock));
         jdbc.queryForList(
-                "SELECT id FROM upms_user WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE FOR UPDATE",
-                params,
-                String.class);
+                "SELECT id FROM upms_user WHERE id = :id AND deleted = FALSE FOR UPDATE", params, String.class);
         jdbc.update(
-                "UPDATE upms_user_role SET deleted = TRUE, updated_at = :now WHERE user_id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE",
+                "UPDATE upms_user_role SET deleted = TRUE, updated_at = :now WHERE user_id = :id AND deleted = FALSE",
                 params);
         jdbc.update(
-                "UPDATE upms_user_oauth_binding SET deleted = TRUE, updated_at = :now WHERE user_id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE",
+                "UPDATE upms_user_oauth_binding SET deleted = TRUE, updated_at = :now WHERE user_id = :id AND deleted = FALSE",
                 params);
         jdbc.update(
-                "UPDATE upms_user SET deleted = TRUE, updated_at = :now WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE",
-                params);
+                "UPDATE upms_user SET deleted = TRUE, updated_at = :now WHERE id = :id AND deleted = FALSE", params);
     }
 
     @Override
     public Optional<User> findById(String id) {
-        return users.findById(id).map(converter::toEntity);
+        return getByIdOpt(id).map(converter::toEntity);
     }
 
     @Override
     public Optional<User> findByUsername(String username) {
-        return users.findByUsername(username).map(converter::toEntity);
+        return getOneOpt(QueryWrapper.create().where(Tables.USER.USERNAME.eq(username)))
+                .map(converter::toEntity);
     }
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return users.findByEmail(email).map(converter::toEntity);
+        return getOneOpt(QueryWrapper.create().where(Tables.USER.EMAIL.eq(email)))
+                .map(converter::toEntity);
     }
 
     @Override
     public Optional<User> findByMobile(String mobile) {
-        return users.findByMobile(mobile).map(converter::toEntity);
+        return getOneOpt(QueryWrapper.create().where(Tables.USER.MOBILE.eq(mobile)))
+                .map(converter::toEntity);
     }
 
     @Override
     public List<User> findByDeptId(String deptId) {
-        return users.findByDeptId(deptId).stream().map(converter::toEntity).toList();
+        return list(QueryWrapper.create().where(Tables.USER.DEPT_ID.eq(deptId))).stream()
+                .map(converter::toEntity)
+                .toList();
     }
 
     @Override
     public PageResult<User> findAll(PageQuery query, String sortBy, String sortOrder) {
-        String property =
+        QueryColumn column =
                 switch (sortBy) {
-                    case "createdAt" -> "createdAt";
-                    case "username" -> "username";
-                    case "nickname" -> "nickname";
-                    case "id" -> "id";
+                    case "createdAt" -> Tables.USER.CREATED_AT;
+                    case "username" -> Tables.USER.USERNAME;
+                    case "nickname" -> Tables.USER.NICKNAME;
+                    case "id" -> Tables.USER.ID;
                     default -> throw new CommonException(UpmsResultCodeEnum.UNSUPPORTED_USER_SORT_FIELD);
                 };
-        var sort = Sort.by("DESC".equalsIgnoreCase(sortOrder) ? Sort.Direction.DESC : Sort.Direction.ASC, property);
-        var page = users.findAll(PageRequest.of(query.pageNum() - 1, query.pageSize(), sort));
+        var page = page(
+                new Page<>(query.pageNum(), query.pageSize()),
+                QueryWrapper.create().orderBy(column, !"DESC".equalsIgnoreCase(sortOrder)));
         return PageResult.of(
-                page.stream().map(converter::toEntity).toList(),
-                page.getTotalElements(),
+                page.getRecords().stream().map(converter::toEntity).toList(),
+                page.getTotalRow(),
                 query.pageNum(),
                 query.pageSize());
     }
@@ -195,28 +197,28 @@ public class UserGatewayImpl implements UserGateway {
 
     @Override
     public boolean existsByUsername(String username) {
-        return users.existsByUsername(username);
+        return exists(QueryWrapper.create().where(Tables.USER.USERNAME.eq(username)));
     }
 
     @Override
     public boolean existsByEmail(String email) {
-        return users.existsByEmail(email);
+        return exists(QueryWrapper.create().where(Tables.USER.EMAIL.eq(email)));
     }
 
     @Override
     public boolean existsByMobile(String mobile) {
-        return users.existsByMobile(mobile);
+        return exists(QueryWrapper.create().where(Tables.USER.MOBILE.eq(mobile)));
     }
 
     @Override
     public long countByDeptId(String deptId) {
-        return users.countByDeptId(deptId);
+        return count(QueryWrapper.create().where(Tables.USER.DEPT_ID.eq(deptId)));
     }
 
     private void lockDepartment(String id) {
         if (id == null
                 || jdbc.queryForList(
-                                "SELECT id FROM upms_department WHERE id = :id AND tenant_id IS NOT DISTINCT FROM :tenant AND deleted = FALSE AND status = 1 FOR UPDATE",
+                                "SELECT id FROM upms_department WHERE id = :id AND deleted = FALSE AND status = 1 FOR UPDATE",
                                 params().addValue("id", id),
                                 String.class)
                         .isEmpty()) {
@@ -258,6 +260,6 @@ public class UserGatewayImpl implements UserGateway {
     }
 
     private MapSqlParameterSource params() {
-        return new MapSqlParameterSource("tenant", tenant.current());
+        return new MapSqlParameterSource();
     }
 }

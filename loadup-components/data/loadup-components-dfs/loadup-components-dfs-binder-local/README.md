@@ -16,4 +16,5 @@ loadup:
     binder.local.base-path: /var/lib/loadup-dfs
 ```
 
-Objects are stored below `<base-path>/objects`; metadata is persisted below `<base-path>/metadata`. This binder has no presigned URL or multipart capability and requires a filesystem visible to the application node.
+Objects are stored below `<base-path>/objects`; metadata is persisted below `<base-path>/metadata`. This binder has no
+presigned URL or multipart capability and requires a filesystem visible to the application node.

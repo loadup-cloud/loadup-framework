@@ -1,6 +1,7 @@
 # DFS database binder
 
-Transitional binder for small files when object storage is unavailable. S3 is recommended for production and large files.
+Transitional binder for small files when object storage is unavailable. S3 is recommended for production and large
+files.
 
 ```xml
 <dependency>
@@ -9,7 +10,9 @@ Transitional binder for small files when object storage is unavailable. S3 is re
 </dependency>
 ```
 
-Select it with `loadup.dfs.binder-type=database`. Flyway creates the PostgreSQL `dfs_file` table. The binder uses Spring JDBC, stores file bytes in `BYTEA`, and stores JSON metadata as text. It supports the common CRUD and metadata capabilities only; presigned URLs and multipart upload are unsupported.
+Select it with `loadup.dfs.binder-type=database`. Flyway creates the PostgreSQL `dfs_file` table. The binder uses Spring
+JDBC, stores file bytes in `BYTEA`, and stores JSON metadata as text. It supports the common CRUD and metadata
+capabilities only; presigned URLs and multipart upload are unsupported.
 
 ## 接入步骤
 
@@ -28,8 +31,9 @@ Select it with `loadup.dfs.binder-type=database`. Flyway creates the PostgreSQL 
 
 ## 自动装配
 
-- [`DatabaseDfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/database/autoconfig/DatabaseDfsAutoConfiguration.java)
-  - 启用条件：`@ConditionalOnProperty(prefix = "loadup.dfs", name = "binder-type", havingValue = "database")`。
+- [
+  `DatabaseDfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/database/autoconfig/DatabaseDfsAutoConfiguration.java)
+    - 启用条件：`@ConditionalOnProperty(prefix = "loadup.dfs", name = "binder-type", havingValue = "database")`。
 
 设计边界与装配路径见 [ARCHITECTURE.md](ARCHITECTURE.md)。
 

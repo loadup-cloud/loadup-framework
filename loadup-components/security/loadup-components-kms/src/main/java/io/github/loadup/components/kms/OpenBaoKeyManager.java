@@ -22,12 +22,20 @@ package io.github.loadup.components.kms;
 import java.util.Base64;
 import java.util.Map;
 
-/** Explicit key administration; export, plaintext backup and deletion are not exposed. */
+/**
+ * Explicit key administration; export, plaintext backup and deletion are not exposed.
+ */
 public final class OpenBaoKeyManager implements KmsKeyManager, AutoCloseable {
     private final OpenBaoTransitClient client;
 
     OpenBaoKeyManager(OpenBaoTransitClient client) {
         this.client = client;
+    }
+
+    private static void requireType(KmsKeyType type) {
+        if (type == null) {
+            throw new IllegalArgumentException("key type is required");
+        }
     }
 
     @Override
@@ -47,8 +55,9 @@ public final class OpenBaoKeyManager implements KmsKeyManager, AutoCloseable {
 
     @Override
     public void setMinimumVersions(String name, int minEncryptionVersion, int minDecryptionVersion) {
-        if (minEncryptionVersion < 0 || minDecryptionVersion < 1)
+        if (minEncryptionVersion < 0 || minDecryptionVersion < 1) {
             throw new IllegalArgumentException("Invalid minimum key versions");
+        }
         client.call(
                 "configure",
                 name,
@@ -65,7 +74,9 @@ public final class OpenBaoKeyManager implements KmsKeyManager, AutoCloseable {
     public void importWrappedKey(String name, KmsKeyType type, byte[] wrappedKey) {
         requireType(type);
         client.validateInput(wrappedKey);
-        if (wrappedKey.length == 0) throw new IllegalArgumentException("wrappedKey is required");
+        if (wrappedKey.length == 0) {
+            throw new IllegalArgumentException("wrappedKey is required");
+        }
         client.call(
                 "import",
                 name,
@@ -91,8 +102,9 @@ public final class OpenBaoKeyManager implements KmsKeyManager, AutoCloseable {
         if (type == KmsKeyType.AES_256_GCM
                 || publicKeyPem == null
                 || !publicKeyPem.startsWith("-----BEGIN PUBLIC KEY-----")
-                || publicKeyPem.length() > 16384)
+                || publicKeyPem.length() > 16384) {
             throw new IllegalArgumentException("A PEM RSA public key is required");
+        }
         client.call(
                 "import",
                 name,
@@ -108,10 +120,6 @@ public final class OpenBaoKeyManager implements KmsKeyManager, AutoCloseable {
                         "allow_rotation",
                         false),
                 false);
-    }
-
-    private static void requireType(KmsKeyType type) {
-        if (type == null) throw new IllegalArgumentException("key type is required");
     }
 
     @Override

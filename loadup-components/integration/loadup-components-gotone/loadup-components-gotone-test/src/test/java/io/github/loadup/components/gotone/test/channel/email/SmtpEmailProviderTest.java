@@ -53,6 +53,22 @@ class SmtpEmailProviderTest {
     private final ApplicationContextRunner contexts = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(EmailChannelAutoConfiguration.class));
 
+    private static String findText(Part part, String mimeType) throws Exception {
+        if (part.isMimeType(mimeType)) {
+            return (String) part.getContent();
+        }
+        if (part.getContent() instanceof Multipart multipart) {
+            for (int i = 0; i < multipart.getCount(); i++) {
+                BodyPart body = multipart.getBodyPart(i);
+                String text = findText(body, mimeType);
+                if (text != null) {
+                    return text;
+                }
+            }
+        }
+        return null;
+    }
+
     @Test
     void sendsDefaultHtmlMessageWithActualMimeHeaders() throws Exception {
         when(sender.createMimeMessage())
@@ -167,21 +183,5 @@ class SmtpEmailProviderTest {
                 .run(context -> assertThat(context)
                         .doesNotHaveBean(JavaMailSender.class)
                         .doesNotHaveBean("smtpEmailProvider"));
-    }
-
-    private static String findText(Part part, String mimeType) throws Exception {
-        if (part.isMimeType(mimeType)) {
-            return (String) part.getContent();
-        }
-        if (part.getContent() instanceof Multipart multipart) {
-            for (int i = 0; i < multipart.getCount(); i++) {
-                BodyPart body = multipart.getBodyPart(i);
-                String text = findText(body, mimeType);
-                if (text != null) {
-                    return text;
-                }
-            }
-        }
-        return null;
     }
 }

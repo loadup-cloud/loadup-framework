@@ -59,7 +59,7 @@
         <loadup.framework.version>0.0.2-SNAPSHOT</loadup.framework.version>
 
         <!-- ORM and Database -->
-
+        <mybatis-flex.version>1.11.8</mybatis-flex.version>
         <mysql.version>9.7.0</mysql.version>
         <flyway.version>12.11.0</flyway.version>
 
@@ -927,6 +927,32 @@
                 <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-database</artifactId>
                 <version>${loadup.framework.version}</version>
+            </dependency>
+            <!-- MyBatis-Flex (ORM for simple aggregate reads and generated Tables/mappers) -->
+            <dependency>
+                <groupId>com.mybatis-flex</groupId>
+                <artifactId>mybatis-flex-spring-boot4-starter</artifactId>
+                <version>${mybatis-flex.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mybatis-flex</groupId>
+                <artifactId>mybatis-flex-annotation</artifactId>
+                <version>${mybatis-flex.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mybatis-flex</groupId>
+                <artifactId>mybatis-flex-core</artifactId>
+                <version>${mybatis-flex.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mybatis-flex</groupId>
+                <artifactId>mybatis-flex-spring</artifactId>
+                <version>${mybatis-flex.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mybatis-flex</groupId>
+                <artifactId>mybatis-flex-processor</artifactId>
+                <version>${mybatis-flex.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>

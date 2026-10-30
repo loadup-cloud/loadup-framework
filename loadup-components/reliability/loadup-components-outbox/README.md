@@ -1,6 +1,7 @@
 # Outbox
 
-在业务数据库事务中保存事件，提交后通过本地处理器可靠执行。使用 PostgreSQL 和 Spring JDBC，支持多实例领取、租约恢复、有限重试、失败查询和人工重放。无消息队列和 JobRunr 依赖。
+在业务数据库事务中保存事件，提交后通过本地处理器可靠执行。使用 PostgreSQL 和 Spring
+JDBC，支持多实例领取、租约恢复、有限重试、失败查询和人工重放。无消息队列和 JobRunr 依赖。
 
 ## 引入与迁移
 
@@ -13,9 +14,11 @@
 </dependency>
 ```
 
-应用提供唯一候选或 `@Primary` DataSource，以及使用该 DataSource 的 Spring JDBC 事务管理器。组件使用这个事务管理器执行独立短事务，不另建事务管理器。发布要求业务事务真实绑定该数据源，且不是只读事务。
+应用提供唯一候选或 `@Primary` DataSource，以及使用该 DataSource 的 Spring JDBC
+事务管理器。组件使用这个事务管理器执行独立短事务，不另建事务管理器。发布要求业务事务真实绑定该数据源，且不是只读事务。
 
-应用负责引入并启用 Flyway 与 `flyway-database-postgresql`，将 `classpath:db/migration` 加入迁移位置，加载 `V20261008000001__create_outbox.sql`。组件不在启动时自行建表。多数据源应用必须为选定的 DataSource 执行迁移。
+应用负责引入并启用 Flyway 与 `flyway-database-postgresql`，将 `classpath:db/migration` 加入迁移位置，加载
+`V20261008000001__create_outbox.sql`。组件不在启动时自行建表。多数据源应用必须为选定的 DataSource 执行迁移。
 
 ```yaml
 loadup:
@@ -29,7 +32,8 @@ loadup:
     batch-size: 20
 ```
 
-`worker-enabled: false` 保留发布和查询能力，可在独立工作节点调用 `OutboxDispatcher.dispatchBatch()`。每个应用实例默认使用一个专属线程，不修改应用的全局调度配置。处理器应设置外部调用超时；租约须覆盖正常处理时间，否则可能发生并发重复执行。首版不续租。
+`worker-enabled: false` 保留发布和查询能力，可在独立工作节点调用 `OutboxDispatcher.dispatchBatch()`
+。每个应用实例默认使用一个专属线程，不修改应用的全局调度配置。处理器应设置外部调用超时；租约须覆盖正常处理时间，否则可能发生并发重复执行。首版不续租。
 
 ## 业务事务中发布
 
@@ -42,7 +46,8 @@ public void createOrder(OrderCreateCommand command) {
 }
 ```
 
-`OutboxTemplate` 通过构造器注入。租户来自可信身份；事件类型和载荷版本属于业务契约。载荷最大 1 MiB，不放入私钥、访问令牌或通知凭证。业务回滚时事件一起回滚；发布本身不根据业务号去重，业务请求唯一性由订单约束负责。
+`OutboxTemplate` 通过构造器注入。租户来自可信身份；事件类型和载荷版本属于业务契约。载荷最大 1
+MiB，不放入私钥、访问令牌或通知凭证。业务回滚时事件一起回滚；发布本身不根据业务号去重，业务请求唯一性由订单约束负责。
 
 ## 注册处理器
 
@@ -69,9 +74,11 @@ public class OrderCreatedHandler implements OutboxHandler {
 }
 ```
 
-每个事件类型只注册一个处理器；需要多项工作时由业务显式发布不同事件。未知类型会有限重试后失败，不会静默丢弃。事件在业务提交之后执行，处理期间不持有领取事务。`TenantUtil` 自动临时绑定事件租户并恢复先前值；不恢复用户认证和授权，任务权限由业务明确决定。
+每个事件类型只注册一个处理器；需要多项工作时由业务显式发布不同事件。未知类型会有限重试后失败，不会静默丢弃。事件在业务提交之后执行，处理期间不持有领取事务。
+`TenantUtil` 自动临时绑定事件租户并恢复先前值；不恢复用户认证和授权，任务权限由业务明确决定。
 
-**至少一次执行**：进程可能在下游完成后、事件确认前退出。同一事件重试和重放保持相同 ID。HTTP 下游必须按其实际协议支持幂等；仅发送 `Idempotency-Key` 请求头不会使任意下游自动幂等。
+**至少一次执行**：进程可能在下游完成后、事件确认前退出。同一事件重试和重放保持相同 ID。HTTP 下游必须按其实际协议支持幂等；仅发送
+`Idempotency-Key` 请求头不会使任意下游自动幂等。
 
 本地数据库消费者可以在自己的 `@Transactional` 方法中调用：
 
@@ -79,7 +86,8 @@ public class OrderCreatedHandler implements OutboxHandler {
 inbox.consume("order-view", event, () -> projectionGateway.apply(event));
 ```
 
-`OutboxInbox` 的去重标识与回调数据库操作必须使用相同数据源和事务。回调异常标记事务回滚，下次可重试；重复事件返回 `false`。不可将外部 HTTP、邮件等副作用放入此回调并据此宣称恰好一次。
+`OutboxInbox` 的去重标识与回调数据库操作必须使用相同数据源和事务。回调异常标记事务回滚，下次可重试；重复事件返回 `false`
+。不可将外部 HTTP、邮件等副作用放入此回调并据此宣称恰好一次。
 
 ## 查询与重放
 
@@ -89,13 +97,17 @@ outbox.failures(trustedTenantId, 100);
 outbox.replay(trustedTenantId, eventId, operatorId, "Reviewed delivery failure");
 ```
 
-查询不暴露事件载荷。仅 `FAILED` 可重放，重放保留事件 ID、重置本轮尝试次数，操作原因和操作者与状态变更共同提交。组件不开放 Controller；应用负责管理权限和租户授权。错误记录只保存异常类型，不保存可能含凭证的异常消息。
+查询不暴露事件载荷。仅 `FAILED` 可重放，重放保留事件 ID、重置本轮尝试次数，操作原因和操作者与状态变更共同提交。组件不开放
+Controller；应用负责管理权限和租户授权。错误记录只保存异常类型，不保存可能含凭证的异常消息。
 
 ## 观测与验证
 
-有 `MeterRegistry` 时注册 `loadup.outbox.delivery`（`outcome=success|failure|lease_lost`）、`loadup.outbox.pending`、`loadup.outbox.failed`、`loadup.outbox.oldest.age`（秒）。积压 Gauge 每次采集查询数据库，应用应设置合理抓取间隔。提供 `ObservationRegistry` 时创建处理 Observation；原请求 traceId 仅作为 `originTraceId` 诊断关联，新任务不伪造原 Span。
+有 `MeterRegistry` 时注册 `loadup.outbox.delivery`（`outcome=success|failure|lease_lost`）、`loadup.outbox.pending`、
+`loadup.outbox.failed`、`loadup.outbox.oldest.age`（秒）。积压 Gauge 每次采集查询数据库，应用应设置合理抓取间隔。提供
+`ObservationRegistry` 时创建处理 Observation；原请求 traceId 仅作为 `originTraceId` 诊断关联，新任务不伪造原 Span。
 
-`OutboxIT` 使用 Testcontainers PostgreSQL，测试源码覆盖回滚、争抢、过期领取、旧领取者确认、Inbox 去重、失败重放及 HTTP 对端受理后模拟响应丢失。用户可在本地执行：
+`OutboxIT` 使用 Testcontainers PostgreSQL，测试源码覆盖回滚、争抢、过期领取、旧领取者确认、Inbox 去重、失败重放及 HTTP
+对端受理后模拟响应丢失。用户可在本地执行：
 
 ```shell
 mvnd clean verify -pl loadup-components/reliability/loadup-components-outbox -am \
@@ -107,19 +119,20 @@ mvnd clean verify -pl loadup-components/reliability/loadup-components-outbox -am
 
 ## 能力矩阵
 
-| 能力 | 首版契约 |
-|---|---|
-| 业务与事件原子提交 | 同 DataSource 的 Spring JDBC 事务 |
-| 多实例领取 | PostgreSQL `FOR UPDATE SKIP LOCKED` + 独立领取凭证 |
-| 崩溃恢复 | 租约过期后重新领取，次数耗尽进入失败 |
-| 重试与重放 | 有限指数退避，上限 24 小时；失败重放留痕 |
-| 本地数据库去重 | Inbox 与消费数据库操作同事务 |
-| 事件顺序 / 恰好一次 | 不保证；业务使用版本控制与幂等 |
-| 消息队列 / JobRunr | 首版无依赖；RetryTask 不参与同一事件状态管理 |
-| 归档 / 自动清理 | 尚未提供；不得过早删除 Inbox 去重记录 |
+| 能力                | 首版契约                                           |
+|---------------------|----------------------------------------------------|
+| 业务与事件原子提交  | 同 DataSource 的 Spring JDBC 事务                  |
+| 多实例领取          | PostgreSQL `FOR UPDATE SKIP LOCKED` + 独立领取凭证 |
+| 崩溃恢复            | 租约过期后重新领取，次数耗尽进入失败               |
+| 重试与重放          | 有限指数退避，上限 24 小时；失败重放留痕           |
+| 本地数据库去重      | Inbox 与消费数据库操作同事务                       |
+| 事件顺序 / 恰好一次 | 不保证；业务使用版本控制与幂等                     |
+| 消息队列 / JobRunr  | 首版无依赖；RetryTask 不参与同一事件状态管理       |
+| 归档 / 自动清理     | 尚未提供；不得过早删除 Inbox 去重记录              |
 
 设计细节见 [ARCHITECTURE.md](ARCHITECTURE.md)。
 
 ## 默认时区
 
-时间默认使用系统本地时区（JVM `ZoneId.systemDefault()`）。无偏移的 JSON 日期按本地时区解释；数据库会话和应用时区保持一致。Outbox 就绪时间和租约仍由数据库会话的 `CURRENT_TIMESTAMP(6)` 计算。显式偏移或 epoch 协议时间保持绝对时间语义。
+时间默认使用系统本地时区（JVM `ZoneId.systemDefault()`）。无偏移的 JSON 日期按本地时区解释；数据库会话和应用时区保持一致。Outbox
+就绪时间和租约仍由数据库会话的 `CURRENT_TIMESTAMP(6)` 计算。显式偏移或 epoch 协议时间保持绝对时间语义。

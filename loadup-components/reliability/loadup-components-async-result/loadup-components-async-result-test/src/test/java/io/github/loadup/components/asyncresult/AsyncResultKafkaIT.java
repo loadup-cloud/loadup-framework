@@ -19,19 +19,31 @@
  */
 package io.github.loadup.components.asyncresult;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.loadup.components.asyncresult.redis.RedisAsyncResultProvider;
-import io.github.loadup.components.testcontainers.annotation.*;
+import io.github.loadup.components.testcontainers.annotation.ContainerType;
+import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
 import io.github.loadup.components.testcontainers.messaging.SharedKafkaContainer;
 import java.time.Duration;
-import java.util.*;
-import java.util.concurrent.*;
-import org.apache.kafka.clients.admin.*;
-import org.apache.kafka.clients.consumer.*;
-import org.apache.kafka.clients.producer.*;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.TopicPartition;
-import org.apache.kafka.common.serialization.*;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -44,8 +56,34 @@ import tools.jackson.databind.json.JsonMapper;
         value = {ContainerType.REDIS, ContainerType.KAFKA},
         reuse = false)
 class AsyncResultKafkaIT {
-    @SpringBootConfiguration
-    static class Application {}
+    private static KafkaConsumer<String, String> consumer(String broker, String topic) {
+        var consumer = new KafkaConsumer<String, String>(Map.of(
+                ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
+                broker,
+                ConsumerConfig.GROUP_ID_CONFIG,
+                UUID.randomUUID().toString(),
+                ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG,
+                false,
+                ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,
+                "earliest",
+                ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
+                StringDeserializer.class,
+                ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
+                StringDeserializer.class));
+        consumer.assign(List.of(new TopicPartition(topic, 0)));
+        return consumer;
+    }
+
+    private static ConsumerRecord<String, String> receive(KafkaConsumer<String, String> consumer) {
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(15);
+        while (System.nanoTime() < deadline) {
+            var records = consumer.poll(Duration.ofMillis(100));
+            if (!records.isEmpty()) {
+                return records.iterator().next();
+            }
+        }
+        throw new AssertionError("MQ message did not arrive");
+    }
 
     @Test
     void kafkaRequestAndReplyCompleteTheOriginalServiceCallOnAnotherInstance() throws Exception {
@@ -117,8 +155,11 @@ class AsyncResultKafkaIT {
                         producer.send(
                                 new ProducerRecord<>(request, mapper.writeValueAsString(key), "order"),
                                 (metadata, error) -> {
-                                    if (error == null) sent.complete(null);
-                                    else sent.completeExceptionally(error);
+                                    if (error == null) {
+                                        sent.complete(null);
+                                    } else {
+                                        sent.completeExceptionally(error);
+                                    }
                                 });
                         return sent;
                     });
@@ -131,30 +172,6 @@ class AsyncResultKafkaIT {
         }
     }
 
-    private static KafkaConsumer<String, String> consumer(String broker, String topic) {
-        var consumer = new KafkaConsumer<String, String>(Map.of(
-                ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
-                broker,
-                ConsumerConfig.GROUP_ID_CONFIG,
-                UUID.randomUUID().toString(),
-                ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG,
-                false,
-                ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,
-                "earliest",
-                ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
-                StringDeserializer.class,
-                ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
-                StringDeserializer.class));
-        consumer.assign(List.of(new TopicPartition(topic, 0)));
-        return consumer;
-    }
-
-    private static ConsumerRecord<String, String> receive(KafkaConsumer<String, String> consumer) {
-        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(15);
-        while (System.nanoTime() < deadline) {
-            var records = consumer.poll(Duration.ofMillis(100));
-            if (!records.isEmpty()) return records.iterator().next();
-        }
-        throw new AssertionError("MQ message did not arrive");
-    }
+    @SpringBootConfiguration
+    static class Application {}
 }

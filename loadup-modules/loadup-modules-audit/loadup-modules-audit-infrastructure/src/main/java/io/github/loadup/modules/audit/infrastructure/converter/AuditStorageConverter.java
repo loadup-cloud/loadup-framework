@@ -20,8 +20,8 @@
 package io.github.loadup.modules.audit.infrastructure.converter;
 
 import io.github.loadup.commons.mapping.LoadUpMapStructConfig;
-import io.github.loadup.modules.audit.domain.model.*;
-import io.github.loadup.modules.audit.infrastructure.dataobject.*;
+import io.github.loadup.modules.audit.domain.model.AuditEvent;
+import io.github.loadup.modules.audit.infrastructure.dataobject.AuditEventDO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

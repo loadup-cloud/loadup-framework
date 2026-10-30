@@ -1,23 +1,25 @@
 # LoadUp Kms
 
-基于 OpenBao Transit 的密钥管理和密码操作组件。应用传入密钥引用与待处理字节，OpenBao 执行加解密或签名；私钥与对称密钥留在 OpenBao。适用于商户请求签名、通知签名及敏感字段加密。
+基于 OpenBao Transit 的密钥管理和密码操作组件。应用传入密钥引用与待处理字节，OpenBao 执行加解密或签名；私钥与对称密钥留在
+OpenBao。适用于商户请求签名、通知签名及敏感字段加密。
 
 ## 能力矩阵
 
-| 能力 | 首版契约 |
-|------|----------|
-| 后端 | OpenBao Transit；单一 jar，复用 LoadUp HTTP |
-| 密钥生成 | RSA 2048/3072/4096、AES-256-GCM；新建请求关闭导出与明文备份 |
-| 加解密 | 字节输入；密文保留密钥名称、版本、Transit 包装串 |
-| 签名验签 | SHA-256 + RSA PKCS#1 v1.5 / RSA-PSS；输入为原始字节，组件不做参数排序 |
-| 签名输出 | 原始签名字节及 Base64；保存名称、版本、算法以支持历史验签 |
-| 管理操作 | 创建、轮换、最低版本配置、读取公钥、导入公钥或已经按 BYOK 包装的密钥 |
-| 凭证 | 环境变量或自定义 Provider；每次请求重新读取；管理身份独立 |
-| 网络 | HTTPS、SSL Bundle、超时、连接池、请求/响应大小限制；无自动重试和重定向 |
-| 可观测性 | 复用 HTTP 的计时与 Boot RestClient 观测，固定客户端与操作名 |
+| 能力     | 首版契约                                                                              |
+|----------|---------------------------------------------------------------------------------------|
+| 后端     | OpenBao Transit；单一 jar，复用 LoadUp HTTP                                           |
+| 密钥生成 | RSA 2048/3072/4096、AES-256-GCM；新建请求关闭导出与明文备份                           |
+| 加解密   | 字节输入；密文保留密钥名称、版本、Transit 包装串                                      |
+| 签名验签 | SHA-256 + RSA PKCS#1 v1.5 / RSA-PSS；输入为原始字节，组件不做参数排序                 |
+| 签名输出 | 原始签名字节及 Base64；保存名称、版本、算法以支持历史验签                             |
+| 管理操作 | 创建、轮换、最低版本配置、读取公钥、导入公钥或已经按 BYOK 包装的密钥                  |
+| 凭证     | 环境变量或自定义 Provider；每次请求重新读取；管理身份独立                             |
+| 网络     | HTTPS、SSL Bundle、超时、连接池、请求/响应大小限制；无自动重试和重定向                |
+| 可观测性 | 复用 HTTP 的计时与 Boot RestClient 观测，固定客户端与操作名                           |
 | 暂不提供 | SM2/SM4、证书生命周期、登录续租、批量接口、AAD/派生密钥、导出/备份/删除接口、管理页面 |
 
-默认关闭，需要已有 OpenBao 服务并显式启用。组件不负责部署、初始化或解封 OpenBao，不依赖业务数据库。导出关闭是服务端策略，不等同于 HSM 硬件保护。既有密钥的策略由运维检查，创建请求不会重写已有密钥的安全属性。
+默认关闭，需要已有 OpenBao 服务并显式启用。组件不负责部署、初始化或解封 OpenBao，不依赖业务数据库。导出关闭是服务端策略，不等同于
+HSM 硬件保护。既有密钥的策略由运维检查，创建请求不会重写已有密钥的安全属性。
 
 ## Maven 接入
 
@@ -30,7 +32,8 @@
 </dependency>
 ```
 
-该组件传递引入 HTTP、RestClient 和 Jackson 3。KMS 使用自己管理的连接池，不需要定义 `loadup.http.clients`；全局 HTTP 客户端可正常共存。
+该组件传递引入 HTTP、RestClient 和 Jackson 3。KMS 使用自己管理的连接池，不需要定义 `loadup.http.clients`；全局 HTTP
+客户端可正常共存。
 
 ## 配置
 
@@ -50,11 +53,15 @@ loadup:
     # ssl-bundle: openbao
 ```
 
-`endpoint` 只接受服务原点，不能含账号密码、查询参数或 `/v1` 路径。`mount` 可为 `payments/transit`；`namespace` 是可选请求头，只有服务端已配置相应命名空间时使用。生产使用 HTTPS；本地调试 HTTP 必须显式设置 `allow-insecure-http: true`。SSL Bundle 沿用 Spring Boot 的 CA 与客户端证书配置。
+`endpoint` 只接受服务原点，不能含账号密码、查询参数或 `/v1` 路径。`mount` 可为 `payments/transit`；`namespace`
+是可选请求头，只有服务端已配置相应命名空间时使用。生产使用 HTTPS；本地调试 HTTP 必须显式设置 `allow-insecure-http: true`
+。SSL Bundle 沿用 Spring Boot 的 CA 与客户端证书配置。
 
-`max-input-bytes` 限制原始输入，默认 64 KiB、最大 1 MiB，网络响应也有上限。RSA 加密受单块 OAEP 长度限制，不能用于大报文；一般业务数据使用 AES，组件不做 RSA 分块。默认连接池每个身份独立，凭证不是普通配置中的字符串。
+`max-input-bytes` 限制原始输入，默认 64 KiB、最大 1 MiB，网络响应也有上限。RSA 加密受单块 OAEP 长度限制，不能用于大报文；一般业务数据使用
+AES，组件不做 RSA 分块。默认连接池每个身份独立，凭证不是普通配置中的字符串。
 
-默认从进程环境读取 `OPENBAO_TOKEN`。组件不会启动时访问服务；未设置凭证时首次调用返回 `AUTHENTICATION`。生产可注入 `KmsTokenProvider`，由集成方完成 AppRole/Kubernetes 登录、缓存和续租：
+默认从进程环境读取 `OPENBAO_TOKEN`。组件不会启动时访问服务；未设置凭证时首次调用返回 `AUTHENTICATION`。生产可注入
+`KmsTokenProvider`，由集成方完成 AppRole/Kubernetes 登录、缓存和续租：
 
 ```java
 @Bean
@@ -63,7 +70,8 @@ KmsTokenProvider kmsTokenProvider(MyOpenBaoSession session) {
 }
 ```
 
-管理接口只有 `management-enabled: true` 时创建，使用 `KmsManagementTokenProvider` 或独立的 `OPENBAO_MANAGEMENT_TOKEN`。不要将管理令牌授权给业务请求。
+管理接口只有 `management-enabled: true` 时创建，使用 `KmsManagementTokenProvider` 或独立的 `OPENBAO_MANAGEMENT_TOKEN`
+。不要将管理令牌授权给业务请求。
 
 ## 业务操作
 
@@ -85,9 +93,12 @@ byte[] original = kms.decrypt(KmsKeyRef.latest("sensitive-fields"), ciphertext);
 
 `version = 0`（`latest`）在新签名/加密时读取最新版本并固定到这次操作。支付渠道应使用渠道已注册公钥对应的明确版本；先登记新公钥、验证成功后再切换签名版本。历史签名和密文需要保存它们自身的版本。
 
-`verify` 的 `expectedKey` 校验调用方期望的名称；传入明确版本还会检查版本一致。收到外部 Base64 签名时，使用已认证商户绑定的密钥信息构造 `new KmsSignature(name, version, algorithm, Base64.getDecoder().decode(externalSignature))`，不要从未经认证的输入决定密钥引用。内容不匹配返回 `false`；服务不可用、拒绝访问、协议错误抛异常，不伪装成验签失败。
+`verify` 的 `expectedKey` 校验调用方期望的名称；传入明确版本还会检查版本一致。收到外部 Base64 签名时，使用已认证商户绑定的密钥信息构造
+`new KmsSignature(name, version, algorithm, Base64.getDecoder().decode(externalSignature))`，不要从未经认证的输入决定密钥引用。内容不匹配返回
+`false`；服务不可用、拒绝访问、协议错误抛异常，不伪装成验签失败。
 
-PSS 使用 SHA-256、MGF1-SHA256、32 字节 salt；PKCS#1 输出等价于 Java `SHA256withRSA`。组件不提供渠道规范化、证书解析、nonce 防重放或商户授权，这些由上层协议负责。Transit 密文不等同于微信等渠道要求的特定 AES 报文格式。
+PSS 使用 SHA-256、MGF1-SHA256、32 字节 salt；PKCS#1 输出等价于 Java `SHA256withRSA`。组件不提供渠道规范化、证书解析、nonce
+防重放或商户授权，这些由上层协议负责。Transit 密文不等同于微信等渠道要求的特定 AES 报文格式。
 
 ## 密钥管理与导入
 
@@ -100,7 +111,8 @@ manager.rotate("sensitive-fields");
 manager.setMinimumVersions("sensitive-fields", 2, 1);
 ```
 
-最低版本配置可能使旧密文无法解密或旧签名无法验签；提高最低解密版本前先完成数据迁移并确认历史保留要求。超时后的创建/轮换状态可能已经生效，应查询 OpenBao 状态，不能盲目重试。
+最低版本配置可能使旧密文无法解密或旧签名无法验签；提高最低解密版本前先完成数据迁移并确认历史保留要求。超时后的创建/轮换状态可能已经生效，应查询
+OpenBao 状态，不能盲目重试。
 
 已有渠道密钥可导入，但首版不接受明文私钥：
 
@@ -131,15 +143,19 @@ path "transit/encrypt/sensitive-fields" { capabilities = ["update"] }
 path "transit/decrypt/sensitive-fields" { capabilities = ["update"] }
 ```
 
-运行身份不授予密钥创建、配置、轮换、导出或备份权限，加密路径只授予 `update`。管理身份按管理范围授予 `keys/{name}` 的 `create/update`、`keys/{name}/rotate`、`config`、`import` 的 `update` 和 `wrapping_key` 的 `read`。修改挂载名时同步修改策略路径；使用真实 OpenBao 验证 ACL 匹配后再接入业务。
+运行身份不授予密钥创建、配置、轮换、导出或备份权限，加密路径只授予 `update`。管理身份按管理范围授予 `keys/{name}` 的
+`create/update`、`keys/{name}/rotate`、`config`、`import` 的 `update` 和 `wrapping_key` 的 `read`。修改挂载名时同步修改策略路径；使用真实
+OpenBao 验证 ACL 匹配后再接入业务。
 
 运维负责持久存储、解封、HA、备份恢复、审计设备与访问策略；应用不得记录请求体、令牌、明文及签名字节。商户到密钥的映射和管理操作审批/审计归上层业务，不由组件建表。
 
 ## 失败语义与验证
 
-`KmsException.getCode()` 提供 `AUTHENTICATION`、`ACCESS_DENIED`、`NOT_FOUND`、`INVALID_REQUEST`、`UNAVAILABLE`、`TRANSPORT`、`INVALID_RESPONSE`；异常不保留远端报文或底层异常，以免泄漏密码材料。服务失败不会降级到本地私钥。
+`KmsException.getCode()` 提供 `AUTHENTICATION`、`ACCESS_DENIED`、`NOT_FOUND`、`INVALID_REQUEST`、`UNAVAILABLE`、`TRANSPORT`、
+`INVALID_RESPONSE`；异常不保留远端报文或底层异常，以免泄漏密码材料。服务失败不会降级到本地私钥。
 
-已编写本地协议夹具测试及自动装配测试，涵盖独立身份、凭证变更、密钥版本、JCA 签名互操作、异常脱敏、不重试及输入限制；它们不代表真实 OpenBao 已验证。遵循仓库约定，本次不执行测试。用户可定向运行：
+已编写本地协议夹具测试及自动装配测试，涵盖独立身份、凭证变更、密钥版本、JCA 签名互操作、异常脱敏、不重试及输入限制；它们不代表真实
+OpenBao 已验证。遵循仓库约定，本次不执行测试。用户可定向运行：
 
 ```shell
 mvn clean -pl loadup-components/security/loadup-components-kms -am test \
@@ -147,4 +163,5 @@ mvn clean -pl loadup-components/security/loadup-components-kms -am test \
   -Dsurefire.failIfNoSpecifiedTests=false -Dskip.spotbugs=true -Dskip.spotless=true
 ```
 
-真实服务验收及故障演练见根 [ROADMAP](../../../ROADMAP.md)。设计见 [ARCHITECTURE](ARCHITECTURE.md)，协议依据为 [OpenBao Transit API](https://openbao.org/docs/api/secret/transit/)。
+真实服务验收及故障演练见根 [ROADMAP](../../../ROADMAP.md)。设计见 [ARCHITECTURE](ARCHITECTURE.md)
+，协议依据为 [OpenBao Transit API](https://openbao.org/docs/api/secret/transit/)。

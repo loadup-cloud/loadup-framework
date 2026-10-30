@@ -27,10 +27,11 @@
 
 ## 配置入口
 
-| 前缀 | 配置类 |
-|---|---|
+| 前缀                       | 配置类                                                                                                                  |
+|----------------------------|-------------------------------------------------------------------------------------------------------------------------|
 | `loadup.gotone.resilience` | [`GotoneResilienceProperties`](src/main/java/io/github/loadup/components/gotone/engine/GotoneResilienceProperties.java) |
 
 ## 自动装配
 
-- [`GotoneEngineAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/engine/GotoneEngineAutoConfiguration.java)
+- [
+  `GotoneEngineAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/engine/GotoneEngineAutoConfiguration.java)

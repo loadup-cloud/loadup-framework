@@ -22,7 +22,8 @@ package io.github.loadup.modules.contract.web;
 import io.github.loadup.modules.contract.app.autoconfigure.ContractAutoConfiguration;
 import io.github.loadup.modules.contract.client.facade.CatalogFacade;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.*;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Import;
 
 @AutoConfiguration(after = ContractAutoConfiguration.class)

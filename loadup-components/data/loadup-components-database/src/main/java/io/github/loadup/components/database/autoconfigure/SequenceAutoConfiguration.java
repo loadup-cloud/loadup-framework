@@ -24,7 +24,6 @@ import io.github.loadup.components.database.sequence.SegmentSequence;
 import io.github.loadup.components.database.sequence.SequenceProperties;
 import io.github.loadup.components.database.sequence.SequenceRangeAllocator;
 import java.time.Clock;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -46,7 +45,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 public class SequenceAutoConfiguration {
     @Bean
     public SequenceRangeAllocator sequenceRangeAllocator(
-            JdbcTemplate jdbc, PlatformTransactionManager manager, @Qualifier("databaseClock") Clock clock) {
+            JdbcTemplate jdbc, PlatformTransactionManager manager, Clock clock) {
         return new DatabaseSequenceRangeAllocator(jdbc, manager, clock);
     }
 
@@ -54,7 +53,7 @@ public class SequenceAutoConfiguration {
     public SegmentSequence sequence(
             SequenceRangeAllocator allocator,
             SequenceProperties properties,
-            @Qualifier("databaseClock") Clock clock,
+            Clock clock,
             org.springframework.beans.factory.ObjectProvider<io.micrometer.core.instrument.MeterRegistry> registry) {
         return new SegmentSequence(allocator, properties, clock, registry.getIfAvailable());
     }

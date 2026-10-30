@@ -45,6 +45,24 @@ public class YunpianSmsProvider implements NotificationChannelProvider {
         this.apiUrl = apiUrl;
     }
 
+    private static String configValue(Map<String, Object> config, String key, String defaultValue) {
+        if (!config.containsKey(key)) {
+            return defaultValue;
+        }
+        return config.get(key).toString();
+    }
+
+    private static boolean isPhoneNumber(String receiver) {
+        return receiver.matches("^\\+?[0-9]{5,20}$");
+    }
+
+    private static String maskPhone(String phone) {
+        if (phone.length() < 7) {
+            return "***";
+        }
+        return phone.substring(0, 3) + "****" + phone.substring(phone.length() - 4);
+    }
+
     @Override
     public String getChannelType() {
         return "SMS";
@@ -94,9 +112,9 @@ public class YunpianSmsProvider implements NotificationChannelProvider {
      *
      * <p>Placeholder: replace with the Yunpian HTTP API call.
      *
-     * @param receiver the phone number
+     * @param receiver   the phone number
      * @param templateId the vendor template id
-     * @param content the rendered content
+     * @param content    the rendered content
      * @throws Exception when the send fails
      */
     protected void sendMessage(String receiver, String templateId, String content) throws Exception {
@@ -115,23 +133,5 @@ public class YunpianSmsProvider implements NotificationChannelProvider {
     @Override
     public boolean isAvailable() {
         return apiKey != null && !apiKey.isBlank();
-    }
-
-    private static String configValue(Map<String, Object> config, String key, String defaultValue) {
-        if (!config.containsKey(key)) {
-            return defaultValue;
-        }
-        return config.get(key).toString();
-    }
-
-    private static boolean isPhoneNumber(String receiver) {
-        return receiver.matches("^\\+?[0-9]{5,20}$");
-    }
-
-    private static String maskPhone(String phone) {
-        if (phone.length() < 7) {
-            return "***";
-        }
-        return phone.substring(0, 3) + "****" + phone.substring(phone.length() - 4);
     }
 }

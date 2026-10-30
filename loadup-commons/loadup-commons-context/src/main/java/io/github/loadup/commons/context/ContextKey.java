@@ -21,7 +21,9 @@ package io.github.loadup.commons.context;
 
 import java.util.Objects;
 
-/** A named, runtime-checked key. Use immutable values when sharing snapshots between threads. */
+/**
+ * A named, runtime-checked key. Use immutable values when sharing snapshots between threads.
+ */
 public record ContextKey<T>(String name, Class<T> type) {
     public ContextKey {
         Objects.requireNonNull(name, "context key name");

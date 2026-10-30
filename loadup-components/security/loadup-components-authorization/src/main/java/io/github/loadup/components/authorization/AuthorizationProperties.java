@@ -27,7 +27,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "loadup.security.method-security")
 public class AuthorizationProperties {
 
-    /** Master switch for the authorization auto-configuration. */
+    /**
+     * Master switch for the authorization auto-configuration.
+     */
     private boolean enabled = true;
 
     public boolean isEnabled() {

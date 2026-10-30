@@ -28,7 +28,6 @@ import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import io.github.loadup.modules.upms.domain.model.User;
 import java.time.Clock;
 import java.time.LocalDateTime;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -44,6 +43,17 @@ public class PasswordLoginStrategy implements LoginStrategy {
     private final UserGateway userGateway;
     private final PasswordEncoder passwordEncoder;
     private final UpmsSecurityProperties securityProperties;
+
+    public PasswordLoginStrategy(
+            UserGateway userGateway,
+            PasswordEncoder passwordEncoder,
+            UpmsSecurityProperties securityProperties,
+            Clock clock) {
+        this.clock = clock;
+        this.userGateway = userGateway;
+        this.passwordEncoder = passwordEncoder;
+        this.securityProperties = securityProperties;
+    }
 
     @Override
     public String getLoginType() {
@@ -116,16 +126,5 @@ public class PasswordLoginStrategy implements LoginStrategy {
 
             userGateway.update(user);
         }
-    }
-
-    public PasswordLoginStrategy(
-            UserGateway userGateway,
-            PasswordEncoder passwordEncoder,
-            UpmsSecurityProperties securityProperties,
-            @Qualifier("upmsClock") Clock clock) {
-        this.clock = clock;
-        this.userGateway = userGateway;
-        this.passwordEncoder = passwordEncoder;
-        this.securityProperties = securityProperties;
     }
 }

@@ -25,19 +25,24 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-/** Isolates a single statement failure within the current JDBC transaction. */
+/**
+ * Isolates a single statement failure within the current JDBC transaction.
+ */
 public final class JdbcSavepointExecutor {
     private JdbcSavepointExecutor() {}
 
     public static <T> T execute(DataSource dataSource, Supplier<T> statement) {
         Objects.requireNonNull(dataSource, "dataSource");
         Objects.requireNonNull(statement, "statement");
-        if (!TransactionSynchronizationManager.isActualTransactionActive()) return statement.get();
+        if (!TransactionSynchronizationManager.isActualTransactionActive()) {
+            return statement.get();
+        }
         Connection connection = DataSourceUtils.getConnection(dataSource);
         try {
-            if (!DataSourceUtils.isConnectionTransactional(connection, dataSource) || connection.getAutoCommit())
+            if (!DataSourceUtils.isConnectionTransactional(connection, dataSource) || connection.getAutoCommit()) {
                 throw new DataAccessResourceFailureException(
                         "The current transaction must use the same JDBC DataSource");
+            }
             Savepoint savepoint = connection.setSavepoint();
             Throwable priorFailure = null;
             try {
@@ -58,7 +63,9 @@ public final class JdbcSavepointExecutor {
                 try {
                     connection.releaseSavepoint(savepoint);
                 } catch (SQLException releaseFailure) {
-                    if (priorFailure != null) releaseFailure.addSuppressed(priorFailure);
+                    if (priorFailure != null) {
+                        releaseFailure.addSuppressed(priorFailure);
+                    }
                     throw new DataAccessResourceFailureException("Unable to release JDBC savepoint", releaseFailure);
                 }
             }

@@ -34,22 +34,34 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "loadup.cache.binder.jetcache")
 public class JetCacheCacheProperties {
 
-    /** Default layout for caches without a per-name setting: LOCAL, REMOTE or BOTH. */
+    /**
+     * Default layout for caches without a per-name setting: LOCAL, REMOTE or BOTH.
+     */
     private String defaultCacheType = CacheType.LOCAL.name();
 
-    /** Maximum entries of the local level before eviction. */
+    /**
+     * Maximum entries of the local level before eviction.
+     */
     private int localLimit = 10_000;
 
-    /** Push local-level invalidations through the remote channel (requires REMOTE or BOTH). */
+    /**
+     * Push local-level invalidations through the remote channel (requires REMOTE or BOTH).
+     */
     private boolean syncLocal = true;
 
-    /** Protect against cache penetration (concurrent loads of the same key are serialized). */
+    /**
+     * Protect against cache penetration (concurrent loads of the same key are serialized).
+     */
     private boolean penetrationProtect = false;
 
-    /** Key prefix for the remote level; the cache name and a {@code ::} separator are appended. */
+    /**
+     * Key prefix for the remote level; the cache name and a {@code ::} separator are appended.
+     */
     private String remoteKeyPrefix = "loadup:cache:";
 
-    /** Per-cache overrides keyed by cache name. */
+    /**
+     * Per-cache overrides keyed by cache name.
+     */
     private Map<String, JetCacheCacheSettings> caches = new LinkedHashMap<>();
 
     public String getDefaultCacheType() {

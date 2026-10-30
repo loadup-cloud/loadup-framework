@@ -43,6 +43,35 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
 
 class OutboxWorkerTest {
+    private static OutboxProperties properties() {
+        OutboxProperties properties = new OutboxProperties();
+        properties.setBatchSize(1);
+        return properties;
+    }
+
+    private static JdbcOutboxRepository.Claim claim(String traceId) {
+        return new JdbcOutboxRepository.Claim(
+                new OutboxEvent(
+                        "event-id",
+                        new OutboxMessage("payment.completed", 1, "order-id", "{}"),
+                        Instant.parse("2026-10-14T00:00:00Z"),
+                        traceId),
+                "lease-token",
+                1);
+    }
+
+    private static OutboxHandler handler(HandlerAction action) {
+        return new OutboxHandler() {
+            public String eventType() {
+                return "payment.completed";
+            }
+
+            public void handle(OutboxEvent event) throws Exception {
+                action.handle(event);
+            }
+        };
+    }
+
     @AfterEach
     void clearThreadState() {
         MDC.clear();
@@ -50,7 +79,7 @@ class OutboxWorkerTest {
     }
 
     @Test
-    void successfulDispatchScopesTenantAndTraceAndRestoresCallerContext() {
+    void successfulDispatchPreservesCallerTenantAndRestoresTraceContext() {
         JdbcOutboxRepository repository = mock(JdbcOutboxRepository.class);
         var claim = claim("trace-origin");
         when(repository.claim()).thenReturn(Optional.of(claim));
@@ -58,7 +87,7 @@ class OutboxWorkerTest {
         SimpleMeterRegistry metrics = new SimpleMeterRegistry();
         try {
             OutboxHandler handler = handler(event -> {
-                assertThat(TenantUtil.getTenantId()).isEqualTo("event-tenant");
+                assertThat(TenantUtil.getTenantId()).isEqualTo("caller-tenant");
                 assertThat(MDC.get("originTraceId")).isEqualTo("trace-origin");
                 assertThat(MDC.get("caller")).isNull();
                 assertThat(event).isSameAs(claim.event());
@@ -186,7 +215,9 @@ class OutboxWorkerTest {
         AtomicInteger attempts = new AtomicInteger();
         CountDownLatch recovered = new CountDownLatch(1);
         doAnswer(invocation -> {
-                    if (attempts.incrementAndGet() == 1) throw new IllegalStateException("synthetic polling failure");
+                    if (attempts.incrementAndGet() == 1) {
+                        throw new IllegalStateException("synthetic polling failure");
+                    }
                     recovered.countDown();
                     return 0;
                 })
@@ -211,35 +242,6 @@ class OutboxWorkerTest {
         worker.stop();
         properties.setWorkerEnabled(false);
         assertThat(worker.isAutoStartup()).isFalse();
-    }
-
-    private static OutboxProperties properties() {
-        OutboxProperties properties = new OutboxProperties();
-        properties.setBatchSize(1);
-        return properties;
-    }
-
-    private static JdbcOutboxRepository.Claim claim(String traceId) {
-        return new JdbcOutboxRepository.Claim(
-                new OutboxEvent(
-                        "event-id",
-                        new OutboxMessage("event-tenant", "payment.completed", 1, "order-id", "{}"),
-                        Instant.parse("2026-10-14T00:00:00Z"),
-                        traceId),
-                "lease-token",
-                1);
-    }
-
-    private static OutboxHandler handler(HandlerAction action) {
-        return new OutboxHandler() {
-            public String eventType() {
-                return "payment.completed";
-            }
-
-            public void handle(OutboxEvent event) throws Exception {
-                action.handle(event);
-            }
-        };
     }
 
     @FunctionalInterface

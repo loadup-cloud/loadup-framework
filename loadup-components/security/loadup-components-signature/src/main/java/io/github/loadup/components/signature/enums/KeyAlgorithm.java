@@ -19,7 +19,9 @@
  */
 package io.github.loadup.components.signature.enums;
 
-/** Supported asymmetric key algorithms. */
+/**
+ * Supported asymmetric key algorithms.
+ */
 public enum KeyAlgorithm {
 
     /**

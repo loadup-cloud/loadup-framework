@@ -59,6 +59,19 @@ import tools.jackson.databind.ObjectMapper;
 @EnableConfigurationProperties(RedisCacheProperties.class)
 public class RedisCacheAutoConfiguration {
 
+    private static RedisCacheConfiguration perCacheConfiguration(
+            RedisCacheConfiguration defaults, CacheNameSettings settings) {
+        RedisCacheConfiguration configuration = defaults;
+        if (settings.ttl() != null || settings.randomExpirationRange() != null) {
+            configuration =
+                    configuration.entryTtl(new RandomTtlFunction(settings.ttl(), settings.randomExpirationRange()));
+        }
+        if (settings.allowNullValues() != null) {
+            configuration = settings.allowNullValues() ? configuration : configuration.disableCachingNullValues();
+        }
+        return configuration;
+    }
+
     @Bean
     @ConditionalOnMissingBean(CacheManager.class)
     public CacheManager cacheManager(
@@ -92,18 +105,5 @@ public class RedisCacheAutoConfiguration {
         }
         RedisCacheManager manager = builder.build();
         return new CacheManagerCustomizers(customizers.orderedStream().toList()).customize(manager);
-    }
-
-    private static RedisCacheConfiguration perCacheConfiguration(
-            RedisCacheConfiguration defaults, CacheNameSettings settings) {
-        RedisCacheConfiguration configuration = defaults;
-        if (settings.ttl() != null || settings.randomExpirationRange() != null) {
-            configuration =
-                    configuration.entryTtl(new RandomTtlFunction(settings.ttl(), settings.randomExpirationRange()));
-        }
-        if (settings.allowNullValues() != null) {
-            configuration = settings.allowNullValues() ? configuration : configuration.disableCachingNullValues();
-        }
-        return configuration;
     }
 }

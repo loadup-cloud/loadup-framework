@@ -24,16 +24,11 @@ import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.modules.audit.client.error.AuditResultCodeEnum;
 import java.time.LocalDateTime;
 
-/** Tenant-scoped audit search. Tenant ID must come from trusted request context. */
+/**
+ * Audit search scoped to the current schema.
+ */
 public record AuditQuery(
-        String tenantId,
-        String actorId,
-        String action,
-        String outcome,
-        LocalDateTime from,
-        LocalDateTime to,
-        int page,
-        int size) {
+        String actorId, String action, String outcome, LocalDateTime from, LocalDateTime to, int page, int size) {
     public AuditQuery {
         io.github.loadup.commons.dto.PageQuery.normalized(page, size, AuditResultCodeEnum.INVALID_PAGE);
         if (from != null && to != null && from.isAfter(to)) {

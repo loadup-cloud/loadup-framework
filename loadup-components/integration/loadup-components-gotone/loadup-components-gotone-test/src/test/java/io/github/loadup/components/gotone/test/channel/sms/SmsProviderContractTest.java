@@ -53,6 +53,14 @@ class SmsProviderContractTest {
                 new YunpianSmsProvider("key", "endpoint"));
     }
 
+    private static void capture(
+            List<List<String>> captured, String receiver, String template, String sign, String content) {
+        if (receiver.equals("+19999999999")) {
+            throw new IllegalStateException("synthetic transport failure");
+        }
+        captured.add(List.of(receiver, template, sign, content));
+    }
+
     @ParameterizedTest
     @MethodSource("missingCredentials")
     void missingCredentialsProduceFailures(NotificationChannelProvider provider) {
@@ -123,11 +131,5 @@ class SmsProviderContractTest {
         assertThat(captured)
                 .allSatisfy(values ->
                         assertThat(values.subList(1, 4)).containsExactly("42", "override-sign", "rendered-content"));
-    }
-
-    private static void capture(
-            List<List<String>> captured, String receiver, String template, String sign, String content) {
-        if (receiver.equals("+19999999999")) throw new IllegalStateException("synthetic transport failure");
-        captured.add(List.of(receiver, template, sign, content));
     }
 }

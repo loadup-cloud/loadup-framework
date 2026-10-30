@@ -27,6 +27,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 class ResourceServerTokenValidatorTest {
+    private static Jwt token(String use, String audience, String issuer) {
+        return Jwt.withTokenValue("test")
+                .header("alg", "RS256")
+                .issuedAt(Instant.now())
+                .expiresAt(Instant.now().plusSeconds(300))
+                .issuer(issuer)
+                .audience(List.of(audience))
+                .claim("token_use", use)
+                .build();
+    }
+
     @Test
     void acceptsOnlyAccessTokensForExpectedIssuerAndAudience() {
         ResourceServerProperties properties = new ResourceServerProperties();
@@ -91,16 +102,5 @@ class ResourceServerTokenValidatorTest {
         assertThat(result.getErrors())
                 .extracting(error -> error.getDescription())
                 .containsExactly("Invalid token use or audience");
-    }
-
-    private static Jwt token(String use, String audience, String issuer) {
-        return Jwt.withTokenValue("test")
-                .header("alg", "RS256")
-                .issuedAt(Instant.now())
-                .expiresAt(Instant.now().plusSeconds(300))
-                .issuer(issuer)
-                .audience(List.of(audience))
-                .claim("token_use", use)
-                .build();
     }
 }

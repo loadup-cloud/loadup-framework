@@ -94,6 +94,7 @@
 
         <!-- Annotation processor versions -->
         <mapstruct.version>1.6.3</mapstruct.version>
+        <mybatis-flex.version>1.11.8</mybatis-flex.version>
 
         <spring.boot.version>4.1.1</spring.boot.version>
 
@@ -155,6 +156,11 @@
                                 <groupId>org.springframework.boot</groupId>
                                 <artifactId>spring-boot-configuration-processor</artifactId>
                                 <version>${spring.boot.version}</version>
+                            </path>
+                            <path>
+                                <groupId>com.mybatis-flex</groupId>
+                                <artifactId>mybatis-flex-processor</artifactId>
+                                <version>${mybatis-flex.version}</version>
                             </path>
 
                         </annotationProcessorPaths>
@@ -423,11 +429,14 @@
                         </execution>
                     </executions>
                 </plugin>
+                <!-- Formatting is a manual gate: run spotless:apply or spotless:check explicitly.
+                     Do not bind check to a lifecycle phase; it must not block install/verify builds. -->
                 <plugin>
                     <groupId>com.diffplug.spotless</groupId>
                     <artifactId>spotless-maven-plugin</artifactId>
                     <version>${spotless-plugin.version}</version>
                     <configuration>
+                        <skip>${skip.spotless}</skip>
                         <java>
                             <includes>
                                 <include>src/main/java/**/*.java</include>
@@ -455,18 +464,6 @@
                             <endWithNewline/>
                         </pom>
                     </configuration>
-                    <executions>
-                        <execution>
-                            <id>spotless-check</id>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                            <phase>validate</phase>
-                            <configuration>
-                                <skip>${skip.spotless}</skip>
-                            </configuration>
-                        </execution>
-                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.flywaydb</groupId>

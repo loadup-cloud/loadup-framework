@@ -30,7 +30,9 @@ import java.net.URI;
 import java.time.Duration;
 import java.util.List;
 
-/** Default thin facade that delegates to the single configured {@link DfsProvider}. */
+/**
+ * Default thin facade that delegates to the single configured {@link DfsProvider}.
+ */
 public final class DefaultDfsService implements DfsService {
     private final DfsProvider provider;
 

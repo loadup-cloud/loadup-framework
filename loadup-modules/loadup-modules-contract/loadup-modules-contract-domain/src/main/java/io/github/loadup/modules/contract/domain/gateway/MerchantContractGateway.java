@@ -20,23 +20,25 @@
 package io.github.loadup.modules.contract.domain.gateway;
 
 import io.github.loadup.commons.domain.PageResult;
-import io.github.loadup.modules.contract.domain.model.*;
+import io.github.loadup.modules.contract.domain.model.ContractRecord;
+import io.github.loadup.modules.contract.domain.model.ContractRevisionRecord;
+import io.github.loadup.modules.contract.domain.model.ContractStatus;
 import java.util.Optional;
 
 public interface MerchantContractGateway {
-    Optional<ContractRecord> find(String tenantId, String id);
+    Optional<ContractRecord> find(String id);
 
-    Optional<ContractRecord> findByScope(String tenantId, String merchantId, String scopeKey);
+    Optional<ContractRecord> findByScope(String merchantId, String scopeKey);
 
-    Optional<ContractRecord> lockByScope(String tenantId, String merchantId, String scopeKey);
+    Optional<ContractRecord> lockByScope(String merchantId, String scopeKey);
 
-    Optional<ContractRecord> findByRequest(String tenantId, String requestKey);
+    Optional<ContractRecord> findByRequest(String requestKey);
 
-    Optional<ContractRevisionRecord> revision(String tenantId, String contractId, int revision);
+    Optional<ContractRevisionRecord> revision(String contractId, int revision);
 
     void insert(ContractRecord contract, ContractRevisionRecord revision);
 
-    void updateStatus(String tenantId, String id, long expectedGeneration, ContractStatus status);
+    void updateStatus(String id, long expectedGeneration, ContractStatus status);
 
-    PageResult<ContractRecord> page(String tenantId, String merchantId, int page, int size);
+    PageResult<ContractRecord> page(String merchantId, int page, int size);
 }

@@ -26,7 +26,9 @@ import io.github.loadup.modules.transfer.client.dto.TransferTaskDTO;
 import io.github.loadup.modules.transfer.domain.model.TransferTask;
 import org.mapstruct.Mapper;
 
-/** Maps application results without exposing persistence or domain models. */
+/**
+ * Maps application results without exposing persistence or domain models.
+ */
 @Mapper(config = LoadUpMapStructConfig.class)
 public interface TransferDTOConverter {
     TransferTaskDTO toDTO(TransferTask value);

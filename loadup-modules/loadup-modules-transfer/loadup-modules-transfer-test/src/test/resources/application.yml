@@ -4,8 +4,3 @@ spring:
 powerjob:
   worker:
     enabled: false
-loadup:
-  database:
-    multi-tenant:
-      enabled: true
-      required: true

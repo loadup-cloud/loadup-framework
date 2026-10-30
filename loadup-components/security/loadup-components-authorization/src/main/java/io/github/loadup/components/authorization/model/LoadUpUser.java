@@ -62,6 +62,25 @@ public class LoadUpUser implements Serializable, Principal {
      */
     private Map<String, Object> attributes;
 
+    public LoadUpUser(
+            String userId,
+            String username,
+            List<String> roles,
+            List<String> permissions,
+            Map<String, Object> attributes) {
+        this.userId = userId;
+        this.username = username;
+        this.roles = roles;
+        this.permissions = permissions;
+        this.attributes = attributes;
+    }
+
+    public LoadUpUser() {}
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
     /**
      * Check if user has a specific role
      */
@@ -109,26 +128,17 @@ public class LoadUpUser implements Serializable, Principal {
         return permissions != null && permissions.contains(permission);
     }
 
-    public LoadUpUser(
-            String userId,
-            String username,
-            List<String> roles,
-            List<String> permissions,
-            Map<String, Object> attributes) {
-        this.userId = userId;
-        this.username = username;
-        this.roles = roles;
-        this.permissions = permissions;
-        this.attributes = attributes;
-    }
-
-    public LoadUpUser() {}
-
     public String getUserId() {
         return this.userId;
     }
 
-    /** Returns the stable user ID used by authentication and audit records. */
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    /**
+     * Returns the stable user ID used by authentication and audit records.
+     */
     @Override
     public String getName() {
         return this.userId;
@@ -138,40 +148,37 @@ public class LoadUpUser implements Serializable, Principal {
         return this.username;
     }
 
-    public List<String> getRoles() {
-        return this.roles;
-    }
-
-    public List<String> getPermissions() {
-        return this.permissions;
-    }
-
-    public Map<String, Object> getAttributes() {
-        return this.attributes;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public List<String> getRoles() {
+        return this.roles;
     }
 
     public void setRoles(List<String> roles) {
         this.roles = roles;
     }
 
+    public List<String> getPermissions() {
+        return this.permissions;
+    }
+
     public void setPermissions(List<String> permissions) {
         this.permissions = permissions;
+    }
+
+    public Map<String, Object> getAttributes() {
+        return this.attributes;
     }
 
     public void setAttributes(Map<String, Object> attributes) {
         this.attributes = attributes;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
     }
 
     public static class Builder {
@@ -209,10 +216,5 @@ public class LoadUpUser implements Serializable, Principal {
         public LoadUpUser build() {
             return new LoadUpUser(this.userId, this.username, this.roles, this.permissions, this.attributes);
         }
-    }
-
-    @Override
-    public String toString() {
-        return ToStringAsJson.reflectionToString(this);
     }
 }

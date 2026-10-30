@@ -19,7 +19,8 @@ OAuth2 授权服务器与令牌签发的具体后端适配模块；由集成方�
 
 主要入口文件：
 
-- [`SasAuthServerAutoConfiguration`](src/main/java/io/github/loadup/components/authserver/sas/SasAuthServerAutoConfiguration.java)
+- [
+  `SasAuthServerAutoConfiguration`](src/main/java/io/github/loadup/components/authserver/sas/SasAuthServerAutoConfiguration.java)
 
 ## 分层与调用路径
 
@@ -28,15 +29,20 @@ API 定义主体与认证契约；SAS binder 配置令牌签发、JWK 和可选 
 ```text
 业务代码 → API/facade → 当前 binder → 第三方引擎或基础设施
 ```
+
 binder 实现框架契约，把实现库及其配置隔离在业务 API 之外。
 
 ## 装配规则
 
-- [`SasAuthServerAutoConfiguration`](src/main/java/io/github/loadup/components/authserver/sas/SasAuthServerAutoConfiguration.java) 是自动配置入口。
-  - `@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)`
-  - `@ConditionalOnProperty( prefix = "loadup.security.auth-server", name = "protocol-endpoints-enabled", havingValue = "true", matchIfMissing = true)`
-  - `@ConditionalOnMissingBean(RegisteredClientRepository.class)`
-  - `@ConditionalOnProperty( prefix = "loadup.security.auth-server", name = "protocol-endpoints-enabled", havingValue = "true", matchIfMissing = true)`
+- [
+  `SasAuthServerAutoConfiguration`](src/main/java/io/github/loadup/components/authserver/sas/SasAuthServerAutoConfiguration.java)
+  是自动配置入口。
+    - `@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)`
+    -
+    `@ConditionalOnProperty( prefix = "loadup.security.auth-server", name = "protocol-endpoints-enabled", havingValue = "true", matchIfMissing = true)`
+    - `@ConditionalOnMissingBean(RegisteredClientRepository.class)`
+    -
+    `@ConditionalOnProperty( prefix = "loadup.security.auth-server", name = "protocol-endpoints-enabled", havingValue = "true", matchIfMissing = true)`
 
 ## 设计取舍
 

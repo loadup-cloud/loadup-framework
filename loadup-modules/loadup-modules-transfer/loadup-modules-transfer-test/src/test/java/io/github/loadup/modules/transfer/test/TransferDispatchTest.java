@@ -19,8 +19,15 @@
  */
 package io.github.loadup.modules.transfer.test;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import io.github.loadup.modules.file.client.facade.FileResourceFacade;
 import io.github.loadup.modules.transfer.app.config.TransferTaskProperties;
@@ -37,6 +44,23 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 class TransferDispatchTest {
+    private static TransferTask task(String id) {
+        return new TransferTask(
+                id,
+                "owner",
+                TransferKind.EXPORT,
+                "test",
+                null,
+                null,
+                TransferStatus.QUEUED,
+                0,
+                0,
+                null,
+                LocalDateTime.now(),
+                null,
+                null);
+    }
+
     @Test
     void queuedRetryDoesNotReattachFilesOrDispatchAgain() {
         var gateway = mock(TransferGateway.class);
@@ -46,7 +70,7 @@ class TransferDispatchTest {
         var converter = mock(TransferDTOConverter.class);
         var service = new TransferTaskService(
                 gateway, files, List.of(), new TransferTaskProperties(), converter, Clock.systemDefaultZone());
-        service.retry("tenant", "queued", "owner", false);
+        service.retry("queued", "owner", false);
         verify(gateway).find("queued");
         verifyNoMoreInteractions(gateway);
         verifyNoInteractions(files);
@@ -60,7 +84,7 @@ class TransferDispatchTest {
         when(gateway.find("duplicate")).thenReturn(Optional.of(task("duplicate")));
         when(gateway.find("missing")).thenReturn(Optional.empty());
         when(gateway.find("second")).thenReturn(Optional.of(task("second")));
-        when(gateway.start(anyString(), anyString())).thenReturn(false);
+        when(gateway.start(anyString())).thenReturn(false);
         var service = new TransferTaskService(
                 gateway,
                 mock(FileResourceFacade.class),
@@ -69,9 +93,9 @@ class TransferDispatchTest {
                 mock(TransferDTOConverter.class),
                 Clock.systemDefaultZone());
         assertThat(service.executeQueuedTasks()).isFalse();
-        verify(gateway).start("tenant", "duplicate");
-        verify(gateway).start("tenant", "second");
-        verify(gateway, never()).options(anyString(), anyString());
+        verify(gateway).start("duplicate");
+        verify(gateway).start("second");
+        verify(gateway, never()).options(anyString());
     }
 
     @Test
@@ -93,23 +117,5 @@ class TransferDispatchTest {
                 mock(TransferDTOConverter.class),
                 Clock.systemDefaultZone());
         assertThat(service.executeQueuedTasks()).isTrue();
-    }
-
-    private static TransferTask task(String id) {
-        return new TransferTask(
-                id,
-                "tenant",
-                "owner",
-                TransferKind.EXPORT,
-                "test",
-                null,
-                null,
-                TransferStatus.QUEUED,
-                0,
-                0,
-                null,
-                LocalDateTime.now(),
-                null,
-                null);
     }
 }

@@ -19,10 +19,12 @@
  */
 package io.github.loadup.components.asyncresult.redis;
 
-import io.github.loadup.components.asyncresult.*;
+import io.github.loadup.components.asyncresult.AsyncResultProperties;
+import io.github.loadup.components.asyncresult.AsyncResultProvider;
 import org.redisson.api.RedissonClient;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.*;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 

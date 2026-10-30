@@ -73,10 +73,4 @@ public class UpmsAutoConfiguration {
             DepartmentGateway departmentGateway) {
         return new AccessDecisionService(userGateway, roleGateway, permissionGateway, departmentGateway);
     }
-
-    @Bean
-    @ConditionalOnMissingBean(name = "upmsClock")
-    public java.time.Clock upmsClock() {
-        return java.time.Clock.systemDefaultZone();
-    }
 }

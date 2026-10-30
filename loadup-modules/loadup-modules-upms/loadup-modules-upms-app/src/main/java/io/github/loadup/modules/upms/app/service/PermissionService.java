@@ -49,6 +49,15 @@ public class PermissionService implements io.github.loadup.modules.upms.client.f
     private final PermissionGateway permissionGateway;
     private final UserPermissionService userPermissionService;
 
+    public PermissionService(
+            PermissionGateway permissionGateway,
+            UserPermissionService userPermissionService,
+            UpmsDTOConverter dtoConverter) {
+        this.dtoConverter = dtoConverter;
+        this.permissionGateway = permissionGateway;
+        this.userPermissionService = userPermissionService;
+    }
+
     @Transactional
     public PermissionDTO createPermission(PermissionCreateCommand command) {
         if (permissionGateway.existsByPermissionCode(command.getPermissionCode())) {
@@ -83,7 +92,9 @@ public class PermissionService implements io.github.loadup.modules.upms.client.f
                 .findById(command.getId())
                 .orElseThrow(() -> new CommonException(UpmsResultCodeEnum.PERMISSION_NOT_FOUND));
 
-        if (command.getParentId() != null) validateParent(command.getId(), command.getParentId());
+        if (command.getParentId() != null) {
+            validateParent(command.getId(), command.getParentId());
+        }
 
         if (command.getParentId() != null) {
             permission.setParentId(command.getParentId());
@@ -186,15 +197,6 @@ public class PermissionService implements io.github.loadup.modules.upms.client.f
             }
         }
         return tree;
-    }
-
-    public PermissionService(
-            PermissionGateway permissionGateway,
-            UserPermissionService userPermissionService,
-            UpmsDTOConverter dtoConverter) {
-        this.dtoConverter = dtoConverter;
-        this.permissionGateway = permissionGateway;
-        this.userPermissionService = userPermissionService;
     }
 
     private void validateParent(String permissionId, String parentId) {

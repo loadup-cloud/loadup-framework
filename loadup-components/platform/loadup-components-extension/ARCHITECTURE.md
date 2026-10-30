@@ -16,7 +16,8 @@
 
 主要入口文件：
 
-- [`ExtensionAutoConfiguration`](src/main/java/io/github/loadup/components/extension/config/ExtensionAutoConfiguration.java)
+- [
+  `ExtensionAutoConfiguration`](src/main/java/io/github/loadup/components/extension/config/ExtensionAutoConfiguration.java)
 - [`ExtensionProvider`](src/main/java/io/github/loadup/components/extension/spi/ExtensionProvider.java)
 
 ## 分层与调用路径
@@ -27,13 +28,16 @@
 
 ## 装配规则
 
-- [`ExtensionAutoConfiguration`](src/main/java/io/github/loadup/components/extension/config/ExtensionAutoConfiguration.java) 是自动配置入口。
-  - `@ConditionalOnClass({ExtensionExecutor.class, ExtensionRegistry.class})`
-  - `@ConditionalOnMissingBean(BizScenarioInterceptor.class)`
+- [
+  `ExtensionAutoConfiguration`](src/main/java/io/github/loadup/components/extension/config/ExtensionAutoConfiguration.java)
+  是自动配置入口。
+    - `@ConditionalOnClass({ExtensionExecutor.class, ExtensionRegistry.class})`
+    - `@ConditionalOnMissingBean(BizScenarioInterceptor.class)`
 
 ## 业务上下文作用域
 
-`BizScenarioInterceptor` 优先使用方法注解中显式指定的业务身份，否则从参数中的 `BizIdentity` 解析。无法解析时沿用当前上下文；成功解析时仅在当前调用内绑定，正常返回或抛出异常都恢复进入前的外层上下文。最外层调用结束后清理绑定，避免后续请求读取残留场景。
+`BizScenarioInterceptor` 优先使用方法注解中显式指定的业务身份，否则从参数中的 `BizIdentity`
+解析。无法解析时沿用当前上下文；成功解析时仅在当前调用内绑定，正常返回或抛出异常都恢复进入前的外层上下文。最外层调用结束后清理绑定，避免后续请求读取残留场景。
 
 ## 扩展契约
 
@@ -45,4 +49,5 @@
 
 ## 场景匹配缓存
 
-缓存键由扩展接口类型、bizCode、useCase、scenario 四部分构成，使用不可变 record 的值相等语义。不同 BizScenario 实例表达同一组值时可命中同一项，预热去重也使用同一契约。缓存仍采用弱键；GC 可以回收缓存项，回收后重新计算，缓存命中不是业务正确性的前提。
+缓存键由扩展接口类型、bizCode、useCase、scenario 四部分构成，使用不可变 record 的值相等语义。不同 BizScenario
+实例表达同一组值时可命中同一项，预热去重也使用同一契约。缓存仍采用弱键；GC 可以回收缓存项，回收后重新计算，缓存命中不是业务正确性的前提。

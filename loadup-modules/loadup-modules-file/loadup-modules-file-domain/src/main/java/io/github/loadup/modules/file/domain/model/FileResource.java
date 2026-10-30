@@ -22,10 +22,11 @@ package io.github.loadup.modules.file.domain.model;
 import io.github.loadup.commons.json.ToStringAsJson;
 import java.time.LocalDateTime;
 
-/** Business record for one object stored by DFS. */
+/**
+ * Business record for one object stored by DFS.
+ */
 public record FileResource(
         String id,
-        String tenantId,
         String ownerId,
         String storageId,
         String filename,

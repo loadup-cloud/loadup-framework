@@ -20,11 +20,15 @@
 package io.github.loadup.modules.merchant.client.facade;
 
 import io.github.loadup.commons.result.PageDTO;
-import io.github.loadup.modules.merchant.client.command.*;
-import io.github.loadup.modules.merchant.client.dto.*;
+import io.github.loadup.modules.merchant.client.command.MerchantCreateCommand;
+import io.github.loadup.modules.merchant.client.command.MerchantStatusCommand;
+import io.github.loadup.modules.merchant.client.command.MerchantUpdateCommand;
+import io.github.loadup.modules.merchant.client.dto.MerchantDTO;
 import io.github.loadup.modules.merchant.client.query.MerchantPageQuery;
 
-/** Public business contract for MerchantService. */
+/**
+ * Public business contract for MerchantService.
+ */
 public interface MerchantFacade {
     MerchantDTO create(MerchantCreateCommand command, String actor);
 

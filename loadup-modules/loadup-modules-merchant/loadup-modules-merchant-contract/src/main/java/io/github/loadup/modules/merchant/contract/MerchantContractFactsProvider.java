@@ -28,7 +28,9 @@ import io.github.loadup.modules.merchant.client.facade.MerchantQueryFacade;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Supplies only managed basic facts, never unverified qualification or private contact fields. */
+/**
+ * Supplies only managed basic facts, never unverified qualification or private contact fields.
+ */
 public class MerchantContractFactsProvider implements MerchantFactsProvider {
     private final MerchantQueryFacade lookup;
 
@@ -36,12 +38,21 @@ public class MerchantContractFactsProvider implements MerchantFactsProvider {
         this.lookup = lookup;
     }
 
-    public MerchantProfileDTO load(String tenant, String id) {
-        var found = lookup.find(tenant, id);
-        if (found.isEmpty()) return null;
+    private static void put(Map<String, ValueDTO> facts, String key, String value) {
+        if (value != null && !value.isBlank()) {
+            facts.put(key, new ValueDTO("STRING", value));
+        }
+    }
+
+    public MerchantProfileDTO load(String id) {
+        var found = lookup.find(id);
+        if (found.isEmpty()) {
+            return null;
+        }
         var merchant = found.get();
-        if (!tenant.equals(merchant.tenantId()) || !id.equals(merchant.id()))
+        if (!id.equals(merchant.id())) {
             throw new CommonException(MerchantResultCodeEnum.MERCHANT_IDENTITY_MISMATCH);
+        }
         Map<String, ValueDTO> facts = new HashMap<>();
         put(facts, "merchant.code", merchant.merchantCode());
         put(facts, "merchant.type", merchant.type());
@@ -50,9 +61,5 @@ public class MerchantContractFactsProvider implements MerchantFactsProvider {
         put(facts, "merchant.province", merchant.province());
         put(facts, "merchant.city", merchant.city());
         return new MerchantProfileDTO(id, merchant.active(), Map.copyOf(facts));
-    }
-
-    private static void put(Map<String, ValueDTO> facts, String key, String value) {
-        if (value != null && !value.isBlank()) facts.put(key, new ValueDTO("STRING", value));
     }
 }

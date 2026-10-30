@@ -37,19 +37,23 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.json.JsonMapper;
 
-/** Real loopback HTTP transport contracts; no vendor endpoint is contacted. */
+/**
+ * Real loopback HTTP transport contracts; no vendor endpoint is contacted.
+ */
 class WebhookTransportIT {
-    private HttpServer server;
     private final AtomicInteger status = new AtomicInteger(200);
     private final AtomicReference<String> method = new AtomicReference<>();
     private final AtomicReference<String> contentType = new AtomicReference<>();
     private final AtomicReference<String> body = new AtomicReference<>();
     private final JsonMapper json = JsonMapper.builder().build();
+    private HttpServer server;
 
     @AfterEach
     void closeServer() {
         Thread.interrupted();
-        if (server != null) server.stop(0);
+        if (server != null) {
+            server.stop(0);
+        }
     }
 
     private String endpoint() throws Exception {

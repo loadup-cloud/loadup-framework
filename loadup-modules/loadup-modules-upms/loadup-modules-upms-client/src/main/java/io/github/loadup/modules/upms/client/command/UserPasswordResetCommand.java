@@ -80,36 +80,36 @@ public class UserPasswordResetCommand {
         return this.username;
     }
 
-    public String getVerificationCode() {
-        return this.verificationCode;
-    }
-
-    public String getNewPassword() {
-        return this.newPassword;
-    }
-
-    public String getConfirmPassword() {
-        return this.confirmPassword;
-    }
-
-    public String getVerificationType() {
-        return this.verificationType;
-    }
-
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getVerificationCode() {
+        return this.verificationCode;
     }
 
     public void setVerificationCode(String verificationCode) {
         this.verificationCode = verificationCode;
     }
 
+    public String getNewPassword() {
+        return this.newPassword;
+    }
+
     public void setNewPassword(String newPassword) {
         this.newPassword = newPassword;
     }
 
+    public String getConfirmPassword() {
+        return this.confirmPassword;
+    }
+
     public void setConfirmPassword(String confirmPassword) {
         this.confirmPassword = confirmPassword;
+    }
+
+    public String getVerificationType() {
+        return this.verificationType;
     }
 
     public void setVerificationType(String verificationType) {

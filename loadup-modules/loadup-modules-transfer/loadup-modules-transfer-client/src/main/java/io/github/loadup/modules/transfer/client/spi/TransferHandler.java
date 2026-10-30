@@ -23,7 +23,9 @@ import io.github.loadup.modules.transfer.client.enums.TransferKind;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/** Business-supplied handler; implementations must tolerate replay of the same task ID. */
+/**
+ * Business-supplied handler; implementations must tolerate replay of the same task ID.
+ */
 public interface TransferHandler {
     String key();
 

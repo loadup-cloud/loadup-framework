@@ -22,7 +22,6 @@ package io.github.loadup.components.globalunique;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.globalunique.model.GlobalUniqueClaim;
 import io.github.loadup.components.globalunique.model.GlobalUniqueRecord;
 import io.github.loadup.components.testcontainers.annotation.ContainerType;
@@ -32,7 +31,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.function.Supplier;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,27 +54,21 @@ class GlobalUniqueTemplateIT {
     }
 
     @Test
-    @DisplayName("The first tenant-scoped claim wins")
+    @DisplayName("The first claim wins")
     void claimReturnsTrueOnlyOnce() {
         String uniqueKey = "order-once";
 
-        assertThat(withTenant("tenant-a", () -> template.claim("ORDER", uniqueKey)))
-                .isTrue();
-        assertThat(withTenant("tenant-a", () -> template.claim("ORDER", uniqueKey)))
-                .isFalse();
+        assertThat(template.claim("ORDER", uniqueKey)).isTrue();
+        assertThat(template.claim("ORDER", uniqueKey)).isFalse();
     }
 
     @Test
-    @DisplayName("The same business key is isolated by tenant and business type")
-    void claimIsIsolatedByTenantAndBusinessType() {
+    @DisplayName("The same business key is isolated by business type")
+    void claimIsIsolatedByBusinessType() {
         String uniqueKey = "shared-key";
 
-        assertThat(withTenant("tenant-a", () -> template.claim("ORDER", uniqueKey)))
-                .isTrue();
-        assertThat(withTenant("tenant-b", () -> template.claim("ORDER", uniqueKey)))
-                .isTrue();
-        assertThat(withTenant("tenant-a", () -> template.claim("PAYMENT", uniqueKey)))
-                .isTrue();
+        assertThat(template.claim("ORDER", uniqueKey)).isTrue();
+        assertThat(template.claim("PAYMENT", uniqueKey)).isTrue();
     }
 
     @Test
@@ -84,13 +76,11 @@ class GlobalUniqueTemplateIT {
     void findReturnsClaimAndAuditFields() {
         GlobalUniqueClaim claim = new GlobalUniqueClaim("REFUND", "refund-details", "refund-42", "{\"amount\":100}");
 
-        assertThat(withTenant("tenant-details", () -> template.claim(claim))).isTrue();
-        GlobalUniqueRecord record = withTenant(
-                        "tenant-details", () -> template.find(claim.bizType(), claim.uniqueKey()))
-                .orElseThrow();
+        assertThat(template.claim(claim)).isTrue();
+        GlobalUniqueRecord record =
+                template.find(claim.bizType(), claim.uniqueKey()).orElseThrow();
 
         assertThat(record.id()).isNotBlank();
-        assertThat(record.tenantId()).isEqualTo("tenant-details");
         assertThat(record.bizId()).isEqualTo("refund-42");
         assertThat(record.requestData()).isEqualTo("{\"amount\":100}");
         assertThat(record.createdAt()).isNotNull();
@@ -99,16 +89,13 @@ class GlobalUniqueTemplateIT {
 
     @Test
     void duplicateClaimDoesNotAbortTheEnclosingPostgresqlTransaction() {
-        withTenant(
-                "tenant-savepoint",
-                () -> transactionTemplate.execute(status -> {
-                    assertThat(template.claim("ORDER", "first")).isTrue();
-                    assertThat(template.claim("ORDER", "first")).isFalse();
-                    assertThat(template.claim("ORDER", "second")).isTrue();
-                    return null;
-                }));
-        assertThat(withTenant("tenant-savepoint", () -> template.find("ORDER", "second")))
-                .isPresent();
+        transactionTemplate.execute(status -> {
+            assertThat(template.claim("ORDER", "first")).isTrue();
+            assertThat(template.claim("ORDER", "first")).isFalse();
+            assertThat(template.claim("ORDER", "second")).isTrue();
+            return null;
+        });
+        assertThat(template.find("ORDER", "second")).isPresent();
     }
 
     @Test
@@ -116,17 +103,13 @@ class GlobalUniqueTemplateIT {
     void rolledBackClaimCanBeRetried() {
         String uniqueKey = "rollback-retry";
 
-        assertThatThrownBy(() -> withTenant("tenant-tx", () -> {
-                    transactionTemplate.executeWithoutResult(status -> {
-                        assertThat(template.claim("ORDER", uniqueKey)).isTrue();
-                        throw new IllegalStateException("rollback");
-                    });
-                    return null;
+        assertThatThrownBy(() -> transactionTemplate.executeWithoutResult(status -> {
+                    assertThat(template.claim("ORDER", uniqueKey)).isTrue();
+                    throw new IllegalStateException("rollback");
                 }))
                 .isInstanceOf(IllegalStateException.class);
 
-        assertThat(withTenant("tenant-tx", () -> template.claim("ORDER", uniqueKey)))
-                .isTrue();
+        assertThat(template.claim("ORDER", uniqueKey)).isTrue();
     }
 
     @Test
@@ -164,10 +147,6 @@ class GlobalUniqueTemplateIT {
             throws InterruptedException {
         ready.countDown();
         start.await();
-        return withTenant("tenant-concurrent", () -> template.claim("ORDER", uniqueKey));
-    }
-
-    private static <T> T withTenant(String tenantId, Supplier<T> action) {
-        return TenantUtil.callWithTenant(tenantId, action::get);
+        return template.claim("ORDER", uniqueKey);
     }
 }

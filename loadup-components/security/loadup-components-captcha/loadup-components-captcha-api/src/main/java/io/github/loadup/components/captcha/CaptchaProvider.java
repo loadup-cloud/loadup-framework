@@ -40,11 +40,13 @@ public interface CaptchaProvider {
      *
      * @param captchaId id returned by {@link #generate(String)}
      * @param userInput binder-specific input: {@link String} answer / JSON track for tianai,
-     *     {@link Number} slider percentage, or the engine's own track object
+     *                  {@link Number} slider percentage, or the engine's own track object
      * @return {@code true} when verification succeeds
      */
     boolean verify(String captchaId, Object userInput);
 
-    /** Binder type, one of {@code tianai} / {@code nanocaptcha}. */
+    /**
+     * Binder type, one of {@code tianai} / {@code nanocaptcha}.
+     */
     String getBinderType();
 }

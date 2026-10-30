@@ -26,26 +26,28 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "loadup.modules.transfer")
 public class TransferTaskProperties {
     private int dispatchBatchSize = 20;
+    private long maxInputBytes = 20L * 1024 * 1024;
+    private long maxOutputBytes = 100L * 1024 * 1024;
 
     public int getDispatchBatchSize() {
         return dispatchBatchSize;
     }
 
     public void setDispatchBatchSize(int size) {
-        if (size < 1 || size > 100)
+        if (size < 1 || size > 100) {
             throw new CommonException(io.github.loadup.commons.enums.CommonResultCodeEnum.PARAM_ILLEGAL);
+        }
         this.dispatchBatchSize = size;
     }
-
-    private long maxInputBytes = 20L * 1024 * 1024;
-    private long maxOutputBytes = 100L * 1024 * 1024;
 
     public long getMaxInputBytes() {
         return maxInputBytes;
     }
 
     public void setMaxInputBytes(long maxInputBytes) {
-        if (maxInputBytes < 1) throw new CommonException(TransferResultCodeEnum.MAXINPUTBYTES_MUST_BE_POSITIVE);
+        if (maxInputBytes < 1) {
+            throw new CommonException(TransferResultCodeEnum.MAXINPUTBYTES_MUST_BE_POSITIVE);
+        }
         this.maxInputBytes = maxInputBytes;
     }
 
@@ -54,7 +56,9 @@ public class TransferTaskProperties {
     }
 
     public void setMaxOutputBytes(long maxOutputBytes) {
-        if (maxOutputBytes < 1) throw new CommonException(TransferResultCodeEnum.MAXOUTPUTBYTES_MUST_BE_POSITIVE);
+        if (maxOutputBytes < 1) {
+            throw new CommonException(TransferResultCodeEnum.MAXOUTPUTBYTES_MUST_BE_POSITIVE);
+        }
         this.maxOutputBytes = maxOutputBytes;
     }
 }

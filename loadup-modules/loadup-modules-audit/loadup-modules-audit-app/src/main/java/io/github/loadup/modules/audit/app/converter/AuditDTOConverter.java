@@ -26,9 +26,10 @@ import io.github.loadup.modules.audit.client.dto.AuditEventDTO;
 import io.github.loadup.modules.audit.domain.model.AuditEvent;
 import io.github.loadup.modules.audit.domain.model.AuditQuery;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
-/** Maps application results without exposing persistence or domain models. */
+/**
+ * Maps application results without exposing persistence or domain models.
+ */
 @Mapper(config = LoadUpMapStructConfig.class)
 public interface AuditDTOConverter {
     AuditEventDTO toDTO(AuditEvent value);
@@ -37,6 +38,5 @@ public interface AuditDTOConverter {
         return PageDTO.of(value.map(this::toDTO));
     }
 
-    @Mapping(target = "tenantId", source = "tenantId")
-    AuditQuery toDomain(io.github.loadup.modules.audit.client.query.AuditPageQuery value, String tenantId);
+    AuditQuery toDomain(io.github.loadup.modules.audit.client.query.AuditPageQuery value);
 }

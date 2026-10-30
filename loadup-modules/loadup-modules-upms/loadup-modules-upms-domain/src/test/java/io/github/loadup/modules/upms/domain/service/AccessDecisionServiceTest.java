@@ -46,6 +46,24 @@ class AccessDecisionServiceTest {
     private final DepartmentGateway departments = mock(DepartmentGateway.class);
     private final AccessDecisionService service = new AccessDecisionService(users, roles, permissions, departments);
 
+    private static Role role(String id, String parentId, DataScope scope) {
+        Role role = new Role();
+        role.setId(id);
+        role.setRoleCode(id);
+        role.setParentId(parentId);
+        role.setDataScope(scope.code());
+        role.setStatus((short) 1);
+        return role;
+    }
+
+    private static Permission permission(String code) {
+        Permission permission = new Permission();
+        permission.setId(code);
+        permission.setPermissionCode(code);
+        permission.setStatus((short) 1);
+        return permission;
+    }
+
     @BeforeEach
     void subject() {
         User user = new User();
@@ -102,23 +120,5 @@ class AccessDecisionServiceTest {
                 .allowed());
         assertFalse(service.decide("user-1", "document:read", new ResourceAttributes(null, "other"))
                 .allowed());
-    }
-
-    private static Role role(String id, String parentId, DataScope scope) {
-        Role role = new Role();
-        role.setId(id);
-        role.setRoleCode(id);
-        role.setParentId(parentId);
-        role.setDataScope(scope.code());
-        role.setStatus((short) 1);
-        return role;
-    }
-
-    private static Permission permission(String code) {
-        Permission permission = new Permission();
-        permission.setId(code);
-        permission.setPermissionCode(code);
-        permission.setStatus((short) 1);
-        return permission;
     }
 }

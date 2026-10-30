@@ -19,8 +19,11 @@
  */
 package io.github.loadup.components.scheduler.powerjob;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.verify;
 
 import io.github.loadup.commons.context.ContextHolder;
 import io.github.loadup.commons.context.ContextKey;
@@ -43,6 +46,42 @@ import tech.powerjob.worker.core.processor.TaskContext;
 import tech.powerjob.worker.core.processor.sdk.BasicProcessor;
 
 class PowerJobIntegrationTest {
+    private final ApplicationContextRunner runner = new ApplicationContextRunner()
+            .withConfiguration(AutoConfigurations.of(LoadUpPowerJobAutoConfiguration.class))
+            .withPropertyValues("powerjob.worker.enabled=false");
+
+    private static TaskContext task() {
+        var task = new TaskContext();
+        task.setJobId(12L);
+        task.setInstanceId(34L);
+        task.setTaskId("task-1");
+        task.setCurrentRetryTimes(2);
+        return task;
+    }
+
+    private static BasicProcessor proxy(BasicProcessor processor, ObservationRegistry registry) {
+        return proxy(processor, registry, "lambda");
+    }
+
+    private static BasicProcessor proxy(BasicProcessor processor, ObservationRegistry registry, String implementation) {
+        BasicProcessor target =
+                switch (implementation) {
+                    case "anonymous" ->
+                        new BasicProcessor() {
+                            @Override
+                            public ProcessResult process(TaskContext context) throws Exception {
+                                return processor.process(context);
+                            }
+                        };
+                    case "jdk", "cglib" -> new DelegatingProcessor(processor);
+                    default -> processor;
+                };
+        var factory = new AspectJProxyFactory(target);
+        factory.setProxyTargetClass("cglib".equals(implementation));
+        factory.addAspect(new PowerJobProcessorAspect(registry));
+        return factory.getProxy();
+    }
+
     @Test
     void rejectsBlankWorkerFallbackAndBlankClientPassword() {
         runner.withPropertyValues(
@@ -84,10 +123,6 @@ class PowerJobIntegrationTest {
             }
         }
     }
-
-    private final ApplicationContextRunner runner = new ApplicationContextRunner()
-            .withConfiguration(AutoConfigurations.of(LoadUpPowerJobAutoConfiguration.class))
-            .withPropertyValues("powerjob.worker.enabled=false");
 
     @Test
     void clientIsOptInAndCustomClientIsClosedBySpring() throws Exception {
@@ -202,38 +237,6 @@ class PowerJobIntegrationTest {
         assertThat(recorder.stopped)
                 .singleElement()
                 .satisfies(context -> assertThat(context.getError()).isNotSameAs(failure));
-    }
-
-    private static TaskContext task() {
-        var task = new TaskContext();
-        task.setJobId(12L);
-        task.setInstanceId(34L);
-        task.setTaskId("task-1");
-        task.setCurrentRetryTimes(2);
-        return task;
-    }
-
-    private static BasicProcessor proxy(BasicProcessor processor, ObservationRegistry registry) {
-        return proxy(processor, registry, "lambda");
-    }
-
-    private static BasicProcessor proxy(BasicProcessor processor, ObservationRegistry registry, String implementation) {
-        BasicProcessor target =
-                switch (implementation) {
-                    case "anonymous" ->
-                        new BasicProcessor() {
-                            @Override
-                            public ProcessResult process(TaskContext context) throws Exception {
-                                return processor.process(context);
-                            }
-                        };
-                    case "jdk", "cglib" -> new DelegatingProcessor(processor);
-                    default -> processor;
-                };
-        var factory = new AspectJProxyFactory(target);
-        factory.setProxyTargetClass("cglib".equals(implementation));
-        factory.addAspect(new PowerJobProcessorAspect(registry));
-        return factory.getProxy();
     }
 
     public static class DelegatingProcessor implements BasicProcessor {

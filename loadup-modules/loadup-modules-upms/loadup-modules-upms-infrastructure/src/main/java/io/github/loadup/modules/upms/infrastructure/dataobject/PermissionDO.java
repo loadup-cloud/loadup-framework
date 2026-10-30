@@ -19,8 +19,8 @@
  */
 package io.github.loadup.modules.upms.infrastructure.dataobject;
 
+import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
-import org.springframework.data.relational.core.mapping.Table;
 
 /**
  * Permission Data Object
@@ -92,92 +92,92 @@ public class PermissionDO extends BaseDO {
         return this.parentId;
     }
 
-    public String getPermissionName() {
-        return this.permissionName;
-    }
-
-    public String getPermissionCode() {
-        return this.permissionCode;
-    }
-
-    public Short getPermissionType() {
-        return this.permissionType;
-    }
-
-    public String getResourcePath() {
-        return this.resourcePath;
-    }
-
-    public String getHttpMethod() {
-        return this.httpMethod;
-    }
-
-    public String getIcon() {
-        return this.icon;
-    }
-
-    public String getComponentPath() {
-        return this.componentPath;
-    }
-
-    public Integer getSortOrder() {
-        return this.sortOrder;
-    }
-
-    public Boolean getVisible() {
-        return this.visible;
-    }
-
-    public Short getStatus() {
-        return this.status;
-    }
-
-    public String getRemark() {
-        return this.remark;
-    }
-
     public void setParentId(String parentId) {
         this.parentId = parentId;
+    }
+
+    public String getPermissionName() {
+        return this.permissionName;
     }
 
     public void setPermissionName(String permissionName) {
         this.permissionName = permissionName;
     }
 
+    public String getPermissionCode() {
+        return this.permissionCode;
+    }
+
     public void setPermissionCode(String permissionCode) {
         this.permissionCode = permissionCode;
+    }
+
+    public Short getPermissionType() {
+        return this.permissionType;
     }
 
     public void setPermissionType(Short permissionType) {
         this.permissionType = permissionType;
     }
 
+    public String getResourcePath() {
+        return this.resourcePath;
+    }
+
     public void setResourcePath(String resourcePath) {
         this.resourcePath = resourcePath;
+    }
+
+    public String getHttpMethod() {
+        return this.httpMethod;
     }
 
     public void setHttpMethod(String httpMethod) {
         this.httpMethod = httpMethod;
     }
 
+    public String getIcon() {
+        return this.icon;
+    }
+
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    public String getComponentPath() {
+        return this.componentPath;
     }
 
     public void setComponentPath(String componentPath) {
         this.componentPath = componentPath;
     }
 
+    public Integer getSortOrder() {
+        return this.sortOrder;
+    }
+
     public void setSortOrder(Integer sortOrder) {
         this.sortOrder = sortOrder;
+    }
+
+    public Boolean getVisible() {
+        return this.visible;
     }
 
     public void setVisible(Boolean visible) {
         this.visible = visible;
     }
 
+    public Short getStatus() {
+        return this.status;
+    }
+
     public void setStatus(Short status) {
         this.status = status;
+    }
+
+    public String getRemark() {
+        return this.remark;
     }
 
     public void setRemark(String remark) {

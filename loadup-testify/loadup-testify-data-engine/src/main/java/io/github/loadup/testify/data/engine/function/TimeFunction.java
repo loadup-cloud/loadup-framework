@@ -28,13 +28,13 @@ import java.util.regex.Pattern;
  * Time functions accessible via ${time.XXX()} Supports offset calculations like ${time.now('+1d')}
  */
 public class TimeFunction implements TestifyFunction {
+    // Pattern to extract time offset like '+1d' or '-2h'
+    private static final Pattern TIME_OFFSET_PATTERN = Pattern.compile("([+-])(\\d+)([hdms])");
+
     @Override
     public String getPrefix() {
         return "time";
     }
-
-    // Pattern to extract time offset like '+1d' or '-2h'
-    private static final Pattern TIME_OFFSET_PATTERN = Pattern.compile("([+-])(\\d+)([hdms])");
 
     /**
      * Get current timestamp as ISO-8601 string.

@@ -110,6 +110,13 @@ public final class SharedPostgreSQLContainer {
      */
     private static Integer port;
 
+    /**
+     * Private constructor to prevent instantiation
+     */
+    private SharedPostgreSQLContainer() {
+        throw new UnsupportedOperationException("Utility class cannot be instantiated");
+    }
+
     public static void startContainer(ContainerConfig config) {
         if (STARTED.get()) {
             return;
@@ -259,13 +266,6 @@ public final class SharedPostgreSQLContainer {
                 "spring.datasource.username", getUsername(),
                 "spring.datasource.password", getPassword(),
                 "spring.datasource.driver-class-name", getDriverClassName());
-    }
-
-    /**
-     * Private constructor to prevent instantiation
-     */
-    private SharedPostgreSQLContainer() {
-        throw new UnsupportedOperationException("Utility class cannot be instantiated");
     }
 
     public static boolean isStarted() {

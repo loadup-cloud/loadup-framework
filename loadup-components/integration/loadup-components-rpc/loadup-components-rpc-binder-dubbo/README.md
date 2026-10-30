@@ -31,6 +31,7 @@ POM 使用：
 实现生成的 `ImplBase`，只重写业务方法，并标注 `@DubboService`：
 
 ```java
+
 @DubboService(interfaceClass = CustomerRpc.class)
 public class CustomerRpcService extends DubboCustomerRpcTriple.CustomerRpcImplBase {
     @Override
@@ -71,6 +72,7 @@ Protobuf 消息命中 Dubbo 的 IDL 分支（`needWrapper=false`），因此不�
 在 `*-infrastructure` 引用生成的存根接口；字段类型必须是生成的 `<Service>Rpc`：
 
 ```java
+
 @DubboReference(url = "tri://customer-headless:50051")
 private CustomerRpc customerRpc;
 

@@ -21,8 +21,21 @@ package io.github.loadup.modules.contract.app.converter;
 
 import io.github.loadup.commons.mapping.LoadUpMapStructConfig;
 import io.github.loadup.modules.contract.app.support.ContractMappingSupport;
-import io.github.loadup.modules.contract.client.dto.*;
-import io.github.loadup.modules.contract.domain.model.*;
+import io.github.loadup.modules.contract.client.dto.CatalogDefinitions;
+import io.github.loadup.modules.contract.client.dto.CatalogVersionDTO;
+import io.github.loadup.modules.contract.client.dto.ConfigurationDTO;
+import io.github.loadup.modules.contract.client.dto.ContractDecisionDTO;
+import io.github.loadup.modules.contract.client.dto.ContractItemDTO;
+import io.github.loadup.modules.contract.client.dto.MerchantContractDTO;
+import io.github.loadup.modules.contract.client.dto.ValueDTO;
+import io.github.loadup.modules.contract.domain.model.CatalogEntry;
+import io.github.loadup.modules.contract.domain.model.ContractDecision;
+import io.github.loadup.modules.contract.domain.model.ContractRecord;
+import io.github.loadup.modules.contract.domain.model.MerchantContractRevision;
+import io.github.loadup.modules.contract.domain.model.ParameterDefinition;
+import io.github.loadup.modules.contract.domain.model.ResolvedConfiguration;
+import io.github.loadup.modules.contract.domain.model.ResolvedContractItem;
+import io.github.loadup.modules.contract.domain.model.TypedValue;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

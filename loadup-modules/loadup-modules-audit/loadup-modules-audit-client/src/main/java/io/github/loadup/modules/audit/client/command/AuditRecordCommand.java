@@ -22,11 +22,10 @@ package io.github.loadup.modules.audit.client.command;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-/** Safe, metadata-only audit input. Never put credentials or request bodies in this record. */
+/**
+ * Safe, metadata-only audit input. Never put credentials or request bodies in this record.
+ */
 public record AuditRecordCommand(
-        @Schema(description = "Tenant identifier resolved from trusted context")
-        String tenantId,
-
         @Schema(description = "Actor identifier") String actorId,
         @Schema(description = "Action") String action,
         @Schema(description = "HTTP request method") String method,

@@ -22,7 +22,6 @@ package io.github.loadup.components.outbox;
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.log.LogUtil;
-import io.github.loadup.commons.util.TenantUtil;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;
@@ -31,7 +30,9 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.MDC;
 
-/** Runs handlers outside claim transactions and restores all per-thread context. */
+/**
+ * Runs handlers outside claim transactions and restores all per-thread context.
+ */
 public final class OutboxDispatcher {
 
     private final JdbcOutboxRepository repository;
@@ -61,8 +62,9 @@ public final class OutboxDispatcher {
         Map<String, OutboxHandler> registry = new HashMap<>();
         for (OutboxHandler handler : handlers) {
             String type = OutboxMessage.required(handler.eventType(), "eventType", 128);
-            if (registry.putIfAbsent(type, handler) != null)
+            if (registry.putIfAbsent(type, handler) != null) {
                 throw new IllegalArgumentException("Duplicate outbox event type: " + type);
+            }
         }
         this.handlers = Map.copyOf(registry);
     }
@@ -71,7 +73,9 @@ public final class OutboxDispatcher {
         int count = 0;
         for (int i = 0; i < properties.getBatchSize() && !Thread.currentThread().isInterrupted(); i++) {
             var next = repository.claim();
-            if (next.isEmpty()) break;
+            if (next.isEmpty()) {
+                break;
+            }
             var claim = next.orElseThrow();
             Map<String, String> previous = MDC.getCopyOfContextMap();
             long started = System.nanoTime();
@@ -79,19 +83,20 @@ public final class OutboxDispatcher {
             Observation observation = Observation.createNotStarted("loadup.outbox.handle", observations);
             try {
                 MDC.clear();
-                if (claim.event().traceId() != null)
+                if (claim.event().traceId() != null) {
                     MDC.put("originTraceId", claim.event().traceId());
+                }
                 observation.start();
                 try (Observation.Scope unusedScope = observation.openScope()) {
                     OutboxHandler handler = handlers.get(claim.event().message().type());
-                    if (handler == null) throw new IllegalStateException("No handler registered");
-                    TenantUtil.runWithTenant(claim.event().message().tenantId(), () -> {
-                        try {
-                            handler.handle(claim.event());
-                        } catch (Exception exception) {
-                            throw new HandlerFailure(exception);
-                        }
-                    });
+                    if (handler == null) {
+                        throw new IllegalStateException("No handler registered");
+                    }
+                    try {
+                        handler.handle(claim.event());
+                    } catch (Exception exception) {
+                        throw new HandlerFailure(exception);
+                    }
                     outcome = repository.complete(claim) ? "success" : "lease_lost";
                 }
             } catch (Exception exception) {
@@ -105,17 +110,22 @@ public final class OutboxDispatcher {
                         claim.event().id(),
                         claim.attempt(),
                         failure.getClass().getSimpleName());
-                if (failure instanceof InterruptedException)
+                if (failure instanceof InterruptedException) {
                     Thread.currentThread().interrupt();
+                }
             } finally {
                 try {
                     observation.stop();
-                    if (metrics != null)
+                    if (metrics != null) {
                         metrics.timer("loadup.outbox.delivery", "outcome", outcome)
                                 .record(System.nanoTime() - started, java.util.concurrent.TimeUnit.NANOSECONDS);
+                    }
                 } finally {
-                    if (previous == null) MDC.clear();
-                    else MDC.setContextMap(previous);
+                    if (previous == null) {
+                        MDC.clear();
+                    } else {
+                        MDC.setContextMap(previous);
+                    }
                 }
             }
             count++;

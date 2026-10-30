@@ -2,7 +2,8 @@
 
 ## 边界
 
-`FileResourceService` 管理业务文件 ID、租户、所有者、元数据、引用和删除状态。它通过 `DfsService` 存取字节，不重新实现本地文件、数据库或对象存储 binder。`FileResourceGateway` 隔离 PostgreSQL；可选 Web 模块负责身份与 HTTP 流式传输。模块不依赖 UPMS 或审计中心。
+`FileResourceService` 管理业务文件 ID、租户、所有者、元数据、引用和删除状态。它通过 `DfsService` 存取字节，不重新实现本地文件、数据库或对象存储
+binder。`FileResourceGateway` 隔离 PostgreSQL；可选 Web 模块负责身份与 HTTP 流式传输。模块不依赖 UPMS 或审计中心。
 
 ```text
 业务/API → FileResourceService ┬→ FileResourceGateway → PostgreSQL
@@ -11,13 +12,18 @@
 
 ## 数据与一致性
 
-`file_resource` 记录业务 ID 与 DFS storage ID、租户/所有者、文件名、大小、类型、provider、状态和时间戳；`file_resource_reference` 记录业务引用，唯一键避免同一关联重复。引用增加与删除申请都先锁定文件行，再检查状态或引用计数，从而阻止“删除检查后又加引用”的竞态。
+`file_resource` 记录业务 ID 与 DFS storage ID、租户/所有者、文件名、大小、类型、provider、状态和时间戳；
+`file_resource_reference` 记录业务引用，唯一键避免同一关联重复。引用增加与删除申请都先锁定文件行，再检查状态或引用计数，从而阻止“删除检查后又加引用”的竞态。
 
-上传先完成 DFS 写入，再写 PostgreSQL；PostgreSQL 失败时尝试补偿删除 DFS 对象。如果补偿删除也失败，原异常附带清理异常，需按 DFS 运维手段清理孤儿对象。删除先在数据库事务内由 `ACTIVE` 变为 `PENDING_DELETE`，提交后清理 DFS，再置 `DELETED`。清理失败保留待处理状态，`cleanupPending` 可重试。若 DFS 对象已不存在，binder 的幂等删除仍可完成状态收敛。跨 PostgreSQL 与 DFS 不承诺原子事务。
+上传先完成 DFS 写入，再写 PostgreSQL；PostgreSQL 失败时尝试补偿删除 DFS 对象。如果补偿删除也失败，原异常附带清理异常，需按
+DFS 运维手段清理孤儿对象。删除先在数据库事务内由 `ACTIVE` 变为 `PENDING_DELETE`，提交后清理 DFS，再置 `DELETED`
+。清理失败保留待处理状态，`cleanupPending` 可重试。若 DFS 对象已不存在，binder 的幂等删除仍可完成状态收敛。跨 PostgreSQL 与
+DFS 不承诺原子事务。
 
 ## 安全与部署
 
-所有元数据查询按租户过滤；Web 入口从受信认证主体和租户上下文取得 owner/tenant，不接受请求体覆盖。只有所有者和超级管理员可读取或删除文件。Web 下载采用附件模式、`nosniff` 和流式传输；不会生成公开直链。业务引用不自动授予文件读取权限，业务域需要单独决定谁能查看附件。
+所有元数据查询按租户过滤；Web 入口从受信认证主体和租户上下文取得 owner/tenant，不接受请求体覆盖。只有所有者和超级管理员可读取或删除文件。Web
+下载采用附件模式、`nosniff` 和流式传输；不会生成公开直链。业务引用不自动授予文件读取权限，业务域需要单独决定谁能查看附件。
 
 HTTP 上传受 Spring Multipart 大小限制。对高风险文件类型的病毒扫描、内容审核、下载水印、保留期限和跨租户共享应在消费应用的业务规则中实现；首版不开放公开访问。
 
@@ -31,43 +37,68 @@ web → app → domain
      client  infrastructure → PostgreSQL / Flyway
 ```
 
-- client 定义不可变请求和 DTO，domain 保留领域模型与 `FileResourceGateway` 端口；应用边界由 `FileDTOConverter` 以 MapStruct Spring 模式映射。
-- `FilePersistenceAutoConfiguration` 归 infrastructure，按 DataSource 和 `loadup.modules.file.enabled` 提供默认 Gateway，消费者可覆盖接口 Bean。
-- app 在持久化装配之后按 Gateway 及所需组件条件创建 `FileResourceService`。生成的 converter 通过显式 `@Import` 注册，避免 REGISTER_BEAN 阶段条件与组件扫描冲突。
+- client 定义不可变请求和 DTO，domain 保留领域模型与 `FileResourceGateway` 端口；应用边界由 `FileDTOConverter` 以
+  MapStruct Spring 模式映射。
+- `FilePersistenceAutoConfiguration` 归 infrastructure，按 DataSource 和 `loadup.modules.file.enabled` 提供默认
+  Gateway，消费者可覆盖接口 Bean。
+- app 在持久化装配之后按 Gateway 及所需组件条件创建 `FileResourceService`。生成的 converter 通过显式 `@Import` 注册，避免
+  REGISTER_BEAN 阶段条件与组件扫描冲突。
 - web 只负责路由、可信身份/租户、方法授权和 HTTP 投影；请求契约归 client。全局响应、Jackson 与 `/api` 前缀由 WebMVC 组件处理。
-- 仓储使用 Spring JDBC，保留租户、锁与状态条件更新；无外键场景下，引用创建和删除请求在同一事务锁定并校验父记录。初始 Flyway 脚本针对 PostgreSQL 新库。
+- 仓储使用 Spring JDBC，保留租户、锁与状态条件更新；无外键场景下，引用创建和删除请求在同一事务锁定并校验父记录。初始 Flyway
+  脚本针对 PostgreSQL 新库。
 - 所有子模块 parent 指向根 `loadup-parent`，所有内部依赖坐标由 BOM 管理。
 
-配置契约迁移到 `loadup.modules.file.*`，不保留旧前缀别名。自动装配、覆盖默认 Gateway 和关闭功能的回归源码见 `FileAutoConfigurationTest`，本次未执行；真实数据库与 HTTP 验收仍需由消费工程完成。
+配置契约迁移到 `loadup.modules.file.*`，不保留旧前缀别名。自动装配、覆盖默认 Gateway 和关闭功能的回归源码见
+`FileAutoConfigurationTest`，本次未执行；真实数据库与 HTTP 验收仍需由消费工程完成。
 
 ## 公共边界与映射约束
 
-Facade 是 client 的业务契约，应用服务直接实现；Controller 和跨模块消费者依赖 Facade。domain 保留业务状态、规则与 Gateway，表示层字段转换交给 Spring 管理的 MapStruct。共享配置固定 Spring 模式、构造器注入和目标字段严格校验。
+Facade 是 client 的业务契约，应用服务直接实现；Controller 和跨模块消费者依赖 Facade。domain 保留业务状态、规则与
+Gateway，表示层字段转换交给 Spring 管理的 MapStruct。共享配置固定 Spring 模式、构造器注入和目标字段严格校验。
 
-仓储依赖 database 的固定 UUID、审计时间、逻辑删除规则，由 database processor 自动生成带 @Mapper 的 XxxDOMapper（继承 BaseMapper），并通过模块生成的 Tables 表达查询。字典删除与文件引用解绑明确使用物理删除；文件状态、通知归档和任务生命周期是业务状态，独立于 BaseDO 的 deleted。
+仓储依赖 database 的固定 UUID、审计时间、逻辑删除规则，由 database processor 自动生成带 @Mapper 的 XxxDOMapper（继承
+BaseMapper），并通过模块生成的 Tables 表达查询。字典删除与文件引用解绑明确使用物理删除；文件状态、通知归档和任务生命周期是业务状态，独立于
+BaseDO 的 deleted。
 
 所有数据对象的诊断文本使用 commons-json；诊断序列化与真实 API JSON 分离，避免因 HTTP 脱敏设置改变日志中的凭证披露规则。
 
 ## Client 入参与分页边界
 
-client.command 表达业务写动作，client.query 表达只读条件；Controller 和 Facade 共用入参契约。模块专用 PageDTO 已移除，app 将领域分页对象映射为 commons-dto 的 PageDTO；Web 输出 PageResponse，避免分页结构随模块变化。领域 Gateway 的分页返回值不携带 HTTP envelope。
+client.command 表达业务写动作，client.query 表达只读条件；Controller 和 Facade 共用入参契约。模块专用 PageDTO 已移除，app
+将领域分页对象映射为 commons-dto 的 PageDTO；Web 输出 PageResponse，避免分页结构随模块变化。领域 Gateway 的分页返回值不携带
+HTTP envelope。
 
 ## 通用输入与时间约定
 
-分页缺省 page=1、size=20，size 上限 100；非法输入使用稳定业务错误码。业务时间使用具名 `fileClock` 并使用 Clock 所绑定的时区（默认系统本地时区）；持久化审计字段由 database 填充。可在测试或消费工程提供同名 Clock Bean。
+分页缺省 page=1、size=20，size 上限 100；非法输入使用稳定业务错误码。业务时间与持久化使用 Spring 共享的
+Clock，默认采用系统本地时区；测试或消费工程可提供 Clock Bean 覆盖默认值。
 
 ## 错误码契约
 
-公开错误枚举位于 `io.github.loadup.modules.file.client.error.FileResultCodeEnum`，错误码以 `FILE_` 开头。服务/领域/仓储使用 `CommonException(enum)`；系统原因可作为 cause 保留，响应文案仅来自枚举。WebMVC 统一返回 HTTP 200 的 result/data。枚举码按稳定公开契约维护，不用字符串消息覆盖。
+公开错误枚举位于 `io.github.loadup.modules.file.client.error.FileResultCodeEnum`，错误码以 `FILE_` 开头。服务/领域/仓储使用
+`CommonException(enum)`；系统原因可作为 cause 保留，响应文案仅来自枚举。WebMVC 统一返回 HTTP 200 的
+result/data。枚举码按稳定公开契约维护，不用字符串消息覆盖。
 
 ## Unified pagination contract
 
-Pure pagination inputs reuse `io.github.loadup.commons.dto.PageQuery`. HTTP fields remain `page` and `size`, with omitted/null values defaulting to 1 and 20; explicit invalid bounds are rejected and size is capped at 100. Business queries retain their filter fields and flat pagination fields but delegate policy to `PageQuery.normalized`, preserving their declared module error code. Mutable UPMS queries expose `pagination()` for validation at the service boundary. Sort whitelists remain business-specific.
+Pure pagination inputs reuse `io.github.loadup.commons.dto.PageQuery`. HTTP fields remain `page` and `size`, with
+omitted/null values defaulting to 1 and 20; explicit invalid bounds are rejected and size is capped at 100. Business
+queries retain their filter fields and flat pagination fields but delegate policy to `PageQuery.normalized`, preserving
+their declared module error code. Mutable UPMS queries expose `pagination()` for validation at the service boundary.
+Sort whitelists remain business-specific.
 
-Domain Gateway results use `io.github.loadup.commons.domain.PageResult<T>`, shared with UPMS. Seven duplicate business Page wrappers have been removed. Application mapping uses the injected Spring MapStruct item converter and `PageResult.map`; `PageDTO.of(result)` adapts the unchanged total/page/size metadata. Facades return PageDTO, and Controllers return PageResponse. No HTTP envelope enters a Gateway.
+Domain Gateway results use `io.github.loadup.commons.domain.PageResult<T>`, shared with UPMS. Seven duplicate business
+Page wrappers have been removed. Application mapping uses the injected Spring MapStruct item converter and
+`PageResult.map`; `PageDTO.of(result)` adapts the unchanged total/page/size metadata. Facades return PageDTO, and
+Controllers return PageResponse. No HTTP envelope enters a Gateway.
 
-The response remains `{result, data: [...], pageInfo: {totalCount, pageIndex, pageSize, ...}}`; data is the current-page array. SuccessResponse serves ordinary success data only; its duplicate pagination field and ofPage factories have been removed. Empty PageDTO defaults to an empty array and metadata 0/1/20. Existing consumer code referencing removed business Page wrappers, DictionaryTypePageQuery, AccountLoginPageQuery or SuccessResponse.ofPage must use the shared contracts. No URL or frontend payload-field migration is required.
+The response remains `{result, data: [...], pageInfo: {totalCount, pageIndex, pageSize, ...}}`; data is the current-page
+array. SuccessResponse serves ordinary success data only; its duplicate pagination field and ofPage factories have been
+removed. Empty PageDTO defaults to an empty array and metadata 0/1/20. Existing consumer code referencing removed
+business Page wrappers, DictionaryTypePageQuery, AccountLoginPageQuery or SuccessResponse.ofPage must use the shared
+contracts. No URL or frontend payload-field migration is required.
 
 ## 迁移顺序
 
-BaseDO 补字段脚本版本为 V20261010000101，排在 V20261002000003 建表之后。旧 12 位版本号会导致空库先 ALTER 未建表，现已修正。已执行旧版迁移的消费工程需核对 Flyway 历史后再升级，框架不自动重写迁移记录。
+BaseDO 补字段脚本版本为 V20261010000101，排在 V20261002000003 建表之后。旧 12 位版本号会导致空库先 ALTER
+未建表，现已修正。已执行旧版迁移的消费工程需核对 Flyway 历史后再升级，框架不自动重写迁移记录。

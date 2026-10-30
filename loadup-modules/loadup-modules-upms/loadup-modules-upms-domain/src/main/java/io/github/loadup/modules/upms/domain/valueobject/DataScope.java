@@ -35,13 +35,13 @@ public enum DataScope {
         this.code = code;
     }
 
-    public short code() {
-        return code;
-    }
-
     public static Optional<DataScope> fromCode(Short code) {
         return Arrays.stream(values())
                 .filter(scope -> code != null && scope.code == code)
                 .findFirst();
+    }
+
+    public short code() {
+        return code;
     }
 }

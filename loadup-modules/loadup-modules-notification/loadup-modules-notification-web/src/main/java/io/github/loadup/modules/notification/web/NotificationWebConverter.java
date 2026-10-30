@@ -24,7 +24,9 @@ import io.github.loadup.modules.notification.client.dto.InboxMessageDTO;
 import io.github.loadup.modules.notification.client.dto.NotificationViewDTO;
 import org.mapstruct.Mapper;
 
-/** Produces the public HTTP projection from the application contract. */
+/**
+ * Produces the public HTTP projection from the application contract.
+ */
 @Mapper(config = LoadUpMapStructConfig.class)
 public interface NotificationWebConverter {
     NotificationViewDTO toView(InboxMessageDTO value);

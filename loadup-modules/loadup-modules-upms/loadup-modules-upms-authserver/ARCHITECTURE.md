@@ -22,7 +22,8 @@ UPMS 与授权服务器之间的可选认证适配模块。
 
 主要入口文件：
 
-- [`UpmsAuthServerAutoConfiguration`](src/main/java/io/github/loadup/modules/upms/authserver/UpmsAuthServerAutoConfiguration.java)
+- [
+  `UpmsAuthServerAutoConfiguration`](src/main/java/io/github/loadup/modules/upms/authserver/UpmsAuthServerAutoConfiguration.java)
 - [`UpmsAuthenticationProvider`](src/main/java/io/github/loadup/modules/upms/authserver/UpmsAuthenticationProvider.java)
 - [`UpmsTokenController`](src/main/java/io/github/loadup/modules/upms/authserver/UpmsTokenController.java)
 
@@ -36,10 +37,13 @@ POST /api/auth/login → UPMS AuthenticationService → JwtEncoder → JSON Toke
 
 ## 装配规则
 
-- [`UpmsAuthServerAutoConfiguration`](src/main/java/io/github/loadup/modules/upms/authserver/UpmsAuthServerAutoConfiguration.java) 是自动配置入口。
-  - `@ConditionalOnMissingBean(UpmsAuthenticationProvider.class)`
-  - `@ConditionalOnProperty( prefix = "loadup.security.auth-server", name = "protocol-endpoints-enabled", havingValue = "true", matchIfMissing = true)`
-  - `@ConditionalOnBean(JwtEncoder.class)`
+- [
+  `UpmsAuthServerAutoConfiguration`](src/main/java/io/github/loadup/modules/upms/authserver/UpmsAuthServerAutoConfiguration.java)
+  是自动配置入口。
+    - `@ConditionalOnMissingBean(UpmsAuthenticationProvider.class)`
+    -
+    `@ConditionalOnProperty( prefix = "loadup.security.auth-server", name = "protocol-endpoints-enabled", havingValue = "true", matchIfMissing = true)`
+    - `@ConditionalOnBean(JwtEncoder.class)`
 
 ## 设计取舍
 

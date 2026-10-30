@@ -25,7 +25,9 @@ import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpMethod;
 
-/** Immutable configuration, replaced atomically rather than edited while requests run. */
+/**
+ * Immutable configuration, replaced atomically rather than edited while requests run.
+ */
 @ConfigurationProperties("loadup.http")
 public record HttpProperties(Map<String, Client> clients) {
     public HttpProperties {
@@ -68,8 +70,9 @@ public record HttpProperties(Map<String, Client> clients) {
                         "base-url must be an HTTP(S) URL without credentials, query or fragment");
             }
             for (Duration timeout : new Duration[] {connectTimeout, readTimeout, acquireTimeout}) {
-                if (timeout.toMillis() < 1 || timeout.toMillis() > 86400000)
+                if (timeout.toMillis() < 1 || timeout.toMillis() > 86400000) {
                     throw new IllegalArgumentException("Invalid HTTP timeout");
+                }
             }
             if (maxConnections < 1
                     || maxConnectionsPerRoute < 1

@@ -34,7 +34,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-/** Connects UPMS credential checks to JSON login and optional OAuth2 authorization. */
+/**
+ * Connects UPMS credential checks to JSON login and optional OAuth2 authorization.
+ */
 @AutoConfiguration(afterName = "io.github.loadup.components.authserver.sas.SasAuthServerAutoConfiguration")
 public class UpmsAuthServerAutoConfiguration {
 
@@ -69,7 +71,7 @@ public class UpmsAuthServerAutoConfiguration {
             UpmsAuthenticationProvider authenticationProvider,
             JwtEncoder jwtEncoder,
             LoadUpAuthServerProperties properties,
-            @org.springframework.beans.factory.annotation.Qualifier("upmsClock") java.time.Clock clock) {
+            java.time.Clock clock) {
         return new UpmsTokenController(authenticationProvider, jwtEncoder, properties, clock);
     }
 }

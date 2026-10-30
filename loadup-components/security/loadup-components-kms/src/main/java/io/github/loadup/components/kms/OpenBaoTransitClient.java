@@ -33,11 +33,14 @@ import org.springframework.web.client.RestClient;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
-/** Dedicated HTTP pools avoid modifying application HTTP clients or credential providers. */
+/**
+ * Dedicated HTTP pools avoid modifying application HTTP clients or credential providers.
+ */
 final class OpenBaoTransitClient implements AutoCloseable {
     private final HttpTemplate http;
     private final ObjectMapper mapper;
     private final int maxInputBytes;
+    private final String clientName;
 
     OpenBaoTransitClient(
             KmsProperties properties,
@@ -111,10 +114,29 @@ final class OpenBaoTransitClient implements AutoCloseable {
         clientName = management ? "kms-admin" : "kms";
     }
 
-    private final String clientName;
+    static String text(JsonNode node, String field) {
+        JsonNode value = node.path(field);
+        if (!value.isString() || value.asString().isEmpty()) {
+            throw new KmsException(KmsException.Code.INVALID_RESPONSE);
+        }
+        return value.asString();
+    }
+
+    static int version(String envelope) {
+        if (envelope == null || !envelope.matches("vault:v[1-9][0-9]*:[A-Za-z0-9+/=]+")) {
+            throw new KmsException(KmsException.Code.INVALID_RESPONSE);
+        }
+        try {
+            return Integer.parseInt(envelope.substring(7, envelope.indexOf(':', 7)));
+        } catch (NumberFormatException invalid) {
+            throw new KmsException(KmsException.Code.INVALID_RESPONSE);
+        }
+    }
 
     JsonNode call(String operation, String key, Object body, boolean requireData) {
-        if (!"wrapping".equals(operation)) KmsKeyRef.validateName(key);
+        if (!"wrapping".equals(operation)) {
+            KmsKeyRef.validateName(key);
+        }
         try {
             var response = http.exchange(
                     clientName, operation, new HttpCall(key == null ? Map.of() : Map.of("key", key), null, null, body));
@@ -129,14 +151,18 @@ final class OpenBaoTransitClient implements AutoCloseable {
                             default -> KmsException.Code.INVALID_REQUEST;
                         });
             }
-            if (!requireData) return null;
+            if (!requireData) {
+                return null;
+            }
             JsonNode data;
             try {
                 data = mapper.readTree(response.getBody()).path("data");
             } catch (RuntimeException invalid) {
                 throw new KmsException(KmsException.Code.INVALID_RESPONSE);
             }
-            if (!data.isObject()) throw new KmsException(KmsException.Code.INVALID_RESPONSE);
+            if (!data.isObject()) {
+                throw new KmsException(KmsException.Code.INVALID_RESPONSE);
+            }
             return data;
         } catch (HttpCallException failure) {
             throw new KmsException(
@@ -150,29 +176,14 @@ final class OpenBaoTransitClient implements AutoCloseable {
     }
 
     void validateInput(byte[] input) {
-        if (input == null || input.length > maxInputBytes)
+        if (input == null || input.length > maxInputBytes) {
             throw new IllegalArgumentException("KMS input exceeds configured limit or is null");
+        }
     }
 
     void validateEncoded(String input) {
-        if (input == null || input.length() > maxInputBytes * 2 + 4096)
+        if (input == null || input.length() > maxInputBytes * 2 + 4096) {
             throw new IllegalArgumentException("Invalid encoded KMS input");
-    }
-
-    static String text(JsonNode node, String field) {
-        JsonNode value = node.path(field);
-        if (!value.isString() || value.asString().isEmpty()) throw new KmsException(KmsException.Code.INVALID_RESPONSE);
-        return value.asString();
-    }
-
-    static int version(String envelope) {
-        if (envelope == null || !envelope.matches("vault:v[1-9][0-9]*:[A-Za-z0-9+/=]+")) {
-            throw new KmsException(KmsException.Code.INVALID_RESPONSE);
-        }
-        try {
-            return Integer.parseInt(envelope.substring(7, envelope.indexOf(':', 7)));
-        } catch (NumberFormatException invalid) {
-            throw new KmsException(KmsException.Code.INVALID_RESPONSE);
         }
     }
 

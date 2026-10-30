@@ -25,7 +25,9 @@ import io.github.loadup.components.testcontainers.annotation.ContainerType;
 import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
 import org.springframework.test.context.TestPropertySource;
 
-/** Spring Cache facade on JetCache multi-level layout (local Caffeine + remote Redis). */
+/**
+ * Spring Cache facade on JetCache multi-level layout (local Caffeine + remote Redis).
+ */
 @EnableTestContainers(ContainerType.REDIS)
 @TestPropertySource(
         properties = {

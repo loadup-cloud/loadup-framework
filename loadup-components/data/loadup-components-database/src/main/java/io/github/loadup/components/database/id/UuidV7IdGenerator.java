@@ -22,7 +22,9 @@ package io.github.loadup.components.database.id;
 import java.security.SecureRandom;
 import java.util.UUID;
 
-/** Generates RFC 9562 version 7 UUID identifiers. */
+/**
+ * Generates RFC 9562 version 7 UUID identifiers.
+ */
 public final class UuidV7IdGenerator implements IdGenerator {
     private static final SecureRandom RANDOM = new SecureRandom();
 

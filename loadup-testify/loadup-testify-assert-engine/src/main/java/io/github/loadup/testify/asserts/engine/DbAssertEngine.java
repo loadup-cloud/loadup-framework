@@ -47,6 +47,11 @@ public class DbAssertEngine implements TestifyAssertEngine {
 
     private String columnNamingStrategy = "caseInsensitive";
 
+    public DbAssertEngine(JdbcTemplate jdbcTemplate, VariableEngine variableEngine) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.variableEngine = variableEngine;
+    }
+
     @Override
     public void compare(JsonNode expectNode, Object actualEx, Map<String, Object> context) {
         if (expectNode == null) {
@@ -266,10 +271,5 @@ public class DbAssertEngine implements TestifyAssertEngine {
             throw new IllegalArgumentException("Invalid SQL identifier: " + value);
         }
         return value;
-    }
-
-    public DbAssertEngine(JdbcTemplate jdbcTemplate, VariableEngine variableEngine) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.variableEngine = variableEngine;
     }
 }

@@ -51,6 +51,24 @@ public class HuaweiSmsProvider implements NotificationChannelProvider {
         this.endpoint = endpoint;
     }
 
+    private static String configValue(Map<String, Object> config, String key, String defaultValue) {
+        if (!config.containsKey(key)) {
+            return defaultValue;
+        }
+        return config.get(key).toString();
+    }
+
+    private static boolean isPhoneNumber(String receiver) {
+        return receiver.matches("^\\+?[0-9]{5,20}$");
+    }
+
+    private static String maskPhone(String phone) {
+        if (phone.length() < 7) {
+            return "***";
+        }
+        return phone.substring(0, 3) + "****" + phone.substring(phone.length() - 4);
+    }
+
     @Override
     public String getChannelType() {
         return "SMS";
@@ -102,11 +120,11 @@ public class HuaweiSmsProvider implements NotificationChannelProvider {
      *
      * <p>Placeholder: replace with the Huawei Cloud SMS SDK call.
      *
-     * @param receiver the phone number
+     * @param receiver   the phone number
      * @param templateId the vendor template id
-     * @param signature the signature
-     * @param sender the sender id
-     * @param content the rendered content
+     * @param signature  the signature
+     * @param sender     the sender id
+     * @param content    the rendered content
      * @throws Exception when the send fails
      */
     protected void sendMessage(String receiver, String templateId, String signature, String sender, String content)
@@ -128,23 +146,5 @@ public class HuaweiSmsProvider implements NotificationChannelProvider {
     @Override
     public boolean isAvailable() {
         return appKey != null && !appKey.isBlank() && appSecret != null && !appSecret.isBlank();
-    }
-
-    private static String configValue(Map<String, Object> config, String key, String defaultValue) {
-        if (!config.containsKey(key)) {
-            return defaultValue;
-        }
-        return config.get(key).toString();
-    }
-
-    private static boolean isPhoneNumber(String receiver) {
-        return receiver.matches("^\\+?[0-9]{5,20}$");
-    }
-
-    private static String maskPhone(String phone) {
-        if (phone.length() < 7) {
-            return "***";
-        }
-        return phone.substring(0, 3) + "****" + phone.substring(phone.length() - 4);
     }
 }

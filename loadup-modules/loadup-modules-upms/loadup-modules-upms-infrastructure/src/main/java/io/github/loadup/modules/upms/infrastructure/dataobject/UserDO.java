@@ -19,10 +19,10 @@
  */
 package io.github.loadup.modules.upms.infrastructure.dataobject;
 
+import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import org.springframework.data.relational.core.mapping.Table;
 
 /**
  * User Data Object - Database mapping entity
@@ -131,172 +131,172 @@ public class UserDO extends BaseDO {
         return this.username;
     }
 
-    public String getPassword() {
-        return this.password;
-    }
-
-    public String getNickname() {
-        return this.nickname;
-    }
-
-    public String getRealName() {
-        return this.realName;
-    }
-
-    public String getDeptId() {
-        return this.deptId;
-    }
-
-    public String getEmail() {
-        return this.email;
-    }
-
-    public Boolean getEmailVerified() {
-        return this.emailVerified;
-    }
-
-    public String getMobile() {
-        return this.mobile;
-    }
-
-    public Boolean getMobileVerified() {
-        return this.mobileVerified;
-    }
-
-    public String getAvatar() {
-        return this.avatar;
-    }
-
-    public Short getGender() {
-        return this.gender;
-    }
-
-    public LocalDate getBirthday() {
-        return this.birthday;
-    }
-
-    public Short getStatus() {
-        return this.status;
-    }
-
-    public Boolean getAccountNonExpired() {
-        return this.accountNonExpired;
-    }
-
-    public Boolean getAccountNonLocked() {
-        return this.accountNonLocked;
-    }
-
-    public Boolean getCredentialsNonExpired() {
-        return this.credentialsNonExpired;
-    }
-
-    public LocalDateTime getLastLoginTime() {
-        return this.lastLoginTime;
-    }
-
-    public String getLastLoginIp() {
-        return this.lastLoginIp;
-    }
-
-    public Integer getLoginFailCount() {
-        return this.loginFailCount;
-    }
-
-    public LocalDateTime getLockedTime() {
-        return this.lockedTime;
-    }
-
-    public LocalDateTime getPasswordUpdateTime() {
-        return this.passwordUpdateTime;
-    }
-
-    public String getRemark() {
-        return this.remark;
-    }
-
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getPassword() {
+        return this.password;
     }
 
     public void setPassword(String password) {
         this.password = password;
     }
 
+    public String getNickname() {
+        return this.nickname;
+    }
+
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public String getRealName() {
+        return this.realName;
     }
 
     public void setRealName(String realName) {
         this.realName = realName;
     }
 
+    public String getDeptId() {
+        return this.deptId;
+    }
+
     public void setDeptId(String deptId) {
         this.deptId = deptId;
+    }
+
+    public String getEmail() {
+        return this.email;
     }
 
     public void setEmail(String email) {
         this.email = email;
     }
 
+    public Boolean getEmailVerified() {
+        return this.emailVerified;
+    }
+
     public void setEmailVerified(Boolean emailVerified) {
         this.emailVerified = emailVerified;
+    }
+
+    public String getMobile() {
+        return this.mobile;
     }
 
     public void setMobile(String mobile) {
         this.mobile = mobile;
     }
 
+    public Boolean getMobileVerified() {
+        return this.mobileVerified;
+    }
+
     public void setMobileVerified(Boolean mobileVerified) {
         this.mobileVerified = mobileVerified;
+    }
+
+    public String getAvatar() {
+        return this.avatar;
     }
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
     }
 
+    public Short getGender() {
+        return this.gender;
+    }
+
     public void setGender(Short gender) {
         this.gender = gender;
+    }
+
+    public LocalDate getBirthday() {
+        return this.birthday;
     }
 
     public void setBirthday(LocalDate birthday) {
         this.birthday = birthday;
     }
 
+    public Short getStatus() {
+        return this.status;
+    }
+
     public void setStatus(Short status) {
         this.status = status;
+    }
+
+    public Boolean getAccountNonExpired() {
+        return this.accountNonExpired;
     }
 
     public void setAccountNonExpired(Boolean accountNonExpired) {
         this.accountNonExpired = accountNonExpired;
     }
 
+    public Boolean getAccountNonLocked() {
+        return this.accountNonLocked;
+    }
+
     public void setAccountNonLocked(Boolean accountNonLocked) {
         this.accountNonLocked = accountNonLocked;
+    }
+
+    public Boolean getCredentialsNonExpired() {
+        return this.credentialsNonExpired;
     }
 
     public void setCredentialsNonExpired(Boolean credentialsNonExpired) {
         this.credentialsNonExpired = credentialsNonExpired;
     }
 
+    public LocalDateTime getLastLoginTime() {
+        return this.lastLoginTime;
+    }
+
     public void setLastLoginTime(LocalDateTime lastLoginTime) {
         this.lastLoginTime = lastLoginTime;
+    }
+
+    public String getLastLoginIp() {
+        return this.lastLoginIp;
     }
 
     public void setLastLoginIp(String lastLoginIp) {
         this.lastLoginIp = lastLoginIp;
     }
 
+    public Integer getLoginFailCount() {
+        return this.loginFailCount;
+    }
+
     public void setLoginFailCount(Integer loginFailCount) {
         this.loginFailCount = loginFailCount;
+    }
+
+    public LocalDateTime getLockedTime() {
+        return this.lockedTime;
     }
 
     public void setLockedTime(LocalDateTime lockedTime) {
         this.lockedTime = lockedTime;
     }
 
+    public LocalDateTime getPasswordUpdateTime() {
+        return this.passwordUpdateTime;
+    }
+
     public void setPasswordUpdateTime(LocalDateTime passwordUpdateTime) {
         this.passwordUpdateTime = passwordUpdateTime;
+    }
+
+    public String getRemark() {
+        return this.remark;
     }
 
     public void setRemark(String remark) {

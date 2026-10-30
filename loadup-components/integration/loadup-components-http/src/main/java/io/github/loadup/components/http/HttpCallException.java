@@ -21,8 +21,21 @@ package io.github.loadup.components.http;
 
 import io.github.loadup.commons.error.CommonException;
 
-/** Safe diagnostic error: deliberately omits URLs, bodies and transport exception messages. */
+/**
+ * Safe diagnostic error: deliberately omits URLs, bodies and transport exception messages.
+ */
 public class HttpCallException extends CommonException {
+    private final Kind kind;
+
+    public HttpCallException(Kind kind) {
+        super(kind);
+        this.kind = kind;
+    }
+
+    public Kind getKind() {
+        return kind;
+    }
+
     public enum Kind implements io.github.loadup.commons.result.ResultCode {
         CONNECTION,
         TIMEOUT,
@@ -42,16 +55,5 @@ public class HttpCallException extends CommonException {
         public String getMessage() {
             return "HTTP call failed: " + name();
         }
-    }
-
-    private final Kind kind;
-
-    public HttpCallException(Kind kind) {
-        super(kind);
-        this.kind = kind;
-    }
-
-    public Kind getKind() {
-        return kind;
     }
 }

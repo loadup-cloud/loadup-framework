@@ -19,15 +19,30 @@
  */
 package io.github.loadup.components.testcontainers;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
-import io.github.loadup.components.testcontainers.cache.*;
-import io.github.loadup.components.testcontainers.cloud.*;
+import io.github.loadup.components.testcontainers.cache.AbstractRedisContainerTest;
+import io.github.loadup.components.testcontainers.cache.SharedRedisContainer;
+import io.github.loadup.components.testcontainers.cloud.AbstractLocalStackContainerTest;
+import io.github.loadup.components.testcontainers.cloud.SharedLocalStackContainer;
 import io.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
-import io.github.loadup.components.testcontainers.database.*;
-import io.github.loadup.components.testcontainers.messaging.*;
-import io.github.loadup.components.testcontainers.search.*;
+import io.github.loadup.components.testcontainers.database.AbstractMongoDBContainerTest;
+import io.github.loadup.components.testcontainers.database.AbstractMySQLContainerTest;
+import io.github.loadup.components.testcontainers.database.AbstractPostgreSQLContainerTest;
+import io.github.loadup.components.testcontainers.database.SharedMongoDBContainer;
+import io.github.loadup.components.testcontainers.database.SharedMySQLContainer;
+import io.github.loadup.components.testcontainers.database.SharedPostgreSQLContainer;
+import io.github.loadup.components.testcontainers.messaging.AbstractKafkaContainerTest;
+import io.github.loadup.components.testcontainers.messaging.SharedKafkaContainer;
+import io.github.loadup.components.testcontainers.search.AbstractElasticsearchContainerTest;
+import io.github.loadup.components.testcontainers.search.SharedElasticsearchContainer;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URLClassLoader;
@@ -43,6 +58,25 @@ import org.testcontainers.mysql.MySQLContainer;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
 class ContainerLifecycleTest {
+    private static void restoreProperty(String name, String value) {
+        if (value == null) {
+            System.clearProperty(name);
+        } else {
+            System.setProperty(name, value);
+        }
+    }
+
+    private static ContainerConfig config(String image) {
+        var config = new ContainerConfig();
+        config.setImage(image);
+        config.setEnabled(true);
+        config.setDatabase("merchant");
+        config.setUsername("reader");
+        config.setPassword("synthetic");
+        config.setReusable(false);
+        return config;
+    }
+
     @Test
     void mysqlStartupCanRetryAndPublishesConnectionProperties() {
         assertThatThrownBy(SharedMySQLContainer::getJdbcUrl).isInstanceOf(IllegalStateException.class);
@@ -57,7 +91,9 @@ class ContainerLifecycleTest {
                     when(container.getHost()).thenReturn("localhost");
                     when(container.getMappedPort(MySQLContainer.MYSQL_PORT)).thenReturn(13306);
                     doAnswer(invocation -> {
-                                if (fail.get()) throw new IllegalStateException("synthetic startup failure");
+                                if (fail.get()) {
+                                    throw new IllegalStateException("synthetic startup failure");
+                                }
                                 return null;
                             })
                             .when(container)
@@ -105,7 +141,9 @@ class ContainerLifecycleTest {
                     when(container.getHost()).thenReturn("localhost");
                     when(container.getFirstMappedPort()).thenReturn(15432);
                     doAnswer(invocation -> {
-                                if (fail.get()) throw new IllegalStateException("synthetic startup failure");
+                                if (fail.get()) {
+                                    throw new IllegalStateException("synthetic startup failure");
+                                }
                                 return null;
                             })
                             .when(container)
@@ -147,7 +185,9 @@ class ContainerLifecycleTest {
                     when(container.getHost()).thenReturn("localhost");
                     when(container.getFirstMappedPort()).thenReturn(27017);
                     doAnswer(invocation -> {
-                                if (fail.get()) throw new IllegalStateException("synthetic startup failure");
+                                if (fail.get()) {
+                                    throw new IllegalStateException("synthetic startup failure");
+                                }
                                 return null;
                             })
                             .when(container)
@@ -186,7 +226,9 @@ class ContainerLifecycleTest {
                     when(container.getHost()).thenReturn("localhost");
                     when(container.getMappedPort(6379)).thenReturn(16379);
                     doAnswer(invocation -> {
-                                if (fail.get()) throw new IllegalStateException("synthetic startup failure");
+                                if (fail.get()) {
+                                    throw new IllegalStateException("synthetic startup failure");
+                                }
                                 return null;
                             })
                             .when(container)
@@ -227,7 +269,9 @@ class ContainerLifecycleTest {
                     when(container.getHost()).thenReturn("localhost");
                     when(container.getFirstMappedPort()).thenReturn(19092);
                     doAnswer(invocation -> {
-                                if (fail.get()) throw new IllegalStateException("synthetic startup failure");
+                                if (fail.get()) {
+                                    throw new IllegalStateException("synthetic startup failure");
+                                }
                                 return null;
                             })
                             .when(container)
@@ -271,7 +315,9 @@ class ContainerLifecycleTest {
                     when(container.getHost()).thenReturn("localhost");
                     when(container.getFirstMappedPort()).thenReturn(19200);
                     doAnswer(invocation -> {
-                                if (fail.get()) throw new IllegalStateException("synthetic startup failure");
+                                if (fail.get()) {
+                                    throw new IllegalStateException("synthetic startup failure");
+                                }
                                 return null;
                             })
                             .when(container)
@@ -312,7 +358,9 @@ class ContainerLifecycleTest {
                     when(container.getSecretKey()).thenReturn("synthetic-secret");
                     when(container.getRegion()).thenReturn("us-east-1");
                     doAnswer(invocation -> {
-                                if (fail.get()) throw new IllegalStateException("synthetic startup failure");
+                                if (fail.get()) {
+                                    throw new IllegalStateException("synthetic startup failure");
+                                }
                                 return null;
                             })
                             .when(container)
@@ -361,10 +409,16 @@ class ContainerLifecycleTest {
                     @Override
                     protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
                         synchronized (getClassLoadingLock(name)) {
-                            if (!className.equals(name)) return super.loadClass(name, resolve);
+                            if (!className.equals(name)) {
+                                return super.loadClass(name, resolve);
+                            }
                             Class<?> loaded = findLoadedClass(name);
-                            if (loaded == null) loaded = findClass(name);
-                            if (resolve) resolveClass(loaded);
+                            if (loaded == null) {
+                                loaded = findClass(name);
+                            }
+                            if (resolve) {
+                                resolveClass(loaded);
+                            }
                             return loaded;
                         }
                     }
@@ -380,22 +434,6 @@ class ContainerLifecycleTest {
             restoreProperty("loadup.testcontainers.enabled", global);
             restoreProperty("loadup.testcontainers.localstack.enabled", local);
         }
-    }
-
-    private static void restoreProperty(String name, String value) {
-        if (value == null) System.clearProperty(name);
-        else System.setProperty(name, value);
-    }
-
-    private static ContainerConfig config(String image) {
-        var config = new ContainerConfig();
-        config.setImage(image);
-        config.setEnabled(true);
-        config.setDatabase("merchant");
-        config.setUsername("reader");
-        config.setPassword("synthetic");
-        config.setReusable(false);
-        return config;
     }
 
     static class MySqlFixture extends AbstractMySQLContainerTest {

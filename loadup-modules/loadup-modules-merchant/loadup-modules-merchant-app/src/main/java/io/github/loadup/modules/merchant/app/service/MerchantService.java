@@ -22,13 +22,17 @@ package io.github.loadup.modules.merchant.app.service;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.merchant.app.converter.MerchantConverter;
-import io.github.loadup.modules.merchant.client.command.*;
-import io.github.loadup.modules.merchant.client.dto.*;
+import io.github.loadup.modules.merchant.client.command.MerchantCreateCommand;
+import io.github.loadup.modules.merchant.client.command.MerchantStatusCommand;
+import io.github.loadup.modules.merchant.client.command.MerchantUpdateCommand;
+import io.github.loadup.modules.merchant.client.dto.MerchantDTO;
 import io.github.loadup.modules.merchant.client.error.MerchantResultCodeEnum;
 import io.github.loadup.modules.merchant.client.query.MerchantPageQuery;
 import io.github.loadup.modules.merchant.domain.gateway.MerchantGateway;
-import io.github.loadup.modules.merchant.domain.model.*;
-import java.time.*;
+import io.github.loadup.modules.merchant.domain.model.Merchant;
+import io.github.loadup.modules.merchant.domain.model.MerchantStatus;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,10 +43,7 @@ public class MerchantService implements io.github.loadup.modules.merchant.client
     private final MerchantConverter converter;
     private final Clock clock;
 
-    public MerchantService(
-            MerchantGateway gateway,
-            MerchantConverter converter,
-            @org.springframework.beans.factory.annotation.Qualifier("merchantClock") Clock clock) {
+    public MerchantService(MerchantGateway gateway, MerchantConverter converter, Clock clock) {
         this.gateway = gateway;
         this.converter = converter;
         this.clock = clock;
@@ -54,12 +55,10 @@ public class MerchantService implements io.github.loadup.modules.merchant.client
 
     @Transactional
     public MerchantDTO create(MerchantCreateCommand command, String actor) {
-        String tenant = MerchantIdentity.tenant();
         MerchantIdentity.actor(actor);
         var at = now();
         var merchant = new Merchant(
                 UUID.randomUUID().toString(),
-                tenant,
                 converter.toInfo(command),
                 MerchantStatus.ACTIVE,
                 1,
@@ -92,12 +91,13 @@ public class MerchantService implements io.github.loadup.modules.merchant.client
     }
 
     private void expected(Merchant current, long expected) {
-        if (current.rowVersion() != expected) throw new CommonException(MerchantResultCodeEnum.CONFLICT);
+        if (current.rowVersion() != expected) {
+            throw new CommonException(MerchantResultCodeEnum.CONFLICT);
+        }
     }
 
     private Merchant require(String id) {
-        return gateway.find(MerchantIdentity.tenant(), id)
-                .orElseThrow(() -> new CommonException(MerchantResultCodeEnum.NOT_FOUND));
+        return gateway.find(id).orElseThrow(() -> new CommonException(MerchantResultCodeEnum.NOT_FOUND));
     }
 
     @Transactional(readOnly = true)
@@ -107,10 +107,10 @@ public class MerchantService implements io.github.loadup.modules.merchant.client
 
     @Transactional(readOnly = true)
     public PageDTO<MerchantDTO> page(MerchantPageQuery query) {
-        if (query.page() < 1 || query.size() < 1 || query.size() > 100)
+        if (query.page() < 1 || query.size() < 1 || query.size() > 100) {
             throw new CommonException(MerchantResultCodeEnum.INVALID_PAGE);
+        }
         var result = gateway.page(
-                MerchantIdentity.tenant(),
                 query.merchantCode(),
                 query.name(),
                 query.status() == null || query.status().isBlank() ? null : MerchantStatus.valueOf(query.status()),

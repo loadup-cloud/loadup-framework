@@ -23,7 +23,6 @@
 
 ## 接入步骤
 
-
 ## 对外契约
 
 - [`ExtensionProvider`](src/main/java/io/github/loadup/components/extension/spi/ExtensionProvider.java)
@@ -32,4 +31,5 @@
 
 ## 自动装配
 
-- [`ExtensionAutoConfiguration`](src/main/java/io/github/loadup/components/extension/config/ExtensionAutoConfiguration.java)
+- [
+  `ExtensionAutoConfiguration`](src/main/java/io/github/loadup/components/extension/config/ExtensionAutoConfiguration.java)

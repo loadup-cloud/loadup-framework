@@ -19,9 +19,9 @@
  */
 package io.github.loadup.modules.upms.infrastructure.dataobject;
 
+import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
 import java.time.LocalDateTime;
-import org.springframework.data.relational.core.mapping.Table;
 
 /**
  * LoginLog Data Object
@@ -89,92 +89,92 @@ public class LoginLogDO extends BaseDO {
         return this.userId;
     }
 
-    public String getUsername() {
-        return this.username;
-    }
-
-    public LocalDateTime getLoginTime() {
-        return this.loginTime;
-    }
-
-    public LocalDateTime getLogoutTime() {
-        return this.logoutTime;
-    }
-
-    public String getIpAddress() {
-        return this.ipAddress;
-    }
-
-    public String getLoginLocation() {
-        return this.loginLocation;
-    }
-
-    public String getBrowser() {
-        return this.browser;
-    }
-
-    public String getOs() {
-        return this.os;
-    }
-
-    public Short getLoginStatus() {
-        return this.loginStatus;
-    }
-
-    public String getLoginMessage() {
-        return this.loginMessage;
-    }
-
-    public String getLoginType() {
-        return this.loginType;
-    }
-
-    public String getProvider() {
-        return this.provider;
-    }
-
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getUsername() {
+        return this.username;
     }
 
     public void setUsername(String username) {
         this.username = username;
     }
 
+    public LocalDateTime getLoginTime() {
+        return this.loginTime;
+    }
+
     public void setLoginTime(LocalDateTime loginTime) {
         this.loginTime = loginTime;
+    }
+
+    public LocalDateTime getLogoutTime() {
+        return this.logoutTime;
     }
 
     public void setLogoutTime(LocalDateTime logoutTime) {
         this.logoutTime = logoutTime;
     }
 
+    public String getIpAddress() {
+        return this.ipAddress;
+    }
+
     public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
+    }
+
+    public String getLoginLocation() {
+        return this.loginLocation;
     }
 
     public void setLoginLocation(String loginLocation) {
         this.loginLocation = loginLocation;
     }
 
+    public String getBrowser() {
+        return this.browser;
+    }
+
     public void setBrowser(String browser) {
         this.browser = browser;
+    }
+
+    public String getOs() {
+        return this.os;
     }
 
     public void setOs(String os) {
         this.os = os;
     }
 
+    public Short getLoginStatus() {
+        return this.loginStatus;
+    }
+
     public void setLoginStatus(Short loginStatus) {
         this.loginStatus = loginStatus;
+    }
+
+    public String getLoginMessage() {
+        return this.loginMessage;
     }
 
     public void setLoginMessage(String loginMessage) {
         this.loginMessage = loginMessage;
     }
 
+    public String getLoginType() {
+        return this.loginType;
+    }
+
     public void setLoginType(String loginType) {
         this.loginType = loginType;
+    }
+
+    public String getProvider() {
+        return this.provider;
     }
 
     public void setProvider(String provider) {

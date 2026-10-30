@@ -41,17 +41,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
  */
 public class LoadUpJwtAuthenticationConverter implements Converter<Jwt, AbstractAuthenticationToken> {
 
-    @Override
-    public AbstractAuthenticationToken convert(Jwt jwt) {
-        LoadUpUser user = LoadUpUser.builder()
-                .userId(jwt.getSubject())
-                .username(stringClaim(jwt, "username"))
-                .roles(stringListClaim(jwt, "roles"))
-                .permissions(stringListClaim(jwt, "permissions"))
-                .build();
-        return UsernamePasswordAuthenticationToken.authenticated(user, jwt, authoritiesOf(user));
-    }
-
     private static List<GrantedAuthority> authoritiesOf(LoadUpUser user) {
         List<GrantedAuthority> authorities = new ArrayList<>();
         if (user.getRoles() != null) {
@@ -99,5 +88,16 @@ public class LoadUpJwtAuthenticationConverter implements Converter<Jwt, Abstract
             return List.of();
         }
         return List.of(text.split(","));
+    }
+
+    @Override
+    public AbstractAuthenticationToken convert(Jwt jwt) {
+        LoadUpUser user = LoadUpUser.builder()
+                .userId(jwt.getSubject())
+                .username(stringClaim(jwt, "username"))
+                .roles(stringListClaim(jwt, "roles"))
+                .permissions(stringListClaim(jwt, "permissions"))
+                .build();
+        return UsernamePasswordAuthenticationToken.authenticated(user, jwt, authoritiesOf(user));
     }
 }

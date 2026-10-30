@@ -35,8 +35,8 @@ public interface RecordHandler {
      * Records the outcome of one channel send.
      *
      * @param request the original notification request
-     * @param config the channel configuration used
-     * @param result the aggregated attempt result
+     * @param config  the channel configuration used
+     * @param result  the aggregated attempt result
      */
     void onResult(NotificationRequest request, ChannelConfig config, SendAttemptResult result);
 

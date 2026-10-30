@@ -19,9 +19,9 @@
  */
 package io.github.loadup.modules.upms.infrastructure.dataobject;
 
+import com.mybatisflex.annotation.Column;
+import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
 
 /**
  * Role Data Object
@@ -75,60 +75,60 @@ public class RoleDO extends BaseDO {
         return this.roleName;
     }
 
-    public String getRoleCode() {
-        return this.roleCode;
-    }
-
-    public String getParentId() {
-        return this.parentId;
-    }
-
-    public Integer getRoleLevel() {
-        return this.roleLevel;
-    }
-
-    public Short getDataScope() {
-        return this.dataScope;
-    }
-
-    public Integer getSortOrder() {
-        return this.sortOrder;
-    }
-
-    public Short getStatus() {
-        return this.status;
-    }
-
-    public String getRemark() {
-        return this.remark;
-    }
-
     public void setRoleName(String roleName) {
         this.roleName = roleName;
+    }
+
+    public String getRoleCode() {
+        return this.roleCode;
     }
 
     public void setRoleCode(String roleCode) {
         this.roleCode = roleCode;
     }
 
+    public String getParentId() {
+        return this.parentId;
+    }
+
     public void setParentId(String parentId) {
         this.parentId = parentId;
+    }
+
+    public Integer getRoleLevel() {
+        return this.roleLevel;
     }
 
     public void setRoleLevel(Integer roleLevel) {
         this.roleLevel = roleLevel;
     }
 
+    public Short getDataScope() {
+        return this.dataScope;
+    }
+
     public void setDataScope(Short dataScope) {
         this.dataScope = dataScope;
+    }
+
+    public Integer getSortOrder() {
+        return this.sortOrder;
     }
 
     public void setSortOrder(Integer sortOrder) {
         this.sortOrder = sortOrder;
     }
 
+    public Short getStatus() {
+        return this.status;
+    }
+
     public void setStatus(Short status) {
         this.status = status;
+    }
+
+    public String getRemark() {
+        return this.remark;
     }
 
     public void setRemark(String remark) {

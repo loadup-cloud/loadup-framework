@@ -2,7 +2,8 @@
 
 UPMS 应用服务与业务编排。
 
-`AccountSecurityService` 提供本人安全概览、按用户 ID 查询登录历史以及使用旧密码修改密码的应用入口。HTTP 适配见 `loadup-modules-upms-web`。登录失败跟踪和临时锁定由 `loadup.modules.upms.security.login` 控制；管理员手动锁定不会因超时自动解除。
+`AccountSecurityService` 提供本人安全概览、按用户 ID 查询登录历史以及使用旧密码修改密码的应用入口。HTTP 适配见
+`loadup-modules-upms-web`。登录失败跟踪和临时锁定由 `loadup.modules.upms.security.login` 控制；管理员手动锁定不会因超时自动解除。
 
 ## 引入
 
@@ -29,8 +30,8 @@ UPMS 应用服务与业务编排。
 
 ## 配置入口
 
-| 前缀 | 配置类 |
-|---|---|
+| 前缀                           | 配置类                                                                                                                |
+|--------------------------------|-----------------------------------------------------------------------------------------------------------------------|
 | `loadup.modules.upms.security` | [`UpmsSecurityProperties`](src/main/java/io/github/loadup/modules/upms/app/autoconfigure/UpmsSecurityProperties.java) |
 
 ## 对外契约
@@ -44,4 +45,6 @@ UPMS 应用服务与业务编排。
 
 ## 受控明文读取
 
-`UserSensitiveReadService.read(actorId, query)` 要求可信 actor、有效 RBAC/ABAC 和可用的可靠 `SensitiveReadAudit`。recorder 必须同步持久化且传播失败；缺失 recorder 时拒绝明文。输出 DTO 在审计成功后由 Spring MapStruct converter 构造。HTTP 入口由 web 适配提供；配置与授权示例见 [UPMS README](../README.md)。
+`UserSensitiveReadService.read(actorId, query)` 要求可信 actor、有效 RBAC/ABAC 和可用的可靠 `SensitiveReadAudit`。recorder
+必须同步持久化且传播失败；缺失 recorder 时拒绝明文。输出 DTO 在审计成功后由 Spring MapStruct converter 构造。HTTP 入口由
+web 适配提供；配置与授权示例见 [UPMS README](../README.md)。

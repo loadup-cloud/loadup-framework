@@ -44,8 +44,9 @@ public final class SchedulerTemplate implements SmartLifecycle {
         for (var task : scanners) {
             if (task.name() == null
                     || !task.name().matches("[A-Za-z][A-Za-z0-9_.-]{0,63}")
-                    || registry.putIfAbsent(task.name(), task) != null)
+                    || registry.putIfAbsent(task.name(), task) != null) {
                 throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
+            }
         }
         tasks = Collections.unmodifiableMap(registry);
     }
@@ -56,9 +57,13 @@ public final class SchedulerTemplate implements SmartLifecycle {
 
     public void trigger(String name) throws Exception {
         var task = tasks.get(name);
-        if (task == null) throw new CommonException(CommonResultCodeEnum.NOT_FOUND);
+        if (task == null) {
+            throw new CommonException(CommonResultCodeEnum.NOT_FOUND);
+        }
         var guard = active.computeIfAbsent(name, ignored -> new AtomicBoolean());
-        if (!guard.compareAndSet(false, true)) return;
+        if (!guard.compareAndSet(false, true)) {
+            return;
+        }
         try {
             task.execute();
         } finally {

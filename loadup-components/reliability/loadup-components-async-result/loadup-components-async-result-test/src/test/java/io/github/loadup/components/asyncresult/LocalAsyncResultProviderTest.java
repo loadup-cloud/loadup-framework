@@ -19,13 +19,16 @@
  */
 package io.github.loadup.components.asyncresult;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.components.asyncresult.local.LocalAsyncResultProvider;
 import java.time.Duration;
 import java.util.UUID;
-import java.util.concurrent.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 
@@ -85,7 +88,11 @@ class LocalAsyncResultProviderTest {
                         () -> provider.complete(key, new AsyncResultValue(String.valueOf(value), null))));
             }
             int accepted = 0;
-            for (var task : tasks) if (task.get(2, TimeUnit.SECONDS) == AsyncCompletionStatus.ACCEPTED) accepted++;
+            for (var task : tasks) {
+                if (task.get(2, TimeUnit.SECONDS) == AsyncCompletionStatus.ACCEPTED) {
+                    accepted++;
+                }
+            }
             assertThat(accepted).isEqualTo(1);
             assertThat(provider.find(key)).isPresent();
         }
@@ -95,9 +102,10 @@ class LocalAsyncResultProviderTest {
     void invalidRetentionCannotAllocateStorage() {
         assertThatThrownBy(() -> new LocalAsyncResultProvider(0)).isInstanceOf(IllegalArgumentException.class);
         try (var provider = new LocalAsyncResultProvider(1)) {
-            for (var duration : java.util.List.of(Duration.ofMillis(-1), Duration.ofDays(8)))
+            for (var duration : java.util.List.of(Duration.ofMillis(-1), Duration.ofDays(8))) {
                 assertThatThrownBy(() -> provider.register(key(), "owner", duration))
                         .isInstanceOf(IllegalArgumentException.class);
+            }
             provider.register(key(), "owner", Duration.ofSeconds(1));
         }
     }

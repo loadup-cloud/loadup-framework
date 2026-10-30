@@ -23,20 +23,23 @@ import io.github.loadup.components.database.id.IdGenerator;
 import io.github.loadup.modules.audit.domain.gateway.AuditGateway;
 import io.github.loadup.modules.audit.infrastructure.converter.AuditStorageConverter;
 import io.github.loadup.modules.audit.infrastructure.converter.AuditStorageConverterImpl;
+import io.github.loadup.modules.audit.infrastructure.mapper.AuditEventMapper;
 import io.github.loadup.modules.audit.infrastructure.repository.AuditGatewayImpl;
 import java.time.Clock;
 import javax.sql.DataSource;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.*;
-import org.springframework.context.annotation.*;
-import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 @AutoConfiguration(
         afterName = {
             "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration",
-            "org.springframework.boot.data.jdbc.autoconfigure.DataJdbcRepositoriesAutoConfiguration",
+            "com.mybatisflex.spring.boot.v4.MybatisFlexAutoConfiguration",
             "io.github.loadup.components.database.autoconfigure.DatabaseCoreAutoConfiguration",
             "io.github.loadup.components.database.autoconfigure.IdGeneratorAutoConfiguration"
         })
@@ -50,11 +53,11 @@ public class AuditPersistenceAutoConfiguration {
         @Bean
         public AuditGateway auditGateway(
                 NamedParameterJdbcTemplate jdbc,
-                JdbcAggregateTemplate aggregates,
+                AuditEventMapper mapper,
                 IdGenerator ids,
                 AuditStorageConverter converter,
-                @Qualifier("databaseClock") Clock clock) {
-            return new AuditGatewayImpl(jdbc, aggregates, ids, converter, clock);
+                Clock clock) {
+            return new AuditGatewayImpl(jdbc, mapper, ids, converter, clock);
         }
     }
 }

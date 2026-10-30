@@ -35,9 +35,10 @@ public class SchedulerAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public SchedulerTemplate schedulerTemplate(List<SchedulerProvider> providers, List<ScheduledTask> tasks) {
-        if (providers.size() != 1)
+        if (providers.size() != 1) {
             throw new io.github.loadup.commons.error.CommonException(
                     io.github.loadup.commons.enums.CommonResultCodeEnum.CONFLICT);
+        }
         return new SchedulerTemplate(providers.getFirst(), tasks);
     }
 }

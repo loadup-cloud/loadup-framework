@@ -32,11 +32,20 @@ public record BundleVersion(String bundleCode, int version, List<Item> items) {
         bundleCode = ContractChecks.code(bundleCode);
         version = ContractChecks.version(version);
         items = List.copyOf(items);
-        if (items.isEmpty() || items.size() > 128)
+        if (items.isEmpty() || items.size() > 128) {
             throw new CommonException(ContractResultCodeEnum.INVALID_BUNDLE_SIZE);
+        }
         var keys = new HashSet<String>();
-        for (Item item : items)
-            if (!keys.add(item.itemKey())) throw new CommonException(ContractResultCodeEnum.DUPLICATE_BUNDLE_ITEM);
+        for (Item item : items) {
+            if (!keys.add(item.itemKey())) {
+                throw new CommonException(ContractResultCodeEnum.DUPLICATE_BUNDLE_ITEM);
+            }
+        }
+    }
+
+    @Override
+    public String toString() {
+        return ToStringAsJson.reflectionToString(this);
     }
 
     public record Item(
@@ -49,15 +58,11 @@ public record BundleVersion(String bundleCode, int version, List<Item> items) {
         public Item {
             itemKey = ContractChecks.code(itemKey);
             Objects.requireNonNull(product, "product");
-            if (required && !defaultSelected)
+            if (required && !defaultSelected) {
                 throw new CommonException(ContractResultCodeEnum.REQUIRED_ITEM_NOT_SELECTED);
+            }
             values = ContractChecks.map(values);
             new ConditionEvaluator().validate(usageCondition);
         }
-    }
-
-    @Override
-    public String toString() {
-        return ToStringAsJson.reflectionToString(this);
     }
 }

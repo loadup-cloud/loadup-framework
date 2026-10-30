@@ -23,7 +23,6 @@ import io.github.loadup.commons.mapping.LoadUpMapStructConfig;
 import io.github.loadup.modules.upms.domain.model.Permission;
 import io.github.loadup.modules.upms.infrastructure.dataobject.PermissionDO;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 /**
  * Permission Converter
@@ -33,7 +32,6 @@ import org.mapstruct.Mapping;
  */
 @Mapper(config = LoadUpMapStructConfig.class, uses = AuditMappingSupport.class)
 public interface PermissionConverter {
-    @Mapping(target = "tenantId", ignore = true)
     PermissionDO toDataObject(Permission permission);
 
     Permission toEntity(PermissionDO permissionDO);

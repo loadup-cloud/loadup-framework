@@ -68,6 +68,10 @@ public final class SharedElasticsearchContainer {
      */
     private static Integer port;
 
+    private SharedElasticsearchContainer() {
+        throw new UnsupportedOperationException("Utility class cannot be instantiated");
+    }
+
     public static void startContainer(ContainerConfig config) {
         if (STARTED.get()) {
             return;
@@ -174,10 +178,6 @@ public final class SharedElasticsearchContainer {
      */
     public static java.util.Map<String, String> getProperties() {
         return java.util.Map.of("spring.elasticsearch.uris", getHttpHostAddress());
-    }
-
-    private SharedElasticsearchContainer() {
-        throw new UnsupportedOperationException("Utility class cannot be instantiated");
     }
 
     public static boolean isStarted() {

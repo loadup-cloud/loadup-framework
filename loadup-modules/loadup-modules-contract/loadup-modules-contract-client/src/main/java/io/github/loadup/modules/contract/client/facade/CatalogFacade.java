@@ -20,11 +20,14 @@
 package io.github.loadup.modules.contract.client.facade;
 
 import io.github.loadup.commons.result.PageDTO;
-import io.github.loadup.modules.contract.client.command.*;
-import io.github.loadup.modules.contract.client.dto.*;
+import io.github.loadup.modules.contract.client.command.CatalogActionCommand;
+import io.github.loadup.modules.contract.client.command.CatalogSaveCommand;
+import io.github.loadup.modules.contract.client.dto.CatalogVersionDTO;
 import io.github.loadup.modules.contract.client.query.CatalogPageQuery;
 
-/** Public business contract for CatalogService. */
+/**
+ * Public business contract for CatalogService.
+ */
 public interface CatalogFacade {
     CatalogVersionDTO save(CatalogSaveCommand command, String actor);
 

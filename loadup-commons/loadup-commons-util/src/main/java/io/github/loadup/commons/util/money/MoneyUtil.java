@@ -28,7 +28,9 @@ import java.util.Collection;
 import java.util.Currency;
 import java.util.Objects;
 
-/** Exact minor-unit arithmetic. Fractional results always require an explicit rounding policy. */
+/**
+ * Exact minor-unit arithmetic. Fractional results always require an explicit rounding policy.
+ */
 public final class MoneyUtil {
     private MoneyUtil() {}
 
@@ -130,7 +132,8 @@ public final class MoneyUtil {
     private static void sameCurrency(Money left, Money right) {
         Objects.requireNonNull(left, "left");
         Objects.requireNonNull(right, "right");
-        if (!left.getCurrency().equals(right.getCurrency()))
+        if (!left.getCurrency().equals(right.getCurrency())) {
             throw new IllegalArgumentException("Different currencies cannot be combined");
+        }
     }
 }

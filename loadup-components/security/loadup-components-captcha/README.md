@@ -1,6 +1,6 @@
 # loadup-components-captcha
 
-统一验证码组件：**facade = `CaptchaTemplate`（generate / verify）**，底层 OSS 可插拔，已
+统一验证码组件： **facade = `CaptchaTemplate`（generate / verify）**，底层 OSS 可插拔，已
 去 fork（不再内置 EasyCaptcha 代码）。业务侧只依赖 api，切换引擎只改 binder 依赖 + 配置。
 
 ## 模块结构
@@ -69,16 +69,16 @@ public class LoginService {
 
 ## 能力矩阵
 
-| 能力 | tianai | nanocaptcha |
-|------|--------|-------------|
-| 滑块 `SLIDER` | ✓ | ✗ |
-| 旋转 `ROTATE` | ✓ | ✗ |
-| 拼图 `CONCAT` | ✓ | ✗ |
-| 点选 `WORD_IMAGE_CLICK` | ✓ | ✗ |
-| 字符图像 `WORD` | ✗ | ✓ |
-| 校验单次有效 | ✓（引擎侧） | ✓（移除式） |
-| 过期 | ✓（按类型配置） | ✓（内存 TTL） |
-| 存储 | 引擎内置 LocalCacheStore（可扩展 Redis） | 进程内 Map（可扩展） |
+| 能力                    | tianai                                   | nanocaptcha          |
+|-------------------------|------------------------------------------|----------------------|
+| 滑块 `SLIDER`           | ✓                                       | ✗                   |
+| 旋转 `ROTATE`           | ✓                                       | ✗                   |
+| 拼图 `CONCAT`           | ✓                                       | ✗                   |
+| 点选 `WORD_IMAGE_CLICK` | ✓                                       | ✗                   |
+| 字符图像 `WORD`         | ✗                                       | ✓                   |
+| 校验单次有效            | ✓（引擎侧）                             | ✓（移除式）         |
+| 过期                    | ✓（按类型配置）                         | ✓（内存 TTL）       |
+| 存储                    | 引擎内置 LocalCacheStore（可扩展 Redis） | 进程内 Map（可扩展） |
 
 > 行为验证码（tianai）是生产推荐：验证答案不返回前端、带轨迹校验。传统图像验证码
 > （nanocaptcha）用于简单场景或无障碍替代。

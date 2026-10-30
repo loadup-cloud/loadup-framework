@@ -46,27 +46,6 @@ class ExtensionRegistryCacheTest {
     private ExtensionRegistry registry;
     private ApplicationContext applicationContext;
 
-    interface TestExtension extends IExtensionPoint {}
-
-    @Extension(bizCode = "test", useCase = "default", scenario = "default")
-    static class TestExtensionImpl implements TestExtension {}
-
-    @Extension(bizCode = "test", useCase = "special", scenario = "default")
-    static class SpecialTestExtensionImpl implements TestExtension {}
-
-    @Configuration
-    static class TestConfig {
-        @Bean
-        public TestExtensionImpl testExtension() {
-            return new TestExtensionImpl();
-        }
-
-        @Bean
-        public SpecialTestExtensionImpl specialTestExtension() {
-            return new SpecialTestExtensionImpl();
-        }
-    }
-
     @BeforeEach
     void setUp() {
         registry = new ExtensionRegistry();
@@ -131,5 +110,26 @@ class ExtensionRegistryCacheTest {
         var bizCodes = registry.getAllBizCodes();
         assertNotNull(bizCodes);
         assertTrue(bizCodes.contains("test"));
+    }
+
+    interface TestExtension extends IExtensionPoint {}
+
+    @Extension(bizCode = "test", useCase = "default", scenario = "default")
+    static class TestExtensionImpl implements TestExtension {}
+
+    @Extension(bizCode = "test", useCase = "special", scenario = "default")
+    static class SpecialTestExtensionImpl implements TestExtension {}
+
+    @Configuration
+    static class TestConfig {
+        @Bean
+        public TestExtensionImpl testExtension() {
+            return new TestExtensionImpl();
+        }
+
+        @Bean
+        public SpecialTestExtensionImpl specialTestExtension() {
+            return new SpecialTestExtensionImpl();
+        }
     }
 }

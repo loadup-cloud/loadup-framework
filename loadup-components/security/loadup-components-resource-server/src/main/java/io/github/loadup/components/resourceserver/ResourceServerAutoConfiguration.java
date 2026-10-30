@@ -49,31 +49,14 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.util.StringUtils;
 import tools.jackson.databind.ObjectMapper;
 
-/** JWT resource-server integration shared by Controller applications and managed gateways. */
+/**
+ * JWT resource-server integration shared by Controller applications and managed gateways.
+ */
 @AutoConfiguration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnProperty(prefix = "loadup.security.resource-server", name = "enabled", havingValue = "true")
 @EnableConfigurationProperties(ResourceServerProperties.class)
 public class ResourceServerAutoConfiguration {
-    @Bean
-    @ConditionalOnMissingBean
-    public LoadUpJwtAuthenticationConverter loadUpJwtAuthenticationConverter() {
-        return new LoadUpJwtAuthenticationConverter();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(JwtDecoder.class)
-    public JwtDecoder resourceServerJwtDecoder(ResourceServerProperties properties) {
-        if (!StringUtils.hasText(properties.getIssuerUri()) || !StringUtils.hasText(properties.getAudience())) {
-            throw new IllegalArgumentException("Resource server requires issuer-uri and audience");
-        }
-        NimbusJwtDecoder decoder = StringUtils.hasText(properties.getJwkSetUri())
-                ? NimbusJwtDecoder.withJwkSetUri(properties.getJwkSetUri()).build()
-                : NimbusJwtDecoder.withIssuerLocation(properties.getIssuerUri()).build();
-        decoder.setJwtValidator(accessTokenValidator(properties));
-        return decoder;
-    }
-
     static OAuth2TokenValidator<Jwt> accessTokenValidator(ResourceServerProperties properties) {
         OAuth2TokenValidator<Jwt> issuer = JwtValidators.createDefaultWithIssuer(properties.getIssuerUri());
         return jwt -> {
@@ -92,6 +75,38 @@ public class ResourceServerAutoConfiguration {
                     : OAuth2TokenValidatorResult.failure(
                             new OAuth2Error("invalid_token", "Invalid token use or audience", null));
         };
+    }
+
+    private static void writeError(
+            HttpServletResponse response,
+            ObjectMapper objectMapper,
+            ApiResultMetrics resultMetrics,
+            CommonResultCodeEnum code)
+            throws IOException {
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("UTF-8");
+        response.getOutputStream().write(objectMapper.writeValueAsBytes(FailureResponse.of(code)));
+        resultMetrics.record(false);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public LoadUpJwtAuthenticationConverter loadUpJwtAuthenticationConverter() {
+        return new LoadUpJwtAuthenticationConverter();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(JwtDecoder.class)
+    public JwtDecoder resourceServerJwtDecoder(ResourceServerProperties properties) {
+        if (!StringUtils.hasText(properties.getIssuerUri()) || !StringUtils.hasText(properties.getAudience())) {
+            throw new IllegalArgumentException("Resource server requires issuer-uri and audience");
+        }
+        NimbusJwtDecoder decoder = StringUtils.hasText(properties.getJwkSetUri())
+                ? NimbusJwtDecoder.withJwkSetUri(properties.getJwkSetUri()).build()
+                : NimbusJwtDecoder.withIssuerLocation(properties.getIssuerUri()).build();
+        decoder.setJwtValidator(accessTokenValidator(properties));
+        return decoder;
     }
 
     @Bean
@@ -144,18 +159,5 @@ public class ResourceServerAutoConfiguration {
                         .authenticationEntryPoint((request, response, exception) -> writeError(
                                 response, objectMapper, resultMetrics, CommonResultCodeEnum.UNAUTHENTICATED)));
         return http.build();
-    }
-
-    private static void writeError(
-            HttpServletResponse response,
-            ObjectMapper objectMapper,
-            ApiResultMetrics resultMetrics,
-            CommonResultCodeEnum code)
-            throws IOException {
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setCharacterEncoding("UTF-8");
-        response.getOutputStream().write(objectMapper.writeValueAsBytes(FailureResponse.of(code)));
-        resultMetrics.record(false);
     }
 }

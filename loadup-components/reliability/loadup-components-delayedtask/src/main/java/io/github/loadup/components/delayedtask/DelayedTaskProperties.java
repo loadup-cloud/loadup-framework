@@ -30,12 +30,24 @@ public class DelayedTaskProperties {
     private Duration lease = Duration.ofMinutes(5);
     private Duration retryDelay = Duration.ofMinutes(1);
 
+    private static void validate(Duration value) {
+        if (value == null || value.compareTo(Duration.ofSeconds(1)) < 0 || value.compareTo(Duration.ofDays(30)) > 0) {
+            invalid();
+        }
+    }
+
+    private static void invalid() {
+        throw new CommonException(DelayedTaskResultCodeEnum.INVALID_ARGUMENT);
+    }
+
     public int getBatchSize() {
         return batchSize;
     }
 
     public void setBatchSize(int value) {
-        if (value < 1 || value > 1000) invalid();
+        if (value < 1 || value > 1000) {
+            invalid();
+        }
         batchSize = value;
     }
 
@@ -44,7 +56,9 @@ public class DelayedTaskProperties {
     }
 
     public void setMaxAttempts(int value) {
-        if (value < 1 || value > 1000) invalid();
+        if (value < 1 || value > 1000) {
+            invalid();
+        }
         maxAttempts = value;
     }
 
@@ -64,14 +78,5 @@ public class DelayedTaskProperties {
     public void setRetryDelay(Duration value) {
         validate(value);
         retryDelay = value;
-    }
-
-    private static void validate(Duration value) {
-        if (value == null || value.compareTo(Duration.ofSeconds(1)) < 0 || value.compareTo(Duration.ofDays(30)) > 0)
-            invalid();
-    }
-
-    private static void invalid() {
-        throw new CommonException(DelayedTaskResultCodeEnum.INVALID_ARGUMENT);
     }
 }

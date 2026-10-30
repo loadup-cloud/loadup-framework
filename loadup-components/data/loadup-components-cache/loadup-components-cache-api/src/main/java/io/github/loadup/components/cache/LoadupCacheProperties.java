@@ -35,16 +35,24 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "loadup.cache")
 public class LoadupCacheProperties {
 
-    /** Backend selector, one of {@link CacheBackendType}. */
+    /**
+     * Backend selector, one of {@link CacheBackendType}.
+     */
     private String type = CacheBackendType.CAFFEINE;
 
-    /** Default TTL for caches without a per-name setting. {@code null} means no expiration. */
+    /**
+     * Default TTL for caches without a per-name setting. {@code null} means no expiration.
+     */
     private Duration defaultTtl;
 
-    /** Whether null return values may be cached when a cache has no per-name setting. */
+    /**
+     * Whether null return values may be cached when a cache has no per-name setting.
+     */
     private Boolean defaultAllowNullValues = true;
 
-    /** Per-cache-name settings keyed by cache name. */
+    /**
+     * Per-cache-name settings keyed by cache name.
+     */
     private Map<String, CacheNameSettings> caches = new LinkedHashMap<>();
 
     public String getType() {

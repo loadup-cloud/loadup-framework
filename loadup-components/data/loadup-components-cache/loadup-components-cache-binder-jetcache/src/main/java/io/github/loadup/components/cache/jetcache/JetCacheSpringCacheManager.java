@@ -76,7 +76,9 @@ public class JetCacheSpringCacheManager extends AbstractCacheManager {
         return createSpringCache(name);
     }
 
-    /** Pre-creates every cache declared in {@code loadup.cache.caches} at startup. */
+    /**
+     * Pre-creates every cache declared in {@code loadup.cache.caches} at startup.
+     */
     public void preloadConfiguredCaches() {
         properties.getCaches().keySet().forEach(this::getCache);
     }

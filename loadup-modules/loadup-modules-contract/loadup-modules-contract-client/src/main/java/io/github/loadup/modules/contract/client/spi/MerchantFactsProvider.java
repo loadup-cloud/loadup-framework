@@ -21,8 +21,10 @@ package io.github.loadup.modules.contract.client.spi;
 
 import io.github.loadup.modules.contract.client.dto.MerchantProfileDTO;
 
-/** Implemented by the consuming merchant application; never sourced from browser facts. */
+/**
+ * Implemented by the consuming merchant application; never sourced from browser facts.
+ */
 @FunctionalInterface
 public interface MerchantFactsProvider {
-    MerchantProfileDTO load(String tenantId, String merchantId);
+    MerchantProfileDTO load(String merchantId);
 }

@@ -22,9 +22,11 @@ package io.github.loadup.modules.file.domain.model;
 import io.github.loadup.commons.json.ToStringAsJson;
 import java.time.LocalDateTime;
 
-/** A business object's claim on a file; claims prevent deletion. */
+/**
+ * A business object's claim on a file; claims prevent deletion.
+ */
 public record FileReference(
-        String id, String tenantId, String fileId, String referenceType, String referenceId, LocalDateTime createdAt) {
+        String id, String fileId, String referenceType, String referenceId, LocalDateTime createdAt) {
     @Override
     public String toString() {
         return ToStringAsJson.reflectionToString(this);
