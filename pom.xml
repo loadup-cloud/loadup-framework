@@ -82,7 +82,7 @@
         <loadup.coverage.dataFile>${maven.multiModuleProjectDirectory}/loadup-coverage/target/jacoco-components.exec</loadup.coverage.dataFile>
 
         <jacoco-plugin.version>0.8.15</jacoco-plugin.version>
-        <versions-plugin.version>2.22.0</versions-plugin.version>
+        <versions-plugin.version>2.23.0</versions-plugin.version>
         <license-plugin.version>2.7.1</license-plugin.version>
         <spotless-plugin.version>3.10.4</spotless-plugin.version>
         <spotbugs-plugin.version>4.10.5.0</spotbugs-plugin.version>
