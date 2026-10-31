@@ -14,12 +14,11 @@ Web Controller → 当前认证用户的收件箱 ────┘
 
 ## 数据与一致性
 
-一位收件人对应一条 `notification_inbox` 记录，保存租户、收件人、发送者、分类、标题、正文、应用内链接、已读时间和归档时间。
-`(tenant_id, recipient_id, request_key)` 为非空 key 提供幂等约束；不提供 key 时允许重复投递。批量投递由一个 JDBC 事务包裹，单次最多
+一位收件人对应一条 `notification_inbox` 记录，保存收件人、发送者、分类、标题、正文、应用内链接、已读时间和归档时间，不含 `tenant_id` 列。
+`(recipient_id, request_key)` 为非空 key 提供幂等约束；不提供 key 时允许重复投递。批量投递由一个 JDBC 事务包裹，单次最多
 100 人；Gotone 渠道返回逐收件人状态。
 
-读取、已读及归档操作均加租户和收件人谓词。归档是软删除，不影响其他收件人的副本。首版不自动清理历史消息；留存与批量投递扩展见根目录
-Roadmap。
+租户身份可通过可信执行上下文传播，但数据库表和查询不使用租户行列；当前仅使用默认 schema，尚未实现租户间数据库隔离。读取、已读及归档操作按收件人和软删除状态限定。归档不影响其他收件人的副本。数据库隔离现状见[数据库 README](../../loadup-components/data/loadup-components-database/README.md)。首版不自动清理历史消息。
 
 ## 边界
 

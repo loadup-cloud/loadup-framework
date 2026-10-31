@@ -34,9 +34,8 @@
 LoadUp 是一个 **被消费的框架/SDK**，通过 `loadup-dependencies` BOM 对外提供能力。
 集成方在自有 Spring Boot / Spring Cloud 项目中引入 BOM，按需使用组件和业务模块。
 
-- `loadup-application` 仅为集成测试验证器和本地开发启动器， **不是生产部署单元**
 - `loadup-modules/` 下的 UPMS、审计、数据字典、文件资源等是 **可复用业务能力**，不是测试代码
-- 单体应用通过 Spring MVC Controller 暴露接口；外部 API 调用规划为独立 HTTP 客户端组件
+- 单体应用通过业务模块可选的 Spring MVC Web 适配模块暴露接口
 
 ---
 
@@ -60,7 +59,7 @@ LoadUp 是一个 **被消费的框架/SDK**，通过 `loadup-dependencies` BOM �
 ## 项目结构
 
 ```
-loadup-cloud/
+loadup-framework/
 ├── loadup-dependencies/        # BOM，统一依赖版本
 ├── loadup-commons/             # 最底层通用基础
 │   ├── loadup-commons-context/ # JDK 25 ScopedValue 只读执行链上下文
@@ -83,9 +82,8 @@ loadup-cloud/
 │   ├── loadup-modules-notification/ # 站内通知
 │   └── loadup-modules-transfer/ # 导入导出任务
 ├── loadup-testify/             # 集成测试框架
-├── loadup-application/         # 集成测试启动器（非生产部署单元）
-├── frontend/                   # Vue 3 管理端
-└── docs/                       # 独立的 Hugo + Hextra 文档站
+├── loadup-coverage/            # component-coverage profile 启用的 JaCoCo 聚合器
+└── doc-sync-agent.py           # 将模块源文档同步到并列 docs 文档站
 ```
 
 ---
@@ -101,7 +99,7 @@ loadup-dependencies (BOM)
         ↑
    loadup-modules/*     ← 模块间依赖应明确且尽量减少
         ↑
-loadup-application
+集成方应用（由消费工程提供）
 
 loadup-testify  → 仅 test scope，深度依赖框架内部类型
 ```
@@ -112,7 +110,7 @@ loadup-testify  → 仅 test scope，深度依赖框架内部类型
 
 ## 组件设计规范
 
-> 项目概况见 [README.md](README.md)，待办事项见 [ROADMAP.md](ROADMAP.md)，组件设计以对应 `ARCHITECTURE.md` 为准。
+> 项目概况见 [README.md](README.md)，仓库依赖边界见 [ARCHITECTURE.md](ARCHITECTURE.md)，组件设计以对应模块 `ARCHITECTURE.md` 为准。
 > 核心原则：底层 OSS + 薄集成；业务侧 API 尽量采用业界标准接口（Spring Cache、S3、OpenTelemetry、Spring MVC
 > 等）；自创接口仅限标准表达不了的语义；每个组件 README 必须维护能力矩阵契约表。
 
@@ -403,7 +401,7 @@ multipart，下载可以返回流式二进制。`loadup-components-webmvc` 对 A
   `LogUtil.getLogger` 获取。保留参数化占位符，异常作为最后参数，敏感字段显式脱敏。
 - 指标和追踪使用 Spring Boot 管理的 `MeterRegistry`、`ObservationRegistry` 和 Micrometer Tracing；组件注入共享实例，基础
   HTTP/JVM 观测由 Boot 提供。自定义指标以 `loadup.<domain>.*` 命名，仅使用低基数标签，配置使用标准 `management.*`。
-- 每完成一项任务立即更新根 `ROADMAP.md`：移除已完成的实现项，把未执行的测试或部署验收单独保留为待办；源码或测试已编写不等于运行验证通过。
+- 保持根 `README.md` 与 `ARCHITECTURE.md` 反映当前接入方式和模块边界；未运行的验证不得描述为已通过。
 
 ## 执行链共享数据
 

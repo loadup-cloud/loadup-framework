@@ -23,7 +23,8 @@ DO extends BaseDO
 
 `BaseDO` lives in `loadup-commons-dto` and is shared by framework modules. Its `id` is marked with
 `@Id(keyType = KeyType.None)`, so MyBatis-Flex never generates or replaces an application-assigned identifier. Business
-tables no longer contain `tenant_id`; tenant identity selects the schema at the data-source boundary.
+tables do not contain `tenant_id`. Schema-per-tenant is the target isolation boundary, but runtime datasource routing
+and per-tenant Flyway orchestration are not implemented; the current application serves the configured default schema.
 
 ## Common fields
 

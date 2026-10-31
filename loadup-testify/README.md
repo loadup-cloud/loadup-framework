@@ -113,7 +113,7 @@ scenario.assertDb("payment_order")
 ```
 
 这是数据准备与断言片段，真实业务调用应插入两者之间。若表采用 BaseDO 标准字段，使用 JDBC 准备数据时必须自行提供数据库要求的
-tenant_id、created_at、updated_at、deleted 等值；JDBC 不会触发 Flex 监听器。
+id、created_at、updated_at、deleted 等值；BaseDO 不提供 `tenant_id` 列，JDBC 也不会触发 Flex 监听器。Schema-per-tenant 路由尚未实现，当前只使用默认 schema；详见[database README](../loadup-components/data/loadup-components-database/README.md)。
 
 | API                           | 语义                                   |
 |-------------------------------|----------------------------------------|

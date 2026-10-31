@@ -45,5 +45,5 @@ loadup:
 ## 自动装配
 
 - [
-  `ApolloConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/apollo/autoconfig/ApolloConfigCenterAutoConfiguration.java)
+  `ApolloConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/apollo/autoconfigure/ApolloConfigCenterAutoConfiguration.java)
     - 启用条件：`@ConditionalOnProperty(prefix = "loadup.configcenter", name = "binder-type", havingValue = "apollo")`。

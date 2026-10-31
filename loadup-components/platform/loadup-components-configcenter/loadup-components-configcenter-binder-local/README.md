@@ -45,6 +45,6 @@ loadup:
 ## 自动装配
 
 - [
-  `LocalConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/local/autoconfig/LocalConfigCenterAutoConfiguration.java)
+  `LocalConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/local/autoconfigure/LocalConfigCenterAutoConfiguration.java)
     - 启用条件：
       `@ConditionalOnProperty( prefix = "loadup.configcenter", name = "binder-type", havingValue = "local", matchIfMissing = true)`。

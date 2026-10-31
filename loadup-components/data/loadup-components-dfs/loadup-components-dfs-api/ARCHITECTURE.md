@@ -14,7 +14,7 @@
 
 主要入口文件：
 
-- [`DfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/autoconfig/DfsAutoConfiguration.java)
+- [`DfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/autoconfigure/DfsAutoConfiguration.java)
 - [`DefaultDfsService`](src/main/java/io/github/loadup/components/dfs/DefaultDfsService.java)
 - [`DfsProvider`](src/main/java/io/github/loadup/components/dfs/DfsProvider.java)
 - [`DfsService`](src/main/java/io/github/loadup/components/dfs/DfsService.java)
@@ -31,7 +31,7 @@
 
 ## 装配规则
 
-- [`DfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/autoconfig/DfsAutoConfiguration.java) 是自动配置入口。
+- [`DfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/autoconfigure/DfsAutoConfiguration.java) 是自动配置入口。
     - `@ConditionalOnSingleCandidate(DfsProvider.class)`
 
 ## 扩展契约

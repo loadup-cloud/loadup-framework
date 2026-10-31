@@ -22,7 +22,7 @@ Client 请求超时是不同状态，不做模糊翻译。
 ## 验证
 
 TransferDispatchTest 验证有界扫描、失败隔离和抢占失败跳过；TransferClaimIT 用真实 PostgreSQL 和两个并发虚拟线程验证仅一个领取成功，以及
-FAILED 重排队和 SUCCEEDED 不可领取。运行状态见 ROADMAP。
+FAILED 重排队和 SUCCEEDED 不可领取；执行结果应以目标环境的定向测试和部署验收记录为准。
 
 ## 迁移版本顺序
 

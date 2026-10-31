@@ -163,5 +163,5 @@ mvn clean -pl loadup-components/security/loadup-components-kms -am test \
   -Dsurefire.failIfNoSpecifiedTests=false -Dskip.spotbugs=true -Dskip.spotless=true
 ```
 
-真实服务验收及故障演练见根 [ROADMAP](../../../ROADMAP.md)。设计见 [ARCHITECTURE](ARCHITECTURE.md)
-，协议依据为 [OpenBao Transit API](https://openbao.org/docs/api/secret/transit/)。
+真实服务验收仍需覆盖密钥轮换、历史数据、BYOK、公钥导入、封印/重启、ACL、续租和故障恢复。设计见
+[ARCHITECTURE](ARCHITECTURE.md)，协议依据为 [OpenBao Transit API](https://openbao.org/docs/api/secret/transit/)。

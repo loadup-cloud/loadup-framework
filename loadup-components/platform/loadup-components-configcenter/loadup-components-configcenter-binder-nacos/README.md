@@ -45,5 +45,5 @@ loadup:
 ## 自动装配
 
 - [
-  `NacosConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/nacos/autoconfig/NacosConfigCenterAutoConfiguration.java)
+  `NacosConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/nacos/autoconfigure/NacosConfigCenterAutoConfiguration.java)
     - 启用条件：`@ConditionalOnProperty(prefix = "loadup.configcenter", name = "binder-type", havingValue = "nacos")`。

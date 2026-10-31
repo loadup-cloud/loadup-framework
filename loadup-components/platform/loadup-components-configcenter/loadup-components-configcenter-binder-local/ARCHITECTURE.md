@@ -20,7 +20,7 @@
 主要入口文件：
 
 - [
-  `LocalConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/local/autoconfig/LocalConfigCenterAutoConfiguration.java)
+  `LocalConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/local/autoconfigure/LocalConfigCenterAutoConfiguration.java)
 - [
   `LocalConfigCenterProvider`](src/main/java/io/github/loadup/components/configcenter/local/LocalConfigCenterProvider.java)
 
@@ -37,7 +37,7 @@ binder 实现框架契约，把实现库及其配置隔离在业务 API 之外�
 ## 装配规则
 
 - [
-  `LocalConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/local/autoconfig/LocalConfigCenterAutoConfiguration.java)
+  `LocalConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/local/autoconfigure/LocalConfigCenterAutoConfiguration.java)
   是自动配置入口。
     -
     `@ConditionalOnProperty( prefix = "loadup.configcenter", name = "binder-type", havingValue = "local", matchIfMissing = true)`

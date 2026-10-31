@@ -47,6 +47,6 @@ Transfer app 显式复用 File app 的权限、业务引用和 DFS 生命周期�
 ## 本次调整范围
 
 原顶层 audit/dictionary/file/notification/transfer 与各自 sibling web 已归入业务聚合目录，实际拆分协议、领域端口、持久化及用例。保留路由、JSON
-字段、数据库历史脚本与事务语义。运行回归未执行，待办记录于根 ROADMAP。
+字段、数据库历史脚本与事务语义。各模块 README 说明其定向验证范围；未执行的回归仍须单独记录，不能视作通过。
 
 接入见 [README.md](README.md)，各领域的业务与一致性细节见所属 ARCHITECTURE。

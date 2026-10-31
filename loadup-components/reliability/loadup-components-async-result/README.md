@@ -136,5 +136,5 @@ loadup.async_result.read_failures；不把订单号、租户或 correlationId �
 异常消息。内部协议无日期字段；业务 DTO 日期格式沿用应用的 Jackson 配置和本地时区契约。
 
 测试及命令见 [test README](loadup-components-async-result-test/README.md)，包括 Local 并发、Redis 两客户端、Kafka
-request/reply 和真实 MySQL Outbox 提交顺序。测试编写不代表已执行，运行结果以根 ROADMAP
-为准。内部设计见 [ARCHITECTURE.md](ARCHITECTURE.md)。
+request/reply 和真实 MySQL Outbox 提交顺序。测试编写不代表已执行；运行时应记录所执行的测试、环境及结果。内部设计见
+[ARCHITECTURE.md](ARCHITECTURE.md)。

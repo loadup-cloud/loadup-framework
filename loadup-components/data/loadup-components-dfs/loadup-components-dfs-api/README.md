@@ -35,7 +35,7 @@ optional provider capabilities and report `UnsupportedOperationException` when u
 
 ## 自动装配
 
-- [`DfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/autoconfig/DfsAutoConfiguration.java)
+- [`DfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/autoconfigure/DfsAutoConfiguration.java)
     - 启用条件：`@ConditionalOnSingleCandidate(DfsProvider.class)`。
 
 设计边界与装配路径见 [ARCHITECTURE.md](ARCHITECTURE.md)。

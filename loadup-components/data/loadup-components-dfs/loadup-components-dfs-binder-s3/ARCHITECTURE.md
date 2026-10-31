@@ -20,7 +20,7 @@
 
 主要入口文件：
 
-- [`S3DfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/s3/autoconfig/S3DfsAutoConfiguration.java)
+- [`S3DfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/s3/autoconfigure/S3DfsAutoConfiguration.java)
 - [`S3DfsProvider`](src/main/java/io/github/loadup/components/dfs/s3/S3DfsProvider.java)
 
 ## 分层与调用路径
@@ -35,7 +35,7 @@ binder 实现框架契约，把实现库及其配置隔离在业务 API 之外�
 
 ## 装配规则
 
-- [`S3DfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/s3/autoconfig/S3DfsAutoConfiguration.java)
+- [`S3DfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/s3/autoconfigure/S3DfsAutoConfiguration.java)
   是自动配置入口。
     - `@ConditionalOnClass(S3Client.class)`
     - `@ConditionalOnProperty(prefix = "loadup.dfs", name = "binder-type", havingValue = "s3")`

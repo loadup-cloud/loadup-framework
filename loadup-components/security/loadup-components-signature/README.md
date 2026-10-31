@@ -209,7 +209,7 @@ mvn clean -pl loadup-components/security/loadup-components-signature -am test \
 `loadup.components.signature.default-signature-algorithm`、`default-digest-algorithm`、`key-size`
 配置保持其原有职责，不控制新请求协议。MD5/SHA-1 等历史摘要接口不作为请求认证方案。
 
-设计和职责见 [ARCHITECTURE](ARCHITECTURE.md)，生产接入待办见 [ROADMAP](../../../ROADMAP.md)。
+设计和职责见 [ARCHITECTURE](ARCHITECTURE.md)。生产验收还需覆盖 OpenBao、Redis、多实例时钟、代理 target、原始 body wrapper 与入口错误映射。
 
 ## 默认时钟
 

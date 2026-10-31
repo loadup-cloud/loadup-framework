@@ -1,7 +1,7 @@
 # In-App Notifications
 
 持久化站内收件箱。业务可直接调用 `InboxService` 投递，也可把它作为 Gotone 的 `IN_APP`
-渠道，与邮件、短信等渠道共享发送入口。消息按租户及收件人隔离，支持分页、未读计数、已读和归档。
+渠道，与邮件、短信等渠道共享发送入口。消息按收件人查询，支持分页、未读计数、已读和归档。租户身份仍可在可信上下文中传递，但当前数据库只使用默认 schema，不提供租户间数据库隔离，详见[数据库 README](../../loadup-components/data/loadup-components-database/README.md)。
 
 ## 引入
 

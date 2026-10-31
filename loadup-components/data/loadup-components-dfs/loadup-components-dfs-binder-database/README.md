@@ -27,12 +27,13 @@ capabilities only; presigned URLs and multipart upload are unsupported.
 
 ## 对外契约
 
-- [`FileStorageMapper`](src/main/java/io/github/loadup/components/dfs/database/mapper/FileStorageMapper.java)
+- [`DatabaseDfsProvider`](src/main/java/io/github/loadup/components/dfs/database/DatabaseDfsProvider.java) implements the `DfsProvider` SPI.
+- [`DfsFileInsert`](src/main/java/io/github/loadup/components/dfs/database/dataobject/DfsFileInsert.java) maps the `dfs_file` table.
 
 ## 自动装配
 
 - [
-  `DatabaseDfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/database/autoconfig/DatabaseDfsAutoConfiguration.java)
+  `DatabaseDfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/database/autoconfigure/DatabaseDfsAutoConfiguration.java)
     - 启用条件：`@ConditionalOnProperty(prefix = "loadup.dfs", name = "binder-type", havingValue = "database")`。
 
 设计边界与装配路径见 [ARCHITECTURE.md](ARCHITECTURE.md)。

@@ -24,7 +24,7 @@
 主要入口文件：
 
 - [
-  `JetCacheCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/jetcache/autoconfig/JetCacheCacheAutoConfiguration.java)
+  `JetCacheCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/jetcache/autoconfigure/JetCacheCacheAutoConfiguration.java)
 
 ## 分层与调用路径
 
@@ -39,7 +39,7 @@ binder 实现框架契约，把实现库及其配置隔离在业务 API 之外�
 ## 装配规则
 
 - [
-  `JetCacheCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/jetcache/autoconfig/JetCacheCacheAutoConfiguration.java)
+  `JetCacheCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/jetcache/autoconfigure/JetCacheCacheAutoConfiguration.java)
   是自动配置入口。
     - `@ConditionalOnClass({SimpleCacheManager.class, CacheBuilderTemplate.class})`
     - `@ConditionalOnProperty(prefix = "loadup.cache", name = "type", havingValue = CacheBackendType.JETCACHE)`

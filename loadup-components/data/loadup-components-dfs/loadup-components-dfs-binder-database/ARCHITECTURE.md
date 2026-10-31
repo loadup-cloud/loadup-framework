@@ -23,7 +23,7 @@
 主要入口文件：
 
 - [
-  `DatabaseDfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/database/autoconfig/DatabaseDfsAutoConfiguration.java)
+  `DatabaseDfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/database/autoconfigure/DatabaseDfsAutoConfiguration.java)
 - [`DatabaseDfsProvider`](src/main/java/io/github/loadup/components/dfs/database/DatabaseDfsProvider.java)
 
 ## 分层与调用路径
@@ -39,16 +39,15 @@ binder 实现框架契约，把实现库及其配置隔离在业务 API 之外�
 ## 装配规则
 
 - [
-  `DatabaseDfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/database/autoconfig/DatabaseDfsAutoConfiguration.java)
+  `DatabaseDfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/database/autoconfigure/DatabaseDfsAutoConfiguration.java)
   是自动配置入口。
-    - `@ConditionalOnClass({FileStorageMapper.class, ObjectMapper.class})`
+    - `@ConditionalOnClass({NamedParameterJdbcTemplate.class, ObjectMapper.class})`
     - `@ConditionalOnProperty(prefix = "loadup.dfs", name = "binder-type", havingValue = "database")`
     - `@ConditionalOnMissingBean(DfsProvider.class)`
 
 ## 扩展契约
 
-- [`FileStorageMapper`](src/main/java/io/github/loadup/components/dfs/database/mapper/FileStorageMapper.java)
-  ：由实现方或调用方按接口定义对接。
+- `DfsFileInsertMapper` is generated from `DfsFileInsert` by MyBatis-Flex; `DatabaseDfsProvider` uses it for file reads and inserts.
 
 ## 设计取舍
 

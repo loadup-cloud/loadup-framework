@@ -119,8 +119,7 @@ requestKey 与原始请求；同键不同内容返回冲突。同商户同 scope
 runtime/resolve 接受 merchantId、scopeKey、itemKey 和 transactionFacts。交易事实仅限 `transaction.*`
 ，必须由受信任支付业务验证；此接口不直接授权商户终端或收银台。金额使用最小单位整数字符串，费率使用十进制字符串。合约暂停/终止、未生效/到期或条件拒绝时不返回可执行配置。
 
-完整顺序调用示例位于 [Router.http](../../loadup-application/src/main/resources/Router.http)
-。必须先配置可信租户入口、MerchantFactsProvider 和方法权限；启动器只是本地验证工程。
+消费工程必须先配置可信租户入口、MerchantFactsProvider 和方法权限。本仓库不包含可运行的本地应用入口。
 
 ## 前端 API
 

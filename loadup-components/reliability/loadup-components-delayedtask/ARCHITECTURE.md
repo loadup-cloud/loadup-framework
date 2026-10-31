@@ -12,7 +12,7 @@ Scheduler binder → delayedtask.scan → recover exhausted → claim → Handle
 
 ## 数据模型
 
-业务唯一键 tenant_id/task_type/biz_id；execute_at 是业务截止时间，next_execute_at 是本次尝试的最早执行时间。attempts
+业务唯一键 `(task_type, biz_id)`，不包含 `tenant_id` 列；execute_at 是业务截止时间，next_execute_at 是本次尝试的最早执行时间。attempts
 记录实际领取次数，max_attempts 在注册时快照。claim_token 和 lease_until 标识当前执行权，last_error 仅保存固定安全描述。Spring
 JDBC 显式维护标准字段，MapStruct 负责数据表示转换；当前数据对象仍继承共享 BaseDO，待公共基础设施迁移时拆除其 Flex 耦合。
 
@@ -36,7 +36,7 @@ Handler 以固定 taskType
 
 ## 验证
 
-PostgreSQL 集成测试源码覆盖事务回滚、幂等和冲突、租户隔离、期限、失败重试、取消改期、租约围栏和并发领取；迁移后的构建与测试尚未运行。多
+PostgreSQL 集成测试源码覆盖事务回滚、幂等和冲突、任务身份上下文、期限、失败重试、取消改期、租约围栏和并发领取；迁移后的构建与测试尚未运行。当前仅运行于默认 schema，未实现租户间数据库隔离；见[数据库 README](../../data/loadup-components-database/README.md)。多
 Pod 故障演练、时钟漂移和规模压测仍待部署验收。
 
 ## 构造与代理安全

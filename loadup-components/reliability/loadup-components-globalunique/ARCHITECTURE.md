@@ -12,9 +12,8 @@ business transaction
       │
       └─ GlobalUniqueTemplate.claim
               │
-              ├─ resolve tenant scope
               ├─ allocate ID and populate audit fields
-              ├─ insert with ON CONFLICT (tenant_id, biz_type, unique_key) DO NOTHING
+              ├─ insert with ON CONFLICT (biz_type, unique_key) DO NOTHING
               └─ PostgreSQL unique index decides first claim or replay
 ```
 
@@ -23,16 +22,17 @@ propagate to the caller. An inactive row that still owns the key is an integrity
 
 ## Uniqueness contract
 
-The database constraint is:
+The current database constraint is:
 
 ```text
-UNIQUE (tenant_id, biz_type, unique_key)
+UNIQUE (biz_type, unique_key)
 ```
 
-Tenant-enabled applications use the tenant bound in `TenantUtil`. When tenant support is disabled,
-the database component's `default-tenant-id` scopes claims. When tenant support is enabled but
-context is optional and absent, the reserved `__loadup_global__` scope keeps the non-null unique
-constraint deterministic.
+The API retains a tenant-scoped identity contract, but the persisted row and unique index contain no
+tenant column. Runtime datasource routing is not implemented and the application currently serves
+only the default schema. Therefore the current database behavior is unique within that schema, not
+isolated per tenant. Do not enable multi-tenant operation until the routing and migration lifecycle
+described by the [database component](../../data/loadup-components-database/README.md) is implemented.
 
 `bizType` and `uniqueKey` are trimmed and required. Their maximum lengths are 64 and 255
 characters. `bizId` and `requestData` are diagnostic data and do not participate in uniqueness.
@@ -45,5 +45,6 @@ without an outer transaction commits as a standalone idempotency record.
 
 ## Persistence
 
-Spring JDBC uses the Spring-managed connection and explicit tenant and soft-delete predicates.
-The PostgreSQL initial migration contains the standard columns, including a Boolean deletion flag.
+Spring JDBC uses the Spring-managed connection and an explicit soft-delete predicate. The PostgreSQL
+initial migration contains the standard columns, including a Boolean deletion flag; it does not
+store or filter a `tenant_id` column.

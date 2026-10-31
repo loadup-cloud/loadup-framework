@@ -169,4 +169,4 @@ mvn clean test -pl :loadup-components-lock -Dtest=LockTemplateTest,LockKeyOption
 mvn clean verify -pl :loadup-components-lock -Dit.test=LockTemplateIT -Dskip.unit.tests=true -Dskip.spotless=true -Dskip.spotbugs=true
 ```
 
-部署环境的故障转移、长暂停、断网、固定租期过期及事务边界验证保留在 ROADMAP。设计见 [ARCHITECTURE.md](ARCHITECTURE.md)。
+生产验收还需覆盖部署环境的故障转移、长暂停、断网、固定租期过期及事务边界。设计见 [ARCHITECTURE.md](ARCHITECTURE.md)。

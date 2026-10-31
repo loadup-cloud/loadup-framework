@@ -35,7 +35,7 @@ flowchart LR
   C --> R[运行时判定与配置]
 ```
 
-- 产品编码、组合编码、方案编码在租户内唯一；停用后不复用历史编码。
+- 产品编码、组合编码、方案编码在当前 schema 内唯一；停用后不复用历史编码。租户身份仍参与应用层校验，但数据库只使用默认 schema。
 - 所有引用指向确切版本，不允许 latest。
 - 已发布内容不可修改，修改创建新版本；主档停用阻止新增销售，默认不影响存量合约。
 - 组合首版只包含产品。方案可以引用多个组合，通过组合别名限定 itemKey，例如 basic.wechat。
@@ -150,19 +150,20 @@ merchantId/scopeKey 绑定与状态，校验持久快照摘要后调用同一领
 
 | 表                         | 核心内容                                                                                 |
 |----------------------------|------------------------------------------------------------------------------------------|
-| contract_catalog_version   | kind 区分产品/条件/组合/方案，租户+kind+code+version 唯一，JSON definition 与 rowVersion |
-| merchant_contract          | 租户+商户+scope 唯一，状态/generation、方案 id、持久 requestKey/requestDigest、创建者    |
-| merchant_contract_revision | 租户+合约+revision 唯一，冻结条款 JSON 与快照摘要                                        |
+| contract_catalog_version   | kind 区分产品/条件/组合/方案，kind+code+version 唯一，JSON definition 与 rowVersion     |
+| merchant_contract          | 商户+scope 唯一，状态/generation、方案 id、持久 requestKey/requestDigest、创建者        |
+| merchant_contract_revision | 合约+revision 唯一，冻结条款 JSON 与快照摘要                                            |
 
-每表含 id VARCHAR (64)、tenant_id、created_at、updated_at、deleted TINYINT，DO 继承 BaseDO。使用 QueryWrapper，Mapper 无额外
-SQL。所有读取、锁定、分页和更新均显式限制租户和 deleted=0；JSON 引用由 app 在同一租户解析。版本身份不变，已发布内容不能原地编辑。
+每表含 `id VARCHAR(64)`、`created_at`、`updated_at`、`deleted`，DO 继承 BaseDO；不含 `tenant_id`。读取、锁定、分页和更新使用
+QueryWrapper 与软删除条件，不添加行级租户谓词。租户身份仍由 ContractIdentity 与可信上下文校验；当前数据库仅运行于默认 schema，未实现
+运行时租户 schema 路由。多租户数据库隔离尚未生效，详见[数据库 README](../../loadup-components/data/loadup-components-database/README.md)。JSON 引用按当前身份在同一 schema 解析。版本身份不变，已发布内容不能原地编辑。
 
 Flyway 为 V20261009000001__create_contract_catalog.sql，避免重复通用 V1
 编号。单表目录是当前设计选择，后续只有需要独立主档、跨项统计或关系约束时再拆表。审批、生效安排、独立绑定历史与审计记录尚未创建空表。
 
 发布事务锁定目录及引用版本，验证全部引用已发布。已下架引用仍允许解释已发布上层版本；下架已有计划本身阻止新签约，不回写存量快照。签约在商户外部查询完成后开启
 READ_COMMITTED 事务，锁定方案状态，计算冻结条款，原子写入 header/revision。获取方案锁后重查幂等请求，避免等待锁期间错过已提交请求。插入触发重复键时，先退出事务并回滚
-header/revision，再查询已提交请求并校验摘要；不在失败事务内重放结果。租户+requestKey
+header/revision，再查询已提交请求并校验摘要；不在失败事务内重放结果。当前 schema 内的 requestKey
 唯一约束处理重复请求，摘要绑定商户/范围/方案/选择/覆盖值/显式生效时间；相同内容重放已提交合约，不同内容拒绝。锁定方案会使同方案签约短暂串行，生产需按实际容量验证；外部调用不能进入持锁区间。
 
 状态更新以 generation 和非终止状态做条件写入；暂停可恢复，终止不可恢复。v1 仅

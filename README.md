@@ -2,7 +2,7 @@
 
 LoadUp 是面向 Spring Boot 应用的可复用框架与 SDK。项目通过 BOM 统一依赖版本，集成方按需引入技术组件和通用业务模块，在自己的应用中组合所需能力。
 
-[阅读文档](https://loadup-docs.laysan.site/) · [技术组件](loadup-components/README.md) · [业务模块](loadup-modules/README.md) · [路线图](ROADMAP.md)
+[阅读文档](https://loadup-docs.laysan.site/) · [技术组件](loadup-components/README.md) · [业务模块](loadup-modules/README.md) · [架构说明](ARCHITECTURE.md)
 
 ## 项目概况
 
@@ -13,7 +13,7 @@ LoadUp 是面向 Spring Boot 应用的可复用框架与 SDK。项目通过 BOM 
   保存业务截止时间并提供租约恢复与重试。
 - **统一版本管理**：`loadup-dependencies` BOM 管理 LoadUp 模块及相关依赖版本。
 
-LoadUp 是供其他应用消费的 SDK。`loadup-application` 用于本地集成验证，不是生产部署单元。
+LoadUp 是供其他应用消费的 SDK。本仓库聚合可复用模块，不包含面向生产部署的应用入口。
 
 ## 能力与目录
 
@@ -24,7 +24,6 @@ LoadUp 是供其他应用消费的 SDK。`loadup-application` 用于本地集成
 | [`loadup-components`](loadup-components/README.md)     | Web MVC、认证授权、指标追踪、缓存、数据库、分布式锁、文件存储、通知、调度等技术组件                     |
 | [`loadup-modules`](loadup-modules/README.md)           | 可复用业务模块，包含 UPMS、审计中心、数据字典、文件资源、站内通知、导入导出任务、商户资料及动态合约管理 |
 | [`loadup-testify`](loadup-testify/README.md)           | 集成测试辅助能力                                                                                        |
-| [`loadup-application`](loadup-application/README.md)   | 本地集成验证启动器                                                                                      |
 
 模块的接入方式、配置项和设计说明见各目录的 README 与 ARCHITECTURE
 文档，也可在[文档站](https://loadup-docs.laysan.site/docs/)按能力查找。
@@ -62,7 +61,7 @@ LoadUp 是供其他应用消费的 SDK。`loadup-application` 用于本地集成
 ## 架构边界
 
 依赖方向为 `commons → components → modules → 集成方应用`。业务模块按需提供 Spring MVC Web 适配；技术组件的不同后端通过独立
-binder 接入。项目不会要求集成方使用 `loadup-application` 作为自己的部署入口。
+binder 接入。详细模块职责、依赖边界与数据库隔离现状见[架构说明](ARCHITECTURE.md)。
 
 ## 许可证
 
@@ -129,7 +128,7 @@ Temurin 25、经 SHA-256 校验的 mvnd 1.0.6 和 Maven 依赖缓存；PR 更新
 `*.lastUpdated` 失败标记；CI 的 mvnd 命令使用 `-U` 重新检查缺失的 release 及更新的 SNAPSHOT，已下载的正常制品继续复用。
 
 - **变更范围**：轻量任务运行 Python 工具回归并比较 PR 的 merge-base 差异或 push 的 before/after。仅修改模块
-  README/ARCHITECTURE/AGENTS、根 ROADMAP/LICENSE/NOTICE 及文档同步工具时，跳过后端 Java、Docker、Maven
+  README/ARCHITECTURE/AGENTS、根 LICENSE/NOTICE 及文档同步工具时，跳过后端 Java、Docker、Maven
   与发布任务；混合后端改动、未知文件、手动运行或比较历史缺失时运行后端检查。删除/改名也参与判断，资源目录中的普通 Markdown
   模板仍属于后端改动。
 - **Backend Fast Quality**：与测试主任务并行，通过 validate 与显式 Spotless、License、Checkstyle

@@ -40,14 +40,14 @@ POST/JSON、权限和 SpringDoc。
 
 ## 持久化与隔离
 
-merchant_profile 包含 id/tenant_id/created_at/updated_at/deleted 标准列，以及基本资料、status、row_version、创建/更新操作者。唯一键
-tenant_id+merchant_code；分页索引 tenant_id+status+created_at。id 由业务 UUID 提供。
+`merchant_profile` 包含 `id`、`created_at`、`updated_at`、`deleted` 及基本资料、status、row_version、创建/更新操作者；不含
+`tenant_id`。编码唯一性和分页索引在当前 schema 内生效。租户身份仍用于业务上下文与身份校验，但当前 HTTP 入口只绑定默认租户，运行时 schema
+路由未实现，因此不能提供租户间数据库隔离。数据库隔离现状见 [database README](../../loadup-components/data/loadup-components-database/README.md)。
 
-Gateway 用 QueryWrapper 明确约束 tenant 与 deleted=0；空租户和空查找 id 拒绝。Mapper 只有 BaseMapper 标准方法。更新整个已合并资料时显式写入
+Gateway 用 QueryWrapper 约束当前 schema 内的记录及 `deleted=0`；租户身份校验仍在应用服务边界执行。空租户和空查找 id 拒绝。Mapper 只有 BaseMapper 标准方法。更新整个已合并资料时显式写入
 null，以允许清空可选公开字段；敏感字段已在领域更新中保留原值或明确置空串。事务由 app 包围，唯一约束处理并发创建，版本条件防止丢失更新。
 
-迁移 V20261010000001 与合约时间戳编号独立，消费方需验收多模块组合及已有库升级。框架提供的是 SDK，loadup-application
-仅作本地集成启动器。
+迁移 V20261010000001 与合约时间戳编号独立，消费方需验收多模块组合及已有库升级。框架提供 SDK，不包含运行时应用入口。
 
 ## 合约事实信任边界
 

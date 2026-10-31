@@ -27,7 +27,9 @@ logic-delete flag, normal rows use `false`, deleted rows use `true`, and mapper 
 automatically add or apply that condition. Paging defaults are 20 items per page with a maximum of 100.
 
 Explicit SQL must still set IDs, audit timestamps and `deleted`, and must filter `deleted` rows itself. Business tables
-do not carry a `tenant_id` column; schema selection is handled by the routing layer. PostgreSQL schemas use boolean
+do not carry a `tenant_id` column. Schema-per-tenant is the isolation target, but runtime routing is not implemented:
+`TenantFilter` currently binds the configured default tenant and the application serves only the configured default
+schema. Do not treat `multi-tenant.enabled` as enabling per-tenant datasource routing. PostgreSQL schemas use boolean
 `deleted`.
 
 ## Schema-per-tenant isolation

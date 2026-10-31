@@ -9,7 +9,7 @@
 |----------|------------------------------------------------------------------------------------------|
 | 基本资料 | 编码、名称/简称、类型、行业、国家/省市、地址、登记号码、联系人、电话和邮箱               |
 | 管理     | 创建、更新、分页、详情、启用/停用，乐观 rowVersion；编码创建后不变                       |
-| 隔离     | 所有 Gateway 查询/更新限制 tenant_id 与 deleted=0；租户内编码唯一                        |
+| 隔离     | 保留可信租户身份校验；数据库当前使用默认 schema，未实现运行时租户 schema 路由或行级隔离 |
 | 对外报文 | POST JSON、全局 result/data、WebMVC `/api`、Trace header、SpringDoc                      |
 | 隐私     | 地址/登记号/联系方式在 WebMVC JSON 输出中脱敏；内部资料与存储不被输出掩码污染            |
 | 合约接入 | 可选 merchant-contract 将持久资料转换为 MerchantFactsProvider；自定义 Provider 优先      |
@@ -111,13 +111,12 @@ WebMVC 处理。原始敏感数据仍存于数据库，输出脱敏不是加密�
 
 ## 页面、示例与验证
 
-前端入口 `/merchants/list`，API 位于 `frontend/apps/admin/src/api/merchant/index.ts`。合约签约页支持按名称搜索启用商户。页面按钮不替代服务端权限检查。
+前端入口 `/merchants/list`，API 位于[管理端 Merchant API](../../../loadup-admin/apps/admin/src/api/merchant/index.ts)。合约签约页支持按名称搜索启用商户。页面按钮不替代服务端权限检查。
 
-[Router.http](../../loadup-application/src/main/resources/Router.http) 提供先创建商户、再签约、启停与更新示例；本地 UPMS
-schema.sql 补三类商户权限。已有数据库需手工执行新增授权语句并重新登录，消费工程自行管理权限。
+本仓库不包含可运行的本地应用入口；本地 UPMS schema.sql 补三类商户权限。已有数据库需手工执行新增授权语句并重新登录，消费工程自行管理权限。
 
 MerchantBasicInfoTest、MerchantFactsTest 和 MerchantContractIT 源码覆盖私有字段更新语义、事实白名单/未知值、身份错配、自定义
-Provider 退让、MySQL 编码唯一/版本冲突/租户隔离、真实商户签约与停用门禁。集成测试使用 Testify + MySQL Testcontainers，不用
+Provider 退让、MySQL 编码唯一/版本冲突和商户签约与停用门禁。集成测试使用 Testify + MySQL Testcontainers，不用
 MockBean 代替数据库；未执行构建或测试。设计见 [ARCHITECTURE.md](ARCHITECTURE.md)。
 
 ## 业务配置命名空间

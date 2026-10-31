@@ -45,5 +45,5 @@ loadup:
 ## 自动装配
 
 - [
-  `NanocaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/nanocaptcha/autoconfig/NanocaptchaAutoConfiguration.java)
+  `NanocaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/nanocaptcha/autoconfigure/NanocaptchaAutoConfiguration.java)
     - 启用条件：`@ConditionalOnProperty(prefix = "loadup.captcha", name = "binder-type", havingValue = "nanocaptcha")`。

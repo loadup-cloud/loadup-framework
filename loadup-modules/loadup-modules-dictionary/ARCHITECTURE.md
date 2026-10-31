@@ -12,17 +12,16 @@
 
 ## 数据与一致性
 
-`dictionary_type` 按 `(tenant_id, type_code)` 唯一，`dictionary_item` 按 `(tenant_id, type_id, item_value)`
-唯一，条目通过外键引用类型。两表保留标准 `id`、`tenant_id`、`created_at`、`updated_at`、`deleted`
-列；当前删除为物理删除，类型有条目时拒绝删除。类型编码和值不可修改，避免已被业务引用的含义发生漂移。
+`dictionary_type` 按 `type_code` 唯一，`dictionary_item` 按 `(type_id, item_value)` 唯一，条目通过外键引用类型。两表保留标准
+`id`、`created_at`、`updated_at`、`deleted` 列，不含 `tenant_id`；当前删除为物理删除，类型有条目时拒绝删除。类型编码和值不可修改，避免已被业务引用的含义发生漂移。
 
 写操作由 `@Transactional` 包裹。管理查询返回含停用数据的分页结果；业务读取只有在类型启用时才返回启用条目，按排序值、标签、value
 排序。每次读取直接访问数据库，因此修改立即可见，不引入缓存失效问题。
 
 ## 租户与扩展
 
-服务显式接收租户 ID；为空时映射到保留租户 `__default__`。Repository 的每个读写操作均限定租户。Web 层从 `TenantUtil`
-获取租户，不接受客户端在请求体中指定租户。多租户应用仍需保证其租户上下文绑定可信。首版 MySQL DDL 与 Flyway 迁移随模块提供。
+租户身份仍由可信执行上下文传递，不接受客户端在请求体中指定租户；但 Repository 不使用 `tenant_id` 行谓词。当前 `TenantFilter` 绑定默认租户，
+schema 路由未实现，因此该模块目前只在默认 schema 中运行，不提供租户间数据库隔离。详见[数据库 README](../../loadup-components/data/loadup-components-database/README.md)。首版 MySQL DDL 与 Flyway 迁移随模块提供。
 
 接入方式见 [README.md](README.md)。
 
@@ -41,7 +40,7 @@ web → app → domain
 - app 在持久化装配之后按 Gateway 及所需组件条件创建 `DictionaryService`。生成的 converter 通过显式 `@Import` 注册，避免
   REGISTER_BEAN 阶段条件与组件扫描冲突。
 - web 只负责路由、可信身份/租户、方法授权和 HTTP 投影；请求契约归 client。全局响应、Jackson 与 `/api` 前缀由 WebMVC 组件处理。
-- 仓储使用 Spring JDBC 与 Spring MapStruct；显式处理租户、锁、幂等及状态条件。Flyway 初始脚本使用 PostgreSQL 结构。
+- 仓储使用 Spring JDBC 与 Spring MapStruct；显式处理锁、幂等及状态条件。Flyway 初始脚本使用 PostgreSQL 结构。
 - 所有子模块 parent 指向根 `loadup-parent`，所有内部依赖坐标由 BOM 管理。
 
 配置契约迁移到 `loadup.modules.dictionary.*`，不保留旧前缀别名。自动装配、覆盖默认 Gateway 和关闭功能的回归源码见

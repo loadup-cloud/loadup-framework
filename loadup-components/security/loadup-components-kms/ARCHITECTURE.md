@@ -85,4 +85,4 @@ ACL、TLS、持久化或解封流程。真实服务的轮换、历史数据、BY
 本身不依赖 Signature。
 
 协议参考：[OpenBao Transit API](https://openbao.org/docs/api/secret/transit/)
-；待完成验收见 [ROADMAP](../../../ROADMAP.md)。
+；真实服务验收还需覆盖轮换、历史数据、BYOK、公钥导入、封印/重启、ACL、续租和故障恢复。
