@@ -28,12 +28,11 @@ class DatabaseCoreAutoConfigurationTest {
 
     @Test
     void bindsDatabaseSchemaIndependentlyOfMultiTenancy() {
-        runner.withPropertyValues(
-                        "loadup.database.default-schema=ledger",
-                        "loadup.database.multi-tenant.enabled=false")
+        runner.withPropertyValues("loadup.database.default-schema=ledger", "loadup.database.multi-tenant.enabled=false")
                 .run(context -> {
                     assertThat(context).hasNotFailed();
-                    assertThat(context.getBean(DatabaseTenant.class).currentSchema()).isEqualTo("ledger");
+                    assertThat(context.getBean(DatabaseTenant.class).currentSchema())
+                            .isEqualTo("ledger");
                 });
     }
 

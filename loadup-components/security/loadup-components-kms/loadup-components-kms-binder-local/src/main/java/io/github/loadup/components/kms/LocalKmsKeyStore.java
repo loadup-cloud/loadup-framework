@@ -29,5 +29,8 @@ public record LocalKmsKeyStore(KeyStore store, char[] password) {
         password = Objects.requireNonNull(password).clone();
     }
 
-    @Override public char[] password() { return password.clone(); }
+    @Override
+    public char[] password() {
+        return password.clone();
+    }
 }

@@ -13,9 +13,11 @@ class RpcClientDefaultsTest {
     @Test
     void infersCallerAndTargetWithoutPerClientConfiguration() {
         var environment = new MockEnvironment().withProperty("spring.application.name", "payment");
-        var settings = RpcClientDefaults.bind(environment, "loadup.modules.payment.limitcenter", "limitcenter", Settings.class);
-        assertThat(settings).isEqualTo(new Settings("__default__", "payment", "limitcenter",
-                Path.of("/var/run/loadup/secrets/limitcenter.jwt")));
+        var settings = RpcClientDefaults.bind(
+                environment, "loadup.modules.payment.limitcenter", "limitcenter", Settings.class);
+        assertThat(settings)
+                .isEqualTo(new Settings(
+                        "__default__", "payment", "limitcenter", Path.of("/var/run/loadup/secrets/limitcenter.jwt")));
     }
 
     @Test
@@ -27,10 +29,13 @@ class RpcClientDefaultsTest {
                 .withProperty("loadup.rpc.client.audience", "internal")
                 .withProperty("loadup.rpc.client.token-file", "/tmp/service.jwt")
                 .withProperty("loadup.modules.payment.limitcenter.audience", "limit-api");
-        var limit = RpcClientDefaults.bind(environment, "loadup.modules.payment.limitcenter", "limitcenter", Settings.class);
+        var limit = RpcClientDefaults.bind(
+                environment, "loadup.modules.payment.limitcenter", "limitcenter", Settings.class);
         var acquire = RpcClientDefaults.bind(environment, "loadup.modules.payment.acquire", "acquire", Settings.class);
-        assertThat(limit).isEqualTo(new Settings("tenant_a", "custom-caller", "limit-api", Path.of("/tmp/service.jwt")));
-        assertThat(acquire).isEqualTo(new Settings("tenant_a", "custom-caller", "internal", Path.of("/tmp/service.jwt")));
+        assertThat(limit)
+                .isEqualTo(new Settings("tenant_a", "custom-caller", "limit-api", Path.of("/tmp/service.jwt")));
+        assertThat(acquire)
+                .isEqualTo(new Settings("tenant_a", "custom-caller", "internal", Path.of("/tmp/service.jwt")));
     }
 
     @Test
@@ -39,7 +44,8 @@ class RpcClientDefaultsTest {
                 .withProperty("spring.application.name", "payment")
                 .withProperty("special-audience", "private-api")
                 .withProperty("loadup.modules.payment.limitcenter.audience", "${special-audience}");
-        var settings = RpcClientDefaults.bind(environment, "loadup.modules.payment.limitcenter", "limitcenter", Settings.class);
+        var settings = RpcClientDefaults.bind(
+                environment, "loadup.modules.payment.limitcenter", "limitcenter", Settings.class);
         assertThat(settings.audience()).isEqualTo("private-api");
     }
 }

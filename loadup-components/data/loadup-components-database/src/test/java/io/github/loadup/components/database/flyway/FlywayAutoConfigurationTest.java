@@ -78,9 +78,7 @@ class FlywayAutoConfigurationTest {
 
     @Test
     void usesDatabaseSchemaWithMultiTenancyDisabled() {
-        runner.withPropertyValues(
-                        "loadup.database.default-schema=ledger",
-                        "loadup.database.multi-tenant.enabled=false")
+        runner.withPropertyValues("loadup.database.default-schema=ledger", "loadup.database.multi-tenant.enabled=false")
                 .run(context -> {
                     assertThat(context).hasNotFailed();
                     var config = context.getBean(Flyway.class).getConfiguration();

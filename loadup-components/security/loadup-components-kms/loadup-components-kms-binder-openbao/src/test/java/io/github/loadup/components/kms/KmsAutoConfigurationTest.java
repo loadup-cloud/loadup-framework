@@ -59,7 +59,10 @@ class KmsAutoConfigurationTest {
 
     @Test
     void assemblesRuntimeWithoutEnablingAdministrationOrMakingNetworkCalls() {
-        context.withPropertyValues("loadup.kms.binder=openbao", "loadup.kms.enabled=true", "loadup.kms.endpoint=https://bao.example.test/")
+        context.withPropertyValues(
+                        "loadup.kms.binder=openbao",
+                        "loadup.kms.enabled=true",
+                        "loadup.kms.endpoint=https://bao.example.test/")
                 .withBean(KmsTokenProvider.class, () -> () -> "runtime")
                 .run(application -> {
                     assertThat(application).hasSingleBean(KmsTemplate.class).doesNotHaveBean(KmsKeyManager.class);
@@ -71,7 +74,8 @@ class KmsAutoConfigurationTest {
     @Test
     void assemblesManagementUsingItsOwnProvider() {
         context.withPropertyValues(
-                        "loadup.kms.binder=openbao", "loadup.kms.enabled=true",
+                        "loadup.kms.binder=openbao",
+                        "loadup.kms.enabled=true",
                         "loadup.kms.management-enabled=true",
                         "loadup.kms.endpoint=https://bao.example.test")
                 .withBean(KmsTokenProvider.class, () -> () -> "runtime")
@@ -86,7 +90,8 @@ class KmsAutoConfigurationTest {
         KmsTemplate runtime = mock(KmsTemplate.class);
         KmsKeyManager manager = mock(KmsKeyManager.class);
         context.withPropertyValues(
-                        "loadup.kms.binder=openbao", "loadup.kms.enabled=true",
+                        "loadup.kms.binder=openbao",
+                        "loadup.kms.enabled=true",
                         "loadup.kms.management-enabled=true",
                         "loadup.kms.endpoint=https://bao.example.test")
                 .withBean(KmsTemplate.class, () -> runtime)
@@ -113,7 +118,8 @@ class KmsAutoConfigurationTest {
     @Test
     void environmentCredentialsFallbackCanBeAssembledWithoutReadingSecretsOrConnecting() {
         context.withPropertyValues(
-                        "loadup.kms.binder=openbao", "loadup.kms.enabled=true",
+                        "loadup.kms.binder=openbao",
+                        "loadup.kms.enabled=true",
                         "loadup.kms.management-enabled=true",
                         "loadup.kms.endpoint=https://bao.example.test",
                         "loadup.kms.token-env=LOADUP_TEST_RUNTIME_TOKEN",
@@ -156,7 +162,8 @@ class KmsAutoConfigurationTest {
     @Test
     void validExplicitPropertiesBindThroughTheRuntimeConfiguration() {
         context.withPropertyValues(
-                        "loadup.kms.binder=openbao", "loadup.kms.enabled=true",
+                        "loadup.kms.binder=openbao",
+                        "loadup.kms.enabled=true",
                         "loadup.kms.endpoint=https://bao.example.test",
                         "loadup.kms.mount=payments/transit",
                         "loadup.kms.namespace=merchant",
@@ -178,7 +185,8 @@ class KmsAutoConfigurationTest {
     @Test
     void invalidTransportTimeoutFailsRuntimeAssembly() {
         context.withPropertyValues(
-                        "loadup.kms.binder=openbao", "loadup.kms.enabled=true",
+                        "loadup.kms.binder=openbao",
+                        "loadup.kms.enabled=true",
                         "loadup.kms.endpoint=https://bao.example.test",
                         "loadup.kms.read-timeout=0ms")
                 .run(application -> assertThat(application).hasFailed());
