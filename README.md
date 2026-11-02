@@ -15,6 +15,8 @@ LoadUp 是面向 Spring Boot 应用的可复用框架与 SDK。项目通过 BOM 
 
 LoadUp 是供其他应用消费的 SDK。本仓库聚合可复用模块，不包含面向生产部署的应用入口。
 
+后续 HTTP 默认调用能力、可选 Nacos/Dubbo 和 Gateway API / Envoy Gateway 部署参考的配套工作见 [Roadmap](ROADMAP.md)。
+
 ## 能力与目录
 
 | 目录                                                   | 内容                                                                                                    |
