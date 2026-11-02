@@ -73,7 +73,7 @@ Protobuf 消息命中 Dubbo 的 IDL 分支（`needWrapper=false`），因此不�
 
 ```java
 
-@DubboReference(url = "tri://customer-headless:50051")
+@DubboReference
 private CustomerRpc customerRpc;
 
 public MerchantEligibilityDTO authorizeNewOrder(String tenant, String payee) {
@@ -83,7 +83,8 @@ public MerchantEligibilityDTO authorizeNewOrder(String tenant, String payee) {
 }
 ```
 
-`@DubboReference` 只支持字段和 setter 注入；超时、重试由各应用的 `dubbo.consumer.*` 统一配置，写调用保持
+部署环境通过 `dubbo.reference.<接口全名>.url` 配置直连地址；使用 Nacos 时不配置 URL，
+由注册中心发现。`@DubboReference` 只支持字段和 setter 注入；超时、重试由各应用的 `dubbo.consumer.*` 统一配置，写调用保持
 `retries: 0`，长调用在注解上单独设置 `timeout`。
 
 ## 身份与错误
