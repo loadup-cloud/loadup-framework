@@ -97,6 +97,8 @@ public class JsonUtil {
         SimpleModule module = new SimpleModule();
         module.addDeserializer(Date.class, new MultiDateDeserializer());
         return builder.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+                .disable(DeserializationFeature.ACCEPT_FLOAT_AS_INT)
+                .enable(DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS)
                 .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
                 .disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
                 .disable(DateTimeFeature.WRITE_DURATIONS_AS_TIMESTAMPS)

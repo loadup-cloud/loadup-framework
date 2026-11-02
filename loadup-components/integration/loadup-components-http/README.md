@@ -1,6 +1,6 @@
 # HTTP
 
-使用 Spring `RestClient` + Apache HttpClient 5 调用外部 API。通过命名客户端与操作配置组织目标地址和协议参数，提供同步调用、原始响应和受限流式下载。沿用
+使用 Spring `RestClient` + Apache HttpClient 5 调用外部 API 和应用间 HTTP 服务。通过命名客户端与操作配置组织目标地址和协议参数，提供同步调用、原始响应和受限流式下载。沿用
 Boot 的 RestClient 定制、Jackson 配置及 HTTP Observation。
 
 ## 引入
@@ -84,6 +84,41 @@ try (OutputStream output = Files.newOutputStream(targetPath)) {
 
 下载限制与普通响应一致，组件关闭 HTTP 响应流但不关闭调用方 OutputStream。失败时文件可能已部分写入；业务应先写临时文件，检查状态及校验信息后再移动到正式位置。
 
+## Spring HTTP Service Clients
+
+接口使用标准 `@HttpExchange` / `@PostExchange`，通过 `http.serviceClient("customer", CustomerHttpService.class)` 创建，
+然后在消费方配置类中将代理注册为 Bean。接口由提供方 client 模块持有，组件不扫描或绑定业务包。
+
+```yaml
+loadup:
+  http:
+    clients:
+      customer:
+        base-url: ${CUSTOMER_BASE_URL:http://customer:8080}
+        allow-private-addresses: true
+        connect-timeout: 1s
+        acquire-timeout: 1s
+        read-timeout: 3s
+        max-request-bytes: 65536
+        max-response-bytes: 65536
+```
+
+按服务配置基础地址，HTTP 方法和相对路径写在标准接口注解中，无需再配置 `operations` 或逐方法 URL。
+每个代理由标准 `HttpServiceProxyFactory` + `RestClientAdapter` 执行；共享同名 HttpTemplate 客户端的 Apache 连接池和
+Boot RestClient 定制/Observation，保留 TLS Bundle、DNS 地址策略及无自动重试/重定向/Cookie 状态。
+接口的绝对 URI 也不能改变配置的 origin，防止把当次凭证发送给其他主机。
+
+使用同步 JSON DTO、泛型响应或 ResponseEntity；响应先有界缓存并关闭底层响应，再进入标准消息转换。
+大文件仍走现有 `download` 流式接口。接口参数显式使用 `@RequestHeader("Authorization")` 传递当次 bearer，
+或使用既有 `credential-ref` 按次读取凭证；不默认转发调用线程的安全身份，也不缓存 token。
+HTTP 非 2xx（含 3xx）抛出安全的 HttpCallException，不暴露原响应正文；HTTP 200 的业务结果可由 HttpServiceResponses.requiredData 校验成功码、状态与非空数据；失败通过 resultCode 提供格式受限的远端码，
+由调用方显式白名单映射，未知码保持依赖失败。远端文案不进入异常，任意异常消息不能伪造远端结果码。
+
+代理每次在当前客户端快照中查找标准代理，完整调用期间持有快照读锁；显式 `refresh` 后原代理使用新地址/连接池，
+失败刷新保留旧快照，关闭后拒绝调用。ConfigMap 更新不会自动调用 refresh，默认随应用重启生效。
+
+`HttpServiceClientsTest` 已补齐泛型 JSON、逐请求令牌、大小上限、超时、私网策略、无重试/重定向和刷新/关闭回归源码；尚未执行。
+
 ## 凭证与配置更新
 
 提供一个 `HttpCredentialProvider` Bean，将 `credential-ref`
@@ -113,6 +148,7 @@ PowerJob/Outbox；不能让多个组件重复包装重试。
 | 能力                        | 首版支持                                                                       |
 |-----------------------------|--------------------------------------------------------------------------------|
 | 命名客户端与操作            | 地址、方法、模板、默认头、凭证引用                                             |
+| 声明式应用间调用            | Spring HTTP Service Clients，按服务地址分组，共享同名连接池                      |
 | 请求体                      | JSON 对象、原始 String/byte[]                                                  |
 | 响应                        | 原始状态/头/byte[]，JSON 解析                                                  |
 | 下载                        | 有上限的流式复制，可用最终 URI/原字节 signer，自动关闭响应、不关闭调用方输出流 |
@@ -156,3 +192,6 @@ HTTP 4xx/5xx 仍返回 ResponseEntity，应先检查状态与完整性再认定�
 
 `HttpTemplateTest.signedStreamObservesTheExactWireTargetAndPropagatesCallerOutputLimitsWithoutClosingOutput`
 已补最终 URI/请求字节、输出内容、调用方异常和输出流生命周期测试源码；2026-10-28 未运行编译或测试。
+
+声明式 JSON 转换明确使用注入的 Jackson 3 JsonMapper（与命名操作相同），保留应用的时间、金额与严格整数约定，
+不会另建默认 mapper。共享 JSON 配置禁止浮点数截断为 int/long；新增回归源码验证标准代理同样拒绝该响应。

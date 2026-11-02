@@ -2,7 +2,7 @@
 
 ## 已批准：Kubernetes 原生部署与 HTTP 默认调用能力
 
-决策日期：2026-11-02。状态：目标已确认，配套实施待完成。完整迁移阶段和 Pay 应用验收以
+决策日期：2026-11-02。状态：HTTP Service Clients 首批源码已接入；运行验收及其余配套实施待完成。完整迁移阶段和 Pay 应用验收以
 [LoadUp Pay Roadmap](../loadup-pay/ROADMAP.md) 为主。
 
 Framework 是可选组件组成的 SDK；本目标不要求所有消费方部署 Kubernetes 或网关。
@@ -18,7 +18,7 @@ Spring Boot 保持 4.1.x，Java 保持 25。此前试接入的 Cloud Alibaba 模
 | 执行模型 | MVC + 虚拟线程在压测后启用；保留独立的连接池、并发隔离和下游容量约束 |
 | RPC | Dubbo Triple binder 保留为可选能力，不作为普通 HTTP 应用的传递依赖；Protobuf/gRPC 按跨语言契约或流式通信需求评估 |
 
-- [ ] 盘点并复用 HTTP、Web MVC、Resource Server、上下文、Resilience4j、可观测组件，确定 HTTP Service Clients 的最小接入位置。
+- [x] 首批在现有 HTTP 单 jar 接入标准 HTTP Service Clients，共享命名 transport；复用 Web MVC、Resource Server、业务上下文和 Boot Observation。未增加容错重试包装。
 - [ ] 完成声明式客户端分组装配与连接配置，保留租户、令牌、幂等、超时、错误码及追踪语义，写请求默认不自动重试。
 - [ ] 配合 Pay 的全量 HTTP 迁移，去掉应用默认依赖中的 Alibaba/Nacos 和 Dubbo；可选组件保持独立接入与版本管理。
 - [ ] 提供版本化 ConfigMap/Secret、滚动发布及配置回退的接入说明，明确文件/环境变量更新不等于 Bean 自动刷新。
@@ -28,3 +28,6 @@ Spring Boot 保持 4.1.x，Java 保持 25。此前试接入的 Cloud Alibaba 模
 
 验收以消费方能够在无独立注册中心的 K8s 环境中完成 HTTP 调用为准，同时保持 SDK 的按需依赖边界。
 文档记录不代表这些工作已实现或测试通过；构建、集成测试与部署仍遵循既有项目约定。
+
+首批：HttpTemplate.serviceClient 按提供方注册声明式接口，无逐方法 URL 配置；TLS、超时、池容量、响应大小及无重试策略复用已有客户端。
+回归测试源码已补充，未执行构建或测试；Pay 的 customer/product/limitcenter/payment 提供端和对应消费者已接入（31/44 操作），其余链路及 Envoy Gateway/配置版本化/虚拟线程仍待实施。

@@ -1,0 +1,44 @@
+package io.github.loadup.components.http;
+
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.enums.ResultStatusEnum;
+import io.github.loadup.commons.result.SuccessResponse;
+
+/** Validates the shared API envelope without trusting a remote description or exception message. */
+public final class HttpServiceResponses {
+    private HttpServiceResponses() {}
+
+    public static <T> T requiredData(SuccessResponse<T> response) {
+        if (response == null || response.result() == null) {
+            throw new HttpCallException(HttpCallException.Kind.RESPONSE_DECODING);
+        }
+        var result = response.result();
+        if (CommonResultCodeEnum.SUCCESS.getCode().equals(result.getCode())
+                && CommonResultCodeEnum.SUCCESS.getStatus().equals(result.getStatus())
+                && response.data() != null) {
+            return response.data();
+        }
+        if (ResultStatusEnum.FAIL.getCode().equals(result.getStatus())
+                && response.data() == null
+                && result.getCode() != null
+                && result.getCode().matches("[A-Z][A-Z0-9_]{0,63}")
+                && !CommonResultCodeEnum.SUCCESS.getCode().equals(result.getCode())) {
+            throw new RemoteFailure(result.getCode());
+        }
+        throw new HttpCallException(HttpCallException.Kind.RESPONSE_DECODING);
+    }
+
+    /** Callers translate only their own explicit whitelist; an arbitrary exception carries no remote code. */
+    public static String resultCode(Throwable failure) {
+        return failure instanceof RemoteFailure remote ? remote.code : "";
+    }
+
+    private static final class RemoteFailure extends HttpCallException {
+        private final String code;
+
+        private RemoteFailure(String code) {
+            super(Kind.TRANSPORT);
+            this.code = code;
+        }
+    }
+}

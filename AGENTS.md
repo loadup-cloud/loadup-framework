@@ -532,27 +532,14 @@ multipart，下载可以返回流式二进制。`loadup-components-webmvc` 对 A
   the business transaction on the same DataSource. Expired-lease recovery is at-least-once: handlers must be idempotent;
   token fencing protects task acknowledgements, not external side effects. XXL-JOB/JobRunr binders are not implemented.
 
-## 应用间 Dubbo Triple 与系统时区
+## 应用间调用与系统时区
 
-- 消费工程的应用间调用统一使用 Dubbo Triple；不新增内部 HTTP 客户端、内部 REST 入口或 HTTP 回退，也不引入 gRPC 契约；Protobuf
-  仅用于 IDL。商户/运营 API、收银台、渠道通知与外部系统沿用各自协议。
-- 每个提供方在自己的 `<service>-client` 模块维护 Java Facade、Command/Query/DTO、结果码，以及 Protobuf `.proto`、生成存根与
-  Wire↔DTO mapper；IDL 代码固定在 `rpc` 子包。适配器用 `@DubboService` 实现生成的 `ImplBase`，消费方 `*-infrastructure` 用
-  `@DubboReference` 引用生成接口。domain/app 不直接引用 rpc 类型。
-- 通用数据契约放现有 `loadup-commons`，通用 RPC 支持放现有 `loadup-components-rpc-binder-dubbo`（`RpcTokenContext`、
-  `RpcExceptionCodes`、provider filter）与 `loadup-components-rpc-proto`（Wire 标量转换）；commons 不反向依赖 components，不另建
-  pay-common/pay-rpc。
-- 跨进程只传 Protobuf 消息，使用 Dubbo Triple 的 IDL 分支，不产生 Wrapper 信封。`*-client` 用 `dubbo-maven-plugin`
-  生成消息与存根，MapStruct mapper 负责 Wire↔record DTO；不需要 `serialization`、`serialize-check-status` 或
-  `check-serializable`。字段号不可复用，删除字段必须 `reserved`。
-- 目标地址/超时/重试/TLS 通过 `dubbo.*` 配置绑定。K8s 命名固定 `<service>-headless:50051`，同 Namespace 使用
-  `tri://<service>-headless:50051`，不把环境地址写进 Java；无注册中心时 `registry.address: N/A`，写调用保持 `retries: 0`。
-- 消费方用 `RpcTokenContext.call(token, ...)` 逐次传播令牌，调用结束即移除。提供方 filter 重建 `Jwt`/`SecurityContext`
-  并恢复；入口负责签名、issuer、audience 和 token_use，内部跳转只校验 `exp`，因此 RPC 端口只对同 Namespace
-  开放。租户来自已验证身份。网络调用不跨本地事务；业务拒绝编码为 `loadup-result-code=<CODE>`
-  ，消费方只按本地白名单映射，未知错误按依赖失败处理，不输出凭证/载荷。
-- 业务时间采用 `ZoneId.systemDefault()`、`Clock.systemDefaultZone()` 或已注入 Clock 的 zone；不在代码、JVM 参数、JDBC 初始化
-  SQL 或 K8s 清单强制指定时区。JWT epoch、`Instant` 等协议边界保持绝对时间语义。
-- 修改 RPC
-  契约、认证或部署时，读取 [Dubbo binder 规范](loadup-components/integration/loadup-components-rpc/loadup-components-rpc-binder-dubbo/README.md)
-  ；源码编译、测试执行与真实 RPC 验收分别报告，遵守现有窄范围 clean 构建约定。
+- 默认推荐 Spring HTTP Service Clients + RestClient；迁移目标和验收边界见 [Roadmap](ROADMAP.md)。
+  SDK 按需依赖，不强制集成方部署 K8s、Nacos 或网关。Dubbo Triple binder 保留为独立可选能力。
+- 声明式客户端复用现有 HTTP 组件命名连接池、超时、TLS、大小限制、无自动重试/重定向及生命周期。
+  使用提供方级基础地址，K8s Service DNS 和本地覆盖均由应用配置；通用能力不引入 Pay 业务 DTO 或专用 pay-common。
+- 内部 HTTP 入口使用 Resource Server 完整 JWT 校验，身份和租户从可信 token 建立；每次传播目标 audience 的凭证。
+  业务失败沿用 ResultCode 白名单，网络调用置于本地事务外，保留幂等和未知结果语义。
+- 修改可选 Triple 时读取 [Dubbo binder 规范](loadup-components/integration/loadup-components-rpc/loadup-components-rpc-binder-dubbo/README.md)。
+  其内部 exp-only 信任模型不适用于 HTTP；保留该协议的网络隔离要求。
+- 业务时间采用系统默认 zone 或业务 Clock 的 zone；JWT epoch、Instant 保持绝对时间。不强制 JVM/JDBC/K8s 固定时区。

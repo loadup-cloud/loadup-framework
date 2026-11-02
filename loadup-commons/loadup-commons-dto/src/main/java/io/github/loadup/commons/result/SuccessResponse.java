@@ -28,6 +28,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "Successful response envelope")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"result", "data"})
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties({"traceId"})
 public record SuccessResponse<T>(
         @Schema(description = "Result metadata") @JsonProperty("result")
         Result result,

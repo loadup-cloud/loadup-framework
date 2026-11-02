@@ -77,3 +77,9 @@ JSON 转换失败日志只包含操作名和异常类型，不包含输入 JSON�
 ## 默认时区
 
 日期默认使用 JVM 系统本地时区；无偏移日期按本地时区解释，显式偏移和 epoch 时间保持绝对时间语义。
+
+## 整数与十进制边界
+
+共享 JsonUtil.customize 配置拒绝将 JSON 浮点数转换为 int/long，金额分单位、版本、计数与序号不能静默截断。
+BigDecimal 保留十进制语义，超出 JavaScript 安全整数范围但在 long 范围内的整数仍按 long 精确处理。
+IntegerJsonContractTest 已补对应回归源码，尚未运行。MVC mapper 的既有定制及声明式 HTTP 客户端均沿用此配置。

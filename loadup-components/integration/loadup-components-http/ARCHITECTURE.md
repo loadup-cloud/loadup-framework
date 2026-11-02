@@ -59,3 +59,25 @@ RestClient interceptor 及 tracing exporter 中的敏感信息采集。
 调用方可用有界输出流收紧单次大小上限；框架仍执行客户端 Content-Length/实际字节限制和响应关闭。
 输出流由调用方持有，写入失败不回滚已写字节，也不关闭该流；业务来源校验与正式提交在负责层完成。
 最终签名不改变固定 origin、DNS/代理约束、无自动重试/无重定向。新增测试源码未执行。
+
+## 声明式应用间调用（迁移首批）
+
+HttpTemplate.serviceClient 提供标准接口代理；内部仍由 HttpServiceProxyFactory + RestClientAdapter 完成注解解析、URI 编码、
+泛型类型和消息转换。同一 RuntimeClient 的命名操作与声明式客户端使用同一个 Apache transport，不建立第二套连接池或注册中心适配。
+
+声明式请求通过当前快照中的 RestClient 发送。末端 interceptor 约束固定 origin、每次 DNS、请求大小和凭证，
+有界读取并关闭响应后交给标准 converter；HTTP 非 2xx 映射为安全传输错误。Boot 的 Observation 仍生效，
+声明式路径不生成 loadup.http.calls 的 operation 指标，以免动态 URI/方法参数产生高基数。
+
+外层轻量代理只协调快照生命周期；每个快照缓存标准接口代理，refresh 后不复用旧 transport。
+整个标准调用在读锁内完成，写锁等待调用结束后才关闭旧池；业务身份由方法参数或 HttpCredentialProvider 当次解析，
+没有额外 ThreadLocal/token 缓存。内部入口鉴权和业务错误白名单属于应用，不属于传输组件。
+
+## 共享业务信封验证
+
+HttpServiceResponses 复用 commons-dto 的标准信封，只有 SUCCESS/S 且非空 data 才返回业务数据。
+格式正确的失败仅保留受限 code 供消费方白名单处理；响应文案不进入异常，任意异常消息不参与码解析。
+不提供全局业务码重映射，也不把认证或传输失败降为业务拒绝。成功但空 data 的协议应另行显式定义，当前方法不接受。
+
+声明式路径通过标准 configureMessageConverters / JacksonJsonHttpMessageConverter 绑定原 JsonMapper；
+其余 Boot 定制与非 JSON 转换保留。共享 JSON 定制关闭 ACCEPT_FLOAT_AS_INT，阻止金额、版本、计数和序号的静默截断。
