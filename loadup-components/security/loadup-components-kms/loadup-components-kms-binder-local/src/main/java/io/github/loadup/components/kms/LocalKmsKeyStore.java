@@ -19,24 +19,15 @@
  */
 package io.github.loadup.components.kms;
 
-import io.github.loadup.commons.json.ToStringAsJson;
+import java.security.KeyStore;
+import java.util.Objects;
 
-/**
- * An opaque Transit ciphertext that must retain its key name and version.
- */
-public record KmsCiphertext(
-        String keyName,
-        int version,
-        @io.github.loadup.commons.json.DiagnosticHidden String value) {
-    public KmsCiphertext {
-        KmsKeyRef.validateName(keyName);
-        if (version < 1 || value == null || !value.matches("vault:v" + version + ":[A-Za-z0-9+/=]+")) {
-            throw new IllegalArgumentException("Invalid KMS ciphertext");
-        }
+/** KeyStore and common entry password supplied by the application. */
+public record LocalKmsKeyStore(KeyStore store, char[] password) {
+    public LocalKmsKeyStore {
+        Objects.requireNonNull(store);
+        password = Objects.requireNonNull(password).clone();
     }
 
-    @Override
-    public String toString() {
-        return ToStringAsJson.reflectionToString(java.util.Map.of("keyName", keyName, "version", version));
-    }
+    @Override public char[] password() { return password.clone(); }
 }

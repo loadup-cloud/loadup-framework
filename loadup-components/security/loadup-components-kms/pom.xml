@@ -1,35 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>io.github.loadup-cloud</groupId>
-        <artifactId>loadup-framework</artifactId>
-        <version>0.0.2-SNAPSHOT</version>
-        <relativePath>../../../pom.xml</relativePath>
-    </parent>
+    <parent><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-framework</artifactId><version>0.0.2-SNAPSHOT</version><relativePath>../../../pom.xml</relativePath></parent>
     <artifactId>loadup-components-kms</artifactId>
+    <packaging>pom</packaging>
     <name>LoadUp Components KMS</name>
-    <description>OpenBao Transit key management, encryption and digital signatures.</description>
-    <properties>
-        <loadup.coverage.skip>false</loadup.coverage.skip>
-    </properties>
-    <dependencies>
-        <dependency>
-            <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-commons-error</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-http</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-commons-json</artifactId>
-        </dependency>
-    </dependencies>
+    <modules><module>loadup-components-kms-api</module><module>loadup-components-kms-binder-openbao</module><module>loadup-components-kms-binder-local</module></modules>
 </project>

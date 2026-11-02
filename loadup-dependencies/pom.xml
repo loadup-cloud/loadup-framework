@@ -1002,7 +1002,17 @@
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-kms</artifactId>
+                <artifactId>loadup-components-kms-api</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-kms-binder-openbao</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-kms-binder-local</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>

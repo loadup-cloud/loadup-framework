@@ -1,6 +1,6 @@
 # LoadUp Kms
 
-基于 OpenBao Transit 的密钥管理和密码操作组件。应用传入密钥引用与待处理字节，OpenBao 执行加解密或签名；私钥与对称密钥留在
+提供 local 和 OpenBao Transit binder 的密钥管理和密码操作组件，默认选择 local。应用传入密钥引用与待处理字节，OpenBao 执行加解密或签名；私钥与对称密钥留在
 OpenBao。适用于商户请求签名、通知签名及敏感字段加密。
 
 ## 能力矩阵
@@ -21,14 +21,14 @@ OpenBao。适用于商户请求签名、通知签名及敏感字段加密。
 默认关闭，需要已有 OpenBao 服务并显式启用。组件不负责部署、初始化或解封 OpenBao，不依赖业务数据库。导出关闭是服务端策略，不等同于
 HSM 硬件保护。既有密钥的策略由运维检查，创建请求不会重写已有密钥的安全属性。
 
-## Maven 接入
+## OpenBao 接入
 
 先引入 `loadup-dependencies` BOM，再添加：
 
 ```xml
 <dependency>
     <groupId>io.github.loadup-cloud</groupId>
-    <artifactId>loadup-components-kms</artifactId>
+    <artifactId>loadup-components-kms-binder-openbao</artifactId>
 </dependency>
 ```
 
@@ -41,6 +41,7 @@ HSM 硬件保护。既有密钥的策略由运维检查，创建请求不会重�
 loadup:
   kms:
     enabled: true
+    binder: openbao
     endpoint: https://openbao.internal:8200
     mount: transit
     token-env: OPENBAO_TOKEN
@@ -165,3 +166,9 @@ mvn clean -pl loadup-components/security/loadup-components-kms -am test \
 
 真实服务验收仍需覆盖密钥轮换、历史数据、BYOK、公钥导入、封印/重启、ACL、续租和故障恢复。设计见
 [ARCHITECTURE](ARCHITECTURE.md)，协议依据为 [OpenBao Transit API](https://openbao.org/docs/api/secret/transit/)。
+
+## Local binder
+
+引入 `loadup-components-kms-binder-local` 依赖，设置 `loadup.kms.enabled=true`（`loadup.kms.binder` 默认为 `local`），并由应用提供 `LocalKmsKeyStore` Bean。Bean 包含已加载的 Java KeyStore 和各密钥条目共用的密码；应用负责加载及持久化 KeyStore。RSA 私钥条目需要证书链，AES 密钥使用 SecretKeyEntry。可用 Java 的 KeyPairGenerator 和 KeyGenerator 生成密钥，RSA 条目还需配套证书。
+
+本地实现支持 RSA SHA-256 签名和验签、AES-GCM 加解密以及公钥和元数据查询。别名对应 KMS 密钥名，目前只支持版本 1，不提供密钥轮换或管理接口。本地密文使用 `local:v1:` 前缀，与 OpenBao 密文不可互换；切换后端前须保留原有后端以解密历史数据。不要把密码或密钥写入普通配置文件。

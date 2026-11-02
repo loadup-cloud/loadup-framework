@@ -19,7 +19,6 @@
  */
 package io.github.loadup.components.signature.request;
 
-import io.github.loadup.components.kms.KmsAutoConfiguration;
 import io.github.loadup.components.kms.KmsTemplate;
 import java.time.Clock;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -36,8 +35,9 @@ import org.springframework.data.redis.core.StringRedisTemplate;
  * Enabling request verification requires a real atomic nonce store; no local fallback.
  */
 @AutoConfiguration(
-        after = KmsAutoConfiguration.class,
-        afterName = "org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfiguration")
+        afterName = {"io.github.loadup.components.kms.KmsAutoConfiguration",
+            "io.github.loadup.components.kms.LocalKmsAutoConfiguration",
+            "org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfiguration"})
 @ConditionalOnProperty(
         prefix = "loadup.components.signature",
         name = "enabled",

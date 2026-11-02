@@ -23,6 +23,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.ssl.SslBundles;
@@ -38,8 +39,8 @@ import tools.jackson.databind.ObjectMapper;
             "org.springframework.boot.restclient.autoconfigure.RestClientAutoConfiguration",
             "org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration"
         })
-@ConditionalOnProperty(prefix = "loadup.kms", name = "enabled", havingValue = "true")
 @EnableConfigurationProperties(KmsProperties.class)
+@ConditionalOnExpression("${loadup.kms.enabled:false} && '${loadup.kms.binder:local}' == 'openbao'")
 public class KmsAutoConfiguration {
     @Bean(destroyMethod = "close")
     @ConditionalOnMissingBean(KmsTemplate.class)

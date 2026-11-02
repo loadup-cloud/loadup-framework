@@ -227,7 +227,7 @@
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-kms</artifactId>
+            <artifactId>loadup-components-kms-binder-openbao</artifactId>
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
@@ -390,7 +390,7 @@
                                             ${maven.multiModuleProjectDirectory}/loadup-components/security/loadup-components-captcha/loadup-components-captcha-test/target/jacoco-it.exec
                                         </file>
                                         <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/security/loadup-components-kms/target/jacoco-unit.exec
+                                            ${maven.multiModuleProjectDirectory}/loadup-components/security/loadup-components-kms/loadup-components-kms-binder-openbao/target/jacoco-unit.exec
                                         </file>
                                         <file>
                                             ${maven.multiModuleProjectDirectory}/loadup-components/security/loadup-components-resource-server/target/jacoco-unit.exec
