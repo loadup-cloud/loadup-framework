@@ -27,6 +27,17 @@ class DatabaseCoreAutoConfigurationTest {
     }
 
     @Test
+    void bindsDatabaseSchemaIndependentlyOfMultiTenancy() {
+        runner.withPropertyValues(
+                        "loadup.database.default-schema=ledger",
+                        "loadup.database.multi-tenant.enabled=false")
+                .run(context -> {
+                    assertThat(context).hasNotFailed();
+                    assertThat(context.getBean(DatabaseTenant.class).currentSchema()).isEqualTo("ledger");
+                });
+    }
+
+    @Test
     void usesApplicationSuppliedClock() {
         Clock fixed = Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC);
         runner.withBean("clock", Clock.class, () -> fixed).run(context -> {

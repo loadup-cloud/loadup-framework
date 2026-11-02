@@ -83,7 +83,7 @@ public class LoadUpFlywayAutoConfiguration {
         LogUtil.info(LoadUpFlywayAutoConfiguration.class, ">>> [FLYWAY] Configuring Flyway with LoadUp properties");
 
         FluentConfiguration config = Flyway.configure().dataSource(dataSource);
-        String schema = databaseProperties.getMultiTenant().getDefaultSchema();
+        String schema = databaseProperties.getDefaultSchema();
         config.defaultSchema(schema);
         config.schemas(schema);
         LogUtil.info(LoadUpFlywayAutoConfiguration.class, ">>> [FLYWAY] Default schema: {}", schema);

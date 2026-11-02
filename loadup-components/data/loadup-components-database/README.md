@@ -36,17 +36,17 @@ schema. Do not treat `multi-tenant.enabled` as enabling per-tenant datasource ro
 
 Tenant identity selects the PostgreSQL schema; it is not stored in every row. `DatabaseTenant.currentTenantId()`
 resolves the trusted tenant and `DatabaseTenant.currentSchema()` returns the validated schema
-(`loadup.database.multi-tenant.default-schema`, default `public`). Schema names are validated against
+(`loadup.database.default-schema`, default `public`). Schema names are validated against
 `[a-z_][a-z0-9_]{0,62}` before they can reach a connection.
 
 ```yaml
 loadup:
   database:
+    default-schema: public     # applies with or without multi-tenancy
     multi-tenant:
       enabled: false          # single default tenant in the current phase
       required: true          # fail closed when enabled and context is missing
       default-tenant-id: __default__
-      default-schema: public
 ```
 
 Current runtime uses one default schema. The planned routing layer is an `AbstractRoutingDataSource` whose

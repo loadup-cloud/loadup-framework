@@ -79,7 +79,7 @@ single-tenant repository / explicit SQL (no tenant predicate)
 
 Design rules:
 
-- `loadup.database.multi-tenant.default-schema` defaults to `public`; `DatabaseTenant.currentSchema()` validates
+- `loadup.database.default-schema` defaults to `public`; `DatabaseTenant.currentSchema()` validates
   `[a-z_][a-z0-9_]{0,62}` before any connection is selected.
 - `enabled=false` always resolves the configured default tenant/schema. `enabled=true, required=true` fails closed when
   the execution context has no tenant.
@@ -109,7 +109,7 @@ deletion is applied by the Flex global configuration for mapper operations and m
 
 Flyway support is optional; consumers using migrations include Flyway and its PostgreSQL module. Migration scripts are
 schema-agnostic (no schema-qualified names) and assume a fresh schema. `LoadUpFlywayAutoConfiguration` applies the
-configured default schema from `loadup.database.multi-tenant.default-schema`; per-tenant execution is a
+configured default schema from `loadup.database.default-schema`; per-tenant execution is a
 deployment/routing responsibility.
 
 ## ID generation and sequences

@@ -16,9 +16,11 @@ import java.util.regex.Pattern;
 public final class DatabaseTenant {
     private static final Pattern SCHEMA_NAME = Pattern.compile("[a-z_][a-z0-9_]{0,62}");
 
+    private final DatabaseProperties databaseProperties;
     private final DatabaseProperties.MultiTenant properties;
 
     public DatabaseTenant(DatabaseProperties properties) {
+        this.databaseProperties = properties;
         this.properties = properties.getMultiTenant();
     }
 
@@ -49,14 +51,14 @@ public final class DatabaseTenant {
      */
     public String currentSchema() {
         if (!properties.isEnabled()) {
-            return requireSchema(properties.getDefaultSchema());
+            return requireSchema(databaseProperties.getDefaultSchema());
         }
         String tenant = TenantUtil.getTenantId();
         if (tenant == null || tenant.isBlank()) {
             if (properties.isRequired()) {
                 throw new CommonException(DatabaseTenantResultCodeEnum.TENANT_REQUIRED);
             }
-            return requireSchema(properties.getDefaultSchema());
+            return requireSchema(databaseProperties.getDefaultSchema());
         }
         return requireSchema(tenant.trim());
     }

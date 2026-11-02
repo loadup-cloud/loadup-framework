@@ -60,6 +60,8 @@ class FlywayAutoConfigurationTest {
             assertThat(config.isBaselineOnMigrate()).isTrue();
             assertThat(config.getBaselineVersion()).isEqualTo(MigrationVersion.fromVersion("0"));
             assertThat(config.getBaselineDescription()).isEqualTo("<<Flyway Baseline>>");
+            assertThat(config.getDefaultSchema()).isEqualTo("public");
+            assertThat(config.getSchemas()).containsExactly("public");
             assertThat(config.isValidateOnMigrate()).isTrue();
             assertThat(config.isOutOfOrder()).isTrue();
             assertThat(config.isCleanDisabled()).isTrue();
@@ -72,6 +74,20 @@ class FlywayAutoConfigurationTest {
             assertThat(context.getBean(FlywayProperties.class).isEnabled()).isTrue();
             verifyNoInteractions(dataSource);
         });
+    }
+
+    @Test
+    void usesDatabaseSchemaWithMultiTenancyDisabled() {
+        runner.withPropertyValues(
+                        "loadup.database.default-schema=ledger",
+                        "loadup.database.multi-tenant.enabled=false")
+                .run(context -> {
+                    assertThat(context).hasNotFailed();
+                    var config = context.getBean(Flyway.class).getConfiguration();
+                    assertThat(config.getDefaultSchema()).isEqualTo("ledger");
+                    assertThat(config.getSchemas()).containsExactly("ledger");
+                    verifyNoInteractions(dataSource);
+                });
     }
 
     @Test

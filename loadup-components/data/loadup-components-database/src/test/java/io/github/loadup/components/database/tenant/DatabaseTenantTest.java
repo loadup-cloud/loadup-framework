@@ -14,7 +14,7 @@ class DatabaseTenantTest {
     void singleTenantAlwaysUsesConfiguredDefault() {
         var properties = new DatabaseProperties();
         properties.getMultiTenant().setDefaultTenantId("single");
-        properties.getMultiTenant().setDefaultSchema("tenant_single");
+        properties.setDefaultSchema("tenant_single");
         var resolver = new DatabaseTenant(properties);
         TenantUtil.runWithTenant("untrusted", () -> {
             assertThat(resolver.currentTenantId()).isEqualTo("single");
@@ -39,10 +39,11 @@ class DatabaseTenantTest {
         properties.getMultiTenant().setEnabled(true);
         properties.getMultiTenant().setRequired(false);
         properties.getMultiTenant().setDefaultTenantId("fallback");
+        properties.setDefaultSchema("ledger");
         var resolver = new DatabaseTenant(properties);
         TenantUtil.runWithTenant(null, () -> {
             assertThat(resolver.currentTenantId()).isEqualTo("fallback");
-            assertThat(resolver.currentSchema()).isEqualTo("public");
+            assertThat(resolver.currentSchema()).isEqualTo("ledger");
         });
     }
 

@@ -34,8 +34,21 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class DatabaseProperties {
 
+    /** Default database schema, independent of tenant isolation. */
+    @NotBlank
+    @Pattern(regexp = "[a-z_][a-z0-9_]{0,62}")
+    private String defaultSchema = CommonConstants.DEFAULT_SCHEMA;
+
     @Valid
     private MultiTenant multiTenant = new MultiTenant();
+
+    public String getDefaultSchema() {
+        return defaultSchema;
+    }
+
+    public void setDefaultSchema(String defaultSchema) {
+        this.defaultSchema = defaultSchema;
+    }
 
     public MultiTenant getMultiTenant() {
         return multiTenant;
@@ -56,10 +69,6 @@ public class DatabaseProperties {
         @NotBlank
         @Size(max = 64)
         private String defaultTenantId = CommonConstants.DEFAULT_TENANT_ID;
-
-        @NotBlank
-        @Pattern(regexp = "[a-z_][a-z0-9_]{0,62}")
-        private String defaultSchema = CommonConstants.DEFAULT_SCHEMA;
 
         public boolean isEnabled() {
             return enabled;
@@ -83,14 +92,6 @@ public class DatabaseProperties {
 
         public void setDefaultTenantId(String defaultTenantId) {
             this.defaultTenantId = defaultTenantId;
-        }
-
-        public String getDefaultSchema() {
-            return defaultSchema;
-        }
-
-        public void setDefaultSchema(String defaultSchema) {
-            this.defaultSchema = defaultSchema;
         }
     }
 }
