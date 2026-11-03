@@ -12,6 +12,7 @@ import io.github.loadup.components.kms.KmsSignatureAlgorithm;
 import io.github.loadup.components.kms.KmsTemplate;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.Set;
 import org.jspecify.annotations.NullMarked;
@@ -86,13 +87,21 @@ final class KmsJwtEncoder implements JwtEncoder {
                             TIMESTAMPS.contains(name)
                                     ? Date.from(Objects.requireNonNull(claims.getClaimAsInstant(name)))
                                     : value));
-            var token = new SignedJWT(JWSHeader.parse(headers.getHeaders()), builder.build());
+            // Spring stores alg as a JwsAlgorithm; Nimbus requires its JSON string representation.
+            var joseHeaders = new HashMap<String, Object>(headers.getHeaders());
+            joseHeaders.put("alg", headers.getAlgorithm().getName());
+            for (String name : Set.of("jku", "x5u")) {
+                if (joseHeaders.get(name) instanceof java.net.URI uri) {
+                    joseHeaders.put(name, uri.toString());
+                }
+            }
+            var token = new SignedJWT(JWSHeader.parse(joseHeaders), builder.build());
             token.sign(signer);
             return new Jwt(
                     token.serialize(),
                     claims.getIssuedAt(),
                     claims.getExpiresAt(),
-                    headers.getHeaders(),
+                    token.getHeader().toJSONObject(),
                     claims.getClaims());
         } catch (JOSEException | ParseException | RuntimeException failure) {
             // Providers may include payloads in exception messages; do not propagate their details.

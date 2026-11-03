@@ -10,13 +10,13 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 /** Real file-backed keys created by the test JDK; no private-key fixtures are checked in. */
-final class TestKeyStores {
-    static final String PASSWORD = "synthetic-keystore-password";
-    static final String PASSWORD_ENV = "LOADUP_TEST_KEYSTORE_PASSWORD";
+public final class TestKeyStores {
+    public static final String PASSWORD = "synthetic-keystore-password";
+    public static final String PASSWORD_ENV = "LOADUP_TEST_KEYSTORE_PASSWORD";
 
     private TestKeyStores() {}
 
-    static Path create(Path directory, String... aliases) throws Exception {
+    public static Path create(Path directory, String... aliases) throws Exception {
         Path store = directory.resolve("keys.p12");
         for (String alias : aliases) {
             var builder = new ProcessBuilder(
@@ -42,7 +42,9 @@ final class TestKeyStores {
                     PASSWORD_ENV,
                     "-noprompt");
             builder.environment().put(PASSWORD_ENV, PASSWORD);
-            var process = builder.redirectErrorStream(true).start();
+            var process = builder.redirectErrorStream(true)
+                    .redirectOutput(ProcessBuilder.Redirect.DISCARD)
+                    .start();
             if (!process.waitFor(30, TimeUnit.SECONDS)) {
                 process.destroyForcibly();
                 throw new IllegalStateException("Test keytool timed out");

@@ -1,8 +1,22 @@
+spring:
+  profiles:
+    active: test
 loadup:
+  kms:
+    enabled: true
+    binder: local
+    local:
+      key-store-type: PKCS12
+      key-store-password-env: LOADUP_TEST_KEYSTORE_PASSWORD
   security:
     auth-server:
       issuer: http://localhost:8080
       audience: loadup-api
+      protocol-endpoints-enabled: true
+      signing:
+        active-key:
+          name: auth-integration
+          version: 1
       clients:
         - client-id: loadup-app
           client-secret: change-me

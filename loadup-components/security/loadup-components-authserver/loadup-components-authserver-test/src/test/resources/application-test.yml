@@ -1,0 +1,4 @@
+# Both environments use the temporary KeyStore provided by the integration fixture.
+spring:
+  main:
+    web-application-type: servlet

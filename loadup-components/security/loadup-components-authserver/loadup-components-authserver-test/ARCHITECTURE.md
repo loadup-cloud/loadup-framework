@@ -1,32 +1,9 @@
-# LoadUp Components AuthServer Test 架构
+# AuthServer Test 设计
 
-## 职责与边界
+测试依赖 authserver-api、SAS binder、kms-local。配置测试使用 ApplicationContextRunner；协议测试使用最小 Servlet 应用和 MockMvc，不接数据库、远程 KMS 或生产凭证。
 
-OAuth2 授权服务器与令牌签发的测试模块，承载模块行为和集成验证；不作为生产运行时依赖。
+TestKeyStores 在临时目录生成真实 PKCS12，配置用例与协议用例共享该夹具。SAS 始终按明确 alias/version 装配 KMS 签名器；JWKS 和 decoder 使用公钥，不能读取私钥。协议测试的密钥位置通过 DynamicPropertySource 提供，配置文件只保存测试身份和密码环境属性名。
 
-## Maven 依赖边界
+回归用例明确验证 Spring JwsHeader 的 alg 对象被转为 Nimbus 所需的 JSON 字符串，且生成的实际 JWT 可验签；KMS 失败用例同时核对 sign 调用次数，避免异常在到达 KMS 前发生却被误判为 provider 失败覆盖。
 
-直接依赖的框架模块：
-
-- `loadup-components-authserver-api`
-- `loadup-components-authserver-binder-sas`
-
-## 实现入口
-
-该模块没有 `src/main/java` 入口；依赖与资源声明以 `pom.xml` 为准。
-
-## 分层与调用路径
-
-API 定义主体与认证契约；SAS binder 配置令牌签发、JWK 和可选 OAuth2 协议端点。
-
-```text
-测试用例 → 测试配置/容器 → 被测 API 与实现 → 契约断言
-```
-
-测试模块处于依赖链末端，用真实装配验证调用路径；不向业务代码暴露新契约。
-
-## 设计取舍
-
-以公开契约验证组件接入；环境相关的启动与数据准备留在测试模块。
-
-集成方式与配置示例见 [README.md](README.md)。
+单元测试覆盖身份/轮换/错误边界；协议集成覆盖 token endpoint、授权重定向和公钥发布。静态检查与测试运行分别记录，不能用 Pod 就绪或 MockMvc 之外的部署检查代替本模块测试执行。

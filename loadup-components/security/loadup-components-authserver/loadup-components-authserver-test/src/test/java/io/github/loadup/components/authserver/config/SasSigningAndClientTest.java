@@ -27,6 +27,7 @@ import com.nimbusds.jose.jwk.JWKSelector;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import com.nimbusds.jwt.SignedJWT;
 import io.github.loadup.components.authserver.properties.LoadUpAuthServerProperties;
 import io.github.loadup.components.authserver.properties.LoadUpAuthServerProperties.Client;
 import io.github.loadup.components.authserver.sas.SasAuthServerAutoConfiguration;
@@ -34,6 +35,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -108,6 +110,26 @@ class SasSigningAndClientTest {
             assertThat(decoded.getIssuedAt()).isNotNull().isBeforeOrEqualTo(Instant.now());
             assertThat(decoded.getNotBefore()).isNotNull().isBefore(Instant.now());
             assertThat(decoded.getExpiresAt()).isNotNull().isAfter(Instant.now());
+        });
+    }
+
+    @Test
+    void springTypedRs256HeaderIsSerializedAndSignedWithItsJsonAlgorithmName() throws Exception {
+        var file = TestKeyStores.create(directory, "auth-current");
+        TestKeyStores.runner(file).run(context -> {
+            var header = JwsHeader.with(SignatureAlgorithm.RS256).type("JWT").build();
+            assertThat(header.getHeaders()).containsEntry("alg", SignatureAlgorithm.RS256);
+            var encoded = context.getBean(JwtEncoder.class)
+                    .encode(JwtEncoderParameters.from(header, tokenParameters().getClaims()));
+            var parsed = SignedJWT.parse(encoded.getTokenValue());
+            assertThat(parsed.getHeader().getAlgorithm().getName()).isEqualTo("RS256");
+            assertThat(parsed.getHeader().getType().toString()).isEqualTo("JWT");
+            assertThat(parsed.getHeader().getKeyID()).isEqualTo("auth-current-v1");
+            assertThat(encoded.getHeaders()).containsEntry("alg", "RS256").containsEntry("typ", "JWT");
+            assertThat(context.getBean(JwtDecoder.class)
+                            .decode(encoded.getTokenValue())
+                            .getSubject())
+                    .isEqualTo("merchant");
         });
     }
 
@@ -189,10 +211,9 @@ class SasSigningAndClientTest {
         assertThat(registered.getTokenSettings().getAccessTokenTimeToLive()).isEqualTo(Duration.ofMinutes(7));
         assertThat(registered.getRedirectUris()).isEmpty();
         assertThat(registered.getScopes()).isEmpty();
-        assertThat(registered.getClientSecret()).startsWith("{bcrypt}");
-        assertThat(new BCryptPasswordEncoder()
-                        .matches(
-                                "synthetic-secret", registered.getClientSecret().substring(8)))
+        String encodedSecret = Objects.requireNonNull(registered.getClientSecret());
+        assertThat(encodedSecret).startsWith("{bcrypt}");
+        assertThat(new BCryptPasswordEncoder().matches("synthetic-secret", encodedSecret.substring(8)))
                 .isTrue();
     }
 

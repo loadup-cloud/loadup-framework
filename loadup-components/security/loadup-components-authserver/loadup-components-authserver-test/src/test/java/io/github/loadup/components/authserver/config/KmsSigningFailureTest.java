@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.github.loadup.components.kms.KmsException;
@@ -83,8 +85,10 @@ class KmsSigningFailureTest {
             for (int attempt = 0; attempt < 2; attempt++) {
                 assertThatThrownBy(() -> encoder.encode(JwtEncoderParameters.from(claims)))
                         .isInstanceOf(JwtEncodingException.class)
-                        .hasMessage("KMS authorization token signing failed");
+                        .hasMessage("KMS authorization token signing failed")
+                        .hasNoCause();
             }
+            verify(kms, times(2)).sign(eq(key), eq(KmsSignatureAlgorithm.RSA_SHA256_PKCS1), any(byte[].class));
             assertThatThrownBy(() -> encoder.encode(JwtEncoderParameters.from(
                             JwsHeader.with(SignatureAlgorithm.RS512).build(), claims)))
                     .isInstanceOf(JwtEncodingException.class);
