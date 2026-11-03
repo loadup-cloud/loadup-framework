@@ -55,3 +55,5 @@ public-key-location 与 jwk-set-uri 不能同时设置；公钥不可读或格�
 | Issuer 发现 | 仅 issuer-uri | 访问元数据和 JWKS |
 
 参考 [Spring Security：JWT Resource Server](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html)。
+
+JWT 认证结果使用 JwtAuthenticationToken 派生类型保留 LoadUpUser 主体；经过 ProviderManager 默认凭证清理后，业务适配器仍可读取已验签 JWT。此行为已补回归源码，未运行测试。

@@ -25,8 +25,11 @@ import io.github.loadup.components.authorization.model.LoadUpUser;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 
 class LoadUpJwtAuthenticationConverterTest {
     @Test
@@ -47,6 +50,30 @@ class LoadUpJwtAuthenticationConverterTest {
         assertThat(authentication.getAuthorities())
                 .extracting(GrantedAuthority::getAuthority)
                 .containsExactlyInAnyOrder("ROLE_ADMIN", "ADMIN", "user:read", "user:delete", "audit:read");
+    }
+
+    @Test
+    void verifiedJwtAndLoadUpPrincipalSurviveTheActualProviderManagerCredentialsErasure() {
+        var jwt = Jwt.withTokenValue("synthetic-token")
+                .header("alg", "RS256")
+                .subject("acquire")
+                .claim("permissions", List.of("pay:payment:read"))
+                .build();
+        var provider = new JwtAuthenticationProvider(token -> {
+            assertThat(token).isEqualTo("synthetic-token");
+            return jwt;
+        });
+        provider.setJwtAuthenticationConverter(new LoadUpJwtAuthenticationConverter());
+        var manager = new ProviderManager(provider);
+        assertThat(manager.isEraseCredentialsAfterAuthentication()).isTrue();
+        var authentication = manager.authenticate(new BearerTokenAuthenticationToken("synthetic-token"));
+        assertThat(authentication.isAuthenticated()).isTrue();
+        assertThat(authentication.getCredentials()).isSameAs(jwt);
+        assertThat(authentication.getPrincipal()).isInstanceOf(LoadUpUser.class);
+        assertThat(authentication.getName()).isEqualTo("acquire");
+        assertThat(authentication.getAuthorities())
+                .extracting(GrantedAuthority::getAuthority)
+                .containsExactly("pay:payment:read");
     }
 
     @Test

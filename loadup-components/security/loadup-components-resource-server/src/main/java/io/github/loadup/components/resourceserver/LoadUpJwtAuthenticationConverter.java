@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.List;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -98,6 +98,6 @@ public class LoadUpJwtAuthenticationConverter implements Converter<Jwt, Abstract
                 .roles(stringListClaim(jwt, "roles"))
                 .permissions(stringListClaim(jwt, "permissions"))
                 .build();
-        return UsernamePasswordAuthenticationToken.authenticated(user, jwt, authoritiesOf(user));
+        return new LoadUpJwtAuthenticationToken(jwt, user, authoritiesOf(user));
     }
 }
