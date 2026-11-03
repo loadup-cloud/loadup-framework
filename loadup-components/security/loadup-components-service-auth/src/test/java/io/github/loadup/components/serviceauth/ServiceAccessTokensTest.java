@@ -16,6 +16,7 @@
 package io.github.loadup.components.serviceauth;
 
 import com.sun.net.httpserver.HttpServer;
+import io.github.loadup.commons.util.TenantUtil;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;
@@ -86,12 +87,12 @@ class ServiceAccessTokensTest {
     @Test
     void cachesPerRouteAndReacquiresBeforeExpiryOnBackgroundThreads() {
         var tokens = ServiceAuthAutoConfiguration.create(settings, clock);
-        Assertions.assertThat(tokens.token("tenant", "acquire", "payment")).isEqualTo("token-1");
-        Assertions.assertThat(tokens.token("tenant", "acquire", "payment")).isEqualTo("token-1");
-        Assertions.assertThat(tokens.token("tenant", "acquire", "realtime")).isEqualTo("token-2");
+        Assertions.assertThat(token(tokens, "acquire", "payment")).isEqualTo("token-1");
+        Assertions.assertThat(token(tokens, "acquire", "payment")).isEqualTo("token-1");
+        Assertions.assertThat(token(tokens, "acquire", "realtime")).isEqualTo("token-2");
         Assertions.assertThat(requests).hasValue(2);
         clock.now = clock.now.plusSeconds(280);
-        Assertions.assertThat(tokens.token("tenant", "acquire", "payment")).isEqualTo("token-3");
+        Assertions.assertThat(token(tokens, "acquire", "payment")).isEqualTo("token-3");
         String expected = "Basic "
                 + Base64.getEncoder()
                         .encodeToString("acquire.tenant.payment:synthetic-secret".getBytes(StandardCharsets.UTF_8));
@@ -102,29 +103,38 @@ class ServiceAccessTokensTest {
     }
 
     @Test
-    void unknownTenantCallerOrAudienceCannotAcquireCredentials() {
+    void unknownTenantContextCallerOrAudienceCannotAcquireCredentials() {
         var tokens = ServiceAuthAutoConfiguration.create(settings, clock);
-        Assertions.assertThatThrownBy(() -> tokens.token("other", "acquire", "payment"))
+        Assertions.assertThatThrownBy(
+                        () -> TenantUtil.callWithTenant("other", () -> tokens.token("acquire", "payment")))
                 .isInstanceOf(IllegalStateException.class);
-        Assertions.assertThatThrownBy(() -> tokens.token("tenant", "payment", "payment"))
+        Assertions.assertThatThrownBy(() -> token(tokens, "payment", "payment"))
                 .isInstanceOf(IllegalStateException.class);
-        Assertions.assertThatThrownBy(() -> tokens.token("tenant", "acquire", "customer"))
+        Assertions.assertThatThrownBy(() -> token(tokens, "acquire", "customer"))
                 .isInstanceOf(IllegalStateException.class);
         Assertions.assertThat(requests).hasValue(0);
     }
 
     @Test
+    void missingTenantContextCannotAcquireCredentials() {
+        var tokens = ServiceAuthAutoConfiguration.create(settings, clock);
+        Assertions.assertThatThrownBy(() -> tokens.token("acquire", "payment"))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Service authorization requires a trusted tenant context");
+    }
+
+    @Test
     void issuerFailuresAreSanitizedAndDoNotReturnAnExpiredToken() {
         var tokens = ServiceAuthAutoConfiguration.create(settings, clock);
-        tokens.token("tenant", "acquire", "payment");
+        token(tokens, "acquire", "payment");
         clock.now = clock.now.plusSeconds(400);
         status.set(401);
-        Assertions.assertThatThrownBy(() -> tokens.token("tenant", "acquire", "payment"))
+        Assertions.assertThatThrownBy(() -> token(tokens, "acquire", "payment"))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Service authorization unavailable")
                 .hasNoCause();
         status.set(200);
-        Assertions.assertThat(tokens.token("tenant", "acquire", "payment")).isEqualTo("token-3");
+        Assertions.assertThat(token(tokens, "acquire", "payment")).isEqualTo("token-3");
     }
 
     @Test
@@ -139,6 +149,10 @@ class ServiceAccessTokensTest {
         settings.setAllowInsecureHttp(false);
         Assertions.assertThatThrownBy(() -> ServiceAuthAutoConfiguration.create(settings, clock))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    private static String token(ServiceAccessTokens tokens, String service, String audience) {
+        return TenantUtil.callWithTenant("tenant", () -> tokens.token(service, audience));
     }
 
     static class MutableClock extends Clock {

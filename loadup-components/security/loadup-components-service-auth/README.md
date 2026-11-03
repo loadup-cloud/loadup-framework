@@ -4,7 +4,7 @@
 
 | 能力 | 契约 |
 | --- | --- |
-| 调用入口 | `token(tenant, service, audience)`，只接受显式注册的身份组合 |
+| 调用入口 | `token(service, audience)`，逻辑租户从执行上下文解析，只接受显式注册的身份组合 |
 | 取令牌 | 标准 client_credentials + client_secret_basic，显式申请配置的 scope，不传入任意租户或 audience 参数 |
 | 缓存 | 每个注册独立保存；到期前 30 秒重新获取，同一注册串行续取 |
 | 超时 | 连接 2 秒、读取 5 秒；配置上限 30 秒，不跟随重定向 |

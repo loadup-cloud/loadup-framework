@@ -15,6 +15,7 @@
  */
 package io.github.loadup.components.serviceauth;
 
+import io.github.loadup.commons.util.TenantUtil;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.time.Clock;
@@ -114,7 +115,11 @@ public class ServiceAuthAutoConfiguration {
         manager.setAuthorizedClientProvider(provider);
         Map<String, Object> locks = new HashMap<>();
         routes.values().forEach(id -> locks.put(id, new Object()));
-        return (tenant, service, audience) -> {
+        return (service, audience) -> {
+            String tenant = TenantUtil.getTenantId();
+            if (tenant == null || tenant.isBlank()) {
+                throw new IllegalStateException("Service authorization requires a trusted tenant context");
+            }
             String id = routes.get(new Route(tenant, service, audience));
             if (id == null) {
                 throw new IllegalStateException("Service authorization route is not registered");
