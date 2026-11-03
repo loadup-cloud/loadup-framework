@@ -28,22 +28,26 @@ class RequestBodyLimitAdviceTest {
         var json = JsonMapper.builder().build();
         var builder = MockMvcBuilders.standaloneSetup(controller)
                 .setControllerAdvice(
-                        new RequestBodyLimitAdvice(new RequestBodyLimitProperties("/api/internal/", DataSize.ofBytes(maxBytes))),
+                        new RequestBodyLimitAdvice(
+                                new RequestBodyLimitProperties("/api/internal/", DataSize.ofBytes(maxBytes))),
                         new ApiExceptionHandler(new ApiPathMatcher()),
-                        new ApiResponseAdvice(new ApiPathMatcher(), new ApiMaskingJson(json), mock(ApiResultMetrics.class)))
+                        new ApiResponseAdvice(
+                                new ApiPathMatcher(), new ApiMaskingJson(json), mock(ApiResultMetrics.class)))
                 .setMessageConverters(new JacksonJsonHttpMessageConverter(json));
         if (reportedLength != null) {
-            builder.addFilter((request, response, chain) -> chain.doFilter(new HttpServletRequestWrapper((HttpServletRequest) request) {
-                @Override
-                public int getContentLength() {
-                    return reportedLength;
-                }
+            builder.addFilter((request, response, chain) -> chain.doFilter(
+                    new HttpServletRequestWrapper((HttpServletRequest) request) {
+                        @Override
+                        public int getContentLength() {
+                            return reportedLength;
+                        }
 
-                @Override
-                public long getContentLengthLong() {
-                    return reportedLength;
-                }
-            }, response));
+                        @Override
+                        public long getContentLengthLong() {
+                            return reportedLength;
+                        }
+                    },
+                    response));
         }
         return builder.build();
     }
@@ -52,11 +56,19 @@ class RequestBodyLimitAdviceTest {
     void exactUtf8ByteBoundaryIsAcceptedAndOneByteMoreIsRejectedBeforeBusinessInvocation() throws Exception {
         byte[] body = "{\"value\":\"é\"}".getBytes(StandardCharsets.UTF_8);
         var mvc = mvc(body.length, null);
-        assertThat(mvc.perform(post("/api/internal/v1/accept").contentType("application/json").content(body))
-                .andReturn().getResponse().getStatus()).isEqualTo(200);
+        assertThat(mvc.perform(post("/api/internal/v1/accept")
+                                .contentType("application/json")
+                                .content(body))
+                        .andReturn()
+                        .getResponse()
+                        .getStatus())
+                .isEqualTo(200);
         assertThat(controller.calls).hasValue(1);
-        var oversized = mvc.perform(post("/api/internal/v1/accept").contentType("application/json")
-                .content("{\"value\":\"é\"} ".getBytes(StandardCharsets.UTF_8))).andReturn().getResponse();
+        var oversized = mvc.perform(post("/api/internal/v1/accept")
+                        .contentType("application/json")
+                        .content("{\"value\":\"é\"} ".getBytes(StandardCharsets.UTF_8)))
+                .andReturn()
+                .getResponse();
         assertThat(oversized.getStatus()).isEqualTo(413);
         assertThat(oversized.getContentAsString()).contains("PARAM_ILLEGAL");
         assertThat(controller.calls).hasValue(1);
@@ -65,9 +77,12 @@ class RequestBodyLimitAdviceTest {
     @Test
     void unknownOrFalseLengthAndTrailingWhitespaceCannotBypassTheLimit() throws Exception {
         for (int length : new int[] {-1, 1}) {
-            var response = mvc(32, length).perform(post("/api/internal/v1/accept")
-                    .contentType("application/json").content("{\"value\":\"private-secret\"}" + " ".repeat(64)))
-                    .andReturn().getResponse();
+            var response = mvc(32, length)
+                    .perform(post("/api/internal/v1/accept")
+                            .contentType("application/json")
+                            .content("{\"value\":\"private-secret\"}" + " ".repeat(64)))
+                    .andReturn()
+                    .getResponse();
             assertThat(response.getStatus()).isEqualTo(413);
             assertThat(response.getContentAsString()).contains("PARAM_ILLEGAL").doesNotContain("private-secret");
         }
@@ -78,20 +93,31 @@ class RequestBodyLimitAdviceTest {
     void matchedRouteHonorsContextPathAndEncodedSpellingWhileOtherApiPathsKeepTheirOwnProtocol() throws Exception {
         var mvc = mvc(8, -1);
         for (String path : new String[] {"/app/api/internal/v1/accept", "/app/%61pi/internal/v1/accept"}) {
-            var response = mvc.perform(post(URI.create(path)).contextPath("/app").contentType("application/json")
-                    .content("{\"value\":\"private-secret\"}")).andReturn().getResponse();
+            var response = mvc.perform(post(URI.create(path))
+                            .contextPath("/app")
+                            .contentType("application/json")
+                            .content("{\"value\":\"private-secret\"}"))
+                    .andReturn()
+                    .getResponse();
             assertThat(response.getStatus()).isEqualTo(413);
         }
-        var external = mvc.perform(post("/api/external/accept").contentType("application/json")
-                .content("{\"value\":\"external\"}")).andReturn().getResponse();
+        var external = mvc.perform(post("/api/external/accept")
+                        .contentType("application/json")
+                        .content("{\"value\":\"external\"}"))
+                .andReturn()
+                .getResponse();
         assertThat(external.getStatus()).isEqualTo(200);
         assertThat(controller.calls).hasValue(1);
     }
 
     @Test
     void malformedSmallJsonKeepsTheExistingBusinessEnvelopeAndCannotInvokeTheController() throws Exception {
-        var response = mvc(64, -1).perform(post("/api/internal/v1/accept").contentType("application/json")
-                .content("{broken")).andReturn().getResponse();
+        var response = mvc(64, -1)
+                .perform(post("/api/internal/v1/accept")
+                        .contentType("application/json")
+                        .content("{broken"))
+                .andReturn()
+                .getResponse();
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getContentAsString()).contains("PARAM_ILLEGAL").doesNotContain("broken");
         assertThat(controller.calls).hasValue(0);
@@ -99,11 +125,13 @@ class RequestBodyLimitAdviceTest {
 
     @Test
     void sdkIsOptInAndRejectsInvalidLimitsAtStartup() {
-        var context = new ApplicationContextRunner().withUserConfiguration(LoadUpWebMvcAutoConfiguration.RequestBodyLimits.class);
+        var context = new ApplicationContextRunner()
+                .withUserConfiguration(LoadUpWebMvcAutoConfiguration.RequestBodyLimits.class);
         context.run(application -> assertThat(application).doesNotHaveBean(RequestBodyLimitAdvice.class));
         context.withPropertyValues("loadup.webmvc.request-body.max-size=1MB").run(application -> {
             assertThat(application).hasSingleBean(RequestBodyLimitAdvice.class);
-            assertThat(application.getBean(RequestBodyLimitProperties.class).pathPrefix()).isEqualTo("/api/internal/");
+            assertThat(application.getBean(RequestBodyLimitProperties.class).pathPrefix())
+                    .isEqualTo("/api/internal/");
         });
         context.withPropertyValues("loadup.webmvc.request-body.max-size=0B")
                 .run(application -> assertThat(application).hasFailed());

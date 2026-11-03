@@ -79,11 +79,18 @@ class SasSigningAndClientTest {
             assertThat(context).hasNotFailed().doesNotHaveBean(com.nimbusds.jose.jwk.RSAKey.class);
             var token = context.getBean(JwtEncoder.class).encode(tokenParameters());
             encoded.set(token.getTokenValue());
-            assertThat(token.getHeaders()).containsEntry("kid", "auth-current-v1").containsEntry("alg", "RS256");
-            assertThat(context.getBean(JwtDecoder.class).decode(token.getTokenValue()).getSubject()).isEqualTo("merchant");
+            assertThat(token.getHeaders())
+                    .containsEntry("kid", "auth-current-v1")
+                    .containsEntry("alg", "RS256");
+            assertThat(context.getBean(JwtDecoder.class)
+                            .decode(token.getTokenValue())
+                            .getSubject())
+                    .isEqualTo("merchant");
             var source = (com.nimbusds.jose.jwk.source.JWKSource<com.nimbusds.jose.proc.SecurityContext>)
                     context.getBean(com.nimbusds.jose.jwk.source.JWKSource.class);
-            var keys = source.get(new com.nimbusds.jose.jwk.JWKSelector(new com.nimbusds.jose.jwk.JWKMatcher.Builder().build()), null);
+            var keys = source.get(
+                    new com.nimbusds.jose.jwk.JWKSelector(new com.nimbusds.jose.jwk.JWKMatcher.Builder().build()),
+                    null);
             assertThat(keys).hasSize(1);
             assertThat(keys.getFirst().isPrivate()).isFalse();
             assertThat(keys.getFirst().toJSONString()).doesNotContain("\"d\":", "\"p\":", "\"q\":");
@@ -103,15 +110,19 @@ class SasSigningAndClientTest {
     void missingKmsMissingAliasAndMissingAudienceFailWithoutGeneratingReplacementKeys() throws Exception {
         new ApplicationContextRunner()
                 .withConfiguration(AutoConfigurations.of(SasAuthServerAutoConfiguration.class))
-                .withPropertyValues("loadup.security.auth-server.protocol-endpoints-enabled=false",
+                .withPropertyValues(
+                        "loadup.security.auth-server.protocol-endpoints-enabled=false",
                         "loadup.security.auth-server.audience=merchant-api")
                 .run(context -> assertThat(context).hasFailed());
         var file = TestKeyStores.create(directory, "auth-current");
-        TestKeyStores.runner(file).withPropertyValues("loadup.security.auth-server.signing.active-key.name=missing")
+        TestKeyStores.runner(file)
+                .withPropertyValues("loadup.security.auth-server.signing.active-key.name=missing")
                 .run(context -> assertThat(context).hasFailed());
-        TestKeyStores.runner(file).withPropertyValues("loadup.security.auth-server.signing.active-key.version=0")
+        TestKeyStores.runner(file)
+                .withPropertyValues("loadup.security.auth-server.signing.active-key.version=0")
                 .run(context -> assertThat(context).hasFailed());
-        TestKeyStores.runner(file).withPropertyValues("loadup.security.auth-server.audience=")
+        TestKeyStores.runner(file)
+                .withPropertyValues("loadup.security.auth-server.audience=")
                 .run(context -> assertThat(context).hasFailed());
         var properties = new LoadUpAuthServerProperties();
         assertThatThrownBy(() -> configuration.loadUpJwtTokenCustomizer(properties))
@@ -122,22 +133,38 @@ class SasSigningAndClientTest {
     void rotationSignsWithNewKeyAndRetainsOldPublicKeyForExistingTokens() throws Exception {
         var file = TestKeyStores.create(directory, "auth-current", "auth-next");
         var oldToken = new java.util.concurrent.atomic.AtomicReference<String>();
-        TestKeyStores.runner(file).run(context -> oldToken.set(context.getBean(JwtEncoder.class).encode(tokenParameters()).getTokenValue()));
-        TestKeyStores.runner(file).withPropertyValues(
-                "loadup.security.auth-server.signing.active-key.name=auth-next",
-                "loadup.security.auth-server.signing.verification-keys[0].name=auth-current")
+        TestKeyStores.runner(file)
+                .run(context -> oldToken.set(context.getBean(JwtEncoder.class)
+                        .encode(tokenParameters())
+                        .getTokenValue()));
+        TestKeyStores.runner(file)
+                .withPropertyValues(
+                        "loadup.security.auth-server.signing.active-key.name=auth-next",
+                        "loadup.security.auth-server.signing.verification-keys[0].name=auth-current")
                 .run(context -> {
                     assertThat(context).hasNotFailed();
                     var next = context.getBean(JwtEncoder.class).encode(tokenParameters());
                     assertThat(next.getHeaders()).containsEntry("kid", "auth-next-v1");
-                    assertThat(context.getBean(JwtDecoder.class).decode(oldToken.get()).getSubject()).isEqualTo("merchant");
-                    assertThat(context.getBean(JwtDecoder.class).decode(next.getTokenValue()).getSubject()).isEqualTo("merchant");
-                    var parameters = JwtEncoderParameters.from(JwsHeader.with(SignatureAlgorithm.RS256).keyId("auth-current-v1").build(), tokenParameters().getClaims());
+                    assertThat(context.getBean(JwtDecoder.class)
+                                    .decode(oldToken.get())
+                                    .getSubject())
+                            .isEqualTo("merchant");
+                    assertThat(context.getBean(JwtDecoder.class)
+                                    .decode(next.getTokenValue())
+                                    .getSubject())
+                            .isEqualTo("merchant");
+                    var parameters = JwtEncoderParameters.from(
+                            JwsHeader.with(SignatureAlgorithm.RS256)
+                                    .keyId("auth-current-v1")
+                                    .build(),
+                            tokenParameters().getClaims());
                     assertThatThrownBy(() -> context.getBean(JwtEncoder.class).encode(parameters))
                             .isInstanceOf(org.springframework.security.oauth2.jwt.JwtEncodingException.class);
                 });
-        TestKeyStores.runner(file).withPropertyValues("loadup.security.auth-server.signing.active-key.name=auth-next")
-                .run(context -> assertThatThrownBy(() -> context.getBean(JwtDecoder.class).decode(oldToken.get()))
+        TestKeyStores.runner(file)
+                .withPropertyValues("loadup.security.auth-server.signing.active-key.name=auth-next")
+                .run(context -> assertThatThrownBy(
+                                () -> context.getBean(JwtDecoder.class).decode(oldToken.get()))
                         .isInstanceOf(org.springframework.security.oauth2.jwt.JwtException.class));
     }
 
@@ -184,13 +211,12 @@ class SasSigningAndClientTest {
     @Test
     void localTokenModeCreatesDecoderWithoutProtocolClientRepository() throws Exception {
         var file = TestKeyStores.create(directory, "auth-current");
-        TestKeyStores.runner(file)
-                .run(context -> {
-                    assertThat(context)
-                            .hasNotFailed()
-                            .hasSingleBean(JwtEncoder.class)
-                            .hasSingleBean(JwtDecoder.class)
-                            .doesNotHaveBean(RegisteredClientRepository.class);
-                });
+        TestKeyStores.runner(file).run(context -> {
+            assertThat(context)
+                    .hasNotFailed()
+                    .hasSingleBean(JwtEncoder.class)
+                    .hasSingleBean(JwtDecoder.class)
+                    .doesNotHaveBean(RegisteredClientRepository.class);
+        });
     }
 }

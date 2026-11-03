@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.apache.hc.client5.http.HttpRoute;
 import org.apache.hc.client5.http.io.ConnectionEndpoint;
 import org.apache.hc.client5.http.io.HttpClientConnectionManager;
@@ -41,7 +40,7 @@ final class MeteredConnectionManager implements HttpClientConnectionManager {
 
             @Override
             public ConnectionEndpoint get(Timeout timeout)
-                throws InterruptedException, ExecutionException, TimeoutException {
+                    throws InterruptedException, ExecutionException, TimeoutException {
                 String outcome = "failure";
                 try {
                     ConnectionEndpoint endpoint = lease.get(timeout);

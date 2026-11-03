@@ -4,13 +4,11 @@ import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.ToDoubleFunction;
-
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 
 /**
@@ -92,7 +90,9 @@ final class HttpPoolMetrics implements AutoCloseable {
         private void register() {
             for (String suffix : List.of("max", "leased", "available", "pending", "route.max", "acquire")) {
                 if (!registry.find("loadup.http.pool." + suffix)
-                    .tags("scope", scope, "client", client).meters().isEmpty()) {
+                        .tags("scope", scope, "client", client)
+                        .meters()
+                        .isEmpty()) {
                     throw new IllegalArgumentException("HTTP pool metric scope/client is already in use");
                 }
             }
@@ -104,9 +104,9 @@ final class HttpPoolMetrics implements AutoCloseable {
             Map<String, Timer> registered = new HashMap<>();
             for (String outcome : List.of("success", "timeout", "interrupted", "failure")) {
                 Timer timer = Timer.builder("loadup.http.pool.acquire")
-                    .description("Connection lease acquisition, excluding TCP connect and HTTP exchange")
-                    .tags("scope", scope, "client", client, "outcome", outcome)
-                    .register(registry);
+                        .description("Connection lease acquisition, excluding TCP connect and HTTP exchange")
+                        .tags("scope", scope, "client", client, "outcome", outcome)
+                        .register(registry);
                 owned.add(timer);
                 registered.put(outcome, timer);
             }
@@ -115,11 +115,11 @@ final class HttpPoolMetrics implements AutoCloseable {
 
         private void gauge(String suffix, ToDoubleFunction<PoolingHttpClientConnectionManager> value) {
             owned.add(Gauge.builder("loadup.http.pool." + suffix, this, state -> {
-                    var current = state.pool;
-                    return current == null ? 0 : value.applyAsDouble(current);
-                })
-                .tags("scope", scope, "client", client)
-                .register(registry));
+                        var current = state.pool;
+                        return current == null ? 0 : value.applyAsDouble(current);
+                    })
+                    .tags("scope", scope, "client", client)
+                    .register(registry));
         }
 
         long start() {
@@ -129,7 +129,8 @@ final class HttpPoolMetrics implements AutoCloseable {
         void record(long start, String outcome) {
             Timer timer = timers.get(outcome);
             if (timer != null) {
-                timer.record(registry.config().clock().monotonicTime() - start, java.util.concurrent.TimeUnit.NANOSECONDS);
+                timer.record(
+                        registry.config().clock().monotonicTime() - start, java.util.concurrent.TimeUnit.NANOSECONDS);
             }
         }
 

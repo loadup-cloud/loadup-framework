@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpResponse;
@@ -13,42 +12,42 @@ import org.springframework.http.client.ClientHttpResponse;
  * Standard Spring proxies resolve the current managed transport for every invocation.
  */
 final class HttpServiceClients {
-    private HttpServiceClients() {
-    }
+    private HttpServiceClients() {}
 
     static <T> T create(HttpTemplate template, String name, Class<T> serviceType) {
-        if (serviceType == null || !serviceType.isInterface()
+        if (serviceType == null
+                || !serviceType.isInterface()
                 || !java.lang.reflect.Modifier.isPublic(serviceType.getModifiers())) {
             throw new IllegalArgumentException("HTTP service type must be a public interface");
         }
         // Validate configuration now; do not retain a pool that refresh may close later.
         template.withServiceClient(name, serviceType, client -> Boolean.TRUE);
-        Object proxy = Proxy.newProxyInstance(serviceType.getClassLoader(), new Class<?>[]{serviceType},
-            (self, method, arguments) -> {
-                if (method.getDeclaringClass() == Object.class) {
-                    return switch (method.getName()) {
-                        case "toString" -> "HTTP Service Client [" + serviceType.getSimpleName() + "]";
-                        case "hashCode" -> System.identityHashCode(self);
-                        case "equals" -> self == arguments[0];
-                        default -> throw new IllegalStateException("Unexpected object method");
-                    };
-                }
-                return template.withServiceClient(name, serviceType, target -> {
-                    try {
-                        return method.invoke(target, arguments);
-                    } catch (InvocationTargetException failure) {
-                        if (failure.getCause() instanceof RuntimeException runtime) {
-                            throw runtime;
-                        }
-                        if (failure.getCause() instanceof Error error) {
-                            throw error;
-                        }
-                        throw new IllegalStateException("HTTP service invocation failed");
-                    } catch (IllegalAccessException failure) {
-                        throw new IllegalStateException("HTTP service interface must be public");
+        Object proxy = Proxy.newProxyInstance(
+                serviceType.getClassLoader(), new Class<?>[] {serviceType}, (self, method, arguments) -> {
+                    if (method.getDeclaringClass() == Object.class) {
+                        return switch (method.getName()) {
+                            case "toString" -> "HTTP Service Client [" + serviceType.getSimpleName() + "]";
+                            case "hashCode" -> System.identityHashCode(self);
+                            case "equals" -> self == arguments[0];
+                            default -> throw new IllegalStateException("Unexpected object method");
+                        };
                     }
+                    return template.withServiceClient(name, serviceType, target -> {
+                        try {
+                            return method.invoke(target, arguments);
+                        } catch (InvocationTargetException failure) {
+                            if (failure.getCause() instanceof RuntimeException runtime) {
+                                throw runtime;
+                            }
+                            if (failure.getCause() instanceof Error error) {
+                                throw error;
+                            }
+                            throw new IllegalStateException("HTTP service invocation failed");
+                        } catch (IllegalAccessException failure) {
+                            throw new IllegalStateException("HTTP service interface must be public");
+                        }
+                    });
                 });
-            });
         return serviceType.cast(proxy);
     }
 
@@ -89,7 +88,6 @@ final class HttpServiceClients {
         }
 
         @Override
-        public void close() {
-        }
+        public void close() {}
     }
 }

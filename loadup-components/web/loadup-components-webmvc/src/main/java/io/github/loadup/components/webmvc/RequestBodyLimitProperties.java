@@ -6,10 +6,15 @@ import org.springframework.util.unit.DataSize;
 
 /** Explicitly enabled byte limit for a mapped MVC path prefix. */
 @ConfigurationProperties("loadup.webmvc.request-body")
-public record RequestBodyLimitProperties(@DefaultValue("/api/internal/") String pathPrefix, DataSize maxSize) {
+public record RequestBodyLimitProperties(
+        @DefaultValue("/api/internal/") String pathPrefix, DataSize maxSize) {
     public RequestBodyLimitProperties {
-        if (pathPrefix == null || !pathPrefix.startsWith("/") || !pathPrefix.endsWith("/")
-                || pathPrefix.contains("//") || pathPrefix.contains("..") || pathPrefix.contains("%")) {
+        if (pathPrefix == null
+                || !pathPrefix.startsWith("/")
+                || !pathPrefix.endsWith("/")
+                || pathPrefix.contains("//")
+                || pathPrefix.contains("..")
+                || pathPrefix.contains("%")) {
             throw new IllegalArgumentException("Request body path prefix must be an absolute directory path");
         }
         if (maxSize == null || maxSize.toBytes() < 1 || maxSize.toBytes() >= Integer.MAX_VALUE) {

@@ -120,7 +120,8 @@ public class ResourceServerAutoConfiguration {
         } else {
             decoder = StringUtils.hasText(properties.getJwkSetUri())
                     ? NimbusJwtDecoder.withJwkSetUri(properties.getJwkSetUri()).build()
-                    : NimbusJwtDecoder.withIssuerLocation(properties.getIssuerUri()).build();
+                    : NimbusJwtDecoder.withIssuerLocation(properties.getIssuerUri())
+                            .build();
         }
         decoder.setJwtValidator(accessTokenValidator(properties));
         return decoder;

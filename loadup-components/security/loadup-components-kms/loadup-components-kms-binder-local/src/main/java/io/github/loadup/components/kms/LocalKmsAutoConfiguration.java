@@ -42,7 +42,8 @@ public class LocalKmsAutoConfiguration {
     LocalKmsKeyStore localKmsKeyStore(
             LocalKmsProperties properties, Environment environment, ResourceLoader resources) {
         if (!StringUtils.hasText(properties.getKeyStoreLocation())) {
-            throw new IllegalArgumentException("loadup.kms.local.key-store-location or LocalKmsKeyStore bean is required");
+            throw new IllegalArgumentException(
+                    "loadup.kms.local.key-store-location or LocalKmsKeyStore bean is required");
         }
         char[] storePassword = password(environment, properties.getKeyStorePasswordEnv());
         char[] keyPassword = null;
@@ -51,7 +52,8 @@ public class LocalKmsAutoConfiguration {
                     ? password(environment, properties.getKeyPasswordEnv())
                     : storePassword.clone();
             var store = KeyStore.getInstance(properties.getKeyStoreType());
-            try (var input = resources.getResource(properties.getKeyStoreLocation()).getInputStream()) {
+            try (var input =
+                    resources.getResource(properties.getKeyStoreLocation()).getInputStream()) {
                 store.load(input, storePassword);
             }
             return new LocalKmsKeyStore(store, keyPassword);

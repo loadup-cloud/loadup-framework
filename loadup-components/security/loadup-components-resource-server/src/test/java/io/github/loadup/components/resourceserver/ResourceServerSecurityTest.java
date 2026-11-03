@@ -211,7 +211,8 @@ class ResourceServerSecurityTest {
                 .isInstanceOf(IllegalArgumentException.class);
         properties.setAudience("merchant-api");
         properties.setJwkSetUri("https://issuer.test/jwks");
-        assertThat(configuration.resourceServerJwtDecoder(properties, new DefaultResourceLoader())).isNotNull();
+        assertThat(configuration.resourceServerJwtDecoder(properties, new DefaultResourceLoader()))
+                .isNotNull();
     }
 
     @Test
@@ -311,7 +312,8 @@ class ResourceServerSecurityTest {
             var properties = new ResourceServerProperties();
             properties.setIssuerUri(issuer);
             properties.setAudience("merchant-api");
-            var decoder = new ResourceServerAutoConfiguration().resourceServerJwtDecoder(properties, new DefaultResourceLoader());
+            var decoder = new ResourceServerAutoConfiguration()
+                    .resourceServerJwtDecoder(properties, new DefaultResourceLoader());
             var claims = new JWTClaimsSet.Builder()
                     .issuer(issuer)
                     .audience("merchant-api")

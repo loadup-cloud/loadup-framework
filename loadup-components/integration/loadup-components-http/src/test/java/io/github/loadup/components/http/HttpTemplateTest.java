@@ -119,15 +119,18 @@ class HttpTemplateTest {
 
     @Test
     void poolMetersRemainOnFailedRefreshAndAreRemovedOnClose() {
-        var max = metrics.get("loadup.http.pool.max").tags("scope", "application", "client", "test").gauge();
+        var max = metrics.get("loadup.http.pool.max")
+                .tags("scope", "application", "client", "test")
+                .gauge();
         double before = max.value();
-        var invalid = copyClient(config(1024L, true, Map.of()).clients().get("test"),
-                null, "missing-bundle", null, Map.of());
+        var invalid =
+                copyClient(config(1024L, true, Map.of()).clients().get("test"), null, "missing-bundle", null, Map.of());
         assertThatThrownBy(() -> http.refresh(new HttpProperties(Map.of("test", invalid))))
                 .isInstanceOf(IllegalArgumentException.class);
         assertThat(max.value()).isEqualTo(before);
         http.refresh(config(1024L, true, Map.of()));
-        assertThat(metrics.get("loadup.http.pool.max").tags("client", "test").gauge()).isSameAs(max);
+        assertThat(metrics.get("loadup.http.pool.max").tags("client", "test").gauge())
+                .isSameAs(max);
         http.close();
         assertThat(metrics.find("loadup.http.pool.max").meters()).isEmpty();
         assertThat(metrics.find("loadup.http.pool.acquire").meters()).isEmpty();

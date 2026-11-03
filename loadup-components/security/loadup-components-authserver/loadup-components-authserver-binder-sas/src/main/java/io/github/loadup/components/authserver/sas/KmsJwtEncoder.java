@@ -1,10 +1,10 @@
 package io.github.loadup.components.authserver.sas;
 
-import com.nimbusds.jose.jca.JCAContext;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSSigner;
+import com.nimbusds.jose.jca.JCAContext;
 import com.nimbusds.jose.util.Base64URL;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
@@ -22,7 +22,9 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.security.oauth2.jwt.JwtEncodingException;
 
-/** Uses Nimbus JOSE serialization while keeping all private-key operations behind KMS. */
+/**
+ * Uses Nimbus JOSE serialization while keeping all private-key operations behind KMS.
+ */
 @NullMarked
 final class KmsJwtEncoder implements JwtEncoder {
     private static final Set<String> TIMESTAMPS = Set.of("iat", "nbf", "exp");
@@ -49,7 +51,8 @@ final class KmsJwtEncoder implements JwtEncoder {
                 if (!JWSAlgorithm.RS256.equals(header.getAlgorithm())
                         || !keys.activeKid().equals(header.getKeyID())
                         || !header.isBase64URLEncodePayload()
-                        || (header.getCriticalParams() != null && !header.getCriticalParams().isEmpty())) {
+                        || (header.getCriticalParams() != null
+                                && !header.getCriticalParams().isEmpty())) {
                     throw new JOSEException("Unsupported authorization token header");
                 }
                 var signature = kms.sign(keys.activeKey(), KmsSignatureAlgorithm.RSA_SHA256_PKCS1, signingInput);
@@ -77,13 +80,20 @@ final class KmsJwtEncoder implements JwtEncoder {
         var claims = parameters.getClaims();
         try {
             var builder = new JWTClaimsSet.Builder();
-            claims.getClaims().forEach((name, value) -> builder.claim(
-                    name, TIMESTAMPS.contains(name)
-                            ? Date.from(Objects.requireNonNull(claims.getClaimAsInstant(name)))
-                            : value));
+            claims.getClaims()
+                    .forEach((name, value) -> builder.claim(
+                            name,
+                            TIMESTAMPS.contains(name)
+                                    ? Date.from(Objects.requireNonNull(claims.getClaimAsInstant(name)))
+                                    : value));
             var token = new SignedJWT(JWSHeader.parse(headers.getHeaders()), builder.build());
             token.sign(signer);
-            return new Jwt(token.serialize(), claims.getIssuedAt(), claims.getExpiresAt(), headers.getHeaders(), claims.getClaims());
+            return new Jwt(
+                    token.serialize(),
+                    claims.getIssuedAt(),
+                    claims.getExpiresAt(),
+                    headers.getHeaders(),
+                    claims.getClaims());
         } catch (JOSEException | ParseException | RuntimeException failure) {
             // Providers may include payloads in exception messages; do not propagate their details.
             throw new JwtEncodingException("KMS authorization token signing failed");

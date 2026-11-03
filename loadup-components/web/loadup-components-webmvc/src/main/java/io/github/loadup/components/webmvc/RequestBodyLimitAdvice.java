@@ -29,13 +29,18 @@ public final class RequestBodyLimitAdvice extends RequestBodyAdviceAdapter {
     }
 
     @Override
-    public boolean supports(MethodParameter parameter, Type targetType, Class<? extends HttpMessageConverter<?>> converter) {
+    public boolean supports(
+            MethodParameter parameter, Type targetType, Class<? extends HttpMessageConverter<?>> converter) {
         return true;
     }
 
     @Override
-    public HttpInputMessage beforeBodyRead(HttpInputMessage input, MethodParameter parameter, Type targetType,
-            Class<? extends HttpMessageConverter<?>> converter) throws IOException {
+    public HttpInputMessage beforeBodyRead(
+            HttpInputMessage input,
+            MethodParameter parameter,
+            Type targetType,
+            Class<? extends HttpMessageConverter<?>> converter)
+            throws IOException {
         if (!(RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes attributes)) {
             return input;
         }

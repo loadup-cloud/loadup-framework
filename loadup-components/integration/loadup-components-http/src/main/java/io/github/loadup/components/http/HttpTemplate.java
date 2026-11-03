@@ -20,7 +20,6 @@
 package io.github.loadup.components.http;
 
 import io.micrometer.core.instrument.MeterRegistry;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,9 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.function.Supplier;
 import java.util.function.Function;
-
+import java.util.function.Supplier;
 import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
@@ -48,8 +46,8 @@ import org.springframework.boot.ssl.SslBundles;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientAdapter;
@@ -271,8 +269,8 @@ public final class HttpTemplate implements AutoCloseable {
             if (runtime == null) {
                 throw new IllegalArgumentException("Unknown HTTP client");
             }
-            Object proxy = runtime.serviceProxies.computeIfAbsent(serviceType, type ->
-                runtime.services.createClient(type));
+            Object proxy =
+                    runtime.serviceProxies.computeIfAbsent(serviceType, type -> runtime.services.createClient(type));
             return action.apply(serviceType.cast(proxy));
         } catch (ResourceAccessException failure) {
             throw classify(failure);
@@ -459,44 +457,50 @@ public final class HttpTemplate implements AutoCloseable {
                     .requestFactory(new HttpComponentsClientHttpRequestFactory(transport))
                     .build();
             RestClient serviceClient = client.mutate()
-                .baseUrl(config.baseUrl().toString())
+                    .baseUrl(config.baseUrl().toString())
                     .configureMessageConverters(converters -> converters.withJsonConverter(
                             new org.springframework.http.converter.json.JacksonJsonHttpMessageConverter(mapper)))
-                .defaultHeaders(h -> h.setAll(config.headers()))
-                .requestInterceptor((request, body, execution) -> {
-                    URI target = request.getURI();
-                    URI base = config.baseUrl();
-                    if (!base.getScheme().equals(target.getScheme())
-                        || !base.getHost().equals(target.getHost())
-                        || base.getPort() != target.getPort()
-                        || target.getUserInfo() != null
-                        || target.getFragment() != null) {
-                        throw new IllegalArgumentException("HTTP service cannot change origin");
-                    }
-                    if (body.length > config.maxRequestBytes()) {
-                        throw new HttpCallException(HttpCallException.Kind.SIZE_LIMIT);
-                    }
-                    policy.resolve(target.getHost());
-                    if (config.credentialRef() != null) {
-                        request.getHeaders().setAll(headers(credentials.headers(config.credentialRef())));
-                    }
-                    try (ClientHttpResponse response = execution.execute(request, body)) {
-                        if (response.getHeaders().getContentLength() > config.maxResponseBytes()) {
+                    .defaultHeaders(h -> h.setAll(config.headers()))
+                    .requestInterceptor((request, body, execution) -> {
+                        URI target = request.getURI();
+                        URI base = config.baseUrl();
+                        if (!base.getScheme().equals(target.getScheme())
+                                || !base.getHost().equals(target.getHost())
+                                || base.getPort() != target.getPort()
+                                || target.getUserInfo() != null
+                                || target.getFragment() != null) {
+                            throw new IllegalArgumentException("HTTP service cannot change origin");
+                        }
+                        if (body.length > config.maxRequestBytes()) {
                             throw new HttpCallException(HttpCallException.Kind.SIZE_LIMIT);
                         }
-                        ByteArrayOutputStream output = new ByteArrayOutputStream();
-                        copy(response.getBody(), output, config.maxResponseBytes());
-                        return new HttpServiceClients.BufferedResponse(
-                            response.getStatusCode(), response.getHeaders(), output.toByteArray());
-                    }
-                })
-                .defaultStatusHandler(status -> !status.is2xxSuccessful(), (request, response) -> {
-                    throw new HttpCallException(HttpCallException.Kind.TRANSPORT);
-                })
-                .build();
-            return new RuntimeClient(config, client,
-                HttpServiceProxyFactory.builderFor(RestClientAdapter.create(serviceClient)).build(),
-                new java.util.concurrent.ConcurrentHashMap<>(), transport, policy, poolState);
+                        policy.resolve(target.getHost());
+                        if (config.credentialRef() != null) {
+                            request.getHeaders().setAll(headers(credentials.headers(config.credentialRef())));
+                        }
+                        try (ClientHttpResponse response = execution.execute(request, body)) {
+                            if (response.getHeaders().getContentLength() > config.maxResponseBytes()) {
+                                throw new HttpCallException(HttpCallException.Kind.SIZE_LIMIT);
+                            }
+                            ByteArrayOutputStream output = new ByteArrayOutputStream();
+                            copy(response.getBody(), output, config.maxResponseBytes());
+                            return new HttpServiceClients.BufferedResponse(
+                                    response.getStatusCode(), response.getHeaders(), output.toByteArray());
+                        }
+                    })
+                    .defaultStatusHandler(status -> !status.is2xxSuccessful(), (request, response) -> {
+                        throw new HttpCallException(HttpCallException.Kind.TRANSPORT);
+                    })
+                    .build();
+            return new RuntimeClient(
+                    config,
+                    client,
+                    HttpServiceProxyFactory.builderFor(RestClientAdapter.create(serviceClient))
+                            .build(),
+                    new java.util.concurrent.ConcurrentHashMap<>(),
+                    transport,
+                    policy,
+                    poolState);
         } catch (RuntimeException failure) {
             try {
                 transport.close();
@@ -545,12 +549,11 @@ public final class HttpTemplate implements AutoCloseable {
     }
 
     private record RuntimeClient(
-        HttpProperties.Client config,
-        RestClient client,
-        HttpServiceProxyFactory services,
-        Map<Class<?>, Object> serviceProxies,
-        CloseableHttpClient transport,
-        HttpTargetPolicy policy,
-        HttpPoolMetrics.State poolMetrics) {
-}
+            HttpProperties.Client config,
+            RestClient client,
+            HttpServiceProxyFactory services,
+            Map<Class<?>, Object> serviceProxies,
+            CloseableHttpClient transport,
+            HttpTargetPolicy policy,
+            HttpPoolMetrics.State poolMetrics) {}
 }

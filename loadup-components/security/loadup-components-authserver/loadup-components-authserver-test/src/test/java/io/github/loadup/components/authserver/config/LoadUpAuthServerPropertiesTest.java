@@ -55,8 +55,14 @@ class LoadUpAuthServerPropertiesTest {
                     assertThat(properties.getAudience()).isEqualTo("loadup-api");
                     assertThat(properties.isProtocolEndpointsEnabled()).isFalse();
                     assertThat(properties.getSigning().getActiveKey().getName()).isEqualTo("auth-current");
-                    assertThat(properties.getSigning().getActiveKey().getVersion()).isEqualTo(2);
-                    assertThat(properties.getSigning().getVerificationKeys().getFirst().getName()).isEqualTo("auth-old");
+                    assertThat(properties.getSigning().getActiveKey().getVersion())
+                            .isEqualTo(2);
+                    assertThat(properties
+                                    .getSigning()
+                                    .getVerificationKeys()
+                                    .getFirst()
+                                    .getName())
+                            .isEqualTo("auth-old");
                     assertThat(properties.getUserAccessTokenTtl()).isEqualTo(java.time.Duration.ofMinutes(12));
                     assertThat(properties.getClients().getFirst().getRedirectUris())
                             .containsExactly("https://example.test/callback");

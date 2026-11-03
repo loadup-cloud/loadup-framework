@@ -24,12 +24,16 @@ import tools.jackson.databind.json.JsonMapper;
 
 class ProtocolResponseTest {
     @Test
-    void nativeTextJsonAndMethodResponsesKeepExactBodyStatusAndContentTypeWhileOrdinaryApiStillWraps() throws Exception {
+    void nativeTextJsonAndMethodResponsesKeepExactBodyStatusAndContentTypeWhileOrdinaryApiStillWraps()
+            throws Exception {
         var json = JsonMapper.builder().build();
         var mvc = MockMvcBuilders.standaloneSetup(new Callback(), new Ordinary())
-                .setControllerAdvice(new ApiResponseAdvice(new ApiPathMatcher(), new ApiMaskingJson(json), mock(ApiResultMetrics.class)),
+                .setControllerAdvice(
+                        new ApiResponseAdvice(
+                                new ApiPathMatcher(), new ApiMaskingJson(json), mock(ApiResultMetrics.class)),
                         new ApiExceptionHandler(new ApiPathMatcher()))
-                .setMessageConverters(new StringHttpMessageConverter(), new JacksonJsonHttpMessageConverter(json)).build();
+                .setMessageConverters(new StringHttpMessageConverter(), new JacksonJsonHttpMessageConverter(json))
+                .build();
         var failure = mvc.perform(post("/api/native/text")).andReturn().getResponse();
         assertThat(failure.getStatus()).isEqualTo(400);
         assertThat(failure.getContentAsString()).isEqualTo("failure");
@@ -49,11 +53,14 @@ class ProtocolResponseTest {
     void protocolDecisionSurvivesReplacementOfTheMatchedHandlerDuringErrorDispatch() throws Exception {
         var request = new MockHttpServletRequest("POST", "/api/native/text");
         var paths = new ApiPathMatcher();
-        assertThat(new ProtocolResponseInterceptor(paths).preHandle(request, new MockHttpServletResponse(),
-                new HandlerMethod(new Callback(), "text"))).isTrue();
-        request.setAttribute(HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE, new HandlerMethod(new Ordinary(), "value"));
+        assertThat(new ProtocolResponseInterceptor(paths)
+                        .preHandle(request, new MockHttpServletResponse(), new HandlerMethod(new Callback(), "text")))
+                .isTrue();
+        request.setAttribute(
+                HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE, new HandlerMethod(new Ordinary(), "value"));
         assertThat(paths.matches(request, "/api/native/text")).isFalse();
-        assertThat(paths.matches(new MockHttpServletRequest("POST", "/api/ordinary"), "/api/ordinary")).isTrue();
+        assertThat(paths.matches(new MockHttpServletRequest("POST", "/api/ordinary"), "/api/ordinary"))
+                .isTrue();
     }
 
     @RestController

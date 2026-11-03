@@ -35,11 +35,13 @@ class KmsSigningFailureTest {
         var file = TestKeyStores.create(directory, "auth-current");
         byte[] original = Files.readAllBytes(file);
         for (String override : new String[] {
-                "loadup.kms.local.key-store-location=" + directory.resolve("missing.p12").toUri(),
-                "loadup.kms.local.key-store-password-env=MISSING_TEST_KMS_PASSWORD",
-                TestKeyStores.PASSWORD_ENV + "=wrong-password"
+            "loadup.kms.local.key-store-location="
+                    + directory.resolve("missing.p12").toUri(),
+            "loadup.kms.local.key-store-password-env=MISSING_TEST_KMS_PASSWORD",
+            TestKeyStores.PASSWORD_ENV + "=wrong-password"
         }) {
-            TestKeyStores.runner(file).withPropertyValues(override)
+            TestKeyStores.runner(file)
+                    .withPropertyValues(override)
                     .run(context -> assertThat(context).hasFailed());
             assertThat(Files.readAllBytes(file)).containsExactly(original);
         }
@@ -51,7 +53,8 @@ class KmsSigningFailureTest {
         var store = new LocalKmsKeyStore(TestKeyStores.load(file), TestKeyStores.PASSWORD.toCharArray());
         TestKeyStores.runner(file)
                 .withBean(LocalKmsKeyStore.class, () -> store)
-                .withPropertyValues("loadup.kms.local.key-store-location=file:/not-used.p12",
+                .withPropertyValues(
+                        "loadup.kms.local.key-store-location=file:/not-used.p12",
                         "loadup.kms.local.key-store-password-env=MISSING_TEST_KMS_PASSWORD")
                 .run(context -> assertThat(context).hasNotFailed().hasSingleBean(KmsTemplate.class));
     }
@@ -66,19 +69,24 @@ class KmsSigningFailureTest {
         when(kms.publicKey(key)).thenReturn(local.publicKey(key));
         when(kms.sign(eq(key), eq(KmsSignatureAlgorithm.RSA_SHA256_PKCS1), any(byte[].class)))
                 .thenThrow(new KmsException(KmsException.Code.INVALID_REQUEST))
-                .thenReturn(new KmsSignature("unexpected-key", 1, KmsSignatureAlgorithm.RSA_SHA256_PKCS1, new byte[] {1}));
+                .thenReturn(
+                        new KmsSignature("unexpected-key", 1, KmsSignatureAlgorithm.RSA_SHA256_PKCS1, new byte[] {1}));
         TestKeyStores.runner(file).withBean(KmsTemplate.class, () -> kms).run(context -> {
             assertThat(context).hasNotFailed().doesNotHaveBean(LocalKmsKeyStore.class);
             var encoder = context.getBean(JwtEncoder.class);
             var now = Instant.now();
-            var claims = JwtClaimsSet.builder().subject("client").issuedAt(now).expiresAt(now.plusSeconds(60)).build();
+            var claims = JwtClaimsSet.builder()
+                    .subject("client")
+                    .issuedAt(now)
+                    .expiresAt(now.plusSeconds(60))
+                    .build();
             for (int attempt = 0; attempt < 2; attempt++) {
                 assertThatThrownBy(() -> encoder.encode(JwtEncoderParameters.from(claims)))
                         .isInstanceOf(JwtEncodingException.class)
                         .hasMessage("KMS authorization token signing failed");
             }
             assertThatThrownBy(() -> encoder.encode(JwtEncoderParameters.from(
-                    JwsHeader.with(SignatureAlgorithm.RS512).build(), claims)))
+                            JwsHeader.with(SignatureAlgorithm.RS512).build(), claims)))
                     .isInstanceOf(JwtEncodingException.class);
         });
     }

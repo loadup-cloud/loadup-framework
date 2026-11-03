@@ -21,10 +21,10 @@ package io.github.loadup.components.authserver.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.nio.file.Path;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import java.nio.file.Path;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;

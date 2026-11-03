@@ -20,10 +20,26 @@ final class TestKeyStores {
         for (String alias : aliases) {
             var builder = new ProcessBuilder(
                     Path.of(System.getProperty("java.home"), "bin", "keytool").toString(),
-                    "-genkeypair", "-alias", alias, "-keyalg", "RSA", "-keysize", "2048",
-                    "-validity", "30", "-dname", "CN=AuthServer Test", "-storetype", "PKCS12",
-                    "-keystore", store.toString(), "-storepass:env", PASSWORD_ENV,
-                    "-keypass:env", PASSWORD_ENV, "-noprompt");
+                    "-genkeypair",
+                    "-alias",
+                    alias,
+                    "-keyalg",
+                    "RSA",
+                    "-keysize",
+                    "2048",
+                    "-validity",
+                    "30",
+                    "-dname",
+                    "CN=AuthServer Test",
+                    "-storetype",
+                    "PKCS12",
+                    "-keystore",
+                    store.toString(),
+                    "-storepass:env",
+                    PASSWORD_ENV,
+                    "-keypass:env",
+                    PASSWORD_ENV,
+                    "-noprompt");
             builder.environment().put(PASSWORD_ENV, PASSWORD);
             var process = builder.redirectErrorStream(true).start();
             if (!process.waitFor(30, TimeUnit.SECONDS)) {
@@ -47,7 +63,8 @@ final class TestKeyStores {
 
     static ApplicationContextRunner runner(Path store) {
         return new ApplicationContextRunner()
-                .withConfiguration(AutoConfigurations.of(LocalKmsAutoConfiguration.class, SasAuthServerAutoConfiguration.class))
+                .withConfiguration(
+                        AutoConfigurations.of(LocalKmsAutoConfiguration.class, SasAuthServerAutoConfiguration.class))
                 .withPropertyValues(
                         "loadup.kms.enabled=true",
                         "loadup.kms.binder=local",

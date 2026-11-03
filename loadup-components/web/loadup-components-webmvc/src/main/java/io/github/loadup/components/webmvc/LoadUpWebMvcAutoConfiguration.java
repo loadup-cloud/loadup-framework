@@ -39,8 +39,8 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.method.HandlerTypePredicate;
-import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import tools.jackson.databind.ObjectMapper;
 

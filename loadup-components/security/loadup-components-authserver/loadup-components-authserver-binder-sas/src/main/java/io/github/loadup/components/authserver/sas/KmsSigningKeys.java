@@ -60,8 +60,7 @@ final class KmsSigningKeys {
 
     private static RSAKey publicKey(KmsTemplate kms, KmsKeyRef key) {
         var pem = kms.publicKey(key);
-        var rsa = RsaKeyConverters.x509()
-                .convert(new ByteArrayInputStream(pem.getBytes(StandardCharsets.US_ASCII)));
+        var rsa = RsaKeyConverters.x509().convert(new ByteArrayInputStream(pem.getBytes(StandardCharsets.US_ASCII)));
         if (rsa.getModulus().bitLength() < 2048 || rsa.getModulus().bitLength() > 4096) {
             throw new IllegalArgumentException("Authorization signing requires RSA-2048 through RSA-4096");
         }

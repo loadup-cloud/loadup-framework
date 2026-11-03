@@ -20,7 +20,8 @@ class HttpServiceResponsesTest {
 
     @Test
     void successRequiresBothMetadataFieldsAndNonNullData() {
-        assertThat(HttpServiceResponses.requiredData(SuccessResponse.of("value"))).isEqualTo("value");
+        assertThat(HttpServiceResponses.requiredData(SuccessResponse.of("value")))
+                .isEqualTo("value");
         assertThatThrownBy(() -> HttpServiceResponses.requiredData(response("SUCCESS", "F", "\"value\"")))
                 .isInstanceOf(HttpCallException.class);
         assertThatThrownBy(() -> HttpServiceResponses.requiredData(response("NOT_FOUND", "S", "\"value\"")))
