@@ -144,8 +144,11 @@ class DelayedTaskIT {
         assertThat(calls).hasValue(0);
         clock.advance(Duration.ofDays(30).plusSeconds(2));
         dispatcher.execute();
-        assertThat(calls).hasValue(2);
+        assertThat(calls).hasValue(1);
         assertThat(get("order").status()).isEqualTo(DelayedTaskStatus.SUCCEEDED);
+        assertThat(get("order").attempts()).isEqualTo(1);
+        dispatcher.execute();
+        assertThat(calls).hasValue(1);
         assertThat(first.toString()).contains("order");
     }
 
@@ -289,15 +292,13 @@ class DelayedTaskIT {
     void invalidArgumentsAndMissingHandlerFailSafely() {
         assertThatThrownBy(() -> tenant("a", () -> tasks.find("bad name", "order")))
                 .isInstanceOf(CommonException.class);
-        assertThatThrownBy(() -> tasks.find("close-order", "order")).isInstanceOf(CommonException.class);
+        assertThat(tasks.find("close-order", "order")).isEmpty();
         tenant("a", () -> transactions.execute(status -> tasks.register("missing-handler", "missing", now())));
         dispatcher.execute();
-        assertThat(tenant(
-                        "a",
-                        () -> tasks.find("missing-handler", "missing")
-                                .orElseThrow()
-                                .status()))
-                .isEqualTo(DelayedTaskStatus.PENDING);
+        var missing = tasks.find("missing-handler", "missing").orElseThrow();
+        assertThat(missing.status()).isEqualTo(DelayedTaskStatus.PENDING);
+        assertThat(missing.attempts()).isEqualTo(1);
+        assertThat(missing.nextExecuteAt()).isAfter(now());
         assertThat(calls).hasValue(0);
         assertThat(ContextHolder.isBound()).isFalse();
     }
