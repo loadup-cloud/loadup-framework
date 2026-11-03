@@ -47,6 +47,8 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -202,14 +204,70 @@ class ResourceServerSecurityTest {
     void decoderFactoryValidatesSettingsAndBuildsLazyJwkDecoder() {
         var configuration = new ResourceServerAutoConfiguration();
         var properties = new ResourceServerProperties();
-        assertThatThrownBy(() -> configuration.resourceServerJwtDecoder(properties))
+        assertThatThrownBy(() -> configuration.resourceServerJwtDecoder(properties, new DefaultResourceLoader()))
                 .isInstanceOf(IllegalArgumentException.class);
         properties.setIssuerUri("https://issuer.test");
-        assertThatThrownBy(() -> configuration.resourceServerJwtDecoder(properties))
+        assertThatThrownBy(() -> configuration.resourceServerJwtDecoder(properties, new DefaultResourceLoader()))
                 .isInstanceOf(IllegalArgumentException.class);
         properties.setAudience("merchant-api");
         properties.setJwkSetUri("https://issuer.test/jwks");
-        assertThat(configuration.resourceServerJwtDecoder(properties)).isNotNull();
+        assertThat(configuration.resourceServerJwtDecoder(properties, new DefaultResourceLoader())).isNotNull();
+    }
+
+    @Test
+    void verifiesOfflinePublicKeyAndPreservesIssuerAudienceAndExpiryValidation() throws Exception {
+        var generator = KeyPairGenerator.getInstance("RSA");
+        generator.initialize(2048);
+        var pair = generator.generateKeyPair();
+        String pem = "-----BEGIN PUBLIC KEY-----\n"
+                + java.util.Base64.getMimeEncoder(64, new byte[] {'\n'})
+                        .encodeToString(pair.getPublic().getEncoded())
+                + "\n-----END PUBLIC KEY-----\n";
+        var loader = new DefaultResourceLoader();
+        loader.addProtocolResolver((location, ignored) -> {
+            assertThat(location).isEqualTo("classpath:test-public.pem");
+            return new ByteArrayResource(pem.getBytes(StandardCharsets.US_ASCII));
+        });
+        var properties = new ResourceServerProperties();
+        properties.setIssuerUri("https://offline-issuer.invalid");
+        properties.setAudience("merchant-api");
+        properties.setPublicKeyLocation("classpath:test-public.pem");
+        var configuration = new ResourceServerAutoConfiguration();
+        var decoder = configuration.resourceServerJwtDecoder(properties, loader);
+        var valid = new JWTClaimsSet.Builder()
+                .issuer(properties.getIssuerUri())
+                .audience("merchant-api")
+                .subject("payment")
+                .claim("token_use", "access")
+                .expirationTime(Date.from(Instant.now().plusSeconds(300)))
+                .build();
+        for (var claims : List.of(
+                valid,
+                new JWTClaimsSet.Builder(valid).issuer("https://other.invalid").build(),
+                new JWTClaimsSet.Builder(valid).audience("other-api").build(),
+                new JWTClaimsSet.Builder(valid)
+                        .expirationTime(Date.from(Instant.now().minusSeconds(300)))
+                        .build(),
+                new JWTClaimsSet.Builder(valid).claim("token_use", "refresh").build())) {
+            var token = new SignedJWT(new JWSHeader(JWSAlgorithm.RS256), claims);
+            token.sign(new RSASSASigner(pair.getPrivate()));
+            if (claims == valid) {
+                assertThat(decoder.decode(token.serialize()).getSubject()).isEqualTo("payment");
+            } else {
+                assertThatThrownBy(() -> decoder.decode(token.serialize()))
+                        .isInstanceOf(org.springframework.security.oauth2.jwt.JwtException.class);
+            }
+        }
+        var invalidSignature = new SignedJWT(new JWSHeader(JWSAlgorithm.RS256), valid);
+        invalidSignature.sign(new RSASSASigner(generator.generateKeyPair().getPrivate()));
+        assertThatThrownBy(() -> decoder.decode(invalidSignature.serialize())).isInstanceOf(BadJwtException.class);
+        properties.setJwkSetUri("https://other.invalid/jwks");
+        assertThatThrownBy(() -> configuration.resourceServerJwtDecoder(properties, loader))
+                .isInstanceOf(IllegalArgumentException.class);
+        properties.setJwkSetUri(null);
+        properties.setPublicKeyLocation("file:/missing-offline-key.pem");
+        assertThatThrownBy(() -> configuration.resourceServerJwtDecoder(properties, new DefaultResourceLoader()))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -253,7 +311,7 @@ class ResourceServerSecurityTest {
             var properties = new ResourceServerProperties();
             properties.setIssuerUri(issuer);
             properties.setAudience("merchant-api");
-            var decoder = new ResourceServerAutoConfiguration().resourceServerJwtDecoder(properties);
+            var decoder = new ResourceServerAutoConfiguration().resourceServerJwtDecoder(properties, new DefaultResourceLoader());
             var claims = new JWTClaimsSet.Builder()
                     .issuer(issuer)
                     .audience("merchant-api")

@@ -33,10 +33,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.converter.RsaKeyConverters;
 import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
@@ -98,13 +100,28 @@ public class ResourceServerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(JwtDecoder.class)
-    public JwtDecoder resourceServerJwtDecoder(ResourceServerProperties properties) {
+    public JwtDecoder resourceServerJwtDecoder(ResourceServerProperties properties, ResourceLoader resourceLoader) {
         if (!StringUtils.hasText(properties.getIssuerUri()) || !StringUtils.hasText(properties.getAudience())) {
             throw new IllegalArgumentException("Resource server requires issuer-uri and audience");
         }
-        NimbusJwtDecoder decoder = StringUtils.hasText(properties.getJwkSetUri())
-                ? NimbusJwtDecoder.withJwkSetUri(properties.getJwkSetUri()).build()
-                : NimbusJwtDecoder.withIssuerLocation(properties.getIssuerUri()).build();
+        NimbusJwtDecoder decoder;
+        if (StringUtils.hasText(properties.getPublicKeyLocation())) {
+            if (StringUtils.hasText(properties.getJwkSetUri())) {
+                throw new IllegalArgumentException("Configure public-key-location or jwk-set-uri, not both");
+            }
+            try (var input = resourceLoader
+                    .getResource(properties.getPublicKeyLocation())
+                    .getInputStream()) {
+                var key = RsaKeyConverters.x509().convert(input);
+                decoder = NimbusJwtDecoder.withPublicKey(key).build();
+            } catch (IOException invalidKey) {
+                throw new IllegalArgumentException("Cannot read resource-server public key", invalidKey);
+            }
+        } else {
+            decoder = StringUtils.hasText(properties.getJwkSetUri())
+                    ? NimbusJwtDecoder.withJwkSetUri(properties.getJwkSetUri()).build()
+                    : NimbusJwtDecoder.withIssuerLocation(properties.getIssuerUri()).build();
+        }
         decoder.setJwtValidator(accessTokenValidator(properties));
         return decoder;
     }

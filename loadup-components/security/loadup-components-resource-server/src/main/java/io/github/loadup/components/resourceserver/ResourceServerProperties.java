@@ -32,6 +32,7 @@ public class ResourceServerProperties {
     private boolean defaultSecurityFilterChain = true;
     private String issuerUri;
     private String jwkSetUri;
+    private String publicKeyLocation;
     private String audience;
     private String accessTokenUseClaim = "token_use";
     private String accessTokenUseValue = "access";
@@ -67,6 +68,14 @@ public class ResourceServerProperties {
 
     public void setJwkSetUri(String jwkSetUri) {
         this.jwkSetUri = jwkSetUri;
+    }
+
+    public String getPublicKeyLocation() {
+        return publicKeyLocation;
+    }
+
+    public void setPublicKeyLocation(String publicKeyLocation) {
+        this.publicKeyLocation = publicKeyLocation;
     }
 
     public String getAudience() {
