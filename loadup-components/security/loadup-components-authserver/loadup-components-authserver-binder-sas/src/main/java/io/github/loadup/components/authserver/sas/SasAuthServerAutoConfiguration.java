@@ -19,30 +19,18 @@
  */
 package io.github.loadup.components.authserver.sas;
 
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.KeyUse;
-import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.authserver.jwt.LoadUpJwtTokenCustomizer;
 import io.github.loadup.components.authserver.properties.LoadUpAuthServerProperties;
 import io.github.loadup.components.authserver.properties.LoadUpAuthServerProperties.Client;
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.PrivateKey;
-import java.security.interfaces.RSAPrivateCrtKey;
-import java.security.interfaces.RSAPublicKey;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.RSAPublicKeySpec;
-import java.util.Base64;
+import io.github.loadup.components.kms.KmsTemplate;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -54,12 +42,11 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
@@ -79,6 +66,10 @@ import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
  * protocol endpoints. The chain remains active alongside application-defined security chains.
  */
 @AutoConfiguration(
+        afterName = {
+            "io.github.loadup.components.kms.LocalKmsAutoConfiguration",
+            "io.github.loadup.components.kms.KmsAutoConfiguration"
+        },
         beforeName = {
             "org.springframework.boot.security.oauth2.server.authorization.autoconfigure.servlet.OAuth2AuthorizationServerAutoConfiguration",
             "org.springframework.boot.security.oauth2.server.authorization.autoconfigure.servlet.OAuth2AuthorizationServerJwtAutoConfiguration",
@@ -111,39 +102,6 @@ public class SasAuthServerAutoConfiguration {
             client.getScopes().forEach(builder::scope);
         }
         return builder.build();
-    }
-
-    private static RSAKey buildRsaKey(LoadUpAuthServerProperties properties) {
-        String privateKeyBase64 = properties.getJwk().getRsaPrivateKeyBase64();
-        String kid = properties.getJwk().getKid();
-        try {
-            RSAPrivateCrtKey privateKey;
-            if (StringUtils.isNotBlank(privateKeyBase64)) {
-                PrivateKey decoded = KeyFactory.getInstance("RSA")
-                        .generatePrivate(
-                                new PKCS8EncodedKeySpec(Base64.getDecoder().decode(privateKeyBase64)));
-                privateKey = (RSAPrivateCrtKey) decoded;
-            } else {
-                LogUtil.warn(
-                        SasAuthServerAutoConfiguration.class,
-                        "loadup.security.auth-server.jwk.rsa-private-key-base64 is not configured; "
-                                + "an ephemeral RSA key will be generated. Tokens become invalid after restart.");
-                KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
-                generator.initialize(2048);
-                KeyPair keyPair = generator.generateKeyPair();
-                privateKey = (RSAPrivateCrtKey) keyPair.getPrivate();
-            }
-            RSAPublicKey publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
-                    .generatePublic(new RSAPublicKeySpec(privateKey.getModulus(), privateKey.getPublicExponent()));
-            return new RSAKey.Builder(publicKey)
-                    .privateKey(privateKey)
-                    .keyID(kid)
-                    .keyUse(KeyUse.SIGNATURE)
-                    .algorithm(JWSAlgorithm.RS256)
-                    .build();
-        } catch (Exception e) {
-            throw new IllegalStateException("Failed to build the authorization server JWK", e);
-        }
     }
 
     private static String encodeClientSecret(String secret) {
@@ -198,31 +156,26 @@ public class SasAuthServerAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(JWKSource.class)
-    public JWKSource<SecurityContext> jwkSource(RSAKey rsaKey) {
-        return new ImmutableJWKSet<>(new JWKSet(rsaKey));
+    KmsSigningKeys loadUpSigningKeys(ObjectProvider<KmsTemplate> kms, LoadUpAuthServerProperties properties) {
+        return new KmsSigningKeys(kms.getObject(), properties.getSigning());
     }
 
     @Bean
-    @ConditionalOnMissingBean(RSAKey.class)
-    public RSAKey loadUpSigningKey(LoadUpAuthServerProperties properties) {
-        return buildRsaKey(properties);
+    @ConditionalOnMissingBean(JWKSource.class)
+    JWKSource<SecurityContext> jwkSource(KmsSigningKeys keys) {
+        return new ImmutableJWKSet<>(keys.publicKeys());
     }
 
     @Bean
     @ConditionalOnMissingBean(JwtEncoder.class)
-    public JwtEncoder loadUpJwtEncoder(JWKSource<SecurityContext> jwkSource) {
-        return new NimbusJwtEncoder(jwkSource);
+    JwtEncoder loadUpJwtEncoder(ObjectProvider<KmsTemplate> kms, KmsSigningKeys keys) {
+        return new KmsJwtEncoder(kms.getObject(), keys);
     }
 
     @Bean
     @ConditionalOnMissingBean(JwtDecoder.class)
-    @ConditionalOnProperty(
-            prefix = "loadup.security.auth-server",
-            name = "protocol-endpoints-enabled",
-            havingValue = "false")
-    public JwtDecoder loadUpLocalJwtDecoder(RSAKey rsaKey) throws com.nimbusds.jose.JOSEException {
-        return NimbusJwtDecoder.withPublicKey(rsaKey.toRSAPublicKey()).build();
+    public JwtDecoder loadUpLocalJwtDecoder(JWKSource<SecurityContext> jwkSource) {
+        return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
     }
 
     @Bean

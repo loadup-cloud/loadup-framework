@@ -42,6 +42,9 @@ class LoadUpAuthServerPropertiesTest {
                         "loadup.security.auth-server.audience=loadup-api",
                         "loadup.security.auth-server.protocol-endpoints-enabled=false",
                         "loadup.security.auth-server.user-access-token-ttl=12m",
+                        "loadup.security.auth-server.signing.active-key.name=auth-current",
+                        "loadup.security.auth-server.signing.active-key.version=2",
+                        "loadup.security.auth-server.signing.verification-keys[0].name=auth-old",
                         "loadup.security.auth-server.clients[0].client-id=portal",
                         "loadup.security.auth-server.clients[0].client-secret=synthetic-secret",
                         "loadup.security.auth-server.clients[0].redirect-uris[0]=https://example.test/callback",
@@ -51,6 +54,9 @@ class LoadUpAuthServerPropertiesTest {
                     assertThat(properties.getIssuer()).isEqualTo("https://sso.example.com/realms/loadup");
                     assertThat(properties.getAudience()).isEqualTo("loadup-api");
                     assertThat(properties.isProtocolEndpointsEnabled()).isFalse();
+                    assertThat(properties.getSigning().getActiveKey().getName()).isEqualTo("auth-current");
+                    assertThat(properties.getSigning().getActiveKey().getVersion()).isEqualTo(2);
+                    assertThat(properties.getSigning().getVerificationKeys().getFirst().getName()).isEqualTo("auth-old");
                     assertThat(properties.getUserAccessTokenTtl()).isEqualTo(java.time.Duration.ofMinutes(12));
                     assertThat(properties.getClients().getFirst().getRedirectUris())
                             .containsExactly("https://example.test/callback");
@@ -64,7 +70,9 @@ class LoadUpAuthServerPropertiesTest {
         contextRunner.run(context -> {
             LoadUpAuthServerProperties properties = context.getBean(LoadUpAuthServerProperties.class);
             assertThat(properties.getIssuer()).isEqualTo("http://localhost:8080");
-            assertThat(properties.getJwk().getKid()).isEqualTo("loadup");
+            assertThat(properties.getSigning().getActiveKey().getName()).isNull();
+            assertThat(properties.getSigning().getActiveKey().getVersion()).isEqualTo(1);
+            assertThat(properties.getSigning().getVerificationKeys()).isEmpty();
         });
     }
 

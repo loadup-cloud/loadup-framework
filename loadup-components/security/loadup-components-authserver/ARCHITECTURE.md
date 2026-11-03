@@ -14,7 +14,8 @@ OAuth2 授权服务器与令牌签发的聚合模块，负责组织下列子模�
 
 ## 分层与调用路径
 
-API 定义主体与认证契约；SAS binder 配置令牌签发、JWK 和可选 OAuth2 协议端点。
+API 定义主体、认证契约与 KMS 密钥引用配置；SAS binder 通过 kms-api 委托 RSA 签名，并仅发布公钥 JWKS 和可选 OAuth2 协议端点。
+集成应用选择 kms-local 等 binder，AuthServer 不持有私钥对象，不再使用独立的 Base64 私钥或临时生成路径。
 
 ```text
 loadup-components-authserver

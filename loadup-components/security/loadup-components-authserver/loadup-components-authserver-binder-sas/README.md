@@ -24,7 +24,8 @@ OAuth2 授权服务器与令牌签发的具体后端适配模块；由集成方�
 ## 接入步骤
 
 需要 SAS 协议与 JWT 签发时引入 binder-sas；用户密码校验由业务认证适配提供。
-此 jar 负责接入具体技术实现；业务模块继续面向 API/facade 编程。
+此 jar 负责接入 SAS 与标准 JwtEncoder；RSA 签名通过 kms-api 委托，应用需选择 KMS binder 并配置持久化密钥。
+完整配置、KeyStore 加载和轮换步骤见 [AuthServer 接入](../README.md)。
 
 ## 自动装配
 

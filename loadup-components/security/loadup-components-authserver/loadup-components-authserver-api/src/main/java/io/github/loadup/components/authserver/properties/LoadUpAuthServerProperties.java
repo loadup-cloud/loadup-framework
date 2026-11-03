@@ -43,9 +43,9 @@ public class LoadUpAuthServerProperties {
 
     private Duration userAccessTokenTtl = Duration.ofMinutes(30);
     /**
-     * Signing JWK configuration used by the SAS binder.
+     * KMS signing reference and retained verification keys used by the SAS binder.
      */
-    private Jwk jwk = new Jwk();
+    private Signing signing = new Signing();
     /**
      * OAuth2 clients registered in the embedded authorization server.
      */
@@ -83,12 +83,12 @@ public class LoadUpAuthServerProperties {
         this.audience = audience;
     }
 
-    public Jwk getJwk() {
-        return jwk;
+    public Signing getSigning() {
+        return signing;
     }
 
-    public void setJwk(Jwk jwk) {
-        this.jwk = jwk;
+    public void setSigning(Signing signing) {
+        this.signing = signing;
     }
 
     public List<Client> getClients() {
@@ -100,35 +100,48 @@ public class LoadUpAuthServerProperties {
     }
 
     /**
-     * Signing key settings for the embedded authorization server.
+     * An explicit active key and historical keys to publish through JWKS.
      */
-    public static class Jwk {
+    public static class Signing {
+        private SigningKey activeKey = new SigningKey();
+        private List<SigningKey> verificationKeys = new ArrayList<>();
 
-        /**
-         * Key ID included in the JWT header and the JWK set.
-         */
-        private String kid = "loadup";
-
-        /**
-         * RSA private key as Base64-encoded PKCS#8 DER. When empty, an ephemeral
-         * RSA-2048 key is generated at startup (tokens become invalid after restart).
-         */
-        private String rsaPrivateKeyBase64;
-
-        public String getKid() {
-            return kid;
+        public SigningKey getActiveKey() {
+            return activeKey;
         }
 
-        public void setKid(String kid) {
-            this.kid = kid;
+        public void setActiveKey(SigningKey activeKey) {
+            this.activeKey = activeKey;
         }
 
-        public String getRsaPrivateKeyBase64() {
-            return rsaPrivateKeyBase64;
+        public List<SigningKey> getVerificationKeys() {
+            return verificationKeys;
         }
 
-        public void setRsaPrivateKeyBase64(String rsaPrivateKeyBase64) {
-            this.rsaPrivateKeyBase64 = rsaPrivateKeyBase64;
+        public void setVerificationKeys(List<SigningKey> verificationKeys) {
+            this.verificationKeys = verificationKeys;
+        }
+    }
+
+    /** A KMS name and pinned version; key IDs are derived as name-vN. */
+    public static class SigningKey {
+        private String name;
+        private int version = 1;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public int getVersion() {
+            return version;
+        }
+
+        public void setVersion(int version) {
+            this.version = version;
         }
     }
 

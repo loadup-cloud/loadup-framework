@@ -19,7 +19,7 @@
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-commons-log</artifactId>
+            <artifactId>loadup-components-kms-api</artifactId>
         </dependency>
 
         <dependency>

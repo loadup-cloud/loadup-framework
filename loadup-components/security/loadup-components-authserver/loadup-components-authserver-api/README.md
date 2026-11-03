@@ -18,7 +18,8 @@ OAuth2 授权服务器与令牌签发的业务契约与接口模块；实现由�
 ## 接入步骤
 
 需要 SAS 协议与 JWT 签发时引入 binder-sas；用户密码校验由业务认证适配提供。
-运行时还需在应用侧引入一种对应 binder；仅有接口 jar 不会创建实际后端能力。
+运行时还需在应用侧引入对应 AuthServer binder 与 KMS binder；仅有接口 jar 不会创建后端能力。
+签名配置为 signing.active-key（明确 name/version）与 verification-keys（保留公钥引用），不配置或传递私钥值；详见 [接入说明](../README.md)。
 
 ## 配置入口
 
