@@ -20,9 +20,7 @@ public final class HttpClientDefaults {
                 prefix + ".tenant-id", environment.getProperty(defaults + "tenant-id", "__default__"),
                 prefix + ".service-id", environment.getProperty(defaults + "service-id",
                         environment.getProperty("spring.application.name", "application")),
-                prefix + ".audience", environment.getProperty(defaults + "audience", application),
-                prefix + ".token-file", environment.getProperty(defaults + "token-file",
-                        "/var/run/loadup/secrets/" + application + ".jwt")));
+                prefix + ".audience", environment.getProperty(defaults + "audience", application)));
         var sources = new ArrayList<ConfigurationPropertySource>();
         ConfigurationPropertySources.get(environment).forEach(sources::add);
         sources.add(fallback);
