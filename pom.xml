@@ -343,7 +343,7 @@
                         <excludes>
                             <exclude>**/dataobject/table/**</exclude>
                             <exclude>**/mapper/*DOMapper.class</exclude>
-                            <exclude>io/github/loadup/components/delayedtask/DelayedTaskConverterImpl.class</exclude>
+                            <exclude>**/converter/*ConverterImpl.class</exclude>
                         </excludes>
                     </configuration>
                     <executions>

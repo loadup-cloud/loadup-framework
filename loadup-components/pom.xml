@@ -16,6 +16,7 @@
     <modules>
         <!-- security -->
         <module>security/loadup-components-authorization</module>
+        <module>security/loadup-components-service-auth</module>
         <module>security/loadup-components-authserver</module>
         <module>security/loadup-components-resource-server</module>
         <module>security/loadup-components-captcha</module>
