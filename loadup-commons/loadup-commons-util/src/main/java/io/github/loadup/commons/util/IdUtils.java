@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common Utils
+ * LoadUp Commons Util
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -39,10 +39,6 @@ public class IdUtils {
         return random.nextLong() & Long.MAX_VALUE;
     }
 
-    /**
-     *
-     * @return {@link SecureRandom}
-     */
     public static SecureRandom getSecureRandom() {
         return new SecureRandom();
     }

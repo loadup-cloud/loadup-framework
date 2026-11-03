@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Client Layer
+ * LoadUp Modules UPMS Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

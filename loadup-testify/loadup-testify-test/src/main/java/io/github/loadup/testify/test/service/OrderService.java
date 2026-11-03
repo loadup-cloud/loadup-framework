@@ -1,6 +1,6 @@
 /*
  * #%L
- * Testify Demo
+ * LoadUp Testify Test
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,9 +22,6 @@ package io.github.loadup.testify.test.service;
 import io.github.loadup.testify.test.model.Order;
 import org.springframework.stereotype.Service;
 
-/**
- * User service for demo - demonstrates integration testing with Testify.
- */
 @Service
 public class OrderService {
 

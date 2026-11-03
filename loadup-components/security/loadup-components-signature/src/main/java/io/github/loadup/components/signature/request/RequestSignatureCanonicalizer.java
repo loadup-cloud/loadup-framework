@@ -24,9 +24,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
 
-/**
- * LoadUp request v1 uses fixed-order ASCII fields, LF separators and a trailing LF.
- */
 public final class RequestSignatureCanonicalizer {
     public static final String PROTOCOL = "loadup-request-v1";
 

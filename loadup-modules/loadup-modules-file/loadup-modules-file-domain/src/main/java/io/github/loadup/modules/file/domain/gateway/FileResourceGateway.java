@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp File Domain
+ * LoadUp Modules File Domain
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

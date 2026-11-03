@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone Binder Webhook
+ * LoadUp Components Gotone Binder Webhook
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -28,9 +28,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 
-/**
- * Auto-configuration for the DingTalk / WeChat Work / Feishu webhook binders.
- */
 @AutoConfiguration
 public class WebhookChannelAutoConfiguration {
 

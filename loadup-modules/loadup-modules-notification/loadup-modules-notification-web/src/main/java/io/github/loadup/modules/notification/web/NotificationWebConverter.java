@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp In-App Notifications Web Adapter
+ * LoadUp Modules Notification Web
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -24,9 +24,6 @@ import io.github.loadup.modules.notification.client.dto.InboxMessageDTO;
 import io.github.loadup.modules.notification.client.dto.NotificationViewDTO;
 import org.mapstruct.Mapper;
 
-/**
- * Produces the public HTTP projection from the application contract.
- */
 @Mapper(config = LoadUpMapStructConfig.class)
 public interface NotificationWebConverter {
     NotificationViewDTO toView(InboxMessageDTO value);

@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Database
+ * LoadUp Components Database
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,9 +19,6 @@
  */
 package io.github.loadup.components.database.sequence;
 
-/**
- * Unique within scope, with gaps allowed; batches need not be contiguous.
- */
 public interface Sequence {
     long next(SequenceScope scope);
 

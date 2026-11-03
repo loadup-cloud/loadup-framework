@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components TestContainers
+ * LoadUp Components Testcontainers
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,30 +22,6 @@ package io.github.loadup.components.testcontainers.database;
 import io.github.loadup.components.testcontainers.annotation.ContainerType;
 import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
 
-/**
- * Abstract base test class that automatically configures MySQL TestContainer.
- *
- * <p>Test classes can extend this class to automatically use the shared MySQL container without
- * needing to manually configure the context initializer.
- *
- * <p>Usage example:
- *
- * <pre>
- * &#64;SpringBootTest
- * class MyIntegrationTest extends AbstractMySQLContainerTest {
- *     &#64;Autowired
- *     private DataSource dataSource;
- *
- *     &#64;Test
- *     void testDatabaseConnection() {
- *         // Your test code here
- *     }
- * }
- * </pre>
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 @EnableTestContainers(ContainerType.MYSQL)
 public abstract class AbstractMySQLContainerTest {
 

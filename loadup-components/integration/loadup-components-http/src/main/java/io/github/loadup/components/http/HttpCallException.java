@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Http
+ * LoadUp Components HTTP
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,9 +23,6 @@ import io.github.loadup.commons.enums.ResultStatusEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.ResultCode;
 
-/**
- * Safe diagnostic error: deliberately omits URLs, bodies and transport exception messages.
- */
 public class HttpCallException extends CommonException {
     private final Kind kind;
 

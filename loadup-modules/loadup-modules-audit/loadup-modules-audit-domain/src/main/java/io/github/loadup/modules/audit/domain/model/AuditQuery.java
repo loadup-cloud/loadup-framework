@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Audit Domain
+ * LoadUp Modules Audit Domain
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -25,9 +25,6 @@ import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.modules.audit.client.error.AuditResultCodeEnum;
 import java.time.LocalDateTime;
 
-/**
- * Audit search scoped to the current schema.
- */
 public record AuditQuery(
         String actorId, String action, String outcome, LocalDateTime from, LocalDateTime to, int page, int size) {
     public AuditQuery {

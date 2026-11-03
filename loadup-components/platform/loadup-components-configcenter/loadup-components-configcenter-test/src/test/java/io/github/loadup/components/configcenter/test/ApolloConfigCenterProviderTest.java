@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp ConfigCenter Test
+ * LoadUp Components ConfigCenter Test
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -53,9 +53,6 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
-/**
- * Unit contracts at the Apollo SDK boundary; no Apollo server is contacted.
- */
 @ResourceLock(Resources.SYSTEM_PROPERTIES)
 class ApolloConfigCenterProviderTest {
     private final Map<String, String> previous = new HashMap<>();

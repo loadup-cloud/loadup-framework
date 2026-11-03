@@ -1,6 +1,6 @@
 /*
  * #%L
- * Testify Data Engine
+ * LoadUp Testify Data Engine
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,9 +22,6 @@ package io.github.loadup.testify.data.engine.function;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-/**
- * Custom functions accessible via ${fn.XXX()}
- */
 public class CommonFunction implements TestifyFunction {
     @Override
     public String getPrefix() {

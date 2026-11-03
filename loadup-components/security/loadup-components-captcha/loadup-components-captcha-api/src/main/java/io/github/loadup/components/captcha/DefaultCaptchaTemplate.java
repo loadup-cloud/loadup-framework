@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Captcha Components API
+ * LoadUp Components Captcha API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,9 +19,6 @@
  */
 package io.github.loadup.components.captcha;
 
-/**
- * Default {@link CaptchaTemplate} that delegates to the single active {@link CaptchaProvider}.
- */
 public class DefaultCaptchaTemplate implements CaptchaTemplate {
 
     private final CaptchaProvider provider;

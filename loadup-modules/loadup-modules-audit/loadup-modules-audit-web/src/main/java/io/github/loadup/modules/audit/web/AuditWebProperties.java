@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Audit Center Web Adapter
+ * LoadUp Modules Audit Web
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,9 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/**
- * HTTP capture settings. No paths are captured until the application opts in.
- */
 @ConfigurationProperties(prefix = "loadup.modules.audit.web")
 public class AuditWebProperties {
     private List<String> includePaths = new ArrayList<>();

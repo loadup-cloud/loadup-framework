@@ -1,6 +1,6 @@
 /*
  * #%L
- * Testify Demo
+ * LoadUp Testify Test
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,9 +22,6 @@ package io.github.loadup.testify.test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-/**
- * Demo application for Testify framework.
- */
 @SpringBootApplication
 public class Application {
 

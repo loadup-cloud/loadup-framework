@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Outbox
+ * LoadUp Components Outbox
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

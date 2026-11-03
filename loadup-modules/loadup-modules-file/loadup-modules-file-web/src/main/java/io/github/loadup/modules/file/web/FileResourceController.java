@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp File Resources Web Adapter
+ * LoadUp Modules File Web
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -53,9 +53,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-/**
- * Authenticated file API; metadata uses the normal JSON envelope, content is streamed.
- */
 @RestController
 @RequestMapping("/files")
 @Tag(name = "File Resources", description = "Managed file uploads, downloads and lifecycle")

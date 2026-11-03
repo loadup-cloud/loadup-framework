@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Http
+ * LoadUp Components HTTP
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,9 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * Values are encoded as URI variables; byte[] and String bodies are sent without JSON wrapping.
- */
 public record HttpCall(
         Map<String, ?> pathVariables, Map<String, List<String>> query, Map<String, String> headers, Object body) {
     public HttpCall {

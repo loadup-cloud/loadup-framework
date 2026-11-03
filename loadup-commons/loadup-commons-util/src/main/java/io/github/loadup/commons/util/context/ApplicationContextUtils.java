@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common Utils
+ * LoadUp Commons Util
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -32,9 +32,6 @@ public class ApplicationContextUtils implements ApplicationContextAware {
 
     private static ApplicationContext applicationContext;
 
-    /**
-     *
-     */
     public static ApplicationContext getApplicationContext() {
         return applicationContext;
     }

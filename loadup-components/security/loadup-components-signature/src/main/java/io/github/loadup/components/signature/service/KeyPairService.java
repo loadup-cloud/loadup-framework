@@ -24,9 +24,6 @@ import io.github.loadup.components.signature.model.KeyPairInfo;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
-/**
- * Facade for key pair generation and Base64 key loading.
- */
 public interface KeyPairService {
 
     /**

@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Client Layer
+ * LoadUp Modules UPMS Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -24,12 +24,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-/**
- * Permission Update Command
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 public class PermissionUpdateCommand {
 
     @NotNull() @Schema(description = "Resource identifier")

@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Cache Binder JetCache
+ * LoadUp Components Cache Binder JetCache
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -25,15 +25,9 @@ import io.github.loadup.components.cache.LoadupCacheProperties;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.function.Function;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.support.AbstractCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 
-/**
- * Spring {@link CacheManager} that lazily creates {@link JetCacheSpringCache} adapters on top of the
- * JetCache {@code CacheManager}. Each Spring cache name maps to one JetCache cache created through
- * {@link QuickConfig}, so multi-level layout, local limit, TTL and null policy are applied per name.
- */
 public class JetCacheSpringCacheManager extends AbstractCacheManager {
 
     private final com.alicp.jetcache.CacheManager jetCacheManager;

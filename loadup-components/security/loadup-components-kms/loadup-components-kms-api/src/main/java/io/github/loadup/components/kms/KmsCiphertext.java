@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Kms
+ * LoadUp Components KMS api
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,9 +23,6 @@ import io.github.loadup.commons.json.DiagnosticHidden;
 import io.github.loadup.commons.json.ToStringAsJson;
 import java.util.Map;
 
-/**
- * An opaque Transit ciphertext that must retain its key name and version.
- */
 public record KmsCiphertext(
         String keyName, int version, @DiagnosticHidden String value) {
     public KmsCiphertext {

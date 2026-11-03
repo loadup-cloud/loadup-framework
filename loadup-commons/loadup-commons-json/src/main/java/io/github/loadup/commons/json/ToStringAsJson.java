@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Common JSON
+ * LoadUp Commons JSON
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -41,9 +41,6 @@ import java.util.Optional;
 import java.util.UUID;
 import tools.jackson.databind.json.JsonMapper;
 
-/**
- * Bounded JSON diagnostics; independent of HTTP serialization and never calls bean getters.
- */
 public final class ToStringAsJson {
     private static final JsonMapper MAPPER = JsonMapper.builder().build();
     private static final int MAX_DEPTH = 6;

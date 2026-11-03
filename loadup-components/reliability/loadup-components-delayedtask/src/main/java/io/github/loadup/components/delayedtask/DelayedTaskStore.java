@@ -31,9 +31,6 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * PostgreSQL task storage; claims and acknowledgements use short fenced transactions.
- */
 public class DelayedTaskStore {
     private final JdbcTemplate jdbc;
     private final IdGenerator ids;

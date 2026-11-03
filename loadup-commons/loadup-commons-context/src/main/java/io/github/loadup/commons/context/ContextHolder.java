@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Common Context
+ * LoadUp Commons Context
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,9 +22,6 @@ package io.github.loadup.commons.context;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 
-/**
- * Read-only execution metadata bound for the dynamic extent of a callback.
- */
 public final class ContextHolder {
     private static final ScopedValue<ExecutionContext> CURRENT = ScopedValue.newInstance();
 

@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Contract Test
+ * LoadUp Modules Contract Test
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

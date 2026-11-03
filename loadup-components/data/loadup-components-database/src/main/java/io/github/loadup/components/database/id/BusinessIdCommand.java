@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Database
+ * LoadUp Components Database
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,9 +23,6 @@ import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.components.database.sequence.DatabaseResultCodeEnum;
 
-/**
- * Business metadata; shard is supplied by the event's registered routing policy.
- */
 public record BusinessIdCommand(
         int dataVersion, int systemVersion, String eventCode, String extensionCode, int siteId, int shard) {
     public BusinessIdCommand {

@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Cache Components API
+ * LoadUp Components Cache API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,12 +19,6 @@
  */
 package io.github.loadup.components.cache;
 
-/**
- * Values for {@code loadup.cache.type}.
- *
- * <p>The type must match the binder jar that is present on the classpath. Switching the backend
- * means changing this property (and the binder dependency) without touching business code.
- */
 public final class CacheBackendType {
 
     /**

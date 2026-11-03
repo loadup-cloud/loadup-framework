@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Common Masking
+ * LoadUp Commons Masking
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,9 +19,6 @@
  */
 package io.github.loadup.commons.masking;
 
-/**
- * Output display rules; none of these rules encrypt or anonymize data.
- */
 public enum MaskType {
     PHONE,
     EMAIL,

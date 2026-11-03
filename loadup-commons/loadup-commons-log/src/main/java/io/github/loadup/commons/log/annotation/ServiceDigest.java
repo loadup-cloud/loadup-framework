@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common Log
+ * LoadUp Commons Log
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -26,11 +26,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * Opts a managed class or individual public method into invocation summary logging.
- * Requires the Observability component and a call through the Spring proxy.
- * Neither arguments nor return values are included in the summary.
- */
 @Documented
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)

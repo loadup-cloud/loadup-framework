@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Common Masking
+ * LoadUp Commons Masking
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,9 +21,6 @@ package io.github.loadup.commons.masking;
 
 import java.util.Objects;
 
-/**
- * Stateless, Unicode code-point-aware rules for API output, explicit logs and exports.
- */
 public final class Masking {
     private static final String HIDDEN = "******";
 

@@ -23,9 +23,6 @@ import io.github.loadup.components.signature.enums.SignatureAlgorithm;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
-/**
- * Facade for asymmetric (RSA / DSA / ECDSA) sign and verify operations.
- */
 public interface SignatureService {
 
     /**

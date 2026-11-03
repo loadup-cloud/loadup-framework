@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone Binder Webhook
+ * LoadUp Components Gotone Binder Webhook
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -31,11 +31,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import tools.jackson.databind.ObjectMapper;
 
-/**
- * Feishu custom bot webhook provider.
- *
- * <p>Channel-level configuration keys: {@code webhookUrl} (required), {@code title}.
- */
 public class FeishuWebhookProvider implements NotificationChannelProvider {
 
     private static final ObjectMapper JSON = new ObjectMapper();

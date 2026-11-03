@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Kms
+ * LoadUp Components KMS api
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,9 +19,6 @@
  */
 package io.github.loadup.components.kms;
 
-/**
- * Cryptographic operations authorized by the runtime OpenBao identity.
- */
 public interface KmsTemplate {
     KmsCiphertext encrypt(KmsKeyRef key, byte[] plaintext);
 

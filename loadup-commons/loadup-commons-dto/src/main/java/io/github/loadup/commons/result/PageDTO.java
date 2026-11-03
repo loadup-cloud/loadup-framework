@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common DTO
+ * LoadUp Commons DTO
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -51,9 +51,6 @@ public class PageDTO<T> implements DTO {
                 .build();
     }
 
-    /**
-     * Adapts neutral pagination metadata; entry conversion belongs to the caller's MapStruct converter.
-     */
     public static <T> PageDTO<T> of(PageResult<T> page) {
         return of(page.records(), page.total(), page.page(), page.size());
     }

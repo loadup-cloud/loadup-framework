@@ -1,6 +1,6 @@
 /*
  * #%L
- * Testify Demo
+ * LoadUp Testify Test
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

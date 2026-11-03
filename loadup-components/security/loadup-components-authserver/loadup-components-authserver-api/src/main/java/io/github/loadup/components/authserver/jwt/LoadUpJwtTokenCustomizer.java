@@ -30,18 +30,6 @@ import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 
-/**
- * Standard {@link OAuth2TokenCustomizer} that writes the LoadUp claims contract into access
- * tokens:
- * <ul>
- *   <li>{@code username} — principal name;</li>
- *   <li>{@code roles} — authority names with the {@code ROLE_} prefix stripped;</li>
- *   <li>{@code permissions} — non-role authority names.</li>
- * </ul>
- *
- * <p>Claims are self-contained so any standard OAuth2 resource server (including the LoadUp
- * gateway) can derive authorities without an introspection call.
- */
 public class LoadUpJwtTokenCustomizer implements OAuth2TokenCustomizer<JwtEncodingContext> {
     private final String audience;
 

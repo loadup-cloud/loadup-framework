@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Dictionary Client
+ * LoadUp Modules Dictionary Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,9 +23,6 @@ import io.github.loadup.commons.json.ToStringAsJson;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
-/**
- * Value and display label within a dictionary type.
- */
 public record DictionaryItemDTO(
         @Schema(description = "Resource identifier") String id,
 

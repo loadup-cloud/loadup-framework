@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Pipeline
+ * LoadUp Components Pipeline
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -34,13 +34,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-/**
- * Immutable description of a pipeline: an ordered list of stage classes plus the
- * captured lambdas for any inline (function-style) stages.
- *
- * <p>Instances are created by the fluent {@link io.github.loadup.components.pipeline.builder.PipelineBuilder}
- * and are consumed by {@link io.github.loadup.components.pipeline.engine.PipelineExecutor}.
- */
 @SuppressWarnings("rawtypes")
 public final class PipelineSpec {
 

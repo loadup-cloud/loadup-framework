@@ -1,6 +1,6 @@
 /*
  * #%L
- * Testify Spring Boot Starter
+ * LoadUp Testify Spring Boot Starter
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -29,9 +29,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-/**
- * Fluent async assertion against a JDBC table.
- */
 public class DbAssert {
 
     private static final Pattern IDENTIFIER = Pattern.compile("[A-Za-z0-9_]+");

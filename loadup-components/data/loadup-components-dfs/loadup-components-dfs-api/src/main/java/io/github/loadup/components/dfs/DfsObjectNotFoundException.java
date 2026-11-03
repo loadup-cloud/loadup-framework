@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Dfs Components Api
+ * LoadUp Components DFS API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,9 +19,6 @@
  */
 package io.github.loadup.components.dfs;
 
-/**
- * Raised when a requested file identifier does not exist.
- */
 public class DfsObjectNotFoundException extends DfsStorageException {
     private static final long serialVersionUID = 1L;
 

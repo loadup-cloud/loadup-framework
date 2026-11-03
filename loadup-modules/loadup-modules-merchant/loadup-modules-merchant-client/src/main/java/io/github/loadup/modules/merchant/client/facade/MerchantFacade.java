@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Merchant Client
+ * LoadUp Modules Merchant Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -26,9 +26,6 @@ import io.github.loadup.modules.merchant.client.command.MerchantUpdateCommand;
 import io.github.loadup.modules.merchant.client.dto.MerchantDTO;
 import io.github.loadup.modules.merchant.client.query.MerchantPageQuery;
 
-/**
- * Public business contract for MerchantService.
- */
 public interface MerchantFacade {
     MerchantDTO create(MerchantCreateCommand command, String actor);
 

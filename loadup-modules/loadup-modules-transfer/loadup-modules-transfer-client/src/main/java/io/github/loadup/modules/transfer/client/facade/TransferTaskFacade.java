@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Transfer Client
+ * LoadUp Modules Transfer Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -24,9 +24,6 @@ import io.github.loadup.modules.transfer.client.dto.TransferTaskDTO;
 import io.github.loadup.modules.transfer.client.enums.TransferKind;
 import java.util.Map;
 
-/**
- * Public business contract for TransferTaskService.
- */
 public interface TransferTaskFacade {
     TransferTaskDTO submit(
             String ownerId, TransferKind kind, String handlerKey, String sourceFileId, Map<String, String> options);

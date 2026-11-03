@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Notification Domain
+ * LoadUp Modules Notification Domain
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,9 +22,6 @@ package io.github.loadup.modules.notification.domain.model;
 import io.github.loadup.commons.json.ToStringAsJson;
 import java.time.LocalDateTime;
 
-/**
- * One recipient's copy of an in-app notification.
- */
 public record InboxMessage(
         String id,
         String recipientId,

@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common Utils
+ * LoadUp Commons Util
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -42,13 +42,6 @@ public class RandomUtil {
     public static final String BASE_CHAR_NUMBER = BASE_CHAR.toUpperCase() + BASE_CHAR_NUMBER_LOWER;
 
     // region ----- get or create Random
-
-    /**
-     *
-     * <a href="https://www.jianshu.com/p/89dfe990295c">https://www.jianshu.com/p/89dfe990295c</a>
-     *
-     * @since 3.1.2
-     */
     public static ThreadLocalRandom getRandom() {
         return ThreadLocalRandom.current();
     }

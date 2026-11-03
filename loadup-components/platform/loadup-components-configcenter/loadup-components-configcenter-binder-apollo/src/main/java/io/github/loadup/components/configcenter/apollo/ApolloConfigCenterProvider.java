@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp ConfigCenter Binder Apollo
+ * LoadUp Components ConfigCenter Binder Apollo
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -30,13 +30,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
-/**
- * Apollo-backed {@link ConfigCenterProvider}.
- *
- * <p>Apollo is a read-optimized config server: writes must go through the Apollo Portal Open
- * API, so {@link #setConfig} and {@link #removeConfig} always return {@code false} and only log a
- * warning. Reads, key listing and change listeners use the Apollo client directly.
- */
 public class ApolloConfigCenterProvider implements ConfigCenterProvider {
 
     private final Config apolloConfig;

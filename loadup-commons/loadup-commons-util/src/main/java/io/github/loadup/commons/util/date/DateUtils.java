@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common Utils
+ * LoadUp Commons Util
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -29,10 +29,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalUnit;
 import java.util.Date;
 
-/**
- * @author Lise
- * @since 1.0.0
- */
 public class DateUtils {
     private static final ZoneId DEFAULT_ZONE = ZoneId.systemDefault();
 

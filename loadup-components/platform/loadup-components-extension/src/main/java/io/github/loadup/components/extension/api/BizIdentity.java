@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Extension
+ * LoadUp Components Extension
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,18 +19,6 @@
  */
 package io.github.loadup.components.extension.api;
 
-/**
- *
- *
- *
- * <pre>{@code
- * public class OrderCreateCommand implements BizIdentity {
- *     private String bizCode;   // e.g. "retail" / "catering"
- *     private String useCase;   // optional, e.g. "groupBuy"
- *     // ...other fields
- * }
- * }</pre>
- */
 public interface BizIdentity {
 
     String getBizCode();

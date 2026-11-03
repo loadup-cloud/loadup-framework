@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common Utils
+ * LoadUp Commons Util
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,12 +19,6 @@
  */
 package io.github.loadup.commons.util.internal;
 
-/**
- * The internal data structure that stores the thread-local variables for Netty and all {@link
- * InternalThread}s. Note that this class is for internal use only. Use {@link
- * Thread#currentThread()} to get the current thread for a regular thread, and use {@link
- * InternalThread#current()} to get the current thread for a {@link InternalThread}.
- */
 public final class InternalThreadLocalMap {
 
     private static final ThreadLocal<InternalThreadLocalMap> SLOW_THREAD_LOCAL = new ThreadLocal<>();

@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Common JSON
+ * LoadUp Commons JSON
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -27,9 +27,6 @@ import tools.jackson.core.JsonToken;
 import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.deser.std.StdDeserializer;
 
-/**
- * Reads strict date/time text or an explicit epoch-millisecond JSON integer.
- */
 public class MultiDateDeserializer extends StdDeserializer<Date> {
     public MultiDateDeserializer() {
         super(Date.class);

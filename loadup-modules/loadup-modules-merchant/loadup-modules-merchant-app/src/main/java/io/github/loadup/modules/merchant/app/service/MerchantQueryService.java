@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Merchant App
+ * LoadUp Modules Merchant App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -26,9 +26,6 @@ import io.github.loadup.modules.merchant.domain.gateway.MerchantGateway;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 
-/**
- * Uses the primary data source without a read-only replica-routing hint.
- */
 @Service
 public class MerchantQueryService implements MerchantQueryFacade {
     private final MerchantGateway gateway;

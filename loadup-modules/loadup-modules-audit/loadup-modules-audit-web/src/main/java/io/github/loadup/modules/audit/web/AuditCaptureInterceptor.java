@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Audit Center Web Adapter
+ * LoadUp Modules Audit Web
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -31,9 +31,6 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 
-/**
- * Captures configured MVC operations without collecting bodies, query strings or credentials.
- */
 public class AuditCaptureInterceptor implements HandlerInterceptor {
 
     private final AuditFacade service;

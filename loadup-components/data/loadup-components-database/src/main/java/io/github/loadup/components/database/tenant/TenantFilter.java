@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Database
+ * LoadUp Components Database
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -30,13 +30,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-/**
- * Binds the configured default tenant to immutable execution metadata.
- *
- * <p>Request-based tenant resolution is intentionally absent while the application serves a single
- * default tenant. When dynamic schema routing is introduced, the resolver replaces this binding at
- * the same entry point.
- */
 public class TenantFilter extends OncePerRequestFilter {
     private final DatabaseProperties.MultiTenant tenantProperties;
 

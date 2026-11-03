@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Client Layer
+ * LoadUp Modules UPMS Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,9 +23,6 @@ import io.github.loadup.commons.json.DiagnosticHidden;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-/**
- * Plaintext output reserved for the authorized and audited read operation.
- */
 public record UserSensitiveDTO(
         @Schema(description = "Resource identifier") String id,
 

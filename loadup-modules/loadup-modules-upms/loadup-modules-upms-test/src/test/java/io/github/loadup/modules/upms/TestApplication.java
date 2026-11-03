@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup UPMS Test
+ * LoadUp Modules UPMS Test
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,12 +23,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 
-/**
- * Test Application for UPMS Module Tests
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 @SpringBootConfiguration
 @EnableAutoConfiguration
 public class TestApplication {

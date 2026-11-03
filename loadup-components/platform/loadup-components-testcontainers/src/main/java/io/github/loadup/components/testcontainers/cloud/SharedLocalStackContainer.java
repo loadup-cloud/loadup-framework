@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components TestContainers
+ * LoadUp Components Testcontainers
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -26,30 +26,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.testcontainers.localstack.LocalStackContainer;
 import org.testcontainers.utility.DockerImageName;
 
-/**
- * Shared LocalStack TestContainer instance for S3 testing.
- *
- * <p>This class provides a singleton LocalStack container that starts once and is shared across all
- * test classes that use it. LocalStack emulates AWS services including S3, allowing for local
- * testing without connecting to real AWS services.
- *
- * <p>Usage example:
- *
- * <pre>
- * &#64;SpringBootTest
- * &#64;TestPropertySource(properties = {
- *     "aws.s3.endpoint=" + SharedLocalStackContainer.getS3Endpoint(),
- *     "aws.access-key-id=" + SharedLocalStackContainer.ACCESS_KEY,
- *     "aws.secret-access-key=" + SharedLocalStackContainer.SECRET_KEY
- * })
- * class MyS3Test {
- *     // Your test code here
- * }
- * </pre>
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 public final class SharedLocalStackContainer {
 
     /**

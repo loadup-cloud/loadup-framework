@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Domain Layer
+ * LoadUp Modules UPMS Domain
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

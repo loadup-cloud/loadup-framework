@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Resilience4j API
+ * LoadUp Components Resilience4j API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,13 +21,6 @@ package io.github.loadup.components.resilience4j;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/**
- * Top-level LoadUp resilience4j configuration ({@code loadup.resilience4j.*}).
- *
- * <p>{@code enabled} switches the whole component; {@code binder-type} selects the backend.
- * Only the in-memory {@code core} binder exists today; a Redis binder is the planned extension
- * point for distributed circuit breaker / rate limiter state.
- */
 @ConfigurationProperties(prefix = "loadup.resilience4j")
 public class Resilience4jProperties {
 

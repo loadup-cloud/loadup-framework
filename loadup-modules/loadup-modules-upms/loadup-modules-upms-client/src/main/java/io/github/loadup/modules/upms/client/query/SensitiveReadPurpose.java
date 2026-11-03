@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Client Layer
+ * LoadUp Modules UPMS Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,9 +19,6 @@
  */
 package io.github.loadup.modules.upms.client.query;
 
-/**
- * Controlled audit purposes; never accept arbitrary text containing personal data.
- */
 public enum SensitiveReadPurpose {
     PROFILE_CORRECTION,
     CUSTOMER_SUPPORT,

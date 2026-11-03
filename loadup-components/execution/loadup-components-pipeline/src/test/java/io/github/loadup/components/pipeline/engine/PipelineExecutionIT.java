@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Pipeline
+ * LoadUp Components Pipeline
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

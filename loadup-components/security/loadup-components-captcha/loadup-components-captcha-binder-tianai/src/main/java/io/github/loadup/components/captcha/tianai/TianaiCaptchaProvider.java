@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Captcha Binder Tianai
+ * LoadUp Components Captcha Binder Tianai
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -28,17 +28,6 @@ import io.github.loadup.components.captcha.CaptchaProvider;
 import io.github.loadup.components.captcha.CaptchaResponse;
 import tools.jackson.databind.ObjectMapper;
 
-/**
- * tianai-captcha backed {@link CaptchaProvider}.
- *
- * <p>Verification input is intentionally loose so the facade stays engine-agnostic:
- * <ul>
- *   <li>{@link Number} — slider percentage ({@code application.matching(id, floatValue)})</li>
- *   <li>{@link ImageCaptchaTrack} — track object</li>
- *   <li>{@link String} — float percentage, or JSON that is parsed into {@link ImageCaptchaTrack}</li>
- *   <li>anything else — rejected</li>
- * </ul>
- */
 public class TianaiCaptchaProvider implements CaptchaProvider {
 
     private final ImageCaptchaApplication application;

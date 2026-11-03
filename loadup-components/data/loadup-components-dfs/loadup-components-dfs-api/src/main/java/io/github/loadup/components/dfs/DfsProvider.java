@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Dfs Components Api
+ * LoadUp Components DFS API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -30,9 +30,6 @@ import java.net.URI;
 import java.time.Duration;
 import java.util.List;
 
-/**
- * Storage SPI implemented by one binder selected at build and deployment time.
- */
 public interface DfsProvider {
 
     FileMetadata upload(FileUploadRequest request);

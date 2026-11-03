@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone Engine
+ * LoadUp Components Gotone Engine
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -26,13 +26,6 @@ import io.github.loadup.components.resilience4j.ResilienceRegistries;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.retry.Retry;
 
-/**
- * Wraps a {@link NotificationChannelProvider} with a per-provider circuit breaker and retry.
- *
- * <p>The circuit breaker wraps the whole retry loop, so retrying an unhealthy provider is bounded
- * and an exhausted retry trips the breaker exactly once; the existing fallback chain then moves to
- * the next provider.
- */
 public final class ResilientNotificationChannelProvider implements NotificationChannelProvider {
 
     private final NotificationChannelProvider delegate;

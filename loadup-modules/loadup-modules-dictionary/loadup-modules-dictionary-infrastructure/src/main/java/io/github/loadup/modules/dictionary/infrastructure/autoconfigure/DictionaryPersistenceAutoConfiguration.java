@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Dictionary Infrastructure
+ * LoadUp Modules Dictionary Infrastructure
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

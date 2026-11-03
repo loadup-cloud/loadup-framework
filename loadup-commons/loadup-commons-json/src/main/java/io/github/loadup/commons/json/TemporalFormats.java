@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Common JSON
+ * LoadUp Commons JSON
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -33,9 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Immutable, strict formatters shared by JSON temporal readers.
- */
 final class TemporalFormats {
     private static final List<String> DATE_PATTERNS = List.of("uuuu-MM-dd", "uuuu/MM/dd", "uuuu.MM.dd", "uuuuMMdd");
     private static final List<DateTimeFormatter> DATES = DATE_PATTERNS.stream()

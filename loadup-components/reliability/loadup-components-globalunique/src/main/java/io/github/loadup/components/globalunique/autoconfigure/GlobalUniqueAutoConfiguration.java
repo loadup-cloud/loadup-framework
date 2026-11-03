@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Components Global Unique
+ * LoadUp Components GlobalUnique
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -34,9 +34,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-/**
- * Configures the database-backed global unique template.
- */
 @AutoConfiguration(
         after = {IdGeneratorAutoConfiguration.class, DatabaseCoreAutoConfiguration.class},
         afterName = "org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration")

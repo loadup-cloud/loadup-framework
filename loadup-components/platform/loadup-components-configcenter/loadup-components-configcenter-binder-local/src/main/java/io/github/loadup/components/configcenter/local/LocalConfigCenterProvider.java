@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp ConfigCenter Binder Local
+ * LoadUp Components ConfigCenter Binder Local
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

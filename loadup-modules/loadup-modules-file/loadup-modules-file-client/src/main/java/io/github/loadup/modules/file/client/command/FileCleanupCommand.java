@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp File Client
+ * LoadUp Modules File Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp ConfigCenter Binder Nacos
+ * LoadUp Components ConfigCenter Binder Nacos
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -28,14 +28,6 @@ import java.util.Properties;
 import org.yaml.snakeyaml.Yaml;
 import tools.jackson.databind.ObjectMapper;
 
-/**
- * Parses and renders Nacos file content (properties / yaml) for the key-value facade.
- *
- * <p>Nacos stores one file per {@code dataId}; the LoadUp facade exposes individual keys. This
- * class flattens the file into a {@code Map<String, String>} (yaml nesting becomes dotted keys,
- * collections become JSON strings) and renders the map back to the original format for
- * read-modify-write operations.
- */
 public final class NacosConfigContent {
 
     private static final String YAML = "yaml";

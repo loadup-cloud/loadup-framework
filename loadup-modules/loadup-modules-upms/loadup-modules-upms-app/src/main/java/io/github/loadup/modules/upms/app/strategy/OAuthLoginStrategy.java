@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS App Layer
+ * LoadUp Modules UPMS App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -41,11 +41,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-/**
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 @Component
 public class OAuthLoginStrategy implements LoginStrategy {
     private final Clock clock;

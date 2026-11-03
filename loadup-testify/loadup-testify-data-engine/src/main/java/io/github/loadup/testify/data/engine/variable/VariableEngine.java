@@ -1,6 +1,6 @@
 /*
  * #%L
- * Testify Data Engine
+ * LoadUp Testify Data Engine
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -37,11 +37,6 @@ import org.springframework.expression.spel.support.MapAccessor;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import tools.jackson.databind.JsonNode;
 
-/**
- * Variable resolution engine supporting: - Datafaker expressions: ${faker.name.firstName} - Time
- * functions with offsets: ${time.now('+1d')}, ${time.now('-2h')} - Custom functions: ${fn.uuid()},
- * ${fn.random(1, 100)} - Variable cross-references with dependency resolution
- */
 public class VariableEngine {
 
     private final ExpressionParser spelParser = new SpelExpressionParser();

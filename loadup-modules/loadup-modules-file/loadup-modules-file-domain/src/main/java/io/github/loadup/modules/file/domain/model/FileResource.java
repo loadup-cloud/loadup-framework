@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp File Domain
+ * LoadUp Modules File Domain
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,9 +22,6 @@ package io.github.loadup.modules.file.domain.model;
 import io.github.loadup.commons.json.ToStringAsJson;
 import java.time.LocalDateTime;
 
-/**
- * Business record for one object stored by DFS.
- */
 public record FileResource(
         String id,
         String ownerId,

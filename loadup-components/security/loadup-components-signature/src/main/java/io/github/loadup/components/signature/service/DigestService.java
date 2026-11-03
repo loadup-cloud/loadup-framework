@@ -21,9 +21,6 @@ package io.github.loadup.components.signature.service;
 
 import io.github.loadup.components.signature.enums.DigestAlgorithm;
 
-/**
- * Facade for digest (MD5 / SHA) and HMAC computation.
- */
 public interface DigestService {
 
     /**

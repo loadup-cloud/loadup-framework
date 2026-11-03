@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Infrastructure Layer
+ * LoadUp Modules UPMS Infrastructure
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,12 +23,6 @@ import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
 import java.time.LocalDateTime;
 
-/**
- * LoginLog Data Object
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 @Table("upms_login_log")
 public class LoginLogDO extends BaseDO {
 

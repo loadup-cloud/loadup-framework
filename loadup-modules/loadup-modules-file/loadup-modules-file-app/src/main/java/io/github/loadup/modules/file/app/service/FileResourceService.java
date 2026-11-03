@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp File App
+ * LoadUp Modules File App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -45,9 +45,6 @@ import java.util.Map;
 import java.util.UUID;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * File lifecycle and business references; DFS remains responsible for bytes.
- */
 public class FileResourceService implements FileResourceFacade {
     private final Clock clock;
     private final FileDTOConverter converter;

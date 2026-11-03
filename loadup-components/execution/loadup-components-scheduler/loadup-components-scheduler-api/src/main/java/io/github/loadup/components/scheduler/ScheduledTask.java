@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Components Scheduler
+ * LoadUp Components Scheduler API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,9 +19,6 @@
  */
 package io.github.loadup.components.scheduler;
 
-/**
- * An idempotent, bounded scanner; scheduling does not own business task state.
- */
 public interface ScheduledTask {
     String name();
 

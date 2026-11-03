@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Common JSON
+ * LoadUp Commons JSON
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -53,19 +53,6 @@ import tools.jackson.databind.module.SimpleModule;
 import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.ObjectNode;
 
-/**
- *
- *
- * <ul>
- * </ul>
- *
- *
- * <ul>
- * </ul>
- *
- * @author loadup_cloud
- * @since 1.0.0
- */
 public class JsonUtil {
 
     public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";

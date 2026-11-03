@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone API
+ * LoadUp Components Gotone API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,9 +21,6 @@ package io.github.loadup.components.gotone.model;
 
 import java.util.List;
 
-/**
- * Aggregated notification send response.
- */
 public record NotificationResponse(
         String traceId,
         String serviceCode,

@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Kms
+ * LoadUp Components KMS binder-openbao
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -31,9 +31,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestClient;
 import tools.jackson.databind.ObjectMapper;
 
-/**
- * Opt-in Transit integration with distinct runtime and management identities.
- */
 @AutoConfiguration(
         afterName = {
             "org.springframework.boot.restclient.autoconfigure.RestClientAutoConfiguration",

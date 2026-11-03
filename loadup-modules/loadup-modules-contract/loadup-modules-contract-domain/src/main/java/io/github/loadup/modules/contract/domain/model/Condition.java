@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Contract Domain
+ * LoadUp Modules Contract Domain
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -24,9 +24,6 @@ import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * A bounded, data-only rule tree. A null root is not a valid rule.
- */
 public sealed interface Condition
         permits Condition.All, Condition.Any, Condition.Not, Condition.Exists, Condition.Compare {
     static Condition always() {

@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Cache Components API
+ * LoadUp Components Cache API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -31,20 +31,6 @@ import tools.jackson.databind.jsontype.TypeSerializer;
 import tools.jackson.databind.module.SimpleModule;
 import tools.jackson.databind.ser.std.StdSerializer;
 
-/**
- * Single JSON value codec shared by every remote-capable binder (redis and jetcache).
- *
- * <p><b>Serializer decision:</b> JSON with {@code @class} default typing is the one and only cache
- * value format. JDK serialization is intentionally not offered: it forces every cached DTO to
- * implement {@link java.io.Serializable}, bloats payloads, and opens deserialization risk. JSON
- * keeps business types as plain records/POJOs and still restores the concrete type on read.
- *
- * <p>The codec works on a copy of the application {@link ObjectMapper} (so the global mapper is
- * never mutated) with {@code @class} type hints enabled for every value, including final records.
- * Spring's {@link NullValue} marker (used by the Cache abstraction for {@code null} results) is
- * written as a stable {@code @class}-only object and resolves back to {@link NullValue#INSTANCE}
- * on read, mirroring Spring Data Redis' null-value handling.
- */
 public final class CacheJsonCodec {
 
     private static final PolymorphicTypeValidator CACHE_TYPE_VALIDATOR =

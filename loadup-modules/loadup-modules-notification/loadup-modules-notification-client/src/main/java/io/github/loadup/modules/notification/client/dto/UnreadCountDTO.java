@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Notification Client
+ * LoadUp Modules Notification Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

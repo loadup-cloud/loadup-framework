@@ -1,6 +1,6 @@
 /*
  * #%L
- * Testify Demo
+ * LoadUp Testify Test
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,9 +19,6 @@
  */
 package io.github.loadup.testify.test.model;
 
-/**
- * User entity for demo.
- */
 public class Order {
     private String orderId;
     private String orderName;

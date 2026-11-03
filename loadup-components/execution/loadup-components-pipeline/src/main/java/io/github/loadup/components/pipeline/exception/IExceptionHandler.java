@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Pipeline
+ * LoadUp Components Pipeline
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,11 +21,6 @@ package io.github.loadup.components.pipeline.exception;
 
 import io.github.loadup.components.pipeline.context.PipelineContext;
 
-/**
- * Top-level exception-handler SPI.
- *
- * @param <RES> the response type returned on exception
- */
 public interface IExceptionHandler<RES> {
 
     /**

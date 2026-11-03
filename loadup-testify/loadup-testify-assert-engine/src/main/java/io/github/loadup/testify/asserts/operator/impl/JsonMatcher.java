@@ -1,6 +1,6 @@
 /*
  * #%L
- * Testify Assert Engine
+ * LoadUp Testify Assert Engine
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -26,9 +26,6 @@ import java.util.Map;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
-/**
- * JSON matcher supporting partial (LENIENT) and full (STRICT) comparison modes.
- */
 public class JsonMatcher implements OperatorMatcher {
 
     @Override

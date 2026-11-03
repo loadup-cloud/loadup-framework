@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Outbox
+ * LoadUp Components Outbox
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -31,9 +31,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.MDC;
 
-/**
- * Runs handlers outside claim transactions and restores all per-thread context.
- */
 public final class OutboxDispatcher {
 
     private final JdbcOutboxRepository repository;

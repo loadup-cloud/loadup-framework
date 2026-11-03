@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common Log
+ * LoadUp Commons Log
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,9 +21,6 @@ package io.github.loadup.commons.log;
 
 import org.slf4j.MDC;
 
-/**
- * Shared MDC contract used by logging and tracing integrations.
- */
 public final class LogContext {
 
     public static final String TRACE_ID = "traceId";

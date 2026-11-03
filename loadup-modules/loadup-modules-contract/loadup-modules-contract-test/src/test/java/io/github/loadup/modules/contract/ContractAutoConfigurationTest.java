@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Contract Test
+ * LoadUp Modules Contract Test
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -41,9 +41,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import tools.jackson.databind.json.JsonMapper;
 
-/**
- * Checks bean registration only; real persistence behavior is covered by ContractPersistenceIT.
- */
 class ContractAutoConfigurationTest {
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(ContractAutoConfiguration.class))

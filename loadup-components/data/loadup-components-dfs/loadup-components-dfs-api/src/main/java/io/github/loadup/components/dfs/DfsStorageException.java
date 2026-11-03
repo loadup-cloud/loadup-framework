@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Dfs Components Api
+ * LoadUp Components DFS API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,9 +23,6 @@ import io.github.loadup.commons.enums.ResultStatusEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.ResultCode;
 
-/**
- * Coded storage failure with a safe message and optional diagnostic cause.
- */
 public class DfsStorageException extends CommonException {
     private static final long serialVersionUID = 1L;
 

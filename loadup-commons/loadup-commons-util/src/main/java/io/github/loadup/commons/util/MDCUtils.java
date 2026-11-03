@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common Utils
+ * LoadUp Commons Util
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,9 +22,6 @@ package io.github.loadup.commons.util;
 import io.github.loadup.commons.log.LogContext;
 import org.slf4j.MDC;
 
-/**
- * @author Lise
- */
 public class MDCUtils {
 
     public static final String MDC_TRACE_ID = LogContext.TRACE_ID;

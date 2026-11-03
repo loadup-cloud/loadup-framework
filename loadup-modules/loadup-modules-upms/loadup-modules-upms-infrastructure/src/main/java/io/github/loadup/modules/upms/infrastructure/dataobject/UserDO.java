@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Infrastructure Layer
+ * LoadUp Modules UPMS Infrastructure
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -24,9 +24,6 @@ import io.github.loadup.commons.dataobject.BaseDO;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-/**
- * User Data Object - Database mapping entity
- */
 @Table("upms_user")
 public class UserDO extends BaseDO {
 

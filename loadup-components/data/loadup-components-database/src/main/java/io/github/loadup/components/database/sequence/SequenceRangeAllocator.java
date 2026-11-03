@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Database
+ * LoadUp Components Database
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,9 +19,6 @@
  */
 package io.github.loadup.components.database.sequence;
 
-/**
- * Returns a range only after its independent allocation transaction commits.
- */
 public interface SequenceRangeAllocator {
     SequenceRange reserve(SequenceScope scope, int step);
 }

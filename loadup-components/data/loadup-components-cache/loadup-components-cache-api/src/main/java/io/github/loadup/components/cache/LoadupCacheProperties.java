@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Cache Components API
+ * LoadUp Components Cache API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -24,14 +24,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/**
- * LoadUp cache facade configuration ({@code loadup.cache.*}).
- *
- * <p>The facade is Spring Cache itself: business code uses {@code @Cacheable} /
- * {@code @CacheEvict} / {@code @CachePut} and never imports a LoadUp cache class. This class only
- * carries the LoadUp additions that Spring Cache cannot express: per-cache TTL, null caching and
- * random expiration (anti-avalanche).
- */
 @ConfigurationProperties(prefix = "loadup.cache")
 public class LoadupCacheProperties {
 

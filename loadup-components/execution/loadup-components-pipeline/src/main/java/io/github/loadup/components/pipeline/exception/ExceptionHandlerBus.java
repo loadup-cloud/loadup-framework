@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Pipeline
+ * LoadUp Components Pipeline
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -25,17 +25,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Registry of exception handlers for a single pipeline.
- *
- * <p>Usage (inside {@link io.github.loadup.components.pipeline.api.IPipelineDefinition#exceptions()}):
- * <pre>{@code
- * return ExceptionHandlerBus.builder()
- *     .register(BizException.class, OrderBizExceptionHandler.class)
- *     .overflow(UnrecoverableException.class)   // rethrow as-is
- *     .bottom(OrderSystemExceptionHandler.class); // catch-all fallback
- * }</pre>
- */
 public final class ExceptionHandlerBus {
 
     /**

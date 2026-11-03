@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Kms
+ * LoadUp Components KMS binder-local
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -34,9 +34,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StringUtils;
 
-/**
- * Uses a caller-supplied KeyStore or loads a configured file without generating replacement keys.
- */
 @AutoConfiguration
 @ConditionalOnProperty(prefix = "loadup.kms", name = "enabled", havingValue = "true")
 @ConditionalOnMissingBean(KmsTemplate.class)

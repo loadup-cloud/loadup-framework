@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components TestContainers
+ * LoadUp Components Testcontainers
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -26,30 +26,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.testcontainers.mysql.MySQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
-/**
- * Shared MySQL TestContainer instance that can be reused across multiple tests.
- *
- * <p>This class provides a singleton MySQL container that starts once and is shared across all test
- * classes that use it. This significantly reduces test execution time by avoiding the overhead of
- * starting a new MySQL container for each test class.
- *
- * <p>Usage example:
- *
- * <pre>
- * &#64;SpringBootTest
- * &#64;TestPropertySource(properties = {
- *     "spring.datasource.url=" + SharedMySQLContainer.JDBC_URL,
- *     "spring.datasource.username=" + SharedMySQLContainer.USERNAME,
- *     "spring.datasource.password=" + SharedMySQLContainer.PASSWORD
- * })
- * class MyIntegrationTest {
- *     // Your test code here
- * }
- * </pre>
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 public final class SharedMySQLContainer {
 
     /**

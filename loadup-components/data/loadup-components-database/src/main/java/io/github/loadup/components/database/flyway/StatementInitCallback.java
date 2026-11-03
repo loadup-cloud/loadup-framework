@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Database
+ * LoadUp Components Database
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -28,15 +28,6 @@ import org.flywaydb.core.api.callback.Callback;
 import org.flywaydb.core.api.callback.Context;
 import org.flywaydb.core.api.callback.Event;
 
-/**
- * Flyway callback that executes an initialization SQL statement on each
- * connection immediately after it is obtained.
- *
- * <p>Replaces the deprecated {@code FluentConfiguration.initSql()} API
- * with the callback-based approach recommended in Flyway 12.x+.
- *
- * @since 1.0.0
- */
 public class StatementInitCallback implements Callback {
 
     private final String sql;

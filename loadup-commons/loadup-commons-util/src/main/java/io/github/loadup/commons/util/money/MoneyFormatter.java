@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common Utils
+ * LoadUp Commons Util
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -26,9 +26,6 @@ import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.Objects;
 
-/**
- * Stateless formatting; localized formatters are created per call and never shared across threads.
- */
 public final class MoneyFormatter {
     private MoneyFormatter() {}
 

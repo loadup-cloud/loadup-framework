@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common Utils
+ * LoadUp Commons Util
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -24,10 +24,6 @@ import java.time.Duration;
 public class DurationUtils {
     private DurationUtils() {}
 
-    /**
-     *
-     * @return Duration
-     */
     public static Duration parse(String duration) {
         String upper = duration.toUpperCase();
         if (!upper.startsWith("PT")) {

@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Captcha Binder Tianai
+ * LoadUp Components Captcha Binder Tianai
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,9 +23,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/**
- * Tianai binder configuration ({@code loadup.captcha.binder.tianai.*}).
- */
 @ConfigurationProperties(prefix = "loadup.captcha.binder.tianai")
 public class TianaiCaptchaProperties {
 

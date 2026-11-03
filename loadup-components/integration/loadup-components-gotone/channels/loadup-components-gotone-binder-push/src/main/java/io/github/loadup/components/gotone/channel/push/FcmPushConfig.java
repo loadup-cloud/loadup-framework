@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone Binder Push
+ * LoadUp Components Gotone Binder Push
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,9 +21,6 @@ package io.github.loadup.components.gotone.channel.push;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/**
- * Configuration for the Firebase Cloud Messaging push binder ({@code loadup.gotone.binder.push.fcm.*}).
- */
 @ConfigurationProperties(prefix = "loadup.gotone.binder.push.fcm")
 public class FcmPushConfig {
 

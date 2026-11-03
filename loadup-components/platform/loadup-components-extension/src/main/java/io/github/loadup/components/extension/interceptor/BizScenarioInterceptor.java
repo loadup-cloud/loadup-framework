@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Extension
+ * LoadUp Components Extension
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -27,13 +27,6 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.util.StringUtils;
 
-/**
- *
- *
- *
- * <ol>
- * </ol>
- */
 public class BizScenarioInterceptor implements MethodInterceptor {
 
     @Override

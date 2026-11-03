@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp JWT Resource Server
+ * LoadUp Components Resource Server
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,9 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/**
- * Configuration for JWT validation and the optional default API security chain.
- */
 @ConfigurationProperties(prefix = "loadup.security.resource-server")
 public class ResourceServerProperties {
     private boolean enabled;

@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp UPMS Authorization Server Adapter
+ * LoadUp Modules UPMS AuthServer
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -35,9 +35,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-/**
- * Connects UPMS credential checks to JSON login and optional OAuth2 authorization.
- */
 @AutoConfiguration(afterName = "io.github.loadup.components.authserver.sas.SasAuthServerAutoConfiguration")
 public class UpmsAuthServerAutoConfiguration {
 

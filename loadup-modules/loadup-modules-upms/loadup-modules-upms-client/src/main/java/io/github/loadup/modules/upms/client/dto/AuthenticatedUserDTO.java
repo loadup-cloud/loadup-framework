@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Client Layer
+ * LoadUp Modules UPMS Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -26,11 +26,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 public class AuthenticatedUserDTO implements Serializable {
 
     @Serial

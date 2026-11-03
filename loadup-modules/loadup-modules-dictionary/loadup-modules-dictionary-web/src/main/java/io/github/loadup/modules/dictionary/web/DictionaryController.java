@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Data Dictionary Web Adapter
+ * LoadUp Modules Dictionary Web
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -43,9 +43,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * HTTP administration and option lookup for business dictionaries.
- */
 @RestController
 @RequestMapping("/dictionaries")
 @Tag(name = "Data Dictionaries", description = "Tenant-scoped business dictionary management")

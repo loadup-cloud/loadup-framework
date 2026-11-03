@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Pipeline
+ * LoadUp Components Pipeline
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,9 +22,6 @@ package io.github.loadup.components.pipeline.stage.function;
 import io.github.loadup.components.pipeline.api.IParamVerifyStage;
 import java.util.function.Consumer;
 
-/**
- * Lambda adapter for {@link IParamVerifyStage}.
- */
 public final class InnerParamVerifyConsumerStage<REQ> implements IFunctionStage, IParamVerifyStage<REQ> {
 
     private final Consumer<REQ> consumer;

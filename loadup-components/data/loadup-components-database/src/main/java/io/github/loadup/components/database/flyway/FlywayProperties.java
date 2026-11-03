@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Database
+ * LoadUp Components Database
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -24,24 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/**
- * Configuration properties for Flyway database migration.
- *
- * <p>Usage example in application.yml:
- * <pre>
- * loadup:
- *   flyway:
- *     enabled: true
- *     locations: classpath:db/migration
- *     table: flyway_schema_history
- *     baseline-on-migrate: true
- *     validate-on-migrate: true
- *     clean-disabled: true
- * </pre>
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 @ConfigurationProperties(prefix = "loadup.flyway")
 public class FlywayProperties {
 

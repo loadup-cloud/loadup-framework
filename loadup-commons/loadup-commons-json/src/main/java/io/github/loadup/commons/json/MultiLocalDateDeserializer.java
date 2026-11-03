@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Common JSON
+ * LoadUp Commons JSON
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -31,9 +31,6 @@ import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.ValueDeserializer;
 import tools.jackson.databind.ext.javatime.deser.LocalDateDeserializer;
 
-/**
- * Reads strict local temporal text; explicit JsonFormat patterns use Jackson's reader.
- */
 public class MultiLocalDateDeserializer extends LocalDateDeserializer {
     public MultiLocalDateDeserializer() {
         super(DateTimeFormatter.ISO_LOCAL_DATE);

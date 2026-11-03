@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Captcha Binder Tianai
+ * LoadUp Components Captcha Binder Tianai
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -49,12 +49,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-/**
- * Auto-configuration for the tianai behavior captcha binder.
- *
- * <p>Assembles the tianai engine from its core classes (no official starter, which targets older
- * Spring Boot generations) and exposes the LoadUp {@link CaptchaProvider}.
- */
 @AutoConfiguration(before = CaptchaAutoConfiguration.class)
 @ConditionalOnClass(TACBuilder.class)
 @ConditionalOnProperty(prefix = "loadup.captcha", name = "binder-type", havingValue = "tianai", matchIfMissing = true)

@@ -1,6 +1,6 @@
 /*
  * #%L
- * Testify Assert Engine
+ * LoadUp Testify Assert Engine
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,9 +23,6 @@ import io.github.loadup.testify.asserts.model.MatchResult;
 import io.github.loadup.testify.asserts.operator.OperatorMatcher;
 import java.util.Map;
 
-/**
- * Regular expression matcher with pattern caching for performance.
- */
 public class RegexMatcher implements OperatorMatcher {
     @Override
     public boolean support(String op) {

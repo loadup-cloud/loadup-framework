@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Cache Test
+ * LoadUp Components Cache Test
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -26,10 +26,6 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-/**
- * Plain Spring Cache business service. It never imports a LoadUp cache class: this is the contract
- * that keeps the same business code running on caffeine, redis or jetcache.
- */
 @Service
 public class CacheableProductService {
 

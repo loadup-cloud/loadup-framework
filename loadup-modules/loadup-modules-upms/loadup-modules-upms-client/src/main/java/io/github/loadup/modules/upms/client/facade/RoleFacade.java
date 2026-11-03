@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Client Layer
+ * LoadUp Modules UPMS Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -26,9 +26,6 @@ import io.github.loadup.modules.upms.client.dto.RoleDTO;
 import io.github.loadup.modules.upms.client.query.RolePageQuery;
 import java.util.List;
 
-/**
- * Public business contract for RoleService.
- */
 public interface RoleFacade {
     RoleDTO createRole(RoleCreateCommand command);
 

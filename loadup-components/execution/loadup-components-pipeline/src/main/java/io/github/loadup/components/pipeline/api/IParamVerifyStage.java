@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Pipeline
+ * LoadUp Components Pipeline
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,15 +19,6 @@
  */
 package io.github.loadup.components.pipeline.api;
 
-/**
- * Parameter-validation stage SPI.
- *
- * <p>The stage receives the raw request object and should throw a {@link RuntimeException}
- * (e.g. {@code IllegalArgumentException}) when validation fails, which will then be routed
- * to the configured {@link io.github.loadup.components.pipeline.exception.IExceptionClassHandler}.
- *
- * @param <REQ> request type
- */
 public interface IParamVerifyStage<REQ> extends IStage {
 
     /**

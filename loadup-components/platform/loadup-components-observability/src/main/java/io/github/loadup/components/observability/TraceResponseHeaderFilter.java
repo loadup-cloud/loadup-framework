@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Observability
+ * LoadUp Components Observability
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -28,9 +28,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-/**
- * Adds the trace ID from Spring Boot's current server observation to the response.
- */
 public final class TraceResponseHeaderFilter extends OncePerRequestFilter {
     private final Tracer tracer;
 

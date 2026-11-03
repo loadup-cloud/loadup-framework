@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Infrastructure Layer
+ * LoadUp Modules UPMS Infrastructure
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,12 +22,6 @@ package io.github.loadup.modules.upms.infrastructure.dataobject;
 import com.mybatisflex.annotation.Table;
 import io.github.loadup.commons.dataobject.BaseDO;
 
-/**
- * Permission Data Object
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 @Table("upms_permission")
 public class PermissionDO extends BaseDO {
 

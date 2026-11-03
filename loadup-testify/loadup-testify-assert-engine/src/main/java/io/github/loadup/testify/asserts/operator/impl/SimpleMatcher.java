@@ -1,6 +1,6 @@
 /*
  * #%L
- * Testify Assert Engine
+ * LoadUp Testify Assert Engine
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -24,9 +24,6 @@ import java.math.BigDecimal;
 import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * Simple equality and inequality matcher. Handles null values properly.
- */
 public class SimpleMatcher {
     public static MatchResult eq(Object actual, Object expected) {
         if (actual == null && expected == null) {

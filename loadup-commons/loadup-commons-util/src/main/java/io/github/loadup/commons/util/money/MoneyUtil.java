@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common Utils
+ * LoadUp Commons Util
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -28,9 +28,6 @@ import java.util.Collection;
 import java.util.Currency;
 import java.util.Objects;
 
-/**
- * Exact minor-unit arithmetic. Fractional results always require an explicit rounding policy.
- */
 public final class MoneyUtil {
     private MoneyUtil() {}
 

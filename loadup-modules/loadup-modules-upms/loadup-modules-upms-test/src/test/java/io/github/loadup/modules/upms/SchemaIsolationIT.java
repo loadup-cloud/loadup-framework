@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup UPMS Test
+ * LoadUp Modules UPMS Test
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -29,9 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-/**
- * Guards the schema-per-tenant contract: business tables must not carry tenant columns.
- */
 @SpringBootTest(classes = TestApplication.class)
 @EnableTestContainers(ContainerType.POSTGRESQL)
 class SchemaIsolationIT {

@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp JWT Resource Server
+ * LoadUp Components Resource Server
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -25,20 +25,10 @@ import java.util.Collection;
 import java.util.List;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 
-/**
- * Converts a verified {@link Jwt} into the standard Spring Security {@link Authentication} with a
- * {@link LoadUpUser} principal.
- *
- * <p>Claim contract (self-contained JWT): {@code sub} = userId, {@code username},
- * {@code roles} and {@code permissions} as arrays (or comma-separated strings). Roles are exposed
- * as {@code ROLE_<role>} plus the raw value; permissions are exposed as raw authorities, so both
- * {@code hasRole(...)} and {@code hasAuthority(...)} work in route-level and method-level rules.
- */
 public class LoadUpJwtAuthenticationConverter implements Converter<Jwt, AbstractAuthenticationToken> {
 
     private static List<GrantedAuthority> authoritiesOf(LoadUpUser user) {

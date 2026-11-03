@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Transfer Infrastructure
+ * LoadUp Modules Transfer Infrastructure
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -119,9 +119,6 @@ public class TransferGatewayImpl extends ServiceImpl<TransferTaskRowMapper, Tran
         }
     }
 
-    /**
-     * Scheduler scan for the current tenant schema.
-     */
     @Override
     public List<String> queued(int limit) {
         if (limit < 1 || limit > 100) {

@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone Store JDBC
+ * LoadUp Components Gotone Store JDBC
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -30,9 +30,6 @@ import java.util.Map;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
-/**
- * JDBC-backed {@link ChannelConfigProvider} backed by {@code gotone_service_channel}.
- */
 public class JdbcChannelConfigProvider implements ChannelConfigProvider {
 
     private final ServiceChannelRowMapper channels;

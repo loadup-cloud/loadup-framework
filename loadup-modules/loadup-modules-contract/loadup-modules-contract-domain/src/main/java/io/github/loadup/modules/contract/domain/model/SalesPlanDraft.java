@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Contract Domain
+ * LoadUp Modules Contract Domain
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -28,9 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-/**
- * Values and permissions are keyed by qualified bundleAlias.itemKey.
- */
 public record SalesPlanDraft(
         String planCode,
         int version,

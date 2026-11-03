@@ -1,6 +1,6 @@
 /*
  * #%L
- * Testify Spring Boot Starter
+ * LoadUp Testify Spring Boot Starter
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -29,9 +29,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-/**
- * Small DSL for JUnit Jupiter integration tests: data cleanup, data setup, and async DB assertions.
- */
 public class TestScenario {
 
     private static final Pattern IDENTIFIER = Pattern.compile("[A-Za-z0-9_]+");

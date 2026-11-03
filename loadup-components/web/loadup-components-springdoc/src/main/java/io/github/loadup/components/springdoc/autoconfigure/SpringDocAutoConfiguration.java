@@ -35,16 +35,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-/**
- * Auto-configuration for the LoadUp SpringDoc component.
- *
- * <p>Activates when SpringDoc's OpenAPI model is on the classpath
- * and {@code loadup.springdoc.enabled} is {@code true} (default).
- *
- * <p>Registers an {@link OpenAPI} bean with project metadata and an optional global
- * JWT Bearer security scheme. A custom bean of type {@link OpenAPI} defined elsewhere
- * takes precedence ({@link ConditionalOnMissingBean}).
- */
 @AutoConfiguration
 @ConditionalOnClass(OpenAPI.class)
 @ConditionalOnProperty(prefix = "loadup.springdoc", name = "enabled", havingValue = "true", matchIfMissing = true)

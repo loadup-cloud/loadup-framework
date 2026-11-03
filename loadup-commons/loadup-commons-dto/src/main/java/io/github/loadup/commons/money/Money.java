@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common DTO
+ * LoadUp Commons DTO
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -27,9 +27,6 @@ import java.math.BigDecimal;
 import java.util.Currency;
 import java.util.Objects;
 
-/**
- * Immutable signed amount in the currency's smallest decimal unit.
- */
 public final class Money implements Comparable<Money> {
     private final long cent;
     private final Currency currency;

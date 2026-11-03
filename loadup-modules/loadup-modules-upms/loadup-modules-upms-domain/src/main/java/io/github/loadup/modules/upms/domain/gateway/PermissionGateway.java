@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Domain Layer
+ * LoadUp Modules UPMS Domain
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,12 +23,6 @@ import io.github.loadup.modules.upms.domain.model.Permission;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Permission Repository Interface
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 public interface PermissionGateway {
 
     /**

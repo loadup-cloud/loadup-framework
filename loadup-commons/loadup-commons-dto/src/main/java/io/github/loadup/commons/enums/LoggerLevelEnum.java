@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common DTO
+ * LoadUp Commons DTO
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,10 +19,6 @@
  */
 package io.github.loadup.commons.enums;
 
-/**
- * @author Lise
- * @since 1.0.0
- */
 public enum LoggerLevelEnum implements IEnum {
     /**
      * DEBUG

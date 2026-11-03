@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Contract Domain
+ * LoadUp Modules Contract Domain
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -25,9 +25,6 @@ import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import java.math.BigDecimal;
 import java.util.Set;
 
-/**
- * An explicit merchant permission that may narrow, but never widen, product constraints.
- */
 public record OverridePolicy(BigDecimal minimum, BigDecimal maximum, Set<TypedValue> allowedValues) {
     public OverridePolicy {
         allowedValues = Set.copyOf(allowedValues);

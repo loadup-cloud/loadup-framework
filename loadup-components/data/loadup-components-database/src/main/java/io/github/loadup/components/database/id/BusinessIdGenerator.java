@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Database
+ * LoadUp Components Database
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -26,9 +26,6 @@ import io.github.loadup.components.database.sequence.SequenceScope;
 import java.time.Clock;
 import java.time.LocalDate;
 
-/**
- * Generates unique business IDs using a single captured local date per call.
- */
 public final class BusinessIdGenerator implements IdGenerator {
     private final BusinessIdCommand defaults;
     private final Sequence sequence;

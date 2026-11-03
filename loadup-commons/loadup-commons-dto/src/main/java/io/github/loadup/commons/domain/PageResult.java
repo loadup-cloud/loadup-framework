@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common DTO
+ * LoadUp Commons DTO
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -26,9 +26,6 @@ import io.github.loadup.commons.json.ToStringAsJson;
 import java.util.List;
 import java.util.function.Function;
 
-/**
- * Framework-neutral page result for domain and application contracts.
- */
 public record PageResult<T>(List<T> records, long total, int page, int size) {
 
     public PageResult {

@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Database
+ * LoadUp Components Database
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,9 +21,6 @@ package io.github.loadup.components.database.id;
 
 import java.util.UUID;
 
-/**
- * Generates RFC 4122 version 4 UUID identifiers.
- */
 public final class UuidV4IdGenerator implements IdGenerator {
     private final boolean withHyphens;
 

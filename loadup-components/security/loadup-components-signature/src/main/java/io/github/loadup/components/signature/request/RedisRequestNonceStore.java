@@ -23,9 +23,6 @@ import java.time.Duration;
 import java.util.Objects;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
-/**
- * Uses one SET NX with an expiry; never releases claims after business failure.
- */
 public final class RedisRequestNonceStore implements RequestNonceStore {
     private final StringRedisTemplate redis;
 

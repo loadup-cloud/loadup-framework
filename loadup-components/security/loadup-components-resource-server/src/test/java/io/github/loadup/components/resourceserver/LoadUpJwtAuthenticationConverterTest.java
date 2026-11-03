@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp JWT Resource Server
+ * LoadUp Components Resource Server
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

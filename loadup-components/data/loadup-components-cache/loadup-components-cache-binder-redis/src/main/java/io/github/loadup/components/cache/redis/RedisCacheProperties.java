@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Cache Binder Redis
+ * LoadUp Components Cache Binder Redis
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,9 +21,6 @@ package io.github.loadup.components.cache.redis;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/**
- * Redis binder settings ({@code loadup.cache.binder.redis.*}).
- */
 @ConfigurationProperties(prefix = "loadup.cache.binder.redis")
 public class RedisCacheProperties {
 

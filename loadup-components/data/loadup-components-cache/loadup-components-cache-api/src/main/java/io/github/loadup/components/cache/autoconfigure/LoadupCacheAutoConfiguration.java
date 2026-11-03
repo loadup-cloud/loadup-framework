@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Cache Components API
+ * LoadUp Components Cache API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -27,14 +27,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 
-/**
- * LoadUp cache facade auto-configuration.
- *
- * <p>Enables Spring Cache annotation-driven caching so that business code can start using
- * {@code @Cacheable} right after adding a binder dependency. A matching binder auto-configuration
- * (caffeine / redis / jetcache) supplies the actual {@link CacheManager}; without any binder Spring
- * Boot falls back to a no-op manager.
- */
 @AutoConfiguration(before = CacheAutoConfiguration.class)
 @ConditionalOnClass(CacheManager.class)
 @EnableCaching

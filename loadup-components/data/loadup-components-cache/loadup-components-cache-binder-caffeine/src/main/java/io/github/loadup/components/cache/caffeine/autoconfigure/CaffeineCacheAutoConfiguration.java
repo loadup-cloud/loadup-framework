@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Cache Binder Caffeine
+ * LoadUp Components Cache Binder Caffeine
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -37,10 +37,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 
-/**
- * Caffeine binder: provides the Spring {@link CacheManager} when {@code loadup.cache.type=caffeine}
- * (the default). Business code only sees the Spring Cache facade.
- */
 @AutoConfiguration(after = LoadupCacheAutoConfiguration.class, before = CacheAutoConfiguration.class)
 @ConditionalOnClass(Caffeine.class)
 @ConditionalOnProperty(

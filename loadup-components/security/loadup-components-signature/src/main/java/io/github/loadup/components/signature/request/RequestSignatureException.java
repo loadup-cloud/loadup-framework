@@ -23,9 +23,6 @@ import io.github.loadup.commons.enums.ResultStatusEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.ResultCode;
 
-/**
- * Safe request verification failure without payloads, headers or backend details.
- */
 public final class RequestSignatureException extends CommonException {
     private final Code code;
 

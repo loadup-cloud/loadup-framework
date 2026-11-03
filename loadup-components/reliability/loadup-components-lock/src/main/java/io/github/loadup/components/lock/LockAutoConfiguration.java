@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Lock
+ * LoadUp Components Lock
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -32,9 +32,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * Reuses an application-owned client or creates a client from explicitly supplied native configuration.
- */
 @AutoConfiguration(
         afterName = {
             "org.redisson.spring.starter.RedissonAutoConfigurationV2",

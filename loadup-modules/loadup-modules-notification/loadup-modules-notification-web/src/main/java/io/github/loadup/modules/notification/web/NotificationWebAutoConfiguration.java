@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp In-App Notifications Web Adapter
+ * LoadUp Modules Notification Web
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

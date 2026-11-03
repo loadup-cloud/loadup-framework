@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Client Layer
+ * LoadUp Modules UPMS Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -26,12 +26,6 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 
-/**
- * Role Create Command
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 public class RoleCreateCommand {
 
     @NotBlank() @Size(max = 50) @Schema(description = "Role name")

@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Client Layer
+ * LoadUp Modules UPMS Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -27,12 +27,6 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 
-/**
- * Role Query Parameters
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 public class RolePageQuery {
 
     @Schema(description = "Role name")

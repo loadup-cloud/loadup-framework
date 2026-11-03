@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp UPMS Authorization Server Adapter
+ * LoadUp Modules UPMS AuthServer
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -33,9 +33,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-/**
- * Delegates user credential checks to UPMS without issuing tokens.
- */
 public final class UpmsAuthenticationProvider implements AuthenticationProvider {
     private final AuthenticationFacade authenticationService;
     private final RoleGateway roleGateway;

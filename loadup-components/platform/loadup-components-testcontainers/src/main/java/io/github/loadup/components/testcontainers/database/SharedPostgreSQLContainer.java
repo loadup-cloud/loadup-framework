@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components TestContainers
+ * LoadUp Components Testcontainers
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -26,24 +26,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
-/**
- * Shared PostgreSQL TestContainer instance that can be reused across multiple tests.
- *
- * <p>This class provides a singleton PostgreSQL container that starts once and is shared across all
- * test classes that use it. This significantly reduces test execution time by avoiding the overhead
- * of starting a new PostgreSQL container for each test class.
- *
- * <p>Usage example:
- *
- * <pre>
- * String jdbcUrl = SharedPostgreSQLContainer.getJdbcUrl();
- * String username = SharedPostgreSQLContainer.getUsername();
- * String password = SharedPostgreSQLContainer.getPassword();
- * </pre>
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 public final class SharedPostgreSQLContainer {
 
     /**

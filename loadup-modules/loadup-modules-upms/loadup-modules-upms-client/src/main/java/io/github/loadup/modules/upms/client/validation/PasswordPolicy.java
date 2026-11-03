@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Client Layer
+ * LoadUp Modules UPMS Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,9 +23,6 @@ import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
 import java.nio.charset.StandardCharsets;
 
-/**
- * Shared input policy compatible with the configured BCrypt encoder.
- */
 public final class PasswordPolicy {
     public static final int MIN_CHARACTERS = 8;
     public static final int MAX_UTF8_BYTES = 72;

@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Domain Layer
+ * LoadUp Modules UPMS Domain
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,11 +22,6 @@ package io.github.loadup.modules.upms.domain.model;
 import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDateTime;
 
-/**
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 public class VerificationCode {
 
     private LocalDateTime expiryTime;

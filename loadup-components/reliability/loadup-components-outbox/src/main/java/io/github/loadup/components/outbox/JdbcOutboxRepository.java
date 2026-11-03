@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Outbox
+ * LoadUp Components Outbox
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -34,9 +34,6 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
-/**
- * PostgreSQL durable queue. Claim and acknowledgement transactions never enclose handlers.
- */
 public class JdbcOutboxRepository implements OutboxTemplate {
     private final DataSource dataSource;
     private final JdbcTemplate jdbc;

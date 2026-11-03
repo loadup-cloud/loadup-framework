@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Web MVC
+ * LoadUp Components WebMVC
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -37,9 +37,6 @@ import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
-/**
- * Applies the common result envelope to every JSON API controller.
- */
 @RestControllerAdvice
 public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
     private final ApiPathMatcher pathMatcher;

@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Transfer Domain
+ * LoadUp Modules Transfer Domain
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,9 +22,6 @@ package io.github.loadup.modules.transfer.domain.model;
 import io.github.loadup.commons.json.ToStringAsJson;
 import java.time.LocalDateTime;
 
-/**
- * Durable state of one import or export job.
- */
 public record TransferTask(
         String id,
         String ownerId,

@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Merchant Client
+ * LoadUp Modules Merchant Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,9 +22,6 @@ package io.github.loadup.modules.merchant.client.error;
 import io.github.loadup.commons.enums.ResultStatusEnum;
 import io.github.loadup.commons.result.ResultCode;
 
-/**
- * Stable public error codes for the merchant module.
- */
 public enum MerchantResultCodeEnum implements ResultCode {
     NOT_FOUND("MERCHANT_NOT_FOUND", "Merchant not found"),
     CONFLICT("MERCHANT_CONFLICT", "Merchant code exists or version changed"),

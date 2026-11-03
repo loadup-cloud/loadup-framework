@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Captcha Components API
+ * LoadUp Components Captcha API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,12 +19,6 @@
  */
 package io.github.loadup.components.captcha;
 
-/**
- * Captcha type identifiers accepted by {@link CaptchaTemplate#generate(String)}.
- *
- * <p>This is the union of the captcha families supported by the binders. A binder only supports
- * the types its underlying engine implements; unsupported types are rejected by that binder.
- */
 public final class CaptchaType {
 
     /**

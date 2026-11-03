@@ -56,9 +56,6 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.model.UploadPartRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
-/**
- * SDK boundary tests complement the real S3-compatible container tests.
- */
 class S3DfsProviderContractTest {
     private final S3Client client = mock(S3Client.class);
     private final S3Presigner presigner = mock(S3Presigner.class);

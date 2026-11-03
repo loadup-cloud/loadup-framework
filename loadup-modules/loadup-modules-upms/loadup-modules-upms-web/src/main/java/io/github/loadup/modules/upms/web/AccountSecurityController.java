@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp UPMS Web Adapter
+ * LoadUp Modules UPMS Web
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -39,9 +39,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Current user's security view; user ID is never accepted from the request.
- */
 @RestController
 @RequestMapping("/account/security")
 @Tag(name = "Account Security", description = "Self-service password and login history")

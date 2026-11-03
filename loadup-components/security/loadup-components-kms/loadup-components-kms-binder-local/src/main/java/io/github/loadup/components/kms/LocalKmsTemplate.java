@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Kms
+ * LoadUp Components KMS binder-local
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -31,7 +31,6 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 
-/** Local cryptography backed by a caller-supplied KeyStore. Aliases represent version 1. */
 public final class LocalKmsTemplate implements KmsTemplate {
     private final KeyStore store;
     private final KeyStore.ProtectionParameter protection;

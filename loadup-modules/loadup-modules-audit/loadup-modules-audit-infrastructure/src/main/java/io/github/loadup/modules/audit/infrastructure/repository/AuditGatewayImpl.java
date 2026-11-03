@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Audit Infrastructure
+ * LoadUp Modules Audit Infrastructure
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

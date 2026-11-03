@@ -27,9 +27,6 @@ import java.security.MessageDigest;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-/**
- * Static digest helpers backed by JCA {@code MessageDigest} / {@code Mac}.
- */
 public final class DigestUtils {
 
     private DigestUtils() {}

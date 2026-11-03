@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Outbox
+ * LoadUp Components Outbox
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,9 +19,6 @@
  */
 package io.github.loadup.components.outbox;
 
-/**
- * One handler per event type. Implementations must tolerate repeated invocation.
- */
 public interface OutboxHandler {
     String eventType();
 

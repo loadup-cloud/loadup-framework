@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Dictionary Domain
+ * LoadUp Modules Dictionary Domain
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,9 +22,6 @@ package io.github.loadup.modules.dictionary.domain.model;
 import io.github.loadup.commons.json.ToStringAsJson;
 import java.time.LocalDateTime;
 
-/**
- * Value and display label within a dictionary type.
- */
 public record DictionaryItem(
         String id,
         String typeId,

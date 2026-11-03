@@ -35,9 +35,6 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.Locale;
 
-/**
- * JCA-backed {@link KeyPairService} implementation.
- */
 public class KeyPairServiceImpl implements KeyPairService {
 
     private final SignatureProperties properties;

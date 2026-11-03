@@ -1,6 +1,6 @@
 /*
  * #%L
- * Testify Assert Engine
+ * LoadUp Testify Assert Engine
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,9 +23,5 @@ import java.util.Map;
 import tools.jackson.databind.JsonNode;
 
 public interface TestifyAssertEngine {
-    /**
-     *
-     * @param context testcontext
-     */
     void compare(JsonNode expectNode, Object actual, Map<String, Object> context);
 }

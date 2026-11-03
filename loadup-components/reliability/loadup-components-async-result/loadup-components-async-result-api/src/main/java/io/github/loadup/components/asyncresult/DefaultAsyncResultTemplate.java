@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Async Result
+ * LoadUp Components Async Result API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -46,9 +46,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import tools.jackson.databind.ObjectMapper;
 
-/**
- * Bounded waiters; backend notifications never execute user continuations on network threads.
- */
 public final class DefaultAsyncResultTemplate implements AsyncResultTemplate {
     private final AsyncResultProvider provider;
     private final AsyncResultProperties properties;

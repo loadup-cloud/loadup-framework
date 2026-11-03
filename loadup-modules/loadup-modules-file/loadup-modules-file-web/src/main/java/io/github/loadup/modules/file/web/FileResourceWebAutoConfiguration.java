@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp File Resources Web Adapter
+ * LoadUp Modules File Web
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

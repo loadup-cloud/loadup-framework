@@ -31,9 +31,6 @@ import java.security.PublicKey;
 import java.security.Signature;
 import java.util.Base64;
 
-/**
- * JCA-backed {@link SignatureService} implementation.
- */
 public class SignatureServiceImpl implements SignatureService {
 
     private final KeyPairService keyPairService;

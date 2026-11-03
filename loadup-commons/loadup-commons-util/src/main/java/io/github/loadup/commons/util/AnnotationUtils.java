@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common Utils
+ * LoadUp Commons Util
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -26,15 +26,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- *
- * <ul>
- * </ul>
- *
- * @author loadup_cloud
- * @since 1.0.0
- */
 public class AnnotationUtils {
 
     public static <T extends Annotation> List<Method> findMethods(Class<?> clazz, Class<T> annotationClass) {

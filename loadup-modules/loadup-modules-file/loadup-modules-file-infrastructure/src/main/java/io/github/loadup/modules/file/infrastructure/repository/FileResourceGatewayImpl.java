@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp File Infrastructure
+ * LoadUp Modules File Infrastructure
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -177,9 +177,6 @@ public class FileResourceGatewayImpl extends ServiceImpl<FileResourceInsertMappe
         }
     }
 
-    /**
-     * Authorized system maintenance scan across the current tenant schema.
-     */
     @Override
     public List<FileResource> pending(int limit) {
         var query = QueryWrapper.create()

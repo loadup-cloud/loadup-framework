@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Captcha Binder Nanocaptcha
+ * LoadUp Components Captcha Binder NanoCaptcha
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -36,12 +36,6 @@ import net.logicsquad.nanocaptcha.image.ImageCaptcha;
 import net.logicsquad.nanocaptcha.image.background.GradiatedBackgroundProducer;
 import net.logicsquad.nanocaptcha.image.noise.CurvedLineNoiseProducer;
 
-/**
- * nanocaptcha backed {@link CaptchaProvider} for classic character image captchas.
- *
- * <p>Answers are kept in an in-memory store with periodic expiry cleanup; each verification is
- * single-use (the entry is removed on the first attempt, whether it succeeds or not).
- */
 public class NanocaptchaProvider implements CaptchaProvider {
 
     private static final int MAX_PENDING = 5000;

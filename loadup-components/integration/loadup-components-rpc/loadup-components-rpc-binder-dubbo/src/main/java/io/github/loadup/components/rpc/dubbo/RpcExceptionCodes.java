@@ -1,3 +1,22 @@
+/*
+ * #%L
+ * LoadUp Components RPC Binder Dubbo
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package io.github.loadup.components.rpc.dubbo;
 
 import io.github.loadup.commons.error.CommonException;
@@ -5,13 +24,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.dubbo.rpc.RpcException;
 
-/**
- * Carries the provider's declared result code across the Dubbo invocation boundary.
- *
- * <p>Dubbo only guarantees the exception type and message. The provider encodes the enum code in
- * the message of a business {@link RpcException}; consumers must still map the value against their
- * own allowlist and treat unknown or missing codes as a dependency failure.
- */
 public final class RpcExceptionCodes {
     private static final String MARKER = "loadup-result-code=";
     private static final Pattern CODE = Pattern.compile("[A-Z][A-Z0-9_]{0,63}");

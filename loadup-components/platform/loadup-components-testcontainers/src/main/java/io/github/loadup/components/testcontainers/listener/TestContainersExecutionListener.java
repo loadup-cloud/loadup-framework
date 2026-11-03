@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components TestContainers
+ * LoadUp Components Testcontainers
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -38,28 +38,6 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
-/**
- * TestExecutionListener that starts testcontainers based on @EnableTestContainers annotation.
- *
- * <p>This listener runs before the Spring ApplicationContext is initialized, allowing it to
- * start containers and inject their properties into the test environment.
- *
- * <p>Usage:
- * <pre>
- * &#64;SpringBootTest
- * &#64;EnableTestContainers(ContainerType.MYSQL)
- * class MyIntegrationTest {
- *
- *     // MySQL container automatically started
- * }
- * </pre>
- *
- * <p>The listener is automatically registered via spring.factories and runs with highest precedence
- * to ensure containers start before any beans are initialized.
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 @SuppressWarnings("PMD.TestClassWithoutTestCases")
 public class TestContainersExecutionListener extends AbstractTestExecutionListener {
 

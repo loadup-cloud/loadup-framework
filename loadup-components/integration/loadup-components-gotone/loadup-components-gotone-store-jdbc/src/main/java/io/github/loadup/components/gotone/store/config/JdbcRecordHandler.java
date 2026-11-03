@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone Store JDBC
+ * LoadUp Components Gotone Store JDBC
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -28,9 +28,6 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-/**
- * JDBC-backed {@link RecordHandler} that persists one notification record per receiver.
- */
 public class JdbcRecordHandler implements RecordHandler {
 
     private static final String STATUS_SUCCESS = "SUCCESS";

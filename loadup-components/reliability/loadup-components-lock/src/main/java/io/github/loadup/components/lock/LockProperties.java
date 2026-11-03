@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Lock
+ * LoadUp Components Lock
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,9 +23,6 @@ import java.time.Duration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.Resource;
 
-/**
- * Opt-in integration; Redis topology and credentials stay in native Redisson configuration.
- */
 @ConfigurationProperties("loadup.lock")
 public record LockProperties(
         boolean enabled,

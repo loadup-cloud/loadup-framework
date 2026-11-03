@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Components Scheduler
+ * LoadUp Components Scheduler API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

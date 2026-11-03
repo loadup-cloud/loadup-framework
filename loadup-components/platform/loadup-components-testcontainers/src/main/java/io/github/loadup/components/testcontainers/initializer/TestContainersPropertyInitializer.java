@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components TestContainers
+ * LoadUp Components Testcontainers
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -37,48 +37,6 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 
-/**
- * Unified ApplicationContextInitializer for testcontainer properties injection.
- *
- * <p>This initializer supports two modes:
- * <ol>
- *   <li><b>Annotation mode</b>: Works with {@link io.github.loadup.components.testcontainers.annotation.EnableTestContainers}
- *       <ul>
- *         <li>TestExecutionListener starts containers and stores properties</li>
- *         <li>This initializer injects stored properties before ApplicationContext refresh</li>
- *       </ul>
- *   </li>
- *   <li><b>Configuration mode</b>: Works with application.yml configuration
- *       <ul>
- *         <li>Reads loadup.testcontainers.* properties</li>
- *         <li>Starts enabled containers and injects properties</li>
- *       </ul>
- *   </li>
- * </ol>
- *
- * <p>Usage examples:
- * <pre>
- * // Annotation mode (recommended)
- * &#64;SpringBootTest
- * &#64;EnableTestContainers(ContainerType.MYSQL)
- * class MyTest {
- * }
- *
- * // Configuration mode
- * &#64;SpringBootTest
- * &#64;ContextConfiguration(initializers = TestContainersPropertyInitializer.class)
- * class MyTest { }
- *
- * # application-test.yml
- * loadup:
- *   testcontainers:
- *     mysql:
- *       enabled: true
- * </pre>
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 @SuppressWarnings("PMD.TestClassWithoutTestCases")
 public class TestContainersPropertyInitializer
         implements ApplicationContextInitializer<ConfigurableApplicationContext> {

@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Extension
+ * LoadUp Components Extension
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -38,9 +38,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
 
-/**
- * Tests for ExtensionRegistry caching functionality
- */
 class ExtensionRegistryCacheTest {
 
     private ExtensionRegistry registry;

@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Common Context
+ * LoadUp Commons Context
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,9 +19,6 @@
  */
 package io.github.loadup.commons.context;
 
-/**
- * Shared metadata keys; none of these values establish authenticated identity.
- */
 public final class ContextKeys {
     public static final ContextKey<String> TENANT_ID = new ContextKey<>("loadup.tenantId", String.class);
 

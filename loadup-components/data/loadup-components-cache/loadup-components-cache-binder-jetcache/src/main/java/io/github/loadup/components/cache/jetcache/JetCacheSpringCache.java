@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Cache Binder JetCache
+ * LoadUp Components Cache Binder JetCache
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -38,13 +38,6 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.ScanOptions;
 
-/**
- * Thin adapter exposing a JetCache {@link Cache} through the Spring Cache contract so that
- * {@code @Cacheable} / {@code @CacheEvict} / {@code @CachePut} work on the JetCache backend.
- *
- * <p>Per-key TTL plus random expiration (anti-avalanche) is applied on every write; when no TTL is
- * configured the JetCache cache default (from {@code QuickConfig.expire(...)}) is used.
- */
 public class JetCacheSpringCache extends AbstractValueAdaptingCache {
 
     private final String name;

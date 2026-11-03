@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Kms
+ * LoadUp Components KMS api
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,9 +19,6 @@
  */
 package io.github.loadup.components.kms;
 
-/**
- * Optional administrative operations, using a separate credential from runtime operations.
- */
 public interface KmsKeyManager {
     void create(String name, KmsKeyType type);
 

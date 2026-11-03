@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Transfer Test
+ * LoadUp Modules Transfer Test
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -43,9 +43,6 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-/**
- * Exercises auto-configuration composition; no persistence operations are executed.
- */
 class TransferAutoConfigurationTest {
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
             .withBean(DataSource.class, () -> mock(DataSource.class))

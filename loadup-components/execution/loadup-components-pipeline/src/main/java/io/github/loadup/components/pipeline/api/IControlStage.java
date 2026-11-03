@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Pipeline
+ * LoadUp Components Pipeline
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,13 +21,6 @@ package io.github.loadup.components.pipeline.api;
 
 import io.github.loadup.components.pipeline.context.PipelineContext;
 
-/**
- * Conditional flow-control stage.
- *
- * <p>When {@link #shouldStop} returns {@code true} the executor aborts the remaining pipeline
- * stages immediately (the response stored in the context up to this point is returned).
- * {@link IFinallyStage}s are still executed.
- */
 public interface IControlStage extends IStage {
 
     /**

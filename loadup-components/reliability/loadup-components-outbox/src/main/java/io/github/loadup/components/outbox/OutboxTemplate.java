@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Outbox
+ * LoadUp Components Outbox
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,9 +22,6 @@ package io.github.loadup.components.outbox;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Publishes transactionally and exposes schema-scoped operational access.
- */
 public interface OutboxTemplate {
     String publish(OutboxMessage message);
 

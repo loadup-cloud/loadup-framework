@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Captcha Components API
+ * LoadUp Components Captcha API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,9 +21,6 @@ package io.github.loadup.components.captcha;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/**
- * LoadUp captcha facade configuration ({@code loadup.captcha.*}).
- */
 @ConfigurationProperties(prefix = "loadup.captcha")
 public class CaptchaProperties {
 

@@ -23,9 +23,6 @@ import io.github.loadup.commons.json.ToStringAsJson;
 import java.net.URI;
 import java.util.Map;
 
-/**
- * Exact HTTP origin-form target and body bytes; no decoding or JSON reserialization.
- */
 public record RequestContent(String method, String target, String contentType, byte[] payload) {
     public RequestContent {
         if (contentType != null && !contentType.matches("[\\x20-\\x7e]*")) {

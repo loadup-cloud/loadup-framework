@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS App Layer
+ * LoadUp Modules UPMS App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,11 +19,6 @@
  */
 package io.github.loadup.modules.upms.app.strategy.oauth;
 
-/**
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 public interface OAuthProvider {
 
     /**

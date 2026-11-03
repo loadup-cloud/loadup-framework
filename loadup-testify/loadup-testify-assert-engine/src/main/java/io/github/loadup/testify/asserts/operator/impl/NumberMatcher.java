@@ -1,6 +1,6 @@
 /*
  * #%L
- * Testify Assert Engine
+ * LoadUp Testify Assert Engine
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -25,10 +25,6 @@ import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Numeric comparison matcher supporting gt, ge, lt, le operations. Handles various numeric types
- * through BigDecimal conversion.
- */
 public class NumberMatcher implements OperatorMatcher {
     private static final Set<String> OPS = Set.of("gt", "ge", "lt", "le");
 

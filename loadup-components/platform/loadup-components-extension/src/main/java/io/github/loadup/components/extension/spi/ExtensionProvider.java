@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Extension
+ * LoadUp Components Extension
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,13 +21,6 @@ package io.github.loadup.components.extension.spi;
 
 import io.github.loadup.components.extension.api.IExtensionPoint;
 
-/**
- *
- * META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 public interface ExtensionProvider {
 
     Class<? extends IExtensionPoint> getExtensionType();

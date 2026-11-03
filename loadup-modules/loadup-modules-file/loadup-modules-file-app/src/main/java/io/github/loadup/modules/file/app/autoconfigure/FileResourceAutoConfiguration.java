@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp File App
+ * LoadUp Modules File App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -35,9 +35,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandi
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
-/**
- * Creates file metadata services when both JDBC and a DFS binder are present.
- */
 @Import(FileDTOConverterImpl.class)
 @AutoConfiguration(
         afterName = {

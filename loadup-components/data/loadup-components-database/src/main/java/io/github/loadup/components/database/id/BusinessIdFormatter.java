@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Database
+ * LoadUp Components Database
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -26,9 +26,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.ResolverStyle;
 
-/**
- * ASCII encoding with an 18-character prefix and 14-character fixed tail.
- */
 public final class BusinessIdFormatter {
     public static final long MAX_SEQUENCE = 99_999_999L;
     private static final DateTimeFormatter DATE =

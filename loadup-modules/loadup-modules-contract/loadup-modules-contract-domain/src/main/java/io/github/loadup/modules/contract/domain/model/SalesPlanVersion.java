@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Contract Domain
+ * LoadUp Modules Contract Domain
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -25,9 +25,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * Created by SalesPlanCompiler; its constructor is deliberately package-private.
- */
 public final class SalesPlanVersion {
     private final String planCode;
     private final int version;

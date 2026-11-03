@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Contract Domain
+ * LoadUp Modules Contract Domain
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -25,9 +25,6 @@ import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Published product contents. Storage adapters must enforce tenant ownership of all references.
- */
 public record ProductVersion(
         String productCode,
         int version,

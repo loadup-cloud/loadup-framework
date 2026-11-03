@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone Engine
+ * LoadUp Components Gotone Engine
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

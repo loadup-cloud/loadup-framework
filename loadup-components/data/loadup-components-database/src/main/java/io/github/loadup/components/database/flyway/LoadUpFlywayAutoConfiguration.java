@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Database
+ * LoadUp Components Database
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -38,29 +38,6 @@ import org.springframework.boot.flyway.autoconfigure.FlywayMigrationInitializer;
 import org.springframework.boot.flyway.autoconfigure.FlywayMigrationStrategy;
 import org.springframework.context.annotation.Bean;
 
-/**
- * Auto-configuration for Flyway database migrations.
- *
- * <p>Provides enhanced Flyway integration for the LoadUp Framework,
- * with additional configuration properties under the {@code loadup.flyway} prefix.
- * Registers its {@link Flyway} bean before Spring Boot's own
- * {@link FlywayAutoConfiguration} so the LoadUp-specific configuration
- * takes precedence.
- *
- * <p>Configuration example:
- * <pre>
- * loadup:
- *   flyway:
- *     enabled: true
- *     locations: classpath:db/migration
- *     baseline-on-migrate: true
- *     validate-on-migrate: true
- *     clean-disabled: true
- * </pre>
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 @AutoConfiguration(before = FlywayAutoConfiguration.class)
 @ConditionalOnClass(Flyway.class)
 @ConditionalOnProperty(prefix = "loadup.flyway", name = "enabled", havingValue = "true", matchIfMissing = true)

@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Cache Binder Caffeine
+ * LoadUp Components Cache Binder Caffeine
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,9 +21,6 @@ package io.github.loadup.components.cache.caffeine;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/**
- * Caffeine binder settings ({@code loadup.cache.binder.caffeine.*}).
- */
 @ConfigurationProperties(prefix = "loadup.cache.binder.caffeine")
 public class CaffeineCacheProperties {
 

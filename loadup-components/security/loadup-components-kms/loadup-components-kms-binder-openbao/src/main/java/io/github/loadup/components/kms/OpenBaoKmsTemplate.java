@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Kms
+ * LoadUp Components KMS binder-openbao
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,9 +23,6 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * RSA and AES Transit operations; private key material never returns to the application.
- */
 public final class OpenBaoKmsTemplate implements KmsTemplate, AutoCloseable {
     private final OpenBaoTransitClient client;
 

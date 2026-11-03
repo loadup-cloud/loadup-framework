@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Common Masking
+ * LoadUp Commons Masking
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components TestContainers
+ * LoadUp Components Testcontainers
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -45,12 +45,6 @@ import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
 import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-/**
- * Integration test class for SharedLocalStackContainer.
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 @SpringBootTest(classes = TestApplication.class)
 @TestPropertySource(
         properties = {"loadup.testcontainers.enabled=true", "loadup.testcontainers.localstack.enabled=true"})

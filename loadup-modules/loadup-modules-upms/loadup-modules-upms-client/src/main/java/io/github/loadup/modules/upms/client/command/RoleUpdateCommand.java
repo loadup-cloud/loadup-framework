@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Client Layer
+ * LoadUp Modules UPMS Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -25,12 +25,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 
-/**
- * Role Update Command
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 public class RoleUpdateCommand {
 
     @NotNull() @Schema(description = "Resource identifier")

@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Pipeline
+ * LoadUp Components Pipeline
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,9 +23,6 @@ import io.github.loadup.components.pipeline.api.IDataProcessStage;
 import io.github.loadup.components.pipeline.context.PipelineContext;
 import java.util.function.BiConsumer;
 
-/**
- * Lambda adapter for {@link IDataProcessStage}.
- */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public final class InnerDataProcessBiConsumerStage implements IFunctionStage, IDataProcessStage {
 

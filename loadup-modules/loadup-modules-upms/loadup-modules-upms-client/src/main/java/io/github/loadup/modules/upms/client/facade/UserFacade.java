@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Client Layer
+ * LoadUp Modules UPMS Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -27,9 +27,6 @@ import io.github.loadup.modules.upms.client.command.UserUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.UserDetailDTO;
 import io.github.loadup.modules.upms.client.query.UserPageQuery;
 
-/**
- * Public business contract for UserService.
- */
 public interface UserFacade extends UserQueryFacade {
     UserDetailDTO createUser(UserCreateCommand command);
 

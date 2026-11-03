@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Import Export Tasks Web Adapter
+ * LoadUp Modules Transfer Web
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -43,9 +43,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Authenticated submission and tracking of business-supplied import/export handlers.
- */
 @RestController
 @RequestMapping("/transfer-tasks")
 @Tag(name = "Import Export Tasks", description = "Asynchronous import and export tasks")

@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Contract Client
+ * LoadUp Modules Contract Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,9 +22,6 @@ package io.github.loadup.modules.contract.client.facade;
 import io.github.loadup.modules.contract.client.dto.ContractDecisionDTO;
 import io.github.loadup.modules.contract.client.query.ContractResolveQuery;
 
-/**
- * Public business contract for ContractResolveService.
- */
 public interface ContractResolveFacade {
     ContractDecisionDTO resolve(ContractResolveQuery query);
 }

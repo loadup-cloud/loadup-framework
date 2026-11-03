@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Domain Layer
+ * LoadUp Modules UPMS Domain
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -31,13 +31,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * User Permission Domain Service Handles complex permission calculation logic including role
- * inheritance
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 public class UserPermissionService {
 
     private final RoleGateway roleGateway;

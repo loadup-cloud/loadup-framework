@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Kms
+ * LoadUp Components KMS binder-openbao
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,9 +22,6 @@ package io.github.loadup.components.kms;
 import java.util.Base64;
 import java.util.Map;
 
-/**
- * Explicit key administration; export, plaintext backup and deletion are not exposed.
- */
 public final class OpenBaoKeyManager implements KmsKeyManager, AutoCloseable {
     private final OpenBaoTransitClient client;
 

@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common DTO
+ * LoadUp Commons DTO
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -27,9 +27,6 @@ import io.github.loadup.commons.json.ToStringAsJson;
 import java.io.Serial;
 import java.io.Serializable;
 
-/**
- * Immutable wire metadata copied from a declared result-code enum.
- */
 public final class Result implements DTO, Serializable {
     @Serial
     private static final long serialVersionUID = -6017673453793484984L;

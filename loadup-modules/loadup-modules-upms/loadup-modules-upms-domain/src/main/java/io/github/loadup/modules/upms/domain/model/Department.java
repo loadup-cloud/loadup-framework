@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Domain Layer
+ * LoadUp Modules UPMS Domain
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,12 +23,6 @@ import io.github.loadup.commons.domain.BaseEntity;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * Department Entity - Organizational structure with unlimited hierarchy
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 public class Department extends BaseEntity {
 
     private String parentId;

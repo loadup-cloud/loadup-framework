@@ -1,6 +1,6 @@
 /*
  * #%L
- * Testify Demo
+ * LoadUp Testify Test
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,9 +21,6 @@ package io.github.loadup.testify.test.model;
 
 import java.time.LocalDateTime;
 
-/**
- * User entity for demo.
- */
 public class User {
     private String userId;
     private String userName;

@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common Utils
+ * LoadUp Commons Util
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,10 +19,6 @@
  */
 package io.github.loadup.commons.util.context;
 
-/**
- * @author Lise
- * @since 1.0.0
- */
 public class RuntimeUtils {
 
     /**

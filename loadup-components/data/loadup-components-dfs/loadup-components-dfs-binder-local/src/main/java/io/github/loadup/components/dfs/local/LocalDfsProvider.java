@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Dfs Binder Local
+ * LoadUp Components DFS Binder Local
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -40,9 +40,6 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.UUID;
 
-/**
- * Local filesystem binder intended for development and single-node deployments.
- */
 public class LocalDfsProvider implements DfsProvider {
     private static final String METADATA_PREFIX = "metadata.";
 

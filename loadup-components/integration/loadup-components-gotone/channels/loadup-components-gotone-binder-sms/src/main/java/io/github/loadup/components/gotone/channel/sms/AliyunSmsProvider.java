@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone Binder SMS
+ * LoadUp Components Gotone Binder SMS
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -28,13 +28,6 @@ import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Aliyun SMS provider.
- *
- * <p>Channel-level configuration keys: {@code templateId}, {@code signName}. The vendor SDK call
- * is a placeholder: implement {@link #sendMessage(String, String, String, String)} with the Aliyun
- * SMS SDK when credentials are provisioned.
- */
 public class AliyunSmsProvider implements NotificationChannelProvider {
 
     private final String accessKeyId;

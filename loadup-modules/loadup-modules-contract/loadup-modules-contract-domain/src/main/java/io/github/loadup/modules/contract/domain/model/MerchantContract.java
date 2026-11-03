@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Contract Domain
+ * LoadUp Modules Contract Domain
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -27,9 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Read-only aggregate assembled from an authoritative repository query in the current schema.
- */
 public record MerchantContract(
         String merchantId,
         String scopeKey,

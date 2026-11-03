@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Database
+ * LoadUp Components Database
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,9 +19,6 @@
  */
 package io.github.loadup.components.database.id;
 
-/**
- * Generates string identifiers for persistent entities.
- */
 @FunctionalInterface
 public interface IdGenerator {
     /**

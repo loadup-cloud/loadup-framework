@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components TestContainers
+ * LoadUp Components Testcontainers
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -37,12 +37,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
-/**
- * Integration test class for SharedPostgreSQLContainer.
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 @SpringBootTest(classes = TestApplication.class)
 @TestPropertySource(
         properties = {"loadup.testcontainers.enabled=true", "loadup.testcontainers.postgresql.enabled=true"})

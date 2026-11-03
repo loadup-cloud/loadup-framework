@@ -31,9 +31,6 @@ import org.springframework.context.annotation.Bean;
 import tech.powerjob.client.PowerJobClient;
 import tech.powerjob.worker.autoconfigure.PowerJobProperties;
 
-/**
- * Adds client lifecycle and observations without replacing the official worker lifecycle.
- */
 @AutoConfiguration(
         afterName = "org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration")
 @EnableConfigurationProperties({PowerJobClientProperties.class, PowerJobProperties.class})

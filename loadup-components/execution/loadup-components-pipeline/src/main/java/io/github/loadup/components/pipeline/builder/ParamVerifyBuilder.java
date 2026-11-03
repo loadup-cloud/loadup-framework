@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Pipeline
+ * LoadUp Components Pipeline
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -31,9 +31,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-/**
- * First builder step — parameter validation, with optional skip to later steps.
- */
 @SuppressWarnings("rawtypes")
 public final class ParamVerifyBuilder extends AbstractPipelineBuilder {
 

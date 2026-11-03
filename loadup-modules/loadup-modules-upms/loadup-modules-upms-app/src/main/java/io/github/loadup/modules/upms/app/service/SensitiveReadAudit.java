@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS App Layer
+ * LoadUp Modules UPMS App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,9 +21,6 @@ package io.github.loadup.modules.upms.app.service;
 
 import io.github.loadup.modules.upms.client.query.SensitiveReadPurpose;
 
-/**
- * Must durably record access before returning; failures must propagate. No plaintext is accepted.
- */
 @FunctionalInterface
 public interface SensitiveReadAudit {
     void record(String actorId, String subjectId, SensitiveReadPurpose purpose);

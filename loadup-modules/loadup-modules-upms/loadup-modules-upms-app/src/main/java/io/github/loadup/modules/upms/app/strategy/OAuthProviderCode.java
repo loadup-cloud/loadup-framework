@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS App Layer
+ * LoadUp Modules UPMS App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,11 +22,6 @@ package io.github.loadup.modules.upms.app.strategy;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
 
-/**
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 public final class OAuthProviderCode {
 
     /**

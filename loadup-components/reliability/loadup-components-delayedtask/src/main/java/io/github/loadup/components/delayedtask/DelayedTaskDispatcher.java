@@ -32,9 +32,6 @@ import java.util.Map;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Calls business code outside claim transactions, with at-least-once delivery semantics.
- */
 public class DelayedTaskDispatcher implements ScheduledTask {
     private final DelayedTaskStore store;
     private final DelayedTaskConverter converter;

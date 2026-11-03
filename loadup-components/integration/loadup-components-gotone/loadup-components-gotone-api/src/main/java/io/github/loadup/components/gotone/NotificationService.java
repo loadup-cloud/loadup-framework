@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone API
+ * LoadUp Components Gotone API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,13 +22,6 @@ package io.github.loadup.components.gotone;
 import io.github.loadup.components.gotone.model.NotificationRequest;
 import io.github.loadup.components.gotone.model.NotificationResponse;
 
-/**
- * Unified notification facade.
- *
- * <p>Sends are driven by {@code serviceCode}: the engine resolves channel configuration through
- * the configured {@code ChannelConfigProvider} and routes to the matching channel providers.
- * Business code never touches a concrete channel SDK.
- */
 public interface NotificationService {
 
     /**

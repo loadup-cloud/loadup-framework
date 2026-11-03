@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS App Layer
+ * LoadUp Modules UPMS App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -36,9 +36,6 @@ import io.github.loadup.modules.upms.domain.model.User;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
-/**
- * Self-service account security queries and password updates.
- */
 @Service
 public class AccountSecurityService implements AccountSecurityFacade {
     private final UpmsDTOConverter dtoConverter;

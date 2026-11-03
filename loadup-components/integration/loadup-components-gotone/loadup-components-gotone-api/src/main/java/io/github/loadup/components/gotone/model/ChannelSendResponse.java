@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone API
+ * LoadUp Components Gotone API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,10 +21,6 @@ package io.github.loadup.components.gotone.model;
 
 import java.util.Map;
 
-/**
- * Channel-level send response returned by {@link
- * io.github.loadup.components.gotone.NotificationChannelProvider}.
- */
 public record ChannelSendResponse(
         String content,
         int successCount,

@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Cache Test
+ * LoadUp Components Cache Test
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -33,11 +33,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.CacheManager;
 import org.springframework.test.context.ActiveProfiles;
 
-/**
- * Binder-independent contract: the same business service and the same facade configuration must
- * behave identically on caffeine, redis and jetcache. Each binder subclass only changes
- * {@code loadup.cache.type} (plus binder-specific layout for jetcache).
- */
 @SpringBootTest(classes = TestCacheApplication.class)
 @ActiveProfiles("test")
 public abstract class AbstractCacheBinderIT {

@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Common Error
+ * LoadUp Commons Error
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,9 +22,6 @@ package io.github.loadup.commons.result;
 import io.github.loadup.commons.enums.ResultStatusEnum;
 import java.util.Objects;
 
-/**
- * Contract for result codes carried by {@link Result} and result enums.
- */
 public interface ResultCode {
     /**
      * Validates the enum-only public error vocabulary at response/exception boundaries.

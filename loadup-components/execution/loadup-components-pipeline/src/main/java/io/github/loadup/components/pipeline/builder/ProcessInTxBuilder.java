@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Pipeline
+ * LoadUp Components Pipeline
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -31,10 +31,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-/**
- * Builder step used inside an open transactional block.
- * The TX ends when {@link #endTx()} is called, which returns a {@link ProcessBuilder}.
- */
 @SuppressWarnings("rawtypes")
 public final class ProcessInTxBuilder extends AbstractPipelineBuilder {
 

@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Audit App
+ * LoadUp Modules Audit App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -33,9 +33,6 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-/**
- * Records and searches immutable audit events.
- */
 public class AuditService implements AuditFacade {
     private final Clock clock;
     private final AuditDTOConverter converter;

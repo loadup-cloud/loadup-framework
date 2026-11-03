@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Transfer App
+ * LoadUp Modules Transfer App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

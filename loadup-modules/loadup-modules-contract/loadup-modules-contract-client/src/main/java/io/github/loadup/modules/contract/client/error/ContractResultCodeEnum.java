@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Contract Client
+ * LoadUp Modules Contract Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,9 +22,6 @@ package io.github.loadup.modules.contract.client.error;
 import io.github.loadup.commons.enums.ResultStatusEnum;
 import io.github.loadup.commons.result.ResultCode;
 
-/**
- * Stable public error codes for the contract module.
- */
 public enum ContractResultCodeEnum implements ResultCode {
     NOT_FOUND("CONTRACT_NOT_FOUND", "Contract resource not found"),
     CONFLICT("CONTRACT_CONFLICT", "Contract resource changed or already exists"),

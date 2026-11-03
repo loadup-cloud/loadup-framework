@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Client Layer
+ * LoadUp Modules UPMS Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,9 +22,6 @@ package io.github.loadup.modules.upms.client.facade;
 import io.github.loadup.modules.upms.client.dto.UserSensitiveDTO;
 import io.github.loadup.modules.upms.client.query.UserSensitiveQuery;
 
-/**
- * Public business contract for UserSensitiveReadService.
- */
 public interface UserSensitiveReadFacade {
     UserSensitiveDTO read(String actorId, UserSensitiveQuery query);
 }

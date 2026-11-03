@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Common Error
+ * LoadUp Commons Error
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,9 +22,6 @@ package io.github.loadup.commons.error;
 import io.github.loadup.commons.result.ResultCode;
 import java.io.Serial;
 
-/**
- * Coded unchecked failure; outward messages come exclusively from the enum.
- */
 public class CommonException extends RuntimeException {
     @Serial
     private static final long serialVersionUID = 2713503013175560520L;

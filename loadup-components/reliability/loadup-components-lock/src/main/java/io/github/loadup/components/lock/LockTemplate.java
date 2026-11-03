@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Lock
+ * LoadUp Components Lock
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,9 +21,6 @@ package io.github.loadup.components.lock;
 
 import java.util.Objects;
 
-/**
- * Synchronous critical sections. Acquire, callback and release all run on the caller thread.
- */
 public interface LockTemplate {
     <T, X extends Throwable> T execute(LockKey key, ScopedValue.CallableOp<T, X> action) throws X, InterruptedException;
 

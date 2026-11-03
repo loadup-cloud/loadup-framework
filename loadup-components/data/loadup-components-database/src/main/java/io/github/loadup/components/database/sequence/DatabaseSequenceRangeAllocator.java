@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Database
+ * LoadUp Components Database
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -33,9 +33,6 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.support.TransactionTemplate;
 
-/**
- * Globally shared sequence rows, isolated from caller tenant and business rollback.
- */
 public final class DatabaseSequenceRangeAllocator implements SequenceRangeAllocator {
     private final JdbcTemplate jdbc;
     private final Clock clock;

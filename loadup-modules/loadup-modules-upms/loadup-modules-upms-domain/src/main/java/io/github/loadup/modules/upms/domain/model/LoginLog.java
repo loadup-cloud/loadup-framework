@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Domain Layer
+ * LoadUp Modules UPMS Domain
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,12 +22,6 @@ package io.github.loadup.modules.upms.domain.model;
 import io.github.loadup.commons.domain.BaseEntity;
 import java.time.LocalDateTime;
 
-/**
- * Login Log Entity - User login/logout audit log
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 public class LoginLog extends BaseEntity {
 
     private String userId;

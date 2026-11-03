@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Web MVC
+ * LoadUp Components WebMVC
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -32,9 +32,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
-/**
- * Preserves business result codes while keeping non-API protocol behavior intact.
- */
 @RestControllerAdvice
 public final class ApiExceptionHandler {
     private final ApiPathMatcher paths;

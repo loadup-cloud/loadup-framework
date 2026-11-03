@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Outbox
+ * LoadUp Components Outbox
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,7 +19,4 @@
  */
 package io.github.loadup.components.outbox;
 
-/**
- * An operational view; payloads are deliberately excluded.
- */
 public record OutboxRecord(String id, String type, String businessId, String status, int attempts, String lastError) {}

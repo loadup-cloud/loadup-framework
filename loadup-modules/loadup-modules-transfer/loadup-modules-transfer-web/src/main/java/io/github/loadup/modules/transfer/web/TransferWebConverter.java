@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Import Export Tasks Web Adapter
+ * LoadUp Modules Transfer Web
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -24,9 +24,6 @@ import io.github.loadup.modules.transfer.client.dto.TransferTaskDTO;
 import io.github.loadup.modules.transfer.client.dto.TransferViewDTO;
 import org.mapstruct.Mapper;
 
-/**
- * Produces the public HTTP projection from the application contract.
- */
 @Mapper(config = LoadUpMapStructConfig.class)
 public interface TransferWebConverter {
     TransferViewDTO toView(TransferTaskDTO value);

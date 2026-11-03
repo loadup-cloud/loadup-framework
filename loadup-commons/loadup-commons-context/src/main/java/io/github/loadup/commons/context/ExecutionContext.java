@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Common Context
+ * LoadUp Commons Context
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,9 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-/**
- * Immutable bindings; values must themselves be immutable when shared between threads.
- */
 public final class ExecutionContext {
     private static final ExecutionContext EMPTY = new ExecutionContext(Map.of());
     private final Map<ContextKey<?>, Object> values;

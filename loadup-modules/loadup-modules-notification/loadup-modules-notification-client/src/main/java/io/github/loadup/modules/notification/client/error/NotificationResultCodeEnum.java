@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Notification Client
+ * LoadUp Modules Notification Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,9 +22,6 @@ package io.github.loadup.modules.notification.client.error;
 import io.github.loadup.commons.enums.ResultStatusEnum;
 import io.github.loadup.commons.result.ResultCode;
 
-/**
- * Stable public error codes for the notification module.
- */
 public enum NotificationResultCodeEnum implements ResultCode {
     INVALID_PAGE("NOTIFICATION_INVALID_PAGE", "Page must be positive and size must be between 1 and 100"),
     RECIPIENTS_MUST_CONTAIN_1_TO_100_USERS(

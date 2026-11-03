@@ -1,6 +1,6 @@
 /*
  * #%L
- * Testify Assert Engine
+ * LoadUp Testify Assert Engine
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -29,11 +29,6 @@ import java.time.temporal.TemporalAccessor;
 import java.util.Date;
 import java.util.Map;
 
-/**
- * Approximate time matcher for handling time comparisons with delta tolerance. Supports multiple
- * timestamp formats: - java.time.Instant - java.time.LocalDateTime - java.sql.Timestamp - ISO-8601
- * strings - Epoch milliseconds (Long)
- */
 public class ApproxTimeMatcher implements OperatorMatcher {
     private static final TimeParser TIME_PARSER = new TimeParser();
 

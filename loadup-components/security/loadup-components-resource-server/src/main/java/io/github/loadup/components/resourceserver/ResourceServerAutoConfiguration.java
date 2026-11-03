@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp JWT Resource Server
+ * LoadUp Components Resource Server
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -51,9 +51,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.util.StringUtils;
 import tools.jackson.databind.ObjectMapper;
 
-/**
- * JWT resource-server integration shared by Controller applications and managed gateways.
- */
 @AutoConfiguration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnProperty(prefix = "loadup.security.resource-server", name = "enabled", havingValue = "true")

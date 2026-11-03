@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp File Client
+ * LoadUp Modules File Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,9 +23,6 @@ import io.github.loadup.commons.json.ToStringAsJson;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
-/**
- * A business object's claim on a file; claims prevent deletion.
- */
 public record FileReferenceDTO(
         @Schema(description = "Resource identifier") String id,
 

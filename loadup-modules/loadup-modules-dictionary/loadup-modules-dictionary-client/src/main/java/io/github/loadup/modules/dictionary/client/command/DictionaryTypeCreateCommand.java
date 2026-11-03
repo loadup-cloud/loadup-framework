@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Dictionary Client
+ * LoadUp Modules Dictionary Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

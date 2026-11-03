@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common DTO
+ * LoadUp Commons DTO
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -28,9 +28,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 
-/**
- * Shared pagination bounds; HTTP field names remain page and size.
- */
 public record PageQuery(
         @Min(1) @JsonProperty("page")
         @Schema(description = "Page number, starting at 1", minimum = "1", defaultValue = "1")

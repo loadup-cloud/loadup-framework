@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common DTO
+ * LoadUp Commons DTO
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,9 +19,6 @@
  */
 package io.github.loadup.commons.domain;
 
-/**
- * Base type for domain entities with a stable identity.
- */
 public abstract class BaseEntity {
 
     private String id;

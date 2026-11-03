@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp ConfigCenter Binder Nacos
+ * LoadUp Components ConfigCenter Binder Nacos
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

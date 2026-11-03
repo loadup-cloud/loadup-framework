@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Dictionary Domain
+ * LoadUp Modules Dictionary Domain
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -25,9 +25,6 @@ import io.github.loadup.modules.dictionary.domain.model.DictionaryType;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Persistence contract scoped to the current tenant schema.
- */
 public interface DictionaryGateway {
     Optional<DictionaryType> findTypeById(String id);
 

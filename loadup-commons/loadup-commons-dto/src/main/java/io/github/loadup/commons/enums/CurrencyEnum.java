@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common DTO
+ * LoadUp Commons DTO
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,9 +23,6 @@ import java.util.Currency;
 import java.util.Locale;
 import java.util.Objects;
 
-/**
- * JDK 25 ISO 4217 catalog snapshot, including historical and special-purpose codes.
- */
 public enum CurrencyEnum {
     ADP("ADP", "020", "ADP"),
     AED("AED", "784", "AED"),

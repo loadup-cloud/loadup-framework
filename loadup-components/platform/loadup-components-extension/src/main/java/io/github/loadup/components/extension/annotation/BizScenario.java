@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Extension
+ * LoadUp Components Extension
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -25,18 +25,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- *
- *
- * <ul>
- * </ul>
- *
- *
- * <pre>{@code
- * @BizScenario
- * public OrderDTO createOrder(OrderCreateCommand cmd) { ... }
- * }</pre>
- */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.PARAMETER})

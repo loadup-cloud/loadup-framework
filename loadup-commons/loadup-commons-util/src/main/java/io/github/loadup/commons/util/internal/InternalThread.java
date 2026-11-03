@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common Utils
+ * LoadUp Commons Util
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,11 +19,6 @@
  */
 package io.github.loadup.commons.util.internal;
 
-/**
- * A special-purpose thread that provides fast access to {@link InternalThreadLocal} variables.
- *
- * @see Thread
- */
 public class InternalThread extends Thread {
     private InternalThreadLocalMap threadLocalMap;
 

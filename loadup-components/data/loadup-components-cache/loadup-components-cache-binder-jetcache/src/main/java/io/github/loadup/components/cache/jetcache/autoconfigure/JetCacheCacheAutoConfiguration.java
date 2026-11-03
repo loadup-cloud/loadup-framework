@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Cache Binder JetCache
+ * LoadUp Components Cache Binder JetCache
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -46,12 +46,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import tools.jackson.databind.ObjectMapper;
 
-/**
- * JetCache binder: adapts the Spring Cache facade to JetCache when
- * {@code loadup.cache.type=jetcache}. JetCache is wired programmatically (local Caffeine level plus
- * an optional Spring Data Redis remote level); the remote level appears only when a
- * {@link RedisConnectionFactory} exists, so LOCAL-only usage needs no Redis at all.
- */
 @AutoConfiguration(after = LoadupCacheAutoConfiguration.class, before = CacheAutoConfiguration.class)
 @ConditionalOnClass({SimpleCacheManager.class, CacheBuilderTemplate.class})
 @ConditionalOnProperty(prefix = "loadup.cache", name = "type", havingValue = CacheBackendType.JETCACHE)

@@ -28,9 +28,6 @@ import javax.sql.DataSource;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-/**
- * Internal business API: call from a tenant-scoped transaction shared with business data.
- */
 public class DelayedTaskTemplate {
     private final DelayedTaskStore store;
     private final DelayedTaskConverter converter;

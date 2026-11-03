@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp UPMS Authorization Server Adapter
+ * LoadUp Modules UPMS AuthServer
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -48,9 +48,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * First-party JSON login for frontend applications.
- */
 @RestController
 @Tag(name = "UPMS Authentication", description = "First-party JSON login")
 public class UpmsTokenController {

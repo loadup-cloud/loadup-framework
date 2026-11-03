@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Notification Client
+ * LoadUp Modules Notification Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,9 +23,6 @@ import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.notification.client.dto.InboxMessageDTO;
 import java.util.List;
 
-/**
- * Public business contract for InboxService.
- */
 public interface InboxFacade {
     int publish(
             String senderId,

@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp File Resources Web Adapter
+ * LoadUp Modules File Web
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -24,9 +24,6 @@ import io.github.loadup.modules.file.client.dto.FileResourceDTO;
 import io.github.loadup.modules.file.client.dto.FileResourceViewDTO;
 import org.mapstruct.Mapper;
 
-/**
- * Produces the public HTTP projection from the application contract.
- */
 @Mapper(config = LoadUpMapStructConfig.class)
 public interface FileWebConverter {
     FileResourceViewDTO toView(FileResourceDTO value);

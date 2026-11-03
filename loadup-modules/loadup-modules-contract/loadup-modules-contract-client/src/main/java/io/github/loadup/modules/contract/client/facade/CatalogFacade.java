@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Contract Client
+ * LoadUp Modules Contract Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -25,9 +25,6 @@ import io.github.loadup.modules.contract.client.command.CatalogSaveCommand;
 import io.github.loadup.modules.contract.client.dto.CatalogVersionDTO;
 import io.github.loadup.modules.contract.client.query.CatalogPageQuery;
 
-/**
- * Public business contract for CatalogService.
- */
 public interface CatalogFacade {
     CatalogVersionDTO save(CatalogSaveCommand command, String actor);
 

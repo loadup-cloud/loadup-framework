@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Database
+ * LoadUp Components Database
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,9 +19,6 @@
  */
 package io.github.loadup.components.database.id;
 
-/**
- * Generates Snowflake identifiers encoded as strings.
- */
 public final class SnowflakeIdGenerator implements IdGenerator {
     private static final long EPOCH = 1_704_067_200_000L;
     private static final long MAX_WORKER_ID = 31L;

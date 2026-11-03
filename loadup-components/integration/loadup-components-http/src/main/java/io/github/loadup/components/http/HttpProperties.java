@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Http
+ * LoadUp Components HTTP
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -25,9 +25,6 @@ import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpMethod;
 
-/**
- * Immutable configuration, replaced atomically rather than edited while requests run.
- */
 @ConfigurationProperties("loadup.http")
 public record HttpProperties(Map<String, Client> clients) {
     public HttpProperties {

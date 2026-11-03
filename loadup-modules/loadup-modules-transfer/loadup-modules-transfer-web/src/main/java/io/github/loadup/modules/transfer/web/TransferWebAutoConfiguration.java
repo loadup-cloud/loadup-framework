@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Import Export Tasks Web Adapter
+ * LoadUp Modules Transfer Web
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

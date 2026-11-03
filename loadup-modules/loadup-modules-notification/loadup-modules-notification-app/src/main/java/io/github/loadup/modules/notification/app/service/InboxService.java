@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Notification App
+ * LoadUp Modules Notification App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -35,9 +35,6 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Delivery to a private, persistent inbox and recipient-owned read operations.
- */
 public class InboxService implements InboxFacade {
     private final Clock clock;
     private final NotificationDTOConverter converter;

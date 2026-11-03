@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Captcha Components API
+ * LoadUp Components Captcha API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -29,9 +29,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandi
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-/**
- * Creates the {@link CaptchaTemplate} from the single active {@link CaptchaProvider}.
- */
 @AutoConfiguration
 @ConditionalOnSingleCandidate(CaptchaProvider.class)
 @EnableConfigurationProperties(CaptchaProperties.class)

@@ -32,9 +32,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-/**
- * Auto-configuration that wires the signature services with explicit beans.
- */
 @AutoConfiguration
 @ConditionalOnProperty(
         prefix = "loadup.components.signature",

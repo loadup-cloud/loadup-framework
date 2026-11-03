@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components TestContainers
+ * LoadUp Components Testcontainers
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -27,35 +27,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import org.springframework.test.context.ContextConfiguration;
 
-/**
- * Annotation to enable specific testcontainers for integration tests.
- *
- * <p>This annotation is automatically detected by {@link io.github.loadup.components.testcontainers.listener.TestContainersExecutionListener}
- * which is registered via spring.factories. No additional configuration is needed.
- *
- * <p>Works with JUnit Jupiter tests.
- *
- * <p>Usage example:
- * <pre>
- * &#64;SpringBootTest
- * &#64;EnableTestContainers(ContainerType.MYSQL)
- * class MyIntegrationTest {
- *     // MySQL container automatically started before test class initialization
- *     // Connection properties automatically injected into Spring environment
- * }
- * </pre>
- *
- * <p>Multiple containers:
- * <pre>
- * &#64;EnableTestContainers({ContainerType.MYSQL, ContainerType.REDIS, ContainerType.KAFKA})
- * class IntegrationTest {
- *     // All three containers started
- * }
- * </pre>
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

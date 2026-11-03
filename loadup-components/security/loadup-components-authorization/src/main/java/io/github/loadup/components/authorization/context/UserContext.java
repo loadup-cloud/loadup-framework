@@ -34,15 +34,6 @@ public final class UserContext {
         // Utility class
     }
 
-    /**
-     * Write the user into the Spring Security context.
-     *
-     * <p>Roles are exposed as {@code ROLE_<role>} (plus the raw value) authorities and
-     * permissions as plain authorities, so both {@code hasRole(...)} and
-     * {@code hasAuthority(...)} expressions work with {@code @PreAuthorize}.
-     *
-     * @param user the user to set; {@code null} clears the context
-     */
     public static void set(LoadUpUser user) {
         if (user == null) {
             clear();

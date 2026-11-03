@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Pipeline
+ * LoadUp Components Pipeline
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,16 +21,6 @@ package io.github.loadup.components.pipeline.api;
 
 import io.github.loadup.components.pipeline.context.PipelineContext;
 
-/**
- * Data-preparation stage SPI.
- *
- * <p>Loads the domain model (or any required data) from the repository / downstream service
- * and returns it. The executor stores the returned value in
- * {@link PipelineContext} and makes it available to subsequent {@link IDataProcessStage}s
- * via {@link PipelineContext#getModel(Class)}.
- *
- * @param <DATA> the type of the domain model produced by this stage
- */
 public interface IDataPrepareStage<DATA> extends IStage {
 
     /**

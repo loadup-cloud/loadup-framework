@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Dfs Binder Local
+ * LoadUp Components DFS Binder Local
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,9 +21,6 @@ package io.github.loadup.components.dfs.local;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/**
- * Local filesystem binder settings.
- */
 @ConfigurationProperties(prefix = "loadup.dfs.binder.local")
 public class LocalDfsProperties {
     private String basePath = System.getProperty("java.io.tmpdir") + "/loadup-dfs";

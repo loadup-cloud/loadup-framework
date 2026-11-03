@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Pipeline
+ * LoadUp Components Pipeline
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,14 +21,6 @@ package io.github.loadup.components.pipeline.api;
 
 import io.github.loadup.components.pipeline.context.PipelineContext;
 
-/**
- * Result-assembly stage — maps domain model to the response DTO.
- *
- * <p>The return value is stored in {@link PipelineContext} and is returned by
- * {@link io.github.loadup.components.pipeline.engine.PipelineExecutor#execute} as the final result.
- *
- * @param <RES> the response type
- */
 public interface IResultAssembleStage<RES> extends IStage {
 
     /**

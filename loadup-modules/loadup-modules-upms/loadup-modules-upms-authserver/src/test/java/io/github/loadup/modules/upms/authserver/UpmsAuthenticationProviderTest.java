@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp UPMS Authorization Server Adapter
+ * LoadUp Modules UPMS AuthServer
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

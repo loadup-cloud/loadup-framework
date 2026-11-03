@@ -1,6 +1,6 @@
 /*
  * #%L
- * Testify Data Engine
+ * LoadUp Testify Data Engine
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -25,9 +25,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Time functions accessible via ${time.XXX()} Supports offset calculations like ${time.now('+1d')}
- */
 public class TimeFunction implements TestifyFunction {
     // Pattern to extract time offset like '+1d' or '-2h'
     private static final Pattern TIME_OFFSET_PATTERN = Pattern.compile("([+-])(\\d+)([hdms])");

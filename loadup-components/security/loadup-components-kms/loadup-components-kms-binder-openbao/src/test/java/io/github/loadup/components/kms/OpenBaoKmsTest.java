@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Kms
+ * LoadUp Components KMS binder-openbao
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -45,9 +45,6 @@ import org.springframework.web.client.RestClient;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
-/**
- * Protocol fixtures verify mapping and JCA interoperability, not a live OpenBao deployment.
- */
 class OpenBaoKmsTest {
     private final JsonMapper mapper = JsonMapper.builder().build();
     private final List<Request> requests = new CopyOnWriteArrayList<>();

@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS App Layer
+ * LoadUp Modules UPMS App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,9 +21,6 @@ package io.github.loadup.modules.upms.app.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/**
- * UPMS Security Configuration Properties
- */
 @ConfigurationProperties(prefix = "loadup.modules.upms.security")
 public class UpmsSecurityProperties {
 

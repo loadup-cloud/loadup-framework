@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone API
+ * LoadUp Components Gotone API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,12 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-/**
- * Notification send request (serviceCode driven).
- *
- * <p>Business code submits a service code plus receivers and template params; the engine resolves
- * channels and templates from the configured {@code ChannelConfigProvider}.
- */
 public record NotificationRequest(
         String serviceCode,
         List<String> receivers,

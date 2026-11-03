@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Lock
+ * LoadUp Components Lock
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,9 +22,6 @@ package io.github.loadup.components.lock;
 import java.time.Duration;
 import java.util.Objects;
 
-/**
- * Waiting and lease are separate policies. Fixed leases deliberately disable Redisson watchdog renewal.
- */
 public record LockOptions(Duration waitTimeout, LeaseMode leaseMode, Duration leaseTime) {
     public LockOptions {
         Objects.requireNonNull(leaseMode, "leaseMode");

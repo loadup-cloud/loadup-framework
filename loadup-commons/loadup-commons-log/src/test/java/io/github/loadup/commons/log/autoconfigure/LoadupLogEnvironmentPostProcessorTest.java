@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common Log
+ * LoadUp Commons Log
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

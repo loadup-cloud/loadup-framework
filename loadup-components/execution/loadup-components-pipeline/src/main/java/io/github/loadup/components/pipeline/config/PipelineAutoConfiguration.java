@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Pipeline
+ * LoadUp Components Pipeline
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -26,15 +26,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
-/**
- * Spring Boot auto-configuration for {@code loadup-components-pipeline}.
- *
- * <p>Registers:
- * <ul>
- *   <li>{@link PipelineExecutor} — the core execution engine</li>
- *   <li>{@link DefaultSpringTxInitializer} — default REQUIRED-propagation TX initialiser</li>
- * </ul>
- */
 @AutoConfiguration
 public class PipelineAutoConfiguration {
 

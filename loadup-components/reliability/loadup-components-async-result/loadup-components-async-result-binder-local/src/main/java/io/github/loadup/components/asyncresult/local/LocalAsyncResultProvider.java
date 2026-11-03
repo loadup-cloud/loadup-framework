@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Async Result
+ * LoadUp Components Async Result Local Binder
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

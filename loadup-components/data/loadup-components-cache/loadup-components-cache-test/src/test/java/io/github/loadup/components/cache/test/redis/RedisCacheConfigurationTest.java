@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Cache Test
+ * LoadUp Components Cache Test
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

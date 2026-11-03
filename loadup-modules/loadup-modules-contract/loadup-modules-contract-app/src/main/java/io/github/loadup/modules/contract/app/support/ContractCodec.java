@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Contract App
+ * LoadUp Modules Contract App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -38,9 +38,6 @@ import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 
-/**
- * Private storage dialect derived from the shared mapper; never mutates the global mapper.
- */
 @Component
 public class ContractCodec {
     private final JsonMapper mapper;

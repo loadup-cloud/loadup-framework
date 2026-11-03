@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Components Global Unique
+ * LoadUp Components GlobalUnique
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,9 +21,6 @@ package io.github.loadup.components.globalunique.model;
 
 import java.time.LocalDateTime;
 
-/**
- * Read-only view of a claimed business key.
- */
 public record GlobalUniqueRecord(
         String id,
         String bizType,

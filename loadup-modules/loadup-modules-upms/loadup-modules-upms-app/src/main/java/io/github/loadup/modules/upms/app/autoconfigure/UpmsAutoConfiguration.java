@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS App Layer
+ * LoadUp Modules UPMS App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -35,12 +35,6 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-/**
- * UPMS Auto Configuration
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 @AutoConfiguration
 @EnableConfigurationProperties(UpmsSecurityProperties.class)
 @ComponentScan(

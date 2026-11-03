@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components TestContainers
+ * LoadUp Components Testcontainers
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,30 +19,6 @@
  */
 package io.github.loadup.components.testcontainers.cache;
 
-/**
- * Abstract base test class that automatically configures Redis TestContainer.
- *
- * <p>Test classes can extend this class to automatically use the shared Redis container without
- * needing to manually configure the context initializer.
- *
- * <p>Usage example:
- *
- * <pre>
- * &#64;SpringBootTest
- * class MyRedisTest extends AbstractRedisContainerTest {
- *     &#64;Autowired
- *     private RedisTemplate redisTemplate;
- *
- *     &#64;Test
- *     void testRedisOperations() {
- *         // Your test code here
- *     }
- * }
- * </pre>
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 public abstract class AbstractRedisContainerTest {
 
     /**

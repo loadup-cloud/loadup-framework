@@ -21,9 +21,6 @@ package io.github.loadup.components.signature.request;
 
 import java.time.Duration;
 
-/**
- * Atomic shared claim with TTL. False means already claimed; failures must throw, never allow.
- */
 @FunctionalInterface
 public interface RequestNonceStore {
     boolean claim(String replayKey, Duration ttl);

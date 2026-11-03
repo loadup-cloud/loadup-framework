@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Observability
+ * LoadUp Components Observability
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -27,9 +27,6 @@ import org.springframework.aop.support.annotation.AnnotationClassFilter;
 import org.springframework.aop.support.annotation.AnnotationMethodMatcher;
 import org.springframework.util.ReflectionUtils;
 
-/**
- * Selects only explicitly annotated, public business methods.
- */
 final class ServiceDigestPointcut extends StaticMethodMatcherPointcut {
     private final AnnotationClassFilter classes = new AnnotationClassFilter(ServiceDigest.class, true);
     private final AnnotationMethodMatcher methods = new AnnotationMethodMatcher(ServiceDigest.class, true);

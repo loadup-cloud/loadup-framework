@@ -23,9 +23,6 @@ import io.github.loadup.commons.enums.ResultStatusEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.ResultCode;
 
-/**
- * Unchecked exception thrown by the signature and digest services.
- */
 public class SignatureException extends CommonException {
 
     private final SignatureErrorCode errorCode;

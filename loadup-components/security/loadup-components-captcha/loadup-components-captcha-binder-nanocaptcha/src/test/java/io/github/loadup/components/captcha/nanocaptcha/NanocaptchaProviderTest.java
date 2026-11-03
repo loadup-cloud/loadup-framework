@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Captcha Binder Nanocaptcha
+ * LoadUp Components Captcha Binder NanoCaptcha
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

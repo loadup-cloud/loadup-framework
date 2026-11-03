@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Kms
+ * LoadUp Components KMS binder-openbao
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,9 +19,6 @@
  */
 package io.github.loadup.components.kms;
 
-/**
- * Supplies a management token independently of runtime authentication.
- */
 @FunctionalInterface
 public interface KmsManagementTokenProvider {
     String token();

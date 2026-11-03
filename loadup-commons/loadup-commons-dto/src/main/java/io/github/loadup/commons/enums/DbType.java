@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common DTO
+ * LoadUp Commons DTO
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,12 +19,6 @@
  */
 package io.github.loadup.commons.enums;
 
-/**
- * Supported database type enumeration.
- *
- * <p>Originally duplicated across {@code loadup-components-globalunique} and
- * shared persistence integrations; consolidated here as the single source of truth.
- */
 public enum DbType {
     MYSQL("mysql", "MySQL"),
     POSTGRESQL("pgsql", "PostgreSQL"),

@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Pipeline
+ * LoadUp Components Pipeline
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -32,9 +32,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-/**
- * Second builder step — data preparation, with optional skip forward.
- */
 @SuppressWarnings("rawtypes")
 public final class DataPrepareBuilder extends AbstractPipelineBuilder {
 

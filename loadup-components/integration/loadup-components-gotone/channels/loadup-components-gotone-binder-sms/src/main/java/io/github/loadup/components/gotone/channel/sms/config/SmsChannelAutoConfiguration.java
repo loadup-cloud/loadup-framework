@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone Binder SMS
+ * LoadUp Components Gotone Binder SMS
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -32,9 +32,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-/**
- * Auto-configuration for the Aliyun / Huawei / Yunpian SMS binders.
- */
 @AutoConfiguration
 @EnableConfigurationProperties({AliyunSmsConfig.class, HuaweiSmsConfig.class, YunpianSmsConfig.class})
 public class SmsChannelAutoConfiguration {

@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Pipeline
+ * LoadUp Components Pipeline
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -49,27 +49,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
 
-/**
- * Core pipeline execution engine.
- *
- * <p>The executor iterates the ordered stage list from {@link PipelineSpec}, resolves each
- * stage instance (either a Spring bean or an inline lambda wrapper), and dispatches it by
- * type:
- * <ol>
- *   <li>{@link IParamVerifyStage}  → {@code verify(request)}</li>
- *   <li>{@link IDataPrepareStage}  → {@code prepare(ctx)} — result stored as model</li>
- *   <li>{@link IDataProcessStage} → {@code process(model, ctx)}</li>
- *   <li>{@link IBizProcessStage}  → {@code process(ctx)}</li>
- *   <li>{@link IControlStage}     → if {@code shouldStop(ctx)} returns {@code true}, abort</li>
- *   <li>{@link IResultAssembleStage} → {@code assemble(ctx)} — result stored as response</li>
- *   <li>{@link ITxInitializer}    → begin a Spring transaction wrapping subsequent stages</li>
- *   <li>{@link EndTxMarker}       → end the open transaction</li>
- *   <li>{@link IFinallyStage}     → deferred to the {@code finally} block</li>
- * </ol>
- *
- * <p>Exception handling is delegated to the {@link ExceptionHandlerBus} returned by
- * {@link IPipelineDefinition#exceptions()}.
- */
 public class PipelineExecutor {
 
     private final ApplicationContext applicationContext;

@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone Binder Webhook
+ * LoadUp Components Gotone Binder Webhook
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -31,12 +31,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import tools.jackson.databind.ObjectMapper;
 
-/**
- * WeChat Work group robot webhook provider.
- *
- * <p>Channel-level configuration keys: {@code webhookUrl} (required), {@code mentionedList},
- * {@code mentionedMobileList}. Receivers default to {@code mentionedMobileList}.
- */
 public class WechatWebhookProvider implements NotificationChannelProvider {
 
     private static final ObjectMapper JSON = new ObjectMapper();

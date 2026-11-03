@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Merchant Contract
+ * LoadUp Modules Merchant Contract
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -28,9 +28,6 @@ import io.github.loadup.modules.merchant.client.facade.MerchantQueryFacade;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Supplies only managed basic facts, never unverified qualification or private contact fields.
- */
 public class MerchantContractFactsProvider implements MerchantFactsProvider {
     private final MerchantQueryFacade lookup;
 

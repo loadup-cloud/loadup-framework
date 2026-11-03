@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common DTO
+ * LoadUp Commons DTO
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -26,9 +26,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Collection;
 import java.util.Objects;
 
-/**
- * Standard successful paginated API envelope.
- */
 @Schema(description = "Successful paginated response")
 @JsonPropertyOrder({"result", "data", "pageInfo"})
 public record PageResponse<T>(

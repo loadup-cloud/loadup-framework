@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Kms
+ * LoadUp Components KMS api
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,9 +19,6 @@
  */
 package io.github.loadup.components.kms;
 
-/**
- * The initial supported Transit key types. SM2 and SM4 are not supported by this backend.
- */
 public enum KmsKeyType {
     RSA_2048("rsa-2048"),
     RSA_3072("rsa-3072"),

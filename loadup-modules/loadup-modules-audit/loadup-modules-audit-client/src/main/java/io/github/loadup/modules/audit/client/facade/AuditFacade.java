@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Audit Client
+ * LoadUp Modules Audit Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -24,9 +24,6 @@ import io.github.loadup.modules.audit.client.command.AuditRecordCommand;
 import io.github.loadup.modules.audit.client.dto.AuditEventDTO;
 import io.github.loadup.modules.audit.client.query.AuditPageQuery;
 
-/**
- * Public business contract for AuditService.
- */
 public interface AuditFacade {
     void record(AuditRecordCommand write);
 

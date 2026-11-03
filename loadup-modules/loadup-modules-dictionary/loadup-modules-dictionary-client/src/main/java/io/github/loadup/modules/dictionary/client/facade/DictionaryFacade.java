@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Dictionary Client
+ * LoadUp Modules Dictionary Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -28,9 +28,6 @@ import io.github.loadup.modules.dictionary.client.dto.DictionaryItemDTO;
 import io.github.loadup.modules.dictionary.client.dto.DictionaryTypeDTO;
 import java.util.List;
 
-/**
- * Public business contract for DictionaryService.
- */
 public interface DictionaryFacade {
     DictionaryTypeDTO createType(DictionaryTypeCreateCommand command);
 

@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Audit App
+ * LoadUp Modules Audit App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -33,9 +33,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandi
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
-/**
- * Activates the JDBC audit center when a data source is available.
- */
 @Import(AuditDTOConverterImpl.class)
 @AutoConfiguration(
         afterName = "io.github.loadup.modules.audit.infrastructure.autoconfigure.AuditPersistenceAutoConfiguration")

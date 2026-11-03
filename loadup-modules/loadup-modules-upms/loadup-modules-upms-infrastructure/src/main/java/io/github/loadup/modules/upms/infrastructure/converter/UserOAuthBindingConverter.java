@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Infrastructure Layer
+ * LoadUp Modules UPMS Infrastructure
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -25,9 +25,6 @@ import io.github.loadup.modules.upms.infrastructure.dataobject.UserOAuthBindingD
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-/**
- * Maps OAuth bindings without copying fields in the domain model.
- */
 @Mapper(config = LoadUpMapStructConfig.class)
 public interface UserOAuthBindingConverter {
     UserOAuthBinding toEntity(UserOAuthBindingDO value);

@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone API
+ * LoadUp Components Gotone API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,10 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-/**
- * Channel-level send request passed to {@link
- * io.github.loadup.components.gotone.NotificationChannelProvider}.
- */
 public record ChannelSendRequest(
         List<String> receivers, String content, Map<String, Object> channelConfig, Map<String, Object> templateParams) {
 

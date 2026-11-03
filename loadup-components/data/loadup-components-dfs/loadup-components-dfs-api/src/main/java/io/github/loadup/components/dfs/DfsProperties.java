@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Dfs Components Api
+ * LoadUp Components DFS API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,9 +21,6 @@ package io.github.loadup.components.dfs;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/**
- * Shared DFS backend selection settings.
- */
 @ConfigurationProperties(prefix = "loadup.dfs")
 public class DfsProperties {
     private BinderType binderType = BinderType.LOCAL;

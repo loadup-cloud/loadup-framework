@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Database
+ * LoadUp Components Database
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -32,9 +32,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-/**
- * Configures the business ID strategy when a sequence allocator is available.
- */
 @AutoConfiguration(after = SequenceAutoConfiguration.class)
 @EnableConfigurationProperties(BusinessIdProperties.class)
 public class IdGeneratorAutoConfiguration {

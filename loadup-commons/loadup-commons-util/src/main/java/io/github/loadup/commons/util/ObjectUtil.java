@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common Utils
+ * LoadUp Commons Util
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,15 +23,6 @@ import io.github.loadup.commons.log.LogUtil;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-/**
- *
- *
- * <ul>
- * </ul>
- *
- * @author loadup_cloud
- * @since 1.0.0
- */
 public class ObjectUtil {
 
     public static boolean isNull(Object obj) {

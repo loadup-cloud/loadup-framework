@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS App Layer
+ * LoadUp Modules UPMS App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -37,12 +37,6 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Permission Management Service
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 @Service
 public class PermissionService implements PermissionFacade {
     private final UpmsDTOConverter dtoConverter;

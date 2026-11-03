@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Components Global Unique
+ * LoadUp Components GlobalUnique
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -24,9 +24,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.flyway.autoconfigure.FlywayMigrationStrategy;
 import org.springframework.context.annotation.Bean;
 
-/**
- * Test application that starts a fresh schema for every integration test run.
- */
 @SpringBootApplication
 public class TestApplication {
 

@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Transfer App
+ * LoadUp Modules Transfer App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -53,9 +53,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Persistent task service for bounded file transfers.
- */
 public class TransferTaskService implements TransferTaskFacade {
     private static final String REF_TYPE = "transfer-task";
     private final Clock clock;

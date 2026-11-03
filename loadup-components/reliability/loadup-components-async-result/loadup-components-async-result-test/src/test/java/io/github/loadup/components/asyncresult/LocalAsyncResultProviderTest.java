@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Async Result Test
+ * LoadUp Components Async Result Test
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

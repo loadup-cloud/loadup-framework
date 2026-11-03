@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Cache Binder JetCache
+ * LoadUp Components Cache Binder JetCache
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -25,12 +25,6 @@ import java.util.Locale;
 import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/**
- * JetCache binder settings ({@code loadup.cache.binder.jetcache.*}).
- *
- * <p>These are binder-specific capabilities that the shared Spring Cache facade cannot express;
- * common settings (TTL, null values, random expiration) stay under {@code loadup.cache.*}.
- */
 @ConfigurationProperties(prefix = "loadup.cache.binder.jetcache")
 public class JetCacheCacheProperties {
 

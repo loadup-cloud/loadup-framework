@@ -27,11 +27,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-/**
- * User model for authorization context.
- *
- * <p>This is a lightweight user model without Spring Security dependencies.</p>
- */
 public class LoadUpUser implements Serializable, Principal {
 
     @Serial

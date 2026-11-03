@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS App Layer
+ * LoadUp Modules UPMS App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -39,12 +39,6 @@ import org.springframework.web.client.RestTemplate;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
-/**
- * GitHub OAuth Provider
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 @Component
 @ConditionalOnProperty(prefix = "loadup.modules.upms.security.oauth.github", name = "enabled", havingValue = "true")
 public class GitHubOAuthProvider implements OAuthProvider {

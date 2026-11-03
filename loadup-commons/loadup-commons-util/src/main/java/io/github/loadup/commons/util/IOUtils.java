@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common Utils
+ * LoadUp Commons Util
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -26,11 +26,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Objects;
 
-/**
- * I/O utility providing stream-to-file copying and file handling.
- *
- * <p>Minimal zero-dependency alternative to Apache Commons IO.
- */
 public final class IOUtils {
 
     public static final int DEFAULT_BUFFER_SIZE = 8192;

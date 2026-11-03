@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Dfs Binder Database
+ * LoadUp Components DFS Binder Database
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -42,9 +42,6 @@ import tools.jackson.core.JacksonException;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
-/**
- * Transitional database binder for small files. S3 is the recommended production binder.
- */
 public class DatabaseDfsProvider implements DfsProvider {
     private final NamedParameterJdbcTemplate jdbc;
     private final DfsFileInsertMapper files;

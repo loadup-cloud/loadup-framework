@@ -22,9 +22,6 @@ package io.github.loadup.components.delayedtask;
 import io.github.loadup.commons.json.ToStringAsJson;
 import java.time.LocalDateTime;
 
-/**
- * Persisted execution metadata; this is not an authorization credential.
- */
 public record DelayedTask(
         String id,
         String taskType,

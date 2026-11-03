@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Contract Client
+ * LoadUp Modules Contract Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,9 +21,6 @@ package io.github.loadup.modules.contract.client.spi;
 
 import io.github.loadup.modules.contract.client.dto.MerchantProfileDTO;
 
-/**
- * Implemented by the consuming merchant application; never sourced from browser facts.
- */
 @FunctionalInterface
 public interface MerchantFactsProvider {
     MerchantProfileDTO load(String merchantId);

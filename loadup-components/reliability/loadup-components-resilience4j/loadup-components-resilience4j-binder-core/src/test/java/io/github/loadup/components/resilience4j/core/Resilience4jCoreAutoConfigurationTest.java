@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Resilience4j Binder Core
+ * LoadUp Components Resilience4j Binder Core
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

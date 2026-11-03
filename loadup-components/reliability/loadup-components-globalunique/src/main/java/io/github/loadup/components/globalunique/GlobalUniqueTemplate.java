@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Components Global Unique
+ * LoadUp Components GlobalUnique
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,9 +23,6 @@ import io.github.loadup.components.globalunique.model.GlobalUniqueClaim;
 import io.github.loadup.components.globalunique.model.GlobalUniqueRecord;
 import java.util.Optional;
 
-/**
- * Claims tenant-scoped idempotency keys through a database unique constraint.
- */
 public interface GlobalUniqueTemplate {
 
     /**

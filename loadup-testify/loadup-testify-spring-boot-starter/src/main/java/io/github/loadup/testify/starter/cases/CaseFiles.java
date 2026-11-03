@@ -1,6 +1,6 @@
 /*
  * #%L
- * Testify Spring Boot Starter
+ * LoadUp Testify Spring Boot Starter
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -32,17 +32,6 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.dataformat.yaml.YAMLFactory;
 
-/**
- * Loads batch test cases from YAML or JSON files. Three layouts are supported:
- *
- * <ul>
- *   <li>{@code cases: [...]} — recommended for a batch of cases in a single file
- *   <li>{@code [...]} — root-level array of case objects
- *   <li>single case object — a file containing exactly one case
- * </ul>
- *
- * <p>Each case object may define {@code name}, {@code variables}, {@code input} and {@code expect}.
- */
 public final class CaseFiles {
 
     private static final ObjectMapper YAML_MAPPER = new ObjectMapper(new YAMLFactory());

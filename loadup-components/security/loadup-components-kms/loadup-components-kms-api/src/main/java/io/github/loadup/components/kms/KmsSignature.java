@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Kms
+ * LoadUp Components KMS api
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,9 +23,6 @@ import io.github.loadup.commons.json.ToStringAsJson;
 import java.util.Base64;
 import java.util.Map;
 
-/**
- * Raw signature bytes plus the metadata required to reconstruct a Transit signature.
- */
 public record KmsSignature(String keyName, int version, KmsSignatureAlgorithm algorithm, byte[] bytes) {
     public KmsSignature {
         KmsKeyRef.validateName(keyName);

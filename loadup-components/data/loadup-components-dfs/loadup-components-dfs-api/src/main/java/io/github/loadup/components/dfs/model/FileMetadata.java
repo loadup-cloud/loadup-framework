@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Dfs Components Api
+ * LoadUp Components DFS API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,9 +22,6 @@ package io.github.loadup.components.dfs.model;
 import java.time.Instant;
 import java.util.Map;
 
-/**
- * Immutable metadata returned by every DFS binder.
- */
 public record FileMetadata(
         String fileId,
         String filename,

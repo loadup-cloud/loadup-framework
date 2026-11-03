@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Web MVC
+ * LoadUp Components WebMVC
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -34,9 +34,6 @@ import tools.jackson.databind.ser.BeanPropertyWriter;
 import tools.jackson.databind.ser.ValueSerializerModifier;
 import tools.jackson.databind.ser.std.StdSerializer;
 
-/**
- * A private response mapper, never a global ObjectMapper or JacksonModule bean.
- */
 public final class ApiMaskingJson {
     private final JsonMapper mapper;
 

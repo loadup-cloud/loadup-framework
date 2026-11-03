@@ -21,27 +21,6 @@ package io.github.loadup.components.springdoc.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/**
- * Configuration properties for the LoadUp SpringDoc component.
- *
- * <p>All properties are prefixed with {@code loadup.springdoc}. Example:
- *
- * <pre>{@code
- * loadup:
- *   springdoc:
- *     title: My API
- *     description: My service REST API documentation
- *     version: 1.0.0
- *     jwt-enabled: true
- *     contact:
- *       name: Dev Team
- *       url: https://example.com
- *       email: dev@example.com
- *     license:
- *       name: Apache-2.0
- *       url: https://www.apache.org/licenses/LICENSE-2.0.txt
- * }</pre>
- */
 @ConfigurationProperties(prefix = "loadup.springdoc")
 public class SpringDocProperties {
 

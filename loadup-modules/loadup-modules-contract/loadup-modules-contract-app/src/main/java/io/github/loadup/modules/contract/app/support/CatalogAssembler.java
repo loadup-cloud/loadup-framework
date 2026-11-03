@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Contract App
+ * LoadUp Modules Contract App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -48,9 +48,6 @@ import java.util.Map;
 import java.util.Set;
 import org.springframework.stereotype.Component;
 
-/**
- * Interprets validated wire definitions; references always resolve in the current schema.
- */
 @Component
 public class CatalogAssembler {
     private final CatalogGateway gateway;

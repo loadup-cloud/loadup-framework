@@ -1,6 +1,6 @@
 /*
  * #%L
- * Testify Spring Boot Starter
+ * LoadUp Testify Spring Boot Starter
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -28,17 +28,6 @@ import io.github.loadup.testify.asserts.operator.OperatorProcessor;
 import java.util.Map;
 import tools.jackson.databind.JsonNode;
 
-/**
- * Declarative assertion helper for integration tests. Compares an actual result against an expected
- * structure (plain values or operator configs) instead of hand-written assertion chains.
- *
- * <p>Expected values support {@code {op: ..., val: ...}} operator configs: {@code eq}, {@code
- * approx} (time, optional {@code threshold} in ms), {@code contains}, {@code regex}, {@code json}
- * (lenient by default, {@code mode: full} for strict), {@code size}, {@code gt}/{@code ge}/{@code
- * lt}/{@code le}. Expected map keys starting with {@code $} are evaluated as JsonPath against the
- * actual result. Placeholders like {@code ${var}} are resolved against the variables passed to each
- * method.
- */
 public class ScenarioAssert {
 
     private final ResponseAssertEngine responseAssertEngine;

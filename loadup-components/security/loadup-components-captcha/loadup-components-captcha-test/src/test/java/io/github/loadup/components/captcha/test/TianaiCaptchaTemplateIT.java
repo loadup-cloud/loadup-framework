@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Captcha Test
+ * LoadUp Components Captcha Test
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -28,13 +28,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-/**
- * Integration test for the tianai binder (default).
- *
- * <p>Verifies generation through the facade and that wrong / unknown inputs are rejected. The
- * correct slider answer is never exposed to clients, so the success path is verified at the
- * engine level by tianai's own test suite.
- */
 @SpringBootTest(classes = CaptchaTestApplication.class)
 class TianaiCaptchaTemplateIT {
 

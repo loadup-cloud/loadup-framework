@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Http
+ * LoadUp Components HTTP
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -66,9 +66,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
-/**
- * Named synchronous operations with bounded bodies, explicit credentials and atomic configuration.
- */
 public final class HttpTemplate implements AutoCloseable {
     private final Supplier<RestClient.Builder> builders;
     private final JsonMapper mapper;

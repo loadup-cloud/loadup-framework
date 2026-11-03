@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Client Layer
+ * LoadUp Modules UPMS Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -28,11 +28,6 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.List;
 
-/**
- * @author LoadUp Framework
- * <p>User Update Command
- * @since 1.0.0
- */
 public class UserUpdateCommand {
 
     @Schema(description = "Updated by")

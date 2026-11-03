@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS App Layer
+ * LoadUp Modules UPMS App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -36,12 +36,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Password Reset Service - Handles password reset with email/SMS verification
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 @Service
 public class PasswordResetService implements PasswordResetFacade {
     private final Clock clock;

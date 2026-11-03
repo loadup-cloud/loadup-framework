@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Cache Binder Caffeine
+ * LoadUp Components Cache Binder Caffeine
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -30,11 +30,6 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 
-/**
- * {@link CaffeineCacheManager} that applies per-cache TTL, random expiration (anti-avalanche) and
- * null-value policy from {@link LoadupCacheProperties}. Caches without a per-name configuration use
- * the component defaults.
- */
 public class LoadupCaffeineCacheManager extends CaffeineCacheManager {
 
     private final LoadupCacheProperties properties;

@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common Utils
+ * LoadUp Commons Util
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -28,15 +28,6 @@ import jakarta.validation.ValidatorFactory;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- *
- *
- * <ul>
- * </ul>
- *
- * @author loadup_cloud
- * @since 1.0.0
- */
 public class ValidateUtils {
 
     private static final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();

@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Contract Domain
+ * LoadUp Modules Contract Domain
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -27,9 +27,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
 import java.util.TreeMap;
 
-/**
- * Length-prefixed canonical encoding; never relies on unordered Map.toString or locale formatting.
- */
 final class SnapshotDigest {
     private final MessageDigest digest;
 

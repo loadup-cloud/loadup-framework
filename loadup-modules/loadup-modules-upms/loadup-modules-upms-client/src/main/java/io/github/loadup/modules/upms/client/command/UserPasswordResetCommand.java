@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Client Layer
+ * LoadUp Modules UPMS Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -25,12 +25,6 @@ import io.github.loadup.modules.upms.client.validation.ValidPassword;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 
-/**
- * User Password Reset Command (with verification code)
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 public class UserPasswordResetCommand {
 
     @NotBlank() @Schema(description = "Username")

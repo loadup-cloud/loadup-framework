@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone Test
+ * LoadUp Components Gotone Test
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

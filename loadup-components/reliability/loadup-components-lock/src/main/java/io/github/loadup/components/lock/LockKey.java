@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Lock
+ * LoadUp Components Lock
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -24,9 +24,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Map;
 
-/**
- * Explicit tenant or global resource scope; external names are encoded to avoid delimiter collisions.
- */
 public record LockKey(String business, String tenantId, String resourceId) {
     public LockKey {
         business = required(business, "business", 64);

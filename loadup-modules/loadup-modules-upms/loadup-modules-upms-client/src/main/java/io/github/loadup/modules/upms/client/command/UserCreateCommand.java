@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Client Layer
+ * LoadUp Modules UPMS Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -30,12 +30,6 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.List;
 
-/**
- * User Create Command
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 public class UserCreateCommand {
 
     @NotBlank() @Size(min = 3, max = 30) @Pattern(regexp = "^[a-zA-Z0-9_]+$") @Schema(description = "Username")

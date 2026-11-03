@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components TestContainers
+ * LoadUp Components Testcontainers
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,15 +22,6 @@ package io.github.loadup.components.testcontainers.config;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
-/**
- * Auto-configuration for TestContainers integration.
- *
- * <p>This configuration is automatically loaded by Spring Boot 3's auto-configuration mechanism.
- * TestExecutionListener is still registered via spring.factories as it's part of Spring Test framework.
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 @AutoConfiguration
 @EnableConfigurationProperties(TestContainersProperties.class)
 @SuppressWarnings("PMD.TestClassWithoutTestCases")

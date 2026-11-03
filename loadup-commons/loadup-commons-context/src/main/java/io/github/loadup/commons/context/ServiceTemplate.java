@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Common Context
+ * LoadUp Commons Context
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,9 +21,6 @@ package io.github.loadup.commons.context;
 
 import java.util.Objects;
 
-/**
- * Optional application-entry lifecycle; transaction, authorization and observation remain external.
- */
 public final class ServiceTemplate {
     private static final Lifecycle NOOP = new Lifecycle() {};
 

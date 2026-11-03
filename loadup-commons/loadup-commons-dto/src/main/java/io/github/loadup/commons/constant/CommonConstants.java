@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common DTO
+ * LoadUp Commons DTO
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,10 +21,6 @@ package io.github.loadup.commons.constant;
 
 import io.github.loadup.commons.json.JsonUtil;
 
-/**
- * @author Lise
- * @since 1.0.0
- */
 public interface CommonConstants {
     String DEFAULT_DATE_FORMAT = JsonUtil.DEFAULT_DATE_FORMAT;
     String DEFAULT_TENANT_ID = "__default__";

@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Notification App
+ * LoadUp Modules Notification App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -27,9 +27,6 @@ import io.github.loadup.modules.notification.app.service.InboxService;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * Gotone IN_APP channel backed by the persistent inbox.
- */
 public class InAppChannelProvider implements NotificationChannelProvider {
 
     private final InboxService inbox;

@@ -29,9 +29,6 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.Objects;
 
-/**
- * Verifies identity, time and signature before consuming a nonce atomically.
- */
 public final class RequestVerifier {
     private final KmsTemplate kms;
     private final RequestNonceStore nonces;

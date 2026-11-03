@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp UPMS Web Adapter
+ * LoadUp Modules UPMS Web
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

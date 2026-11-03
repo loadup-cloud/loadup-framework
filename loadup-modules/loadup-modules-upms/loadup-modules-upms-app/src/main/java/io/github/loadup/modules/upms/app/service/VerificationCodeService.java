@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS App Layer
+ * LoadUp Modules UPMS App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -31,12 +31,6 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Service;
 
-/**
- * Verification Code Service - For email/SMS verification
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 @Service
 public class VerificationCodeService {
     private static final int CODE_LENGTH = 6;

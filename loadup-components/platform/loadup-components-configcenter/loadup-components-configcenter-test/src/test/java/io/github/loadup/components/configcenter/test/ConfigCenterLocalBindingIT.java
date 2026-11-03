@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp ConfigCenter Test
+ * LoadUp Components ConfigCenter Test
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -30,13 +30,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-/**
- * Integration test for the local binder.
- *
- * <p>Verifies the full {@link ConfigCenterTemplate} contract: read / write / remove / list /
- * listener. The same contract is exercised by other binders so that switching the backend does
- * not change business code.
- */
 @SpringBootTest(classes = ConfigCenterTestApplication.class)
 class ConfigCenterLocalBindingIT {
 

@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components TestContainers
+ * LoadUp Components Testcontainers
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,28 +21,6 @@ package io.github.loadup.components.testcontainers.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/**
- * Configuration properties for TestContainers.
- *
- * <p>This class provides centralized configuration for all TestContainers, allowing flexible
- * switching between TestContainers and real services.
- *
- * <p>Usage example in application.yml:
- *
- * <pre>
- * loadup:
- *   testcontainers:
- *     enabled: true
- *     mysql:
- *       enabled: true
- *       version: mysql:8.0
- *     redis:
- *       enabled: false  # Use real Redis
- * </pre>
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 @ConfigurationProperties(prefix = "loadup.testcontainers")
 @SuppressWarnings("PMD.TestClassWithoutTestCases")
 public class TestContainersProperties {

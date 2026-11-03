@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Captcha Test
+ * LoadUp Components Captcha Test
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -29,9 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
-/**
- * Integration test for the nanocaptcha binder.
- */
 @SpringBootTest(classes = CaptchaTestApplication.class)
 @TestPropertySource(properties = "loadup.captcha.binder-type=nanocaptcha")
 class NanocaptchaTemplateIT {

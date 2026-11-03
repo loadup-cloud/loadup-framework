@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Audit App
+ * LoadUp Modules Audit App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -28,9 +28,6 @@ import io.github.loadup.modules.audit.domain.model.AuditEvent;
 import io.github.loadup.modules.audit.domain.model.AuditQuery;
 import org.mapstruct.Mapper;
 
-/**
- * Maps application results without exposing persistence or domain models.
- */
 @Mapper(config = LoadUpMapStructConfig.class)
 public interface AuditDTOConverter {
     AuditEventDTO toDTO(AuditEvent value);

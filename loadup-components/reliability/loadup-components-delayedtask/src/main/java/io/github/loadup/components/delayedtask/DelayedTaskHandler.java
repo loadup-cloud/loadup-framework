@@ -19,9 +19,6 @@
  */
 package io.github.loadup.components.delayedtask;
 
-/**
- * Must be idempotent by business identity and verify current business state before side effects.
- */
 public interface DelayedTaskHandler {
     String taskType();
 

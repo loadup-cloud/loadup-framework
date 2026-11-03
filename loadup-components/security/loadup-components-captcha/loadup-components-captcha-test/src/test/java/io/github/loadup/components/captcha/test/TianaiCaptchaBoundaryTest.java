@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Captcha Test
+ * LoadUp Components Captcha Test
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

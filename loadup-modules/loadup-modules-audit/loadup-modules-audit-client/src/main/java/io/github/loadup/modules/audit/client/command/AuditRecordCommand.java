@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Audit Client
+ * LoadUp Modules Audit Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,9 +22,6 @@ package io.github.loadup.modules.audit.client.command;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-/**
- * Safe, metadata-only audit input. Never put credentials or request bodies in this record.
- */
 public record AuditRecordCommand(
         @Schema(description = "Actor identifier") String actorId,
         @Schema(description = "Action") String action,

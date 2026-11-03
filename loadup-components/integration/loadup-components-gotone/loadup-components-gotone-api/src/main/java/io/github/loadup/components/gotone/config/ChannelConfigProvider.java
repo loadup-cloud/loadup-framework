@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone API
+ * LoadUp Components Gotone API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,12 +22,6 @@ package io.github.loadup.components.gotone.config;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Optional storage SPI that resolves the enabled channel configuration for a service code.
- *
- * <p>The engine treats this provider as optional: when absent, requests may still be sent directly
- * to channels listed in {@code NotificationRequest.channels()}.
- */
 public interface ChannelConfigProvider {
 
     /**

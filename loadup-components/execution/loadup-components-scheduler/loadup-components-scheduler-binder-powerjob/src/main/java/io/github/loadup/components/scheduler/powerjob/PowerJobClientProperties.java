@@ -21,9 +21,6 @@ package io.github.loadup.components.scheduler.powerjob;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/**
- * Optional native management client settings; secrets are never included in diagnostics.
- */
 @ConfigurationProperties("powerjob.client")
 public class PowerJobClientProperties {
     private boolean enabled;

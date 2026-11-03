@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone Engine
+ * LoadUp Components Gotone Engine
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,14 +21,6 @@ package io.github.loadup.components.gotone.engine;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/**
- * Gotone resilience configuration ({@code loadup.gotone.resilience.*}).
- *
- * <p>When enabled and a resilience4j binder is present, every channel provider is wrapped
- * with a per-provider circuit breaker and retry. Instance names follow the
- * {@code gotone-<channelType>-<providerName>} convention and are configured with the standard
- * {@code resilience4j.*} properties.
- */
 @ConfigurationProperties(prefix = "loadup.gotone.resilience")
 public class GotoneResilienceProperties {
 

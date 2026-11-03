@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common Utils
+ * LoadUp Commons Util
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -27,11 +27,6 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-/**
- * Digest & hash utility.
- *
- * <p>Provides MD5, SHA-256, SHA-512, HMAC-SHA256, and HMAC-SHA512 operations.
- */
 public final class DigestUtils {
 
     private DigestUtils() {}

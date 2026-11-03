@@ -1,6 +1,6 @@
 /*
  * #%L
- * Testify Spring Boot Starter
+ * LoadUp Testify Spring Boot Starter
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,14 +22,6 @@ package io.github.loadup.testify.starter.cases;
 import java.util.Map;
 import tools.jackson.databind.JsonNode;
 
-/**
- * One data-driven test case loaded from a case file.
- *
- * @param name      display name used by the parameterized test
- * @param variables per-case variables, resolved before the case runs
- * @param input     raw input node, bound to the service method by the test code
- * @param expect    expected output node (plain values or operator configs)
- */
 public record TestifyCase(String name, Map<String, Object> variables, JsonNode input, JsonNode expect) {
 
     public TestifyCase {

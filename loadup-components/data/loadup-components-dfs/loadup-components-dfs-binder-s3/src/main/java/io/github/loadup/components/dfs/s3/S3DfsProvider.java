@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Dfs Binder S3
+ * LoadUp Components DFS Binder S3
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -62,9 +62,6 @@ import software.amazon.awssdk.services.s3.model.UploadPartResponse;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 
-/**
- * Thin adapter over the AWS SDK S3 client.
- */
 public class S3DfsProvider implements DfsProvider {
     private static final String META_FILENAME = "loadup-filename";
     private static final String META_UPLOADED_AT = "loadup-uploaded-at";

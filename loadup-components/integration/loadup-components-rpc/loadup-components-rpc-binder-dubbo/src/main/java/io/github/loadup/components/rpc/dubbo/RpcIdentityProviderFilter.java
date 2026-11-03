@@ -1,3 +1,22 @@
+/*
+ * #%L
+ * LoadUp Components RPC Binder Dubbo
+ * %%
+ * Copyright (C) 2025 - 2026 LoadUp Cloud
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package io.github.loadup.components.rpc.dubbo;
 
 import io.github.loadup.commons.error.CommonException;
@@ -15,14 +34,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 
-/**
- * Provider-side guard for every Dubbo-exposed facade.
- *
- * <p>It rebuilds the caller identity from the propagated access token, binds it to the invocation
- * thread and restores the previous context afterwards, so provider actor providers keep reading the
- * same credentials and authorities as on the HTTP path. Business rejections are rewritten into a
- * Dubbo exception that carries the declared result code; unknown failures stay opaque.
- */
 @Activate(group = CommonConstants.PROVIDER, order = RpcIdentityProviderFilter.ORDER)
 public final class RpcIdentityProviderFilter implements Filter {
     /**

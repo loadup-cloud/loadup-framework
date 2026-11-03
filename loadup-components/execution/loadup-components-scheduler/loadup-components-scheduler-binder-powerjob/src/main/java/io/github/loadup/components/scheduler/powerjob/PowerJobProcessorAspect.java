@@ -31,9 +31,6 @@ import org.springframework.aop.support.AopUtils;
 import tech.powerjob.worker.core.processor.ProcessResult;
 import tech.powerjob.worker.core.processor.TaskContext;
 
-/**
- * Instruments Spring processors while retaining native PowerJob result and exception semantics.
- */
 @Aspect
 public class PowerJobProcessorAspect {
     private final ObservationRegistry observations;

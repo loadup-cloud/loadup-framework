@@ -25,9 +25,6 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Transport headers with strict duplicate rejection and canonical Base64 encoding.
- */
 public record RequestSignature(RequestSignatureParameters parameters, String signature) {
     public RequestSignature {
         if (parameters == null || signature == null || signature.length() > 684) {

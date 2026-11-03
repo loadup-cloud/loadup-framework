@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Components Global Unique
+ * LoadUp Components GlobalUnique
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -30,9 +30,6 @@ import java.util.Optional;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-/**
- * PostgreSQL implementation of {@link GlobalUniqueTemplate}.
- */
 public class DefaultGlobalUniqueTemplate implements GlobalUniqueTemplate {
 
     private final JdbcTemplate jdbc;

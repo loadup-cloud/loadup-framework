@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components TestContainers
+ * LoadUp Components Testcontainers
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -36,12 +36,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.testcontainers.containers.GenericContainer;
 
-/**
- * Integration test class for SharedRedisContainer.
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 @SpringBootTest(classes = TestApplication.class)
 @EnableTestContainers(ContainerType.REDIS)
 public class SharedRedisContainerIT {

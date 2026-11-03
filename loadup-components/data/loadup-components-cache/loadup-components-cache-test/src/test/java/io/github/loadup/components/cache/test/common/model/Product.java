@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Cache Test
+ * LoadUp Components Cache Test
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,7 +19,4 @@
  */
 package io.github.loadup.components.cache.test.common.model;
 
-/**
- * Simple business DTO used to prove that cached values survive JSON (de)serialization.
- */
 public record Product(Long id, String name) {}

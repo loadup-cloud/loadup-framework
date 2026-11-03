@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Http
+ * LoadUp Components HTTP
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -30,9 +30,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestClient;
 import tools.jackson.databind.ObjectMapper;
 
-/**
- * Preserves Boot's RestClient customizers and shared Jackson conventions.
- */
 @AutoConfiguration(
         afterName = {
             "org.springframework.boot.restclient.autoconfigure.RestClientAutoConfiguration",

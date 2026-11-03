@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Cache Components API
+ * LoadUp Components Cache API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,10 +22,6 @@ package io.github.loadup.components.cache;
 import java.time.Duration;
 import java.util.concurrent.ThreadLocalRandom;
 
-/**
- * Shared anti-avalanche helper: every binder applies the same random TTL semantics so that a cache
- * name configured once behaves identically regardless of the underlying middleware.
- */
 public final class RandomExpiration {
 
     private RandomExpiration() {}

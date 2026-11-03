@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Data Dictionary Web Adapter
+ * LoadUp Modules Dictionary Web
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -25,9 +25,6 @@ import io.github.loadup.modules.dictionary.client.dto.DictionaryOptionDTO;
 import java.util.List;
 import org.mapstruct.Mapper;
 
-/**
- * Produces the public HTTP projection from the application contract.
- */
 @Mapper(config = LoadUpMapStructConfig.class)
 public interface DictionaryWebConverter {
     DictionaryOptionDTO toOption(DictionaryItemDTO value);

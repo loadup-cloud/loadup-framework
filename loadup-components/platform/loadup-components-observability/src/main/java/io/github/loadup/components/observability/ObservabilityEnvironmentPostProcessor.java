@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Observability
+ * LoadUp Components Observability
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -26,9 +26,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 
-/**
- * Supplies one standard application tag without overriding explicit management settings.
- */
 public class ObservabilityEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {

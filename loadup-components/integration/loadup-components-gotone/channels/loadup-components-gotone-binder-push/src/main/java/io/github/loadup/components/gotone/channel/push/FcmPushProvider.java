@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone Binder Push
+ * LoadUp Components Gotone Binder Push
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -29,13 +29,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-/**
- * Firebase Cloud Messaging push provider.
- *
- * <p>Channel-level configuration keys: {@code title}, {@code sound}, {@code badge}, {@code extras}.
- * The actual FCM HTTP v1 call is a placeholder: implement {@link #sendMessage(String, String,
- * Map)} with the Firebase Admin SDK when credentials are provisioned.
- */
 public class FcmPushProvider implements NotificationChannelProvider {
 
     private static final Pattern DEVICE_TOKEN = Pattern.compile("^[A-Za-z0-9_\\-]{20,}$");

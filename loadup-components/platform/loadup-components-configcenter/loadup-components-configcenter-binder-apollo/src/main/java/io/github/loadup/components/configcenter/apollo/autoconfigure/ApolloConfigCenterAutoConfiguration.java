@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp ConfigCenter Binder Apollo
+ * LoadUp Components ConfigCenter Binder Apollo
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

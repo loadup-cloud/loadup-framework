@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Transfer Client
+ * LoadUp Modules Transfer Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -25,9 +25,6 @@ import io.github.loadup.modules.transfer.client.enums.TransferStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
-/**
- * Durable state of one import or export job.
- */
 public record TransferTaskDTO(
         @Schema(description = "Resource identifier") String id,
 

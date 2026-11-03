@@ -24,11 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/**
- * Auth server configuration (prefix {@code loadup.security.auth-server}).
- *
- * <p>Configures embedded Spring Authorization Server endpoints.
- */
 @ConfigurationProperties(prefix = "loadup.security.auth-server")
 public class LoadUpAuthServerProperties {
 

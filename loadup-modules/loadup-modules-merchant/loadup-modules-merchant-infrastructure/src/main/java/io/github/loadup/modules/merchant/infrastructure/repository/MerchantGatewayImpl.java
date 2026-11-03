@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Merchant Infrastructure
+ * LoadUp Modules Merchant Infrastructure
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

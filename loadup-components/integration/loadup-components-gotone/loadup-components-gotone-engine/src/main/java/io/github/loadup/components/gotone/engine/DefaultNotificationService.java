@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone Engine
+ * LoadUp Components Gotone Engine
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -36,16 +36,6 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.core.task.TaskExecutor;
 
-/**
- * Default {@link NotificationService} implementation: a pure send engine with zero storage and
- * zero database dependencies.
- *
- * <p>The engine resolves channel configuration through the optional {@link ChannelConfigProvider},
- * renders templates through the optional {@link TemplateRenderer}, sends through the registered
- * channel providers (with fallback and resilience), and reports outcomes through the optional
- * {@link RecordHandler}. Without a channel configuration provider, requests can still be sent
- * directly to the channels listed in {@link NotificationRequest#channels()}.
- */
 public class DefaultNotificationService implements NotificationService {
 
     private final NotificationChannelManager channelManager;

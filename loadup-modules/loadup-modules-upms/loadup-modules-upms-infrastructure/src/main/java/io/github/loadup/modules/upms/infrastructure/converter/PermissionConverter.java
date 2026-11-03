@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Infrastructure Layer
+ * LoadUp Modules UPMS Infrastructure
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -24,12 +24,6 @@ import io.github.loadup.modules.upms.domain.model.Permission;
 import io.github.loadup.modules.upms.infrastructure.dataobject.PermissionDO;
 import org.mapstruct.Mapper;
 
-/**
- * Permission Converter
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 @Mapper(config = LoadUpMapStructConfig.class, uses = AuditMappingSupport.class)
 public interface PermissionConverter {
     PermissionDO toDataObject(Permission permission);

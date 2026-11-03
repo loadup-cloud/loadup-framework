@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Dictionary App
+ * LoadUp Modules Dictionary App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -43,9 +43,6 @@ import java.util.UUID;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Dictionary administration and effective-value queries.
- */
 public class DictionaryService implements DictionaryFacade {
     private final Clock clock;
     private final DictionaryDTOConverter converter;

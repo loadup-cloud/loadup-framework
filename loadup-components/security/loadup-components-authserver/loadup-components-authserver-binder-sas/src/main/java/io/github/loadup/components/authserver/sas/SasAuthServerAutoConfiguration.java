@@ -59,12 +59,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 
-/**
- * Embedded Spring Authorization Server binder (default).
- *
- * <p>Provides the standard authorization server beans and a dedicated filter chain for the
- * protocol endpoints. The chain remains active alongside application-defined security chains.
- */
 @AutoConfiguration(
         afterName = {
             "io.github.loadup.components.kms.LocalKmsAutoConfiguration",

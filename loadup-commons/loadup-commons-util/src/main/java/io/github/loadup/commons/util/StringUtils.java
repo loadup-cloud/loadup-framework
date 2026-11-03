@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common Utils
+ * LoadUp Commons Util
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -24,10 +24,6 @@ import java.text.MessageFormat;
 import java.util.Map;
 import org.apache.commons.lang3.ArrayUtils;
 
-/**
- * @author Lise
- * @since 1.0.0
- */
 public class StringUtils {
 
     /**

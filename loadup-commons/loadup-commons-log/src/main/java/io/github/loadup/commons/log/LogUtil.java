@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common Log
+ * LoadUp Commons Log
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,9 +22,6 @@ package io.github.loadup.commons.log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Convenience facade for parameterized application logging.
- */
 public final class LogUtil {
 
     private static final Logger FALLBACK_LOGGER = LoggerFactory.getLogger(LogUtil.class);

@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Lock
+ * LoadUp Components Lock
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,9 +23,6 @@ import io.github.loadup.commons.enums.ResultStatusEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.ResultCode;
 
-/**
- * Acquisition ended without a lock; the business callback was not executed.
- */
 public final class LockUnavailableException extends CommonException {
     public LockUnavailableException() {
         super(Code.ACQUISITION_TIMEOUT);

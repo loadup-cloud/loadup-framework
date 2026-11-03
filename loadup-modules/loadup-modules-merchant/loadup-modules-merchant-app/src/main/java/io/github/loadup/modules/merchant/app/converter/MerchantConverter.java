@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Merchant App
+ * LoadUp Modules Merchant App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -36,9 +36,6 @@ public interface MerchantConverter {
 
     MerchantBasicInfo toInfo(MerchantUpdateCommand command);
 
-    /**
-     * Retains private values on null; an empty string explicitly clears a value.
-     */
     @Mapping(target = "merchantCode", source = "update.merchantCode")
     @Mapping(target = "name", source = "update.name")
     @Mapping(target = "shortName", source = "update.shortName")

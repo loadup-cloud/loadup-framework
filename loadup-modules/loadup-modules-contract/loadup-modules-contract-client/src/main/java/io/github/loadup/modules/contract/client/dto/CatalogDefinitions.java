@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Contract Client
+ * LoadUp Modules Contract Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -26,9 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Wire definitions use decimal strings and stable references to stored versions.
- */
 public final class CatalogDefinitions {
     private CatalogDefinitions() {}
 

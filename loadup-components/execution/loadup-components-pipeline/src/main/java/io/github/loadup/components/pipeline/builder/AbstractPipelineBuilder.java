@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Pipeline
+ * LoadUp Components Pipeline
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -33,12 +33,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-/**
- * Base class for all pipeline builder steps.
- *
- * <p>Each builder step is type-safe: the return type forces the caller
- * through the intended stage order (verify → prepare → process → assemble).
- */
 @SuppressWarnings("rawtypes")
 public abstract class AbstractPipelineBuilder {
 

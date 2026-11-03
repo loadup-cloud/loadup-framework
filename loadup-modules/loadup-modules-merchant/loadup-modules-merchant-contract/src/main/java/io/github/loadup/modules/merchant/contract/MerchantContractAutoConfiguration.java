@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Merchant Contract
+ * LoadUp Modules Merchant Contract
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

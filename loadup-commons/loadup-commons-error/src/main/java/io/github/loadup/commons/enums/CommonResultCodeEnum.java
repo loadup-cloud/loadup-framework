@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Common Error
+ * LoadUp Commons Error
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

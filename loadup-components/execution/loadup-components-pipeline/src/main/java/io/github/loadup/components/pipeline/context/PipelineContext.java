@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Pipeline
+ * LoadUp Components Pipeline
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,17 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-/**
- * Shared mutable state bag passed across all pipeline stages.
- *
- * <p><strong>Access contract:</strong>
- * <ul>
- *   <li>Stages may call {@link #getRequest()}, {@link #getModel(Class)}, and the property
- *       accessors freely.</li>
- *   <li>Only {@link io.github.loadup.components.pipeline.engine.PipelineExecutor} should call
- *       the {@code set*} mutators — consider them internal API.</li>
- * </ul>
- */
 public class PipelineContext {
 
     /**

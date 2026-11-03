@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone Binder Email
+ * LoadUp Components Gotone Binder Email
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -29,12 +29,6 @@ import java.util.Map;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
-/**
- * SMTP email provider backed by Spring Mail.
- *
- * <p>Per-receiver sending keeps a precise per-receiver success/failure status. Channel-level
- * configuration keys: {@code subject}, {@code from}, {@code html}.
- */
 public class SmtpEmailProvider implements NotificationChannelProvider {
 
     private final JavaMailSender mailSender;

@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Observability
+ * LoadUp Components Observability
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -28,9 +28,6 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.util.ClassUtils;
 
-/**
- * Logs fixed metadata only; arguments, results and exception messages are never inspected.
- */
 final class ServiceDigestInterceptor implements MethodInterceptor {
     private static void writeSummary(MethodInvocation invocation, long elapsedMs, Throwable failure) {
         try {

@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Captcha Components API
+ * LoadUp Components Captcha API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,12 +19,6 @@
  */
 package io.github.loadup.components.captcha;
 
-/**
- * Business-facing captcha facade.
- *
- * <p>Business code injects this interface and never touches the underlying engine. Switching the
- * backend means changing the binder dependency and {@code loadup.captcha.binder-type} only.
- */
 public interface CaptchaTemplate {
 
     /**

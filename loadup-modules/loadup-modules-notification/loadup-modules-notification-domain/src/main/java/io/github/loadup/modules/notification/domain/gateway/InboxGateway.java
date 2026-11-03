@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Notification Domain
+ * LoadUp Modules Notification Domain
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

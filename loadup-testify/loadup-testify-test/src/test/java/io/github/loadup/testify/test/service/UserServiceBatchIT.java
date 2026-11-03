@@ -1,6 +1,6 @@
 /*
  * #%L
- * Testify Demo
+ * LoadUp Testify Test
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -37,10 +37,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-/**
- * Data-driven integration test: cases are loaded from a YAML file, each case carries its own input
- * and expected output, and assertions are expressed declaratively with operators.
- */
 @SpringBootTest(classes = TestApplication.class)
 @EnableTestContainers(ContainerType.MYSQL)
 class UserServiceBatchIT {

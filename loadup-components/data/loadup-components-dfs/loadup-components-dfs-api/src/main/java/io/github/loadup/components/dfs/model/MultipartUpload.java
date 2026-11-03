@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Dfs Components Api
+ * LoadUp Components DFS API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,7 +19,4 @@
  */
 package io.github.loadup.components.dfs.model;
 
-/**
- * Identifier returned when a multipart upload is initiated.
- */
 public record MultipartUpload(String fileId, String uploadId) {}

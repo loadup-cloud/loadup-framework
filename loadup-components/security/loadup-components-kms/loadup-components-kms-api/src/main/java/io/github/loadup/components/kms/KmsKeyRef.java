@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Kms
+ * LoadUp Components KMS api
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,9 +19,6 @@
  */
 package io.github.loadup.components.kms;
 
-/**
- * An OpenBao key name and version; zero selects the latest version for new operations.
- */
 public record KmsKeyRef(String name, int version) {
     public KmsKeyRef {
         validateName(name);

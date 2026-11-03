@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common Utils
+ * LoadUp Commons Util
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,9 +22,6 @@ package io.github.loadup.commons.util;
 import io.github.loadup.commons.context.ContextHolder;
 import io.github.loadup.commons.context.ContextKeys;
 
-/**
- * Read-only tenant metadata; temporary overrides are confined to callback scopes.
- */
 public final class TenantUtil {
     private TenantUtil() {
         throw new UnsupportedOperationException("Utility class");

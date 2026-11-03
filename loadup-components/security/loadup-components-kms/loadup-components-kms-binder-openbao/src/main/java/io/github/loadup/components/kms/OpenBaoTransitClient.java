@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Kms
+ * LoadUp Components KMS binder-openbao
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -33,9 +33,6 @@ import org.springframework.web.client.RestClient;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
-/**
- * Dedicated HTTP pools avoid modifying application HTTP clients or credential providers.
- */
 final class OpenBaoTransitClient implements AutoCloseable {
     private final HttpTemplate http;
     private final ObjectMapper mapper;

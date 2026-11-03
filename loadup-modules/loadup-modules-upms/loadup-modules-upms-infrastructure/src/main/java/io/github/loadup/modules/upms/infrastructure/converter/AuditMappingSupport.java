@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Infrastructure Layer
+ * LoadUp Modules UPMS Infrastructure
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,9 +19,6 @@
  */
 package io.github.loadup.modules.upms.infrastructure.converter;
 
-/**
- * Converts domain audit values to the database representation.
- */
 public final class AuditMappingSupport {
     private AuditMappingSupport() {}
 

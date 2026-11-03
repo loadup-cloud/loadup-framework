@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Components Scheduler
+ * LoadUp Components Scheduler Binder PowerJob
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -27,9 +27,6 @@ import tech.powerjob.worker.core.processor.ProcessResult;
 import tech.powerjob.worker.core.processor.TaskContext;
 import tech.powerjob.worker.core.processor.sdk.BasicProcessor;
 
-/**
- * Set jobParams to a registered scanner name in the PowerJob job definition.
- */
 public class PowerJobSchedulerProvider implements SchedulerProvider, BasicProcessor {
     private volatile SchedulerTemplate scheduler;
 

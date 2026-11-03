@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Web MVC
+ * LoadUp Components WebMVC
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -28,9 +28,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-/**
- * Binds immutable request metadata for each servlet dispatch.
- */
 public final class ExecutionContextFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilterAsyncDispatch() {

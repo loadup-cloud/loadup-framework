@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Outbox
+ * LoadUp Components Outbox
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -25,9 +25,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import org.springframework.context.SmartLifecycle;
 
-/**
- * A dedicated single-thread poller; no global scheduling configuration is installed.
- */
 public class OutboxWorker implements SmartLifecycle {
 
     private final OutboxDispatcher dispatcher;

@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp ConfigCenter Binder Nacos
+ * LoadUp Components ConfigCenter Binder Nacos
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -38,15 +38,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
-/**
- * Nacos-backed {@link ConfigCenterProvider}.
- *
- * <p>Nacos stores one file per {@code dataId}; this provider loads the whole file into a flat
- * key-value snapshot (see {@link NacosConfigContent}) and serves individual keys from it. Writes
- * are read-modify-write of the whole file (last-writer-wins per file, not per key). A single
- * Nacos listener refreshes the snapshot and dispatches only the keys whose values actually
- * changed.
- */
 @SuppressFBWarnings(
         value = "CT_CONSTRUCTOR_THROW",
         justification = "ConfigService creation and initial load must fail fast at startup")

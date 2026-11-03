@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Audit Center Web Adapter
+ * LoadUp Modules Audit Web
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -27,9 +27,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-/**
- * Optional MVC capture and query surface for the audit center.
- */
 @AutoConfiguration(afterName = "io.github.loadup.modules.audit.app.autoconfigure.AuditAutoConfiguration")
 @ConditionalOnBean(AuditFacade.class)
 @EnableConfigurationProperties(AuditWebProperties.class)

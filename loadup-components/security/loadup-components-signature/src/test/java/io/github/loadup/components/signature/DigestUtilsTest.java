@@ -26,9 +26,6 @@ import io.github.loadup.components.signature.util.DigestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/**
- * Tests for the {@code DigestUtils} static helpers.
- */
 class DigestUtilsTest {
 
     @Test

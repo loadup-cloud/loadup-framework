@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Observability
+ * LoadUp Components Observability
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -24,9 +24,6 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
-/**
- * Uses Spring Boot's MeterRegistry and tracing auto-configuration as the single backend.
- */
 @AutoConfiguration
 public class ObservabilityAutoConfiguration {
     @Bean

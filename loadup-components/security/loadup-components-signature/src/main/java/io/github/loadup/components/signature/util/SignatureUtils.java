@@ -32,9 +32,6 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
-/**
- * Static asymmetric sign / verify helpers backed by JCA {@link Signature}.
- */
 public final class SignatureUtils {
 
     private SignatureUtils() {

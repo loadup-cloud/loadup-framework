@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Async Result
+ * LoadUp Components Async Result API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,9 +23,6 @@ import java.time.Duration;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-/**
- * Backend SPI. Notifications are hints; stored results remain authoritative until expiry.
- */
 public interface AsyncResultProvider {
     void register(AsyncReplyKey key, String owner, Duration retention);
 

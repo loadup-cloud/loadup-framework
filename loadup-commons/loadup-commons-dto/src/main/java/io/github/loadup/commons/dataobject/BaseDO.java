@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common DTO
+ * LoadUp Commons DTO
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -25,9 +25,6 @@ import io.github.loadup.commons.json.ToStringAsJson;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-/**
- * Common persistent fields for data objects.
- */
 public abstract class BaseDO implements Serializable {
     private static final long serialVersionUID = 1L;
 

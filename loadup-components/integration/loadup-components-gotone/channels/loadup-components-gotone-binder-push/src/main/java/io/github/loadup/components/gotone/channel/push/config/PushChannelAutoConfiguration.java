@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone Binder Push
+ * LoadUp Components Gotone Binder Push
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -28,9 +28,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-/**
- * Auto-configuration for the Firebase Cloud Messaging push binder.
- */
 @AutoConfiguration
 @ConditionalOnProperty(
         prefix = "loadup.gotone.binder.push.fcm",

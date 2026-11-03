@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Merchant Test
+ * LoadUp Modules Merchant Test
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

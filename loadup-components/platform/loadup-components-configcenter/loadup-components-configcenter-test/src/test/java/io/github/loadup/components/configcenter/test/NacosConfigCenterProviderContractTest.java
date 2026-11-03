@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp ConfigCenter Test
+ * LoadUp Components ConfigCenter Test
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -53,9 +53,6 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
-/**
- * Unit contracts with a mocked Nacos SDK, not a remote-server integration test.
- */
 class NacosConfigCenterProviderContractTest {
     private static final String DATA_ID = "loadup-config", GROUP = "DEFAULT_GROUP";
 

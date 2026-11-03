@@ -22,9 +22,6 @@ package io.github.loadup.components.signature.model;
 import io.github.loadup.commons.json.ToStringAsJson;
 import java.io.Serializable;
 
-/**
- * Immutable key pair container with Base64-encoded keys.
- */
 public class KeyPairInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;

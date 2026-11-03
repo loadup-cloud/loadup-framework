@@ -28,9 +28,6 @@ import java.security.MessageDigest;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-/**
- * JCA-backed {@link DigestService} implementation.
- */
 public class DigestServiceImpl implements DigestService {
 
     @Override

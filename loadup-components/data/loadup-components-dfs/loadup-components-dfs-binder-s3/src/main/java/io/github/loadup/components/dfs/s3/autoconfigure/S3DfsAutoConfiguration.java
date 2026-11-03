@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Dfs Binder S3
+ * LoadUp Components DFS Binder S3
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -40,9 +40,6 @@ import software.amazon.awssdk.services.s3.S3ClientBuilder;
 import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
-/**
- * Auto-configuration for AWS S3 and compatible object stores such as MinIO.
- */
 @AutoConfiguration(before = DfsAutoConfiguration.class)
 @ConditionalOnClass(S3Client.class)
 @ConditionalOnProperty(prefix = "loadup.dfs", name = "binder-type", havingValue = "s3")

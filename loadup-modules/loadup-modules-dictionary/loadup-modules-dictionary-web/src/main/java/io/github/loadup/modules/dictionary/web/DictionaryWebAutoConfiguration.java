@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Data Dictionary Web Adapter
+ * LoadUp Modules Dictionary Web
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -25,9 +25,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
-/**
- * Optional Spring MVC surface for the data dictionary.
- */
 @Import(DictionaryWebConverterImpl.class)
 @AutoConfiguration(afterName = "io.github.loadup.modules.dictionary.app.autoconfigure.DictionaryAutoConfiguration")
 @ConditionalOnBean(DictionaryFacade.class)

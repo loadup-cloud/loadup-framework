@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp UPMS Authorization Server Adapter
+ * LoadUp Modules UPMS AuthServer
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -24,9 +24,6 @@ import java.util.Collection;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-/**
- * Authenticated UPMS identity used by Spring Authorization Server.
- */
 public record UpmsPrincipal(String subjectId, String username, Collection<? extends GrantedAuthority> authorities)
         implements UserDetails, LoadUpSubject {
 

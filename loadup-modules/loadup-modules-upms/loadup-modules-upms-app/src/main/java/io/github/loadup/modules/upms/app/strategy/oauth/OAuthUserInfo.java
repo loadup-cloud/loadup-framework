@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS App Layer
+ * LoadUp Modules UPMS App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,11 +23,6 @@ import io.github.loadup.commons.json.ToStringAsJson;
 import java.io.Serial;
 import java.io.Serializable;
 
-/**
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 public class OAuthUserInfo implements Serializable {
 
     @Serial

@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Cache Binder Redis
+ * LoadUp Components Cache Binder Redis
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -48,11 +48,6 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import tools.jackson.databind.ObjectMapper;
 
-/**
- * Redis binder: provides the Spring {@link CacheManager} backed by Spring Data Redis when
- * {@code loadup.cache.type=redis}. Reuses the standard {@code spring.data.redis.*} connection
- * settings; per-cache TTL / null caching / random expiration come from {@link LoadupCacheProperties}.
- */
 @AutoConfiguration(after = LoadupCacheAutoConfiguration.class, before = CacheAutoConfiguration.class)
 @ConditionalOnClass({RedisCacheManager.class, RedisConnectionFactory.class})
 @ConditionalOnProperty(prefix = "loadup.cache", name = "type", havingValue = CacheBackendType.REDIS)

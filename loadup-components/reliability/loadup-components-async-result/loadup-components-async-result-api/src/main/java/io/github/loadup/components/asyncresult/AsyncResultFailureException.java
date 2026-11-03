@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Async Result
+ * LoadUp Components Async Result API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,9 +21,6 @@ package io.github.loadup.components.asyncresult;
 
 import io.github.loadup.commons.error.CommonException;
 
-/**
- * Remote codes are data; applications explicitly map their own known error enums.
- */
 public final class AsyncResultFailureException extends CommonException {
     private final String remoteCode;
 

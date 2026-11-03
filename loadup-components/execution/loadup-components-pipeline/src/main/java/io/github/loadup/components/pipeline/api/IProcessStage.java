@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Pipeline
+ * LoadUp Components Pipeline
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,10 +19,4 @@
  */
 package io.github.loadup.components.pipeline.api;
 
-/**
- * Marker interface for all processing stages.
- *
- * @see IBizProcessStage
- * @see IDataProcessStage
- */
 public interface IProcessStage extends IStage {}

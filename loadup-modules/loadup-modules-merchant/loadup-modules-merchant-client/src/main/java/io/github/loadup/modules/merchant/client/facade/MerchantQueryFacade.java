@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Merchant Client
+ * LoadUp Modules Merchant Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,9 +22,6 @@ package io.github.loadup.modules.merchant.client.facade;
 import io.github.loadup.modules.merchant.client.dto.MerchantProfileDTO;
 import java.util.Optional;
 
-/**
- * Public business facade.
- */
 public interface MerchantQueryFacade {
     Optional<MerchantProfileDTO> find(String merchantId);
 }

@@ -29,9 +29,6 @@ import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
-/**
- * Signature component configuration ({@code loadup.components.signature.*}).
- */
 @Validated
 @ConfigurationProperties(prefix = "loadup.components.signature")
 public class SignatureProperties {

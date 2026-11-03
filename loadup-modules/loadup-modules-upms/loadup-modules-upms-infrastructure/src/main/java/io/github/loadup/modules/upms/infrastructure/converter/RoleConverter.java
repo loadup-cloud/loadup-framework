@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Infrastructure Layer
+ * LoadUp Modules UPMS Infrastructure
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -24,12 +24,6 @@ import io.github.loadup.modules.upms.domain.model.Role;
 import io.github.loadup.modules.upms.infrastructure.dataobject.RoleDO;
 import org.mapstruct.Mapper;
 
-/**
- * Role Converter
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 @Mapper(config = LoadUpMapStructConfig.class, uses = AuditMappingSupport.class)
 public interface RoleConverter {
     RoleDO toDataObject(Role role);

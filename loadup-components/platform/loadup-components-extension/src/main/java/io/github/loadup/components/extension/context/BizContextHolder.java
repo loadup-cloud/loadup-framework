@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Extension
+ * LoadUp Components Extension
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,18 +21,6 @@ package io.github.loadup.components.extension.context;
 
 import io.github.loadup.components.extension.core.BizScenario;
 
-/**
- *
- *
- *
- * <pre>{@code
- * BizContextHolder.set(BizScenario.valueOf("trade", "checkout"));
- *
- * BizScenario scenario = BizContextHolder.get();
- *
- * BizContextHolder.clear();
- * }</pre>
- */
 public final class BizContextHolder {
 
     private static final ThreadLocal<BizScenario> CONTEXT = new InheritableThreadLocal<>();

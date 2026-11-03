@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone Binder SMS
+ * LoadUp Components Gotone Binder SMS
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -28,13 +28,6 @@ import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Yunpian SMS provider.
- *
- * <p>Channel-level configuration keys: {@code templateId}. The vendor HTTP call is a placeholder:
- * implement {@link #sendMessage(String, String, String)} with the Yunpian API when credentials are
- * provisioned.
- */
 public class YunpianSmsProvider implements NotificationChannelProvider {
 
     private final String apiKey;

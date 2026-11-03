@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone Store JDBC
+ * LoadUp Components Gotone Store JDBC
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -25,9 +25,6 @@ import io.github.loadup.components.gotone.store.mapper.NotificationServiceRowMap
 import io.github.loadup.components.gotone.store.table.Tables;
 import java.util.Optional;
 
-/**
- * JDBC-backed {@link ServiceConfigProvider} backed by {@code gotone_notification_service}.
- */
 public class JdbcServiceConfigProvider implements ServiceConfigProvider {
 
     private final NotificationServiceRowMapper services;

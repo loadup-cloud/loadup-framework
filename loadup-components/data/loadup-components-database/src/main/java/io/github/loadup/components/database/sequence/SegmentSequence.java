@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Database
+ * LoadUp Components Database
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -38,9 +38,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * Bounded per-scope double buffers; the warm path performs only atomic claims.
- */
 public final class SegmentSequence implements Sequence, AutoCloseable {
     private final SequenceRangeAllocator allocator;
     private final SequenceProperties properties;

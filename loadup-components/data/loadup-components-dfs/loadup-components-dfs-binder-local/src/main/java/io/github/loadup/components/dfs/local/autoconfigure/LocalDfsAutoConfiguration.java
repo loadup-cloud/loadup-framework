@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Dfs Binder Local
+ * LoadUp Components DFS Binder Local
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -29,9 +29,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-/**
- * Auto-configuration for the local filesystem binder.
- */
 @AutoConfiguration(before = DfsAutoConfiguration.class)
 @ConditionalOnProperty(prefix = "loadup.dfs", name = "binder-type", havingValue = "local", matchIfMissing = true)
 @EnableConfigurationProperties(LocalDfsProperties.class)

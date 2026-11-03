@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Captcha Binder Nanocaptcha
+ * LoadUp Components Captcha Binder NanoCaptcha
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,9 +21,6 @@ package io.github.loadup.components.captcha.nanocaptcha;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/**
- * Nanocaptcha binder configuration ({@code loadup.captcha.binder.nanocaptcha.*}).
- */
 @ConfigurationProperties(prefix = "loadup.captcha.binder.nanocaptcha")
 public class NanocaptchaProperties {
 

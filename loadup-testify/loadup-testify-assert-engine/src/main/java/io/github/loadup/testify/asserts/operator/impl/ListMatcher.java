@@ -1,6 +1,6 @@
 /*
  * #%L
- * Testify Assert Engine
+ * LoadUp Testify Assert Engine
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -24,9 +24,6 @@ import io.github.loadup.testify.asserts.operator.OperatorMatcher;
 import java.util.Collection;
 import java.util.Map;
 
-/**
- * Simple equality and inequality matcher. Handles null values properly.
- */
 public class ListMatcher implements OperatorMatcher {
     @Override
     public boolean support(String op) {

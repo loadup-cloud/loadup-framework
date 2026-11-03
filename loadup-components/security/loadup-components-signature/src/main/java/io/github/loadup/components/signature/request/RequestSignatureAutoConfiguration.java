@@ -31,9 +31,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
-/**
- * Enabling request verification requires a real atomic nonce store; no local fallback.
- */
 @AutoConfiguration(
         afterName = {
             "io.github.loadup.components.kms.KmsAutoConfiguration",

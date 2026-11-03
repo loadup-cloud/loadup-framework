@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Dictionary App
+ * LoadUp Modules Dictionary App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -34,9 +34,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandi
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
-/**
- * Wires the dictionary service to its JDBC store.
- */
 @Import(DictionaryDTOConverterImpl.class)
 @AutoConfiguration(
         afterName =

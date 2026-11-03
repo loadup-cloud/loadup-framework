@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Common Context
+ * LoadUp Commons Context
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

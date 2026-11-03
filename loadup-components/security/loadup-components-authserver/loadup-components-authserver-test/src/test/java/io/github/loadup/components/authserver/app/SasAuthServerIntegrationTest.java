@@ -45,10 +45,6 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
-/**
- * End-to-end test: the embedded Spring Authorization Server exposes the standard token endpoint
- * and returns a LoadUp JWT that can be verified with the configured JWK source.
- */
 @SpringBootTest(classes = AuthServerTestApplication.class)
 @AutoConfigureMockMvc
 @DisplayName("SAS binder end-to-end")

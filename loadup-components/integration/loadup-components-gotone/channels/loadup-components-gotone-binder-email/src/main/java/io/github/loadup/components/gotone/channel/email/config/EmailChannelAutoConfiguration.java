@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone Binder Email
+ * LoadUp Components Gotone Binder Email
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -30,12 +30,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
-/**
- * Auto-configuration for the SMTP email channel binder.
- *
- * <p>Reads the standard {@code spring.mail.*} properties. A {@link JavaMailSender} is only created
- * here when Spring Boot's mail auto-configuration has not already provided one.
- */
 @AutoConfiguration
 @ConditionalOnProperty(
         prefix = "loadup.gotone.binder.email.smtp",

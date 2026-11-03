@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp In-App Notifications Web Adapter
+ * LoadUp Modules Notification Web
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -44,9 +44,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * A user-owned inbox with a separate administrator publishing entry point.
- */
 @RestController
 @RequestMapping("/notifications")
 @Tag(name = "In-App Notifications", description = "Private notification inbox")

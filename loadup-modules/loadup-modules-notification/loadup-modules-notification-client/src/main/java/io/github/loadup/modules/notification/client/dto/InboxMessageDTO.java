@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Notification Client
+ * LoadUp Modules Notification Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,9 +23,6 @@ import io.github.loadup.commons.json.ToStringAsJson;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
-/**
- * One recipient's copy of an in-app notification.
- */
 public record InboxMessageDTO(
         @Schema(description = "Resource identifier") String id,
 

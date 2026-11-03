@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Kms
+ * LoadUp Components KMS binder-local
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -22,7 +22,6 @@ package io.github.loadup.components.kms;
 import java.security.KeyStore;
 import java.util.Objects;
 
-/** KeyStore and common entry password supplied by the application. */
 public record LocalKmsKeyStore(KeyStore store, char[] password) {
     public LocalKmsKeyStore {
         Objects.requireNonNull(store);

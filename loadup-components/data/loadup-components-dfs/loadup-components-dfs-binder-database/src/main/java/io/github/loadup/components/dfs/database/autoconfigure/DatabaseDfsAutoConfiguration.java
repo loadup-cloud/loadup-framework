@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Dfs Binder Database
+ * LoadUp Components DFS Binder Database
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -33,9 +33,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import tools.jackson.databind.ObjectMapper;
 
-/**
- * Auto-configuration for the transitional database DFS binder.
- */
 @AutoConfiguration(
         before = DfsAutoConfiguration.class,
         afterName = {

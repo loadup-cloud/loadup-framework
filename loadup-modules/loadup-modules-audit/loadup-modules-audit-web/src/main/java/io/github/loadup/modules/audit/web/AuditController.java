@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Audit Center Web Adapter
+ * LoadUp Modules Audit Web
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -32,9 +32,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Administrator-only audit search.
- */
 @RestController
 @Tag(name = "Audit", description = "Tenant-scoped administrator audit search")
 public class AuditController {

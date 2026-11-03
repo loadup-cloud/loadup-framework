@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone API
+ * LoadUp Components Gotone API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -24,11 +24,6 @@ import io.github.loadup.components.gotone.model.NotificationRequest;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Optional storage SPI that receives the outcome of every channel send attempt.
- *
- * <p>The default JDBC store implements this SPI to persist one notification record per receiver.
- */
 public interface RecordHandler {
 
     /**

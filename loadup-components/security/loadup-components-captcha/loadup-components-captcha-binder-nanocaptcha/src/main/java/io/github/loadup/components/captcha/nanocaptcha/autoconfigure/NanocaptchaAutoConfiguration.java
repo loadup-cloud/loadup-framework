@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Captcha Binder Nanocaptcha
+ * LoadUp Components Captcha Binder NanoCaptcha
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -31,9 +31,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-/**
- * Auto-configuration for the nanocaptcha image captcha binder.
- */
 @AutoConfiguration(before = CaptchaAutoConfiguration.class)
 @ConditionalOnClass(ImageCaptcha.class)
 @ConditionalOnProperty(prefix = "loadup.captcha", name = "binder-type", havingValue = "nanocaptcha")

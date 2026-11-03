@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Http
+ * LoadUp Components HTTP
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,9 +23,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import org.apache.hc.client5.http.SystemDefaultDnsResolver;
 
-/**
- * Enforces address policy on every connection's DNS resolution, not just configuration loading.
- */
 final class HttpTargetPolicy extends SystemDefaultDnsResolver {
     private final boolean allowPrivate;
 

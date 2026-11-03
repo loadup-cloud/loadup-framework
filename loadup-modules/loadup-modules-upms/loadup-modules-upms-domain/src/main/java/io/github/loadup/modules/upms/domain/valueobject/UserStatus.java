@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Domain Layer
+ * LoadUp Modules UPMS Domain
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,12 +23,6 @@ import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
 
-/**
- * User Status Value Object
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 public class UserStatus {
 
     public static final short NORMAL = 1;

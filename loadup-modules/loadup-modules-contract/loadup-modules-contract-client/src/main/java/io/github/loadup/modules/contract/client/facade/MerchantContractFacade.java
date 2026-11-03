@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Contract Client
+ * LoadUp Modules Contract Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -25,9 +25,6 @@ import io.github.loadup.modules.contract.client.command.ContractStatusCommand;
 import io.github.loadup.modules.contract.client.dto.MerchantContractDTO;
 import io.github.loadup.modules.contract.client.query.MerchantContractPageQuery;
 
-/**
- * Public business contract for MerchantContractService.
- */
 public interface MerchantContractFacade {
     MerchantContractDTO preview(ContractSignCommand command, String actor);
 

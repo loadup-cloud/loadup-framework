@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Transfer App
+ * LoadUp Modules Transfer App
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -26,9 +26,6 @@ import io.github.loadup.modules.transfer.client.dto.TransferTaskDTO;
 import io.github.loadup.modules.transfer.domain.model.TransferTask;
 import org.mapstruct.Mapper;
 
-/**
- * Maps application results without exposing persistence or domain models.
- */
 @Mapper(config = LoadUpMapStructConfig.class)
 public interface TransferDTOConverter {
     TransferTaskDTO toDTO(TransferTask value);

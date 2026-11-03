@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Outbox
+ * LoadUp Components Outbox
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,9 +21,6 @@ package io.github.loadup.components.outbox;
 
 import java.nio.charset.StandardCharsets;
 
-/**
- * A versioned business event published inside the current tenant schema.
- */
 public record OutboxMessage(String type, int version, String businessId, String payload) {
     public OutboxMessage {
         type = required(type, "type", 128);

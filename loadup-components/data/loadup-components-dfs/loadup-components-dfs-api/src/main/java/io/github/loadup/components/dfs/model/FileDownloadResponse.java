@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Dfs Components Api
+ * LoadUp Components DFS API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,9 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
-/**
- * Download response whose content stream must be closed by the caller.
- */
 public record FileDownloadResponse(FileMetadata metadata, InputStream content, long contentLength)
         implements AutoCloseable {
 

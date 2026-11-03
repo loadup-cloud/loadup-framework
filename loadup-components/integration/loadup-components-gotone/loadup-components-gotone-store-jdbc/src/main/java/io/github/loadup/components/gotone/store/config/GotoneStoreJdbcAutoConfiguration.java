@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone Store JDBC
+ * LoadUp Components Gotone Store JDBC
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -33,13 +33,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.context.annotation.Bean;
 
-/**
- * Auto-configuration for the default JDBC store of the gotone component.
- *
- * <p>Each storage SPI is only registered when no custom implementation is present, so integrators
- * can swap the JDBC store for their own {@link ServiceConfigProvider} / {@link ChannelConfigProvider}
- * / {@link RecordHandler} beans without touching the engine.
- */
 @AutoConfiguration(
         afterName = {
             "io.github.loadup.components.database.autoconfigure.DatabaseCoreAutoConfiguration",

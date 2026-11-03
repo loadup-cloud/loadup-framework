@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone Binder Webhook
+ * LoadUp Components Gotone Binder Webhook
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -28,9 +28,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Map;
 
-/**
- * Shared HTTP support for the webhook providers.
- */
 final class WebhookSupport {
 
     private static final HttpClient HTTP = HttpClient.newHttpClient();

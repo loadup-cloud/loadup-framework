@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Merchant Domain
+ * LoadUp Modules Merchant Domain
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%

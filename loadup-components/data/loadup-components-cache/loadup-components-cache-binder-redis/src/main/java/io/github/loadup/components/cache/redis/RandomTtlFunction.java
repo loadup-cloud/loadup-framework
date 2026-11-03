@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Cache Binder Redis
+ * LoadUp Components Cache Binder Redis
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,10 +23,6 @@ import io.github.loadup.components.cache.RandomExpiration;
 import java.time.Duration;
 import org.springframework.data.redis.cache.RedisCacheWriter;
 
-/**
- * Spring Data Redis {@link RedisCacheWriter.TtlFunction} computing {@code ttl + random[0, range]}
- * per key on every write. Random expiration spreads cache expiry over time to avoid avalanche.
- */
 public final class RandomTtlFunction implements RedisCacheWriter.TtlFunction {
 
     private final Duration base;

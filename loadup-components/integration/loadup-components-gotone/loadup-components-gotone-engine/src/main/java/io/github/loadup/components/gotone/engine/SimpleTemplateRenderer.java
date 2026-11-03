@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone Engine
+ * LoadUp Components Gotone Engine
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -24,12 +24,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Minimal {@code ${placeholder}} template renderer.
- *
- * <p>Registered by default when no other {@link TemplateRenderer} bean exists. Integrators that
- * need richer rendering (SpEL, Thymeleaf, FreeMarker) can provide their own renderer bean.
- */
 public class SimpleTemplateRenderer implements TemplateRenderer {
 
     private static final Pattern PLACEHOLDER = Pattern.compile("\\$\\{([^}]+)}");

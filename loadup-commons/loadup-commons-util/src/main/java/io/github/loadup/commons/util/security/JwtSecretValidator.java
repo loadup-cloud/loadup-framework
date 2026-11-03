@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Common Utils
+ * LoadUp Commons Util
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -25,9 +25,6 @@ import java.util.Set;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-/**
- * Validates shared secrets used for HMAC JWT signing and verification.
- */
 public final class JwtSecretValidator {
     private static final int MINIMUM_BYTES = 32;
     private static final Set<String> KNOWN_WEAK_VALUES =

@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Components Scheduler
+ * LoadUp Components Scheduler API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -30,9 +30,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.springframework.context.SmartLifecycle;
 
-/**
- * Resolves registered scanners and suppresses overlapping calls within this application.
- */
 public final class SchedulerTemplate implements SmartLifecycle {
     private final SchedulerProvider provider;
     private final Map<String, ScheduledTask> tasks;

@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp File Client
+ * LoadUp Modules File Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -26,9 +26,6 @@ import io.github.loadup.modules.file.client.dto.FileResourceDTO;
 import java.io.InputStream;
 import java.util.List;
 
-/**
- * Public business contract for FileResourceService.
- */
 public interface FileResourceFacade {
     FileResourceDTO upload(String ownerId, String filename, String contentType, long size, InputStream content);
 

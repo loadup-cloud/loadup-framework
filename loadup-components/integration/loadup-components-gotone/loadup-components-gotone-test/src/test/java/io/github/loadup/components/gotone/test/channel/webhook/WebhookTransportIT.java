@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Gotone Test
+ * LoadUp Components Gotone Test
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -37,9 +37,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.json.JsonMapper;
 
-/**
- * Real loopback HTTP transport contracts; no vendor endpoint is contacted.
- */
 class WebhookTransportIT {
     private final AtomicInteger status = new AtomicInteger(200);
     private final AtomicReference<String> method = new AtomicReference<>();

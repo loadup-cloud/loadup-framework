@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Captcha Components API
+ * LoadUp Components Captcha API
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -19,12 +19,6 @@
  */
 package io.github.loadup.components.captcha;
 
-/**
- * SPI implemented by each captcha binder.
- *
- * <p>A binder adapts one underlying captcha engine (tianai behavior captcha, nanocaptcha image
- * captcha, ...) to the LoadUp facade. Exactly one provider is active per application.
- */
 public interface CaptchaProvider {
 
     /**

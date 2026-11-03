@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components TestContainers
+ * LoadUp Components Testcontainers
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -28,15 +28,6 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.utility.DockerImageName;
 
-/**
- * Shared Elasticsearch TestContainer instance that can be reused across multiple tests.
- *
- * <p>This class provides a singleton Elasticsearch container that starts once and is shared across
- * all test classes that use it.
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 public final class SharedElasticsearchContainer {
 
     /**

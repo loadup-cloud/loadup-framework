@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Components Global Unique
+ * LoadUp Components GlobalUnique
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -21,9 +21,6 @@ package io.github.loadup.components.globalunique;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/**
- * Global unique component configuration.
- */
 @ConfigurationProperties(prefix = "loadup.global-unique")
 public class GlobalUniqueProperties {
     private boolean enabled = true;

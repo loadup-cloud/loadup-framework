@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components TestContainers
+ * LoadUp Components Testcontainers
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -26,15 +26,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.testcontainers.mongodb.MongoDBContainer;
 import org.testcontainers.utility.DockerImageName;
 
-/**
- * Shared MongoDB TestContainer instance that can be reused across multiple tests.
- *
- * <p>This class provides a singleton MongoDB container that starts once and is shared across all
- * test classes that use it.
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 public final class SharedMongoDBContainer {
 
     /**

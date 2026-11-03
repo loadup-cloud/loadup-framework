@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Resilience4j Binder Core
+ * LoadUp Components Resilience4j Binder Core
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -47,18 +47,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-/**
- * Core binder auto-configuration for Resilience4j.
- *
- * <p>Assembles the five standard registries (circuit breaker / retry / rate limiter / bulkhead /
- * time limiter), their Spring AOP aspects and Micrometer metrics from the standard
- * {@code resilience4j.*} properties. Unlike the upstream {@code spring-boot3} starter, the
- * assembly lives in LoadUp so it stays compatible with Spring Boot 4.
- *
- * <p>Business code uses the standard Resilience4j annotations
- * ({@code @CircuitBreaker}, {@code @Retry}, {@code @RateLimiter}, {@code @Bulkhead},
- * {@code @TimeLimiter}) or injects the registries through {@link ResilienceRegistries}.
- */
 @AutoConfiguration
 @EnableConfigurationProperties({
     Resilience4jProperties.class,

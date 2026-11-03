@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Lock
+ * LoadUp Components Lock
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -30,9 +30,6 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-/**
- * Delegates lock ownership and lease renewal to Redisson; never silently skips release failures.
- */
 public final class RedissonLockTemplate implements LockTemplate {
     private final RedissonClient client;
     private final String namespace;

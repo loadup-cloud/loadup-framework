@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Modules UPMS Client Layer
+ * LoadUp Modules UPMS Client
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -27,12 +27,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * User Detail DTO
- *
- * @author LoadUp Framework
- * @since 1.0.0
- */
 public class UserDetailDTO {
 
     @Schema(description = "Resource identifier")

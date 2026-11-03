@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Pipeline
+ * LoadUp Components Pipeline
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,9 +23,6 @@ import io.github.loadup.components.pipeline.api.IDataPrepareStage;
 import io.github.loadup.components.pipeline.context.PipelineContext;
 import java.util.function.Function;
 
-/**
- * Lambda adapter for {@link IDataPrepareStage}.
- */
 @SuppressWarnings("rawtypes")
 public final class InnerDataPrepareFunctionStage implements IFunctionStage, IDataPrepareStage {
 

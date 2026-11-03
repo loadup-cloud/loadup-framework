@@ -1,6 +1,6 @@
 /*
  * #%L
- * Loadup Components Pipeline
+ * LoadUp Components Pipeline
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -23,9 +23,6 @@ import io.github.loadup.components.pipeline.api.IBizProcessStage;
 import io.github.loadup.components.pipeline.context.PipelineContext;
 import java.util.function.Consumer;
 
-/**
- * Lambda adapter for {@link IBizProcessStage}.
- */
 public final class InnerBizProcessConsumerStage implements IFunctionStage, IBizProcessStage {
 
     private final Consumer<PipelineContext> consumer;

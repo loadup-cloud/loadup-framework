@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Components Scheduler
+ * LoadUp Components Scheduler Binder Local
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -24,9 +24,6 @@ import io.github.loadup.components.scheduler.SchedulerProvider;
 import io.github.loadup.components.scheduler.SchedulerTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 
-/**
- * Uses Spring's scheduler thread; failures in one scanner do not suppress other scanners.
- */
 public class LocalSchedulerProvider implements SchedulerProvider {
     private volatile SchedulerTemplate scheduler;
 

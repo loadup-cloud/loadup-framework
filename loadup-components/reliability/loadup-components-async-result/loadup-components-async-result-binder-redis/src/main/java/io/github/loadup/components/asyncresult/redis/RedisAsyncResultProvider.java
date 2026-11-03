@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Async Result
+ * LoadUp Components Async Result Redis Binder
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -36,9 +36,6 @@ import org.redisson.api.RedissonClient;
 import org.redisson.client.codec.StringCodec;
 import tools.jackson.databind.json.JsonMapper;
 
-/**
- * Uses string-only protocol data and a single-key CAS; caller owns the Redisson client.
- */
 public final class RedisAsyncResultProvider implements AsyncResultProvider {
     private static final String REGISTER = """
         if redis.call('EXISTS', KEYS[1]) == 1 then return 0 end

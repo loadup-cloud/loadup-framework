@@ -1,6 +1,6 @@
 /*
  * #%L
- * LoadUp Contract Domain
+ * LoadUp Modules Contract Domain
  * %%
  * Copyright (C) 2025 - 2026 LoadUp Cloud
  * %%
@@ -26,9 +26,6 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.Objects;
 
-/**
- * Immutable signed terms. Time schedules and lifecycle mutations belong to transactional application services.
- */
 public record MerchantContractRevision(
         String merchantId,
         String scopeKey,
