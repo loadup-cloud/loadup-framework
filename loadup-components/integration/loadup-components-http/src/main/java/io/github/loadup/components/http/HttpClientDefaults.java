@@ -31,7 +31,6 @@ public final class HttpClientDefaults {
     public static <T> T bind(Environment environment, String prefix, String application, Class<T> type) {
         String defaults = "loadup.http.client.";
         var fallback = new MapConfigurationPropertySource(Map.of(
-                prefix + ".tenant-id", environment.getProperty(defaults + "tenant-id", "__default__"),
                 prefix + ".service-id",
                         environment.getProperty(
                                 defaults + "service-id",
