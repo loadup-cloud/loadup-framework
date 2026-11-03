@@ -27,6 +27,7 @@ MyDTO dto = JsonUtil.fromJson(json, MyDTO.class);
 |-------------------------------------------|---------------------------------------------|
 | 对象、泛型、Map、字节、文件与 JSON 树转换 | JsonUtil                                    |
 | LocalDate / LocalDateTime / Date 日期规则 | JsonUtil.customize 与 MultiDateDeserializer |
+| 严格快照/协议校验 | JsonUtil.strictProtocol（禁用注解，拒绝未知字段、缺失 creator、primitive null、尾随 token） |
 | 接入应用 ObjectMapper                     | WebMVC 装配后调用 JsonUtil.setObjectMapper  |
 | record、继承字段、嵌套集合和标准 JSON     | 是                                          |
 | 凭证字段、WRITE_ONLY 和 Masked 保护       | 是                                          |

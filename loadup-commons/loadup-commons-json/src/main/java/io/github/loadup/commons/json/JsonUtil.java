@@ -39,6 +39,8 @@ import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.JavaType;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.MapperFeature;
+import tools.jackson.databind.PropertyNamingStrategies;
 import tools.jackson.databind.SerializationFeature;
 import tools.jackson.databind.cfg.DateTimeFeature;
 import tools.jackson.databind.cfg.EnumFeature;
@@ -69,11 +71,24 @@ public class JsonUtil {
     }
 
     /**
+     * Apply strict, annotation-free snapshot validation conventions to a Jackson 3 mapper builder.
+     */
+    public static JsonMapper.Builder strictProtocol(JsonMapper.Builder builder) {
+        return builder.disable(MapperFeature.USE_ANNOTATIONS)
+                .propertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE)
+                .enable(
+                        DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+                        DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES,
+                        DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES,
+                        DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
+                .disable(DeserializationFeature.ACCEPT_FLOAT_AS_INT);
+    }
+
+    /**
      * Apply the framework JSON conventions to a Jackson 3 mapper builder.
      */
     public static JsonMapper.Builder customize(JsonMapper.Builder builder) {
-        SimpleModule javaTimeModule = new SimpleModule();
-        javaTimeModule.addSerializer(
+        SimpleModule javaTimeModule = new SimpleModule();        javaTimeModule.addSerializer(
                 LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT)));
         javaTimeModule.addDeserializer(LocalDate.class, new MultiLocalDateDeserializer());
         javaTimeModule.addSerializer(

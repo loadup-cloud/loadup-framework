@@ -15,6 +15,7 @@
  */
 package io.github.loadup.components.asyncresult;
 
+import io.github.loadup.commons.json.JsonUtil;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -45,7 +46,7 @@ public class AsyncResultAutoConfiguration {
         return new DefaultAsyncResultTemplate(
                 provider,
                 properties,
-                mapper.getIfAvailable(() -> JsonMapper.builder().build()),
+                mapper.getIfAvailable(() -> JsonUtil.customize(JsonMapper.builder()).build()),
                 metrics.getIfAvailable());
     }
 }

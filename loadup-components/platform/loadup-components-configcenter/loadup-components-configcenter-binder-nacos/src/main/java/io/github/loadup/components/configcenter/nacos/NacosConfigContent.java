@@ -22,13 +22,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 import org.yaml.snakeyaml.Yaml;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 public final class NacosConfigContent {
 
     private static final String YAML = "yaml";
     private static final String YML = "yml";
-    private static final ObjectMapper MAPPER = JsonUtil.getObjectMapper();
+    private static final JsonMapper MAPPER = JsonUtil.customize(JsonMapper.builder()).build();
 
     private NacosConfigContent() {
         // Utility class

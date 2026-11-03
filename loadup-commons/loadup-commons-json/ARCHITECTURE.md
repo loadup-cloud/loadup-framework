@@ -4,7 +4,7 @@
 
 `JsonUtil` 负责真实报文的 Jackson 3 转换和默认日期配置；`MultiDateDeserializer` 负责 Date 的多格式输入。格式常量由
 JsonUtil 统一定义，commons-dto 的 CommonConstants 引用这些常量。JSON 不依赖 commons-util 或 commons-dto，空值检查使用
-JDK，避免循环依赖。
+JDK，避免循环依赖。需要严格快照/协议校验的组件使用 `JsonUtil.strictProtocol`，避免各自复制安全相关 mapper 配置。
 
 `ToStringAsJson` 将项目数据投影为安全的 Map/List/标量，再由独立 Jackson 3 JsonMapper 编码。投影直接读取字段，避免 bean
 getter、对象自定义 toString 递归及资源访问。继承字段统一处理，静态字段和合成字段跳过。

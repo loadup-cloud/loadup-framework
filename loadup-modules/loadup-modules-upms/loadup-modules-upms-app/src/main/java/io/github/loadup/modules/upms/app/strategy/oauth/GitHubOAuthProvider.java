@@ -33,7 +33,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
+import io.github.loadup.commons.json.JsonUtil;
+import tools.jackson.databind.json.JsonMapper;
 
 @Component
 @ConditionalOnProperty(prefix = "loadup.modules.upms.security.oauth.github", name = "enabled", havingValue = "true")
@@ -44,7 +45,7 @@ public class GitHubOAuthProvider implements OAuthProvider {
     private static final String USER_INFO_URL = "https://api.github.com/user";
     private final UpmsSecurityProperties securityProperties;
     private final RestTemplate restTemplate = new RestTemplate();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final JsonMapper objectMapper = JsonUtil.customize(JsonMapper.builder()).build();
 
     public GitHubOAuthProvider(UpmsSecurityProperties securityProperties) {
         this.securityProperties = securityProperties;

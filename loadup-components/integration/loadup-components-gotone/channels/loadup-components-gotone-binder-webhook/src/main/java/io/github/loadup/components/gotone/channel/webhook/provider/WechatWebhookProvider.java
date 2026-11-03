@@ -25,11 +25,12 @@ import io.github.loadup.components.gotone.model.ChannelSendRequest;
 import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import tools.jackson.databind.ObjectMapper;
+import io.github.loadup.commons.json.JsonUtil;
+import tools.jackson.databind.json.JsonMapper;
 
 public class WechatWebhookProvider implements NotificationChannelProvider {
 
-    private static final ObjectMapper JSON = new ObjectMapper();
+    private static final JsonMapper JSON = JsonUtil.customize(JsonMapper.builder()).build();
 
     private static ChannelSendResponse success(ChannelSendRequest request) {
         return new ChannelSendResponse(request.content(), 1, 0, Map.of("wechat", true), Map.of());

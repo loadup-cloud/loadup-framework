@@ -24,12 +24,13 @@ import io.github.loadup.components.gotone.store.table.Tables;
 import java.util.List;
 import java.util.Map;
 import tools.jackson.core.JacksonException;
-import tools.jackson.databind.ObjectMapper;
+import io.github.loadup.commons.json.JsonUtil;
+import tools.jackson.databind.json.JsonMapper;
 
 public class JdbcChannelConfigProvider implements ChannelConfigProvider {
 
     private final ServiceChannelRowMapper channels;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final JsonMapper objectMapper = JsonUtil.customize(JsonMapper.builder()).build();
 
     public JdbcChannelConfigProvider(ServiceChannelRowMapper channels) {
         this.channels = channels;
