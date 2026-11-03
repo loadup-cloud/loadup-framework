@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.transfer.app.service;
 
+import io.github.loadup.commons.dto.PageQuery;
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.log.LogUtil;
@@ -30,6 +31,7 @@ import io.github.loadup.modules.transfer.app.config.TransferTaskProperties;
 import io.github.loadup.modules.transfer.app.converter.TransferDTOConverter;
 import io.github.loadup.modules.transfer.client.dto.TransferTaskDTO;
 import io.github.loadup.modules.transfer.client.error.TransferResultCodeEnum;
+import io.github.loadup.modules.transfer.client.facade.TransferTaskFacade;
 import io.github.loadup.modules.transfer.client.spi.TransferContext;
 import io.github.loadup.modules.transfer.client.spi.TransferHandler;
 import io.github.loadup.modules.transfer.domain.gateway.TransferGateway;
@@ -49,11 +51,12 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Persistent task service for bounded file transfers.
  */
-public class TransferTaskService implements io.github.loadup.modules.transfer.client.facade.TransferTaskFacade {
+public class TransferTaskService implements TransferTaskFacade {
     private static final String REF_TYPE = "transfer-task";
     private final Clock clock;
     private final TransferDTOConverter converter;
@@ -105,7 +108,7 @@ public class TransferTaskService implements io.github.loadup.modules.transfer.cl
         return value.trim();
     }
 
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public TransferTaskDTO submit(
             String ownerId,
             io.github.loadup.modules.transfer.client.enums.TransferKind kind,
@@ -158,7 +161,7 @@ public class TransferTaskService implements io.github.loadup.modules.transfer.cl
     }
 
     public PageDTO<TransferTaskDTO> list(String actorId, boolean admin, String ownerId, int page, int size) {
-        io.github.loadup.commons.dto.PageQuery.normalized(page, size, TransferResultCodeEnum.INVALID_PAGE);
+        PageQuery.normalized(page, size, TransferResultCodeEnum.INVALID_PAGE);
         String owner = admin && ownerId != null && !ownerId.isBlank() ? required(ownerId, 64) : required(actorId, 64);
         return converter.toPageDTO(repository.list(owner, page, size));
     }
@@ -166,7 +169,7 @@ public class TransferTaskService implements io.github.loadup.modules.transfer.cl
     /**
      * Redispatch a queued task or explicitly replay a failed task.
      */
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public TransferTaskDTO retry(String id, String actorId, boolean admin) {
         TransferTask task = requireTask(id, actorId, admin);
         if (task.status() != TransferStatus.FAILED && task.status() != TransferStatus.QUEUED) {

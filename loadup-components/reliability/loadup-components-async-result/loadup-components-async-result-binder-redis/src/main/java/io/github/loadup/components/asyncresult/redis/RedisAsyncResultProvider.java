@@ -28,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import org.redisson.api.RScript;
@@ -63,7 +64,7 @@ public final class RedisAsyncResultProvider implements AsyncResultProvider {
 
     public RedisAsyncResultProvider(RedissonClient client, String namespace) {
         AsyncReplyKey.required(namespace, 128);
-        this.client = java.util.Objects.requireNonNull(client);
+        this.client = Objects.requireNonNull(client);
         prefix = "loadup:async-result:" + encode(namespace) + ":";
     }
 

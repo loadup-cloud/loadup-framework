@@ -19,6 +19,8 @@
  */
 package io.github.loadup.components.lock;
 
+import java.util.Objects;
+
 /**
  * Synchronous critical sections. Acquire, callback and release all run on the caller thread.
  */
@@ -29,7 +31,7 @@ public interface LockTemplate {
             throws X, InterruptedException;
 
     default void run(LockKey key, Runnable action) throws InterruptedException {
-        java.util.Objects.requireNonNull(action, "action");
+        Objects.requireNonNull(action, "action");
         execute(key, () -> {
             action.run();
             return null;
@@ -37,7 +39,7 @@ public interface LockTemplate {
     }
 
     default void run(LockKey key, LockOptions options, Runnable action) throws InterruptedException {
-        java.util.Objects.requireNonNull(action, "action");
+        Objects.requireNonNull(action, "action");
         execute(key, options, () -> {
             action.run();
             return null;

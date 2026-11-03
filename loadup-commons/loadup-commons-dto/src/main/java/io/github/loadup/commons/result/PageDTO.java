@@ -19,6 +19,7 @@
  */
 package io.github.loadup.commons.result;
 
+import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.dto.DTO;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -53,7 +54,7 @@ public class PageDTO<T> implements DTO {
     /**
      * Adapts neutral pagination metadata; entry conversion belongs to the caller's MapStruct converter.
      */
-    public static <T> PageDTO<T> of(io.github.loadup.commons.domain.PageResult<T> page) {
+    public static <T> PageDTO<T> of(PageResult<T> page) {
         return of(page.records(), page.total(), page.page(), page.size());
     }
 

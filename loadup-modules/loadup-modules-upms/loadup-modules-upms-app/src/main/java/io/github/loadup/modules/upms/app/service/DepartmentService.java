@@ -25,6 +25,7 @@ import io.github.loadup.modules.upms.client.command.DepartmentCreateCommand;
 import io.github.loadup.modules.upms.client.command.DepartmentUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.DepartmentDTO;
 import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
+import io.github.loadup.modules.upms.client.facade.DepartmentFacade;
 import io.github.loadup.modules.upms.domain.gateway.DepartmentGateway;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import io.github.loadup.modules.upms.domain.model.Department;
@@ -41,7 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @since 1.0.0
  */
 @Service
-public class DepartmentService implements io.github.loadup.modules.upms.client.facade.DepartmentFacade {
+public class DepartmentService implements DepartmentFacade {
     private final UpmsDTOConverter dtoConverter;
 
     private final DepartmentGateway departmentGateway;

@@ -26,6 +26,7 @@ import static org.mockito.Mockito.when;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import java.time.Duration;
 import java.util.Map;
 import javax.net.ssl.SSLContext;
 import org.junit.jupiter.api.Test;
@@ -52,8 +53,7 @@ class HttpAutoConfigurationTest {
                 .run(application -> {
                     assertThat(application).hasSingleBean(HttpTemplate.class);
                     var properties = application.getBean(HttpProperties.class);
-                    assertThat(properties.clients().get("demo").readTimeout())
-                            .isEqualTo(java.time.Duration.ofSeconds(10));
+                    assertThat(properties.clients().get("demo").readTimeout()).isEqualTo(Duration.ofSeconds(10));
                     assertThat(properties.clients().get("demo").operations()).containsKey("query");
                 });
     }

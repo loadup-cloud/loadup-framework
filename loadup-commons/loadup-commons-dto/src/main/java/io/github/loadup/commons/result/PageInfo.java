@@ -19,15 +19,18 @@
  */
 package io.github.loadup.commons.result;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.io.Serializable;
 
 @Schema(description = "Pagination metadata")
 public record PageInfo(
         @Schema(description = "Total record count") Long totalCount,
         @Schema(description = "Page size") Long pageSize,
         @Schema(description = "Page number, starting at 1") Long pageIndex)
-        implements java.io.Serializable {
+        implements Serializable {
     public PageInfo {
         if (totalCount == null
                 || totalCount < 0
@@ -35,8 +38,7 @@ public record PageInfo(
                 || pageSize < 1
                 || pageIndex == null
                 || pageIndex < 1) {
-            throw new io.github.loadup.commons.error.CommonException(
-                    io.github.loadup.commons.enums.CommonResultCodeEnum.PARAM_ILLEGAL);
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
         }
     }
 

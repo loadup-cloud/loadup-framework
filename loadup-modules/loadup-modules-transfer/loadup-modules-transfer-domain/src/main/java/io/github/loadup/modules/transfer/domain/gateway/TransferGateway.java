@@ -21,13 +21,14 @@ package io.github.loadup.modules.transfer.domain.gateway;
 
 import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.modules.transfer.domain.model.TransferTask;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 public interface TransferGateway {
     void insert(TransferTask task, Map<String, String> options);
 
-    java.util.List<String> queued(int limit);
+    List<String> queued(int limit);
 
     Optional<TransferTask> find(String id);
 

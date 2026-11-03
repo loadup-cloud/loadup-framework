@@ -25,6 +25,7 @@ import io.github.loadup.components.extension.annotation.Extension;
 import io.github.loadup.components.extension.api.IExtensionPoint;
 import io.github.loadup.components.extension.core.BizScenario;
 import io.github.loadup.components.extension.spi.ExtensionProvider;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -104,7 +105,7 @@ public class ExtensionRegistry implements ApplicationListener<ContextRefreshedEv
 
         Extension virtualExtension = new Extension() {
             @Override
-            public Class<? extends java.lang.annotation.Annotation> annotationType() {
+            public Class<? extends Annotation> annotationType() {
                 return Extension.class;
             }
 

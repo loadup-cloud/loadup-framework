@@ -19,10 +19,13 @@
  */
 package io.github.loadup.modules.upms.client.query;
 
+import io.github.loadup.commons.dto.PageQuery;
 import io.github.loadup.commons.json.ToStringAsJson;
+import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
 
 /**
  * Role Query Parameters
@@ -48,22 +51,18 @@ public class RolePageQuery {
     private Boolean deleted;
 
     // Pagination
-    @Min(1)
-    @Schema(description = "Page number, starting at 1", minimum = "1", defaultValue = "1")
+    @Min(1) @Schema(description = "Page number, starting at 1", minimum = "1", defaultValue = "1")
     private Integer page = 1;
 
-    @Min(1)
-    @Max(100)
-    @Schema(description = "Page size", minimum = "1", maximum = "100", defaultValue = "20")
+    @Min(1) @Max(100) @Schema(description = "Page size", minimum = "1", maximum = "100", defaultValue = "20")
     private Integer size = 20;
 
-    @jakarta.validation.constraints.Pattern(regexp = "sortOrder|roleName|roleCode")
-    @Schema(
+    @Pattern(regexp = "sortOrder|roleName|roleCode") @Schema(
             description = "Whitelisted sort field",
             allowableValues = {"sortOrder", "roleName", "roleCode"})
     private String sortBy = "sortOrder";
 
-    @jakarta.validation.constraints.Pattern(regexp = "(?i)ASC|DESC")
+    @Pattern(regexp = "(?i)ASC|DESC")
     @Schema(
             description = "Sort direction",
             allowableValues = {"ASC", "DESC"})
@@ -168,9 +167,8 @@ public class RolePageQuery {
         this.deleted = deleted;
     }
 
-    public io.github.loadup.commons.dto.PageQuery pagination() {
-        return io.github.loadup.commons.dto.PageQuery.normalized(
-                page, size, io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum.INVALID_PAGE);
+    public PageQuery pagination() {
+        return PageQuery.normalized(page, size, UpmsResultCodeEnum.INVALID_PAGE);
     }
 
     @Override
@@ -185,12 +183,9 @@ public class RolePageQuery {
         private Short status;
         private Boolean deleted;
 
-        @Min(1)
-        private Integer page = 1;
+        @Min(1) private Integer page = 1;
 
-        @Min(1)
-        @Max(100)
-        private Integer size = 20;
+        @Min(1) @Max(100) private Integer size = 20;
 
         private String sortBy = "sortOrder";
 

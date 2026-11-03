@@ -20,6 +20,7 @@
 package io.github.loadup.components.configcenter;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public interface ConfigCenterProvider {
     String getConfig(String key);
@@ -30,7 +31,7 @@ public interface ConfigCenterProvider {
 
     List<String> listKeys(String prefix);
 
-    void addListener(String key, java.util.function.Consumer<String> listener);
+    void addListener(String key, Consumer<String> listener);
 
     void removeListener(String key);
 

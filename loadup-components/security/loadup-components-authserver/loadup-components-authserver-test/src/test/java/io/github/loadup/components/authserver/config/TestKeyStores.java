@@ -2,6 +2,7 @@ package io.github.loadup.components.authserver.config;
 
 import io.github.loadup.components.authserver.sas.SasAuthServerAutoConfiguration;
 import io.github.loadup.components.kms.LocalKmsAutoConfiguration;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.KeyStore;
 import java.util.concurrent.TimeUnit;
@@ -55,7 +56,7 @@ final class TestKeyStores {
 
     static KeyStore load(Path path) throws Exception {
         var store = KeyStore.getInstance("PKCS12");
-        try (var input = java.nio.file.Files.newInputStream(path)) {
+        try (var input = Files.newInputStream(path)) {
             store.load(input, PASSWORD.toCharArray());
         }
         return store;

@@ -27,8 +27,7 @@ import java.util.Objects;
 
 @Schema(description = "UserLockCommand")
 public record UserLockCommand(
-        @Schema(description = "Resource identifier") @NotBlank
-        String id) implements DTO {
+        @Schema(description = "Resource identifier") @NotBlank String id) implements DTO {
 
     public static UserLockCommand of(String id) {
         return new UserLockCommand(Objects.requireNonNull(id, "id must not be null"));

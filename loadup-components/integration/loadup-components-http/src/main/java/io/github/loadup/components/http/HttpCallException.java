@@ -19,7 +19,9 @@
  */
 package io.github.loadup.components.http;
 
+import io.github.loadup.commons.enums.ResultStatusEnum;
 import io.github.loadup.commons.error.CommonException;
+import io.github.loadup.commons.result.ResultCode;
 
 /**
  * Safe diagnostic error: deliberately omits URLs, bodies and transport exception messages.
@@ -36,7 +38,7 @@ public class HttpCallException extends CommonException {
         return kind;
     }
 
-    public enum Kind implements io.github.loadup.commons.result.ResultCode {
+    public enum Kind implements ResultCode {
         CONNECTION,
         TIMEOUT,
         TRANSPORT,
@@ -49,7 +51,7 @@ public class HttpCallException extends CommonException {
         }
 
         public String getStatus() {
-            return io.github.loadup.commons.enums.ResultStatusEnum.FAIL.getCode();
+            return ResultStatusEnum.FAIL.getCode();
         }
 
         public String getMessage() {

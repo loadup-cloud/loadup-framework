@@ -38,6 +38,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 
 class DelayedTaskBoundaryTest {
@@ -48,7 +49,7 @@ class DelayedTaskBoundaryTest {
                 mock(DelayedTaskConverter.class),
                 new DelayedTaskProperties(),
                 Clock.systemDefaultZone(),
-                mock(javax.sql.DataSource.class));
+                mock(DataSource.class));
         for (String type : Arrays.asList(null, "", "bad name")) {
             assertThatThrownBy(() -> template.find(type, "id")).isInstanceOf(CommonException.class);
         }
@@ -68,7 +69,7 @@ class DelayedTaskBoundaryTest {
                 mock(DelayedTaskConverter.class),
                 new DelayedTaskProperties(),
                 Clock.systemDefaultZone(),
-                mock(javax.sql.DataSource.class));
+                mock(DataSource.class));
         assertThat(template.find("order.close", "id")).isEmpty();
     }
 

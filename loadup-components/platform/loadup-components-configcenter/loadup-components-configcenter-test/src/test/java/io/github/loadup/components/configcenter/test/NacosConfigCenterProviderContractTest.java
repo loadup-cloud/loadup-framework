@@ -43,6 +43,7 @@ import io.github.loadup.components.configcenter.ConfigCenterProvider;
 import io.github.loadup.components.configcenter.nacos.NacosConfigCenterProperties;
 import io.github.loadup.components.configcenter.nacos.NacosConfigCenterProvider;
 import io.github.loadup.components.configcenter.nacos.autoconfigure.NacosConfigCenterAutoConfiguration;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -93,8 +94,8 @@ class NacosConfigCenterProviderContractTest {
             var contents = ArgumentCaptor.forClass(String.class);
             verify(sdk, times(2)).publishConfig(eq(DATA_ID), eq(GROUP), contents.capture());
             Properties first = new Properties(), second = new Properties();
-            first.load(new java.io.StringReader(contents.getAllValues().get(0)));
-            second.load(new java.io.StringReader(contents.getAllValues().get(1)));
+            first.load(new StringReader(contents.getAllValues().get(0)));
+            second.load(new StringReader(contents.getAllValues().get(1)));
             assertThat(first).containsEntry("a", "new").containsEntry("external", "retained");
             assertThat(second).containsEntry("external", "retained").doesNotContainKey("a");
         }

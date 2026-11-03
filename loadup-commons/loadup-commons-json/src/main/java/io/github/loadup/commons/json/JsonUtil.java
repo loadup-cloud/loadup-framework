@@ -19,6 +19,7 @@
  */
 package io.github.loadup.commons.json;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
@@ -34,6 +35,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.TimeZone;
 import tools.jackson.core.JacksonException;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.DeserializationFeature;
@@ -103,10 +106,9 @@ public class JsonUtil {
                 .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
                 .disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
                 .disable(DateTimeFeature.WRITE_DURATIONS_AS_TIMESTAMPS)
-                .changeDefaultPropertyInclusion(ignored ->
-                        com.fasterxml.jackson.annotation.JsonInclude.Value.construct(Include.ALWAYS, Include.ALWAYS))
+                .changeDefaultPropertyInclusion(ignored -> JsonInclude.Value.construct(Include.ALWAYS, Include.ALWAYS))
                 .defaultDateFormat(new SimpleDateFormat(DEFAULT_DATE_TIME_FORMAT))
-                .defaultTimeZone(java.util.TimeZone.getDefault())
+                .defaultTimeZone(TimeZone.getDefault())
                 .addModule(javaTimeModule)
                 .addModule(module);
     }
@@ -119,7 +121,7 @@ public class JsonUtil {
      * Use the application mapper when Spring configures one.
      */
     public static void setObjectMapper(ObjectMapper mapper) {
-        objectMapper = java.util.Objects.requireNonNull(mapper);
+        objectMapper = Objects.requireNonNull(mapper);
     }
 
     public static String toJson(Object object) {

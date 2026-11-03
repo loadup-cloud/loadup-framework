@@ -34,13 +34,16 @@ import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.components.observability.ApiResultMetrics;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import jakarta.servlet.Filter;
+import jakarta.servlet.http.HttpServletResponse;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Instant;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -58,6 +61,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.web.SecurityFilterChain;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -80,7 +84,7 @@ class ResourceServerSecurityTest {
         var response = new MockHttpServletResponse();
         filter.doFilter(request, response, (incoming, outgoing) -> {
             endpoint.run();
-            ((jakarta.servlet.http.HttpServletResponse) outgoing).setStatus(200);
+            ((HttpServletResponse) outgoing).setStatus(200);
         });
         assertThat(request.getSession(false)).isNull();
         return response;
@@ -115,7 +119,7 @@ class ResourceServerSecurityTest {
     @Test
     void bearerAuthenticationUsesVerifiedPrincipalAndDoesNotCreateSession() {
         runner.run(application -> {
-            var called = new java.util.concurrent.atomic.AtomicBoolean();
+            var called = new AtomicBoolean();
             Filter filter = application.getBean("springSecurityFilterChain", Filter.class);
             var response = request(filter, "/api/private", "valid", () -> {
                 var authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -157,7 +161,7 @@ class ResourceServerSecurityTest {
         runner.withPropertyValues("loadup.security.resource-server.permit-all[0]=/api/public")
                 .run(application -> {
                     Filter filter = application.getBean("springSecurityFilterChain", Filter.class);
-                    var calls = new java.util.concurrent.atomic.AtomicInteger();
+                    var calls = new AtomicInteger();
                     assertThat(request(filter, "/api/public", null, calls::incrementAndGet)
                                     .getStatus())
                             .isEqualTo(200);
@@ -221,7 +225,7 @@ class ResourceServerSecurityTest {
         generator.initialize(2048);
         var pair = generator.generateKeyPair();
         String pem = "-----BEGIN PUBLIC KEY-----\n"
-                + java.util.Base64.getMimeEncoder(64, new byte[] {'\n'})
+                + Base64.getMimeEncoder(64, new byte[] {'\n'})
                         .encodeToString(pair.getPublic().getEncoded())
                 + "\n-----END PUBLIC KEY-----\n";
         var loader = new DefaultResourceLoader();
@@ -255,8 +259,7 @@ class ResourceServerSecurityTest {
             if (claims == valid) {
                 assertThat(decoder.decode(token.serialize()).getSubject()).isEqualTo("payment");
             } else {
-                assertThatThrownBy(() -> decoder.decode(token.serialize()))
-                        .isInstanceOf(org.springframework.security.oauth2.jwt.JwtException.class);
+                assertThatThrownBy(() -> decoder.decode(token.serialize())).isInstanceOf(JwtException.class);
             }
         }
         var invalidSignature = new SignedJWT(new JWSHeader(JWSAlgorithm.RS256), valid);

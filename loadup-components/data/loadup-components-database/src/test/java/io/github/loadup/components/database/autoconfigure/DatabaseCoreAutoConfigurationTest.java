@@ -7,6 +7,7 @@ import io.github.loadup.commons.time.autoconfigure.ClockAutoConfiguration;
 import io.github.loadup.components.database.tenant.DatabaseTenant;
 import java.time.Clock;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -22,7 +23,7 @@ class DatabaseCoreAutoConfigurationTest {
         runner.run(context -> {
             assertThat(context).hasNotFailed().hasSingleBean(DatabaseTenant.class);
             assertThat(context).hasSingleBean(Clock.class);
-            assertThat(context.getBean("clock", Clock.class).getZone()).isEqualTo(java.time.ZoneId.systemDefault());
+            assertThat(context.getBean("clock", Clock.class).getZone()).isEqualTo(ZoneId.systemDefault());
         });
     }
 

@@ -36,15 +36,10 @@ public class PermissionCreateCommand {
     @Schema(description = "Parent id")
     private String parentId;
 
-    @NotBlank()
-    @Size(max = 50)
-    @Schema(description = "Permission name")
+    @NotBlank() @Size(max = 50) @Schema(description = "Permission name")
     private String permissionName;
 
-    @NotBlank()
-    @Size(max = 100)
-    @Pattern(regexp = "^[a-z:]+$")
-    @Schema(description = "Permission code")
+    @NotBlank() @Size(max = 100) @Pattern(regexp = "^[a-z:]+$") @Schema(description = "Permission code")
     private String permissionCode;
 
     /**

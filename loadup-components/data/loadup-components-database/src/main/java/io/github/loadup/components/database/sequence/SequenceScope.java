@@ -22,12 +22,14 @@ package io.github.loadup.components.database.sequence;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
 import java.time.LocalDate;
+import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
  * A shared allocation namespace; the maximum is immutable once initialized.
  */
 public final class SequenceScope {
-    private static final java.util.regex.Pattern NAME = java.util.regex.Pattern.compile("[A-Za-z0-9_-]{1,120}");
+    private static final Pattern NAME = Pattern.compile("[A-Za-z0-9_-]{1,120}");
     private final String name;
     private final LocalDate date;
     private final long maximum;
@@ -66,7 +68,7 @@ public final class SequenceScope {
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(key, maximum);
+        return Objects.hash(key, maximum);
     }
 
     @Override

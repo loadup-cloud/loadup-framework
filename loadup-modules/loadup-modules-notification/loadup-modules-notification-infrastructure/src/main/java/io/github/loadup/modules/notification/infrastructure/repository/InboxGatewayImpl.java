@@ -27,6 +27,7 @@ import io.github.loadup.modules.notification.infrastructure.converter.Notificati
 import io.github.loadup.modules.notification.infrastructure.dataobject.InboxMessageDO;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.Map;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -75,7 +76,7 @@ public class InboxGatewayImpl implements InboxGateway {
     public PageResult<InboxMessage> list(String recipient, boolean unread, int page, int size) {
         String predicate =
                 " AND recipient_id = :recipient AND archived_at IS NULL" + (unread ? " AND read_at IS NULL" : "");
-        long total = count(predicate, java.util.Map.of("recipient", recipient));
+        long total = count(predicate, Map.of("recipient", recipient));
         var rows = jdbc.sql("SELECT " + COLUMNS + FROM + predicate
                         + " ORDER BY created_at DESC, id DESC LIMIT :limit OFFSET :offset")
                 .param("recipient", recipient)
@@ -90,7 +91,7 @@ public class InboxGatewayImpl implements InboxGateway {
     public long unreadCount(String recipient) {
         return count(
                 " AND recipient_id = :recipient AND archived_at IS NULL AND read_at IS NULL",
-                java.util.Map.of("recipient", recipient));
+                Map.of("recipient", recipient));
     }
 
     @Override
@@ -107,7 +108,7 @@ public class InboxGatewayImpl implements InboxGateway {
                 ? changed
                 : (int) count(
                         " AND recipient_id = :recipient AND id = :id AND archived_at IS NULL",
-                        java.util.Map.of("recipient", recipient, "id", id));
+                        Map.of("recipient", recipient, "id", id));
     }
 
     @Override
@@ -133,12 +134,10 @@ public class InboxGatewayImpl implements InboxGateway {
                 .update();
         return changed > 0
                 ? changed
-                : (int) count(
-                        " AND recipient_id = :recipient AND id = :id",
-                        java.util.Map.of("recipient", recipient, "id", id));
+                : (int) count(" AND recipient_id = :recipient AND id = :id", Map.of("recipient", recipient, "id", id));
     }
 
-    private long count(String predicate, java.util.Map<String, ?> params) {
+    private long count(String predicate, Map<String, ?> params) {
         Long count = jdbc.sql("SELECT COUNT(*)" + FROM + predicate)
                 .params(params)
                 .query(Long.class)

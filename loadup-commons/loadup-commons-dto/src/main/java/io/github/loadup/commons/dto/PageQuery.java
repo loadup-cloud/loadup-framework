@@ -25,19 +25,18 @@ import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.commons.result.ResultCode;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
 /**
  * Shared pagination bounds; HTTP field names remain page and size.
  */
 public record PageQuery(
-        @jakarta.validation.constraints.Min(1)
-        @JsonProperty("page")
+        @Min(1) @JsonProperty("page")
         @Schema(description = "Page number, starting at 1", minimum = "1", defaultValue = "1")
         Integer pageNum,
 
-        @jakarta.validation.constraints.Min(1)
-        @jakarta.validation.constraints.Max(100)
-        @JsonProperty("size")
+        @Min(1) @Max(100) @JsonProperty("size")
         @Schema(description = "Page size", minimum = "1", maximum = "100", defaultValue = "20")
         Integer pageSize) {
     public static final int DEFAULT_PAGE_SIZE = 20;

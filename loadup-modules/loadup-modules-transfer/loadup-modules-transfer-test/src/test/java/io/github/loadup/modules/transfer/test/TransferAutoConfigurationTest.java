@@ -29,6 +29,7 @@ import io.github.loadup.modules.file.app.service.FileResourceService;
 import io.github.loadup.modules.transfer.app.autoconfigure.TransferAutoConfiguration;
 import io.github.loadup.modules.transfer.app.config.TransferTaskProperties;
 import io.github.loadup.modules.transfer.app.converter.TransferDTOConverter;
+import io.github.loadup.modules.transfer.app.service.TransferTaskProcessor;
 import io.github.loadup.modules.transfer.app.service.TransferTaskService;
 import io.github.loadup.modules.transfer.client.enums.TransferKind;
 import io.github.loadup.modules.transfer.client.spi.TransferHandler;
@@ -72,8 +73,7 @@ class TransferAutoConfigurationTest {
                     .hasSingleBean(TransferGateway.class)
                     .hasSingleBean(TransferDTOConverter.class)
                     .hasSingleBean(TransferTaskService.class);
-            assertThat(context)
-                    .hasSingleBean(io.github.loadup.modules.transfer.app.service.TransferTaskProcessor.class);
+            assertThat(context).hasSingleBean(TransferTaskProcessor.class);
         });
     }
 

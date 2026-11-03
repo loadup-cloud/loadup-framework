@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.springframework.context.SmartLifecycle;
 
@@ -35,7 +36,7 @@ import org.springframework.context.SmartLifecycle;
 public final class SchedulerTemplate implements SmartLifecycle {
     private final SchedulerProvider provider;
     private final Map<String, ScheduledTask> tasks;
-    private final Map<String, AtomicBoolean> active = new java.util.concurrent.ConcurrentHashMap<>();
+    private final Map<String, AtomicBoolean> active = new ConcurrentHashMap<>();
     private volatile boolean running;
 
     public SchedulerTemplate(SchedulerProvider provider, List<ScheduledTask> scanners) {

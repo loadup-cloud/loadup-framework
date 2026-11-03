@@ -28,14 +28,12 @@ import jakarta.validation.constraints.Size;
 import java.util.Map;
 
 public record ContractResolveQuery(
-        @Schema(description = "Merchant identifier") @NotBlank
-        String merchantId,
+        @Schema(description = "Merchant identifier") @NotBlank String merchantId,
 
         @Schema(description = "Scope key") @NotBlank String scopeKey,
         @Schema(description = "Item key") @NotBlank String itemKey,
 
-        @Schema(description = "Transaction facts") @NotNull @Size(max = 256)
-        Map<String, ValueDTO> transactionFacts) {
+        @Schema(description = "Transaction facts") @NotNull @Size(max = 256) Map<String, ValueDTO> transactionFacts) {
     @Override
     public String toString() {
         return ToStringAsJson.reflectionToString(this);

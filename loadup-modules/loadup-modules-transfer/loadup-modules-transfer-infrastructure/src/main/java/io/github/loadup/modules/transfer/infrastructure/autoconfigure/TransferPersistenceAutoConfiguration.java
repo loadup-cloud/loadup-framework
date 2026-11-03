@@ -24,6 +24,7 @@ import io.github.loadup.modules.transfer.domain.gateway.TransferGateway;
 import io.github.loadup.modules.transfer.infrastructure.mapper.TransferTaskOptionRowMapper;
 import io.github.loadup.modules.transfer.infrastructure.mapper.TransferTaskRowMapper;
 import io.github.loadup.modules.transfer.infrastructure.repository.TransferGatewayImpl;
+import java.time.Clock;
 import javax.sql.DataSource;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -56,7 +57,7 @@ public class TransferPersistenceAutoConfiguration {
                 TransferTaskRowMapper mapper,
                 TransferTaskOptionRowMapper optionMapper,
                 IdGenerator ids,
-                java.time.Clock clock) {
+                Clock clock) {
             return new TransferGatewayImpl(jdbc, mapper, optionMapper, ids, clock);
         }
     }

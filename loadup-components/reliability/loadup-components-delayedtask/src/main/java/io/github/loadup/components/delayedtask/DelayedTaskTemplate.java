@@ -22,6 +22,7 @@ package io.github.loadup.components.delayedtask;
 import io.github.loadup.commons.error.CommonException;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,7 +75,7 @@ public class DelayedTaskTemplate {
                 || !TransactionSynchronizationManager.hasResource(dataSource)) {
             throw new CommonException(DelayedTaskResultCodeEnum.TRANSACTION_REQUIRED);
         }
-        LocalDateTime deadline = executeAt.truncatedTo(java.time.temporal.ChronoUnit.MICROS);
+        LocalDateTime deadline = executeAt.truncatedTo(ChronoUnit.MICROS);
         var row = store.insert(taskType, bizId, deadline, properties.getMaxAttempts(), LocalDateTime.now(clock));
         if (!row.getExecuteAt().equals(deadline)) {
             throw new CommonException(DelayedTaskResultCodeEnum.CONFLICT);
@@ -99,7 +100,7 @@ public class DelayedTaskTemplate {
         if (deadline == null) {
             invalid();
         }
-        change(type, biz, deadline.truncatedTo(java.time.temporal.ChronoUnit.MICROS), false);
+        change(type, biz, deadline.truncatedTo(ChronoUnit.MICROS), false);
     }
 
     @Transactional

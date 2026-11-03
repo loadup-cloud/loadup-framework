@@ -25,13 +25,11 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
 public record ContractStatusCommand(
-        @Schema(description = "Resource identifier") @NotBlank
-        String id,
+        @Schema(description = "Resource identifier") @NotBlank String id,
 
         @Schema(description = "Expected generation") @Min(1) long expectedGeneration,
 
-        @Schema(description = "Current lifecycle status") @NotBlank
-        String status) {
+        @Schema(description = "Current lifecycle status") @NotBlank String status) {
     @Override
     public String toString() {
         return ToStringAsJson.reflectionToString(this);

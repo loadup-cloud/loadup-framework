@@ -32,6 +32,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.upms.app.converter.UserSensitiveConverter;
 import io.github.loadup.modules.upms.app.service.SensitiveReadAudit;
 import io.github.loadup.modules.upms.app.service.UserSensitiveReadService;
@@ -83,8 +84,7 @@ class UserSensitiveReadServiceTest {
     void requiresAuditAndPropagatesFailure() {
         when(decisions.decide(anyString(), anyString(), any())).thenReturn(AccessDecision.permit("SUPPORT"));
         var unavailable = service(false);
-        assertThatExceptionOfType(io.github.loadup.commons.error.CommonException.class)
-                .isThrownBy(() -> unavailable.read("actor", query));
+        assertThatExceptionOfType(CommonException.class).isThrownBy(() -> unavailable.read("actor", query));
         var available = service(true);
         doThrow(new IllegalStateException("audit unavailable")).when(audit).record("actor", "subject", query.purpose());
         assertThatIllegalStateException().isThrownBy(() -> available.read("actor", query));
@@ -109,9 +109,9 @@ class UserSensitiveReadServiceTest {
     @Test
     void rejectsUntrustedQueryMetadata() {
         var service = service(true);
-        assertThatExceptionOfType(io.github.loadup.commons.error.CommonException.class)
+        assertThatExceptionOfType(CommonException.class)
                 .isThrownBy(() -> service.read("actor", new UserSensitiveQuery("../subject", query.purpose())));
-        assertThatExceptionOfType(io.github.loadup.commons.error.CommonException.class)
+        assertThatExceptionOfType(CommonException.class)
                 .isThrownBy(() -> service.read("actor", new UserSensitiveQuery("subject", null)));
         verifyNoInteractions(decisions, audit);
     }

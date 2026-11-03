@@ -22,6 +22,7 @@ package io.github.loadup.components.scheduler.powerjob;
 import io.github.loadup.commons.error.CommonException;
 import io.micrometer.observation.ObservationRegistry;
 import java.util.Arrays;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -44,8 +45,7 @@ public class LoadUpPowerJobAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public PowerJobProcessorAspect powerJobProcessorAspect(
-            org.springframework.beans.factory.ObjectProvider<ObservationRegistry> observations) {
+    public PowerJobProcessorAspect powerJobProcessorAspect(ObjectProvider<ObservationRegistry> observations) {
         return new PowerJobProcessorAspect(observations.getIfAvailable(() -> ObservationRegistry.NOOP));
     }
 

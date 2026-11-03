@@ -27,8 +27,7 @@ import java.util.Objects;
 
 @Schema(description = "Identifier lookup query")
 public record IdQuery(
-        @Schema(description = "Resource identifier") @NotBlank
-        String id) implements DTO {
+        @Schema(description = "Resource identifier") @NotBlank String id) implements DTO {
 
     public static IdQuery of(String id) {
         return new IdQuery(Objects.requireNonNull(id, "id must not be null"));

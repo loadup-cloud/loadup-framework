@@ -22,6 +22,7 @@ package io.github.loadup.modules.contract;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.contract.app.support.ContractCodec;
 import io.github.loadup.modules.contract.client.dto.CatalogDefinitions;
 import io.github.loadup.modules.contract.domain.model.ComparisonOperator;
@@ -84,6 +85,6 @@ class ContractCodecTest {
         assertThatThrownBy(() -> codec.read("{\"items\":[],\"unexpected\":true}", CatalogDefinitions.Bundle.class))
                 .isInstanceOf(RuntimeException.class);
         assertThatThrownBy(() -> codec.write(Map.of("value", "x".repeat(131072))))
-                .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
+                .isInstanceOf(CommonException.class);
     }
 }

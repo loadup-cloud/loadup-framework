@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.upms.client.command;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.modules.upms.client.validation.ValidPassword;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -37,37 +38,27 @@ import java.util.List;
  */
 public class UserCreateCommand {
 
-    @NotBlank()
-    @Size(min = 3, max = 30)
-    @Pattern(regexp = "^[a-zA-Z0-9_]+$")
-    @Schema(description = "Username")
+    @NotBlank() @Size(min = 3, max = 30) @Pattern(regexp = "^[a-zA-Z0-9_]+$") @Schema(description = "Username")
     private String username;
 
-    @NotBlank()
-    @Schema(description = "Password, supplied only in requests", accessMode = Schema.AccessMode.WRITE_ONLY)
-    @com.fasterxml.jackson.annotation.JsonProperty(
-            access = com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY)
+    @NotBlank() @Schema(description = "Password, supplied only in requests", accessMode = Schema.AccessMode.WRITE_ONLY)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ValidPassword
     private String password;
 
-    @NotBlank()
-    @Size(max = 50)
-    @Schema(description = "Nickname")
+    @NotBlank() @Size(max = 50) @Schema(description = "Nickname")
     private String nickname;
 
-    @Size(max = 50)
-    @Schema(description = "Real name")
+    @Size(max = 50) @Schema(description = "Real name")
     private String realName;
 
     @Schema(description = "Dept id")
     private String deptId;
 
-    @Email()
-    @Schema(description = "Email")
+    @Email() @Schema(description = "Email")
     private String email;
 
-    @Pattern(regexp = "^1[3-9]\\d{9}$")
-    @Schema(description = "Mobile")
+    @Pattern(regexp = "^1[3-9]\\d{9}$") @Schema(description = "Mobile")
     private String mobile;
 
     @Schema(description = "Avatar")

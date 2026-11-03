@@ -21,6 +21,7 @@ package io.github.loadup.components.http;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Values are encoded as URI variables; byte[] and String bodies are sent without JSON wrapping.
@@ -32,7 +33,7 @@ public record HttpCall(
         query = query == null
                 ? Map.of()
                 : query.entrySet().stream()
-                        .collect(java.util.stream.Collectors.toUnmodifiableMap(
+                        .collect(Collectors.toUnmodifiableMap(
                                 Map.Entry::getKey, entry -> List.copyOf(entry.getValue())));
         headers = headers == null ? Map.of() : Map.copyOf(headers);
     }

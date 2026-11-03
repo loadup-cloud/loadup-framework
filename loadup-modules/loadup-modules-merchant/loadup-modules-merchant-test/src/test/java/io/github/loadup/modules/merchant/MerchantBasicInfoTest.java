@@ -22,6 +22,7 @@ package io.github.loadup.modules.merchant;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.merchant.app.converter.MerchantConverter;
 import io.github.loadup.modules.merchant.app.converter.MerchantConverterImpl;
 import io.github.loadup.modules.merchant.domain.model.Merchant;
@@ -50,9 +51,8 @@ class MerchantBasicInfoTest {
         var at = LocalDateTime.of(2026, 10, 10, 0, 0);
         var merchant = new Merchant("id", info("M001", null), MerchantStatus.ACTIVE, 1, "actor", "actor", at, at);
         assertThatThrownBy(() -> merchant.update(info("M002", null), "actor", at))
-                .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
-        assertThatThrownBy(() -> info("M001", "138****8000"))
-                .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
+                .isInstanceOf(CommonException.class);
+        assertThatThrownBy(() -> info("M001", "138****8000")).isInstanceOf(CommonException.class);
         assertThat(merchant.changeStatus(MerchantStatus.INACTIVE, "actor", at).rowVersion())
                 .isEqualTo(2);
     }

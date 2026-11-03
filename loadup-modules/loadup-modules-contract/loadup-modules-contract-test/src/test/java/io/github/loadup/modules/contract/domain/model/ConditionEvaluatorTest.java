@@ -22,8 +22,11 @@ package io.github.loadup.modules.contract.domain.model;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import io.github.loadup.commons.error.CommonException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 
 class ConditionEvaluatorTest {
@@ -88,12 +91,10 @@ class ConditionEvaluatorTest {
         }
         Condition overBudget = deep;
         assertThatThrownBy(() -> evaluator.evaluate(overBudget, Map.of(), Map.of()))
-                .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
-        var wide = new Condition.All(java.util.stream.IntStream.range(0, 128)
-                .mapToObj(i -> equal("answer"))
-                .toList());
-        assertThatThrownBy(() -> evaluator.validate(wide))
-                .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
+                .isInstanceOf(CommonException.class);
+        var wide = new Condition.All(
+                IntStream.range(0, 128).mapToObj(i -> equal("answer")).toList());
+        assertThatThrownBy(() -> evaluator.validate(wide)).isInstanceOf(CommonException.class);
     }
 
     @Test
@@ -103,20 +104,18 @@ class ConditionEvaluatorTest {
                         ComparisonOperator.BETWEEN,
                         List.of(TypedValue.integer(10), TypedValue.integer(1)),
                         null))
-                .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
+                .isInstanceOf(CommonException.class);
         assertThatThrownBy(() ->
                         new Condition.Compare("enabled", ComparisonOperator.GT, List.of(TypedValue.bool(true)), null))
-                .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
+                .isInstanceOf(CommonException.class);
         assertThatThrownBy(() -> evaluator.validateConfigurationReferences(
-                        new Condition.Compare("amount", ComparisonOperator.LE, List.of(), "unknown"),
-                        java.util.Set.of()))
-                .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
+                        new Condition.Compare("amount", ComparisonOperator.LE, List.of(), "unknown"), Set.of()))
+                .isInstanceOf(CommonException.class);
     }
 
     @Test
     void refusesHugeExponentBeforeCanonicalExpansion() {
-        assertThatThrownBy(() -> TypedValue.decimal("1E+100000000"))
-                .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
+        assertThatThrownBy(() -> TypedValue.decimal("1E+100000000")).isInstanceOf(CommonException.class);
         assertThat(TypedValue.decimal("0.0045000")).isEqualTo(TypedValue.decimal("0.0045"));
     }
 }

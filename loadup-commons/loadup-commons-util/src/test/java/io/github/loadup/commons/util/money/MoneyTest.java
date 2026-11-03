@@ -26,9 +26,11 @@ import io.github.loadup.commons.enums.CurrencyEnum;
 import io.github.loadup.commons.money.Money;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Arrays;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -159,13 +161,12 @@ class MoneyTest {
 
     @Test
     void catalogMatchesJdkCodesAndPreservesNumericLeadingZerosAndRequestedSymbols() {
-        var codes = java.util.Arrays.stream(CurrencyEnum.values())
-                .map(CurrencyEnum::getCode)
-                .collect(java.util.stream.Collectors.toSet());
+        var codes =
+                Arrays.stream(CurrencyEnum.values()).map(CurrencyEnum::getCode).collect(Collectors.toSet());
         assertThat(codes)
                 .isEqualTo(Currency.availableCurrencies()
                         .map(Currency::getCurrencyCode)
-                        .collect(java.util.stream.Collectors.toSet()));
+                        .collect(Collectors.toSet()));
         for (CurrencyEnum currency : CurrencyEnum.values()) {
             assertThat(currency.getNumericCode())
                     .isEqualTo(currency.toCurrency().getNumericCodeAsString());

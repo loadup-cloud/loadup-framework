@@ -15,11 +15,15 @@
  */
 package io.github.loadup.commons.event;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import io.github.loadup.commons.error.DomainViolation;
 import io.github.loadup.commons.json.DiagnosticHidden;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.commons.time.BusinessTime;
 import io.github.loadup.commons.validation.DomainChecks;
+import jakarta.validation.Valid;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
@@ -32,18 +36,16 @@ public record EventEnvelope<T>(
         String producer,
         String eventType,
 
-        @com.fasterxml.jackson.annotation.JsonProperty(required = true)
-        @com.fasterxml.jackson.annotation.JsonSetter(nulls = com.fasterxml.jackson.annotation.Nulls.FAIL)
+        @JsonProperty(required = true) @JsonSetter(nulls = Nulls.FAIL)
         int schemaVersion,
 
         String aggregateId,
 
-        @com.fasterxml.jackson.annotation.JsonProperty(required = true)
-        @com.fasterxml.jackson.annotation.JsonSetter(nulls = com.fasterxml.jackson.annotation.Nulls.FAIL)
+        @JsonProperty(required = true) @JsonSetter(nulls = Nulls.FAIL)
         long aggregateVersion,
 
         OffsetDateTime occurredAt,
-        @DiagnosticHidden @jakarta.validation.Valid T data) {
+        @DiagnosticHidden @Valid T data) {
     public EventEnvelope {
         DomainChecks.id(deliveryId);
         DomainChecks.id(businessEventId);

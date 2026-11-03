@@ -21,6 +21,7 @@ package io.github.loadup.components.testcontainers.messaging;
 
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -147,8 +148,8 @@ public final class SharedKafkaContainer {
      *
      * @return map of property names to values
      */
-    public static java.util.Map<String, String> getProperties() {
-        return java.util.Map.of("spring.kafka.bootstrap-servers", getBootstrapServers());
+    public static Map<String, String> getProperties() {
+        return Map.of("spring.kafka.bootstrap-servers", getBootstrapServers());
     }
 
     public static boolean isStarted() {

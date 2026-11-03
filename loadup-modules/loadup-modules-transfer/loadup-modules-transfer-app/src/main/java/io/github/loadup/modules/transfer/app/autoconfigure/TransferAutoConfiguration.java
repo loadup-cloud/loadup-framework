@@ -23,10 +23,12 @@ import io.github.loadup.modules.file.client.facade.FileResourceFacade;
 import io.github.loadup.modules.transfer.app.config.TransferTaskProperties;
 import io.github.loadup.modules.transfer.app.converter.TransferDTOConverter;
 import io.github.loadup.modules.transfer.app.converter.TransferDTOConverterImpl;
+import io.github.loadup.modules.transfer.app.service.TransferTaskProcessor;
 import io.github.loadup.modules.transfer.app.service.TransferTaskService;
 import io.github.loadup.modules.transfer.client.facade.TransferTaskFacade;
 import io.github.loadup.modules.transfer.client.spi.TransferHandler;
 import io.github.loadup.modules.transfer.domain.gateway.TransferGateway;
+import java.time.Clock;
 import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -62,15 +64,14 @@ public class TransferAutoConfiguration {
             List<TransferHandler> handlers,
             TransferTaskProperties properties,
             TransferDTOConverter converter,
-            java.time.Clock clock) {
+            Clock clock) {
         return new TransferTaskService(repository, files, handlers, properties, converter, clock);
     }
 
     @Bean
     @ConditionalOnBean(TransferTaskService.class)
     @ConditionalOnMissingBean(name = "transferTaskProcessor")
-    public io.github.loadup.modules.transfer.app.service.TransferTaskProcessor transferTaskProcessor(
-            TransferTaskService service) {
-        return new io.github.loadup.modules.transfer.app.service.TransferTaskProcessor(service);
+    public TransferTaskProcessor transferTaskProcessor(TransferTaskService service) {
+        return new TransferTaskProcessor(service);
     }
 }

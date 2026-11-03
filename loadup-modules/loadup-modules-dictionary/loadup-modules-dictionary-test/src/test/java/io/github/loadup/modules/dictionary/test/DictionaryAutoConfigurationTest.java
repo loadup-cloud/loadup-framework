@@ -30,6 +30,7 @@ import io.github.loadup.modules.dictionary.domain.gateway.DictionaryGateway;
 import io.github.loadup.modules.dictionary.infrastructure.autoconfigure.DictionaryPersistenceAutoConfiguration;
 import io.github.loadup.modules.dictionary.infrastructure.mapper.DictionaryItemMapper;
 import io.github.loadup.modules.dictionary.infrastructure.mapper.DictionaryTypeMapper;
+import java.time.Clock;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -46,7 +47,7 @@ class DictionaryAutoConfigurationTest {
             .withBean(DictionaryTypeMapper.class, () -> mock(DictionaryTypeMapper.class))
             .withBean(DictionaryItemMapper.class, () -> mock(DictionaryItemMapper.class))
             .withBean(IdGenerator.class, () -> () -> "dictionary-id")
-            .withBean("databaseClock", java.time.Clock.class, java.time.Clock::systemDefaultZone)
+            .withBean("databaseClock", Clock.class, Clock::systemDefaultZone)
             .withConfiguration(AutoConfigurations.of(
                     DictionaryPersistenceAutoConfiguration.class, DictionaryAutoConfiguration.class));
 

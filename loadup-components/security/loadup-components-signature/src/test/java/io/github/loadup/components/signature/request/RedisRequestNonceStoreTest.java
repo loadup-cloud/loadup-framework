@@ -27,6 +27,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.Duration;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
@@ -44,6 +45,6 @@ class RedisRequestNonceStoreTest {
         assertThat(store.claim(key, Duration.ofNanos(1000001))).isTrue();
         assertThat(store.claim(key, Duration.ofNanos(1000001))).isFalse();
         assertThatThrownBy(() -> store.claim(key, Duration.ofNanos(1000001))).isInstanceOf(IllegalStateException.class);
-        verify(values, org.mockito.Mockito.times(3)).setIfAbsent(storageKey, "1", Duration.ofMillis(2));
+        verify(values, Mockito.times(3)).setIfAbsent(storageKey, "1", Duration.ofMillis(2));
     }
 }

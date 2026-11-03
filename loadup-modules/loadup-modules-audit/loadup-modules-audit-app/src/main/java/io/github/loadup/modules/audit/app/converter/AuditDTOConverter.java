@@ -23,6 +23,7 @@ import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.mapping.LoadUpMapStructConfig;
 import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.audit.client.dto.AuditEventDTO;
+import io.github.loadup.modules.audit.client.query.AuditPageQuery;
 import io.github.loadup.modules.audit.domain.model.AuditEvent;
 import io.github.loadup.modules.audit.domain.model.AuditQuery;
 import org.mapstruct.Mapper;
@@ -38,5 +39,5 @@ public interface AuditDTOConverter {
         return PageDTO.of(value.map(this::toDTO));
     }
 
-    AuditQuery toDomain(io.github.loadup.modules.audit.client.query.AuditPageQuery value);
+    AuditQuery toDomain(AuditPageQuery value);
 }

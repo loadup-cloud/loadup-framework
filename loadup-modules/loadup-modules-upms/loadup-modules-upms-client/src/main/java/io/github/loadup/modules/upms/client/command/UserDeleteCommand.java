@@ -27,8 +27,7 @@ import java.util.Objects;
 
 @Schema(description = "UserDeleteCommand")
 public record UserDeleteCommand(
-        @Schema(description = "Resource identifier") @NotBlank
-        String id) implements DTO {
+        @Schema(description = "Resource identifier") @NotBlank String id) implements DTO {
 
     public static UserDeleteCommand of(String id) {
         return new UserDeleteCommand(Objects.requireNonNull(id, "id must not be null"));

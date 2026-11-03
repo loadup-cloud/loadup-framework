@@ -36,6 +36,7 @@ import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -86,7 +87,7 @@ public class LocalDfsProvider implements DfsProvider {
         Path temporary = target.resolveSibling(target.getFileName() + ".uploading");
         Instant uploadedAt = Instant.now();
         try {
-            Files.createDirectories(java.util.Objects.requireNonNull(target.getParent()));
+            Files.createDirectories(Objects.requireNonNull(target.getParent()));
             Files.copy(request.content(), temporary, StandardCopyOption.REPLACE_EXISTING);
             long actualSize = Files.size(temporary);
             if (actualSize != request.contentLength()) {
@@ -189,7 +190,7 @@ public class LocalDfsProvider implements DfsProvider {
         values.setProperty("uploadedAt", metadata.uploadedAt().toString());
         metadata.metadata().forEach((key, value) -> values.setProperty(METADATA_PREFIX + key, value));
         Path metadataFile = metadataPath(metadata.fileId());
-        Files.createDirectories(java.util.Objects.requireNonNull(metadataFile.getParent()));
+        Files.createDirectories(Objects.requireNonNull(metadataFile.getParent()));
         try (OutputStream output = Files.newOutputStream(metadataFile)) {
             values.store(output, null);
         }

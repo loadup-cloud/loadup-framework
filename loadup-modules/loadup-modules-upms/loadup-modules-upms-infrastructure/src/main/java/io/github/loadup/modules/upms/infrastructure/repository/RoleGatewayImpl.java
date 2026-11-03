@@ -24,6 +24,8 @@ import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import io.github.loadup.commons.domain.PageResult;
 import io.github.loadup.commons.dto.PageQuery;
+import io.github.loadup.commons.error.CommonException;
+import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
 import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
 import io.github.loadup.modules.upms.domain.model.Role;
 import io.github.loadup.modules.upms.infrastructure.converter.RoleConverter;
@@ -37,6 +39,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -104,7 +107,7 @@ public class RoleGatewayImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
             WHERE id = :id AND deleted = FALSE
             """, new BeanPropertySqlParameterSource(row));
         if (changed != 1) {
-            throw new org.springframework.dao.IncorrectResultSizeDataAccessException(1, changed);
+            throw new IncorrectResultSizeDataAccessException(1, changed);
         }
         return converter.toEntity(row);
     }
@@ -116,12 +119,10 @@ public class RoleGatewayImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
         jdbc.queryForList(
                 "SELECT id FROM upms_role WHERE id = :id AND deleted = FALSE FOR UPDATE", params, String.class);
         if (!findByParentId(id).isEmpty()) {
-            throw new io.github.loadup.commons.error.CommonException(
-                    io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum.ROLE_STILL_HAS_CHILD_ROLES);
+            throw new CommonException(UpmsResultCodeEnum.ROLE_STILL_HAS_CHILD_ROLES);
         }
         if (countUsersByRoleId(id) > 0) {
-            throw new io.github.loadup.commons.error.CommonException(
-                    io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum.ROLE_IS_STILL_ASSIGNED_TO_USERS);
+            throw new CommonException(UpmsResultCodeEnum.ROLE_IS_STILL_ASSIGNED_TO_USERS);
         }
         for (String table : List.of("upms_role_permission", "upms_role_department", "upms_user_role")) {
             jdbc.update(
@@ -258,8 +259,7 @@ public class RoleGatewayImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
                         params().addValue("id", id),
                         String.class)
                 .isEmpty()) {
-            throw new io.github.loadup.commons.error.CommonException(
-                    io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum.PARENT_ROLE_DOES_NOT_EXIST);
+            throw new CommonException(UpmsResultCodeEnum.PARENT_ROLE_DOES_NOT_EXIST);
         }
     }
 

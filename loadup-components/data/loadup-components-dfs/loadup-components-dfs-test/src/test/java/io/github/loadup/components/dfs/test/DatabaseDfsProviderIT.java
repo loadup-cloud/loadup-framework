@@ -22,18 +22,27 @@ package io.github.loadup.components.dfs.test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import io.github.loadup.components.dfs.DfsObjectNotFoundException;
 import io.github.loadup.components.dfs.DfsService;
+import io.github.loadup.components.dfs.DfsStorageException;
 import io.github.loadup.components.dfs.model.FileDownloadResponse;
 import io.github.loadup.components.dfs.model.FileMetadata;
 import io.github.loadup.components.dfs.model.FileUploadRequest;
 import io.github.loadup.components.testcontainers.annotation.ContainerType;
 import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.UUID;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
@@ -43,11 +52,10 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(properties = "loadup.dfs.binder-type=database")
 class DatabaseDfsProviderIT {
     private final DfsService service;
-    private final org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate jdbc;
+    private final NamedParameterJdbcTemplate jdbc;
 
     @Autowired
-    DatabaseDfsProviderIT(
-            DfsService service, org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate jdbc) {
+    DatabaseDfsProviderIT(DfsService service, NamedParameterJdbcTemplate jdbc) {
         this.service = service;
         this.jdbc = jdbc;
     }
@@ -74,23 +82,22 @@ class DatabaseDfsProviderIT {
 
     @Test
     void missingAndRepeatedDeletePreserveObjectNotFoundContract() {
-        String missing = java.util.UUID.randomUUID().toString();
-        org.assertj.core.api.Assertions.assertThat(service.exists(missing)).isFalse();
-        org.assertj.core.api.Assertions.assertThat(service.delete(missing)).isFalse();
-        org.assertj.core.api.Assertions.assertThatThrownBy(() -> service.download(missing))
-                .isInstanceOf(io.github.loadup.components.dfs.DfsObjectNotFoundException.class);
-        org.assertj.core.api.Assertions.assertThatThrownBy(() -> service.getMetadata(missing))
-                .isInstanceOf(io.github.loadup.components.dfs.DfsObjectNotFoundException.class);
+        String missing = UUID.randomUUID().toString();
+        Assertions.assertThat(service.exists(missing)).isFalse();
+        Assertions.assertThat(service.delete(missing)).isFalse();
+        Assertions.assertThatThrownBy(() -> service.download(missing)).isInstanceOf(DfsObjectNotFoundException.class);
+        Assertions.assertThatThrownBy(() -> service.getMetadata(missing))
+                .isInstanceOf(DfsObjectNotFoundException.class);
     }
 
     @Test
     void legacyNullMetadataRemainsReadableAndCorruptedJsonFailsExplicitly() throws Exception {
-        String fileId = java.util.UUID.randomUUID().toString();
-        var now = java.time.LocalDateTime.now();
+        String fileId = UUID.randomUUID().toString();
+        var now = LocalDateTime.now();
         jdbc.update(
                 "INSERT INTO dfs_file (id, filename, file_size, content_type, content, metadata_json, created_at, updated_at, deleted) "
                         + "VALUES (:id, :filename, :fileSize, :contentType, :content, :metadataJson, :createdAt, :updatedAt, FALSE)",
-                new org.springframework.jdbc.core.namedparam.MapSqlParameterSource()
+                new MapSqlParameterSource()
                         .addValue("id", fileId)
                         .addValue("filename", "legacy.txt")
                         .addValue("fileSize", 0L)
@@ -100,15 +107,11 @@ class DatabaseDfsProviderIT {
                         .addValue("createdAt", now)
                         .addValue("updatedAt", now));
         try {
-            org.assertj.core.api.Assertions.assertThat(
-                            service.getMetadata(fileId).metadata())
-                    .isEmpty();
+            Assertions.assertThat(service.getMetadata(fileId).metadata()).isEmpty();
             jdbc.update(
                     "UPDATE dfs_file SET metadata_json = :metadata WHERE id = :id",
-                    new org.springframework.jdbc.core.namedparam.MapSqlParameterSource("id", fileId)
-                            .addValue("metadata", "not valid json"));
-            org.assertj.core.api.Assertions.assertThatThrownBy(() -> service.getMetadata(fileId))
-                    .isInstanceOf(io.github.loadup.components.dfs.DfsStorageException.class);
+                    new MapSqlParameterSource("id", fileId).addValue("metadata", "not valid json"));
+            Assertions.assertThatThrownBy(() -> service.getMetadata(fileId)).isInstanceOf(DfsStorageException.class);
         } finally {
             service.delete(fileId);
         }
@@ -116,18 +119,17 @@ class DatabaseDfsProviderIT {
 
     @Test
     void inputLengthMismatchAndStreamFailureDoNotProduceSuccessfulUploads() {
-        org.assertj.core.api.Assertions.assertThatThrownBy(() -> service.upload(
+        Assertions.assertThatThrownBy(() -> service.upload(
                         FileUploadRequest.of("bad.txt", new ByteArrayInputStream(new byte[] {1}), 2, "text/plain")))
-                .isInstanceOf(io.github.loadup.components.dfs.DfsStorageException.class);
-        var failure = new java.io.IOException("synthetic read failure");
-        java.io.InputStream broken = new java.io.InputStream() {
-            public int read() throws java.io.IOException {
+                .isInstanceOf(DfsStorageException.class);
+        var failure = new IOException("synthetic read failure");
+        InputStream broken = new InputStream() {
+            public int read() throws IOException {
                 throw failure;
             }
         };
-        org.assertj.core.api.Assertions.assertThatThrownBy(
-                        () -> service.upload(FileUploadRequest.of("bad.txt", broken, 1, "text/plain")))
-                .isInstanceOf(io.github.loadup.components.dfs.DfsStorageException.class)
+        Assertions.assertThatThrownBy(() -> service.upload(FileUploadRequest.of("bad.txt", broken, 1, "text/plain")))
+                .isInstanceOf(DfsStorageException.class)
                 .hasCause(failure);
     }
 }

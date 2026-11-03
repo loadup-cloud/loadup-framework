@@ -27,6 +27,7 @@ import io.github.loadup.modules.merchant.client.command.MerchantStatusCommand;
 import io.github.loadup.modules.merchant.client.command.MerchantUpdateCommand;
 import io.github.loadup.modules.merchant.client.dto.MerchantDTO;
 import io.github.loadup.modules.merchant.client.error.MerchantResultCodeEnum;
+import io.github.loadup.modules.merchant.client.facade.MerchantFacade;
 import io.github.loadup.modules.merchant.client.query.MerchantPageQuery;
 import io.github.loadup.modules.merchant.domain.gateway.MerchantGateway;
 import io.github.loadup.modules.merchant.domain.model.Merchant;
@@ -38,7 +39,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class MerchantService implements io.github.loadup.modules.merchant.client.facade.MerchantFacade {
+public class MerchantService implements MerchantFacade {
     private final MerchantGateway gateway;
     private final MerchantConverter converter;
     private final Clock clock;

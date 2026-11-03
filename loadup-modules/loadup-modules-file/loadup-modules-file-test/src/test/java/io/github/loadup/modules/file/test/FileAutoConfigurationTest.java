@@ -42,6 +42,7 @@ import java.util.Optional;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -122,7 +123,7 @@ class FileAutoConfigurationTest {
                 new FileResource("file", "owner", "storage", "name", "text/plain", 7, "database", "ACTIVE", now, now);
         gateway.insert(file);
         var inserted = ArgumentCaptor.forClass(FileResourceInsert.class);
-        verify(resources).insert(inserted.capture(), org.mockito.ArgumentMatchers.eq(true));
+        verify(resources).insert(inserted.capture(), ArgumentMatchers.eq(true));
         assertThat(inserted.getValue().getId()).isEqualTo("file");
         assertThat(inserted.getValue().getDeleted()).isFalse();
         when(resources.selectOneById("file")).thenReturn(inserted.getValue());

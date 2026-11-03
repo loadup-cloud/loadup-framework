@@ -3,6 +3,7 @@ package io.github.loadup.components.http;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
@@ -15,9 +16,7 @@ final class HttpServiceClients {
     private HttpServiceClients() {}
 
     static <T> T create(HttpTemplate template, String name, Class<T> serviceType) {
-        if (serviceType == null
-                || !serviceType.isInterface()
-                || !java.lang.reflect.Modifier.isPublic(serviceType.getModifiers())) {
+        if (serviceType == null || !serviceType.isInterface() || !Modifier.isPublic(serviceType.getModifiers())) {
             throw new IllegalArgumentException("HTTP service type must be a public interface");
         }
         // Validate configuration now; do not retain a pool that refresh may close later.

@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.audit.domain.model;
 
+import io.github.loadup.commons.dto.PageQuery;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.modules.audit.client.error.AuditResultCodeEnum;
@@ -30,7 +31,7 @@ import java.time.LocalDateTime;
 public record AuditQuery(
         String actorId, String action, String outcome, LocalDateTime from, LocalDateTime to, int page, int size) {
     public AuditQuery {
-        io.github.loadup.commons.dto.PageQuery.normalized(page, size, AuditResultCodeEnum.INVALID_PAGE);
+        PageQuery.normalized(page, size, AuditResultCodeEnum.INVALID_PAGE);
         if (from != null && to != null && from.isAfter(to)) {
             throw new CommonException(AuditResultCodeEnum.INVALID_TIME_RANGE);
         }

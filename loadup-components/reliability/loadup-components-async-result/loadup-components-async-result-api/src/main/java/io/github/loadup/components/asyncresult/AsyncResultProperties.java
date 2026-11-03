@@ -19,6 +19,7 @@
  */
 package io.github.loadup.components.asyncresult;
 
+import io.github.loadup.commons.json.ToStringAsJson;
 import java.time.Duration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -65,6 +66,6 @@ public record AsyncResultProperties(
 
     @Override
     public String toString() {
-        return io.github.loadup.commons.json.ToStringAsJson.reflectionToString(this);
+        return ToStringAsJson.reflectionToString(this);
     }
 }

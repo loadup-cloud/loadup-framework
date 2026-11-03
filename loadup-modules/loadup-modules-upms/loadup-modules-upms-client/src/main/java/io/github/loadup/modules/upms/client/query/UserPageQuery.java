@@ -19,10 +19,13 @@
  */
 package io.github.loadup.modules.upms.client.query;
 
+import io.github.loadup.commons.dto.PageQuery;
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
 
 /**
  * User Query Parameters
@@ -57,22 +60,18 @@ public class UserPageQuery {
     private Boolean deleted;
 
     // Pagination
-    @Min(1)
-    @Schema(description = "Page number, starting at 1", minimum = "1", defaultValue = "1")
+    @Min(1) @Schema(description = "Page number, starting at 1", minimum = "1", defaultValue = "1")
     private Integer page = 1;
 
-    @Min(1)
-    @Max(100)
-    @Schema(description = "Page size", minimum = "1", maximum = "100", defaultValue = "20")
+    @Min(1) @Max(100) @Schema(description = "Page size", minimum = "1", maximum = "100", defaultValue = "20")
     private Integer size = 20;
 
-    @jakarta.validation.constraints.Pattern(regexp = "createdAt|username|nickname|id")
-    @Schema(
+    @Pattern(regexp = "createdAt|username|nickname|id") @Schema(
             description = "Whitelisted sort field",
             allowableValues = {"createdAt", "username", "nickname", "id"})
     private String sortBy = "createdAt";
 
-    @jakarta.validation.constraints.Pattern(regexp = "(?i)ASC|DESC")
+    @Pattern(regexp = "(?i)ASC|DESC")
     @Schema(
             description = "Sort direction",
             allowableValues = {"ASC", "DESC"})
@@ -207,9 +206,8 @@ public class UserPageQuery {
         this.deleted = deleted;
     }
 
-    public io.github.loadup.commons.dto.PageQuery pagination() {
-        return io.github.loadup.commons.dto.PageQuery.normalized(
-                page, size, io.github.loadup.commons.enums.CommonResultCodeEnum.PARAM_ILLEGAL);
+    public PageQuery pagination() {
+        return PageQuery.normalized(page, size, CommonResultCodeEnum.PARAM_ILLEGAL);
     }
 
     @Override
@@ -227,12 +225,9 @@ public class UserPageQuery {
         private Short status;
         private Boolean deleted;
 
-        @Min(1)
-        private Integer page = 1;
+        @Min(1) private Integer page = 1;
 
-        @Min(1)
-        @Max(100)
-        private Integer size = 20;
+        @Min(1) @Max(100) private Integer size = 20;
 
         private String sortBy = "createdAt";
 

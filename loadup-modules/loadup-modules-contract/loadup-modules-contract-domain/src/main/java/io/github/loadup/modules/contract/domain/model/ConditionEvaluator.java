@@ -24,6 +24,7 @@ import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 public final class ConditionEvaluator {
     private static boolean compatible(TypedValue left, TypedValue right) {
@@ -40,7 +41,7 @@ public final class ConditionEvaluator {
         count(Objects.requireNonNull(condition), 1, new int[1]);
     }
 
-    public void validateConfigurationReferences(Condition condition, java.util.Set<String> parameterKeys) {
+    public void validateConfigurationReferences(Condition condition, Set<String> parameterKeys) {
         validate(condition);
         switch (condition) {
             case Condition.All all ->

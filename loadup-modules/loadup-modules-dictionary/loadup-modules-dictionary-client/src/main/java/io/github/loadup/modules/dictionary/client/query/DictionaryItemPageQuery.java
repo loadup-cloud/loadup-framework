@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.dictionary.client.query;
 
+import io.github.loadup.commons.dto.PageQuery;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.modules.dictionary.client.error.DictionaryResultCodeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -28,20 +29,16 @@ import jakarta.validation.constraints.Min;
 public record DictionaryItemPageQuery(
         @Schema(description = "Type code") String typeCode,
 
-        @Schema(description = "Page number, starting at 1", minimum = "1", defaultValue = "1") @Min(1)
-        Integer page,
+        @Schema(description = "Page number, starting at 1", minimum = "1", defaultValue = "1") @Min(1) Integer page,
 
         @Schema(
                 description = "Page size; list queries allow at most 100",
                 minimum = "1",
                 maximum = "100",
                 defaultValue = "20")
-        @Min(1)
-        @Max(100)
-        Integer size) {
+        @Min(1) @Max(100) Integer size) {
     public DictionaryItemPageQuery {
-        var pagination =
-                io.github.loadup.commons.dto.PageQuery.normalized(page, size, DictionaryResultCodeEnum.INVALID_PAGE);
+        var pagination = PageQuery.normalized(page, size, DictionaryResultCodeEnum.INVALID_PAGE);
         page = pagination.page();
         size = pagination.size();
     }

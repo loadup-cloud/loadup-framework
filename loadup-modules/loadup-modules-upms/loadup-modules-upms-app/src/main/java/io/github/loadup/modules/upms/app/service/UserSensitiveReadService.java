@@ -24,6 +24,7 @@ import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.upms.app.converter.UserSensitiveConverter;
 import io.github.loadup.modules.upms.client.dto.UserSensitiveDTO;
 import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
+import io.github.loadup.modules.upms.client.facade.UserSensitiveReadFacade;
 import io.github.loadup.modules.upms.client.query.UserSensitiveQuery;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import io.github.loadup.modules.upms.domain.service.AccessDecisionService;
@@ -33,7 +34,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserSensitiveReadService implements io.github.loadup.modules.upms.client.facade.UserSensitiveReadFacade {
+public class UserSensitiveReadService implements UserSensitiveReadFacade {
     public static final String PERMISSION = "upms:user:sensitive:read";
     private final UserGateway users;
     private final AccessDecisionService decisions;

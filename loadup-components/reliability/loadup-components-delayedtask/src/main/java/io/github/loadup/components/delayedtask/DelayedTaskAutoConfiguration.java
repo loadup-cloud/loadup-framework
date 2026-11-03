@@ -26,6 +26,7 @@ import io.micrometer.observation.ObservationRegistry;
 import java.time.Clock;
 import java.util.List;
 import javax.sql.DataSource;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -70,7 +71,7 @@ public class DelayedTaskAutoConfiguration {
             DelayedTaskConverter converter,
             DelayedTaskProperties props,
             Clock clock,
-            org.springframework.beans.factory.ObjectProvider<ObservationRegistry> registry,
+            ObjectProvider<ObservationRegistry> registry,
             List<DelayedTaskHandler> handlers) {
         return new DelayedTaskDispatcher(
                 store, converter, props, clock, registry.getIfAvailable(() -> ObservationRegistry.NOOP), handlers);

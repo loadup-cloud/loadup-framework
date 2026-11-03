@@ -20,6 +20,7 @@
 package io.github.loadup.testify.data.engine.function;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -82,7 +83,7 @@ public class TimeFunction implements TestifyFunction {
     public long epochMilli(String offset) {
         LocalDateTime base = LocalDateTime.now();
         LocalDateTime result = applyOffset(base, offset);
-        return result.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli();
+        return result.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
     // Apply time offset like '+1d', '-2h', etc.

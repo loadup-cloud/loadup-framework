@@ -22,7 +22,9 @@ package io.github.loadup.modules.dictionary.app.autoconfigure;
 import io.github.loadup.modules.dictionary.app.converter.DictionaryDTOConverter;
 import io.github.loadup.modules.dictionary.app.converter.DictionaryDTOConverterImpl;
 import io.github.loadup.modules.dictionary.app.service.DictionaryService;
+import io.github.loadup.modules.dictionary.client.facade.DictionaryFacade;
 import io.github.loadup.modules.dictionary.domain.gateway.DictionaryGateway;
+import java.time.Clock;
 import javax.sql.DataSource;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -49,9 +51,9 @@ import org.springframework.context.annotation.Import;
 public class DictionaryAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(io.github.loadup.modules.dictionary.client.facade.DictionaryFacade.class)
+    @ConditionalOnMissingBean(DictionaryFacade.class)
     public DictionaryService dictionaryService(
-            DictionaryGateway repository, DictionaryDTOConverter converter, java.time.Clock clock) {
+            DictionaryGateway repository, DictionaryDTOConverter converter, Clock clock) {
         return new DictionaryService(repository, converter, clock);
     }
 }

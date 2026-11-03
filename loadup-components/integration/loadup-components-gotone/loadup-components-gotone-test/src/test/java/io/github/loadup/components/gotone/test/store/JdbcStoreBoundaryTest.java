@@ -42,17 +42,20 @@ import io.github.loadup.components.gotone.store.dataobject.ServiceChannelRow;
 import io.github.loadup.components.gotone.store.mapper.NotificationRecordRowMapper;
 import io.github.loadup.components.gotone.store.mapper.NotificationServiceRowMapper;
 import io.github.loadup.components.gotone.store.mapper.ServiceChannelRowMapper;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 class JdbcStoreBoundaryTest {
-    private final java.time.Clock clock =
-            java.time.Clock.fixed(java.time.Instant.parse("2026-01-01T00:00:00Z"), java.time.ZoneOffset.UTC);
+    private final Clock clock = Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC);
 
     private static ServiceChannelRow channel(String config, String fallback) {
-        var now = java.time.LocalDateTime.of(2026, 1, 1, 0, 0);
+        var now = LocalDateTime.of(2026, 1, 1, 0, 0);
         return new ServiceChannelRow(
                 "id", "ALERT", "EMAIL", "template", config, "smtp", fallback, true, 0, now, now, false);
     }
@@ -140,7 +143,7 @@ class JdbcStoreBoundaryTest {
         assertThat(rows.getAllValues()).allSatisfy(row -> {
             assertThat(row.getContent()).isEqualTo("rendered");
             assertThat(row.getId()).isNotNull();
-            assertThat(row.getSendTime()).isEqualTo(java.time.LocalDateTime.of(2026, 1, 1, 0, 0));
+            assertThat(row.getSendTime()).isEqualTo(LocalDateTime.of(2026, 1, 1, 0, 0));
             assertThat(row.getCreatedAt()).isEqualTo(row.getSendTime());
             assertThat(row.getUpdatedAt()).isEqualTo(row.getSendTime());
         });

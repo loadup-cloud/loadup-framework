@@ -35,6 +35,7 @@ import io.github.loadup.modules.contract.client.command.ContractStatusCommand;
 import io.github.loadup.modules.contract.client.dto.CatalogVersionDTO;
 import io.github.loadup.modules.contract.client.dto.MerchantProfileDTO;
 import io.github.loadup.modules.contract.client.dto.ValueDTO;
+import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import io.github.loadup.modules.contract.client.query.ContractResolveQuery;
 import io.github.loadup.modules.contract.client.spi.MerchantFactsProvider;
 import java.time.Instant;
@@ -164,10 +165,7 @@ class ContractPersistenceIT {
             assertThatThrownBy(() -> contracts.sign(command(plan, "different-request"), "operator"))
                     .isInstanceOfSatisfying(
                             CommonException.class,
-                            failure -> assertThat(failure.getResultCode())
-                                    .isEqualTo(
-                                            io.github.loadup.modules.contract.client.error.ContractResultCodeEnum
-                                                    .CONFLICT));
+                            failure -> assertThat(failure.getResultCode()).isEqualTo(ContractResultCodeEnum.CONFLICT));
             assertThat(contracts.detail(id).id()).isEqualTo(id);
         }
     }
@@ -177,8 +175,7 @@ class ContractPersistenceIT {
         String plan = plan();
         var invalid =
                 new ContractSignCommand("merchant", "store", plan, "invalid", Set.of("missing"), Map.of(), null, null);
-        assertThatThrownBy(() -> contracts.sign(invalid, "operator"))
-                .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
+        assertThatThrownBy(() -> contracts.sign(invalid, "operator")).isInstanceOf(CommonException.class);
         var signed = contracts.sign(command(plan, "valid"), "operator");
         var version = catalog.detail(plan);
         catalog.retire(new CatalogActionCommand(plan, version.rowVersion()), "operator");

@@ -24,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.github.loadup.components.configcenter.nacos.NacosConfigContent;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class NacosConfigContentTest {
@@ -118,7 +119,7 @@ class NacosConfigContentTest {
         assertThat(NacosConfigContent.parse(NacosConfigContent.render(values, null), null))
                 .containsEntry("path", "C:\\tmp\r\nline")
                 .containsEntry("empty", "");
-        org.assertj.core.api.Assertions.assertThatThrownBy(() -> NacosConfigContent.parse("bad=\\uXXXX", "properties"))
+        Assertions.assertThatThrownBy(() -> NacosConfigContent.parse("bad=\\uXXXX", "properties"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasCauseInstanceOf(IllegalArgumentException.class);
     }

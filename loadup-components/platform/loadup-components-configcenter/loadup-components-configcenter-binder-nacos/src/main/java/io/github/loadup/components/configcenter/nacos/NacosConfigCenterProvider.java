@@ -26,10 +26,12 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.components.configcenter.ConfigCenterProvider;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
@@ -131,7 +133,7 @@ public class NacosConfigCenterProvider implements ConfigCenterProvider {
     @Override
     public void addListener(String key, Consumer<String> listener) {
         listeners
-                .computeIfAbsent(key, k -> Collections.synchronizedList(new java.util.ArrayList<>()))
+                .computeIfAbsent(key, k -> Collections.synchronizedList(new ArrayList<>()))
                 .add(listener);
         registerNacosListener();
     }
@@ -187,7 +189,7 @@ public class NacosConfigCenterProvider implements ConfigCenterProvider {
             String key = entry.getKey();
             String oldValue = previous.get(key);
             String newValue = entry.getValue();
-            if (!java.util.Objects.equals(oldValue, newValue)) {
+            if (!Objects.equals(oldValue, newValue)) {
                 dispatch(key, newValue);
             }
         }

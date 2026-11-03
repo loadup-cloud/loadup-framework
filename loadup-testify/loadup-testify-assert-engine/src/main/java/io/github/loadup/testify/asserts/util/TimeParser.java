@@ -19,6 +19,7 @@
  */
 package io.github.loadup.testify.asserts.util;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DateTimeException;
@@ -294,9 +295,9 @@ public class TimeParser {
             if (str.contains(".") && str.matches(".*\\d{1,9}$")) {
 
                 String withoutNanos = str.replaceAll("\\.\\d{1,9}$", "");
-                return java.sql.Timestamp.valueOf(withoutNanos).getTime();
+                return Timestamp.valueOf(withoutNanos).getTime();
             } else {
-                return java.sql.Timestamp.valueOf(str).getTime();
+                return Timestamp.valueOf(str).getTime();
             }
         } catch (IllegalArgumentException ignored) {
 

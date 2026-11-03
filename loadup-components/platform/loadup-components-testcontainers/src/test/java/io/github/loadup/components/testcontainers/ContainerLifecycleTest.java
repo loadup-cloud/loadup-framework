@@ -45,6 +45,7 @@ import io.github.loadup.components.testcontainers.search.AbstractElasticsearchCo
 import io.github.loadup.components.testcontainers.search.SharedElasticsearchContainer;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
+import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.Test;
@@ -404,25 +405,25 @@ class ContainerLifecycleTest {
                 System.setProperty("loadup.testcontainers.enabled", switches[0]);
                 System.setProperty("loadup.testcontainers.localstack.enabled", switches[1]);
                 // The switches are read at class initialization, so each scenario needs a fresh class.
-                try (var loader = new URLClassLoader(
-                        new java.net.URL[] {location}, getClass().getClassLoader()) {
-                    @Override
-                    protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-                        synchronized (getClassLoadingLock(name)) {
-                            if (!className.equals(name)) {
-                                return super.loadClass(name, resolve);
+                try (var loader =
+                        new URLClassLoader(new URL[] {location}, getClass().getClassLoader()) {
+                            @Override
+                            protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+                                synchronized (getClassLoadingLock(name)) {
+                                    if (!className.equals(name)) {
+                                        return super.loadClass(name, resolve);
+                                    }
+                                    Class<?> loaded = findLoadedClass(name);
+                                    if (loaded == null) {
+                                        loaded = findClass(name);
+                                    }
+                                    if (resolve) {
+                                        resolveClass(loaded);
+                                    }
+                                    return loaded;
+                                }
                             }
-                            Class<?> loaded = findLoadedClass(name);
-                            if (loaded == null) {
-                                loaded = findClass(name);
-                            }
-                            if (resolve) {
-                                resolveClass(loaded);
-                            }
-                            return loaded;
-                        }
-                    }
-                }) {
+                        }) {
                     Class<?> isolated = Class.forName(className, true, loader);
                     assertThat(isolated.getMethod("isEnabled").invoke(null)).isEqualTo(false);
                     assertThatThrownBy(() -> isolated.getMethod("getInstance").invoke(null))

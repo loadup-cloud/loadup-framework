@@ -28,6 +28,7 @@ import io.micrometer.observation.ObservationRegistry;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import org.slf4j.MDC;
 
 /**
@@ -118,7 +119,7 @@ public final class OutboxDispatcher {
                     observation.stop();
                     if (metrics != null) {
                         metrics.timer("loadup.outbox.delivery", "outcome", outcome)
-                                .record(System.nanoTime() - started, java.util.concurrent.TimeUnit.NANOSECONDS);
+                                .record(System.nanoTime() - started, TimeUnit.NANOSECONDS);
                     }
                 } finally {
                     if (previous == null) {

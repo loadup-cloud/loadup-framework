@@ -22,6 +22,11 @@ package io.github.loadup.components.authserver.config;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.nimbusds.jose.jwk.JWKMatcher;
+import com.nimbusds.jose.jwk.JWKSelector;
+import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.proc.SecurityContext;
 import io.github.loadup.components.authserver.properties.LoadUpAuthServerProperties;
 import io.github.loadup.components.authserver.properties.LoadUpAuthServerProperties.Client;
 import io.github.loadup.components.authserver.sas.SasAuthServerAutoConfiguration;
@@ -29,6 +34,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -40,6 +46,8 @@ import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.security.oauth2.jwt.JwtEncodingException;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 
 class SasSigningAndClientTest {
@@ -74,9 +82,9 @@ class SasSigningAndClientTest {
     @Test
     void persistentKmsKeySignsTokensAcrossContextRestartsAndJwksContainsOnlyPublicMaterial() throws Exception {
         var file = TestKeyStores.create(directory, "auth-current");
-        var encoded = new java.util.concurrent.atomic.AtomicReference<String>();
+        var encoded = new AtomicReference<String>();
         TestKeyStores.runner(file).run(context -> {
-            assertThat(context).hasNotFailed().doesNotHaveBean(com.nimbusds.jose.jwk.RSAKey.class);
+            assertThat(context).hasNotFailed().doesNotHaveBean(RSAKey.class);
             var token = context.getBean(JwtEncoder.class).encode(tokenParameters());
             encoded.set(token.getTokenValue());
             assertThat(token.getHeaders())
@@ -86,11 +94,8 @@ class SasSigningAndClientTest {
                             .decode(token.getTokenValue())
                             .getSubject())
                     .isEqualTo("merchant");
-            var source = (com.nimbusds.jose.jwk.source.JWKSource<com.nimbusds.jose.proc.SecurityContext>)
-                    context.getBean(com.nimbusds.jose.jwk.source.JWKSource.class);
-            var keys = source.get(
-                    new com.nimbusds.jose.jwk.JWKSelector(new com.nimbusds.jose.jwk.JWKMatcher.Builder().build()),
-                    null);
+            var source = (JWKSource<SecurityContext>) context.getBean(JWKSource.class);
+            var keys = source.get(new JWKSelector(new JWKMatcher.Builder().build()), null);
             assertThat(keys).hasSize(1);
             assertThat(keys.getFirst().isPrivate()).isFalse();
             assertThat(keys.getFirst().toJSONString()).doesNotContain("\"d\":", "\"p\":", "\"q\":");
@@ -132,7 +137,7 @@ class SasSigningAndClientTest {
     @Test
     void rotationSignsWithNewKeyAndRetainsOldPublicKeyForExistingTokens() throws Exception {
         var file = TestKeyStores.create(directory, "auth-current", "auth-next");
-        var oldToken = new java.util.concurrent.atomic.AtomicReference<String>();
+        var oldToken = new AtomicReference<String>();
         TestKeyStores.runner(file)
                 .run(context -> oldToken.set(context.getBean(JwtEncoder.class)
                         .encode(tokenParameters())
@@ -159,13 +164,13 @@ class SasSigningAndClientTest {
                                     .build(),
                             tokenParameters().getClaims());
                     assertThatThrownBy(() -> context.getBean(JwtEncoder.class).encode(parameters))
-                            .isInstanceOf(org.springframework.security.oauth2.jwt.JwtEncodingException.class);
+                            .isInstanceOf(JwtEncodingException.class);
                 });
         TestKeyStores.runner(file)
                 .withPropertyValues("loadup.security.auth-server.signing.active-key.name=auth-next")
                 .run(context -> assertThatThrownBy(
                                 () -> context.getBean(JwtDecoder.class).decode(oldToken.get()))
-                        .isInstanceOf(org.springframework.security.oauth2.jwt.JwtException.class));
+                        .isInstanceOf(JwtException.class));
     }
 
     @Test

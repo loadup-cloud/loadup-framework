@@ -56,27 +56,22 @@ public class UserUpdateCommand {
     @Schema(description = "Avatar")
     private String avatar;
 
-    @Pattern(regexp = "^$|^1[3-9]\\d{9}$")
-    @Schema(description = "Mobile")
+    @Pattern(regexp = "^$|^1[3-9]\\d{9}$") @Schema(description = "Mobile")
     private String mobile;
 
-    @Email()
-    @Schema(description = "Email")
+    @Email() @Schema(description = "Email")
     private String email;
 
     @Schema(description = "Dept id")
     private String deptId;
 
-    @Size(max = 50)
-    @Schema(description = "Real name")
+    @Size(max = 50) @Schema(description = "Real name")
     private String realName;
 
-    @Size(max = 50)
-    @Schema(description = "Nickname")
+    @Size(max = 50) @Schema(description = "Nickname")
     private String nickname;
 
-    @NotNull()
-    @Schema(description = "Resource identifier")
+    @NotNull() @Schema(description = "Resource identifier")
     private String id;
 
     public UserUpdateCommand(

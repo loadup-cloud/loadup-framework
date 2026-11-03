@@ -25,6 +25,8 @@ import io.github.loadup.modules.upms.client.dto.AuthenticatedUserDTO;
 import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import io.github.loadup.modules.upms.domain.model.User;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -35,13 +37,12 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class EmailLoginStrategy implements LoginStrategy {
-    private final java.time.Clock clock;
+    private final Clock clock;
 
     private final UserGateway userGateway;
     private final VerificationCodeService verificationCodeService;
 
-    public EmailLoginStrategy(
-            UserGateway userGateway, VerificationCodeService verificationCodeService, java.time.Clock clock) {
+    public EmailLoginStrategy(UserGateway userGateway, VerificationCodeService verificationCodeService, Clock clock) {
         this.clock = clock;
         this.userGateway = userGateway;
         this.verificationCodeService = verificationCodeService;
@@ -75,8 +76,7 @@ public class EmailLoginStrategy implements LoginStrategy {
             throw new CommonException(UpmsResultCodeEnum.ACCOUNT_IS_LOCKED_OR_DISABLED);
         }
 
-        user.updateLastLogin(
-                credentials.getIpAddress(), java.time.LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
+        user.updateLastLogin(credentials.getIpAddress(), LocalDateTime.ofInstant(clock.instant(), clock.getZone()));
         userGateway.update(user);
 
         return AuthenticatedUserDTO.builder()

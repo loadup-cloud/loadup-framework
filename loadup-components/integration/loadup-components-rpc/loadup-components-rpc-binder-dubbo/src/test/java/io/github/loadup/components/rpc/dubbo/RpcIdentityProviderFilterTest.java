@@ -13,9 +13,12 @@ import static org.mockito.Mockito.when;
 
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
+import java.util.Set;
 import org.apache.dubbo.rpc.Invocation;
 import org.apache.dubbo.rpc.Invoker;
 import org.apache.dubbo.rpc.Result;
@@ -109,9 +112,9 @@ class RpcIdentityProviderFilterTest {
 
     @Test
     void invalidCommandIsRejectedBeforeTheBusinessMethod() {
-        var validator = mock(jakarta.validation.Validator.class);
-        var violation = mock(jakarta.validation.ConstraintViolation.class);
-        when(validator.validate(any())).thenReturn(java.util.Set.of(violation));
+        var validator = mock(Validator.class);
+        var violation = mock(ConstraintViolation.class);
+        when(validator.validate(any())).thenReturn(Set.of(violation));
         filter.setValidator(validator);
         when(invocation.getAttachment(RpcTokenContext.AUTHORIZATION))
                 .thenReturn("Bearer " + token(Instant.now().plusSeconds(300)));

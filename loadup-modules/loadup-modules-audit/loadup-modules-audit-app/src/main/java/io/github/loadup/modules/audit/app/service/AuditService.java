@@ -25,6 +25,7 @@ import io.github.loadup.modules.audit.app.converter.AuditDTOConverter;
 import io.github.loadup.modules.audit.client.command.AuditRecordCommand;
 import io.github.loadup.modules.audit.client.dto.AuditEventDTO;
 import io.github.loadup.modules.audit.client.error.AuditResultCodeEnum;
+import io.github.loadup.modules.audit.client.facade.AuditFacade;
 import io.github.loadup.modules.audit.client.query.AuditPageQuery;
 import io.github.loadup.modules.audit.domain.gateway.AuditGateway;
 import io.github.loadup.modules.audit.domain.model.AuditEvent;
@@ -35,7 +36,7 @@ import java.util.UUID;
 /**
  * Records and searches immutable audit events.
  */
-public class AuditService implements io.github.loadup.modules.audit.client.facade.AuditFacade {
+public class AuditService implements AuditFacade {
     private final Clock clock;
     private final AuditDTOConverter converter;
     private final AuditGateway repository;

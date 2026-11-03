@@ -19,7 +19,9 @@
  */
 package io.github.loadup.modules.upms.authserver;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.commons.result.FailureResponse;
 import io.github.loadup.commons.result.IResponse;
 import io.github.loadup.commons.result.SuccessResponse;
@@ -29,6 +31,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.Clock;
 import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -54,13 +57,13 @@ public class UpmsTokenController {
     private final UpmsAuthenticationProvider authenticationProvider;
     private final JwtEncoder jwtEncoder;
     private final LoadUpAuthServerProperties properties;
-    private final java.time.Clock clock;
+    private final Clock clock;
 
     public UpmsTokenController(
             UpmsAuthenticationProvider authenticationProvider,
             JwtEncoder jwtEncoder,
             LoadUpAuthServerProperties properties,
-            java.time.Clock clock) {
+            Clock clock) {
         this.authenticationProvider = authenticationProvider;
         this.jwtEncoder = jwtEncoder;
         this.properties = properties;
@@ -131,12 +134,11 @@ public class UpmsTokenController {
                     format = "password",
                     example = "Example-password-123",
                     accessMode = Schema.AccessMode.WRITE_ONLY)
-            @com.fasterxml.jackson.annotation.JsonProperty(
-                    access = com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY)
+            @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
             String password) {
         @Override
         public String toString() {
-            return io.github.loadup.commons.json.ToStringAsJson.reflectionToString(this);
+            return ToStringAsJson.reflectionToString(this);
         }
     }
 
@@ -150,7 +152,7 @@ public class UpmsTokenController {
             long expiresIn) {
         @Override
         public String toString() {
-            return io.github.loadup.commons.json.ToStringAsJson.reflectionToString(this);
+            return ToStringAsJson.reflectionToString(this);
         }
     }
 }

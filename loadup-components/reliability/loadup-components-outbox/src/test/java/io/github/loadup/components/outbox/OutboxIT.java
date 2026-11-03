@@ -34,6 +34,7 @@ import java.net.URI;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -136,7 +137,7 @@ class OutboxIT {
             var first = executor.submit(repository::claim);
             var second = executor.submit(repository::claim);
             assertThat(List.of(first.get(), second.get()).stream()
-                            .filter(java.util.Optional::isPresent)
+                            .filter(Optional::isPresent)
                             .count())
                     .isEqualTo(1);
         }

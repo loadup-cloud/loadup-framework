@@ -34,15 +34,10 @@ import java.util.List;
  */
 public class RoleCreateCommand {
 
-    @NotBlank()
-    @Size(max = 50)
-    @Schema(description = "Role name")
+    @NotBlank() @Size(max = 50) @Schema(description = "Role name")
     private String roleName;
 
-    @NotBlank()
-    @Size(max = 50)
-    @Pattern(regexp = "^[A-Z_]+$")
-    @Schema(description = "Role code")
+    @NotBlank() @Size(max = 50) @Pattern(regexp = "^[A-Z_]+$") @Schema(description = "Role code")
     private String roleCode;
 
     /**

@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.dictionary.app.service;
 
+import io.github.loadup.commons.dto.PageQuery;
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.PageDTO;
@@ -82,7 +83,7 @@ public class DictionaryService implements DictionaryFacade {
     }
 
     private static void validatePage(int page, int size) {
-        io.github.loadup.commons.dto.PageQuery.normalized(page, size, DictionaryResultCodeEnum.INVALID_PAGE);
+        PageQuery.normalized(page, size, DictionaryResultCodeEnum.INVALID_PAGE);
     }
 
     @Transactional

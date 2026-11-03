@@ -23,7 +23,9 @@ import io.github.loadup.components.dfs.DfsService;
 import io.github.loadup.modules.file.app.converter.FileDTOConverter;
 import io.github.loadup.modules.file.app.converter.FileDTOConverterImpl;
 import io.github.loadup.modules.file.app.service.FileResourceService;
+import io.github.loadup.modules.file.client.facade.FileResourceFacade;
 import io.github.loadup.modules.file.domain.gateway.FileResourceGateway;
+import java.time.Clock;
 import javax.sql.DataSource;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -48,9 +50,9 @@ import org.springframework.context.annotation.Import;
 public class FileResourceAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(io.github.loadup.modules.file.client.facade.FileResourceFacade.class)
+    @ConditionalOnMissingBean(FileResourceFacade.class)
     public FileResourceService fileResourceService(
-            FileResourceGateway repository, DfsService dfs, FileDTOConverter converter, java.time.Clock clock) {
+            FileResourceGateway repository, DfsService dfs, FileDTOConverter converter, Clock clock) {
         return new FileResourceService(repository, dfs, converter, clock);
     }
 }

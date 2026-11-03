@@ -29,6 +29,7 @@ import io.github.loadup.modules.contract.client.command.CatalogActionCommand;
 import io.github.loadup.modules.contract.client.command.CatalogSaveCommand;
 import io.github.loadup.modules.contract.client.dto.CatalogVersionDTO;
 import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
+import io.github.loadup.modules.contract.client.facade.CatalogFacade;
 import io.github.loadup.modules.contract.client.query.CatalogPageQuery;
 import io.github.loadup.modules.contract.domain.gateway.CatalogGateway;
 import io.github.loadup.modules.contract.domain.model.CatalogEntry;
@@ -41,7 +42,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class CatalogService implements io.github.loadup.modules.contract.client.facade.CatalogFacade {
+public class CatalogService implements CatalogFacade {
     private final CatalogGateway gateway;
     private final ContractCodec codec;
     private final CatalogAssembler assembler;

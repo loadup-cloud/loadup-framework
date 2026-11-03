@@ -20,8 +20,14 @@
 package io.github.loadup.components.database.sequence;
 
 import io.github.loadup.commons.error.CommonException;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,13 +46,12 @@ public final class SegmentSequence implements Sequence, AutoCloseable {
     private final SequenceProperties properties;
     private final Clock clock;
     private final ConcurrentHashMap<String, State> states = new ConcurrentHashMap<>();
-    private final java.util.Set<CompletableFuture<Void>> pending = ConcurrentHashMap.newKeySet();
+    private final Set<CompletableFuture<Void>> pending = ConcurrentHashMap.newKeySet();
     private final ThreadPoolExecutor executor;
     private final Object scopeMonitor = new Object();
-    private final io.micrometer.core.instrument.Counter issued;
-    private final io.micrometer.core.instrument.Timer refill;
-    private final java.util.Map<DatabaseResultCodeEnum, io.micrometer.core.instrument.Counter> failures =
-            new java.util.EnumMap<>(DatabaseResultCodeEnum.class);
+    private final Counter issued;
+    private final Timer refill;
+    private final Map<DatabaseResultCodeEnum, Counter> failures = new EnumMap<>(DatabaseResultCodeEnum.class);
     private volatile boolean closed;
 
     public SegmentSequence(SequenceRangeAllocator allocator, SequenceProperties properties, Clock clock) {
@@ -54,10 +59,7 @@ public final class SegmentSequence implements Sequence, AutoCloseable {
     }
 
     public SegmentSequence(
-            SequenceRangeAllocator allocator,
-            SequenceProperties properties,
-            Clock clock,
-            io.micrometer.core.instrument.MeterRegistry registry) {
+            SequenceRangeAllocator allocator, SequenceProperties properties, Clock clock, MeterRegistry registry) {
         issued = registry == null ? null : registry.counter("loadup.database.sequence.issued");
         refill = registry == null ? null : registry.timer("loadup.database.sequence.refill");
         if (registry != null) {

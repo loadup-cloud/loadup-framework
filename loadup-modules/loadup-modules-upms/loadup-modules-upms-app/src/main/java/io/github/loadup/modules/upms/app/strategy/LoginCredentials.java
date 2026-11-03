@@ -20,6 +20,8 @@
 package io.github.loadup.modules.upms.app.strategy;
 
 import io.github.loadup.commons.json.ToStringAsJson;
+import io.github.loadup.commons.masking.MaskType;
+import io.github.loadup.commons.masking.Masked;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -43,17 +45,17 @@ public class LoginCredentials implements Serializable {
 
     private String mobile;
 
-    @io.github.loadup.commons.masking.Masked(io.github.loadup.commons.masking.MaskType.FULL)
+    @Masked(MaskType.FULL)
     private String smsCode;
 
     private String email;
 
-    @io.github.loadup.commons.masking.Masked(io.github.loadup.commons.masking.MaskType.FULL)
+    @Masked(MaskType.FULL)
     private String emailCode;
 
     private String provider;
 
-    @io.github.loadup.commons.masking.Masked(io.github.loadup.commons.masking.MaskType.FULL)
+    @Masked(MaskType.FULL)
     private String code;
 
     private String state;
@@ -66,7 +68,7 @@ public class LoginCredentials implements Serializable {
 
     private String captchaKey;
 
-    @io.github.loadup.commons.masking.Masked(io.github.loadup.commons.masking.MaskType.FULL)
+    @Masked(MaskType.FULL)
     private String captchaCode;
 
     private Map<String, Object> extra = new HashMap<>();
@@ -251,17 +253,17 @@ public class LoginCredentials implements Serializable {
         private String password;
         private String mobile;
 
-        @io.github.loadup.commons.masking.Masked(io.github.loadup.commons.masking.MaskType.FULL)
+        @Masked(MaskType.FULL)
         private String smsCode;
 
         private String email;
 
-        @io.github.loadup.commons.masking.Masked(io.github.loadup.commons.masking.MaskType.FULL)
+        @Masked(MaskType.FULL)
         private String emailCode;
 
         private String provider;
 
-        @io.github.loadup.commons.masking.Masked(io.github.loadup.commons.masking.MaskType.FULL)
+        @Masked(MaskType.FULL)
         private String code;
 
         private String state;
@@ -270,7 +272,7 @@ public class LoginCredentials implements Serializable {
         private String userAgent;
         private String captchaKey;
 
-        @io.github.loadup.commons.masking.Masked(io.github.loadup.commons.masking.MaskType.FULL)
+        @Masked(MaskType.FULL)
         private String captchaCode;
 
         private Map<String, Object> extra = new HashMap<>();

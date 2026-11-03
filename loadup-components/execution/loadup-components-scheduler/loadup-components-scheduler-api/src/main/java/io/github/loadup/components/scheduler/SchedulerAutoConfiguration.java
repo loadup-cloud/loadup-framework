@@ -19,6 +19,8 @@
  */
 package io.github.loadup.components.scheduler;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
 import java.util.List;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -36,8 +38,7 @@ public class SchedulerAutoConfiguration {
     @ConditionalOnMissingBean
     public SchedulerTemplate schedulerTemplate(List<SchedulerProvider> providers, List<ScheduledTask> tasks) {
         if (providers.size() != 1) {
-            throw new io.github.loadup.commons.error.CommonException(
-                    io.github.loadup.commons.enums.CommonResultCodeEnum.CONFLICT);
+            throw new CommonException(CommonResultCodeEnum.CONFLICT);
         }
         return new SchedulerTemplate(providers.getFirst(), tasks);
     }

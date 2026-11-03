@@ -31,6 +31,7 @@ import io.github.loadup.modules.contract.client.command.ContractSignCommand;
 import io.github.loadup.modules.contract.client.command.ContractStatusCommand;
 import io.github.loadup.modules.contract.client.dto.MerchantContractDTO;
 import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
+import io.github.loadup.modules.contract.client.facade.MerchantContractFacade;
 import io.github.loadup.modules.contract.client.query.MerchantContractPageQuery;
 import io.github.loadup.modules.contract.domain.gateway.CatalogGateway;
 import io.github.loadup.modules.contract.domain.gateway.MerchantContractGateway;
@@ -44,6 +45,8 @@ import io.github.loadup.modules.contract.domain.model.ContractSigner;
 import io.github.loadup.modules.contract.domain.model.ContractStatus;
 import io.github.loadup.modules.contract.domain.model.MerchantContractRevision;
 import io.github.loadup.modules.contract.domain.model.TypedValue;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -58,7 +61,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @Service
-public class MerchantContractService implements io.github.loadup.modules.contract.client.facade.MerchantContractFacade {
+public class MerchantContractService implements MerchantContractFacade {
     private final CatalogGateway catalog;
     private final MerchantContractGateway gateway;
     private final CatalogAssembler assembler;
@@ -211,9 +214,8 @@ public class MerchantContractService implements io.github.loadup.modules.contrac
     }
 
     private MerchantContractDTO replay(ContractRecord existing, String digest) {
-        if (!java.security.MessageDigest.isEqual(
-                existing.requestDigest().getBytes(java.nio.charset.StandardCharsets.UTF_8),
-                digest.getBytes(java.nio.charset.StandardCharsets.UTF_8))) {
+        if (!MessageDigest.isEqual(
+                existing.requestDigest().getBytes(StandardCharsets.UTF_8), digest.getBytes(StandardCharsets.UTF_8))) {
             throw new CommonException(ContractResultCodeEnum.IDEMPOTENCY_CONFLICT);
         }
         return toDTO(existing);

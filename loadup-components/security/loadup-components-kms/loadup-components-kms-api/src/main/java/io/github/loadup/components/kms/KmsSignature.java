@@ -21,6 +21,7 @@ package io.github.loadup.components.kms;
 
 import io.github.loadup.commons.json.ToStringAsJson;
 import java.util.Base64;
+import java.util.Map;
 
 /**
  * Raw signature bytes plus the metadata required to reconstruct a Transit signature.
@@ -49,6 +50,6 @@ public record KmsSignature(String keyName, int version, KmsSignatureAlgorithm al
 
     @Override
     public String toString() {
-        return ToStringAsJson.reflectionToString(java.util.Map.of("keyName", keyName, "version", version));
+        return ToStringAsJson.reflectionToString(Map.of("keyName", keyName, "version", version));
     }
 }

@@ -19,12 +19,14 @@
  */
 package io.github.loadup.modules.notification.app.service;
 
+import io.github.loadup.commons.dto.PageQuery;
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.PageDTO;
 import io.github.loadup.modules.notification.app.converter.NotificationDTOConverter;
 import io.github.loadup.modules.notification.client.dto.InboxMessageDTO;
 import io.github.loadup.modules.notification.client.error.NotificationResultCodeEnum;
+import io.github.loadup.modules.notification.client.facade.InboxFacade;
 import io.github.loadup.modules.notification.domain.gateway.InboxGateway;
 import io.github.loadup.modules.notification.domain.model.InboxMessage;
 import java.time.Clock;
@@ -36,7 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Delivery to a private, persistent inbox and recipient-owned read operations.
  */
-public class InboxService implements io.github.loadup.modules.notification.client.facade.InboxFacade {
+public class InboxService implements InboxFacade {
     private final Clock clock;
     private final NotificationDTOConverter converter;
     private final InboxGateway repository;
@@ -90,7 +92,7 @@ public class InboxService implements io.github.loadup.modules.notification.clien
     }
 
     public PageDTO<InboxMessageDTO> list(String recipientId, boolean unreadOnly, int page, int size) {
-        io.github.loadup.commons.dto.PageQuery.normalized(page, size, NotificationResultCodeEnum.INVALID_PAGE);
+        PageQuery.normalized(page, size, NotificationResultCodeEnum.INVALID_PAGE);
         return converter.toPageDTO(repository.list(required(recipientId, 64), unreadOnly, page, size));
     }
 

@@ -33,6 +33,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -99,7 +100,7 @@ public class DepartmentGatewayImpl extends ServiceImpl<DepartmentMapper, Departm
             WHERE id = :id AND deleted = FALSE
             """, new BeanPropertySqlParameterSource(row));
         if (changed != 1) {
-            throw new org.springframework.dao.IncorrectResultSizeDataAccessException(1, changed);
+            throw new IncorrectResultSizeDataAccessException(1, changed);
         }
         return converter.toEntity(row);
     }

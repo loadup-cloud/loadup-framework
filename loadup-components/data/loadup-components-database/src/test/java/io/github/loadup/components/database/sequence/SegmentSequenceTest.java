@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.time.Clock;
@@ -44,6 +45,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+import java.util.stream.LongStream;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 
 class SegmentSequenceTest {
@@ -112,8 +116,7 @@ class SegmentSequenceTest {
         SequenceScope scope = scope("small", 23);
         try (SegmentSequence sequence = new SegmentSequence(store, properties(10), clock)) {
             assertThat(sequence.nextBatch(scope, 23))
-                    .containsExactly(
-                            java.util.stream.LongStream.rangeClosed(1, 23).toArray());
+                    .containsExactly(LongStream.rangeClosed(1, 23).toArray());
             assertThatThrownBy(() -> sequence.next(scope))
                     .isInstanceOfSatisfying(
                             CommonException.class,
@@ -317,7 +320,7 @@ class SegmentSequenceTest {
 
     @Test
     void validatesEveryCapacityAndWaitBoundaryBeforeCreatingWorkers() {
-        List<java.util.function.Consumer<SequenceProperties>> invalid = List.of(
+        List<Consumer<SequenceProperties>> invalid = List.of(
                 p -> p.setStep(0),
                 p -> p.setStep(1_000_001),
                 p -> p.setMaxScopes(0),
@@ -392,9 +395,8 @@ class SegmentSequenceTest {
                 task.get(5, TimeUnit.SECONDS);
             }
             assertThat(issued)
-                    .containsExactlyInAnyOrderElementsOf(java.util.stream.LongStream.rangeClosed(1, 37)
-                            .boxed()
-                            .toList());
+                    .containsExactlyInAnyOrderElementsOf(
+                            LongStream.rangeClosed(1, 37).boxed().toList());
             assertThat(exhausted).hasValue(27);
         }
     }
@@ -415,7 +417,7 @@ class SegmentSequenceTest {
                             .counter()
                             .count())
                     .isEqualTo(1);
-            org.awaitility.Awaitility.await()
+            Awaitility.await()
                     .atMost(Duration.ofSeconds(2))
                     .untilAsserted(() -> assertThat(registry.get("loadup.database.sequence.refill")
                                     .timer()
@@ -430,7 +432,7 @@ class SegmentSequenceTest {
     void allocatorFailuresPreserveBusinessCodesAndWrapUnexpectedFailures() {
         RuntimeException[] failures = {
             new IllegalArgumentException("synthetic transport failure"),
-            new CommonException(io.github.loadup.commons.enums.CommonResultCodeEnum.SYS_ERROR),
+            new CommonException(CommonResultCodeEnum.SYS_ERROR),
             new CommonException(DatabaseResultCodeEnum.EXHAUSTED)
         };
         for (RuntimeException failure : failures) {

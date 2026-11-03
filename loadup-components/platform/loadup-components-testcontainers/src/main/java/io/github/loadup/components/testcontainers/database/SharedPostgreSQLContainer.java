@@ -21,6 +21,7 @@ package io.github.loadup.components.testcontainers.database;
 
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -260,8 +261,8 @@ public final class SharedPostgreSQLContainer {
      *
      * @return map of property names to values
      */
-    public static java.util.Map<String, String> getProperties() {
-        return java.util.Map.of(
+    public static Map<String, String> getProperties() {
+        return Map.of(
                 "spring.datasource.url", getJdbcUrl(),
                 "spring.datasource.username", getUsername(),
                 "spring.datasource.password", getPassword(),

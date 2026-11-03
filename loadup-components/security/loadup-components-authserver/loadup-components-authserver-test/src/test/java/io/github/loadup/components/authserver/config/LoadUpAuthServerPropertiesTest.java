@@ -22,6 +22,7 @@ package io.github.loadup.components.authserver.config;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.loadup.components.authserver.properties.LoadUpAuthServerProperties;
+import java.time.Duration;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -63,7 +64,7 @@ class LoadUpAuthServerPropertiesTest {
                                     .getFirst()
                                     .getName())
                             .isEqualTo("auth-old");
-                    assertThat(properties.getUserAccessTokenTtl()).isEqualTo(java.time.Duration.ofMinutes(12));
+                    assertThat(properties.getUserAccessTokenTtl()).isEqualTo(Duration.ofMinutes(12));
                     assertThat(properties.getClients().getFirst().getRedirectUris())
                             .containsExactly("https://example.test/callback");
                     assertThat(properties.getClients().getFirst().getScopes()).containsExactly("openid");

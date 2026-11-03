@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.merchant.client.query;
 
+import io.github.loadup.commons.dto.PageQuery;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.modules.merchant.client.error.MerchantResultCodeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -27,28 +28,22 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 
 public record MerchantPageQuery(
-        @Schema(description = "Merchant code") @Size(max = 64)
-        String merchantCode,
+        @Schema(description = "Merchant code") @Size(max = 64) String merchantCode,
 
         @Schema(description = "Name") @Size(max = 200) String name,
 
-        @Schema(description = "Current lifecycle status") @Size(max = 16)
-        String status,
+        @Schema(description = "Current lifecycle status") @Size(max = 16) String status,
 
-        @Schema(description = "Page number, starting at 1", minimum = "1", defaultValue = "1") @Min(1)
-        Integer page,
+        @Schema(description = "Page number, starting at 1", minimum = "1", defaultValue = "1") @Min(1) Integer page,
 
         @Schema(
                 description = "Page size; list queries allow at most 100",
                 minimum = "1",
                 maximum = "100",
                 defaultValue = "20")
-        @Min(1)
-        @Max(100)
-        Integer size) {
+        @Min(1) @Max(100) Integer size) {
     public MerchantPageQuery {
-        var pagination =
-                io.github.loadup.commons.dto.PageQuery.normalized(page, size, MerchantResultCodeEnum.INVALID_PAGE);
+        var pagination = PageQuery.normalized(page, size, MerchantResultCodeEnum.INVALID_PAGE);
         page = pagination.page();
         size = pagination.size();
     }

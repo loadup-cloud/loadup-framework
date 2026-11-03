@@ -19,15 +19,15 @@
  */
 package io.github.loadup.components.kms;
 
+import io.github.loadup.commons.json.DiagnosticHidden;
 import io.github.loadup.commons.json.ToStringAsJson;
+import java.util.Map;
 
 /**
  * An opaque Transit ciphertext that must retain its key name and version.
  */
 public record KmsCiphertext(
-        String keyName,
-        int version,
-        @io.github.loadup.commons.json.DiagnosticHidden String value) {
+        String keyName, int version, @DiagnosticHidden String value) {
     public KmsCiphertext {
         KmsKeyRef.validateName(keyName);
         if (version < 1 || value == null || !value.matches("(vault|local):v" + version + ":[A-Za-z0-9+/=]+")) {
@@ -37,6 +37,6 @@ public record KmsCiphertext(
 
     @Override
     public String toString() {
-        return ToStringAsJson.reflectionToString(java.util.Map.of("keyName", keyName, "version", version));
+        return ToStringAsJson.reflectionToString(Map.of("keyName", keyName, "version", version));
     }
 }

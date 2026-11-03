@@ -23,6 +23,7 @@ import com.ctrip.framework.apollo.Config;
 import com.ctrip.framework.apollo.ConfigService;
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.configcenter.ConfigCenterProvider;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -100,7 +101,7 @@ public class ApolloConfigCenterProvider implements ConfigCenterProvider {
     @Override
     public void addListener(String key, Consumer<String> listener) {
         listeners
-                .computeIfAbsent(key, k -> Collections.synchronizedList(new java.util.ArrayList<>()))
+                .computeIfAbsent(key, k -> Collections.synchronizedList(new ArrayList<>()))
                 .add(listener);
     }
 

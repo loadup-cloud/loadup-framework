@@ -29,7 +29,9 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import org.springframework.stereotype.Component;
 import tools.jackson.core.type.TypeReference;
@@ -82,10 +84,10 @@ public class ContractCodec {
             map.forEach((key, item) -> sorted.put((String) key, canonical(item)));
             return sorted;
         }
-        if (value instanceof java.util.Set<?> set) {
+        if (value instanceof Set<?> set) {
             return set.stream().map(Object::toString).sorted().toList();
         }
-        if (value instanceof java.util.List<?> list) {
+        if (value instanceof List<?> list) {
             return list.stream().map(this::canonical).toList();
         }
         return value;

@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.upms.client.command;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -37,24 +38,21 @@ public class UserLoginCommand {
     private String username;
 
     @Schema(description = "Password, supplied only in requests", accessMode = Schema.AccessMode.WRITE_ONLY)
-    @com.fasterxml.jackson.annotation.JsonProperty(
-            access = com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @Schema(description = "Mobile")
     private String mobile;
 
     @Schema(description = "SMS verification code", accessMode = Schema.AccessMode.WRITE_ONLY)
-    @com.fasterxml.jackson.annotation.JsonProperty(
-            access = com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String smsCode;
 
     @Schema(description = "Email")
     private String email;
 
     @Schema(description = "Email verification code", accessMode = Schema.AccessMode.WRITE_ONLY)
-    @com.fasterxml.jackson.annotation.JsonProperty(
-            access = com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String emailCode;
 
     @Schema(description = "Provider")
@@ -73,8 +71,7 @@ public class UserLoginCommand {
     private String captchaKey;
 
     @Schema(description = "Captcha answer", accessMode = Schema.AccessMode.WRITE_ONLY)
-    @com.fasterxml.jackson.annotation.JsonProperty(
-            access = com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String captchaCode;
 
     @Schema(description = "Ip address")

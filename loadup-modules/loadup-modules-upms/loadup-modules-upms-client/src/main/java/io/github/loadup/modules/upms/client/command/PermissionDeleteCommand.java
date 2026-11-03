@@ -27,8 +27,7 @@ import java.util.Objects;
 
 @Schema(description = "PermissionDeleteCommand")
 public record PermissionDeleteCommand(
-        @Schema(description = "Resource identifier") @NotBlank
-        String id) implements DTO {
+        @Schema(description = "Resource identifier") @NotBlank String id) implements DTO {
 
     public static PermissionDeleteCommand of(String id) {
         return new PermissionDeleteCommand(Objects.requireNonNull(id, "id must not be null"));

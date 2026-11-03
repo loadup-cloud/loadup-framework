@@ -27,8 +27,7 @@ import java.util.Objects;
 
 @Schema(description = "RoleDeleteCommand")
 public record RoleDeleteCommand(
-        @Schema(description = "Resource identifier") @NotBlank
-        String id) implements DTO {
+        @Schema(description = "Resource identifier") @NotBlank String id) implements DTO {
 
     public static RoleDeleteCommand of(String id) {
         return new RoleDeleteCommand(Objects.requireNonNull(id, "id must not be null"));

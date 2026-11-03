@@ -25,13 +25,19 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.sun.net.httpserver.HttpServer;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.AfterEach;
@@ -176,7 +182,7 @@ class HttpTemplateTest {
     @Test
     void signedStreamObservesTheExactWireTargetAndPropagatesCallerOutputLimitsWithoutClosingOutput() {
         var observed = new AtomicReference<URI>();
-        var closed = new java.util.concurrent.atomic.AtomicBoolean();
+        var closed = new AtomicBoolean();
         var output = new ByteArrayOutputStream() {
             @Override
             public void close() {
@@ -198,7 +204,7 @@ class HttpTemplateTest {
         assertThat(response.getBody()).isEqualTo(3L);
         assertThat(output.toString(StandardCharsets.UTF_8)).isEqualTo("raw");
         assertThat(closed).isFalse();
-        var limited = new java.io.OutputStream() {
+        var limited = new OutputStream() {
             @Override
             public void write(int value) {
                 throw new IllegalStateException("Synthetic caller size limit");
@@ -260,7 +266,7 @@ class HttpTemplateTest {
         server.createContext("/slow", exchange -> {
             calls.incrementAndGet();
             try {
-                new java.util.concurrent.CountDownLatch(1).await(2, java.util.concurrent.TimeUnit.SECONDS);
+                new CountDownLatch(1).await(2, TimeUnit.SECONDS);
             } catch (InterruptedException interrupted) {
                 Thread.currentThread().interrupt();
             }
@@ -373,14 +379,14 @@ class HttpTemplateTest {
         HttpProperties.Client valid = config(1024L, true, Map.of()).clients().get("test");
         assertThatThrownBy(() -> http.refresh(new HttpProperties(Map.of("bad name", valid))))
                 .isInstanceOf(IllegalArgumentException.class);
-        var operations = new java.util.HashMap<String, HttpProperties.Operation>();
+        var operations = new HashMap<String, HttpProperties.Operation>();
         for (int i = 0; i < 257; i++) {
             operations.put("operation" + i, new HttpProperties.Operation(HttpMethod.POST, "/echo", null));
         }
         assertThatThrownBy(() -> http.refresh(
                         new HttpProperties(Map.of("test", copyClient(valid, null, null, null, operations)))))
                 .isInstanceOf(IllegalArgumentException.class);
-        var clients = new java.util.HashMap<String, HttpProperties.Client>();
+        var clients = new HashMap<String, HttpProperties.Client>();
         for (int i = 0; i < 257; i++) {
             clients.put("client" + i, valid);
         }
@@ -443,7 +449,7 @@ class HttpTemplateTest {
     @Test
     void builderFailureDuringRefreshKeepsPreviousPoolUsable() {
         http.close();
-        var failBuild = new java.util.concurrent.atomic.AtomicBoolean();
+        var failBuild = new AtomicBoolean();
         http = new HttpTemplate(
                 config(1024L, true, Map.of()),
                 () -> {
@@ -587,7 +593,7 @@ class HttpTemplateTest {
                     assertThat(uri.getRawPath()).isEqualTo("/signed/a%2Fb");
                     assertThat(uri.getRawQuery()).isEqualTo("q=x%2By%26z");
                     assertThat(new String(signedBody, StandardCharsets.UTF_8)).isEqualTo(body);
-                    java.util.Arrays.fill(signedBody, (byte) 'x');
+                    Arrays.fill(signedBody, (byte) 'x');
                     return Map.of("Authorization", "Bearer signed");
                 });
 

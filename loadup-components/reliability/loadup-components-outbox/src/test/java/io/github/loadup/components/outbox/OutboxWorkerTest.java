@@ -40,6 +40,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.slf4j.MDC;
 
 class OutboxWorkerTest {
@@ -172,10 +173,7 @@ class OutboxWorkerTest {
         when(repository.claim()).thenReturn(Optional.of(claim));
         OutboxDispatcher dispatcher = new OutboxDispatcher(repository, properties(), List.of(), null);
         assertThat(dispatcher.dispatchBatch()).isEqualTo(1);
-        verify(repository)
-                .fail(
-                        org.mockito.ArgumentMatchers.eq(claim),
-                        org.mockito.ArgumentMatchers.isA(IllegalStateException.class));
+        verify(repository).fail(ArgumentMatchers.eq(claim), ArgumentMatchers.isA(IllegalStateException.class));
         OutboxHandler handler = handler(event -> {});
         assertThatThrownBy(() -> new OutboxDispatcher(repository, properties(), List.of(handler, handler), null))
                 .isInstanceOf(IllegalArgumentException.class)

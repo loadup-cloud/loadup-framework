@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.upms.client.dto;
 
+import io.github.loadup.commons.json.DiagnosticHidden;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -28,14 +29,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record UserSensitiveDTO(
         @Schema(description = "Resource identifier") String id,
 
-        @Schema(description = "Real name") @io.github.loadup.commons.json.DiagnosticHidden
-        String realName,
+        @Schema(description = "Real name") @DiagnosticHidden String realName,
 
-        @Schema(description = "Email") @io.github.loadup.commons.json.DiagnosticHidden
-        String email,
+        @Schema(description = "Email") @DiagnosticHidden String email,
 
-        @Schema(description = "Mobile") @io.github.loadup.commons.json.DiagnosticHidden
-        String mobile) {
+        @Schema(description = "Mobile") @DiagnosticHidden String mobile) {
     @Override
     public String toString() {
         return ToStringAsJson.reflectionToString(this);

@@ -22,16 +22,19 @@ package io.github.loadup.modules.contract.domain.model;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public final class SalesPlanCompiler {
     private final ConfigurationResolver resolver = new ConfigurationResolver();
 
     public SalesPlanVersion publish(SalesPlanDraft draft) {
-        new ConditionEvaluator().validateConfigurationReferences(draft.eligibilityCondition(), java.util.Set.of());
+        new ConditionEvaluator().validateConfigurationReferences(draft.eligibilityCondition(), Set.of());
         var items = new HashMap<String, SalesPlanVersion.Item>();
-        var aliases = new java.util.HashSet<String>();
+        var aliases = new HashSet<String>();
         for (var selection : draft.bundles()) {
             if (!aliases.add(selection.alias())) {
                 throw new CommonException(ContractResultCodeEnum.DUPLICATE_BUNDLE_ALIAS);
@@ -104,7 +107,7 @@ public final class SalesPlanCompiler {
                 items.entrySet().stream()
                         .filter(e -> e.getValue().defaultSelected())
                         .map(Map.Entry::getKey)
-                        .collect(java.util.stream.Collectors.toSet()));
+                        .collect(Collectors.toSet()));
         return new SalesPlanVersion(draft, items);
     }
 }

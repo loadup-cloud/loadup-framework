@@ -28,6 +28,7 @@ import io.github.loadup.modules.upms.client.command.UserPasswordChangeCommand;
 import io.github.loadup.modules.upms.client.dto.LoginEntryDTO;
 import io.github.loadup.modules.upms.client.dto.SecurityOverviewDTO;
 import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
+import io.github.loadup.modules.upms.client.facade.AccountSecurityFacade;
 import io.github.loadup.modules.upms.domain.gateway.LoginLogGateway;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import io.github.loadup.modules.upms.domain.model.LoginLog;
@@ -39,7 +40,7 @@ import org.springframework.stereotype.Service;
  * Self-service account security queries and password updates.
  */
 @Service
-public class AccountSecurityService implements io.github.loadup.modules.upms.client.facade.AccountSecurityFacade {
+public class AccountSecurityService implements AccountSecurityFacade {
     private final UpmsDTOConverter dtoConverter;
     private final UserGateway users;
     private final LoginLogGateway logins;

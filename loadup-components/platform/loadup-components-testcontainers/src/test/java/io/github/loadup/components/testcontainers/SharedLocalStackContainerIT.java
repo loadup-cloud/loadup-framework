@@ -34,6 +34,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.localstack.LocalStackContainer;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
@@ -130,7 +131,7 @@ class SharedLocalStackContainerIT extends AbstractLocalStackContainerTest {
             // Put an object
             PutObjectRequest putObjectRequest =
                     PutObjectRequest.builder().bucket(bucketName).key(objectKey).build();
-            s3Client.putObject(putObjectRequest, software.amazon.awssdk.core.sync.RequestBody.fromString(content));
+            s3Client.putObject(putObjectRequest, RequestBody.fromString(content));
             LogUtil.info(SharedLocalStackContainerIT.class, "Uploaded object: {}", objectKey);
 
             // Get the object

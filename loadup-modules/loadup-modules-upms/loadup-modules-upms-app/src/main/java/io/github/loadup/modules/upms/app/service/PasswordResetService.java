@@ -26,6 +26,7 @@ import io.github.loadup.commons.masking.MaskType;
 import io.github.loadup.commons.masking.Masking;
 import io.github.loadup.modules.upms.client.command.UserPasswordResetCommand;
 import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
+import io.github.loadup.modules.upms.client.facade.PasswordResetFacade;
 import io.github.loadup.modules.upms.client.validation.PasswordPolicy;
 import io.github.loadup.modules.upms.domain.gateway.UserGateway;
 import io.github.loadup.modules.upms.domain.model.User;
@@ -42,7 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @since 1.0.0
  */
 @Service
-public class PasswordResetService implements io.github.loadup.modules.upms.client.facade.PasswordResetFacade {
+public class PasswordResetService implements PasswordResetFacade {
     private final Clock clock;
 
     private final UserGateway userGateway;

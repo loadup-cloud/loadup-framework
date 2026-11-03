@@ -19,7 +19,12 @@
  */
 package io.github.loadup.commons.domain;
 
+import io.github.loadup.commons.dto.PageQuery;
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.error.CommonException;
+import io.github.loadup.commons.json.ToStringAsJson;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Framework-neutral page result for domain and application contracts.
@@ -28,10 +33,9 @@ public record PageResult<T>(List<T> records, long total, int page, int size) {
 
     public PageResult {
         records = records == null ? List.of() : List.copyOf(records);
-        io.github.loadup.commons.dto.PageQuery.of(page, size);
+        PageQuery.of(page, size);
         if (total < 0) {
-            throw new io.github.loadup.commons.error.CommonException(
-                    io.github.loadup.commons.enums.CommonResultCodeEnum.PARAM_ILLEGAL);
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
         }
     }
 
@@ -42,12 +46,12 @@ public record PageResult<T>(List<T> records, long total, int page, int size) {
     /**
      * Maps entries without changing pagination metadata.
      */
-    public <R> PageResult<R> map(java.util.function.Function<? super T, ? extends R> converter) {
+    public <R> PageResult<R> map(Function<? super T, ? extends R> converter) {
         return new PageResult<>(records.stream().<R>map(converter).toList(), total, page, size);
     }
 
     @Override
     public String toString() {
-        return io.github.loadup.commons.json.ToStringAsJson.reflectionToString(this);
+        return ToStringAsJson.reflectionToString(this);
     }
 }

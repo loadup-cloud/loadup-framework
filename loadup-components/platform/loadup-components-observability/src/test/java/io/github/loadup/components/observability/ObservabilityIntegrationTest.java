@@ -29,6 +29,7 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.micrometer.tracing.Span;
 import io.micrometer.tracing.TraceContext;
 import io.micrometer.tracing.Tracer;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -105,7 +106,7 @@ class ObservabilityIntegrationTest {
                     assertThat(registration.getFilter()).isInstanceOf(TraceResponseHeaderFilter.class);
                     var request = new MockHttpServletRequest();
                     var response = new MockHttpServletResponse();
-                    var invoked = new java.util.concurrent.atomic.AtomicBoolean();
+                    var invoked = new AtomicBoolean();
                     registration.getFilter().doFilter(request, response, (incoming, outgoing) -> {
                         assertThat(((MockHttpServletResponse) outgoing).getHeader("traceId"))
                                 .isEqualTo("0123456789abcdef0123456789abcdef");

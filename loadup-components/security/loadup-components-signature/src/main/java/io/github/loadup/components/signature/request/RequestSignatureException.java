@@ -19,7 +19,9 @@
  */
 package io.github.loadup.components.signature.request;
 
+import io.github.loadup.commons.enums.ResultStatusEnum;
 import io.github.loadup.commons.error.CommonException;
+import io.github.loadup.commons.result.ResultCode;
 
 /**
  * Safe request verification failure without payloads, headers or backend details.
@@ -36,7 +38,7 @@ public final class RequestSignatureException extends CommonException {
         return code;
     }
 
-    public enum Code implements io.github.loadup.commons.result.ResultCode {
+    public enum Code implements ResultCode {
         MALFORMED,
         IDENTITY_MISMATCH,
         EXPIRED,
@@ -51,7 +53,7 @@ public final class RequestSignatureException extends CommonException {
         }
 
         public String getStatus() {
-            return io.github.loadup.commons.enums.ResultStatusEnum.FAIL.getCode();
+            return ResultStatusEnum.FAIL.getCode();
         }
 
         public String getMessage() {

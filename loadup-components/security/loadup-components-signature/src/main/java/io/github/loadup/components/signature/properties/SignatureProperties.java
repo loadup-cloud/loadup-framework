@@ -44,14 +44,12 @@ public class SignatureProperties {
     /**
      * The default signature algorithm.
      */
-    @NotNull
-    private SignatureAlgorithm defaultSignatureAlgorithm = SignatureAlgorithm.SHA256_WITH_RSA;
+    @NotNull private SignatureAlgorithm defaultSignatureAlgorithm = SignatureAlgorithm.SHA256_WITH_RSA;
 
     /**
      * The default digest algorithm.
      */
-    @NotNull
-    private DigestAlgorithm defaultDigestAlgorithm = DigestAlgorithm.SHA256;
+    @NotNull private DigestAlgorithm defaultDigestAlgorithm = DigestAlgorithm.SHA256;
 
     /**
      * Per-algorithm key sizes in bits.

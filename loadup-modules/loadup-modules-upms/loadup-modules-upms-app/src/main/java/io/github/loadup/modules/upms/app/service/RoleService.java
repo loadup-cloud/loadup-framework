@@ -26,6 +26,7 @@ import io.github.loadup.modules.upms.client.command.RoleCreateCommand;
 import io.github.loadup.modules.upms.client.command.RoleUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.RoleDTO;
 import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
+import io.github.loadup.modules.upms.client.facade.RoleFacade;
 import io.github.loadup.modules.upms.client.query.RolePageQuery;
 import io.github.loadup.modules.upms.domain.gateway.DepartmentGateway;
 import io.github.loadup.modules.upms.domain.gateway.PermissionGateway;
@@ -52,7 +53,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @since 1.0.0
  */
 @Service
-public class RoleService implements io.github.loadup.modules.upms.client.facade.RoleFacade {
+public class RoleService implements RoleFacade {
     private final UpmsDTOConverter dtoConverter;
 
     private final RoleGateway roleGateway;

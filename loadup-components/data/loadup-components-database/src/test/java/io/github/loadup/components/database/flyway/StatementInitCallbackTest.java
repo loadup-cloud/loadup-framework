@@ -34,6 +34,7 @@ import java.sql.Statement;
 import org.flywaydb.core.api.callback.Context;
 import org.flywaydb.core.api.callback.Event;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 class StatementInitCallbackTest {
     @Test
@@ -60,7 +61,7 @@ class StatementInitCallbackTest {
 
         verify(statement).execute("SET time_zone = '+08:00'");
         verify(statement).close();
-        org.mockito.Mockito.verify(connection, org.mockito.Mockito.never()).close();
+        Mockito.verify(connection, Mockito.never()).close();
     }
 
     @Test
@@ -95,6 +96,6 @@ class StatementInitCallbackTest {
         assertThatThrownBy(() -> new StatementInitCallback("SELECT 1").handle(Event.AFTER_CONNECT, context))
                 .isInstanceOf(CommonException.class)
                 .hasCause(failure);
-        org.mockito.Mockito.verify(connection, org.mockito.Mockito.never()).close();
+        Mockito.verify(connection, Mockito.never()).close();
     }
 }

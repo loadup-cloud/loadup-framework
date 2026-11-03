@@ -25,40 +25,30 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public record MerchantCreateCommand(
-        @Schema(description = "Merchant code") @NotBlank @Size(max = 64)
-        String merchantCode,
+        @Schema(description = "Merchant code") @NotBlank @Size(max = 64) String merchantCode,
 
-        @Schema(description = "Name") @NotBlank @Size(max = 200)
-        String name,
+        @Schema(description = "Name") @NotBlank @Size(max = 200) String name,
 
         @Schema(description = "Short name") @Size(max = 100) String shortName,
 
-        @Schema(description = "Type") @NotBlank @Size(max = 32)
-        String type,
+        @Schema(description = "Type") @NotBlank @Size(max = 32) String type,
 
-        @Schema(description = "Industry") @NotBlank @Size(max = 64)
-        String industry,
+        @Schema(description = "Industry") @NotBlank @Size(max = 64) String industry,
 
-        @Schema(description = "ISO 3166-1 alpha-2 country code") @NotBlank @Size(max = 2)
-        String country,
+        @Schema(description = "ISO 3166-1 alpha-2 country code") @NotBlank @Size(max = 2) String country,
 
         @Schema(description = "Province") @Size(max = 64) String province,
         @Schema(description = "City") @Size(max = 64) String city,
 
-        @Schema(description = "Merchant business address") @Size(max = 500)
-        String address,
+        @Schema(description = "Merchant business address") @Size(max = 500) String address,
 
-        @Schema(description = "Registration no") @Size(max = 64)
-        String registrationNo,
+        @Schema(description = "Registration no") @Size(max = 64) String registrationNo,
 
-        @Schema(description = "Contact name") @Size(max = 100)
-        String contactName,
+        @Schema(description = "Contact name") @Size(max = 100) String contactName,
 
-        @Schema(description = "Contact phone") @Size(max = 32)
-        String contactPhone,
+        @Schema(description = "Contact phone") @Size(max = 32) String contactPhone,
 
-        @Schema(description = "Contact email") @Size(max = 200)
-        String contactEmail) {
+        @Schema(description = "Contact email") @Size(max = 200) String contactEmail) {
     @Override
     public String toString() {
         return ToStringAsJson.reflectionToString(this);

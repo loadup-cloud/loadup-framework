@@ -26,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.TimeZone;
 import org.junit.jupiter.api.Test;
@@ -42,7 +43,7 @@ class MultiTemporalDeserializerTest {
     @Test
     void defaultsToSystemLocalZoneForDatesWithoutOffsets() {
         JsonMapper localMapper = JsonUtil.customize(JsonMapper.builder()).build();
-        java.time.ZoneId zone = TimeZone.getDefault().toZoneId();
+        ZoneId zone = TimeZone.getDefault().toZoneId();
         LocalDateTime local = LocalDateTime.of(2026, 10, 12, 9, 30);
         Date expected = Date.from(local.atZone(zone).toInstant());
         assertThat(localMapper.readValue(quote("2026-10-12 09:30:00"), Date.class))

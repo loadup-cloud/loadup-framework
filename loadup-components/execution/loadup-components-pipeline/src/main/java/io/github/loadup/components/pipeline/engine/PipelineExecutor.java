@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
@@ -119,7 +120,7 @@ public class PipelineExecutor {
                 // ── Transaction block: startTx ... endTx ──────────────────────
                 if (ITxInitializer.class.isAssignableFrom(stageClass)) {
                     ITxInitializer initializer = (ITxInitializer) applicationContext.getBean(stageClass);
-                    org.springframework.transaction.TransactionDefinition txDef = initializer.init(ctx);
+                    TransactionDefinition txDef = initializer.init(ctx);
                     PlatformTransactionManager txManager = applicationContext.getBean(PlatformTransactionManager.class);
                     TransactionTemplate txTemplate = new TransactionTemplate(txManager, txDef);
 

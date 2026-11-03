@@ -25,6 +25,7 @@ import io.github.loadup.modules.upms.client.command.PermissionCreateCommand;
 import io.github.loadup.modules.upms.client.command.PermissionUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.PermissionDTO;
 import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
+import io.github.loadup.modules.upms.client.facade.PermissionFacade;
 import io.github.loadup.modules.upms.domain.gateway.PermissionGateway;
 import io.github.loadup.modules.upms.domain.model.Permission;
 import io.github.loadup.modules.upms.domain.service.UserPermissionService;
@@ -43,7 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @since 1.0.0
  */
 @Service
-public class PermissionService implements io.github.loadup.modules.upms.client.facade.PermissionFacade {
+public class PermissionService implements PermissionFacade {
     private final UpmsDTOConverter dtoConverter;
 
     private final PermissionGateway permissionGateway;

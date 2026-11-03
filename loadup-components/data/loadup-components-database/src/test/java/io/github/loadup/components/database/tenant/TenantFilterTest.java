@@ -29,9 +29,11 @@ import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.database.config.DatabaseProperties;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.ServletException;
+import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.web.util.WebUtils;
 
 class TenantFilterTest {
     @Test
@@ -94,7 +96,7 @@ class TenantFilterTest {
         properties.setDefaultTenantId("single-tenant");
         var request = new MockHttpServletRequest();
         request.setDispatcherType(DispatcherType.ERROR);
-        request.setAttribute(org.springframework.web.util.WebUtils.ERROR_REQUEST_URI_ATTRIBUTE, "/api/orders");
+        request.setAttribute(WebUtils.ERROR_REQUEST_URI_ATTRIBUTE, "/api/orders");
         var key = new ContextKey<>("errors.path", String.class);
         request.setAttribute(
                 ExecutionContext.class.getName(), ExecutionContext.empty().with(key, "/api/orders"));
@@ -109,7 +111,7 @@ class TenantFilterTest {
     void ioAndRuntimeFailuresPropagateWithoutLeakingContext() {
         var properties = new DatabaseProperties.MultiTenant();
         var filter = new TenantFilter(properties);
-        var io = new java.io.IOException("synthetic IO failure");
+        var io = new IOException("synthetic IO failure");
         assertThatThrownBy(
                         () -> filter.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(), (r, s) -> {
                             throw io;

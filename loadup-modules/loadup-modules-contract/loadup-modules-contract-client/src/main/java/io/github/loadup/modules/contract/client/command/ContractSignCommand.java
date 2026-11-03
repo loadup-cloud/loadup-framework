@@ -29,19 +29,15 @@ import java.util.Map;
 import java.util.Set;
 
 public record ContractSignCommand(
-        @Schema(description = "Merchant identifier") @NotBlank @Size(max = 64)
-        String merchantId,
+        @Schema(description = "Merchant identifier") @NotBlank @Size(max = 64) String merchantId,
 
-        @Schema(description = "Scope key") @NotBlank @Size(max = 128)
-        String scopeKey,
+        @Schema(description = "Scope key") @NotBlank @Size(max = 128) String scopeKey,
 
         @Schema(description = "Plan version id") @NotBlank String planVersionId,
 
-        @Schema(description = "Idempotency key") @NotBlank @Size(max = 128)
-        String requestKey,
+        @Schema(description = "Idempotency key") @NotBlank @Size(max = 128) String requestKey,
 
-        @Schema(description = "Selected items") @NotNull @Size(max = 256)
-        Set<String> selectedItems,
+        @Schema(description = "Selected items") @NotNull @Size(max = 256) Set<String> selectedItems,
 
         @Schema(description = "Values") @NotNull Map<String, Map<String, String>> values,
         @Schema(description = "Effective from") Instant effectiveFrom,

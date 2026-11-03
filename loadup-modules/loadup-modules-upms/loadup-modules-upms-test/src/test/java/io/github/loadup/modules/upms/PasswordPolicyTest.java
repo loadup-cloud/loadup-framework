@@ -26,17 +26,17 @@ import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.upms.client.validation.PasswordPolicy;
 import io.github.loadup.modules.upms.client.validation.PasswordPolicyValidator;
 import io.github.loadup.modules.upms.client.validation.ValidPassword;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class PasswordPolicyTest {
     @Test
     void enforcesUnicodeCharacterMinimumAndUtf8ByteMaximum() {
-        for (String password : java.util.List.of("abcdefgh", "a".repeat(72), "界".repeat(24), "😀".repeat(8))) {
+        for (String password : List.of("abcdefgh", "a".repeat(72), "界".repeat(24), "😀".repeat(8))) {
             assertThat(PasswordPolicy.isValid(password)).isTrue();
             assertThat(new PasswordPolicyValidator().isValid(password, null)).isTrue();
         }
-        for (String password :
-                java.util.List.of("a".repeat(7), "a".repeat(73), "界".repeat(25), "😀".repeat(7), " ".repeat(8))) {
+        for (String password : List.of("a".repeat(7), "a".repeat(73), "界".repeat(25), "😀".repeat(7), " ".repeat(8))) {
             assertThat(PasswordPolicy.isValid(password)).isFalse();
             assertThatThrownBy(() -> PasswordPolicy.requireValid(password)).isInstanceOf(CommonException.class);
         }
@@ -45,7 +45,7 @@ class PasswordPolicyTest {
 
     @Test
     void passwordEntryFieldsShareOneValidationAnnotation() throws Exception {
-        for (String name : java.util.List.of(
+        for (String name : List.of(
                 "UserCreateCommand",
                 "UserRegisterCommand",
                 "UserPasswordChangeCommand",

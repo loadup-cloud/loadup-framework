@@ -26,6 +26,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import io.github.loadup.components.kms.KmsException;
 import io.github.loadup.components.kms.KmsKeyRef;
 import io.github.loadup.components.kms.KmsSignature;
 import io.github.loadup.components.kms.KmsSignatureAlgorithm;
@@ -50,6 +51,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 class RequestSignatureTest {
     private final KmsTemplate kms = mock(KmsTemplate.class);
@@ -96,7 +98,7 @@ class RequestSignatureTest {
             jca.update((byte[]) invocation.getArgument(2));
             return new KmsSignature(key.name(), key.version(), algorithm, jca.sign());
         });
-        org.mockito.Mockito.doAnswer(invocation -> {
+        Mockito.doAnswer(invocation -> {
                     KmsSignature signed = invocation.getArgument(1);
                     var jca = signature(signed.algorithm());
                     jca.initVerify(pair.getPublic());
@@ -225,7 +227,7 @@ class RequestSignatureTest {
         assertThatThrownBy(() -> verifier.verify(identity, content, signed))
                 .hasMessage("Request signature rejected: REPLAY");
         claims.clear();
-        org.mockito.Mockito.doAnswer(invocation -> {
+        Mockito.doAnswer(invocation -> {
                     clock.now = Instant.ofEpochSecond(signed.parameters().timestamp() + 300);
                     return true;
                 })
@@ -249,8 +251,7 @@ class RequestSignatureTest {
         assertThatThrownBy(() -> failing.verify(identity, content, signed))
                 .hasMessage("Request signature rejected: REPLAY_STORE_UNAVAILABLE")
                 .hasNoCause();
-        org.mockito.Mockito.doThrow(new io.github.loadup.components.kms.KmsException(
-                        io.github.loadup.components.kms.KmsException.Code.UNAVAILABLE))
+        Mockito.doThrow(new KmsException(KmsException.Code.UNAVAILABLE))
                 .when(kms)
                 .verify(any(), any(), any());
         assertThatThrownBy(() -> verifier.verify(identity, content, signed))

@@ -24,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.loadup.components.asyncresult.local.LocalAsyncResultAutoConfiguration;
 import io.github.loadup.components.asyncresult.redis.RedisAsyncResultAutoConfiguration;
+import java.time.Duration;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -89,7 +90,7 @@ class AsyncResultAutoConfigurationTest {
         assertThatThrownBy(() -> new AsyncReplyKey("t", "op", "b", "bad")).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> new AsyncResultOptions("", "op", "b", null))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> new AsyncResultOptions("t", "op", "b", java.time.Duration.ZERO))
+        assertThatThrownBy(() -> new AsyncResultOptions("t", "op", "b", Duration.ZERO))
                 .isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> new AsyncResultValue(null, null)).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> new AsyncResultValue("1", "FAIL")).isInstanceOf(IllegalArgumentException.class);
@@ -107,7 +108,7 @@ class AsyncResultAutoConfigurationTest {
                 .isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> new AsyncResultOptions("t".repeat(65), "op", "b", null))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> new AsyncResultOptions("t", "op", "b", java.time.Duration.ofMillis(-1)))
+        assertThatThrownBy(() -> new AsyncResultOptions("t", "op", "b", Duration.ofMillis(-1)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

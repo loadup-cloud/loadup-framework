@@ -45,6 +45,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -199,7 +200,7 @@ class AsyncResultTest {
             assertThat(future.cancel(false)).isTrue();
             var issued = new CountDownLatch(1);
             var error = new AtomicReference<Throwable>();
-            var interrupted = new java.util.concurrent.atomic.AtomicBoolean();
+            var interrupted = new AtomicBoolean();
             var thread = Thread.ofVirtual().start(() -> {
                 try {
                     template.execute(options(), String.class, k -> {
@@ -268,7 +269,7 @@ class AsyncResultTest {
         try (var actual = new LocalAsyncResultProvider(100)) {
             var provider = spy(actual);
             doAnswer(i -> (AutoCloseable) () -> {}).when(provider).subscribe(anyString(), any());
-            var first = new java.util.concurrent.atomic.AtomicBoolean(true);
+            var first = new AtomicBoolean(true);
             doAnswer(i -> {
                         if (first.getAndSet(false)) {
                             throw new IllegalStateException("offline");

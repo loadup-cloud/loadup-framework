@@ -26,14 +26,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public record MerchantStatusCommand(
-        @Schema(description = "Resource identifier") @NotBlank @Size(max = 64)
-        String id,
+        @Schema(description = "Resource identifier") @NotBlank @Size(max = 64) String id,
 
-        @Schema(description = "Expected version for optimistic concurrency") @Min(1)
-        long expectedRowVersion,
+        @Schema(description = "Expected version for optimistic concurrency") @Min(1) long expectedRowVersion,
 
-        @Schema(description = "Current lifecycle status") @NotBlank
-        String status) {
+        @Schema(description = "Current lifecycle status") @NotBlank String status) {
     @Override
     public String toString() {
         return ToStringAsJson.reflectionToString(this);

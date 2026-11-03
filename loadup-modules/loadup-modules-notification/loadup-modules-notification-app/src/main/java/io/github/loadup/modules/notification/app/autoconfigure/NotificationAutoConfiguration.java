@@ -24,7 +24,9 @@ import io.github.loadup.modules.notification.app.converter.NotificationDTOConver
 import io.github.loadup.modules.notification.app.converter.NotificationDTOConverterImpl;
 import io.github.loadup.modules.notification.app.integration.InAppChannelProvider;
 import io.github.loadup.modules.notification.app.service.InboxService;
+import io.github.loadup.modules.notification.client.facade.InboxFacade;
 import io.github.loadup.modules.notification.domain.gateway.InboxGateway;
+import java.time.Clock;
 import javax.sql.DataSource;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -49,9 +51,8 @@ import org.springframework.context.annotation.Import;
 public class NotificationAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(io.github.loadup.modules.notification.client.facade.InboxFacade.class)
-    public InboxService inboxService(
-            InboxGateway repository, NotificationDTOConverter converter, java.time.Clock clock) {
+    @ConditionalOnMissingBean(InboxFacade.class)
+    public InboxService inboxService(InboxGateway repository, NotificationDTOConverter converter, Clock clock) {
         return new InboxService(repository, converter, clock);
     }
 

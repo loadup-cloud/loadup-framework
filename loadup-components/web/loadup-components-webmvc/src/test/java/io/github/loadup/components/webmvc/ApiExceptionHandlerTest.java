@@ -30,9 +30,15 @@ import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.FailureResponse;
 import jakarta.servlet.RequestDispatcher;
+import jakarta.validation.ConstraintViolationException;
+import java.util.Map;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.webmvc.error.ErrorAttributes;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,8 +53,7 @@ class ApiExceptionHandlerTest {
                 .setMessageConverters(
                         new JacksonJsonHttpMessageConverter(JsonMapper.builder().build()))
                 .build();
-        for (var entry : java.util.Map.of(
-                        "/api/business", "CONFLICT", "/api/unknown", "SYS_ERROR", "/api/input", "PARAM_ILLEGAL")
+        for (var entry : Map.of("/api/business", "CONFLICT", "/api/unknown", "SYS_ERROR", "/api/input", "PARAM_ILLEGAL")
                 .entrySet()) {
             var response = mvc.perform(
                             post(entry.getKey()).contentType("application/json").content("{\"value\":-1}"))
@@ -61,10 +66,9 @@ class ApiExceptionHandlerTest {
                     .contains("\"result\"", "\"data\"", entry.getValue())
                     .doesNotContain("private-secret");
         }
-        assertThatThrownBy(() -> mvc.perform(post("/api/denied")))
-                .hasCauseInstanceOf(org.springframework.security.access.AccessDeniedException.class);
+        assertThatThrownBy(() -> mvc.perform(post("/api/denied"))).hasCauseInstanceOf(AccessDeniedException.class);
         assertThatThrownBy(() -> mvc.perform(post("/api/unauthenticated")))
-                .hasCauseInstanceOf(org.springframework.security.core.AuthenticationException.class);
+                .hasCauseInstanceOf(AuthenticationException.class);
         assertThatThrownBy(() -> mvc.perform(post("/protocol"))).hasCauseInstanceOf(CommonException.class);
     }
 
@@ -75,7 +79,7 @@ class ApiExceptionHandlerTest {
                 .setMessageConverters(
                         new JacksonJsonHttpMessageConverter(JsonMapper.builder().build()))
                 .build();
-        for (var entry : java.util.Map.of(
+        for (var entry : Map.of(
                         "/api/system-code",
                         "SYS_ERROR",
                         "/api/not-found",
@@ -104,13 +108,13 @@ class ApiExceptionHandlerTest {
     @Test
     void errorDispatchMapsApiStatusesButPreservesProtocolStatus() throws Exception {
         var attributes = mock(ErrorAttributes.class);
-        when(attributes.getErrorAttributes(any(), any())).thenReturn(java.util.Map.of("error", "protocol-error"));
+        when(attributes.getErrorAttributes(any(), any())).thenReturn(Map.of("error", "protocol-error"));
         var mvc = MockMvcBuilders.standaloneSetup(new ApiErrorController(new ApiPathMatcher(), attributes))
                 .addPlaceholderValue("spring.web.error.path", "/error")
                 .setMessageConverters(
                         new JacksonJsonHttpMessageConverter(JsonMapper.builder().build()))
                 .build();
-        for (var entry : java.util.Map.of(
+        for (var entry : Map.of(
                         400,
                         "PARAM_ILLEGAL",
                         405,
@@ -196,7 +200,7 @@ class ApiExceptionHandlerTest {
 
         @PostMapping("/api/constraint")
         Object constraint() {
-            throw new jakarta.validation.ConstraintViolationException(java.util.Set.of());
+            throw new ConstraintViolationException(Set.of());
         }
 
         @PostMapping("/api/nested")
@@ -216,12 +220,12 @@ class ApiExceptionHandlerTest {
 
         @PostMapping("/api/denied")
         Object denied() {
-            throw new org.springframework.security.access.AccessDeniedException("denied");
+            throw new AccessDeniedException("denied");
         }
 
         @PostMapping("/api/unauthenticated")
         Object unauthenticated() {
-            throw new org.springframework.security.authentication.BadCredentialsException("invalid");
+            throw new BadCredentialsException("invalid");
         }
 
         @PostMapping("/protocol")

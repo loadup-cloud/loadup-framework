@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,6 +49,7 @@ import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 class ServiceDigestTest {
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
@@ -206,7 +208,7 @@ class ServiceDigestTest {
         runner.run(context -> {
             var service = context.getBean(WholeService.class);
             try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
-                var results = new ArrayList<java.util.concurrent.Future<Object>>();
+                var results = new ArrayList<Future<Object>>();
                 for (int i = 0; i < 8; i++) {
                     String id = "trace-" + i;
                     results.add(executor.submit(() -> {
@@ -252,7 +254,7 @@ class ServiceDigestTest {
     @Configuration(proxyBeanMethods = false)
     static class Services {
         @Bean
-        @org.springframework.context.annotation.Primary
+        @Primary
         WholeService wholeService() {
             return new WholeService();
         }

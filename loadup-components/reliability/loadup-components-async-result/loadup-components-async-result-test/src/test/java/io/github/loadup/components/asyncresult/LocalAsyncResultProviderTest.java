@@ -25,6 +25,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.components.asyncresult.local.LocalAsyncResultProvider;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -81,7 +83,7 @@ class LocalAsyncResultProviderTest {
                 var executor = Executors.newVirtualThreadPerTaskExecutor()) {
             var key = key();
             provider.register(key, "owner", Duration.ofSeconds(5));
-            var tasks = new java.util.ArrayList<Future<AsyncCompletionStatus>>();
+            var tasks = new ArrayList<Future<AsyncCompletionStatus>>();
             for (int i = 0; i < 30; i++) {
                 int value = i;
                 tasks.add(executor.submit(
@@ -102,7 +104,7 @@ class LocalAsyncResultProviderTest {
     void invalidRetentionCannotAllocateStorage() {
         assertThatThrownBy(() -> new LocalAsyncResultProvider(0)).isInstanceOf(IllegalArgumentException.class);
         try (var provider = new LocalAsyncResultProvider(1)) {
-            for (var duration : java.util.List.of(Duration.ofMillis(-1), Duration.ofDays(8))) {
+            for (var duration : List.of(Duration.ofMillis(-1), Duration.ofDays(8))) {
                 assertThatThrownBy(() -> provider.register(key(), "owner", duration))
                         .isInstanceOf(IllegalArgumentException.class);
             }

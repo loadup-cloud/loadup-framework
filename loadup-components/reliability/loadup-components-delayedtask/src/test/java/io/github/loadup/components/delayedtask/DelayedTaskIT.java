@@ -40,8 +40,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -49,6 +51,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @SpringBootTest(classes = DelayedTaskIT.Application.class)
@@ -90,7 +93,7 @@ class DelayedTaskIT {
         properties.setMaxAttempts(2);
     }
 
-    private <T> T tenant(String tenant, java.util.function.Supplier<T> action) {
+    private <T> T tenant(String tenant, Supplier<T> action) {
         return ContextHolder.callWith(ExecutionContext.empty().with(ContextKeys.TENANT_ID, tenant), action::get);
     }
 
@@ -108,19 +111,15 @@ class DelayedTaskIT {
 
     @Test
     void dispatcherProxySuspendsAndRestoresTheCallerTransaction() {
-        assertThat(org.springframework.aop.support.AopUtils.isAopProxy(dispatcher))
-                .isTrue();
+        assertThat(AopUtils.isAopProxy(dispatcher)).isTrue();
         register("transaction-suspension", now());
-        transactions.executeWithoutResult(
-                status -> {
-                    assertThat(org.springframework.transaction.support.TransactionSynchronizationManager
-                                    .isActualTransactionActive())
-                            .isTrue();
-                    dispatcher.execute();
-                    assertThat(org.springframework.transaction.support.TransactionSynchronizationManager
-                                    .isActualTransactionActive())
-                            .isTrue();
-                });
+        transactions.executeWithoutResult(status -> {
+            assertThat(TransactionSynchronizationManager.isActualTransactionActive())
+                    .isTrue();
+            dispatcher.execute();
+            assertThat(TransactionSynchronizationManager.isActualTransactionActive())
+                    .isTrue();
+        });
         assertThat(calls).hasValue(1);
         assertThat(get("transaction-suspension").status()).isEqualTo(DelayedTaskStatus.SUCCEEDED);
     }
@@ -339,8 +338,7 @@ class DelayedTaskIT {
                 }
 
                 public void handle(DelayedTask task) {
-                    assertThat(org.springframework.transaction.support.TransactionSynchronizationManager
-                                    .isActualTransactionActive())
+                    assertThat(TransactionSynchronizationManager.isActualTransactionActive())
                             .isFalse();
                     calls.incrementAndGet();
                     if (failures.getAndDecrement() > 0) {

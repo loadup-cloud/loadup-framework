@@ -20,6 +20,7 @@
 package io.github.loadup.modules.file.app.service;
 
 import io.github.loadup.commons.constant.CommonConstants;
+import io.github.loadup.commons.dto.PageQuery;
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.result.PageDTO;
@@ -32,6 +33,7 @@ import io.github.loadup.modules.file.app.converter.FileDTOConverter;
 import io.github.loadup.modules.file.client.dto.FileReferenceDTO;
 import io.github.loadup.modules.file.client.dto.FileResourceDTO;
 import io.github.loadup.modules.file.client.error.FileResultCodeEnum;
+import io.github.loadup.modules.file.client.facade.FileResourceFacade;
 import io.github.loadup.modules.file.domain.gateway.FileResourceGateway;
 import io.github.loadup.modules.file.domain.model.FileReference;
 import io.github.loadup.modules.file.domain.model.FileResource;
@@ -46,7 +48,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * File lifecycle and business references; DFS remains responsible for bytes.
  */
-public class FileResourceService implements io.github.loadup.modules.file.client.facade.FileResourceFacade {
+public class FileResourceService implements FileResourceFacade {
     private final Clock clock;
     private final FileDTOConverter converter;
     private final FileResourceGateway repository;
@@ -147,7 +149,7 @@ public class FileResourceService implements io.github.loadup.modules.file.client
     }
 
     public PageDTO<FileResourceDTO> list(String actorId, boolean admin, String ownerId, int page, int size) {
-        io.github.loadup.commons.dto.PageQuery.normalized(page, size, FileResultCodeEnum.INVALID_PAGE);
+        PageQuery.normalized(page, size, FileResultCodeEnum.INVALID_PAGE);
         String owner = admin && ownerId != null && !ownerId.isBlank() ? required(ownerId, 64) : required(actorId, 64);
         return converter.toPageDTO(repository.list(owner, page, size));
     }

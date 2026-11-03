@@ -19,6 +19,7 @@
  */
 package io.github.loadup.commons.result;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -28,7 +29,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "Successful response envelope")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"result", "data"})
-@com.fasterxml.jackson.annotation.JsonIgnoreProperties({"traceId"})
+@JsonIgnoreProperties({"traceId"})
 public record SuccessResponse<T>(
         @Schema(description = "Result metadata") @JsonProperty("result")
         Result result,

@@ -28,6 +28,7 @@ import io.micrometer.context.ContextSnapshot;
 import io.micrometer.context.ContextSnapshotFactory;
 import io.micrometer.core.instrument.MeterRegistry;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CancellationException;
@@ -276,7 +277,7 @@ public final class DefaultAsyncResultTemplate implements AsyncResultTemplate {
                 metrics.counter(
                                 "loadup.async_result.completions",
                                 "outcome",
-                                status.name().toLowerCase(java.util.Locale.ROOT))
+                                status.name().toLowerCase(Locale.ROOT))
                         .increment();
             }
             return status;

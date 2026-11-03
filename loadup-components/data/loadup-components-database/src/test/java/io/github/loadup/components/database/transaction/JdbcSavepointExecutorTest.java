@@ -31,6 +31,7 @@ import static org.mockito.Mockito.when;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Savepoint;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -88,7 +89,7 @@ class JdbcSavepointExecutorTest {
     void activeTransactionCannotUseAnAutocommitConnection() throws SQLException {
         bindTransaction();
         when(connection.getAutoCommit()).thenReturn(true);
-        var invoked = new java.util.concurrent.atomic.AtomicBoolean();
+        var invoked = new AtomicBoolean();
         assertThrows(
                 DataAccessResourceFailureException.class,
                 () -> JdbcSavepointExecutor.execute(dataSource, () -> {

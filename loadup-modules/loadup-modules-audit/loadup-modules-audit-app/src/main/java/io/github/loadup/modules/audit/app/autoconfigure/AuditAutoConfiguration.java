@@ -23,6 +23,7 @@ import io.github.loadup.modules.audit.app.converter.AuditDTOConverter;
 import io.github.loadup.modules.audit.app.converter.AuditDTOConverterImpl;
 import io.github.loadup.modules.audit.app.service.AuditService;
 import io.github.loadup.modules.audit.domain.gateway.AuditGateway;
+import java.time.Clock;
 import javax.sql.DataSource;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -45,7 +46,7 @@ public class AuditAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public AuditService auditService(AuditGateway repository, AuditDTOConverter converter, java.time.Clock clock) {
+    public AuditService auditService(AuditGateway repository, AuditDTOConverter converter, Clock clock) {
         return new AuditService(repository, converter, clock);
     }
 }

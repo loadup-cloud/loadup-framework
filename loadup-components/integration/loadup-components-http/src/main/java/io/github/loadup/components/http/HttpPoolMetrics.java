@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.ToDoubleFunction;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 
@@ -129,8 +130,7 @@ final class HttpPoolMetrics implements AutoCloseable {
         void record(long start, String outcome) {
             Timer timer = timers.get(outcome);
             if (timer != null) {
-                timer.record(
-                        registry.config().clock().monotonicTime() - start, java.util.concurrent.TimeUnit.NANOSECONDS);
+                timer.record(registry.config().clock().monotonicTime() - start, TimeUnit.NANOSECONDS);
             }
         }
 

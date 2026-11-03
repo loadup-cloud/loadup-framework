@@ -19,7 +19,9 @@
  */
 package io.github.loadup.components.signature.exception;
 
+import io.github.loadup.commons.enums.ResultStatusEnum;
 import io.github.loadup.commons.error.CommonException;
+import io.github.loadup.commons.result.ResultCode;
 
 /**
  * Unchecked exception thrown by the signature and digest services.
@@ -45,7 +47,7 @@ public class SignatureException extends CommonException {
     /**
      * Categorized signature errors.
      */
-    public enum SignatureErrorCode implements io.github.loadup.commons.result.ResultCode {
+    public enum SignatureErrorCode implements ResultCode {
         INVALID_KEY("Invalid key"),
         INVALID_ALGORITHM("Unsupported algorithm"),
         SIGN_FAILED("Sign failed"),
@@ -65,7 +67,7 @@ public class SignatureException extends CommonException {
         }
 
         public String getStatus() {
-            return io.github.loadup.commons.enums.ResultStatusEnum.FAIL.getCode();
+            return ResultStatusEnum.FAIL.getCode();
         }
 
         public String getMessage() {

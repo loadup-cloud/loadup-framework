@@ -25,8 +25,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 public record UserSensitiveQuery(
-        @Schema(description = "Resource identifier") @NotNull @Pattern(regexp = "[A-Za-z0-9_-]{1,64}")
-        String id,
+        @Schema(description = "Resource identifier") @NotNull @Pattern(regexp = "[A-Za-z0-9_-]{1,64}") String id,
 
         @Schema(description = "Purpose") @NotNull SensitiveReadPurpose purpose) {
     @Override

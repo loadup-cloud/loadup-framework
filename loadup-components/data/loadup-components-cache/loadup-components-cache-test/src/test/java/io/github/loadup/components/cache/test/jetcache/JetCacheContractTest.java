@@ -49,6 +49,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.cache.Cache.ValueRetrievalException;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.data.redis.connection.RedisConnection;
@@ -106,7 +108,7 @@ class JetCacheContractTest {
                 assertThatThrownBy(() -> cache.get("failure", () -> {
                             throw failure;
                         }))
-                        .isInstanceOf(org.springframework.cache.Cache.ValueRetrievalException.class)
+                        .isInstanceOf(ValueRetrievalException.class)
                         .hasCause(failure);
             }
         }
@@ -217,11 +219,10 @@ class JetCacheContractTest {
             assertThat(orders.get("key", String.class)).isEqualTo("value");
         });
         var custom = new ConcurrentMapCacheManager();
-        contexts.withBean(org.springframework.cache.CacheManager.class, () -> custom)
-                .run(context -> assertThat(context.getBean(org.springframework.cache.CacheManager.class))
-                        .isSameAs(custom));
+        contexts.withBean(CacheManager.class, () -> custom)
+                .run(context -> assertThat(context.getBean(CacheManager.class)).isSameAs(custom));
         contexts.withPropertyValues("loadup.cache.type=none")
-                .withBean(org.springframework.cache.CacheManager.class, NoOpCacheManager::new)
+                .withBean(CacheManager.class, NoOpCacheManager::new)
                 .run(context -> assertThat(context).doesNotHaveBean(JetCacheSpringCacheManager.class));
     }
 }

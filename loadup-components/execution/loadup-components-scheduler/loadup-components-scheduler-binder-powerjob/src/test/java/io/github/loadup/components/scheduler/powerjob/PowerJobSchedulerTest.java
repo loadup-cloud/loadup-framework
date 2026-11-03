@@ -25,6 +25,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.components.scheduler.ScheduledTask;
 import io.github.loadup.components.scheduler.SchedulerAutoConfiguration;
 import io.github.loadup.components.scheduler.SchedulerProvider;
@@ -41,16 +42,14 @@ class PowerJobSchedulerTest {
         var provider = new PowerJobSchedulerProvider();
         var context = new TaskContext();
         context.setJobParams("scan");
-        assertThatThrownBy(() -> provider.process(context))
-                .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
+        assertThatThrownBy(() -> provider.process(context)).isInstanceOf(CommonException.class);
         var task = mock(ScheduledTask.class);
         when(task.name()).thenReturn("scan");
         provider.start(new SchedulerTemplate(provider, List.of(task)));
         assertThat(provider.process(context).isSuccess()).isTrue();
         verify(task).execute();
         provider.stop();
-        assertThatThrownBy(() -> provider.process(context))
-                .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
+        assertThatThrownBy(() -> provider.process(context)).isInstanceOf(CommonException.class);
     }
 
     @Test

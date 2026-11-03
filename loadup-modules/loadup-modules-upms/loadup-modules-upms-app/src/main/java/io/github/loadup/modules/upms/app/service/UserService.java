@@ -32,6 +32,7 @@ import io.github.loadup.modules.upms.client.command.UserUpdateCommand;
 import io.github.loadup.modules.upms.client.dto.RoleDTO;
 import io.github.loadup.modules.upms.client.dto.UserDetailDTO;
 import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
+import io.github.loadup.modules.upms.client.facade.UserFacade;
 import io.github.loadup.modules.upms.client.query.UserPageQuery;
 import io.github.loadup.modules.upms.client.validation.PasswordPolicy;
 import io.github.loadup.modules.upms.domain.gateway.DepartmentGateway;
@@ -43,6 +44,8 @@ import io.github.loadup.modules.upms.domain.model.User;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -55,7 +58,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @since 1.0.0
  */
 @Service
-public class UserService implements io.github.loadup.modules.upms.client.facade.UserFacade {
+public class UserService implements UserFacade {
     private final Clock clock;
     private final UpmsDTOConverter dtoConverter;
 
@@ -283,8 +286,8 @@ public class UserService implements io.github.loadup.modules.upms.client.facade.
         var pagination = query.pagination();
         String sortBy = query.getSortBy() == null ? "createdAt" : query.getSortBy();
         String sortOrder = query.getSortOrder() == null ? "DESC" : query.getSortOrder();
-        if (!java.util.Set.of("createdAt", "username", "nickname", "id").contains(sortBy)
-                || !java.util.Set.of("ASC", "DESC").contains(sortOrder.toUpperCase(java.util.Locale.ROOT))) {
+        if (!Set.of("createdAt", "username", "nickname", "id").contains(sortBy)
+                || !Set.of("ASC", "DESC").contains(sortOrder.toUpperCase(Locale.ROOT))) {
             throw new CommonException(UpmsResultCodeEnum.UNSUPPORTED_USER_SORT_FIELD_OR_DIRECTION);
         }
         PageQuery pageQuery = pagination;

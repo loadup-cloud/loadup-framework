@@ -34,6 +34,7 @@ import io.github.loadup.components.kms.KmsSignatureAlgorithm;
 import io.github.loadup.components.kms.KmsTemplate;
 import io.github.loadup.components.signature.request.RedisRequestNonceStore;
 import io.github.loadup.components.signature.request.RequestContent;
+import io.github.loadup.components.signature.request.RequestNonceStore;
 import io.github.loadup.components.signature.request.RequestSignature;
 import io.github.loadup.components.signature.request.RequestSignatureCanonicalizer;
 import io.github.loadup.components.signature.request.RequestSignatureException;
@@ -52,6 +53,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -193,8 +195,7 @@ class RequestSignatureContractTest {
             assertMalformed(() -> RequestSignature.fromHeaders(headers));
         }
         var lowercase = new HashMap<String, List<String>>();
-        valid.toHeaders()
-                .forEach((key, value) -> lowercase.put(key.toLowerCase(java.util.Locale.ROOT), List.of(value)));
+        valid.toHeaders().forEach((key, value) -> lowercase.put(key.toLowerCase(Locale.ROOT), List.of(value)));
         lowercase.put(null, List.of("ignored"));
         assertThat(RequestSignature.fromHeaders(lowercase)).isEqualTo(valid);
     }
@@ -220,7 +221,7 @@ class RequestSignatureContractTest {
     @Test
     void missingAndOversizedContentFailBeforeEitherRemoteBoundary() {
         var kms = mock(KmsTemplate.class);
-        var nonce = mock(io.github.loadup.components.signature.request.RequestNonceStore.class);
+        var nonce = mock(RequestNonceStore.class);
         var policy = new RequestSignatureProperties(Duration.ofSeconds(2), Duration.ZERO, 1);
         var signer = new RequestSigner(kms, CLOCK, policy);
         var verifier = new RequestVerifier(kms, nonce, CLOCK, policy);

@@ -24,7 +24,9 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import org.junit.jupiter.api.Test;
 
 class ContextHolderTest {
@@ -101,7 +103,7 @@ class ContextHolderTest {
                     return ContextHolder.get(ORDER);
                 }));
                 assertThat(wrapped.get()).isEqualTo("caller");
-                var tasks = new java.util.ArrayList<java.util.concurrent.Future<String>>();
+                var tasks = new ArrayList<Future<String>>();
                 for (int i = 0; i < 100; i++) {
                     String id = "order-" + i;
                     tasks.add(executor.submit(() ->

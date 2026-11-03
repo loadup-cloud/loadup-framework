@@ -21,6 +21,7 @@ package io.github.loadup.components.authserver.jwt;
 
 import java.security.Principal;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -70,7 +71,7 @@ public class LoadUpJwtTokenCustomizer implements OAuth2TokenCustomizer<JwtEncodi
         }
         context.getClaims().claim("token_use", "access");
         if (audience != null && !audience.isBlank()) {
-            context.getClaims().audience(java.util.List.of(audience));
+            context.getClaims().audience(List.of(audience));
         }
         Authentication principal = context.getPrincipal();
         var authorization = context.getAuthorization();

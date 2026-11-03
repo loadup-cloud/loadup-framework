@@ -21,6 +21,8 @@ package io.github.loadup.modules.upms.infrastructure.repository;
 
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
+import io.github.loadup.commons.error.CommonException;
+import io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum;
 import io.github.loadup.modules.upms.domain.gateway.PermissionGateway;
 import io.github.loadup.modules.upms.domain.model.Permission;
 import io.github.loadup.modules.upms.infrastructure.converter.PermissionConverter;
@@ -32,6 +34,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -97,7 +100,7 @@ public class PermissionGatewayImpl extends ServiceImpl<PermissionMapper, Permiss
             WHERE id = :id AND deleted = FALSE
             """, new BeanPropertySqlParameterSource(row));
         if (changed != 1) {
-            throw new org.springframework.dao.IncorrectResultSizeDataAccessException(1, changed);
+            throw new IncorrectResultSizeDataAccessException(1, changed);
         }
         return converter.toEntity(row);
     }
@@ -109,9 +112,7 @@ public class PermissionGatewayImpl extends ServiceImpl<PermissionMapper, Permiss
         jdbc.queryForList(
                 "SELECT id FROM upms_permission WHERE id = :id AND deleted = FALSE FOR UPDATE", params, String.class);
         if (!findByParentId(id).isEmpty()) {
-            throw new io.github.loadup.commons.error.CommonException(
-                    io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum
-                            .PERMISSION_CONTAINS_CHILD_PERMISSIONS);
+            throw new CommonException(UpmsResultCodeEnum.PERMISSION_CONTAINS_CHILD_PERMISSIONS);
         }
         jdbc.update(
                 "UPDATE upms_role_permission SET deleted = TRUE, updated_at = :now WHERE permission_id = :id AND deleted = FALSE",
@@ -188,8 +189,7 @@ public class PermissionGatewayImpl extends ServiceImpl<PermissionMapper, Permiss
                         params().addValue("id", id),
                         String.class)
                 .isEmpty()) {
-            throw new io.github.loadup.commons.error.CommonException(
-                    io.github.loadup.modules.upms.client.error.UpmsResultCodeEnum.PERMISSION_NOT_FOUND);
+            throw new CommonException(UpmsResultCodeEnum.PERMISSION_NOT_FOUND);
         }
     }
 

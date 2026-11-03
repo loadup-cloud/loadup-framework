@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.contract.app.support;
 
+import io.github.loadup.commons.dto.PageQuery;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 
@@ -32,7 +33,7 @@ public final class ContractIdentity {
     }
 
     public static void page(int page, int size) {
-        io.github.loadup.commons.dto.PageQuery.normalized(page, size, ContractResultCodeEnum.INVALID_PAGE);
+        PageQuery.normalized(page, size, ContractResultCodeEnum.INVALID_PAGE);
     }
 
     public static String code(String value, int max) {

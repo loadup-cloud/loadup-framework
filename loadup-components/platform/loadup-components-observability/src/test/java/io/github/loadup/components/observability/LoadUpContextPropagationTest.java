@@ -28,8 +28,10 @@ import io.github.loadup.commons.context.ExecutionContext;
 import io.micrometer.context.ContextRegistry;
 import io.micrometer.context.ContextSnapshotFactory;
 import io.micrometer.context.ThreadLocalAccessor;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
@@ -101,7 +103,7 @@ class LoadUpContextPropagationTest {
     @ValueSource(booleans = {false, true})
     void bootExecutorUsesBusinessDecoratorAlongsideStandardPropagation(boolean virtual) {
         var marker = new ThreadLocal<String>();
-        String key = "test.boot.context." + java.util.UUID.randomUUID();
+        String key = "test.boot.context." + UUID.randomUUID();
         ContextRegistry.getInstance().registerThreadLocalAccessor(new ThreadLocalAccessor<String>() {
             public Object key() {
                 return key;
@@ -124,7 +126,7 @@ class LoadUpContextPropagationTest {
             new ApplicationContextRunner()
                     .withConfiguration(AutoConfigurations.of(
                             ObservabilityAutoConfiguration.class, TaskExecutionAutoConfiguration.class))
-                    .withBean(io.micrometer.core.instrument.MeterRegistry.class, SimpleMeterRegistry::new)
+                    .withBean(MeterRegistry.class, SimpleMeterRegistry::new)
                     .withPropertyValues(
                             "spring.task.execution.propagate-context=true", "spring.threads.virtual.enabled=" + virtual)
                     .run(context -> {

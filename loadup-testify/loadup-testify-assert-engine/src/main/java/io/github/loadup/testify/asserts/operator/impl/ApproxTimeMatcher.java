@@ -22,8 +22,11 @@ package io.github.loadup.testify.asserts.operator.impl;
 import io.github.loadup.testify.asserts.model.MatchResult;
 import io.github.loadup.testify.asserts.operator.OperatorMatcher;
 import io.github.loadup.testify.asserts.util.TimeParser;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.TemporalAccessor;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -67,9 +70,9 @@ public class ApproxTimeMatcher implements OperatorMatcher {
             return n.longValue();
         }
 
-        if (value instanceof java.time.temporal.TemporalAccessor ta) {
+        if (value instanceof TemporalAccessor ta) {
             try {
-                return java.time.Instant.from(ta).toEpochMilli();
+                return Instant.from(ta).toEpochMilli();
             } catch (Exception e) {
                 return LocalDateTime.from(ta)
                         .atZone(ZoneId.systemDefault())
@@ -78,7 +81,7 @@ public class ApproxTimeMatcher implements OperatorMatcher {
             }
         }
 
-        if (value instanceof java.util.Date d) {
+        if (value instanceof Date d) {
             return d.getTime();
         }
 

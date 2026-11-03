@@ -25,11 +25,9 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
 public record CatalogActionCommand(
-        @Schema(description = "Resource identifier") @NotBlank
-        String id,
+        @Schema(description = "Resource identifier") @NotBlank String id,
 
-        @Schema(description = "Expected version for optimistic concurrency") @Min(1)
-        long expectedRowVersion) {
+        @Schema(description = "Expected version for optimistic concurrency") @Min(1) long expectedRowVersion) {
     @Override
     public String toString() {
         return ToStringAsJson.reflectionToString(this);

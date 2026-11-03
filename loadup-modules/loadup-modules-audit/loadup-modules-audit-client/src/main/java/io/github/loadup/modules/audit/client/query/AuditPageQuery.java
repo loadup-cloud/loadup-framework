@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.audit.client.query;
 
+import io.github.loadup.commons.dto.PageQuery;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.modules.audit.client.error.AuditResultCodeEnum;
@@ -38,23 +39,19 @@ public record AuditPageQuery(
         @Schema(description = "Inclusive end time in the application local time zone")
         LocalDateTime to,
 
-        @Schema(description = "Page number, starting at 1", minimum = "1", defaultValue = "1") @Min(1)
-        Integer page,
+        @Schema(description = "Page number, starting at 1", minimum = "1", defaultValue = "1") @Min(1) Integer page,
 
         @Schema(
                 description = "Page size; list queries allow at most 100",
                 minimum = "1",
                 maximum = "100",
                 defaultValue = "20")
-        @Min(1)
-        @Max(100)
-        Integer size) {
+        @Min(1) @Max(100) Integer size) {
     public AuditPageQuery {
         if (from != null && to != null && from.isAfter(to)) {
             throw new CommonException(AuditResultCodeEnum.INVALID_TIME_RANGE);
         }
-        var pagination =
-                io.github.loadup.commons.dto.PageQuery.normalized(page, size, AuditResultCodeEnum.INVALID_PAGE);
+        var pagination = PageQuery.normalized(page, size, AuditResultCodeEnum.INVALID_PAGE);
         page = pagination.page();
         size = pagination.size();
     }

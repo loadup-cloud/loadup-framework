@@ -22,6 +22,7 @@ package io.github.loadup.components.lock;
 import io.github.loadup.commons.json.ToStringAsJson;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Map;
 
 /**
  * Explicit tenant or global resource scope; external names are encoded to avoid delimiter collisions.
@@ -70,6 +71,6 @@ public record LockKey(String business, String tenantId, String resourceId) {
 
     @Override
     public String toString() {
-        return ToStringAsJson.reflectionToString(java.util.Map.of("scope", tenantId == null ? "global" : "tenant"));
+        return ToStringAsJson.reflectionToString(Map.of("scope", tenantId == null ? "global" : "tenant"));
     }
 }

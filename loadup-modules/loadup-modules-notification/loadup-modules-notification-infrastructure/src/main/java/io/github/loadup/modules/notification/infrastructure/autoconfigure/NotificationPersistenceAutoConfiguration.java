@@ -24,7 +24,9 @@ import io.github.loadup.modules.notification.domain.gateway.InboxGateway;
 import io.github.loadup.modules.notification.infrastructure.converter.NotificationStorageConverter;
 import io.github.loadup.modules.notification.infrastructure.converter.NotificationStorageConverterImpl;
 import io.github.loadup.modules.notification.infrastructure.repository.InboxGatewayImpl;
+import java.time.Clock;
 import javax.sql.DataSource;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -54,11 +56,11 @@ public class NotificationPersistenceAutoConfiguration {
     static class DefaultPersistence {
         @Bean
         public InboxGateway notificationGateway(
-                org.springframework.beans.factory.ObjectProvider<JdbcClient> jdbcClient,
+                ObjectProvider<JdbcClient> jdbcClient,
                 DataSource dataSource,
                 IdGenerator ids,
                 NotificationStorageConverter converter,
-                java.time.Clock clock) {
+                Clock clock) {
             return new InboxGatewayImpl(
                     jdbcClient.getIfAvailable(() -> JdbcClient.create(dataSource)), converter, clock, ids);
         }

@@ -19,6 +19,8 @@
  */
 package io.github.loadup.commons.result;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.loadup.commons.dto.DTO;
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.json.ToStringAsJson;
@@ -42,11 +44,11 @@ public final class Result implements DTO, Serializable {
         this.message = value.getMessage();
     }
 
-    @com.fasterxml.jackson.annotation.JsonCreator
+    @JsonCreator
     private Result(
-            @com.fasterxml.jackson.annotation.JsonProperty("code") String code,
-            @com.fasterxml.jackson.annotation.JsonProperty("status") String status,
-            @com.fasterxml.jackson.annotation.JsonProperty("message") String message) {
+            @JsonProperty("code") String code,
+            @JsonProperty("status") String status,
+            @JsonProperty("message") String message) {
         this.code = code;
         this.status = status;
         this.message = message;

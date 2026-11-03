@@ -21,6 +21,7 @@ package io.github.loadup.components.database.flyway;
 
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.database.config.DatabaseProperties;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
@@ -125,7 +126,7 @@ public class LoadUpFlywayAutoConfiguration {
 
         // Encoding
         if (properties.getEncoding() != null) {
-            config.encoding(java.nio.charset.Charset.forName(properties.getEncoding()));
+            config.encoding(Charset.forName(properties.getEncoding()));
         }
 
         // Placeholders

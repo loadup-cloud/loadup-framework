@@ -23,6 +23,7 @@ import io.github.loadup.components.authserver.properties.LoadUpAuthServerPropert
 import io.github.loadup.modules.upms.client.facade.AuthenticationFacade;
 import io.github.loadup.modules.upms.domain.gateway.RoleGateway;
 import io.github.loadup.modules.upms.domain.service.UserPermissionService;
+import java.time.Clock;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -71,7 +72,7 @@ public class UpmsAuthServerAutoConfiguration {
             UpmsAuthenticationProvider authenticationProvider,
             JwtEncoder jwtEncoder,
             LoadUpAuthServerProperties properties,
-            java.time.Clock clock) {
+            Clock clock) {
         return new UpmsTokenController(authenticationProvider, jwtEncoder, properties, clock);
     }
 }

@@ -37,15 +37,10 @@ public class DepartmentCreateCommand {
     @Schema(description = "Parent id")
     private String parentId;
 
-    @NotBlank()
-    @Size(max = 50)
-    @Schema(description = "Dept name")
+    @NotBlank() @Size(max = 50) @Schema(description = "Dept name")
     private String deptName;
 
-    @NotBlank()
-    @Size(max = 50)
-    @Pattern(regexp = "^[A-Z0-9_]+$")
-    @Schema(description = "Dept code")
+    @NotBlank() @Size(max = 50) @Pattern(regexp = "^[A-Z0-9_]+$") @Schema(description = "Dept code")
     private String deptCode;
 
     @Schema(description = "Display order; smaller values appear first")
@@ -54,12 +49,10 @@ public class DepartmentCreateCommand {
     @Schema(description = "Leader user id")
     private String leaderUserId;
 
-    @Pattern(regexp = "^1[3-9]\\d{9}$")
-    @Schema(description = "Mobile")
+    @Pattern(regexp = "^1[3-9]\\d{9}$") @Schema(description = "Mobile")
     private String mobile;
 
-    @Email()
-    @Schema(description = "Email")
+    @Email() @Schema(description = "Email")
     private String email;
 
     /**

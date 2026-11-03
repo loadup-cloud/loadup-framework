@@ -25,6 +25,7 @@ import io.github.loadup.commons.masking.MaskType;
 import io.github.loadup.commons.masking.Masked;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -61,8 +62,7 @@ class ToStringAsJsonTest {
     void diagnosticProtectionDoesNotMaskAnAuthorizedHttpResponse() {
         var value = new Plaintext("person@example.com");
         assertThat(mapper.writeValueAsString(value)).contains("person@example.com");
-        assertThat(ToStringAsJson.reflectionToString(java.util.Map.of("data", value)))
-                .doesNotContain("person@example.com");
+        assertThat(ToStringAsJson.reflectionToString(Map.of("data", value))).doesNotContain("person@example.com");
     }
 
     private record Plaintext(@DiagnosticHidden String email) {}

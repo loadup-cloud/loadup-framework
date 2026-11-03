@@ -22,6 +22,9 @@ package io.github.loadup.components.database.id;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 class IdGeneratorTest {
@@ -29,7 +32,7 @@ class IdGeneratorTest {
     void generatesUuidIdentifiers() {
         var generator = new UuidV4IdGenerator(true);
         var first = generator.generate();
-        assertThat(java.util.UUID.fromString(first).version()).isEqualTo(4);
+        assertThat(UUID.fromString(first).version()).isEqualTo(4);
         assertThat(generator.generate()).isNotEqualTo(first);
     }
 
@@ -57,7 +60,7 @@ class IdGeneratorTest {
                         ? value
                         : value.substring(0, 8) + "-" + value.substring(8, 12) + "-" + value.substring(12, 16) + "-"
                                 + value.substring(16, 20) + "-" + value.substring(20);
-                var uuid = java.util.UUID.fromString(canonical);
+                var uuid = UUID.fromString(canonical);
                 assertThat(uuid.variant()).isEqualTo(2);
                 assertThat(uuid.version()).isEqualTo(generator instanceof UuidV4IdGenerator ? 4 : 7);
             }
@@ -78,7 +81,7 @@ class IdGeneratorTest {
         var firstNode = new SnowflakeIdGenerator(0, 0);
         var lastNode = new SnowflakeIdGenerator(31, 31);
         long previous = -1;
-        java.util.Set<String> generated = new java.util.HashSet<>();
+        Set<String> generated = new HashSet<>();
         for (int i = 0; i < 10000; i++) {
             String id = firstNode.generate();
             long value = Long.parseLong(id);

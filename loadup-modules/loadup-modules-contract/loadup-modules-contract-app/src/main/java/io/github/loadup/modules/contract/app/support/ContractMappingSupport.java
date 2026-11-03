@@ -23,6 +23,7 @@ import io.github.loadup.modules.contract.domain.model.ConfigurationLayer;
 import io.github.loadup.modules.contract.domain.model.TypedValue;
 import io.github.loadup.modules.contract.domain.model.ValueType;
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
@@ -58,7 +59,7 @@ public class ContractMappingSupport {
                 : values.stream().map(ConfigurationLayer::valueOf).collect(Collectors.toUnmodifiableSet());
     }
 
-    public java.util.Map<String, Object> definition(String content) {
+    public Map<String, Object> definition(String content) {
         return codec.definition(content);
     }
 }

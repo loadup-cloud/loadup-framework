@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.upms.client.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
@@ -31,8 +32,7 @@ public record SecurityOverviewDTO(
         @Schema(description = "Login fail count") int loginFailCount,
 
         @Schema(description = "Password updated at", accessMode = Schema.AccessMode.WRITE_ONLY)
-        @com.fasterxml.jackson.annotation.JsonProperty(
-                access = com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY)
+        @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
         LocalDateTime passwordUpdatedAt,
 
         @Schema(description = "Last login at") LocalDateTime lastLoginAt,

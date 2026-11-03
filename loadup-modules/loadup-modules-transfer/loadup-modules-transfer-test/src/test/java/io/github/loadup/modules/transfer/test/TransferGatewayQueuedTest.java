@@ -15,6 +15,7 @@ import io.github.loadup.modules.transfer.infrastructure.mapper.TransferTaskOptio
 import io.github.loadup.modules.transfer.infrastructure.mapper.TransferTaskRowMapper;
 import io.github.loadup.modules.transfer.infrastructure.repository.TransferGatewayImpl;
 import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -38,10 +39,10 @@ class TransferGatewayQueuedTest {
                 0,
                 0,
                 null,
-                java.time.LocalDateTime.now(),
+                LocalDateTime.now(),
                 null,
                 null,
-                java.time.LocalDateTime.now(),
+                LocalDateTime.now(),
                 false);
     }
 

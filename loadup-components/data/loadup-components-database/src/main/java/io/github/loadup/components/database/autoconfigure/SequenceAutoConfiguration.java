@@ -23,7 +23,9 @@ import io.github.loadup.components.database.sequence.DatabaseSequenceRangeAlloca
 import io.github.loadup.components.database.sequence.SegmentSequence;
 import io.github.loadup.components.database.sequence.SequenceProperties;
 import io.github.loadup.components.database.sequence.SequenceRangeAllocator;
+import io.micrometer.core.instrument.MeterRegistry;
 import java.time.Clock;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -54,7 +56,7 @@ public class SequenceAutoConfiguration {
             SequenceRangeAllocator allocator,
             SequenceProperties properties,
             Clock clock,
-            org.springframework.beans.factory.ObjectProvider<io.micrometer.core.instrument.MeterRegistry> registry) {
+            ObjectProvider<MeterRegistry> registry) {
         return new SegmentSequence(allocator, properties, clock, registry.getIfAvailable());
     }
 }

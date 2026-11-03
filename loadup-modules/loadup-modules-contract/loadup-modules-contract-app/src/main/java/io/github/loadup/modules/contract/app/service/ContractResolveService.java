@@ -25,6 +25,7 @@ import io.github.loadup.modules.contract.app.support.ContractIdentity;
 import io.github.loadup.modules.contract.app.support.MerchantFacts;
 import io.github.loadup.modules.contract.client.dto.ContractDecisionDTO;
 import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
+import io.github.loadup.modules.contract.client.facade.ContractResolveFacade;
 import io.github.loadup.modules.contract.client.query.ContractResolveQuery;
 import io.github.loadup.modules.contract.domain.gateway.MerchantContractGateway;
 import io.github.loadup.modules.contract.domain.model.ContractRuntimeResolver;
@@ -37,7 +38,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ContractResolveService implements io.github.loadup.modules.contract.client.facade.ContractResolveFacade {
+public class ContractResolveService implements ContractResolveFacade {
     private final MerchantContractGateway gateway;
     private final MerchantContractService contracts;
     private final MerchantFacts facts;

@@ -22,6 +22,7 @@ package io.github.loadup.components.asyncresult;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.components.asyncresult.local.LocalAsyncResultProvider;
 import io.github.loadup.components.outbox.JdbcOutboxRepository;
 import io.github.loadup.components.outbox.OutboxDispatcher;
@@ -89,7 +90,7 @@ class AsyncResultOutboxIT {
                             () -> template.execute(AsyncResultTest.options(), String.class, k -> {
                                 throw new AssertionError("must not dispatch inside transaction");
                             }))
-                    .isInstanceOf(io.github.loadup.commons.error.CommonException.class));
+                    .isInstanceOf(CommonException.class));
         }
     }
 

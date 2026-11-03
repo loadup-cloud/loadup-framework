@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.loadup.components.authorization.context.UserContext;
 import io.github.loadup.components.authorization.model.LoadUpUser;
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
@@ -153,7 +154,7 @@ class UserContextTest {
 
     @Test
     void foreignAndAnonymousPrincipalsAreNotPresentedAsLoadUpUsers() {
-        java.security.Principal principal = () -> "external-user";
+        Principal principal = () -> "external-user";
         SecurityContextHolder.getContext()
                 .setAuthentication(UsernamePasswordAuthenticationToken.authenticated(principal, null, List.of()));
         assertThat(UserContext.get()).isNull();

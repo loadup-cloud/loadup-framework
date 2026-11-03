@@ -30,6 +30,7 @@ import io.github.loadup.components.asyncresult.AsyncResultCodeEnum;
 import io.github.loadup.components.asyncresult.AsyncResultProvider;
 import io.github.loadup.components.asyncresult.AsyncResultValue;
 import java.time.Duration;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
@@ -89,7 +90,7 @@ public final class LocalAsyncResultProvider implements AsyncResultProvider, Auto
 
     @Override
     public AsyncCompletionStatus complete(AsyncReplyKey key, AsyncResultValue value) {
-        java.util.Objects.requireNonNull(value);
+        Objects.requireNonNull(value);
         var entry = records.getIfPresent(key);
         if (entry == null) {
             return AsyncCompletionStatus.UNKNOWN;

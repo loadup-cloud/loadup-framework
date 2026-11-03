@@ -31,7 +31,9 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
 
 class BusinessIdTest {
@@ -126,7 +128,7 @@ class BusinessIdTest {
             assertThat(formatter.parse(formatter.format(parts))).isEqualTo(parts);
         }
         assertThat(valid[0].extensionCode()).isEmpty();
-        java.util.List<java.util.function.Supplier<BusinessIdCommand>> invalid = java.util.List.of(
+        List<Supplier<BusinessIdCommand>> invalid = List.of(
                 () -> new BusinessIdCommand(-1, 1, "11000000", "", 1, 1),
                 () -> new BusinessIdCommand(10, 1, "11000000", "", 1, 1),
                 () -> new BusinessIdCommand(1, -1, "11000000", "", 1, 1),
@@ -162,7 +164,7 @@ class BusinessIdTest {
                             CommonException.class,
                             error -> assertThat(error.getResultCode()).isEqualTo(DatabaseResultCodeEnum.INVALID_INPUT));
         }
-        for (LocalDate date : java.util.List.of(LocalDate.of(1, 1, 1), LocalDate.of(9999, 12, 31))) {
+        for (LocalDate date : List.of(LocalDate.of(1, 1, 1), LocalDate.of(9999, 12, 31))) {
             var parts = new BusinessIdParts(date, command(""), BusinessIdFormatter.MAX_SEQUENCE);
             assertThat(formatter.parse(formatter.format(parts))).isEqualTo(parts);
         }

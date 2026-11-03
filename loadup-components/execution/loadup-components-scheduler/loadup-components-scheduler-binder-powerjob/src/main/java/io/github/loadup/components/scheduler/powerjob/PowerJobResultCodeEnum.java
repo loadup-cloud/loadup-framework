@@ -19,6 +19,7 @@
  */
 package io.github.loadup.components.scheduler.powerjob;
 
+import io.github.loadup.commons.enums.ResultStatusEnum;
 import io.github.loadup.commons.result.ResultCode;
 
 public enum PowerJobResultCodeEnum implements ResultCode {
@@ -33,7 +34,7 @@ public enum PowerJobResultCodeEnum implements ResultCode {
 
     @Override
     public String getStatus() {
-        return io.github.loadup.commons.enums.ResultStatusEnum.FAIL.getCode();
+        return ResultStatusEnum.FAIL.getCode();
     }
 
     @Override

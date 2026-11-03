@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.contract.client.spi.MerchantFactsProvider;
 import io.github.loadup.modules.merchant.client.dto.MerchantProfileDTO;
 import io.github.loadup.modules.merchant.client.facade.MerchantQueryFacade;
@@ -58,8 +59,7 @@ class MerchantFactsTest {
     void mismatchedMerchantIdentityIsRejected() {
         var provider = new MerchantContractFactsProvider(id ->
                 Optional.of(new MerchantProfileDTO("other", "M001", "ENTERPRISE", "RETAIL", "CN", null, null, true)));
-        assertThatThrownBy(() -> provider.load("id"))
-                .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
+        assertThatThrownBy(() -> provider.load("id")).isInstanceOf(CommonException.class);
     }
 
     @Test

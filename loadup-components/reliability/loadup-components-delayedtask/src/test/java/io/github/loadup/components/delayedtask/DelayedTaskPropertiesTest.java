@@ -22,7 +22,9 @@ package io.github.loadup.components.delayedtask;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import io.github.loadup.commons.error.CommonException;
 import java.time.Duration;
+import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 
 class DelayedTaskPropertiesTest {
@@ -40,16 +42,12 @@ class DelayedTaskPropertiesTest {
         assertThat(p.getLease()).isEqualTo(Duration.ofSeconds(1));
         assertThat(p.getRetryDelay()).isEqualTo(Duration.ofDays(30));
         for (int n : new int[] {0, 1001}) {
-            assertThatThrownBy(() -> p.setBatchSize(n))
-                    .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
-            assertThatThrownBy(() -> p.setMaxAttempts(n))
-                    .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
+            assertThatThrownBy(() -> p.setBatchSize(n)).isInstanceOf(CommonException.class);
+            assertThatThrownBy(() -> p.setMaxAttempts(n)).isInstanceOf(CommonException.class);
         }
-        for (Duration duration : java.util.Arrays.asList(null, Duration.ZERO, Duration.ofDays(31))) {
-            assertThatThrownBy(() -> p.setLease(duration))
-                    .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
-            assertThatThrownBy(() -> p.setRetryDelay(duration))
-                    .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
+        for (Duration duration : Arrays.asList(null, Duration.ZERO, Duration.ofDays(31))) {
+            assertThatThrownBy(() -> p.setLease(duration)).isInstanceOf(CommonException.class);
+            assertThatThrownBy(() -> p.setRetryDelay(duration)).isInstanceOf(CommonException.class);
         }
     }
 }

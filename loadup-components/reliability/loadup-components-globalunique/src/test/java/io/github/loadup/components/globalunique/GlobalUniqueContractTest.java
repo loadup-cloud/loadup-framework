@@ -32,6 +32,8 @@ import io.github.loadup.components.globalunique.model.GlobalUniqueRecord;
 import java.time.Clock;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -49,7 +51,7 @@ class GlobalUniqueContractTest {
 
         doReturn(0).when(jdbc).update(anyString(), any(), any(), any(), any(), any(), any(), any());
         var stored = new GlobalUniqueRecord("id", "order", "key", null, null, null, null);
-        when(jdbc.query(anyString(), org.mockito.ArgumentMatchers.<RowMapper<GlobalUniqueRecord>>any(), any(), any()))
+        when(jdbc.query(anyString(), ArgumentMatchers.<RowMapper<GlobalUniqueRecord>>any(), any(), any()))
                 .thenReturn(List.of(stored));
         assertThat(template.claim("order", "key")).isFalse();
     }
@@ -61,8 +63,7 @@ class GlobalUniqueContractTest {
                 .thenThrow(failure);
         assertThatThrownBy(() -> template.claim("order", "key")).isSameAs(failure);
         doReturn(0).when(jdbc).update(anyString(), any(), any(), any(), any(), any(), any(), any());
-        assertThatThrownBy(() -> template.claim("order", "key"))
-                .isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
+        assertThatThrownBy(() -> template.claim("order", "key")).isInstanceOf(DataIntegrityViolationException.class);
         assertThatThrownBy(() -> template.claim((GlobalUniqueClaim) null)).isInstanceOf(NullPointerException.class);
         assertThat(template.find("order", "missing")).isEmpty();
     }

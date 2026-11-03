@@ -20,6 +20,8 @@
 package io.github.loadup.modules.upms.app.converter;
 
 import io.github.loadup.commons.mapping.LoadUpMapStructConfig;
+import io.github.loadup.modules.upms.app.strategy.LoginCredentials;
+import io.github.loadup.modules.upms.client.command.UserLoginCommand;
 import io.github.loadup.modules.upms.client.dto.AccessDecisionDTO;
 import io.github.loadup.modules.upms.client.dto.DepartmentDTO;
 import io.github.loadup.modules.upms.client.dto.LoginEntryDTO;
@@ -41,8 +43,7 @@ import org.mapstruct.Mapping;
 @Mapper(config = LoadUpMapStructConfig.class)
 public interface UpmsDTOConverter {
     @Mapping(target = "extra", ignore = true)
-    io.github.loadup.modules.upms.app.strategy.LoginCredentials toCredentials(
-            io.github.loadup.modules.upms.client.command.UserLoginCommand command);
+    LoginCredentials toCredentials(UserLoginCommand command);
 
     @Mapping(target = "deptName", source = "departmentName")
     @Mapping(target = "roles", source = "roles")

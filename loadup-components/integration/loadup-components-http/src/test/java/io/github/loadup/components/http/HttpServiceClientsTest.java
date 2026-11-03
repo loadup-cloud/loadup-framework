@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.PostExchange;
+import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 
 class HttpServiceClientsTest {
@@ -121,7 +122,7 @@ class HttpServiceClientsTest {
                 config(1024, 1024, true, Duration.ofSeconds(1)),
                 RestClient::builder,
                 JsonMapper.builder()
-                        .disable(tools.jackson.databind.DeserializationFeature.ACCEPT_FLOAT_AS_INT)
+                        .disable(DeserializationFeature.ACCEPT_FLOAT_AS_INT)
                         .build(),
                 null,
                 null,

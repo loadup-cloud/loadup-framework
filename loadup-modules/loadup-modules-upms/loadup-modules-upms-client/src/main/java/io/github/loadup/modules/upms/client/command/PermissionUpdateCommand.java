@@ -32,15 +32,13 @@ import jakarta.validation.constraints.Size;
  */
 public class PermissionUpdateCommand {
 
-    @NotNull()
-    @Schema(description = "Resource identifier")
+    @NotNull() @Schema(description = "Resource identifier")
     private String id;
 
     @Schema(description = "Parent id")
     private String parentId;
 
-    @Size(max = 50)
-    @Schema(description = "Permission name")
+    @Size(max = 50) @Schema(description = "Permission name")
     private String permissionName;
 
     /**

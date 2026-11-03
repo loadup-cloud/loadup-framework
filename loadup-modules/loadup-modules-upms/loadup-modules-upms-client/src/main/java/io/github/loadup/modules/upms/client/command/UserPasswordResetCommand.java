@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.upms.client.command;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.modules.upms.client.validation.ValidPassword;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -32,27 +33,21 @@ import jakarta.validation.constraints.NotBlank;
  */
 public class UserPasswordResetCommand {
 
-    @NotBlank()
-    @Schema(description = "Username")
+    @NotBlank() @Schema(description = "Username")
     private String username;
 
-    @NotBlank()
-    @Schema(description = "Verification code")
+    @NotBlank() @Schema(description = "Verification code")
     private String verificationCode;
 
-    @NotBlank()
-    @Schema(
+    @NotBlank() @Schema(
             description = "New password: at least 8 Unicode characters, at most 72 UTF-8 bytes",
             accessMode = Schema.AccessMode.WRITE_ONLY)
-    @com.fasterxml.jackson.annotation.JsonProperty(
-            access = com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ValidPassword
     private String newPassword;
 
-    @NotBlank()
-    @Schema(description = "Confirmation of the new password", accessMode = Schema.AccessMode.WRITE_ONLY)
-    @com.fasterxml.jackson.annotation.JsonProperty(
-            access = com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY)
+    @NotBlank() @Schema(description = "Confirmation of the new password", accessMode = Schema.AccessMode.WRITE_ONLY)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String confirmPassword;
 
     /**

@@ -21,6 +21,8 @@ package io.github.loadup.modules.merchant.domain.model;
 
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
+import io.github.loadup.commons.masking.MaskType;
+import io.github.loadup.commons.masking.Masked;
 import io.github.loadup.modules.merchant.client.error.MerchantResultCodeEnum;
 import java.util.Objects;
 
@@ -34,20 +36,15 @@ public record MerchantBasicInfo(
         String province,
         String city,
 
-        @io.github.loadup.commons.masking.Masked(io.github.loadup.commons.masking.MaskType.FULL)
-        String address,
+        @Masked(MaskType.FULL) String address,
 
-        @io.github.loadup.commons.masking.Masked(io.github.loadup.commons.masking.MaskType.FULL)
-        String registrationNo,
+        @Masked(MaskType.FULL) String registrationNo,
 
-        @io.github.loadup.commons.masking.Masked(io.github.loadup.commons.masking.MaskType.NAME)
-        String contactName,
+        @Masked(MaskType.NAME) String contactName,
 
-        @io.github.loadup.commons.masking.Masked(io.github.loadup.commons.masking.MaskType.PHONE)
-        String contactPhone,
+        @Masked(MaskType.PHONE) String contactPhone,
 
-        @io.github.loadup.commons.masking.Masked(io.github.loadup.commons.masking.MaskType.EMAIL)
-        String contactEmail) {
+        @Masked(MaskType.EMAIL) String contactEmail) {
     public MerchantBasicInfo {
         for (String value : new String[] {merchantCode, name, industry, country}) {
             if (value == null || value.isBlank()) {

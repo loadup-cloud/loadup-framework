@@ -23,6 +23,7 @@ import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -55,7 +56,7 @@ public record SalesPlanDraft(
     }
 
     private static <T> Map<String, Map<String, T>> copyNested(Map<String, Map<String, T>> input) {
-        var result = new java.util.HashMap<String, Map<String, T>>();
+        var result = new HashMap<String, Map<String, T>>();
         ContractChecks.map(input).forEach((key, value) -> result.put(key, ContractChecks.map(value)));
         return Map.copyOf(result);
     }

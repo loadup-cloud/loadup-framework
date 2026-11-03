@@ -22,6 +22,7 @@ package io.github.loadup.components.resourceserver;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.loadup.components.authorization.model.LoadUpUser;
+import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.GrantedAuthority;
@@ -83,8 +84,8 @@ class LoadUpJwtAuthenticationConverterTest {
         Jwt jwt = Jwt.withTokenValue("test")
                 .header("alg", "RS256")
                 .subject("u-4")
-                .claim("roles", java.util.Arrays.asList(null, "", " ", "ROLE_AUDITOR", 7))
-                .claim("permissions", java.util.Arrays.asList(null, "", " ", "audit:read", 8))
+                .claim("roles", Arrays.asList(null, "", " ", "ROLE_AUDITOR", 7))
+                .claim("permissions", Arrays.asList(null, "", " ", "audit:read", 8))
                 .build();
         var authentication = new LoadUpJwtAuthenticationConverter().convert(jwt);
         assertThat(authentication.getAuthorities())

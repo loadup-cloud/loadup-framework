@@ -23,6 +23,7 @@ import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.modules.contract.client.error.ContractResultCodeEnum;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Objects;
 import java.util.Set;
 
@@ -65,9 +66,7 @@ public record ParameterDefinition(
         if (type == ValueType.INTEGER
                 && minimum != null
                 && maximum != null
-                && minimum.setScale(0, java.math.RoundingMode.CEILING)
-                                .compareTo(maximum.setScale(0, java.math.RoundingMode.FLOOR))
-                        > 0) {
+                && minimum.setScale(0, RoundingMode.CEILING).compareTo(maximum.setScale(0, RoundingMode.FLOOR)) > 0) {
             throw new CommonException(ContractResultCodeEnum.INTEGER_RANGE_CONTAINS_NO_VALUE);
         }
         if (minimum != null && maximum != null && minimum.compareTo(maximum) > 0) {

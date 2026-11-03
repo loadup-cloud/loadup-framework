@@ -27,19 +27,22 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import io.github.loadup.commons.error.CommonException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 class SchedulerTemplateTest {
     @Test
     void autoConfigurationSelectsOneProviderAndRejectsAmbiguity() {
-        var runner = new org.springframework.boot.test.context.runner.ApplicationContextRunner()
-                .withConfiguration(
-                        org.springframework.boot.autoconfigure.AutoConfigurations.of(SchedulerAutoConfiguration.class));
+        var runner = new ApplicationContextRunner()
+                .withConfiguration(AutoConfigurations.of(SchedulerAutoConfiguration.class));
         runner.run(context -> assertThat(context).doesNotHaveBean(SchedulerTemplate.class));
         runner.withBean("first", SchedulerProvider.class, () -> mock(SchedulerProvider.class))
                 .run(context -> assertThat(
@@ -66,14 +69,13 @@ class SchedulerTemplateTest {
         scheduler.stop();
         scheduler.stop();
         verify(provider).stop();
-        assertThatThrownBy(() -> scheduler.trigger("missing"))
-                .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
+        assertThatThrownBy(() -> scheduler.trigger("missing")).isInstanceOf(CommonException.class);
         assertThatThrownBy(() -> new SchedulerTemplate(provider, List.of(task, task)))
-                .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
+                .isInstanceOf(CommonException.class);
         for (String invalid : Arrays.asList(null, "", "bad name")) {
             when(task.name()).thenReturn(invalid);
             assertThatThrownBy(() -> new SchedulerTemplate(provider, List.of(task)))
-                    .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
+                    .isInstanceOf(CommonException.class);
         }
     }
 
@@ -81,7 +83,7 @@ class SchedulerTemplateTest {
     void overlappingWakeUpsAreSuppressedAndFailureReleasesGuard() throws Exception {
         var entered = new CountDownLatch(1);
         var release = new CountDownLatch(1);
-        var calls = new java.util.concurrent.atomic.AtomicInteger();
+        var calls = new AtomicInteger();
         ScheduledTask task = new ScheduledTask() {
             public String name() {
                 return "test";

@@ -29,6 +29,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.redisson.Redisson;
@@ -105,8 +106,8 @@ class LockAutoConfigurationTest {
                     assertThat(context).hasNotFailed();
                     var options = context.getBean(LockProperties.class).options();
                     assertThat(options.leaseMode()).isEqualTo(LockOptions.LeaseMode.FIXED);
-                    assertThat(options.waitTimeout()).isEqualTo(java.time.Duration.ofMillis(250));
-                    assertThat(options.leaseTime()).isEqualTo(java.time.Duration.ofSeconds(5));
+                    assertThat(options.waitTimeout()).isEqualTo(Duration.ofMillis(250));
+                    assertThat(options.leaseTime()).isEqualTo(Duration.ofSeconds(5));
                 });
         verify(client, never()).shutdown();
     }

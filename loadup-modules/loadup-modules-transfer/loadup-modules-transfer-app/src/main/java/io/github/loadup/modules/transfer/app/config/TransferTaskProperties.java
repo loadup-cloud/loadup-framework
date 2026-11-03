@@ -19,6 +19,7 @@
  */
 package io.github.loadup.modules.transfer.app.config;
 
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.transfer.client.error.TransferResultCodeEnum;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -35,7 +36,7 @@ public class TransferTaskProperties {
 
     public void setDispatchBatchSize(int size) {
         if (size < 1 || size > 100) {
-            throw new CommonException(io.github.loadup.commons.enums.CommonResultCodeEnum.PARAM_ILLEGAL);
+            throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
         }
         this.dispatchBatchSize = size;
     }

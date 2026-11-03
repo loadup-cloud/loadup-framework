@@ -24,11 +24,17 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.net.URI;
+import java.net.UnknownHostException;
+import java.net.http.HttpTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
@@ -48,19 +54,24 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.converter.HttpMessageConversionException;
+import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import org.springframework.web.util.UriComponentsBuilder;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Named synchronous operations with bounded bodies, explicit credentials and atomic configuration.
  */
 public final class HttpTemplate implements AutoCloseable {
     private final Supplier<RestClient.Builder> builders;
-    private final tools.jackson.databind.json.JsonMapper mapper;
+    private final JsonMapper mapper;
     private final HttpCredentialProvider credentials;
     private final SslBundles sslBundles;
     private final MeterRegistry metrics;
@@ -91,7 +102,7 @@ public final class HttpTemplate implements AutoCloseable {
             String metricScope) {
         name(metricScope);
         this.builders = builders;
-        if (!(mapper instanceof tools.jackson.databind.json.JsonMapper jsonMapper)) {
+        if (!(mapper instanceof JsonMapper jsonMapper)) {
             throw new IllegalArgumentException("HTTP JSON conversion requires a JsonMapper");
         }
         this.mapper = jsonMapper;
@@ -141,12 +152,12 @@ public final class HttpTemplate implements AutoCloseable {
 
     private static HttpCallException classify(Throwable failure) {
         for (Throwable cause = failure; cause != null; cause = cause.getCause()) {
-            if (cause instanceof java.net.SocketTimeoutException
-                    || cause instanceof java.net.http.HttpTimeoutException
+            if (cause instanceof SocketTimeoutException
+                    || cause instanceof HttpTimeoutException
                     || cause.getClass().getSimpleName().contains("Timeout")) {
                 return new HttpCallException(HttpCallException.Kind.TIMEOUT);
             }
-            if (cause instanceof java.net.ConnectException || cause instanceof java.net.UnknownHostException) {
+            if (cause instanceof ConnectException || cause instanceof UnknownHostException) {
                 return new HttpCallException(HttpCallException.Kind.CONNECTION);
             }
         }
@@ -173,7 +184,7 @@ public final class HttpTemplate implements AutoCloseable {
                                     "trailer",
                                     "proxy-authorization",
                                     "keep-alive")
-                            .contains(key.toLowerCase(java.util.Locale.ROOT))) {
+                            .contains(key.toLowerCase(Locale.ROOT))) {
                 throw new IllegalArgumentException("Invalid or transport-owned HTTP header");
             }
         }
@@ -274,11 +285,11 @@ public final class HttpTemplate implements AutoCloseable {
             return action.apply(serviceType.cast(proxy));
         } catch (ResourceAccessException failure) {
             throw classify(failure);
-        } catch (org.springframework.http.converter.HttpMessageNotWritableException failure) {
+        } catch (HttpMessageNotWritableException failure) {
             throw new HttpCallException(HttpCallException.Kind.SERIALIZATION);
-        } catch (org.springframework.http.converter.HttpMessageConversionException failure) {
+        } catch (HttpMessageConversionException failure) {
             throw new HttpCallException(HttpCallException.Kind.RESPONSE_DECODING);
-        } catch (org.springframework.web.client.RestClientException failure) {
+        } catch (RestClientException failure) {
             throw new HttpCallException(HttpCallException.Kind.RESPONSE_DECODING);
         } finally {
             lock.readLock().unlock();
@@ -350,7 +361,7 @@ public final class HttpTemplate implements AutoCloseable {
             URI uri = uri(runtime.config.baseUrl(), definition.path(), call);
             try {
                 runtime.policy.resolve(uri.getHost());
-            } catch (java.net.UnknownHostException blocked) {
+            } catch (UnknownHostException blocked) {
                 throw new HttpCallException(HttpCallException.Kind.CONNECTION);
             }
             HttpHeaders requestHeaders = new HttpHeaders();
@@ -458,8 +469,8 @@ public final class HttpTemplate implements AutoCloseable {
                     .build();
             RestClient serviceClient = client.mutate()
                     .baseUrl(config.baseUrl().toString())
-                    .configureMessageConverters(converters -> converters.withJsonConverter(
-                            new org.springframework.http.converter.json.JacksonJsonHttpMessageConverter(mapper)))
+                    .configureMessageConverters(
+                            converters -> converters.withJsonConverter(new JacksonJsonHttpMessageConverter(mapper)))
                     .defaultHeaders(h -> h.setAll(config.headers()))
                     .requestInterceptor((request, body, execution) -> {
                         URI target = request.getURI();
@@ -497,7 +508,7 @@ public final class HttpTemplate implements AutoCloseable {
                     client,
                     HttpServiceProxyFactory.builderFor(RestClientAdapter.create(serviceClient))
                             .build(),
-                    new java.util.concurrent.ConcurrentHashMap<>(),
+                    new ConcurrentHashMap<>(),
                     transport,
                     policy,
                     poolState);

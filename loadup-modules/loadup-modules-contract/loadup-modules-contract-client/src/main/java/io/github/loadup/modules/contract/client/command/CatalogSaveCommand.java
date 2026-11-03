@@ -33,16 +33,13 @@ public record CatalogSaveCommand(
         @Schema(description = "Expected version for optimistic concurrency")
         Long expectedRowVersion,
 
-        @Schema(description = "Task or catalog category") @NotBlank
-        String kind,
+        @Schema(description = "Task or catalog category") @NotBlank String kind,
 
-        @Schema(description = "Business code") @NotBlank @Size(max = 128)
-        String code,
+        @Schema(description = "Business code") @NotBlank @Size(max = 128) String code,
 
         @Schema(description = "Version") @Min(1) int version,
 
-        @Schema(description = "Definition") @NotNull @Size(max = 64)
-        Map<String, Object> definition) {
+        @Schema(description = "Definition") @NotNull @Size(max = 64) Map<String, Object> definition) {
     @Override
     public String toString() {
         return ToStringAsJson.reflectionToString(this);

@@ -29,6 +29,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.modules.file.client.facade.FileResourceFacade;
 import io.github.loadup.modules.transfer.app.config.TransferTaskProperties;
 import io.github.loadup.modules.transfer.app.converter.TransferDTOConverter;
@@ -103,10 +104,8 @@ class TransferDispatchTest {
         var properties = new TransferTaskProperties();
         properties.setDispatchBatchSize(100);
         assertThat(properties.getDispatchBatchSize()).isEqualTo(100);
-        assertThatThrownBy(() -> properties.setDispatchBatchSize(0))
-                .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
-        assertThatThrownBy(() -> properties.setDispatchBatchSize(101))
-                .isInstanceOf(io.github.loadup.commons.error.CommonException.class);
+        assertThatThrownBy(() -> properties.setDispatchBatchSize(0)).isInstanceOf(CommonException.class);
+        assertThatThrownBy(() -> properties.setDispatchBatchSize(101)).isInstanceOf(CommonException.class);
         var gateway = mock(TransferGateway.class);
         when(gateway.queued(100)).thenReturn(List.of());
         var service = new TransferTaskService(

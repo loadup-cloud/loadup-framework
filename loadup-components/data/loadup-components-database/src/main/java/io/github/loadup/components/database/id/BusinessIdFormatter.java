@@ -21,6 +21,7 @@ package io.github.loadup.components.database.id;
 
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.components.database.sequence.DatabaseResultCodeEnum;
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.ResolverStyle;
@@ -75,7 +76,7 @@ public final class BusinessIdFormatter {
                     LocalDate.parse(value.substring(0, 8), DATE), c, Long.parseLong(value.substring(tail + 6)));
             format(parts);
             return parts;
-        } catch (java.time.DateTimeException | NumberFormatException failure) {
+        } catch (DateTimeException | NumberFormatException failure) {
             throw new CommonException(DatabaseResultCodeEnum.INVALID_INPUT, failure);
         }
     }

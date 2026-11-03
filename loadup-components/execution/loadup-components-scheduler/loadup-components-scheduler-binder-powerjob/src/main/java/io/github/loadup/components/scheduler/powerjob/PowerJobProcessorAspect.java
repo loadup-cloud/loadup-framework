@@ -27,6 +27,7 @@ import io.micrometer.observation.ObservationRegistry;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.aop.support.AopUtils;
 import tech.powerjob.worker.core.processor.ProcessResult;
 import tech.powerjob.worker.core.processor.TaskContext;
 
@@ -53,8 +54,7 @@ public class PowerJobProcessorAspect {
             Observation observation = Observation.createNotStarted("loadup.powerjob.process", observations)
                     .lowCardinalityKeyValue(
                             "processor",
-                            org.springframework.aop.support.AopUtils.getTargetClass(invocation.getTarget())
-                                    .getName())
+                            AopUtils.getTargetClass(invocation.getTarget()).getName())
                     .start();
             try (var _ = observation.openScope()) {
                 ProcessResult result = (ProcessResult) invocation.proceed();

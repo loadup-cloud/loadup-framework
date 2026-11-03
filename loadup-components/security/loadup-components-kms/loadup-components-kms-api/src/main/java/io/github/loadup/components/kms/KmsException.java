@@ -19,7 +19,9 @@
  */
 package io.github.loadup.components.kms;
 
+import io.github.loadup.commons.enums.ResultStatusEnum;
 import io.github.loadup.commons.error.CommonException;
+import io.github.loadup.commons.result.ResultCode;
 
 /**
  * A safe error classification without remote messages, credentials, plaintext or signatures.
@@ -36,7 +38,7 @@ public class KmsException extends CommonException {
         return code;
     }
 
-    public enum Code implements io.github.loadup.commons.result.ResultCode {
+    public enum Code implements ResultCode {
         AUTHENTICATION,
         ACCESS_DENIED,
         NOT_FOUND,
@@ -50,7 +52,7 @@ public class KmsException extends CommonException {
         }
 
         public String getStatus() {
-            return io.github.loadup.commons.enums.ResultStatusEnum.FAIL.getCode();
+            return ResultStatusEnum.FAIL.getCode();
         }
 
         public String getMessage() {

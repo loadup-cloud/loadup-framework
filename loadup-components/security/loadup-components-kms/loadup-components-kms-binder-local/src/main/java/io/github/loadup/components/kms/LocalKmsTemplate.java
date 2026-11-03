@@ -26,6 +26,7 @@ import java.security.spec.MGF1ParameterSpec;
 import java.security.spec.PSSParameterSpec;
 import java.util.Base64;
 import java.util.Map;
+import java.util.Objects;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
@@ -36,7 +37,7 @@ public final class LocalKmsTemplate implements KmsTemplate {
     private final KeyStore.ProtectionParameter protection;
 
     public LocalKmsTemplate(KeyStore store, char[] password) {
-        this.store = java.util.Objects.requireNonNull(store);
+        this.store = Objects.requireNonNull(store);
         this.protection = new KeyStore.PasswordProtection(password.clone());
     }
 

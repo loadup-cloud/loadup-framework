@@ -33,12 +33,10 @@ import java.util.List;
  */
 public class RoleUpdateCommand {
 
-    @NotNull()
-    @Schema(description = "Resource identifier")
+    @NotNull() @Schema(description = "Resource identifier")
     private String id;
 
-    @Size(max = 50)
-    @Schema(description = "Role name")
+    @Size(max = 50) @Schema(description = "Role name")
     private String roleName;
 
     @Schema(description = "Parent id")

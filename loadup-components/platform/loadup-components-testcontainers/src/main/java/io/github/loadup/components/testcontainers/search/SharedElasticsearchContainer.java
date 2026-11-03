@@ -22,6 +22,7 @@ package io.github.loadup.components.testcontainers.search;
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
 import java.time.Duration;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
@@ -176,8 +177,8 @@ public final class SharedElasticsearchContainer {
      *
      * @return map of property names to values
      */
-    public static java.util.Map<String, String> getProperties() {
-        return java.util.Map.of("spring.elasticsearch.uris", getHttpHostAddress());
+    public static Map<String, String> getProperties() {
+        return Map.of("spring.elasticsearch.uris", getHttpHostAddress());
     }
 
     public static boolean isStarted() {

@@ -23,8 +23,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.loadup.components.resilience4j.Resilience4jProperties;
 import io.github.loadup.components.resilience4j.ResilienceRegistries;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.github.resilience4j.retry.RetryRegistry;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -93,9 +96,9 @@ class Resilience4jCoreAutoConfigurationTest {
         assertThat(breaker.executeSupplier(() -> "accepted")).isEqualTo("accepted");
         breaker.transitionToOpenState();
         assertThat(other.circuitBreakerRegistry().circuitBreaker("payments").getState())
-                .isEqualTo(io.github.resilience4j.circuitbreaker.CircuitBreaker.State.CLOSED);
+                .isEqualTo(CircuitBreaker.State.CLOSED);
 
-        var attempts = new java.util.concurrent.atomic.AtomicInteger();
+        var attempts = new AtomicInteger();
         assertThat(policies.retryRegistry().retry("notifications").executeSupplier(() -> {
                     if (attempts.incrementAndGet() == 1) {
                         throw new IllegalStateException("synthetic transient failure");
@@ -113,8 +116,7 @@ class Resilience4jCoreAutoConfigurationTest {
         assertThat(limiter.acquirePermission()).isTrue();
         assertThat(policies.timeLimiterRegistry()
                         .timeLimiter("channel")
-                        .executeFutureSupplier(
-                                () -> java.util.concurrent.CompletableFuture.completedFuture("completed")))
+                        .executeFutureSupplier(() -> CompletableFuture.completedFuture("completed")))
                 .isEqualTo("completed");
     }
 
