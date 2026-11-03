@@ -42,6 +42,7 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.SerializationFeature;
 import tools.jackson.databind.cfg.DateTimeFeature;
+import tools.jackson.databind.cfg.EnumFeature;
 import tools.jackson.databind.ext.javatime.ser.LocalDateSerializer;
 import tools.jackson.databind.ext.javatime.ser.LocalDateTimeSerializer;
 import tools.jackson.databind.json.JsonMapper;
@@ -98,7 +99,7 @@ public class JsonUtil {
         module.addDeserializer(Date.class, new MultiDateDeserializer());
         return builder.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
                 .disable(DeserializationFeature.ACCEPT_FLOAT_AS_INT)
-                .enable(DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS)
+                .enable(EnumFeature.FAIL_ON_NUMBERS_FOR_ENUMS)
                 .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
                 .disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
                 .disable(DateTimeFeature.WRITE_DURATIONS_AS_TIMESTAMPS)

@@ -25,24 +25,49 @@ import jakarta.servlet.DispatcherType;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.converter.autoconfigure.ServerHttpMessageConvertersCustomizer;
 import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.webmvc.error.ErrorAttributes;
 import org.springframework.boot.webmvc.error.ErrorController;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.method.HandlerTypePredicate;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import tools.jackson.databind.ObjectMapper;
 
 @AutoConfiguration(beforeName = "org.springframework.boot.webmvc.autoconfigure.error.ErrorMvcAutoConfiguration")
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class LoadUpWebMvcAutoConfiguration {
+    @Bean
+    public WebMvcConfigurer loadUpProtocolResponseRouting(ApiPathMatcher paths) {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addInterceptors(InterceptorRegistry registry) {
+                registry.addInterceptor(new ProtocolResponseInterceptor(paths));
+            }
+        };
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    @ConditionalOnProperty(prefix = "loadup.webmvc.request-body", name = "max-size")
+    @EnableConfigurationProperties(RequestBodyLimitProperties.class)
+    static class RequestBodyLimits {
+        @Bean
+        @ConditionalOnMissingBean(RequestBodyLimitAdvice.class)
+        RequestBodyLimitAdvice loadUpRequestBodyLimitAdvice(RequestBodyLimitProperties properties) {
+            return new RequestBodyLimitAdvice(properties);
+        }
+    }
+
     @Bean
     public WebMvcConfigurer loadUpApiPathPrefix() {
         return new WebMvcConfigurer() {

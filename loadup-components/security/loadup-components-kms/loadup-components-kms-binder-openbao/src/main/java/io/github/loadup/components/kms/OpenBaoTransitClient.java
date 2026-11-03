@@ -110,7 +110,8 @@ final class OpenBaoTransitClient implements AutoCloseable {
                     return Map.of("X-Vault-Token", token);
                 },
                 sslBundles,
-                metrics);
+                metrics,
+                management ? "openbao-admin" : "openbao-transit");
         clientName = management ? "kms-admin" : "kms";
     }
 

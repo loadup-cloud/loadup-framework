@@ -20,11 +20,22 @@
 package io.github.loadup.components.webmvc;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.HandlerMapping;
 
 final class ApiPathMatcher {
     private static final String API_PREFIX = "/api";
+    private static final String PROTOCOL_ATTRIBUTE = ProtocolResponse.class.getName();
 
     boolean matches(HttpServletRequest request, String uri) {
+        if (Boolean.TRUE.equals(request.getAttribute(PROTOCOL_ATTRIBUTE))) {
+            return false;
+        }
+        rememberProtocol(request, request.getAttribute(HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE));
+        if (Boolean.TRUE.equals(request.getAttribute(PROTOCOL_ATTRIBUTE))) {
+            return false;
+        }
         if (uri == null) {
             return false;
         }
@@ -33,5 +44,14 @@ final class ApiPathMatcher {
                 ? uri.substring(contextPath.length())
                 : uri;
         return path.equals(API_PREFIX) || path.startsWith(API_PREFIX + "/");
+    }
+
+    void rememberProtocol(HttpServletRequest request, Object candidate) {
+        if (candidate instanceof HandlerMethod handler
+                && (handler.hasMethodAnnotation(ProtocolResponse.class)
+                        || AnnotatedElementUtils.hasAnnotation(handler.getBeanType(), ProtocolResponse.class))) {
+            // Keep the decision for a subsequent error dispatch after MVC replaces the matched handler.
+            request.setAttribute(PROTOCOL_ATTRIBUTE, Boolean.TRUE);
+        }
     }
 }

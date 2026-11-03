@@ -33,6 +33,7 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
@@ -74,7 +75,11 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
                         && !StringHttpMessageConverter.class.isAssignableFrom(selectedConverterType))) {
             return body;
         }
-        response.setStatusCode(HttpStatus.OK);
+        // A transport size rejection must not be mistaken for a business response with HTTP 200.
+        if (!(response instanceof ServletServerHttpResponse servletResponse)
+                || servletResponse.getServletResponse().getStatus() != 413) {
+            response.setStatusCode(HttpStatus.OK);
+        }
         IResponse<?> envelope = body instanceof IResponse<?> existing
                 ? existing
                 : body instanceof PageDTO<?> page ? PageResponse.of(page) : SuccessResponse.of(body);

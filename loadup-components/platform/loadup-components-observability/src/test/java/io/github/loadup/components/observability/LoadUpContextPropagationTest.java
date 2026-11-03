@@ -29,8 +29,13 @@ import io.micrometer.context.ContextRegistry;
 import io.micrometer.context.ContextSnapshotFactory;
 import io.micrometer.context.ThreadLocalAccessor;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
@@ -61,20 +66,20 @@ class LoadUpContextPropagationTest {
             }
         });
         var snapshots = ContextSnapshotFactory.builder()
-                .contextRegistry(registry)
-                .clearMissing(true)
-                .build();
+            .contextRegistry(registry)
+            .clearMissing(true)
+            .build();
         var decorator = new CompositeTaskDecorator(
-                List.of(new LoadUpContextTaskDecorator(), new ContextPropagatingTaskDecorator(snapshots)));
+            List.of(new LoadUpContextTaskDecorator(), new ContextPropagatingTaskDecorator(snapshots)));
         marker.set("caller-marker");
         try {
             Runnable task = ContextHolder.callWith(
-                    ExecutionContext.empty().with(ContextKeys.TENANT_ID, "caller"),
-                    () -> decorator.decorate(() -> {
-                        assertThat(ContextHolder.get(ContextKeys.TENANT_ID)).isEqualTo("caller");
-                        assertThat(marker.get()).isEqualTo("caller-marker");
-                        throw new IllegalStateException("failed");
-                    }));
+                ExecutionContext.empty().with(ContextKeys.TENANT_ID, "caller"),
+                () -> decorator.decorate(() -> {
+                    assertThat(ContextHolder.get(ContextKeys.TENANT_ID)).isEqualTo("caller");
+                    assertThat(marker.get()).isEqualTo("caller-marker");
+                    throw new IllegalStateException("failed");
+                }));
             marker.set("worker-marker");
             ContextHolder.runWith(ExecutionContext.empty().with(ContextKeys.TENANT_ID, "worker"), () -> {
                 assertThatThrownBy(task::run).isInstanceOf(IllegalStateException.class);
@@ -82,11 +87,11 @@ class LoadUpContextPropagationTest {
                 assertThat(marker.get()).isEqualTo("worker-marker");
             });
             Runnable empty =
-                    decorator.decorate(() -> assertThat(ContextHolder.isEmpty()).isTrue());
+                decorator.decorate(() -> assertThat(ContextHolder.isEmpty()).isTrue());
             try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
                 executor.submit(() -> ContextHolder.runWith(
-                                ExecutionContext.empty().with(ContextKeys.TENANT_ID, "worker"), empty))
-                        .get();
+                        ExecutionContext.empty().with(ContextKeys.TENANT_ID, "worker"), empty))
+                    .get();
             }
         } finally {
             marker.remove();
@@ -94,22 +99,59 @@ class LoadUpContextPropagationTest {
         assertThat(ContextHolder.isBound()).isFalse();
     }
 
-    @Test
-    void bootExecutorUsesBusinessDecoratorAlongsideStandardPropagation() {
-        new ApplicationContextRunner()
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void bootExecutorUsesBusinessDecoratorAlongsideStandardPropagation(boolean virtual) {
+        var marker = new ThreadLocal<String>();
+        String key = "test.boot.context." + java.util.UUID.randomUUID();
+        ContextRegistry.getInstance().registerThreadLocalAccessor(new ThreadLocalAccessor<String>() {
+            public Object key() {
+                return key;
+            }
+
+            public String getValue() {
+                return marker.get();
+            }
+
+            public void setValue(String value) {
+                marker.set(value);
+            }
+
+            public void setValue() {
+                marker.remove();
+            }
+        });
+        try {
+            marker.set("request-marker");
+            new ApplicationContextRunner()
                 .withConfiguration(AutoConfigurations.of(
-                        ObservabilityAutoConfiguration.class, TaskExecutionAutoConfiguration.class))
+                    ObservabilityAutoConfiguration.class, TaskExecutionAutoConfiguration.class))
                 .withBean(io.micrometer.core.instrument.MeterRegistry.class, SimpleMeterRegistry::new)
                 .withPropertyValues(
-                        "spring.task.execution.propagate-context=true", "spring.threads.virtual.enabled=true")
+                    "spring.task.execution.propagate-context=true", "spring.threads.virtual.enabled=" + virtual)
                 .run(context -> {
                     assertThat(context).hasSingleBean(LoadUpContextTaskDecorator.class);
                     var executor = context.getBean("applicationTaskExecutor", AsyncTaskExecutor.class);
                     ContextHolder.callWith(ExecutionContext.empty().with(ContextKeys.TENANT_ID, "tenant"), () -> {
-                        var value = executor.submit(() -> ContextHolder.get(ContextKeys.TENANT_ID));
-                        assertThat(value.get()).isEqualTo("tenant");
+                        var value = executor.submit(() -> {
+                            assertThat(Thread.currentThread().isVirtual()).isEqualTo(virtual);
+                            assertThat(marker.get()).isEqualTo("request-marker");
+                            return ContextHolder.get(ContextKeys.TENANT_ID);
+                        });
+                        assertThat(value.get(5, TimeUnit.SECONDS)).isEqualTo("tenant");
                         return null;
                     });
+                    assertThat(ContextHolder.isBound()).isFalse();
+                    marker.remove();
+                    var empty = executor.submit(() -> {
+                        assertThat(marker.get()).isNull();
+                        return ContextHolder.isEmpty();
+                    });
+                    assertThat(empty.get(5, TimeUnit.SECONDS)).isTrue();
                 });
+        } finally {
+            marker.remove();
+            ContextRegistry.getInstance().removeThreadLocalAccessor(key);
+        }
     }
 }

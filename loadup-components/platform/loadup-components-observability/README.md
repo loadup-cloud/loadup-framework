@@ -175,3 +175,9 @@ loadup:
 
 验证包含 JDK/CGLIB 代理、类/方法/继承/组合注解、虚拟线程、异常保留、日志失败隔离以及 Boot 自动发现、真实 Micrometer MDC
 和事务提交失败。事务测试使用测试事务管理器验证代理顺序，不将其视为真实数据库验收。
+
+## 两种线程模型的任务传播
+
+LoadUpContextTaskDecorator 捕获不可变 ExecutionContext；Boot 4.1 的 spring.task.execution.propagate-context=true 添加原生 Micrometer 传播。
+LoadUpContextPropagationTest 已扩展平台/虚拟 applicationTaskExecutor、原生 ThreadLocal 捕获及空上下文/异常恢复回归源码，未执行。
+自建执行器须显式装配所需 decorator；认证上下文和后台任务身份仍由安全集成及业务负责，不以元数据传播代替授权或传播数据库事务。

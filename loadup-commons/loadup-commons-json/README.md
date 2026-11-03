@@ -83,3 +83,6 @@ JSON 转换失败日志只包含操作名和异常类型，不包含输入 JSON�
 共享 JsonUtil.customize 配置拒绝将 JSON 浮点数转换为 int/long，金额分单位、版本、计数与序号不能静默截断。
 BigDecimal 保留十进制语义，超出 JavaScript 安全整数范围但在 long 范围内的整数仍按 long 精确处理。
 IntegerJsonContractTest 已补对应回归源码，尚未运行。MVC mapper 的既有定制及声明式 HTTP 客户端均沿用此配置。
+
+枚举只接受已声明的字符串符号；通过 Jackson 3 的 EnumFeature.FAIL_ON_NUMBERS_FOR_ENUMS 显式启用校验，
+不允许以数字 ordinal 替代，未知符号拒绝。该开关不再属于 DeserializationFeature，Jackson 3.2.3 默认关闭，不能直接删除配置后依赖默认值。

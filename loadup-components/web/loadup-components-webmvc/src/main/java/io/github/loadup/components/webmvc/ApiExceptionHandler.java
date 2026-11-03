@@ -43,6 +43,11 @@ public final class ApiExceptionHandler {
         this.paths = paths;
     }
 
+    @ExceptionHandler(RequestBodyLimitException.class)
+    public ResponseEntity<FailureResponse<Void>> oversizedBody() {
+        return ResponseEntity.status(413).body(FailureResponse.of(CommonResultCodeEnum.PARAM_ILLEGAL));
+    }
+
     @ExceptionHandler(CommonException.class)
     public ResponseEntity<FailureResponse<Void>> business(CommonException failure, HttpServletRequest request)
             throws Exception {

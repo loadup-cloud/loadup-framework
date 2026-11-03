@@ -50,6 +50,18 @@ Provider 每次解析。
 Boot RestClient.Builder 被注入并 clone，保留其自动定制。默认不新增请求报文日志，指标以可信配置名称而非动态请求值作为标签。应用还需限制自定义
 RestClient interceptor 及 tracing exporter 中的敏感信息采集。
 
+HttpPoolMetrics 持有单个固定 scope 下的有限 client 指标；gauge 读取 Apache 原生 PoolStats，
+MeteredConnectionManager 仅包裹 lease/get 边界，TCP connect/upgrade、释放和关闭保持原样委托。
+该边界包含连接可用性校验，不仅是队列时间；与 Boot 的整个 HTTP 调用观测分开。
+当前 Boot BOM 的 Apache 5.6.4 已有可选 observation 模块，但原生 lease 计时包装接口标记为 5.7，
+因此不为此覆盖 BOM 或重复安装 HTTP 调用观测。参考 [Apache 池观测](https://hc.apache.org/httpcomponents-client-5.6.x/observation.html)
+与 [lease 计时 API](https://hc.apache.org/httpcomponents-client-5.7.x/current/httpclient5-observation/apidocs/org/apache/hc/client5/http/observation/HttpClientObservationSupport.html)。
+
+所有候选传输构建完成且活跃调用排空后，先注册新增客户端的指标，再切换同名客户端的池引用；计时序列在同名刷新中延续。
+新增指标装配失败时回收本次已注册的指标和候选传输，旧快照不变。删除客户端与关闭模板均移除其持有的池指标。
+多个模板通过固定 scope 隔离；scope/client 重复时拒绝装配，不允许第二个模板静默接管第一个模板的 gauge。
+MeterRegistry 由应用共享，模板不关闭它；自定义 MeterFilter 须保留 scope/client，不应合并不同池的身份。
+
 组件不提供重试配置，Apache 自动重试关闭；需要重试时由业务确认幂等后接入现有任务或容错能力。Outbox
 的失败重投和外部请求的受理状态分别管理，下游已受理但响应丢失时仍可能再次发送同一业务请求。
 
@@ -60,7 +72,7 @@ RestClient interceptor 及 tracing exporter 中的敏感信息采集。
 输出流由调用方持有，写入失败不回滚已写字节，也不关闭该流；业务来源校验与正式提交在负责层完成。
 最终签名不改变固定 origin、DNS/代理约束、无自动重试/无重定向。新增测试源码未执行。
 
-## 声明式应用间调用（迁移首批）
+## 声明式应用间调用
 
 HttpTemplate.serviceClient 提供标准接口代理；内部仍由 HttpServiceProxyFactory + RestClientAdapter 完成注解解析、URI 编码、
 泛型类型和消息转换。同一 RuntimeClient 的命名操作与声明式客户端使用同一个 Apache transport，不建立第二套连接池或注册中心适配。
@@ -81,3 +93,11 @@ HttpServiceResponses 复用 commons-dto 的标准信封，只有 SUCCESS/S 且�
 
 声明式路径通过标准 configureMessageConverters / JacksonJsonHttpMessageConverter 绑定原 JsonMapper；
 其余 Boot 定制与非 JSON 转换保留。共享 JSON 定制关闭 ACCEPT_FLOAT_AS_INT，阻止金额、版本、计数和序号的静默截断。
+
+## 共享出站身份配置默认值
+
+HttpClientDefaults.bind(environment, modulePrefix, targetApplication, Settings.class) 仅复用 Boot Binder 绑定默认配置，不负责认证。
+模块显式配置优先，其次是 loadup.http.client.{tenant-id,service-id,audience,token-file}；tenant-id 默认 __default__，
+service-id 默认调用方 spring.application.name，audience 默认目标应用，token-file 默认 /var/run/loadup/secrets/<目标应用>.jwt。
+多目标调用须分别指定 audience/token-file，避免把共享目标配置误用于另一服务。helper 不读/缓存 token、不设置全局认证头；
+调用方仍逐次验证并读取凭证。旧 RPC 配置前缀不在此 helper 中提供兼容别名。

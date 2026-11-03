@@ -83,3 +83,9 @@ ResultCode，不附带异常消息或堆栈；日志 RuntimeException 被隔离�
 
 该摘要是调用完成日志，不额外创建 Span、Timer 或注册表。同步业务调用、线程传播、事务最终结果和异步完成分别遵循其负责层契约；自调用、final
 方法及异步返回值边界见 README。
+
+## 两种线程模型的任务传播
+
+LoadUpContextTaskDecorator 捕获不可变 ExecutionContext；Boot 4.1 的 spring.task.execution.propagate-context=true 添加原生 Micrometer 传播。
+LoadUpContextPropagationTest 已扩展平台/虚拟 applicationTaskExecutor、原生 ThreadLocal 捕获及空上下文/异常恢复回归源码，未执行。
+自建执行器须显式装配所需 decorator；认证上下文和后台任务身份仍由安全集成及业务负责，不以元数据传播代替授权或传播数据库事务。

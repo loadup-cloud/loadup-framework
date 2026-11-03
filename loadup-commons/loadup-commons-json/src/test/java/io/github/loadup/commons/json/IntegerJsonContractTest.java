@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.cfg.EnumFeature;
 import tools.jackson.databind.json.JsonMapper;
 
 class IntegerJsonContractTest {
@@ -29,5 +30,12 @@ class IntegerJsonContractTest {
         assertThat(json.readValue("{\"mode\":\"INIT\"}", EnumValue.class).mode()).isEqualTo(Mode.INIT);
         assertThatThrownBy(() -> json.readValue("{\"mode\":0}", EnumValue.class)).isInstanceOf(RuntimeException.class);
         assertThatThrownBy(() -> json.readValue("{\"mode\":\"UNKNOWN\"}", EnumValue.class)).isInstanceOf(RuntimeException.class);
+    }
+
+    @Test
+    void customizationRestoresStrictEnumContractOnAPermissiveBuilder() {
+        var strict = JsonUtil.customize(JsonMapper.builder().disable(EnumFeature.FAIL_ON_NUMBERS_FOR_ENUMS)).build();
+        assertThat(strict.readValue("{\"mode\":\"SUCCEEDED\"}", EnumValue.class).mode()).isEqualTo(Mode.SUCCEEDED);
+        assertThatThrownBy(() -> strict.readValue("{\"mode\":1}", EnumValue.class)).isInstanceOf(RuntimeException.class);
     }
 }

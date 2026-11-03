@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Merge each Maven module's README and ARCHITECTURE into one Hextra page.
 
-Usage: python3 doc-sync-agent.py [--site PATH] [--apply | --check | --build]
+Usage: python3 doc-sync-agent.py [--site PATH] [--module REACTOR_PATH] [--apply | --check | --build]
 Default is a read-only preview. --build applies changes before running Hugo.
 The site homepage and documentation landing page are maintained by hand.
 Modules are discovered from the root POM reactor, never from stray directories.
@@ -214,6 +214,7 @@ def main() -> int:
     global SITE, CONTENT
     parser = argparse.ArgumentParser(description="Sync Maven module docs to Hugo/Hextra")
     parser.add_argument("--site", type=Path, default=SITE, help="Hugo repository (default: sibling docs directory)")
+    parser.add_argument("--module", action="append", default=[], help="sync only this reactor module; repeat to select more")
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--apply", action="store_true", help="write generated pages")
     mode.add_argument("--check", action="store_true", help="fail if generated pages are stale")
@@ -227,6 +228,15 @@ def main() -> int:
         modules = module_directories()
         mapping = source_map(modules)
         updates, obsolete = pending(mapping)
+        if args.module:
+            by_name = {str(module.relative_to(ROOT)): site_path(module) for module in modules}
+            unknown = set(args.module) - by_name.keys()
+            if unknown:
+                parser.error(f"Unknown reactor module: {', '.join(sorted(unknown))}")
+            targets = {by_name[name] for name in args.module}
+            updates = [(path, content) for path, content in updates if path in targets]
+            # A scoped sync has no authority to delete another module's generated page.
+            obsolete = []
     except (OSError, ValueError) as error:
         print(f"Documentation sync failed: {error}", file=sys.stderr)
         return 1

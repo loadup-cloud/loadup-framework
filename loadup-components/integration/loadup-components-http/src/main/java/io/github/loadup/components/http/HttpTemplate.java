@@ -66,6 +66,7 @@ public final class HttpTemplate implements AutoCloseable {
     private final HttpCredentialProvider credentials;
     private final SslBundles sslBundles;
     private final MeterRegistry metrics;
+    private final HttpPoolMetrics poolMetrics;
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private Map<String, RuntimeClient> clients = Map.of();
     private long version;
@@ -78,6 +79,19 @@ public final class HttpTemplate implements AutoCloseable {
             HttpCredentialProvider credentials,
             SslBundles sslBundles,
             MeterRegistry metrics) {
+        this(properties, builders, mapper, credentials, sslBundles, metrics, "application");
+    }
+
+    /** A fixed, unique scope separates templates sharing the same meter registry. */
+    public HttpTemplate(
+            HttpProperties properties,
+            Supplier<RestClient.Builder> builders,
+            ObjectMapper mapper,
+            HttpCredentialProvider credentials,
+            SslBundles sslBundles,
+            MeterRegistry metrics,
+            String metricScope) {
+        name(metricScope);
         this.builders = builders;
         if (!(mapper instanceof tools.jackson.databind.json.JsonMapper jsonMapper)) {
             throw new IllegalArgumentException("HTTP JSON conversion requires a JsonMapper");
@@ -86,6 +100,7 @@ public final class HttpTemplate implements AutoCloseable {
         this.credentials = credentials;
         this.sslBundles = sslBundles;
         this.metrics = metrics;
+        this.poolMetrics = new HttpPoolMetrics(metrics, metricScope);
         refresh(properties);
     }
 
@@ -205,7 +220,7 @@ public final class HttpTemplate implements AutoCloseable {
                 if (config.credentialRef() != null && credentials == null) {
                     throw new IllegalArgumentException("HTTP credentials require a provider");
                 }
-                replacement.put(entry.getKey(), create(config));
+                replacement.put(entry.getKey(), create(entry.getKey(), config));
             }
         } catch (RuntimeException failure) {
             release(replacement);
@@ -218,6 +233,14 @@ public final class HttpTemplate implements AutoCloseable {
                 throw new IllegalStateException("HTTP template is closed");
             }
             Map<String, RuntimeClient> previous = clients;
+            Map<String, HttpPoolMetrics.State> metricStates = new HashMap<>();
+            replacement.forEach((name, client) -> metricStates.put(name, client.poolMetrics));
+            try {
+                poolMetrics.activate(metricStates);
+            } catch (RuntimeException failure) {
+                release(replacement);
+                throw failure;
+            }
             clients = Map.copyOf(replacement);
             version++;
             release(previous);
@@ -381,7 +404,7 @@ public final class HttpTemplate implements AutoCloseable {
         }
     }
 
-    private RuntimeClient create(HttpProperties.Client config) {
+    private RuntimeClient create(String name, HttpProperties.Client config) {
         var policy = new HttpTargetPolicy(config.allowPrivateAddresses());
         var poolBuilder = PoolingHttpClientConnectionManagerBuilder.create()
                 .setDnsResolver(policy)
@@ -404,8 +427,9 @@ public final class HttpTemplate implements AutoCloseable {
                     .buildClassic());
         }
         var pool = poolBuilder.build();
+        var poolState = poolMetrics.candidate(name, pool);
         var transportBuilder = HttpClients.custom()
-                .setConnectionManager(pool)
+                .setConnectionManager(new MeteredConnectionManager(pool, poolState))
                 .disableAutomaticRetries()
                 .disableRedirectHandling()
                 .disableCookieManagement()
@@ -472,7 +496,7 @@ public final class HttpTemplate implements AutoCloseable {
                 .build();
             return new RuntimeClient(config, client,
                 HttpServiceProxyFactory.builderFor(RestClientAdapter.create(serviceClient)).build(),
-                new java.util.concurrent.ConcurrentHashMap<>(), transport, policy);
+                new java.util.concurrent.ConcurrentHashMap<>(), transport, policy, poolState);
         } catch (RuntimeException failure) {
             try {
                 transport.close();
@@ -509,6 +533,7 @@ public final class HttpTemplate implements AutoCloseable {
             closed = true;
             release(clients);
             clients = Map.of();
+            poolMetrics.close();
         } finally {
             lock.writeLock().unlock();
         }
@@ -525,6 +550,7 @@ public final class HttpTemplate implements AutoCloseable {
         HttpServiceProxyFactory services,
         Map<Class<?>, Object> serviceProxies,
         CloseableHttpClient transport,
-        HttpTargetPolicy policy) {
+        HttpTargetPolicy policy,
+        HttpPoolMetrics.State poolMetrics) {
 }
 }

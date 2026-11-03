@@ -1,6 +1,7 @@
 # RPC Dubbo binder
 
-应用间调用统一使用 Dubbo Triple 的 **Protobuf 纯 IDL 模式**。服务契约由提供方的 `*-client` 模块用 `.proto` 定义，
+本 binder 是按需引入的 Dubbo Triple **Protobuf 纯 IDL 模式**，不是应用间调用的默认方案。
+默认推荐 HTTP Service Clients；Pay 已迁出本 binder，下列 Pay 名称仅为历史示意，不是当前运行配置。服务契约由提供方的 `*-client` 模块用 `.proto` 定义，
 `dubbo-maven-plugin` 生成 protobuf 消息和 `DubboXxxTriple` 存根；不生成 gRPC `BindableService`，也不使用 Java
 接口 + Wrapper 序列化模式。BOM 固定 Dubbo 3.3.6。
 

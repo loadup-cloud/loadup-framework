@@ -22,3 +22,9 @@ Server；多 Pod 场景所有 Pod 均会扫描，数据库领取负责互斥。
 | 业务数据持久化 | 由业务组件负责     |
 
 完整接入契约见上级 [Scheduler](../README.md)。
+
+## 虚拟线程评估
+
+LocalSchedulerProvider 使用 Spring 原生 fixed-delay，逐个同步唤醒 scanner。Boot 全局虚拟线程开关会影响自动 TaskScheduler，不能把 pool.size 当成虚拟线程并发上限。
+不自动并行化 scanner，不修改任务领取、租约或幂等语义。LocalSchedulerTest 已补两种模式下原生调度与不重叠检查源码，未运行。
+消费方应验证扫描持续时间/停机、队列积压和背景身份重建；线程开关不能替代持久任务恢复或并发隔离。

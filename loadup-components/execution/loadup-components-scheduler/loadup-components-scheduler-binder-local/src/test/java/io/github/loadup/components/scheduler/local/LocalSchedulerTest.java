@@ -25,35 +25,57 @@ import static org.awaitility.Awaitility.await;
 import io.github.loadup.components.scheduler.ScheduledTask;
 import io.github.loadup.components.scheduler.SchedulerAutoConfiguration;
 import io.github.loadup.components.scheduler.SchedulerTemplate;
+
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 class LocalSchedulerTest {
-    @Test
-    void springScheduledWakesScannersWithoutExternalServices() {
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void springScheduledWakesScannersWithoutExternalServices(boolean virtual) {
         var calls = new AtomicInteger();
+        var active = new AtomicInteger();
+        var overlapping = new AtomicBoolean();
         new ApplicationContextRunner()
-                .withConfiguration(
-                        AutoConfigurations.of(LocalSchedulerAutoConfiguration.class, SchedulerAutoConfiguration.class))
-                .withBean(ScheduledTask.class, () -> new ScheduledTask() {
-                    public String name() {
-                        return "scan";
-                    }
+            .withConfiguration(
+                AutoConfigurations.of(LocalSchedulerAutoConfiguration.class, SchedulerAutoConfiguration.class,
+                    TaskSchedulingAutoConfiguration.class))
+            .withBean(ScheduledTask.class, () -> new ScheduledTask() {
+                public String name() {
+                    return "scan";
+                }
 
-                    public void execute() {
-                        calls.incrementAndGet();
+                public void execute() {
+                    if (active.incrementAndGet() != 1) {
+                        overlapping.set(true);
                     }
-                })
-                .withPropertyValues(
-                        "loadup.scheduler.local.interval=PT0.02S", "loadup.scheduler.local.initial-delay=PT0S")
-                .run(context -> {
-                    assertThat(context).hasSingleBean(SchedulerTemplate.class);
-                    await().atMost(Duration.ofSeconds(3)).until(() -> calls.get() > 1);
-                });
+                    try {
+                        calls.incrementAndGet();
+                        Thread.sleep(30);
+                    } catch (InterruptedException interrupted) {
+                        Thread.currentThread().interrupt();
+                    } finally {
+                        active.decrementAndGet();
+                    }
+                }
+            })
+            .withPropertyValues(
+                "loadup.scheduler.local.interval=PT0.02S", "loadup.scheduler.local.initial-delay=PT0S",
+                "spring.threads.virtual.enabled=" + virtual)
+            .run(context -> {
+                assertThat(context).hasSingleBean(SchedulerTemplate.class);
+                await().atMost(Duration.ofSeconds(3)).until(() -> calls.get() > 1);
+                assertThat(overlapping).isFalse();
+            });
     }
 
     @Test
@@ -62,24 +84,24 @@ class LocalSchedulerTest {
         provider.wakeUp();
         var calls = new AtomicInteger();
         var tasks = List.of(
-                new ScheduledTask() {
-                    public String name() {
-                        return "bad";
-                    }
+            new ScheduledTask() {
+                public String name() {
+                    return "bad";
+                }
 
-                    public void execute() {
-                        throw new IllegalStateException("synthetic");
-                    }
-                },
-                new ScheduledTask() {
-                    public String name() {
-                        return "good";
-                    }
+                public void execute() {
+                    throw new IllegalStateException("synthetic");
+                }
+            },
+            new ScheduledTask() {
+                public String name() {
+                    return "good";
+                }
 
-                    public void execute() {
-                        calls.incrementAndGet();
-                    }
-                });
+                public void execute() {
+                    calls.incrementAndGet();
+                }
+            });
         provider.start(new SchedulerTemplate(provider, tasks));
         provider.wakeUp();
         assertThat(calls).hasValue(1);
@@ -91,9 +113,9 @@ class LocalSchedulerTest {
     @Test
     void localBinderBacksOffForOtherSelection() {
         new ApplicationContextRunner()
-                .withConfiguration(
-                        AutoConfigurations.of(LocalSchedulerAutoConfiguration.class, SchedulerAutoConfiguration.class))
-                .withPropertyValues("loadup.scheduler.binder-type=powerjob")
-                .run(context -> assertThat(context).doesNotHaveBean(LocalSchedulerProvider.class));
+            .withConfiguration(
+                AutoConfigurations.of(LocalSchedulerAutoConfiguration.class, SchedulerAutoConfiguration.class))
+            .withPropertyValues("loadup.scheduler.binder-type=powerjob")
+            .run(context -> assertThat(context).doesNotHaveBean(LocalSchedulerProvider.class));
     }
 }

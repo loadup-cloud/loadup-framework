@@ -159,11 +159,14 @@ PowerJob/Outbox；不能让多个组件重复包装重试。
 | 异步调用 / multipart 上传   | 首版未提供                                                                     |
 
 `HttpTemplateTest` 使用本地 HTTP 服务验证协议状态、无重试与重定向、JSON、原始下载、大小限制、地址策略、URI
-编码和刷新失败保留旧配置。用户可本地执行：
+编码和刷新失败保留旧配置；HttpPoolMetricsTest 覆盖池饱和、计时边界、刷新、注册失败回收与 scope 隔离。
+其余测试覆盖声明式代理、信封验证、配置与地址策略。后续恢复测试时，用户可在 Framework 根目录选择该模块及其依赖：
 
 ```shell
-mvnd clean test -pl loadup-components/integration/loadup-components-http \
-  -Dtest=HttpTemplateTest -Dskip.spotless=true -Dskip.spotbugs=true
+mvnd clean test -pl loadup-components/integration/loadup-components-http -am \
+  -Dmaven.test.skip=false -DskipTests=false -Dskip.unit.tests=false \
+  -Dtest=HttpTemplateTest,HttpPoolMetricsTest,HttpServiceClientsTest,HttpServiceResponsesTest,HttpClientDefaultsTest,HttpAutoConfigurationTest,HttpTargetPolicyTest,HttpConfigurationContractTest \
+  -Dsurefire.failIfNoSpecifiedTests=false -Dskip.spotless=true -Dskip.spotbugs=true
 ```
 
 本次实现未执行构建或测试。设计见 [ARCHITECTURE.md](ARCHITECTURE.md)。
@@ -173,6 +176,24 @@ mvnd clean test -pl loadup-components/integration/loadup-components-http \
 使用消费工程提供的 Micrometer `MeterRegistry`，`loadup.http.calls` 的 outcome 统一为 success/failure；非 2xx 与传输失败均计为
 failure。client/operation 仅取已配置的有限名称，目标参数和原始 URI 不进入标签。引入 Observability 后公共 application 标签由标准
 management 配置统一提供。
+
+命名操作与 HTTP Service Clients 共用以下池指标，均带 `scope/client` 标签：
+
+| 指标 | 含义 |
+| --- | --- |
+| `loadup.http.pool.leased/available/pending` | Apache 原生池中已借出、空闲、等待获取的连接数 |
+| `loadup.http.pool.max/route.max` | 总连接上限与默认每路由上限 |
+| `loadup.http.pool.acquire` | 原生 lease/get 阶段计时；outcome 为 success/timeout/interrupted/failure |
+
+acquire 包含无竞争时的连接借出和连接可用性校验，不包含后续 TCP 建连、TLS 握手及 HTTP 响应耗时；
+不能把它当作仅排队时间或整个 HTTP 调用耗时。取消操作仍由 Apache 处理，未进入 get 的取消不产生完成计时。
+池指标与 HTTP 总耗时应一起采集，不能用总耗时反推池等待。需要获取等待的分位数时，在消费工程原生
+`management.metrics.distribution.percentiles-histogram` 中为 `loadup.http.pool.acquire` 启用直方图，并在压测前冻结桶和采集间隔。
+
+默认 scope 为 application；手动创建多个 HttpTemplate 并共享 MeterRegistry 时，使用带 metricScope 的构造器指定固定且不同的 scope，
+不要使用随机值、URI 或业务标识。OpenBao 使用 openbao-transit/openbao-admin。相同 scope/client 的并存实例会在装配时被拒绝，
+指标过滤器应保留这两个身份标签。刷新保留同名客户端的累计计时并切换 gauge 的池引用；移除客户端或关闭模板时只清理其持有的池指标。
+构建候选客户端失败保留原池及指标。这些采集与生命周期回归目前只有源码和静态检查，尚未运行。
 
 ## 最终请求签名与流式下载
 
@@ -195,3 +216,11 @@ HTTP 4xx/5xx 仍返回 ResponseEntity，应先检查状态与完整性再认定�
 
 声明式 JSON 转换明确使用注入的 Jackson 3 JsonMapper（与命名操作相同），保留应用的时间、金额与严格整数约定，
 不会另建默认 mapper。共享 JSON 配置禁止浮点数截断为 int/long；新增回归源码验证标准代理同样拒绝该响应。
+
+## 共享出站身份配置默认值
+
+HttpClientDefaults.bind(environment, modulePrefix, targetApplication, Settings.class) 仅复用 Boot Binder 绑定默认配置，不负责认证。
+模块显式配置优先，其次是 loadup.http.client.{tenant-id,service-id,audience,token-file}；tenant-id 默认 __default__，
+service-id 默认调用方 spring.application.name，audience 默认目标应用，token-file 默认 /var/run/loadup/secrets/<目标应用>.jwt。
+多目标调用须分别指定 audience/token-file，避免把共享目标配置误用于另一服务。helper 不读/缓存 token、不设置全局认证头；
+调用方仍逐次验证并读取凭证。旧 RPC 配置前缀不在此 helper 中提供兼容别名。
