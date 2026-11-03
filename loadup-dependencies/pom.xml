@@ -48,9 +48,9 @@
         <!-- Spring Framework (FROZEN) -->
         <!-- This POM-only BOM has no source headers; direct license goals still require a license name. -->
         <license.licenseName>apache_v2</license.licenseName>
-        <license.skipRemoveLicense>true</license.skipRemoveLicense>
-        <license.skipUpdateLicense>true</license.skipUpdateLicense>
-        <license.skipCheckLicense>true</license.skipCheckLicense>
+
+
+
         <spring.boot.version>4.1.2</spring.boot.version>
         <spring-cloud.version>2025.1.4</spring-cloud.version>
         <tomcat.version>11.0.27</tomcat.version>

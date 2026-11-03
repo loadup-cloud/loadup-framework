@@ -19,7 +19,7 @@
 需要 Docker。一次执行新组件及上游的定向测试，避免逐文件构建：
 
 ```bash
-mvnd clean license:update-file-header spotless:apply verify \
+mvnd clean spotless:apply verify \
   -pl :loadup-components-async-result-test -am \
   -Dtest=AsyncResultTest,AsyncResultAutoConfigurationTest,LocalAsyncResultProviderTest \
   -Dsurefire.failIfNoSpecifiedTests=false \
