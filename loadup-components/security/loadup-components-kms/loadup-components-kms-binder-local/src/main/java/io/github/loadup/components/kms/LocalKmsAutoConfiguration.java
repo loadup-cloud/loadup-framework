@@ -19,7 +19,11 @@
  */
 package io.github.loadup.components.kms;
 
+import java.io.IOException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.Arrays;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -30,7 +34,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StringUtils;
 
-/** Uses a caller-supplied KeyStore or loads a configured file without generating replacement keys. */
+/**
+ * Uses a caller-supplied KeyStore or loads a configured file without generating replacement keys.
+ */
 @AutoConfiguration
 @ConditionalOnProperty(prefix = "loadup.kms", name = "enabled", havingValue = "true")
 @ConditionalOnMissingBean(KmsTemplate.class)
@@ -57,8 +63,9 @@ public class LocalKmsAutoConfiguration {
                 store.load(input, storePassword);
             }
             return new LocalKmsKeyStore(store, keyPassword);
-        } catch (Exception failure) {
-            throw new IllegalStateException("Cannot load local KMS KeyStore; check location, type and credentials");
+        } catch (IOException | NoSuchAlgorithmException | CertificateException | KeyStoreException failure) {
+            throw new IllegalStateException(
+                    "Cannot load local KMS KeyStore; check location, type and credentials", failure);
         } finally {
             Arrays.fill(storePassword, '\0');
             if (keyPassword != null) {

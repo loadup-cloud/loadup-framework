@@ -544,3 +544,7 @@ multipart，下载可以返回流式二进制。`loadup-components-webmvc` 对 A
 - 修改可选 Triple 时读取 [Dubbo binder 规范](loadup-components/integration/loadup-components-rpc/loadup-components-rpc-binder-dubbo/README.md)。
   其内部 exp-only 信任模型不适用于 HTTP；保留该协议的网络隔离要求。
 - 业务时间采用系统默认 zone 或业务 Clock 的 zone；JWT epoch、Instant 保持绝对时间。不强制 JVM/JDBC/K8s 固定时区。
+
+## 代码质量审查
+
+- 修改 Java 代码时，代理检查改动涉及的代码风格、潜在缺陷、安全问题、重复及复杂逻辑，参考 Checkstyle、SpotBugs（含 Find Security Bugs）和 PMD 的检查范围。适用时参考 `config/quality/` 中保留的规则和排除配置，并在交付时说明未能验证的风险。

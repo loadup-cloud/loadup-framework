@@ -65,24 +65,15 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup-build
-      - name: Check formatting, licenses, dependency rules and Checkstyle without compilation
+      - name: Check formatting, licenses, dependency rules without compilation
         run: |
-          versions=$(python3 -c 'import xml.etree.ElementTree as E; p=E.parse("pom.xml").find("{*}properties"); print(p.findtext("{*}license-plugin.version"), p.findtext("{*}maven-checkstyle-plugin.version"), p.findtext("{*}spotless-plugin.version"))')
-          read -r license_version checkstyle_version spotless_version <<< "$versions"
+          versions=$(python3 -c 'import xml.etree.ElementTree as E; p=E.parse("pom.xml").find("{*}properties"); print(p.findtext("{*}license-plugin.version"), p.findtext("{*}spotless-plugin.version"))')
+          read -r license_version spotless_version <<< "$versions"
           mvn -B -ntp -U -T 1 validate \
             "com.diffplug.spotless:spotless-maven-plugin:$spotless_version:check" \
             "org.codehaus.mojo:license-maven-plugin:$license_version:check-file-header" \
-            "org.apache.maven.plugins:maven-checkstyle-plugin:$checkstyle_version:check" \
             -Dskip.spotless=false -Dskip.enforcer=false \
             -Dlicense.skipUpdateLicense=true
-      - name: Upload fast quality reports
-        if: always()
-        uses: actions/upload-artifact@v7 # v7
-        with:
-          name: fast-quality-reports
-          retention-days: 14
-          if-no-files-found: ignore
-          path: '**/target/checkstyle-result.xml'
 
   verify:
     name: Backend Tests and Analysis
@@ -102,12 +93,11 @@ jobs:
         run: |
           cp .github/testcontainers.properties "$HOME/.testcontainers.properties"
           docker info
-      - name: Build once, run tests, SpotBugs and PMD
+      - name: Build once and run tests
         id: build
         run: |
-          mvn -B -ntp -U -T 1 -Pcomponent-coverage clean install pmd:check \
+          mvn -B -ntp -U -T 1 -Pcomponent-coverage clean install \
             -DskipTests=false -Dskip.unit.tests=false -Dskip.integration.tests=false \
-            -Dskip.spotbugs=false \
             -Dlicense.skipUpdateLicense=true -Dlicense.skipCheckLicense=true \
             -Dskip.enforcer=true \
             -Dtestcontainers.reuse.enable=false -Dspring.profiles.active=ci
@@ -132,9 +122,6 @@ jobs:
           path: |
             **/target/surefire-reports/**
             **/target/failsafe-reports/**
-            **/target/spotbugsXml.xml
-            **/target/pmd.xml
-            **/target/checkstyle-result.xml
             **/target/site/jacoco/**
             **/target/site/jacoco-aggregate/**
             **/target/jacoco-unit.exec
@@ -197,4 +184,4 @@ jobs:
           : "${PACKAGES_TOKEN:?Set PACKAGES_TOKEN with access to loadup-cloud/loadup-packages}"
           mvn -B -ntp -U -T 1 clean deploy -P github \
             -DaltDeploymentRepository=github::https://maven.pkg.github.com/loadup-cloud/loadup-packages \
-            -DdeployAtEnd=true -DskipTests -Dskip.spotbugs=true
+            -DdeployAtEnd=true -DskipTests

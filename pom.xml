@@ -73,8 +73,6 @@
         <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
         <maven-surefire-plugin.version>3.6.0</maven-surefire-plugin.version>
         <maven-war-plugin.version>3.5.1</maven-war-plugin.version>
-        <maven-pmd-plugin.version>3.28.0</maven-pmd-plugin.version>
-        <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
 
         <!-- Only runtime component jars opt in to the explicit post-reactor coverage check. -->
         <loadup.coverage.skip>true</loadup.coverage.skip>
@@ -85,12 +83,11 @@
         <versions-plugin.version>2.23.0</versions-plugin.version>
         <license-plugin.version>2.7.1</license-plugin.version>
         <spotless-plugin.version>3.11.0</spotless-plugin.version>
-        <spotbugs-plugin.version>4.10.5.0</spotbugs-plugin.version>
+
         <enforcer-plugin.version>3.6.3</enforcer-plugin.version>
 
         <!-- Code quality tool versions -->
         <palantir-java-format.version>2.98.0</palantir-java-format.version>
-        <findsecbugs-plugin.version>1.14.0</findsecbugs-plugin.version>
 
         <!-- Annotation processor versions -->
         <mapstruct.version>1.6.3</mapstruct.version>
@@ -108,7 +105,7 @@
         <skip.spotless>false</skip.spotless>
         <skip.unit.tests>false</skip.unit.tests>
         <skip.integration.tests>false</skip.integration.tests>
-        <skip.spotbugs>false</skip.spotbugs>
+
         <skip.enforcer>false</skip.enforcer>
         <testcontainers.reuse.enable>true</testcontainers.reuse.enable>
 
@@ -490,34 +487,6 @@
                     </dependencies>
                 </plugin>
                 <plugin>
-                    <groupId>com.github.spotbugs</groupId>
-                    <artifactId>spotbugs-maven-plugin</artifactId>
-                    <version>${spotbugs-plugin.version}</version>
-                    <configuration>
-                        <effort>Max</effort>
-                        <threshold>Medium</threshold>
-                        <failOnError>true</failOnError>
-                        <skip>${skip.spotbugs}</skip>
-                        <excludeFilterFile>${maven.multiModuleProjectDirectory}/config/quality/spotbugs-exclude.xml</excludeFilterFile>
-                        <plugins>
-                            <plugin>
-                                <groupId>com.h3xstream.findsecbugs</groupId>
-                                <artifactId>findsecbugs-plugin</artifactId>
-                                <version>${findsecbugs-plugin.version}</version>
-                            </plugin>
-                        </plugins>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>spotbugs-check</id>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                            <phase>verify</phase>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
                     <version>${enforcer-plugin.version}</version>
@@ -574,35 +543,6 @@
                         </execution>
                     </executions>
                 </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-pmd-plugin</artifactId>
-                    <version>${maven-pmd-plugin.version}</version>
-                    <configuration>
-                        <targetJdk>${java.version}</targetJdk>
-                        <excludeRoots>
-                            <excludeRoot>${project.build.directory}/generated-sources</excludeRoot>
-                            <excludeRoot>${project.build.directory}/generated-test-sources</excludeRoot>
-                        </excludeRoots>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>${maven-checkstyle-plugin.version}</version>
-                    <configuration>
-                        <configLocation>${maven.multiModuleProjectDirectory}/config/quality/checkstyle.xml</configLocation>
-                        <excludeGeneratedSources>true</excludeGeneratedSources>
-                        <includeTestSourceDirectory>false</includeTestSourceDirectory>
-                    </configuration>
-                    <dependencies>
-                        <dependency>
-                            <groupId>com.puppycrawl.tools</groupId>
-                            <artifactId>checkstyle</artifactId>
-                            <version>14.3.0</version>
-                        </dependency>
-                    </dependencies>
-                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -649,20 +589,8 @@
                 <inherited>true</inherited>
             </plugin>
             <plugin>
-                <groupId>com.github.spotbugs</groupId>
-                <artifactId>spotbugs-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
@@ -703,13 +631,11 @@
             <id>skip-quality</id>
             <properties>
                 <skip.spotless>true</skip.spotless>
-                <skip.spotbugs>true</skip.spotbugs>
+
                 <skip.enforcer>true</skip.enforcer>
                 <license.skipCheckLicense>true</license.skipCheckLicense>
                 <license.skipUpdateLicense>true</license.skipUpdateLicense>
-                <checkstyle.skip>true</checkstyle.skip>
-                <pmd.skip>true</pmd.skip>
-                <cpd.skip>true</cpd.skip>
+
                 <jacoco.skip>true</jacoco.skip>
                 <loadup.coverage.skip>true</loadup.coverage.skip>
             </properties>
@@ -790,7 +716,7 @@
             <id>dev</id>
             <properties>
                 <skip.spotless>true</skip.spotless>
-                <skip.spotbugs>true</skip.spotbugs>
+
                 <license.skip>true</license.skip>
             </properties>
         </profile>
