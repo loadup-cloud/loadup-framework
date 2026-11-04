@@ -80,9 +80,8 @@ public class JetCacheCacheAutoConfiguration {
             LoadupCacheProperties properties,
             JetCacheCacheProperties binderProperties,
             ObjectProvider<RedisConnectionFactory> connectionFactoryProvider,
-            ObjectProvider<ObjectMapper> objectMapperProvider,
+            ObjectMapper objectMapper,
             ObjectProvider<CacheManagerCustomizer<?>> customizers) {
-        ObjectMapper objectMapper = objectMapperProvider.getIfAvailable(ObjectMapper::new);
         CacheJsonCodec codec = new CacheJsonCodec(objectMapper);
 
         JetCacheSpringCacheManager manager = new JetCacheSpringCacheManager(

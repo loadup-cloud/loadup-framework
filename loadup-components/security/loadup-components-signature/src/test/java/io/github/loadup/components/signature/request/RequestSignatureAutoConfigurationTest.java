@@ -18,8 +18,8 @@ package io.github.loadup.components.signature.request;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-import io.github.loadup.commons.time.autoconfigure.ClockAutoConfiguration;
 import io.github.loadup.components.kms.KmsTemplate;
+import io.github.loadup.components.runtime.time.ClockAutoConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;

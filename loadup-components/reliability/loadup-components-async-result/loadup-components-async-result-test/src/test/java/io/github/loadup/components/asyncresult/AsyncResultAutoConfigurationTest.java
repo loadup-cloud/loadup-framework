@@ -20,14 +20,18 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.loadup.components.asyncresult.local.LocalAsyncResultAutoConfiguration;
 import io.github.loadup.components.asyncresult.redis.RedisAsyncResultAutoConfiguration;
+import io.github.loadup.components.runtime.json.JsonAutoConfiguration;
 import java.time.Duration;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 class AsyncResultAutoConfigurationTest {
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(
+                    JsonAutoConfiguration.class,
+                    JacksonAutoConfiguration.class,
                     AsyncResultAutoConfiguration.class,
                     LocalAsyncResultAutoConfiguration.class,
                     RedisAsyncResultAutoConfiguration.class));

@@ -31,7 +31,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.TimeZone;
 import tools.jackson.core.JacksonException;
 import tools.jackson.core.type.TypeReference;
@@ -56,7 +55,7 @@ public class JsonUtil {
     public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
     public static final String DEFAULT_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
-    private static volatile ObjectMapper objectMapper = initObjectMapper();
+    private static final ObjectMapper objectMapper = initObjectMapper();
 
     /**
      *
@@ -114,13 +113,6 @@ public class JsonUtil {
 
     public static ObjectMapper getObjectMapper() {
         return objectMapper;
-    }
-
-    /**
-     * Use the application mapper when Spring configures one.
-     */
-    public static void setObjectMapper(ObjectMapper mapper) {
-        objectMapper = Objects.requireNonNull(mapper);
     }
 
     public static String toJson(Object object) {

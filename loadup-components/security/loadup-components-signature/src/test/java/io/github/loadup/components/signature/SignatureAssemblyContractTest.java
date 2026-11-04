@@ -20,11 +20,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import io.github.loadup.commons.time.autoconfigure.ClockAutoConfiguration;
 import io.github.loadup.components.kms.KmsKeyRef;
 import io.github.loadup.components.kms.KmsSignature;
 import io.github.loadup.components.kms.KmsSignatureAlgorithm;
 import io.github.loadup.components.kms.KmsTemplate;
+import io.github.loadup.components.runtime.time.ClockAutoConfiguration;
 import io.github.loadup.components.signature.config.SignatureAutoConfiguration;
 import io.github.loadup.components.signature.request.RequestContent;
 import io.github.loadup.components.signature.request.RequestNonceStore;

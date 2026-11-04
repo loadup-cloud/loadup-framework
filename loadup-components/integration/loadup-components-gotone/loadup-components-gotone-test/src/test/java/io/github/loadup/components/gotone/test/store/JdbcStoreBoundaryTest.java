@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import tools.jackson.databind.json.JsonMapper;
 
 class JdbcStoreBoundaryTest {
     private final Clock clock = Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC);
@@ -64,7 +65,8 @@ class JdbcStoreBoundaryTest {
         when(channels.selectListByQuery(any(QueryWrapper.class))).thenReturn(List.of());
         assertThat(new JdbcServiceConfigProvider(services).findByServiceCode("missing"))
                 .isEmpty();
-        assertThat(new JdbcChannelConfigProvider(channels).findEnabledByServiceCode("missing"))
+        assertThat(new JdbcChannelConfigProvider(channels, JsonMapper.builder().build())
+                        .findEnabledByServiceCode("missing"))
                 .isEmpty();
         verify(services).selectOneByQuery(any(QueryWrapper.class));
         verify(channels).selectListByQuery(any(QueryWrapper.class));
@@ -73,7 +75,8 @@ class JdbcStoreBoundaryTest {
     @Test
     void nullBlankAndValidJsonSettingsAreMappedThroughThePublicProvider() {
         var mapper = mock(ServiceChannelRowMapper.class);
-        var provider = new JdbcChannelConfigProvider(mapper);
+        var provider =
+                new JdbcChannelConfigProvider(mapper, JsonMapper.builder().build());
         for (String raw : new String[] {null, " ", "null"}) {
             var row = channel(raw, raw);
             when(mapper.selectListByQuery(any(QueryWrapper.class))).thenReturn(List.of(row));
@@ -98,7 +101,8 @@ class JdbcStoreBoundaryTest {
         events.start();
         logger.addAppender(events);
         try {
-            var result = new JdbcChannelConfigProvider(mapper)
+            var result = new JdbcChannelConfigProvider(
+                            mapper, JsonMapper.builder().build())
                     .findEnabledByServiceCode("ALERT")
                     .getFirst();
             assertThat(result.channelConfig()).isEmpty();

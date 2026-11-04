@@ -43,4 +43,6 @@ DTO、领域数据和 DO 共用；WebMVC 复用其日期配置，诊断输出使
 
 commons-error 提供 JDK-only `DomainViolation`；commons-dto 提供 `BusinessTime`、通用 `EventEnvelope`、`ContractReference`
 、共享支付词汇和显式 `DomainChecks.cnyAmount` 守卫。它们不依赖技术组件；CNY 守卫不改变 Money 的多币种能力。BusinessTime
-每次读取系统默认 zone，不固定区域，不修改 JVM 默认值。
+每次读取系统默认 zone，不固定区域，不修改 JVM 默认值。Runtime 提供可覆盖的 `Clock.systemDefaultZone()` Bean。
+
+Spring Boot 装配统一位于 `loadup-components/platform/loadup-components-runtime`；commons 无 Spring 运行依赖。

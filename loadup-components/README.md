@@ -10,7 +10,7 @@ binder。分类目录不是 Maven 模块，组件坐标、Java 包名、配置�
 | `security/`    | 安全与身份 | [authorization](security/loadup-components-authorization/README.md)、[authserver](security/loadup-components-authserver/README.md)、[resource-server](security/loadup-components-resource-server/README.md)、[captcha](security/loadup-components-captcha/README.md)、[kms](security/loadup-components-kms/README.md)、[signature](security/loadup-components-signature/README.md)                   |
 | `web/`         | Web 接入   | [webmvc](web/loadup-components-webmvc/README.md)、[springdoc](web/loadup-components-springdoc/README.md)                                                                                                                                                                                                                                                                                             |
 | `data/`        | 数据与存储 | [cache](data/loadup-components-cache/README.md)、[database](data/loadup-components-database/README.md)、[dfs](data/loadup-components-dfs/README.md)                                                                                                                                                                                                                                                  |
-| `integration/` | 外部集成   | [http](integration/loadup-components-http/README.md)、[gotone](integration/loadup-components-gotone/README.md)                                                                                                                                                                                                                                                                                       |
+| `integration/` | 外部集成   | [http](integration/loadup-components-http/README.md)、[gotone](integration/loadup-components-gotone/README.md)、[payment-channel](integration/loadup-components-payment-channel/README.md)                                                                                                                                                                                                          |
 | `reliability/` | 可靠性     | [DelayedTask](reliability/loadup-components-delayedtask/README.md)、[async-result](reliability/loadup-components-async-result/README.md)、[lock](reliability/loadup-components-lock/README.md)、[outbox](reliability/loadup-components-outbox/README.md)、[globalunique](reliability/loadup-components-globalunique/README.md)、[resilience4j](reliability/loadup-components-resilience4j/README.md) |
 | `execution/`   | 任务与执行 | [Scheduler](execution/loadup-components-scheduler/README.md)、[pipeline](execution/loadup-components-pipeline/README.md)                                                                                                                                                                                                                                                                             |
 | `platform/`    | 平台基础   | [configcenter](platform/loadup-components-configcenter/README.md)、[extension](platform/loadup-components-extension/README.md)、[observability](platform/loadup-components-observability/README.md)、[testcontainers](platform/loadup-components-testcontainers/README.md)                                                                                                                           |
@@ -22,7 +22,7 @@ loadup-components/
 ├── security/       authorization, authserver, resource-server, captcha, kms, signature
 ├── web/            webmvc, springdoc
 ├── data/           cache, database, dfs
-├── integration/    http, gotone
+├── integration/    http, gotone, payment-channel
 ├── reliability/    delayedtask, async-result, lock, outbox, globalunique, resilience4j
 ├── execution/      scheduler, pipeline
 └── platform/       configcenter, extension, observability, testcontainers
@@ -82,3 +82,5 @@ JaCoCo CLI 或 Python 覆盖率脚本。先收齐全部组件及兄弟测试模�
 新增 AsyncResult 的 3 个运行时 jar 在独立定向运行中均达到行/分支 ≥90%，21 项单测及 4 项 Redis/Kafka/MySQL IT
 通过，报告见 [AsyncResult Test](reliability/loadup-components-async-result/loadup-components-async-result-test/README.md)
 。该结果不与前述 48 个 jar 合并宣称为同一次全量验收。
+
+`platform/loadup-components-runtime` 承接 Clock、日志、JSON 与容器访问工具的 Spring Boot 装配；commons 保留纯基础能力。

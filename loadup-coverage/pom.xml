@@ -115,6 +115,22 @@
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-components-payment-channel-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-components-payment-channel-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-components-payment-channel-alipay</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-components-payment-channel-wechat</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-http</artifactId>
         </dependency>
         <dependency>
@@ -313,6 +329,18 @@
                                         </file>
                                         <file>
                                             ${maven.multiModuleProjectDirectory}/loadup-components/integration/loadup-components-gotone/loadup-components-gotone-test/target/jacoco-it.exec
+                                        </file>
+                                        <file>
+                                            ${maven.multiModuleProjectDirectory}/loadup-components/integration/loadup-components-payment-channel/loadup-components-payment-channel-api/target/jacoco-unit.exec
+                                        </file>
+                                        <file>
+                                            ${maven.multiModuleProjectDirectory}/loadup-components/integration/loadup-components-payment-channel/loadup-components-payment-channel-core/target/jacoco-unit.exec
+                                        </file>
+                                        <file>
+                                            ${maven.multiModuleProjectDirectory}/loadup-components/integration/loadup-components-payment-channel/binders/loadup-components-payment-channel-alipay/target/jacoco-unit.exec
+                                        </file>
+                                        <file>
+                                            ${maven.multiModuleProjectDirectory}/loadup-components/integration/loadup-components-payment-channel/binders/loadup-components-payment-channel-wechat/target/jacoco-unit.exec
                                         </file>
                                         <file>
                                             ${maven.multiModuleProjectDirectory}/loadup-components/integration/loadup-components-http/target/jacoco-unit.exec

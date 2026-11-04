@@ -17,8 +17,8 @@ package io.github.loadup.components.database.autoconfigure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.loadup.commons.time.autoconfigure.ClockAutoConfiguration;
 import io.github.loadup.components.database.tenant.DatabaseTenant;
+import io.github.loadup.components.runtime.time.ClockAutoConfiguration;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;

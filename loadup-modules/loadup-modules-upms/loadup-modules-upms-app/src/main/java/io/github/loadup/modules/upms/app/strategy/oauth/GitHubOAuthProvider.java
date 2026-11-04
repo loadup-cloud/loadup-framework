@@ -16,7 +16,6 @@
 package io.github.loadup.modules.upms.app.strategy.oauth;
 
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.commons.json.JsonUtil;
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.modules.upms.app.autoconfigure.UpmsSecurityProperties;
 import io.github.loadup.modules.upms.app.strategy.OAuthProviderCode;
@@ -45,10 +44,10 @@ public class GitHubOAuthProvider implements OAuthProvider {
     private static final String USER_INFO_URL = "https://api.github.com/user";
     private final UpmsSecurityProperties securityProperties;
     private final RestTemplate restTemplate = new RestTemplate();
-    private final JsonMapper objectMapper =
-            JsonUtil.customize(JsonMapper.builder()).build();
+    private final JsonMapper objectMapper;
 
-    public GitHubOAuthProvider(UpmsSecurityProperties securityProperties) {
+    public GitHubOAuthProvider(UpmsSecurityProperties securityProperties, JsonMapper objectMapper) {
+        this.objectMapper = objectMapper;
         this.securityProperties = securityProperties;
     }
 

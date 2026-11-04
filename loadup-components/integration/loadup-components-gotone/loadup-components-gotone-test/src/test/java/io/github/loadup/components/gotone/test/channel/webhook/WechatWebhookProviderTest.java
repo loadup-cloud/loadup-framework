@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.json.JsonMapper;
 
 class WechatWebhookProviderTest {
 
@@ -56,7 +57,8 @@ class WechatWebhookProviderTest {
         });
         server.start();
 
-        WechatWebhookProvider provider = new WechatWebhookProvider();
+        WechatWebhookProvider provider =
+                new WechatWebhookProvider(JsonMapper.builder().build());
         ChannelSendResponse response = provider.send(new ChannelSendRequest(
                 List.of("13800138000"),
                 "hello wechat",

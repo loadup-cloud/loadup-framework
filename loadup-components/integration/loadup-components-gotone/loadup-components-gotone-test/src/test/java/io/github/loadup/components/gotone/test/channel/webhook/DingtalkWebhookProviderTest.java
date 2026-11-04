@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.json.JsonMapper;
 
 class DingtalkWebhookProviderTest {
 
@@ -56,7 +57,8 @@ class DingtalkWebhookProviderTest {
         });
         server.start();
 
-        DingtalkWebhookProvider provider = new DingtalkWebhookProvider();
+        DingtalkWebhookProvider provider =
+                new DingtalkWebhookProvider(JsonMapper.builder().build());
         ChannelSendResponse response = provider.send(new ChannelSendRequest(
                 List.of("13800138000"),
                 "hello dingtalk",
@@ -80,7 +82,8 @@ class DingtalkWebhookProviderTest {
         });
         server.start();
 
-        DingtalkWebhookProvider provider = new DingtalkWebhookProvider();
+        DingtalkWebhookProvider provider =
+                new DingtalkWebhookProvider(JsonMapper.builder().build());
         ChannelSendResponse response = provider.send(new ChannelSendRequest(
                 List.of("13800138000"),
                 "hello",
@@ -93,7 +96,8 @@ class DingtalkWebhookProviderTest {
 
     @Test
     void missingWebhookUrlFailsFast() {
-        DingtalkWebhookProvider provider = new DingtalkWebhookProvider();
+        DingtalkWebhookProvider provider =
+                new DingtalkWebhookProvider(JsonMapper.builder().build());
 
         ChannelSendResponse response =
                 provider.send(new ChannelSendRequest(List.of("13800138000"), "hello", Map.of(), Map.of()));

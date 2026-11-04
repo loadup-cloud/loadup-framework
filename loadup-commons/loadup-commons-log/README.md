@@ -22,7 +22,7 @@ loadup:
     console-pattern: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{traceId:-},%X{spanId:-}] %logger{36} - %msg%n%wEx"
 ```
 
-模块通过 Spring Boot `EnvironmentPostProcessor` 设置 `logging.pattern.console` 与 `logging.pattern.file` 默认值；集成方显式配置的
+Runtime 模块通过 Spring Boot `EnvironmentPostProcessor` 设置 `logging.pattern.console` 与 `logging.pattern.file` 默认值；集成方显式配置的
 `logging.pattern.console` / `logging.pattern.file` 具有更高优先级。`LogContext` 统一使用 `traceId`、`spanId` 和
 `requestId` MDC 键。
 
@@ -99,3 +99,5 @@ public class OrderService {
 消费应用引入 `loadup-components-observability` 后启用执行逻辑：使用 Guava Stopwatch 和 LogUtil
 记录方法、结果码、耗时及异常类型，traceId/spanId 复用 MDC。入参、返回值和异常消息不进入摘要。commons-log 自身不创建 AOP 代理或引入
 Guava；关闭配置、代理及异步边界见 [Observability 接入手册](../../loadup-components/platform/loadup-components-observability/README.md#service-摘要日志)。
+
+Spring Boot 配置属性、EnvironmentPostProcessor 和自动配置已迁至 `loadup-components-runtime`，仅引入 commons-log 不触发装配。

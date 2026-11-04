@@ -1,0 +1,4 @@
+io.github.loadup.components.runtime.time.ClockAutoConfiguration
+io.github.loadup.components.runtime.logging.LoadupLogAutoConfiguration
+io.github.loadup.components.runtime.json.JsonAutoConfiguration
+io.github.loadup.components.runtime.context.RuntimeContextAutoConfiguration

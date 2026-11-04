@@ -22,9 +22,6 @@
 - `org.apache.commons:commons-text`
 - `org.apache.commons:commons-pool2`
 - `commons-io:commons-io`
-- `org.springframework.security:spring-security-crypto`
-- `org.springframework:spring-context`
-- `org.springframework.boot:spring-boot-starter-validation`
 - `org.hibernate.validator:hibernate-validator`
 - `jakarta.validation:jakarta.validation-api`
 - `org.slf4j:slf4j-api`
@@ -55,3 +52,5 @@ BigDecimal。默认主单位转换要求精确，比例运算由调用方指定�
 Currency 后同时设置 min/maxFractionDigits，避免 Locale 的默认币种精度污染 JPY/KWD 等结果。
 
 MoneyTest 覆盖不同币种精度、异币种拒绝、边界溢出、最终和溢出、舍入、格式化、枚举目录和 Jackson 3 两字段往返。测试源码不代表执行成功。
+
+ApplicationContextUtils 已迁至 runtime.context；本模块不依赖 Spring 运行库。

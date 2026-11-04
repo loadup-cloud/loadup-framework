@@ -66,11 +66,12 @@ loadup-framework/
 │   ├── loadup-commons-dto/     # 通用响应、DTO 与 BaseDO
 │   ├── loadup-commons-util/    # 工具类：StringUtils、DateUtils、MoneyUtil
 │   ├── loadup-commons-log/     # 统一日志格式与 trace MDC 约定
+│   ├── loadup-commons-time/    # 共享 Clock 自动配置
 ├── loadup-components/          # 技术组件，分类目录不增加 Maven 层级
 │   ├── security/       # authorization, authserver, resource-server, captcha, kms, signature
 │   ├── web/            # webmvc, springdoc
 │   ├── data/           # cache, database, dfs
-│   ├── integration/    # http, gotone
+│   ├── integration/    # http, gotone, payment-channel
 │   ├── reliability/    # lock, outbox, delayedtask, globalunique, resilience4j
 │   ├── execution/      # scheduler, pipeline
 │   └── platform/       # configcenter, extension, observability, testcontainers
@@ -133,7 +134,7 @@ loadup-components-{domain}/
 
 ### 多后端共存模式（Mode B）
 
-适用于多个 Provider 同时活跃、运行时数据驱动路由。仅 Gotone。
+适用于多个 Provider 同时活跃、运行时数据驱动路由。当前为 Gotone 与 payment-channel。
 
 ```
 loadup-components-{domain}/

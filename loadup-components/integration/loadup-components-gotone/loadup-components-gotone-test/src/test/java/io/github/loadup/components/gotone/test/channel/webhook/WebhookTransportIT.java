@@ -63,7 +63,10 @@ class WebhookTransportIT {
     }
 
     private List<NotificationChannelProvider> providers() {
-        return List.of(new WechatWebhookProvider(), new DingtalkWebhookProvider(), new FeishuWebhookProvider());
+        return List.of(
+                new WechatWebhookProvider(JsonMapper.builder().build()),
+                new DingtalkWebhookProvider(JsonMapper.builder().build()),
+                new FeishuWebhookProvider(JsonMapper.builder().build()));
     }
 
     @Test
@@ -92,7 +95,7 @@ class WebhookTransportIT {
     @Test
     void mentionedUsersAndMarkdownOptionsReachTheirVendorPayloads() throws Exception {
         String url = endpoint();
-        var wechat = new WechatWebhookProvider();
+        var wechat = new WechatWebhookProvider(JsonMapper.builder().build());
         wechat.send(new ChannelSendRequest(
                 List.of("default"),
                 "hello",
@@ -115,7 +118,7 @@ class WebhookTransportIT {
                         .get(0)
                         .asString())
                 .isEqualTo("override");
-        new DingtalkWebhookProvider()
+        new DingtalkWebhookProvider(JsonMapper.builder().build())
                 .send(new ChannelSendRequest(
                         List.of("12345"),
                         "**hello**",

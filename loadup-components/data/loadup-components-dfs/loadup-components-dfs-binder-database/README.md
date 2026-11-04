@@ -51,3 +51,5 @@ loadup:
 ## 默认时区
 
 日期默认使用 JVM 系统本地时区；无偏移日期按本地时区解释，显式偏移和 epoch 时间保持绝对时间语义。
+
+Spring 装配使用 `loadup-components-runtime` 提供的应用 JSON mapper / Clock；消费者通过参数注入，不创建默认兜底实例。独立测试需显式提供所需 Bean。

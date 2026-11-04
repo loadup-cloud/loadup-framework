@@ -33,17 +33,21 @@ import io.github.loadup.components.captcha.CaptchaProvider;
 import io.github.loadup.components.captcha.tianai.TianaiCaptchaProperties;
 import io.github.loadup.components.captcha.tianai.TianaiCaptchaProvider;
 import io.github.loadup.components.captcha.tianai.autoconfigure.TianaiCaptchaAutoConfiguration;
+import io.github.loadup.components.runtime.json.JsonAutoConfiguration;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import tools.jackson.databind.json.JsonMapper;
 
 class TianaiCaptchaBoundaryTest {
     @Test
     void generationHonorsDefaultAndExplicitTypeAndPreservesPayload() {
         var application = mock(ImageCaptchaApplication.class);
-        var provider = new TianaiCaptchaProvider(application, "ROTATE");
+        var provider = new TianaiCaptchaProvider(
+                application, "ROTATE", JsonMapper.builder().build());
         var vo = new ImageCaptchaVO(
                 "id",
                 "ROTATE",
@@ -79,7 +83,8 @@ class TianaiCaptchaBoundaryTest {
     @Test
     void verifiesNumbersTracksAndJsonThroughSdk() {
         var application = mock(ImageCaptchaApplication.class);
-        var provider = new TianaiCaptchaProvider(application, "SLIDER");
+        var provider = new TianaiCaptchaProvider(
+                application, "SLIDER", JsonMapper.builder().build());
         when(application.matching("id", 0.25f)).thenReturn(true);
         assertThat(provider.verify("id", 0.25)).isTrue();
         assertThat(provider.verify("id", " 0.25 ")).isTrue();
@@ -100,7 +105,8 @@ class TianaiCaptchaBoundaryTest {
     @Test
     void malformedAndUnsupportedInputsAreRejected() {
         var application = mock(ImageCaptchaApplication.class);
-        var provider = new TianaiCaptchaProvider(application, "SLIDER");
+        var provider = new TianaiCaptchaProvider(
+                application, "SLIDER", JsonMapper.builder().build());
         assertThat(provider.verify(null, "0.5")).isFalse();
         assertThat(provider.verify("id", null)).isFalse();
         assertThat(provider.verify("id", new Object())).isFalse();
@@ -112,7 +118,10 @@ class TianaiCaptchaBoundaryTest {
     @Test
     void customResourcesAndExpiryConfigurationCanReplaceDefaults() {
         new ApplicationContextRunner()
-                .withConfiguration(AutoConfigurations.of(TianaiCaptchaAutoConfiguration.class))
+                .withConfiguration(AutoConfigurations.of(
+                        JsonAutoConfiguration.class,
+                        JacksonAutoConfiguration.class,
+                        TianaiCaptchaAutoConfiguration.class))
                 .withPropertyValues(
                         "loadup.captcha.binder.tianai.init-default-resource=false",
                         "loadup.captcha.binder.tianai.default-type=ROTATE",

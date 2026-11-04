@@ -18,8 +18,8 @@ package io.github.loadup.modules.notification.test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-import io.github.loadup.commons.time.autoconfigure.ClockAutoConfiguration;
 import io.github.loadup.components.database.id.IdGenerator;
+import io.github.loadup.components.runtime.time.ClockAutoConfiguration;
 import io.github.loadup.modules.notification.app.autoconfigure.NotificationAutoConfiguration;
 import io.github.loadup.modules.notification.app.converter.NotificationDTOConverter;
 import io.github.loadup.modules.notification.app.service.InboxService;

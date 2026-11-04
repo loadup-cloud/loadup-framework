@@ -69,9 +69,8 @@ public class RedisCacheAutoConfiguration {
             RedisConnectionFactory connectionFactory,
             LoadupCacheProperties properties,
             RedisCacheProperties binderProperties,
-            ObjectProvider<ObjectMapper> objectMapperProvider,
+            ObjectMapper objectMapper,
             ObjectProvider<CacheManagerCustomizer<?>> customizers) {
-        ObjectMapper objectMapper = objectMapperProvider.getIfAvailable(ObjectMapper::new);
         GenericJacksonJsonRedisSerializer valueSerializer =
                 new GenericJacksonJsonRedisSerializer(new CacheJsonCodec(objectMapper).objectMapper());
 

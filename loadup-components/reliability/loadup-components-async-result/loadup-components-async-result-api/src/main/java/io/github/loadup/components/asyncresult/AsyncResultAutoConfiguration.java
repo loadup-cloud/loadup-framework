@@ -15,7 +15,6 @@
  */
 package io.github.loadup.components.asyncresult;
 
-import io.github.loadup.commons.json.JsonUtil;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -25,7 +24,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandi
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import tools.jackson.databind.ObjectMapper;
-import tools.jackson.databind.json.JsonMapper;
 
 @AutoConfiguration(
         afterName = {
@@ -41,13 +39,8 @@ public class AsyncResultAutoConfiguration {
     public AsyncResultTemplate asyncResultTemplate(
             AsyncResultProvider provider,
             AsyncResultProperties properties,
-            ObjectProvider<ObjectMapper> mapper,
+            ObjectMapper mapper,
             ObjectProvider<MeterRegistry> metrics) {
-        return new DefaultAsyncResultTemplate(
-                provider,
-                properties,
-                mapper.getIfAvailable(
-                        () -> JsonUtil.customize(JsonMapper.builder()).build()),
-                metrics.getIfAvailable());
+        return new DefaultAsyncResultTemplate(provider, properties, mapper, metrics.getIfAvailable());
     }
 }

@@ -16,7 +16,6 @@
 package io.github.loadup.components.gotone.store.config;
 
 import com.mybatisflex.core.query.QueryWrapper;
-import io.github.loadup.commons.json.JsonUtil;
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.gotone.config.ChannelConfigProvider;
 import io.github.loadup.components.gotone.store.dataobject.ServiceChannelRow;
@@ -30,10 +29,10 @@ import tools.jackson.databind.json.JsonMapper;
 public class JdbcChannelConfigProvider implements ChannelConfigProvider {
 
     private final ServiceChannelRowMapper channels;
-    private final JsonMapper objectMapper =
-            JsonUtil.customize(JsonMapper.builder()).build();
+    private final JsonMapper objectMapper;
 
-    public JdbcChannelConfigProvider(ServiceChannelRowMapper channels) {
+    public JdbcChannelConfigProvider(ServiceChannelRowMapper channels, JsonMapper objectMapper) {
+        this.objectMapper = objectMapper;
         this.channels = channels;
     }
 

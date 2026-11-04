@@ -20,7 +20,6 @@ import io.github.loadup.components.dfs.autoconfigure.DfsAutoConfiguration;
 import io.github.loadup.components.dfs.database.DatabaseDfsProvider;
 import io.github.loadup.components.dfs.database.mapper.DfsFileInsertMapper;
 import java.time.Clock;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -43,10 +42,7 @@ public class DatabaseDfsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DfsProvider.class)
     public DfsProvider databaseDfsProvider(
-            NamedParameterJdbcTemplate jdbc,
-            DfsFileInsertMapper files,
-            ObjectProvider<ObjectMapper> objectMapperProvider,
-            Clock clock) {
-        return new DatabaseDfsProvider(jdbc, files, objectMapperProvider.getIfAvailable(ObjectMapper::new), clock);
+            NamedParameterJdbcTemplate jdbc, DfsFileInsertMapper files, ObjectMapper objectMapper, Clock clock) {
+        return new DatabaseDfsProvider(jdbc, files, objectMapper, clock);
     }
 }

@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.context.annotation.Bean;
+import tools.jackson.databind.json.JsonMapper;
 
 @AutoConfiguration(
         afterName = {
@@ -47,8 +48,8 @@ public class GotoneStoreJdbcAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ChannelConfigProvider channelConfigProvider(ServiceChannelRowMapper channels) {
-        return new JdbcChannelConfigProvider(channels);
+    public ChannelConfigProvider channelConfigProvider(ServiceChannelRowMapper channels, JsonMapper mapper) {
+        return new JdbcChannelConfigProvider(channels, mapper);
     }
 
     @Bean

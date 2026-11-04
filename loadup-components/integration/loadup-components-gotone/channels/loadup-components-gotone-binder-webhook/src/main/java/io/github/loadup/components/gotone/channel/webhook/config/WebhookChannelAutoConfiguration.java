@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import tools.jackson.databind.json.JsonMapper;
 
 @AutoConfiguration
 public class WebhookChannelAutoConfiguration {
@@ -34,8 +35,8 @@ public class WebhookChannelAutoConfiguration {
             havingValue = "true",
             matchIfMissing = true)
     @ConditionalOnMissingBean(name = "dingtalkWebhookProvider")
-    public NotificationChannelProvider dingtalkWebhookProvider() {
-        return new DingtalkWebhookProvider();
+    public NotificationChannelProvider dingtalkWebhookProvider(JsonMapper mapper) {
+        return new DingtalkWebhookProvider(mapper);
     }
 
     @Bean
@@ -45,8 +46,8 @@ public class WebhookChannelAutoConfiguration {
             havingValue = "true",
             matchIfMissing = true)
     @ConditionalOnMissingBean(name = "wechatWebhookProvider")
-    public NotificationChannelProvider wechatWebhookProvider() {
-        return new WechatWebhookProvider();
+    public NotificationChannelProvider wechatWebhookProvider(JsonMapper mapper) {
+        return new WechatWebhookProvider(mapper);
     }
 
     @Bean
@@ -56,7 +57,7 @@ public class WebhookChannelAutoConfiguration {
             havingValue = "true",
             matchIfMissing = true)
     @ConditionalOnMissingBean(name = "feishuWebhookProvider")
-    public NotificationChannelProvider feishuWebhookProvider() {
-        return new FeishuWebhookProvider();
+    public NotificationChannelProvider feishuWebhookProvider(JsonMapper mapper) {
+        return new FeishuWebhookProvider(mapper);
     }
 }

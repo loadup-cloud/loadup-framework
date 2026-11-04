@@ -14,8 +14,7 @@ getter、对象自定义 toString 递归及资源访问。继承字段统一处�
 日志诊断与 WebMVC 的真实响应序列化分离，避免因 Web ObjectMapper、授权上下文或脱敏开关改变日志披露策略。commons-dto 和
 commons-util 均单向依赖本模块，JSON 仅向下依赖 commons-log、commons-masking 与 Jackson。
 
-WebMVC 对应用 mapper 使用 JsonUtil.customize，再通过 setObjectMapper 同步给 JsonUtil；诊断 mapper 不参与同步。此次归并保留转换
-API 和容错行为，仅调整包、模块与依赖所有权；未额外注册 Guava 模块或改变序列化行为。
+Runtime 对 Boot mapper 使用 JsonUtil.customize；JsonUtil 持有固定默认 mapper，应用 mapper 不回写静态字段。
 
 ## 有限输出
 

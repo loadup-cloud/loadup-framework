@@ -21,7 +21,6 @@ import io.github.loadup.components.observability.ApiResultMetrics;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -132,7 +131,7 @@ public class ResourceServerAutoConfiguration {
             JwtDecoder jwtDecoder,
             LoadUpJwtAuthenticationConverter jwtAuthenticationConverter,
             ResourceServerProperties properties,
-            ObjectProvider<ObjectMapper> objectMapperProvider,
+            ObjectMapper objectMapper,
             ApiResultMetrics resultMetrics)
             throws Exception {
         if (!StringUtils.hasText(properties.getIssuerUri()) || !StringUtils.hasText(properties.getAudience())) {
@@ -148,7 +147,6 @@ public class ResourceServerAutoConfiguration {
             return jwt;
         };
         List<String> publicPaths = properties.getPermitAll();
-        ObjectMapper objectMapper = objectMapperProvider.getIfAvailable(ObjectMapper::new);
         http.securityMatcher("/api/**")
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

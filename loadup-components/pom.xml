@@ -33,6 +33,7 @@
         <module>integration/loadup-components-http</module>
         <module>integration/loadup-components-rpc</module>
         <module>integration/loadup-components-gotone</module>
+        <module>integration/loadup-components-payment-channel</module>
         <!-- reliability -->
         <module>reliability/loadup-components-lock</module>
         <module>reliability/loadup-components-async-result</module>
@@ -46,6 +47,7 @@
         <!-- platform -->
         <module>platform/loadup-components-configcenter</module>
         <module>platform/loadup-components-extension</module>
+        <module>platform/loadup-components-runtime</module>
         <module>platform/loadup-components-observability</module>
         <module>platform/loadup-components-testcontainers</module>
     </modules>

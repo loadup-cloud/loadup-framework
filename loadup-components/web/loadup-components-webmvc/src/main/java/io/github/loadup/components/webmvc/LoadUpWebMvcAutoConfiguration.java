@@ -15,17 +15,14 @@
  */
 package io.github.loadup.components.webmvc;
 
-import io.github.loadup.commons.json.JsonUtil;
 import io.github.loadup.components.observability.ApiResultMetrics;
 import jakarta.servlet.DispatcherType;
-import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.converter.autoconfigure.ServerHttpMessageConvertersCustomizer;
-import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.webmvc.error.ErrorAttributes;
 import org.springframework.boot.webmvc.error.ErrorController;
@@ -86,17 +83,6 @@ public class LoadUpWebMvcAutoConfiguration {
     @Bean
     public ApiPathMatcher loadUpApiPathMatcher() {
         return new ApiPathMatcher();
-    }
-
-    @Bean
-    @Order(1)
-    public JsonMapperBuilderCustomizer loadUpJsonMapperBuilderCustomizer() {
-        return JsonUtil::customize;
-    }
-
-    @Bean
-    public SmartInitializingSingleton loadUpJsonMapperSync(ObjectMapper objectMapper) {
-        return () -> JsonUtil.setObjectMapper(objectMapper);
     }
 
     @Bean

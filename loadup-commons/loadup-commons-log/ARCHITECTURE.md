@@ -4,7 +4,7 @@
 
 `loadup-commons-log` owns the logging contract shared by applications and framework components:
 
-- default `logging.pattern.console` / `logging.pattern.file` for Spring Boot applications;
+- framework logging pattern constants (Spring Boot assembly belongs to runtime);
 - stable MDC keys for `traceId`, `spanId`, and `requestId`;
 - a small `LogContext` utility for framework integrations.
 
@@ -65,3 +65,5 @@ Spring AOP dependency. The Observability component owns advisor registration, St
 commons-log only supplies the marker, LogUtil and existing MDC conventions. Neither arguments nor return values are
 captured by this contract. Spring proxy interception and asynchronous completion semantics are documented in the
 Observability README.
+
+Spring Boot 配置属性、EnvironmentPostProcessor 和自动配置已迁至 `loadup-components-runtime`，仅引入 commons-log 不触发装配。

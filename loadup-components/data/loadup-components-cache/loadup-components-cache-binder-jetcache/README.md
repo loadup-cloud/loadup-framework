@@ -48,3 +48,5 @@ loadup:
   `JetCacheCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/jetcache/autoconfigure/JetCacheCacheAutoConfiguration.java)
     - 启用条件：
       `@ConditionalOnProperty(prefix = "loadup.cache", name = "type", havingValue = CacheBackendType.JETCACHE)`。
+
+Spring 装配使用 `loadup-components-runtime` 提供的应用 JSON mapper / Clock；消费者通过参数注入，不创建默认兜底实例。独立测试需显式提供所需 Bean。

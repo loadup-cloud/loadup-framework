@@ -22,11 +22,13 @@ import io.github.loadup.components.cache.LoadupCacheProperties;
 import io.github.loadup.components.cache.autoconfigure.LoadupCacheAutoConfiguration;
 import io.github.loadup.components.cache.redis.RandomTtlFunction;
 import io.github.loadup.components.cache.redis.autoconfigure.RedisCacheAutoConfiguration;
+import io.github.loadup.components.runtime.json.JsonAutoConfiguration;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.cache.autoconfigure.CacheManagerCustomizer;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
@@ -37,8 +39,11 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 
 class RedisCacheConfigurationTest {
     private final ApplicationContextRunner contexts = new ApplicationContextRunner()
-            .withConfiguration(
-                    AutoConfigurations.of(LoadupCacheAutoConfiguration.class, RedisCacheAutoConfiguration.class))
+            .withConfiguration(AutoConfigurations.of(
+                    JsonAutoConfiguration.class,
+                    JacksonAutoConfiguration.class,
+                    LoadupCacheAutoConfiguration.class,
+                    RedisCacheAutoConfiguration.class))
             .withBean(RedisConnectionFactory.class, () -> mock(RedisConnectionFactory.class))
             .withPropertyValues("loadup.cache.type=redis");
 

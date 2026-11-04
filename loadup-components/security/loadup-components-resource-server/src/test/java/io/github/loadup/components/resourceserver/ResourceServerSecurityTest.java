@@ -28,6 +28,7 @@ import com.nimbusds.jwt.SignedJWT;
 import com.sun.net.httpserver.HttpServer;
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.components.observability.ApiResultMetrics;
+import io.github.loadup.components.runtime.json.JsonAutoConfiguration;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import jakarta.servlet.Filter;
 import jakarta.servlet.http.HttpServletResponse;
@@ -43,6 +44,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -63,7 +65,8 @@ import tools.jackson.databind.json.JsonMapper;
 
 class ResourceServerSecurityTest {
     private final WebApplicationContextRunner runner = new WebApplicationContextRunner()
-            .withConfiguration(AutoConfigurations.of(ResourceServerAutoConfiguration.class))
+            .withConfiguration(AutoConfigurations.of(
+                    JsonAutoConfiguration.class, JacksonAutoConfiguration.class, ResourceServerAutoConfiguration.class))
             .withUserConfiguration(SecuritySupport.class)
             .withPropertyValues(
                     "loadup.security.resource-server.enabled=true",

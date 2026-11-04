@@ -19,8 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import io.github.loadup.commons.time.autoconfigure.ClockAutoConfiguration;
 import io.github.loadup.components.database.id.IdGenerator;
+import io.github.loadup.components.runtime.time.ClockAutoConfiguration;
 import io.github.loadup.modules.file.app.service.FileResourceService;
 import io.github.loadup.modules.transfer.app.autoconfigure.TransferAutoConfiguration;
 import io.github.loadup.modules.transfer.app.config.TransferTaskProperties;

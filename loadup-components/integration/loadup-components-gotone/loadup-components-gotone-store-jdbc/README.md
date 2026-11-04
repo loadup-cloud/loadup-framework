@@ -42,3 +42,5 @@ Mapper 由 APT 生成在 target 中，仅供存储实现使用。
 
 邮件、短信按逐收件人结果记录；Webhook 按整组投递结果记录各提及对象。记录成功表示投递成功，不表示用户已读。损坏的渠道 JSON
 沿用空配置回退，日志只保留异常类型。
+
+Spring 装配使用 `loadup-components-runtime` 提供的应用 JSON mapper / Clock；消费者通过参数注入，不创建默认兜底实例。独立测试需显式提供所需 Bean。

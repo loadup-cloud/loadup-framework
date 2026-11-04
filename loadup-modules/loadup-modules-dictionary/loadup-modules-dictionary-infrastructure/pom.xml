@@ -12,6 +12,10 @@
     <description>JDBC persistence and infrastructure adapters for data dictionaries.</description>
     <properties/>
     <dependencies>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-components-runtime</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

@@ -44,6 +44,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import tools.jackson.databind.json.JsonMapper;
 
 @AutoConfiguration(before = CaptchaAutoConfiguration.class)
 @ConditionalOnClass(TACBuilder.class)
@@ -132,7 +133,7 @@ public class TianaiCaptchaAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public CaptchaProvider tianaiCaptchaProvider(
-            ImageCaptchaApplication application, TianaiCaptchaProperties properties) {
-        return new TianaiCaptchaProvider(application, properties.getDefaultType());
+            ImageCaptchaApplication application, TianaiCaptchaProperties properties, JsonMapper mapper) {
+        return new TianaiCaptchaProvider(application, properties.getDefaultType(), mapper);
     }
 }

@@ -26,6 +26,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-components-runtime</artifactId>
+            <scope>test</scope>
+        </dependency>
         <!-- UPMS Modules -->
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

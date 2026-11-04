@@ -35,6 +35,7 @@ import io.github.loadup.components.cache.jetcache.JetCacheCacheSettings;
 import io.github.loadup.components.cache.jetcache.JetCacheSpringCache;
 import io.github.loadup.components.cache.jetcache.JetCacheSpringCacheManager;
 import io.github.loadup.components.cache.jetcache.autoconfigure.JetCacheCacheAutoConfiguration;
+import io.github.loadup.components.runtime.json.JsonAutoConfiguration;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -44,6 +45,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.cache.Cache.ValueRetrievalException;
 import org.springframework.cache.CacheManager;
@@ -197,8 +199,11 @@ class JetCacheContractTest {
     @Test
     void localAutoConfigurationAppliesPenetrationProtectionPreloadsAndBacksOff() {
         var contexts = new ApplicationContextRunner()
-                .withConfiguration(
-                        AutoConfigurations.of(LoadupCacheAutoConfiguration.class, JetCacheCacheAutoConfiguration.class))
+                .withConfiguration(AutoConfigurations.of(
+                        JsonAutoConfiguration.class,
+                        JacksonAutoConfiguration.class,
+                        LoadupCacheAutoConfiguration.class,
+                        JetCacheCacheAutoConfiguration.class))
                 .withPropertyValues(
                         "loadup.cache.type=jetcache",
                         "loadup.cache.binder.jetcache.penetration-protect=true",

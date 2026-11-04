@@ -50,8 +50,8 @@ public class ServiceAuthAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ServiceAccessTokens.class)
-    ServiceAccessTokens serviceAccessTokens(ServiceAuthProperties properties) {
-        return create(properties, Clock.systemUTC());
+    ServiceAccessTokens serviceAccessTokens(ServiceAuthProperties properties, Clock clock) {
+        return create(properties, clock);
     }
 
     static ServiceAccessTokens create(ServiceAuthProperties properties, Clock clock) {

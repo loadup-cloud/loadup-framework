@@ -16,7 +16,7 @@ commons → components → modules → 消费工程
 | `security`    | 安全与身份 | authorization：方法授权；authserver：OAuth2 令牌签发；resource-server：JWT 校验；captcha：验证码；kms：OpenBao 密钥管理；signature：数字签名及请求验签 |
 | `web`         | Web 接入   | webmvc：JSON 报文和错误处理；springdoc：OpenAPI 与 Scalar                                                                                              |
 | `data`        | 数据与存储 | cache：缓存；database：数据库集成；dfs：文件存储                                                                                                       |
-| `integration` | 外部集成   | http：出站 HTTP；gotone：多渠道通知                                                                                                                    |
+| `integration` | 外部集成   | http：出站 HTTP；gotone：多渠道通知；payment-channel：支付收单渠道 SPI、路由与支付宝/微信协议 binder                       |
 | `reliability` | 可靠性     | async-result：异步业务结果等待与跨实例回传；lock：同步分布式互斥；outbox：可靠事务事件；globalunique：幂等控制；resilience4j：熔断、重试、限流         |
 | `execution`   | 任务与执行 | Scheduler：可切换本地 / PowerJob 唤醒（PowerJob 能力归属 binder）；DelayedTask（reliability）：持久化业务截止任务；pipeline：流水线编排                |
 | `platform`    | 平台基础   | configcenter：配置中心；extension：扩展机制；observability：Micrometer 指标与追踪；testcontainers：测试容器                                            |
@@ -33,8 +33,9 @@ commons → components → modules → 消费工程
 
 ## 组件内部结构
 
-一次选择一个后端的组件使用 API + binder；多个渠道共存的 Gotone 使用 API + engine + 可选 store + binders；只有一个实现的组件采用单
-jar。迁移分类不改变这些内部结构，也不把公共逻辑提升到分类目录。
+一次选择一个后端的组件使用 API + binder；多个渠道共存的 Gotone 和 payment-channel 使用 API + engine/core + binders；
+只有一个实现的组件采用单一 jar。迁移分类不改变这些内部结构，也不把公共逻辑提升到分类目录。payment-channel 的 API 仍按
+支付宝/微信收单语义建模，不宣称厂商无关的通用渠道抽象。
 
 ## 文档与开发工具
 
@@ -68,3 +69,5 @@ MySQL 测试中，拥有 Flyway 清库或持久作业执行器的组件使用 `r
 IT。
 
 目录迁移以 Java 文件内容摘要、artifact/Parent 契约、模块聚合路径、文档映射与链接检查作为静态证据。构建和运行验证由消费工程按项目约定执行，不把静态检查当成编译或测试通过。
+
+`platform/loadup-components-runtime` 承接 Clock、日志、JSON 与容器访问工具的 Spring Boot 装配；commons 保留纯基础能力。

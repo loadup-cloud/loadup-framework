@@ -19,7 +19,6 @@ import cloud.tianai.captcha.application.ImageCaptchaApplication;
 import cloud.tianai.captcha.application.vo.ImageCaptchaVO;
 import cloud.tianai.captcha.common.response.ApiResponse;
 import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
-import io.github.loadup.commons.json.JsonUtil;
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.captcha.CaptchaProvider;
 import io.github.loadup.components.captcha.CaptchaResponse;
@@ -29,10 +28,10 @@ public class TianaiCaptchaProvider implements CaptchaProvider {
 
     private final ImageCaptchaApplication application;
     private final String defaultType;
-    private final JsonMapper objectMapper =
-            JsonUtil.customize(JsonMapper.builder()).build();
+    private final JsonMapper objectMapper;
 
-    public TianaiCaptchaProvider(ImageCaptchaApplication application, String defaultType) {
+    public TianaiCaptchaProvider(ImageCaptchaApplication application, String defaultType, JsonMapper objectMapper) {
+        this.objectMapper = objectMapper;
         this.application = application;
         this.defaultType = defaultType;
     }

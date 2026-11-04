@@ -12,6 +12,10 @@
     <description>JDBC persistence and infrastructure adapters for in-app notifications.</description>
     <properties/>
     <dependencies>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-components-runtime</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
