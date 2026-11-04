@@ -28,7 +28,8 @@ public final class NacosConfigContent {
 
     private static final String YAML = "yaml";
     private static final String YML = "yml";
-    private static final JsonMapper MAPPER = JsonUtil.customize(JsonMapper.builder()).build();
+    private static final JsonMapper MAPPER =
+            JsonUtil.customize(JsonMapper.builder()).build();
 
     private NacosConfigContent() {
         // Utility class

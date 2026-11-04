@@ -46,7 +46,8 @@ public class AsyncResultAutoConfiguration {
         return new DefaultAsyncResultTemplate(
                 provider,
                 properties,
-                mapper.getIfAvailable(() -> JsonUtil.customize(JsonMapper.builder()).build()),
+                mapper.getIfAvailable(
+                        () -> JsonUtil.customize(JsonMapper.builder()).build()),
                 metrics.getIfAvailable());
     }
 }

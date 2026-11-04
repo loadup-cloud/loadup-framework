@@ -19,18 +19,19 @@ import static io.github.loadup.components.gotone.channel.webhook.provider.Webhoo
 import static io.github.loadup.components.gotone.channel.webhook.provider.WebhookSupport.maskUrl;
 import static io.github.loadup.components.gotone.channel.webhook.provider.WebhookSupport.postJson;
 
+import io.github.loadup.commons.json.JsonUtil;
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.gotone.NotificationChannelProvider;
 import io.github.loadup.components.gotone.model.ChannelSendRequest;
 import io.github.loadup.components.gotone.model.ChannelSendResponse;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import io.github.loadup.commons.json.JsonUtil;
 import tools.jackson.databind.json.JsonMapper;
 
 public class DingtalkWebhookProvider implements NotificationChannelProvider {
 
-    private static final JsonMapper JSON = JsonUtil.customize(JsonMapper.builder()).build();
+    private static final JsonMapper JSON =
+            JsonUtil.customize(JsonMapper.builder()).build();
 
     private static ChannelSendResponse success(ChannelSendRequest request) {
         return new ChannelSendResponse(request.content(), 1, 0, Map.of("dingtalk", true), Map.of());

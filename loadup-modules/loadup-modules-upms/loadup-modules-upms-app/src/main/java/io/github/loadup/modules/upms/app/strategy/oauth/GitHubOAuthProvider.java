@@ -16,6 +16,7 @@
 package io.github.loadup.modules.upms.app.strategy.oauth;
 
 import io.github.loadup.commons.error.CommonException;
+import io.github.loadup.commons.json.JsonUtil;
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.modules.upms.app.autoconfigure.UpmsSecurityProperties;
 import io.github.loadup.modules.upms.app.strategy.OAuthProviderCode;
@@ -33,7 +34,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import tools.jackson.databind.JsonNode;
-import io.github.loadup.commons.json.JsonUtil;
 import tools.jackson.databind.json.JsonMapper;
 
 @Component
@@ -45,7 +45,8 @@ public class GitHubOAuthProvider implements OAuthProvider {
     private static final String USER_INFO_URL = "https://api.github.com/user";
     private final UpmsSecurityProperties securityProperties;
     private final RestTemplate restTemplate = new RestTemplate();
-    private final JsonMapper objectMapper = JsonUtil.customize(JsonMapper.builder()).build();
+    private final JsonMapper objectMapper =
+            JsonUtil.customize(JsonMapper.builder()).build();
 
     public GitHubOAuthProvider(UpmsSecurityProperties securityProperties) {
         this.securityProperties = securityProperties;

@@ -38,8 +38,8 @@ import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.JavaType;
 import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.MapperFeature;
+import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.PropertyNamingStrategies;
 import tools.jackson.databind.SerializationFeature;
 import tools.jackson.databind.cfg.DateTimeFeature;
@@ -88,7 +88,8 @@ public class JsonUtil {
      * Apply the framework JSON conventions to a Jackson 3 mapper builder.
      */
     public static JsonMapper.Builder customize(JsonMapper.Builder builder) {
-        SimpleModule javaTimeModule = new SimpleModule();        javaTimeModule.addSerializer(
+        SimpleModule javaTimeModule = new SimpleModule();
+        javaTimeModule.addSerializer(
                 LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT)));
         javaTimeModule.addDeserializer(LocalDate.class, new MultiLocalDateDeserializer());
         javaTimeModule.addSerializer(
