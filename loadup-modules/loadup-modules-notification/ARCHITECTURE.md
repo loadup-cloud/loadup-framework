@@ -93,3 +93,17 @@ array. SuccessResponse serves ordinary success data only; its duplicate paginati
 removed. Empty PageDTO defaults to an empty array and metadata 0/1/20. Existing consumer code referencing removed
 business Page wrappers, DictionaryTypePageQuery, AccountLoginPageQuery or SuccessResponse.ofPage must use the shared
 contracts. No URL or frontend payload-field migration is required.
+
+## 可靠受理与站内信投递
+
+新增 NotificationFacade → NotificationSubmissionService → NotificationSubmissionGateway。
+MapStruct 转换命令为内容快照；规范化后序列化的 SHA-256 摘要用于同 source/requestKey 冲突判定。
+数据库唯一约束加 ON CONFLICT 保证并发去重，禁止捕获唯一键异常后继续使用已失败的 PostgreSQL 事务。
+受理服务将请求、目标、Outbox 写入同一事务；InAppDeliveryHandler 在事务内 FOR UPDATE 锁定目标，
+确认事件类型/版本/关联 ID 后写入站内信并标记完成。重复事件读取终态直接返回；过期目标不创建站内信。
+此处理器仅处理本地数据库，不包含外部网络副作用。
+
+独立的 NotificationSubmissionAutoConfiguration 在 Outbox 和 Notification 装配之后注册服务及处理器，
+支持禁用 notification 或 outbox 后不暴露提交入口。新流程使用 notificationClock。
+Gotone engine/store 由宿主应用选择；当前新受理入口只支持 IN_APP，外部渠道模型和不确定结果恢复后续实现。
+多租户 schema 路由尚未实现，宿主应用需限制单配置租户，不能将 tenant 上下文视为物理隔离已实现。

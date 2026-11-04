@@ -13,11 +13,8 @@
     <description>Dictionary types, entries and lookup management.</description>
     <modules>
         <module>loadup-modules-dictionary-client</module>
-        <module>loadup-modules-dictionary-domain</module>
-        <module>loadup-modules-dictionary-infrastructure</module>
-        <module>loadup-modules-dictionary-app</module>
+        <module>loadup-modules-dictionary-core</module>
         <module>loadup-modules-dictionary-web</module>
-        <module>loadup-modules-dictionary-test</module>
     </modules>
     <properties/>
 </project>

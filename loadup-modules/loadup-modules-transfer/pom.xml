@@ -13,11 +13,8 @@
     <description>Import and export task submission, execution and result tracking.</description>
     <modules>
         <module>loadup-modules-transfer-client</module>
-        <module>loadup-modules-transfer-domain</module>
-        <module>loadup-modules-transfer-infrastructure</module>
-        <module>loadup-modules-transfer-app</module>
+        <module>loadup-modules-transfer-core</module>
         <module>loadup-modules-transfer-web</module>
-        <module>loadup-modules-transfer-test</module>
     </modules>
     <properties/>
 </project>

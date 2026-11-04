@@ -1,0 +1,2 @@
+io.github.loadup.modules.transfer.app.autoconfigure.TransferAutoConfiguration
+io.github.loadup.modules.transfer.infrastructure.autoconfigure.TransferPersistenceAutoConfiguration

@@ -13,11 +13,8 @@
     <description>File metadata, storage references and resource lifecycle management.</description>
     <modules>
         <module>loadup-modules-file-client</module>
-        <module>loadup-modules-file-domain</module>
-        <module>loadup-modules-file-infrastructure</module>
-        <module>loadup-modules-file-app</module>
+        <module>loadup-modules-file-core</module>
         <module>loadup-modules-file-web</module>
-        <module>loadup-modules-file-test</module>
     </modules>
     <properties/>
 </project>

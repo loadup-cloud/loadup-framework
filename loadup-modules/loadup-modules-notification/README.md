@@ -1,6 +1,6 @@
 # In-App Notifications
 
-持久化站内收件箱。业务可直接调用 `InboxService` 投递，也可把它作为 Gotone 的 `IN_APP`
+持久化站内收件箱。业务可直接调用 `InboxFacade` 投递，也可把它作为 Gotone 的 `IN_APP`
 渠道，与邮件、短信等渠道共享发送入口。消息按收件人查询，支持分页、未读计数、已读和归档。租户身份仍可在可信上下文中传递，但当前数据库只使用默认 schema，不提供租户间数据库隔离，详见[数据库 README](../../loadup-components/data/loadup-components-database/README.md)。
 
 ## 引入
@@ -9,19 +9,19 @@
 <dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-modules-notification-app</artifactId></dependency>
 ```
 
-应用需要 MySQL `DataSource`；Flyway 执行 `V20261003000001__create_notification_inbox.sql`。设置
+应用需要 PostgreSQL `DataSource`；Flyway 执行 `V20261003000001__create_notification_inbox.sql`。设置
 `loadup.modules.notification.enabled: false` 可关闭自动装配。需要 API 时另引入 `loadup-modules-notification-web`；需要使用
 Gotone 统一发送入口时引入 `loadup-components-gotone-engine`。
 
 ## 服务 API
 
-`InboxService.publish(tenantId, senderId, recipients, category, title, body, actionUrl, requestKey)` 每次最多投递 100
-个收件人，返回新插入的消息数。`requestKey` 可选；同一租户、收件人和 key 重复投递只保留一条。`actionUrl` 仅接受应用内以 `/`
+`InboxFacade.publish(senderId, recipients, category, title, body, actionUrl, requestKey)` 每次最多投递 100
+个收件人，返回新插入的消息数。`requestKey` 可选；当前 schema 内同一收件人和 key 重复投递只保留一条。`actionUrl` 仅接受应用内以 `/`
 开头的路径。`list`、`unreadCount`、`markRead`、`markAllRead` 和 `archive` 均以收件人 ID 为边界。调用方负责保证收件人属于当前租户。
 
-Gotone `IN_APP` 渠道使用 `NotificationRequest.channels = ["IN_APP"]`，接收者为用户 ID。`templateParams` 提供 `tenantId`、
+Gotone `IN_APP` 渠道使用 `NotificationRequest.channels = ["IN_APP"]`，接收者为用户 ID。`templateParams` 提供
 `title`、`body`、`category`，可选 `senderId`、`actionUrl`、`requestKey`；已配置 Gotone 模板时渲染结果作为消息正文，否则使用
-`body`。业务重试时应复用相同 `requestKey`，以避免重复入站通知。没有 `tenantId` 时按单租户 `__default__` 处理。
+`body`。业务重试时应复用相同 `requestKey`，以避免重复入站通知。租户上下文由部署入口建立，模板参数不能选择数据库 schema。
 
 Web 接口见 [Web 适配](loadup-modules-notification-web/README.md)，设计见 [ARCHITECTURE.md](ARCHITECTURE.md)。
 
@@ -101,3 +101,19 @@ array. SuccessResponse serves ordinary success data only; its duplicate paginati
 removed. Empty PageDTO defaults to an empty array and metadata 0/1/20. Existing consumer code referencing removed
 business Page wrappers, DictionaryTypePageQuery, AccountLoginPageQuery or SuccessResponse.ofPage must use the shared
 contracts. No URL or frontend payload-field migration is required.
+
+## 持久化异步受理（IN_APP）
+
+`NotificationFacade.submit(source, NotificationSubmitCommand)` 在本地事务中保存 notification_request、
+逐收件人 notification_delivery 与 Outbox 事件。`source` 必须由可信入口提供。渠道首期仅 IN_APP，其他渠道明确拒绝。
+同 source/requestKey 和内容返回同一 ID/时间，内容改变返回 NOTIFICATION_REQUEST_CONFLICT。
+收件人按去空格、去重、排序规范化；固定已渲染正文，过期新请求拒绝，已受理重复请求仍可查询原受理结果。
+
+Outbox 后台在同一事务内锁定目标、写站内信、标记 DELIVERED；重放不重复写入。过期目标标记 EXPIRED。
+请求需 JDBC 事务、Outbox、应用 JsonMapper、IdGenerator；app 已声明相应依赖。新增迁移由 infrastructure JAR 提供。
+新入口返回受理成功，不承诺已读。目标尚为 PENDING 时需同时检查其 event_id 对应的 Outbox 是否已耗尽。
+
+可选 web 增加 `/api/internal/v1/notifications/submit`，需要 SERVICE JWT、subject 与 service_id 一致，以及
+`SCOPE_notification:submit:in-app`。source 不从 body 获取；租户安全必须由部署应用验证（Pay notificationcenter 当前只支持配置租户）。
+Gotone 持久化由部署应用按需装配 gotone-store-jdbc，通知业务记录不依赖 Gotone 日志成功与否。
+此批次尚未运行构建、集成测试或真实数据库迁移。

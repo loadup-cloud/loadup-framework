@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-modules-dictionary-app</artifactId>
+            <artifactId>loadup-modules-dictionary-core</artifactId>
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

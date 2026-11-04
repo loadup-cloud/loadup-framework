@@ -302,11 +302,6 @@
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-testify-core</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-testify-data-engine</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
@@ -491,17 +486,7 @@
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-modules-audit-domain</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-modules-audit-infrastructure</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-modules-audit-app</artifactId>
+                <artifactId>loadup-modules-audit-core</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>
@@ -509,29 +494,16 @@
                 <artifactId>loadup-modules-audit-web</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-modules-audit-test</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-modules-dictionary-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-modules-dictionary-domain</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-modules-dictionary-infrastructure</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-modules-dictionary-app</artifactId>
+                <artifactId>loadup-modules-dictionary-core</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>
@@ -539,29 +511,16 @@
                 <artifactId>loadup-modules-dictionary-web</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-modules-dictionary-test</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-modules-file-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-modules-file-domain</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-modules-file-infrastructure</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-modules-file-app</artifactId>
+                <artifactId>loadup-modules-file-core</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>
@@ -569,11 +528,7 @@
                 <artifactId>loadup-modules-file-web</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-modules-file-test</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-modules-notification-client</artifactId>
@@ -609,19 +564,10 @@
                 <artifactId>loadup-modules-transfer-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-modules-transfer-domain</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-modules-transfer-infrastructure</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-modules-transfer-app</artifactId>
+                <artifactId>loadup-modules-transfer-core</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>
@@ -629,11 +575,7 @@
                 <artifactId>loadup-modules-transfer-web</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-modules-transfer-test</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-modules</artifactId>
@@ -1076,16 +1018,6 @@
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-resilience4j</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-resilience4j-api</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-resilience4j-binder-core</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <!-- ========== loadup-components-configcenter start ==========-->

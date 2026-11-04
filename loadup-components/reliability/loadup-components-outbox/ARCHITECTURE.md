@@ -12,7 +12,7 @@
 | OutboxHandler                  | 按事件类型执行业务工作             |
 | OutboxDispatcher               | 处理器选择、异常归类、上下文与观测 |
 | OutboxWorker                   | 专属单线程轮询与应用生命周期       |
-| OutboxInbox                    | 本地消费去重与业务事务绑定         |
+| IdempotentEventConsumer        | 本地消费去重与业务事务绑定         |
 
 ## 事务边界
 

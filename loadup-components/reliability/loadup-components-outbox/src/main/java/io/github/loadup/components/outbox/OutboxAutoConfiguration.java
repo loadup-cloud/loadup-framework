@@ -47,8 +47,8 @@ public class OutboxAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public OutboxInbox outboxInbox(DataSource source, PlatformTransactionManager manager) {
-        return new OutboxInbox(source, manager);
+    public IdempotentEventConsumer idempotentEventConsumer(DataSource source, PlatformTransactionManager manager) {
+        return new IdempotentEventConsumer(source, manager);
     }
 
     @Bean

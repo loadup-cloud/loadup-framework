@@ -19,7 +19,7 @@
 
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-modules-audit-app</artifactId>
+            <artifactId>loadup-modules-audit-core</artifactId>
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

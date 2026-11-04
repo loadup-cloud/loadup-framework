@@ -1,0 +1,2 @@
+io.github.loadup.modules.file.app.autoconfigure.FileResourceAutoConfiguration
+io.github.loadup.modules.file.infrastructure.autoconfigure.FilePersistenceAutoConfiguration

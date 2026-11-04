@@ -86,7 +86,7 @@ public class OrderCreatedHandler implements OutboxHandler {
 inbox.consume("order-view", event, () -> projectionGateway.apply(event));
 ```
 
-`OutboxInbox` 的去重标识与回调数据库操作必须使用相同数据源和事务。回调异常标记事务回滚，下次可重试；重复事件返回 `false`
+`IdempotentEventConsumer` 的去重标识与回调数据库操作必须使用相同数据源和事务。回调异常标记事务回滚，下次可重试；重复事件返回 `false`
 。不可将外部 HTTP、邮件等副作用放入此回调并据此宣称恰好一次。
 
 ## 查询与重放

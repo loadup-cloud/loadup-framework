@@ -95,7 +95,7 @@ class OutboxConfigurationTest {
                 .withPropertyValues("loadup.outbox.enabled=false")
                 .run(context -> {
                     assertThat(context).doesNotHaveBean(OutboxDispatcher.class);
-                    assertThat(context).doesNotHaveBean(OutboxInbox.class);
+                    assertThat(context).doesNotHaveBean(IdempotentEventConsumer.class);
                 });
     }
 
@@ -106,7 +106,9 @@ class OutboxConfigurationTest {
                 .withBean(PlatformTransactionManager.class, () -> new DataSourceTransactionManager(source))
                 .run(context -> {
                     assertThat(context).hasSingleBean(JdbcOutboxRepository.class);
-                    assertThat(context).hasSingleBean(OutboxInbox.class);
+                    assertThat(context).hasSingleBean(IdempotentEventConsumer.class);
+                    assertThat(context.getBean("idempotentEventConsumer"))
+                            .isSameAs(context.getBean(IdempotentEventConsumer.class));
                     assertThat(context).hasSingleBean(OutboxDispatcher.class);
                     OutboxWorker worker = context.getBean(OutboxWorker.class);
                     assertThat(worker.isAutoStartup()).isFalse();

@@ -13,11 +13,8 @@
     <description>Audit event capture, storage and administrator queries.</description>
     <modules>
         <module>loadup-modules-audit-client</module>
-        <module>loadup-modules-audit-domain</module>
-        <module>loadup-modules-audit-infrastructure</module>
-        <module>loadup-modules-audit-app</module>
+        <module>loadup-modules-audit-core</module>
         <module>loadup-modules-audit-web</module>
-        <module>loadup-modules-audit-test</module>
     </modules>
     <properties/>
 </project>

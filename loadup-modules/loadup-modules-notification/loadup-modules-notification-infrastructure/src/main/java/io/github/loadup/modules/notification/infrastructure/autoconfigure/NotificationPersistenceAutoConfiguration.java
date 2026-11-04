@@ -17,9 +17,11 @@ package io.github.loadup.modules.notification.infrastructure.autoconfigure;
 
 import io.github.loadup.components.database.id.IdGenerator;
 import io.github.loadup.modules.notification.domain.gateway.InboxGateway;
+import io.github.loadup.modules.notification.domain.gateway.NotificationSubmissionGateway;
 import io.github.loadup.modules.notification.infrastructure.converter.NotificationStorageConverter;
 import io.github.loadup.modules.notification.infrastructure.converter.NotificationStorageConverterImpl;
 import io.github.loadup.modules.notification.infrastructure.repository.InboxGatewayImpl;
+import io.github.loadup.modules.notification.infrastructure.repository.JdbcNotificationSubmissionGateway;
 import java.time.Clock;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.ObjectProvider;
@@ -45,6 +47,11 @@ import org.springframework.jdbc.core.simple.JdbcClient;
         havingValue = "true",
         matchIfMissing = true)
 public class NotificationPersistenceAutoConfiguration {
+    @Bean
+    @ConditionalOnMissingBean(NotificationSubmissionGateway.class)
+    public NotificationSubmissionGateway notificationSubmissionGateway(DataSource dataSource) {
+        return new JdbcNotificationSubmissionGateway(JdbcClient.create(dataSource));
+    }
 
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnMissingBean(InboxGateway.class)

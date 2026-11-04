@@ -26,7 +26,7 @@
         <!-- Resilience4j facade + default in-memory binder for per-provider circuit breaker / retry -->
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-resilience4j-binder-core</artifactId>
+            <artifactId>loadup-components-resilience4j</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

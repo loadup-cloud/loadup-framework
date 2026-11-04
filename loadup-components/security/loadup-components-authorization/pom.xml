@@ -12,17 +12,7 @@
     <artifactId>loadup-components-authorization</artifactId>
     <name>LoadUp Components Authorization</name>
     <description>Spring Security method authorization and access decision integration.</description>
-    <properties>
-        <loadup.coverage.skip>false</loadup.coverage.skip>
-        <java.version>25</java.version>
-        <project.encoding>UTF-8</project.encoding>
-        <maven.compiler.source>${java.version}</maven.compiler.source>
-        <maven.compiler.target>${java.version}</maven.compiler.target>
-        <maven.compiler.release>${java.version}</maven.compiler.release>
-        <project.build.encoding>${project.encoding}</project.build.encoding>
-        <project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>${project.encoding}</project.reporting.outputEncoding>
-    </properties>
+
     <dependencies>
         <!-- Spring Security standard facade -->
         <dependency>

@@ -8,7 +8,7 @@
 ```xml
 <dependency>
     <groupId>io.github.loadup-cloud</groupId>
-    <artifactId>loadup-components-resilience4j-binder-core</artifactId>
+    <artifactId>loadup-components-resilience4j</artifactId>
 </dependency>
 ```
 

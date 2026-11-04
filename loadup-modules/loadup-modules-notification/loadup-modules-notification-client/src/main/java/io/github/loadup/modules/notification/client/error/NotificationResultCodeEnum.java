@@ -19,6 +19,12 @@ import io.github.loadup.commons.enums.ResultStatusEnum;
 import io.github.loadup.commons.result.ResultCode;
 
 public enum NotificationResultCodeEnum implements ResultCode {
+    SERVICE_IDENTITY_REQUIRED("NOTIFICATION_SERVICE_IDENTITY_REQUIRED", "Verified service identity is required"),
+    INVALID_SUBMISSION("NOTIFICATION_INVALID_SUBMISSION", "Invalid notification submission"),
+    UNSUPPORTED_CHANNEL("NOTIFICATION_UNSUPPORTED_CHANNEL", "Notification channel is not supported"),
+    REQUEST_CONFLICT("NOTIFICATION_REQUEST_CONFLICT", "Idempotency key was used for different content"),
+    NOTIFICATION_EXPIRED("NOTIFICATION_EXPIRED", "Notification has expired"),
+    INVALID_DELIVERY_EVENT("NOTIFICATION_INVALID_DELIVERY_EVENT", "Invalid notification delivery event"),
     INVALID_PAGE("NOTIFICATION_INVALID_PAGE", "Page must be positive and size must be between 1 and 100"),
     RECIPIENTS_MUST_CONTAIN_1_TO_100_USERS(
             "NOTIFICATION_RECIPIENTS_MUST_CONTAIN_1_TO_100_USERS", "recipients must contain 1 to 100 users"),

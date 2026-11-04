@@ -9,12 +9,38 @@
     </parent>
 
     <artifactId>loadup-components-resilience4j</artifactId>
-    <packaging>pom</packaging>
     <name>LoadUp Components Resilience4j</name>
-    <description>Resilience4j integration for application fault tolerance.</description>
+    <description>Resilience4j integration, Spring AOP advice and Micrometer metrics.</description>
 
-    <modules>
-        <module>loadup-components-resilience4j-api</module>
-        <module>loadup-components-resilience4j-binder-core</module>
-    </modules>
+    <dependencies>
+        <!-- Spring 6 integration: aspects + common configuration properties (no Boot 3 starter) -->
+        <dependency>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-spring6</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-micrometer</artifactId>
+        </dependency>
+        <!-- Spring Boot 4 renamed spring-boot-starter-aop to spring-boot-starter-aspectj -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aspectj</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
 </project>

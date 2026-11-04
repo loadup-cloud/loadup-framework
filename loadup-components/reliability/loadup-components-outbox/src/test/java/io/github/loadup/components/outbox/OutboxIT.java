@@ -56,7 +56,7 @@ import tools.jackson.databind.json.JsonMapper;
 @EnableTestContainers(value = ContainerType.POSTGRESQL, reuse = false)
 class OutboxIT {
     private final JdbcOutboxRepository repository;
-    private final OutboxInbox inbox;
+    private final IdempotentEventConsumer inbox;
     private final OutboxProperties properties;
     private final JdbcTemplate jdbc;
     private final TransactionTemplate transactions;
@@ -64,7 +64,7 @@ class OutboxIT {
     @Autowired
     OutboxIT(
             JdbcOutboxRepository repository,
-            OutboxInbox inbox,
+            IdempotentEventConsumer inbox,
             OutboxProperties properties,
             DataSource source,
             PlatformTransactionManager manager) {
