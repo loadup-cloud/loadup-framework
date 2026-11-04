@@ -30,4 +30,12 @@ loadup-components-authserver
 
 聚合层只表达模块组合和依赖方向，实际能力由选定的子模块提供。
 
+API 与 SAS binder 保持独立发布，不因当前只有一个 binder 而合并：
+
+- `loadup-modules-upms-authserver` 只消费 `authserver-api` 的 `LoadUpAuthServerProperties` 与 `LoadUpSubject`。
+- SAS binder 通过 `AutoConfiguration.imports` 注册自动配置，并创建依赖 `KmsTemplate` 的 JwtEncoder/JwtDecoder。
+- 若合并，只用认证契约的消费方会传递引入嵌入式 Authorization Server 自动配置和 KMS 依赖，servlet 应用可能因此装配失败或意外暴露 OAuth2 端点。
+
+只有出现明确的“契约与实现不可分离”消费场景时，再评估合并。
+
 集成方式与配置示例见 [README.md](README.md)。

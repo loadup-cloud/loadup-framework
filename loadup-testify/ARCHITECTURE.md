@@ -9,17 +9,13 @@ Testify 是测试依赖，减少测试中的数据准备和断言重复。JUnit 
 
 ```mermaid
 flowchart LR
-  D[data-engine] --> C[core]
-  A[assert-engine] --> D
-  A --> C
+  A[assert-engine（变量引擎 + 断言引擎）] --> C[commons-json]
   S[spring-boot-starter] --> A
-  S --> D
-  S --> C
   T[test 示例工程] --> S
 ```
 
-箭头表示依赖，聚合 POM 本身没有执行逻辑。Core 的实际职责是测试专用 JsonUtil；data-engine 负责值解析；assert-engine 负责比较和
-diff；starter 提供 Spring 装配、案例加载及便捷 JDBC API。Testcontainers 是独立组件，不是 Testify 内置后端。
+箭头表示依赖，聚合 POM 本身没有执行逻辑。assert-engine 负责变量解析、响应/数据库/异常比较和 diff；starter 提供 Spring
+装配、案例加载及便捷 JDBC API。变量解析复用 loadup-commons-json 的 JsonUtil。Testcontainers 是独立组件，不是 Testify 内置后端。
 
 ## 调用路径
 

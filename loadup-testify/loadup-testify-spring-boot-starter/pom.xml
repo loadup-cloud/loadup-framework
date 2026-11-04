@@ -23,10 +23,6 @@
 
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-testify-data-engine</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-testify-assert-engine</artifactId>
         </dependency>
         <dependency>

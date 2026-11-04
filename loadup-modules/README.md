@@ -1,15 +1,13 @@
 # LoadUp Modules
 
-可按需消费的业务能力，每个业务目录是 COLA 聚合 POM。通过 `loadup-dependencies` BOM 管理版本，消费工程引入具体 `*-app` 或
-`*-web` jar。
+可按需消费的业务能力，每个业务目录是聚合 POM。通过 `loadup-dependencies` BOM 管理版本，消费工程引入具体 `*-core`、`*-app`
+或 `*-web` jar。
 
 ## 业务目录
 
 | 模块                                                  | 能力                                    |
 |-------------------------------------------------------|-----------------------------------------|
 | [UPMS](loadup-modules-upms/README.md)                 | 用户、RBAC/ABAC、账号安全及可选认证适配 |
-| [Merchant](loadup-modules-merchant/README.md)         | 商户基本资料与可选合约事实适配          |
-| [Contract](loadup-modules-contract/README.md)         | 产品、组合、销售方案与商户合约          |
 | [Audit](loadup-modules-audit/README.md)               | 审计记录、查询与可选 MVC 采集           |
 | [Dictionary](loadup-modules-dictionary/README.md)     | 字典类型、条目及启用选项                |
 | [File](loadup-modules-file/README.md)                 | 文件元数据、访问控制、引用与清理        |
@@ -18,14 +16,14 @@
 
 ## 分层选择
 
-每个业务目录统一包含 `client / domain / infrastructure / app / web / test` 子模块。UPMS 的 authserver、Merchant 的
-contract 适配也位于所属业务目录。web 是可选接口适配层，不在 modules 下单列为业务模块。
+小型业务目录默认包含 `client / core / web` 子模块：`core` 内部保留 `domain / app / infrastructure` 包边界。UPMS 因独立
+authserver 集成保留完整 `client / domain / infrastructure / app / web / test` 分层。web 是可选接口适配层，不在 modules 下单列为业务模块。
 
 - 仅共享协议：引入 `*-client`。
-- 程序化使用用例：引入 `*-app`，自动带入默认持久化适配。
-- 提供 HTTP 接口：引入同一业务目录下的 `*-web`，自动带入 app。
+- 程序化使用用例：引入 `*-core`（UPMS 为 `*-app`），自动带入默认持久化适配。
+- 提供 HTTP 接口：引入同一业务目录下的 `*-web`，自动带入 core。
 - 扩展持久化：依赖 domain Gateway，实现并注册接口 Bean。
-- test 只用于验证，不引入生产工程。
+- 独立测试模块只用于验证，不引入生产工程；默认测试跟随 core。
 
 ## 配置命名空间
 

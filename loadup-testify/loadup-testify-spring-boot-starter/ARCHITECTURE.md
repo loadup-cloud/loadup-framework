@@ -2,7 +2,7 @@
 
 ## 所有权
 
-Starter 负责 Spring 集成与易用入口，依赖 core、data-engine 和 assert-engine。依赖 spring-boot-starter-jdbc 与 Jackson
+Starter 负责 Spring 集成与易用入口，依赖 assert-engine（其中包含变量引擎）。依赖 spring-boot-starter-jdbc 与 Jackson
 YAML；消费工程自行提供 Spring Boot Test、JUnit、容器和数据源配置。
 
 ## 装配顺序

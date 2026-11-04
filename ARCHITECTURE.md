@@ -32,8 +32,11 @@ types. Module-specific extension points and configuration are documented in that
 
 ## Persistence and tenant boundary
 
-Business modules use COLA-style client, domain, infrastructure, app, and optional web layers.
-Persistence models and mappers belong in infrastructure; domain objects remain free of Spring
+Small business modules publish `client`, `core`, and optional `web` artifacts; `core` keeps the
+`domain`, `app`, and `infrastructure` package boundaries in one JAR. Modules that need independent
+layer publication or separate application integration (UPMS authserver) keep the full
+client/domain/infrastructure/app/web/test split. Persistence models and mappers belong in
+infrastructure; domain objects remain free of Spring
 and ORM annotations. The database component uses MyBatis-Flex generated mappers for simple
 queries and logical deletion, with explicit `JdbcClient` SQL for complex filters, locking, and
 bulk operations.

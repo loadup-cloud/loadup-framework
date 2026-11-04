@@ -75,7 +75,7 @@ loadup-framework/
 │   ├── reliability/    # lock, outbox, delayedtask, globalunique, resilience4j
 │   ├── execution/      # scheduler, pipeline
 │   └── platform/       # configcenter, extension, observability, testcontainers
-├── loadup-modules/             # 通用业务聚合，各自包含 COLA 分层与可选 web 子模块
+├── loadup-modules/             # 通用业务聚合；小型模块采用 client/core/web，UPMS 保留完整 COLA 分层
 │   ├── loadup-modules-upms/    # 用户与权限管理、账号安全
 │   ├── loadup-modules-audit/   # 审计中心
 │   ├── loadup-modules-dictionary/ # 数据字典
@@ -164,19 +164,32 @@ loadup-components-{name}/
 
 ---
 
-## 业务模块内部分层（COLA 4.0）
+## 业务模块内部分层
+
+模块边界按真实消费方式划分，不把代码分层直接变成 Maven 模块边界。
+
+### 默认：client + core + web
 
 ```
 loadup-modules-{mod}/
 ├── {mod}-client/          # Facade、DTO、Command、Query、消费方 SPI
-├── {mod}-domain/          # 纯 POJO + Gateway 接口 + 枚举（零 Spring 注解）
-├── {mod}-infrastructure/  # DO extends BaseDO、Mapper、GatewayImpl、Converter
-├── {mod}-app/             # @Service 业务编排、AutoConfiguration
-├── {mod}-web/             # 可选 Controller 适配；按 Maven 依赖装配
-└── {mod}-test/            # 集成测试 + 单元测试（parent = 根 loadup-parent）
+├── {mod}-core/            # domain + app + infrastructure 包，同一发布单元
+└── {mod}-web/             # 可选 Controller 适配；按 Maven 依赖装配
 ```
 
-**domain 层铁律**：无 `@Table`、无 `@Service`、无任何 Spring / ORM 注解。
+- `core` 内保留 `domain / app / infrastructure` 包边界和依赖方向；合并 Maven 模块不等于取消职责分层。
+- 普通单元测试与集成测试跟随 `core`（`src/test`）；仅当集成测试需要独立装配或独立依赖集时才保留 `*-test` 模块。
+- `core` 可直接被其他模块程序化消费；不要只提供可执行应用包。
+
+### 保留完整 COLA 分层
+
+业务确需独立发布各层、不同消费方只引入部分层，或存在独立应用集成（如 UPMS 的 authserver）时，保留：
+
+```
+{mod}-client / {mod}-domain / {mod}-infrastructure / {mod}-app / {mod}-web / {mod}-test
+```
+
+**domain 层铁律**：无 `@Table`、无 `@Service`、无任何 Spring / ORM 注解。该规则同时适用于 `core` 内的 `domain` 包。
 
 ---
 
@@ -237,8 +250,7 @@ Commons、Components、Modules、Testify，例如 `LoadUp Commons JSON`、`LoadU
 保持大写，JetCache、JobRunr、ConfigCenter、AuthServer、RetryTask、GlobalUnique、WebMVC、SpringDoc、Testcontainers、Resilience4j、NanoCaptcha
 保持约定拼写。根项目、应用、BOM 分别使用 `LoadUp Framework`、`LoadUp Application`、`LoadUp Dependencies`；Gotone channels 聚合为
 `LoadUp Components Gotone Channels`。详细用途写入 description，名称保持空格分隔的统一结构。 每个 POM 均显式声明简短英文
-`<description>`，说明实际职责；client/domain/app/infrastructure/web/test 分别描述公开契约、领域模型、业务编排、持久化适配、HTTP
-入口和测试范围，未实现的传输能力如实标明状态。
+`<description>`，说明实际职责；client/core/web（或保留完整分层模块的 domain/app/infrastructure/test）分别描述公开契约、领域与用例实现、HTTP 入口和测试范围，未实现的传输能力如实标明状态。
 
 | 类型              | 规则                                     | 示例                             |
 |-------------------|------------------------------------------|----------------------------------|
@@ -342,7 +354,7 @@ multipart，下载可以返回流式二进制。`loadup-components-webmvc` 对 A
 
 - 集成测试类名 `*IT.java`，单元测试类名 `*Test.java`
 - 集成测试用 Testify + Testcontainers（`@EnableTestContainers(ContainerType.MYSQL)`）
-- 测试模块 `*-test/` 的 parent 指向根 `loadup-parent`，不是模块聚合 pom
+- 测试默认跟随业务 `core` 的 `src/test`；保留独立测试模块时，`*-test/` 的 parent 指向根 `loadup-parent`，不是模块聚合 pom
 - 测试模块必须有 3 个 yml 文件：`application.yml`（激活 test profile）、`application-test.yml`（本地）、`application-ci.yml`
   （CI）
 

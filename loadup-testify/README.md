@@ -230,7 +230,7 @@ name/id、input/params、expect/expected。对象绑定可用 Testify `JsonUtil.
 context，测试代码应主动校验必要变量。案例文件应来自可信测试资源，SpEL 不是不可信输入的沙箱。
 
 自定义函数实现 `TestifyFunction`，然后提供一个替代 `VariableEngine` Bean，显式包含内置 time/fn 与自定义函数。仅声明函数
-Bean 不会被默认自动配置收集；完整示例见 [数据引擎 README](loadup-testify-data-engine/README.md)。
+Bean 不会被默认自动配置收集；完整示例见 [断言引擎 README](loadup-testify-assert-engine/README.md#变量引擎)。
 
 ## 执行与排错
 
@@ -262,8 +262,6 @@ mvnd clean test -pl loadup-testify/loadup-testify-test -am \
 
 ## 子模块文档
 
-- [Core 接入](loadup-testify-core/README.md) / [设计](loadup-testify-core/ARCHITECTURE.md)
-- [数据引擎接入](loadup-testify-data-engine/README.md) / [设计](loadup-testify-data-engine/ARCHITECTURE.md)
-- [断言引擎接入](loadup-testify-assert-engine/README.md) / [设计](loadup-testify-assert-engine/ARCHITECTURE.md)
+- [断言引擎接入](loadup-testify-assert-engine/README.md) / [设计](loadup-testify-assert-engine/ARCHITECTURE.md)（含变量引擎与内置函数）
 - [Starter 接入](loadup-testify-spring-boot-starter/README.md) / [设计](loadup-testify-spring-boot-starter/ARCHITECTURE.md)
 - [测试示例](loadup-testify-test/README.md) / [设计](loadup-testify-test/ARCHITECTURE.md)

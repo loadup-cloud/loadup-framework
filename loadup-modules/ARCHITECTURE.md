@@ -1,52 +1,64 @@
 # 业务模块架构
 
-业务能力位于 `commons → components → modules → 消费工程` 的第三层。modules 只按业务领域组织聚合目录，各领域内部统一 COLA
-分层。
+业务能力位于 `commons → components → modules → 消费工程` 的第三层。modules 只按业务领域组织聚合目录，模块边界按真实消费方式划分，
+不把代码分层直接变成 Maven 模块边界。
+
+默认小型业务（audit、dictionary、file、notification、transfer）：
 
 ```text
 loadup-modules/
   loadup-modules-{business}/
     loadup-modules-{business}-client
-    loadup-modules-{business}-domain
-    loadup-modules-{business}-infrastructure
-    loadup-modules-{business}-app
+    loadup-modules-{business}-core        # 同一 JAR 内保留 domain / app / infrastructure 包
     loadup-modules-{business}-web
-    loadup-modules-{business}-test
 ```
 
-## 层与依赖
+UPMS 因独立 authserver 集成保留完整分层：
 
-| 层             | 职责                                    | 依赖边界                                    |
-|----------------|-----------------------------------------|---------------------------------------------|
-| client         | Facade、Command、Query、DTO、消费方 SPI | 不依赖应用、HTTP 或持久化                   |
-| domain         | 纯 Java 领域模型、规则、Gateway         | 不依赖 Spring、ORM、client DTO              |
-| infrastructure | 持久化/外部系统适配、迁移               | 实现 domain Gateway                         |
-| app            | 用例、事务、应用装配、MapStruct         | 依赖 client/domain，组合默认 infrastructure |
-| web            | Controller、可信请求上下文与授权        | 依赖 app/client，复用全局 WebMVC            |
-| test           | 单测和集成验证源码                      | 仅 test scope 使用运行模块                  |
+```text
+  loadup-modules-upms/
+    loadup-modules-upms-client
+    loadup-modules-upms-domain
+    loadup-modules-upms-infrastructure
+    loadup-modules-upms-app
+    loadup-modules-upms-web
+    loadup-modules-upms-test
+```
+
+## 包与依赖
+
+| 包 / 模块         | 职责                                    | 依赖边界                                    |
+|-------------------|-----------------------------------------|---------------------------------------------|
+| client            | Facade、Command、Query、DTO、消费方 SPI | 不依赖应用、HTTP 或持久化                   |
+| core.domain       | 纯 Java 领域模型、规则、Gateway         | 不依赖 Spring、ORM、client DTO              |
+| core.infrastructure | 持久化/外部系统适配、迁移             | 实现 domain Gateway                         |
+| core.app          | 用例、事务、应用装配、MapStruct         | 依赖 client/domain，组合默认 infrastructure |
+| web               | Controller、可信请求上下文与授权        | 依赖 core/client，复用全局 WebMVC           |
+| test（可选）      | 独立装配的单测和集成验证源码            | 仅 test scope 使用运行模块                  |
 
 Transfer client 自有公共枚举，domain 保留领域枚举，应用层通过 MapStruct/名称映射转换；domain 不依赖 client。UPMS 保留所属
-authserver 适配，Merchant 保留所属 contract 适配。
+authserver 适配。
 
 应用服务依赖 Gateway 接口，公开返回 client DTO；HTTP 层使用可见字段投影，文件 storageId 与通知接收者等内部信息不暴露。MapStruct
 统一使用 LoadUpMapStructConfig 和 Spring 注入。
 
 ## 装配与配置
 
-业务模块的默认 Spring Data JDBC / Spring JDBC Gateway 与 Flyway 脚本归 infrastructure；持久化自动配置创建端口适配。app
-在其之后按 Gateway 和所需组件条件创建用例服务。消费者可替换 Gateway Bean。
+业务模块的默认 Spring Data JDBC / Spring JDBC Gateway 与 Flyway 脚本归 core 的 `infrastructure` 包；持久化自动配置创建端口适配。
+app 在其之后按 Gateway 和所需组件条件创建用例服务。消费者可替换 Gateway Bean。
 
 配置为 `loadup.modules.<business>.*`，Web 按 `*-web` Maven 依赖装配，无额外 enabled 开关；全局安全协议由技术组件的
 `loadup.security.*` 管理。配置的 enabled 开关控制 Bean，不作为 Flyway 跳过脚本机制。用户需迁移旧前缀，无兼容别名。
 
 ## 跨业务边界
 
-Transfer app 显式复用 File app 的权限、业务引用和 DFS 生命周期。UPMS web 的敏感查询审计通过 Audit client Facade记录。Merchant
-通过可选 merchant-contract 适配和公开 MerchantQueryFacade 向 Contract 提供资料事实，两个核心模块不互相依赖。
+Transfer core 显式复用 File core 的权限、业务引用和 DFS 生命周期。UPMS web 的敏感查询审计通过 Audit client Facade记录。
+商户与合约事实已迁移到 Pay 的 productcenter，框架不再提供 merchant/contract 业务模块。
 
 ## 本次调整范围
 
-原顶层 audit/dictionary/file/notification/transfer 与各自 sibling web 已归入业务聚合目录，实际拆分协议、领域端口、持久化及用例。保留路由、JSON
-字段、数据库历史脚本与事务语义。各模块 README 说明其定向验证范围；未执行的回归仍须单独记录，不能视作通过。
+原顶层 audit/dictionary/file/notification/transfer 与各自 sibling web 已归入业务聚合目录。小型业务把 domain/app/infrastructure
+合并为可复用的 `core` JAR，同时保留包边界；UPMS 保留完整分层。保留路由、JSON 字段、数据库历史脚本与事务语义。各模块 README
+说明其定向验证范围；未执行的回归仍须单独记录，不能视作通过。
 
 接入见 [README.md](README.md)，各领域的业务与一致性细节见所属 ARCHITECTURE。

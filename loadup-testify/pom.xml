@@ -15,7 +15,6 @@
 
     <modules>
         <module>loadup-testify-assert-engine</module>
-        <module>loadup-testify-data-engine</module>
         <module>loadup-testify-spring-boot-starter</module>
         <module>loadup-testify-test</module>
     </modules>

@@ -7,11 +7,11 @@
 ## 引入
 
 ```xml
-<dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-modules-transfer-app</artifactId></dependency>
+<dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-modules-transfer-core</artifactId></dependency>
 <dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-components-dfs-binder-local</artifactId></dependency>
 ```
 
-模块依赖 `loadup-modules-file-app`、Scheduler API 和 PostgreSQL `DataSource`；Flyway 执行
+模块依赖 `loadup-modules-file-core`、Scheduler API 和 PostgreSQL `DataSource`；Flyway 执行
 `V20261003000002__create_transfer_task.sql`。导入源文件应先由文件资源模块上传。`loadup.modules.transfer.enabled: false`
 可关闭自动装配；HTTP 端点由 `loadup-modules-transfer-web` 单独提供。多节点部署须配置共享 DFS binder，并选择一个 Scheduler
 binder；本地 @Scheduled 不需要独立 Server。
@@ -48,18 +48,15 @@ MVC 注解不会处理 CSV、Excel 或文件下载。业务 handler 生成文件
 首版没有通用明文导出开关。若业务确需明文，必须在提交和后台执行时校验租户、授权范围及有效用户状态，并可靠审计；不要把请求中的管理员标记或
 ThreadLocal 传播到任务来绕过校验。
 
-## COLA 模块选择
+## 模块选择
 
 本目录的 Maven 坐标 `loadup-modules-transfer` 为聚合 POM。业务接入选择具体 jar，版本由根 BOM 管理：
 
-| 子模块                                                               | 用途                                              |
-|----------------------------------------------------------------------|---------------------------------------------------|
-| [`client`](loadup-modules-transfer-client/README.md)                 | 对外 DTO、请求契约；不依赖 Spring 或持久化实现    |
-| [`domain`](loadup-modules-transfer-domain/README.md)                 | 纯 Java 领域模型、分页值与 Gateway 接口           |
-| [`infrastructure`](loadup-modules-transfer-infrastructure/README.md) | 默认 Spring JDBC Gateway、Flyway 迁移与持久化装配 |
-| [`app`](loadup-modules-transfer-app/README.md)                       | 用例服务、DTO 映射与应用装配；程序化接入入口      |
-| [`web`](loadup-modules-transfer-web/README.md)                       | 可选 Spring MVC 适配；自动引入 app                |
-| [`test`](loadup-modules-transfer-test/README.md)                     | 自动装配回归源码，不作为生产依赖                  |
+| 子模块 | 用途 |
+| --- | --- |
+| [`client`](loadup-modules-transfer-client/README.md) | 对外 DTO、请求契约；不依赖 Spring 或持久化实现 |
+| [`core`](loadup-modules-transfer-core/README.md) | 领域模型、用例服务、DTO 映射、默认 Spring JDBC Gateway 与 Flyway 迁移；程序化接入入口 |
+| [`web`](loadup-modules-transfer-web/README.md) | 可选 Spring MVC 适配；自动引入 core |
 
 `TransferTaskService` 现在位于 `io.github.loadup.modules.transfer.app.service`；公开结果位于
 `io.github.loadup.modules.transfer.client.dto`。领域 Gateway 不引用客户端 DTO，也不引用数据库或 Spring API。HTTP
@@ -76,7 +73,7 @@ loadup:
         enabled: true
 ```
 
-仅引入 app 时不注册 Controller；通过是否引入 web 依赖选择 HTTP 暴露，关闭模块 enabled 开关同时停止默认应用与持久化 Bean
+仅引入 core 时不注册 Controller；通过是否引入 web 依赖选择 HTTP 暴露，关闭模块 enabled 开关同时停止默认应用与持久化 Bean
 装配。配置开关不控制 Flyway 对已在 classpath 上的脚本执行。不要在已有数据库重复复制迁移脚本。
 
 ## 调度配置

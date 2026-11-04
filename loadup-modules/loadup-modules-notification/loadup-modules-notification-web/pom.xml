@@ -22,7 +22,7 @@
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-modules-notification-app</artifactId>
+            <artifactId>loadup-modules-notification-core</artifactId>
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

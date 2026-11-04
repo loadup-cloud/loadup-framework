@@ -13,11 +13,8 @@
     <description>User inbox notifications, read status and message publishing.</description>
     <modules>
         <module>loadup-modules-notification-client</module>
-        <module>loadup-modules-notification-domain</module>
-        <module>loadup-modules-notification-infrastructure</module>
-        <module>loadup-modules-notification-app</module>
+        <module>loadup-modules-notification-core</module>
         <module>loadup-modules-notification-web</module>
-        <module>loadup-modules-notification-test</module>
     </modules>
     <properties/>
 </project>

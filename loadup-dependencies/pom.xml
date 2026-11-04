@@ -300,11 +300,6 @@
                 <artifactId>loadup-testify-assert-engine</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-testify-data-engine</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
 
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
@@ -536,28 +531,13 @@
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-modules-notification-domain</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-modules-notification-infrastructure</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-modules-notification-app</artifactId>
+                <artifactId>loadup-modules-notification-core</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-modules-notification-web</artifactId>
                 <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-modules-notification-test</artifactId>
-                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
