@@ -162,6 +162,13 @@ loadup-components-{name}/
 
 **判断标准**：如果一个组件有多于一种后端实现 → Mode A（单后端）或 Mode B（多后端共存）。反之 → 单一 jar。
 
+### 自动配置排序
+
+- 自动配置之间的 `after` / `before` 优先使用类引用（如 `after = XxxAutoConfiguration.class`），由编译器校验目标存在。
+- 目标类不在当前模块编译类路径时（可选 binder、可选集成组件），使用 `afterName` / `beforeName` 字符串，避免为了排序引入实现依赖。
+- 排序只应表达真实的激活顺序，不要用 `@AutoConfiguration(after=...)` 替代包边界或模块依赖。
+- 包名按用途区分：`*.autoconfigure` 放置注册在 `AutoConfiguration.imports` 的自动配置；`*.config` 放置普通 `@Configuration` 与 `@ConfigurationProperties`。
+
 ---
 
 ## 业务模块内部分层

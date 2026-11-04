@@ -15,6 +15,9 @@
  */
 package io.github.loadup.modules.dictionary.infrastructure.autoconfigure;
 
+import com.mybatisflex.spring.boot.v4.MybatisFlexAutoConfiguration;
+import io.github.loadup.components.database.autoconfigure.DatabaseCoreAutoConfiguration;
+import io.github.loadup.components.database.autoconfigure.IdGeneratorAutoConfiguration;
 import io.github.loadup.components.database.id.IdGenerator;
 import io.github.loadup.modules.dictionary.domain.gateway.DictionaryGateway;
 import io.github.loadup.modules.dictionary.infrastructure.converter.DictionaryStorageConverter;
@@ -28,17 +31,18 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 @AutoConfiguration(
-        afterName = {
-            "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration",
-            "com.mybatisflex.spring.boot.v4.MybatisFlexAutoConfiguration",
-            "io.github.loadup.components.database.autoconfigure.DatabaseCoreAutoConfiguration",
-            "io.github.loadup.components.database.autoconfigure.IdGeneratorAutoConfiguration"
+        after = {
+            DataSourceAutoConfiguration.class,
+            MybatisFlexAutoConfiguration.class,
+            DatabaseCoreAutoConfiguration.class,
+            IdGeneratorAutoConfiguration.class
         })
 @ConditionalOnSingleCandidate(DataSource.class)
 @ConditionalOnProperty(

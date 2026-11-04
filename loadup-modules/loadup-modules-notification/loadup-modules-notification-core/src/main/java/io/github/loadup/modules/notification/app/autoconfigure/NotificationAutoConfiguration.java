@@ -22,6 +22,7 @@ import io.github.loadup.modules.notification.app.integration.InAppChannelProvide
 import io.github.loadup.modules.notification.app.service.InboxService;
 import io.github.loadup.modules.notification.client.facade.InboxFacade;
 import io.github.loadup.modules.notification.domain.gateway.InboxGateway;
+import io.github.loadup.modules.notification.infrastructure.autoconfigure.NotificationPersistenceAutoConfiguration;
 import java.time.Clock;
 import javax.sql.DataSource;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -33,9 +34,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 @Import(NotificationDTOConverterImpl.class)
+// Gotone engine is an optional runtime dependency; keep the ordering by name so this module only compiles against
+// gotone-api.
 @AutoConfiguration(
-        afterName =
-                "io.github.loadup.modules.notification.infrastructure.autoconfigure.NotificationPersistenceAutoConfiguration",
+        after = NotificationPersistenceAutoConfiguration.class,
         beforeName = "io.github.loadup.components.gotone.engine.GotoneEngineAutoConfiguration")
 @ConditionalOnSingleCandidate(DataSource.class)
 @ConditionalOnBean(InboxGateway.class)

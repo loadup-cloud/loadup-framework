@@ -15,6 +15,7 @@
  */
 package io.github.loadup.modules.transfer.app.autoconfigure;
 
+import io.github.loadup.modules.file.app.autoconfigure.FileResourceAutoConfiguration;
 import io.github.loadup.modules.file.client.facade.FileResourceFacade;
 import io.github.loadup.modules.transfer.app.config.TransferTaskProperties;
 import io.github.loadup.modules.transfer.app.converter.TransferDTOConverter;
@@ -24,6 +25,7 @@ import io.github.loadup.modules.transfer.app.service.TransferTaskService;
 import io.github.loadup.modules.transfer.client.facade.TransferTaskFacade;
 import io.github.loadup.modules.transfer.client.spi.TransferHandler;
 import io.github.loadup.modules.transfer.domain.gateway.TransferGateway;
+import io.github.loadup.modules.transfer.infrastructure.autoconfigure.TransferPersistenceAutoConfiguration;
 import java.time.Clock;
 import java.util.List;
 import javax.sql.DataSource;
@@ -37,11 +39,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 @Import(TransferDTOConverterImpl.class)
-@AutoConfiguration(
-        afterName = {
-            "io.github.loadup.modules.transfer.infrastructure.autoconfigure.TransferPersistenceAutoConfiguration",
-            "io.github.loadup.modules.file.app.autoconfigure.FileResourceAutoConfiguration"
-        })
+@AutoConfiguration(after = {TransferPersistenceAutoConfiguration.class, FileResourceAutoConfiguration.class})
 @ConditionalOnSingleCandidate(DataSource.class)
 @ConditionalOnBean({TransferGateway.class, FileResourceFacade.class})
 @ConditionalOnProperty(

@@ -15,6 +15,7 @@
  */
 package io.github.loadup.modules.file.web;
 
+import io.github.loadup.modules.file.app.autoconfigure.FileResourceAutoConfiguration;
 import io.github.loadup.modules.file.client.facade.FileResourceFacade;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -22,7 +23,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 @Import(FileWebConverterImpl.class)
-@AutoConfiguration(afterName = "io.github.loadup.modules.file.app.autoconfigure.FileResourceAutoConfiguration")
+@AutoConfiguration(after = FileResourceAutoConfiguration.class)
 @ConditionalOnBean(FileResourceFacade.class)
 public class FileResourceWebAutoConfiguration {
     @Bean

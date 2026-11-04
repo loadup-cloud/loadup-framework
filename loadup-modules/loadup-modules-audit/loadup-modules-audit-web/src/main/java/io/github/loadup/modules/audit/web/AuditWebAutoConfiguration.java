@@ -15,6 +15,7 @@
  */
 package io.github.loadup.modules.audit.web;
 
+import io.github.loadup.modules.audit.app.autoconfigure.AuditAutoConfiguration;
 import io.github.loadup.modules.audit.client.facade.AuditFacade;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -23,7 +24,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@AutoConfiguration(afterName = "io.github.loadup.modules.audit.app.autoconfigure.AuditAutoConfiguration")
+@AutoConfiguration(after = AuditAutoConfiguration.class)
 @ConditionalOnBean(AuditFacade.class)
 @EnableConfigurationProperties(AuditWebProperties.class)
 public class AuditWebAutoConfiguration {

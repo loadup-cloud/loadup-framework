@@ -20,6 +20,7 @@ import io.github.loadup.modules.dictionary.app.converter.DictionaryDTOConverterI
 import io.github.loadup.modules.dictionary.app.service.DictionaryService;
 import io.github.loadup.modules.dictionary.client.facade.DictionaryFacade;
 import io.github.loadup.modules.dictionary.domain.gateway.DictionaryGateway;
+import io.github.loadup.modules.dictionary.infrastructure.autoconfigure.DictionaryPersistenceAutoConfiguration;
 import java.time.Clock;
 import javax.sql.DataSource;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -31,9 +32,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 @Import(DictionaryDTOConverterImpl.class)
-@AutoConfiguration(
-        afterName =
-                "io.github.loadup.modules.dictionary.infrastructure.autoconfigure.DictionaryPersistenceAutoConfiguration")
+@AutoConfiguration(after = DictionaryPersistenceAutoConfiguration.class)
 @ConditionalOnSingleCandidate(DataSource.class)
 @ConditionalOnBean(DictionaryGateway.class)
 @ConditionalOnProperty(

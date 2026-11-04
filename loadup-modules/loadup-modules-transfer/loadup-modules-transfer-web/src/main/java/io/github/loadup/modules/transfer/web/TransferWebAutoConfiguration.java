@@ -15,6 +15,7 @@
  */
 package io.github.loadup.modules.transfer.web;
 
+import io.github.loadup.modules.transfer.app.autoconfigure.TransferAutoConfiguration;
 import io.github.loadup.modules.transfer.client.facade.TransferTaskFacade;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -22,7 +23,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 @Import(TransferWebConverterImpl.class)
-@AutoConfiguration(afterName = "io.github.loadup.modules.transfer.app.autoconfigure.TransferAutoConfiguration")
+@AutoConfiguration(after = TransferAutoConfiguration.class)
 @ConditionalOnBean(TransferTaskFacade.class)
 public class TransferWebAutoConfiguration {
     @Bean

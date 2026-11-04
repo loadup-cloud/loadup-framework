@@ -15,6 +15,7 @@
  */
 package io.github.loadup.modules.dictionary.web;
 
+import io.github.loadup.modules.dictionary.app.autoconfigure.DictionaryAutoConfiguration;
 import io.github.loadup.modules.dictionary.client.facade.DictionaryFacade;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -22,7 +23,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 @Import(DictionaryWebConverterImpl.class)
-@AutoConfiguration(afterName = "io.github.loadup.modules.dictionary.app.autoconfigure.DictionaryAutoConfiguration")
+@AutoConfiguration(after = DictionaryAutoConfiguration.class)
 @ConditionalOnBean(DictionaryFacade.class)
 public class DictionaryWebAutoConfiguration {
     @Bean

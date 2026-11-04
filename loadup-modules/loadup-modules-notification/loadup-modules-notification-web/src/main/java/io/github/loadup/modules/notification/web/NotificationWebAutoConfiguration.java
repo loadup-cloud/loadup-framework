@@ -15,6 +15,8 @@
  */
 package io.github.loadup.modules.notification.web;
 
+import io.github.loadup.modules.notification.app.autoconfigure.NotificationAutoConfiguration;
+import io.github.loadup.modules.notification.app.autoconfigure.NotificationSubmissionAutoConfiguration;
 import io.github.loadup.modules.notification.client.facade.InboxFacade;
 import io.github.loadup.modules.notification.client.facade.NotificationFacade;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -23,11 +25,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 @Import(NotificationWebConverterImpl.class)
-@AutoConfiguration(
-        afterName = {
-            "io.github.loadup.modules.notification.app.autoconfigure.NotificationAutoConfiguration",
-            "io.github.loadup.modules.notification.app.autoconfigure.NotificationSubmissionAutoConfiguration"
-        })
+@AutoConfiguration(after = {NotificationAutoConfiguration.class, NotificationSubmissionAutoConfiguration.class})
 @ConditionalOnBean(InboxFacade.class)
 public class NotificationWebAutoConfiguration {
     @Bean

@@ -16,11 +16,13 @@
 package io.github.loadup.modules.file.app.autoconfigure;
 
 import io.github.loadup.components.dfs.DfsService;
+import io.github.loadup.components.dfs.autoconfigure.DfsAutoConfiguration;
 import io.github.loadup.modules.file.app.converter.FileDTOConverter;
 import io.github.loadup.modules.file.app.converter.FileDTOConverterImpl;
 import io.github.loadup.modules.file.app.service.FileResourceService;
 import io.github.loadup.modules.file.client.facade.FileResourceFacade;
 import io.github.loadup.modules.file.domain.gateway.FileResourceGateway;
+import io.github.loadup.modules.file.infrastructure.autoconfigure.FilePersistenceAutoConfiguration;
 import java.time.Clock;
 import javax.sql.DataSource;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -32,11 +34,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 @Import(FileDTOConverterImpl.class)
-@AutoConfiguration(
-        afterName = {
-            "io.github.loadup.modules.file.infrastructure.autoconfigure.FilePersistenceAutoConfiguration",
-            "io.github.loadup.components.dfs.autoconfigure.DfsAutoConfiguration"
-        })
+@AutoConfiguration(after = {FilePersistenceAutoConfiguration.class, DfsAutoConfiguration.class})
 @ConditionalOnSingleCandidate(DataSource.class)
 @ConditionalOnBean({FileResourceGateway.class, DfsService.class})
 @ConditionalOnProperty(prefix = "loadup.modules.file", name = "enabled", havingValue = "true", matchIfMissing = true)

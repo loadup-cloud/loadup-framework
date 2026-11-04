@@ -15,6 +15,8 @@
  */
 package io.github.loadup.modules.transfer.infrastructure.autoconfigure;
 
+import com.mybatisflex.spring.boot.v4.MybatisFlexAutoConfiguration;
+import io.github.loadup.components.database.autoconfigure.IdGeneratorAutoConfiguration;
 import io.github.loadup.components.database.id.IdGenerator;
 import io.github.loadup.modules.transfer.domain.gateway.TransferGateway;
 import io.github.loadup.modules.transfer.infrastructure.mapper.TransferTaskOptionRowMapper;
@@ -26,15 +28,16 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @AutoConfiguration(
-        afterName = {
-            "org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration",
-            "com.mybatisflex.spring.boot.v4.MybatisFlexAutoConfiguration",
-            "io.github.loadup.components.database.autoconfigure.IdGeneratorAutoConfiguration"
+        after = {
+            JdbcTemplateAutoConfiguration.class,
+            MybatisFlexAutoConfiguration.class,
+            IdGeneratorAutoConfiguration.class
         })
 @ConditionalOnSingleCandidate(DataSource.class)
 @ConditionalOnProperty(

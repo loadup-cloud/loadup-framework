@@ -31,6 +31,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+// The SAS binder is an optional runtime dependency; keep the ordering by name so UPMS only depends on the authserver
+// API.
 @AutoConfiguration(afterName = "io.github.loadup.components.authserver.sas.SasAuthServerAutoConfiguration")
 public class UpmsAuthServerAutoConfiguration {
 

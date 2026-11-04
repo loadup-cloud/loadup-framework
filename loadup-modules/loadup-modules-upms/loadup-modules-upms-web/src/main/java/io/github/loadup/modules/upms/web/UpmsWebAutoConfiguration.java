@@ -15,13 +15,12 @@
  */
 package io.github.loadup.modules.upms.web;
 
+import io.github.loadup.modules.audit.app.autoconfigure.AuditAutoConfiguration;
 import io.github.loadup.modules.upms.app.autoconfigure.UpmsAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Import;
 
-@AutoConfiguration(
-        after = UpmsAutoConfiguration.class,
-        afterName = "io.github.loadup.modules.audit.app.autoconfigure.AuditAutoConfiguration")
+@AutoConfiguration(after = {UpmsAutoConfiguration.class, AuditAutoConfiguration.class})
 @Import({
     AuthenticationController.class,
     AccountSecurityController.class,

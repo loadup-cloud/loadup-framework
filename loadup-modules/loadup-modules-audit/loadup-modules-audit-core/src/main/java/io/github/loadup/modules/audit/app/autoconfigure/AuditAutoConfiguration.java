@@ -19,6 +19,7 @@ import io.github.loadup.modules.audit.app.converter.AuditDTOConverter;
 import io.github.loadup.modules.audit.app.converter.AuditDTOConverterImpl;
 import io.github.loadup.modules.audit.app.service.AuditService;
 import io.github.loadup.modules.audit.domain.gateway.AuditGateway;
+import io.github.loadup.modules.audit.infrastructure.autoconfigure.AuditPersistenceAutoConfiguration;
 import java.time.Clock;
 import javax.sql.DataSource;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -30,8 +31,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 @Import(AuditDTOConverterImpl.class)
-@AutoConfiguration(
-        afterName = "io.github.loadup.modules.audit.infrastructure.autoconfigure.AuditPersistenceAutoConfiguration")
+@AutoConfiguration(after = AuditPersistenceAutoConfiguration.class)
 @ConditionalOnSingleCandidate(DataSource.class)
 @ConditionalOnBean(AuditGateway.class)
 @ConditionalOnProperty(prefix = "loadup.modules.audit", name = "enabled", havingValue = "true", matchIfMissing = true)

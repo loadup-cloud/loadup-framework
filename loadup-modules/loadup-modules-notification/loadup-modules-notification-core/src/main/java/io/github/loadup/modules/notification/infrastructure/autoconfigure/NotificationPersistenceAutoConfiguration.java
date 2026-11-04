@@ -15,6 +15,8 @@
  */
 package io.github.loadup.modules.notification.infrastructure.autoconfigure;
 
+import io.github.loadup.components.database.autoconfigure.DatabaseCoreAutoConfiguration;
+import io.github.loadup.components.database.autoconfigure.IdGeneratorAutoConfiguration;
 import io.github.loadup.components.database.id.IdGenerator;
 import io.github.loadup.modules.notification.domain.gateway.InboxGateway;
 import io.github.loadup.modules.notification.domain.gateway.NotificationSubmissionGateway;
@@ -29,16 +31,17 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.simple.JdbcClient;
 
 @AutoConfiguration(
-        afterName = {
-            "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration",
-            "io.github.loadup.components.database.autoconfigure.DatabaseCoreAutoConfiguration",
-            "io.github.loadup.components.database.autoconfigure.IdGeneratorAutoConfiguration"
+        after = {
+            DataSourceAutoConfiguration.class,
+            DatabaseCoreAutoConfiguration.class,
+            IdGeneratorAutoConfiguration.class
         })
 @ConditionalOnSingleCandidate(DataSource.class)
 @ConditionalOnProperty(

@@ -16,6 +16,7 @@
 package io.github.loadup.modules.notification.app.autoconfigure;
 
 import io.github.loadup.components.database.id.IdGenerator;
+import io.github.loadup.components.outbox.OutboxAutoConfiguration;
 import io.github.loadup.components.outbox.OutboxTemplate;
 import io.github.loadup.modules.notification.app.converter.NotificationSubmissionConverter;
 import io.github.loadup.modules.notification.app.converter.NotificationSubmissionConverterImpl;
@@ -34,9 +35,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import tools.jackson.databind.json.JsonMapper;
 
-@AutoConfiguration(
-        after = NotificationAutoConfiguration.class,
-        afterName = "io.github.loadup.components.outbox.OutboxAutoConfiguration")
+@AutoConfiguration(after = {NotificationAutoConfiguration.class, OutboxAutoConfiguration.class})
 @ConditionalOnBean({NotificationSubmissionGateway.class, OutboxTemplate.class, InboxFacade.class})
 @ConditionalOnProperty(
         prefix = "loadup.modules.notification",
