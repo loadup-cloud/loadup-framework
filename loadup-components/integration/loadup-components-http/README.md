@@ -21,6 +21,7 @@ UPMS、Outbox 或渠道 SDK。
 loadup:
   http:
     enabled: true
+    default-port: 8080
     clients:
       merchant:
         base-url: https://merchant.example.com
@@ -44,6 +45,10 @@ loadup:
             method: GET
             path: /statements/{date}
 ```
+
+`base-url` 可省略。省略时客户端名被当作目标应用名，地址按 `http://<client-name>:<default-port>` 解析，默认端口
+`8080`；该约定的目标同时允许私有/集群地址。显式 `base-url` 仍默认禁止私有目标，需要时配置
+`allow-private-addresses: true`。连接、池和大小限制均有默认值，只有与默认值不同的客户端才需要单独覆盖。
 
 配置中的客户端和操作名限定为 1–64 个字母、数字、下划线或连字符。路径模板与业务传入的变量分别处理，变量作为值编码，调用不能改变配置的
 origin。连接池等待、连接建立和响应读取超时分别配置；读取超时不是整个下载的总时长限制。
@@ -87,23 +92,30 @@ try (OutputStream output = Files.newOutputStream(targetPath)) {
 ## Spring HTTP Service Clients
 
 接口使用标准 `@HttpExchange` / `@PostExchange`，通过 `http.serviceClient("customer", CustomerHttpService.class)` 创建，
-然后在消费方配置类中将代理注册为 Bean。接口由提供方 client 模块持有，组件不扫描或绑定业务包。
+然后在消费方配置类中将代理注册为 Bean。接口由提供方 client 模块持有，组件不扫描或绑定业务包。客户端名等于目标应用名时可省略全部配置：
 
 ```yaml
 loadup:
   http:
     clients:
       customer:
-        base-url: ${CUSTOMER_BASE_URL:http://customer:8080}
-        allow-private-addresses: true
-        connect-timeout: 1s
-        acquire-timeout: 1s
-        read-timeout: 3s
-        max-request-bytes: 65536
+        # http://customer:8080, framework defaults
+```
+
+只有地址或协议参数不同于约定时才覆盖：
+
+```yaml
+loadup:
+  http:
+    clients:
+      customer:
+        base-url: ${CUSTOMER_BASE_URL:https://customer.example.com}
+        read-timeout: 5s
         max-response-bytes: 65536
 ```
 
-按服务配置基础地址，HTTP 方法和相对路径写在标准接口注解中，无需再配置 `operations` 或逐方法 URL。
+未在配置中声明的客户端在首次创建 Service Client 时按应用名约定建立，默认使用 `http://<name>:<default-port>`、
+框架默认超时/池/大小和私有地址放行；显式配置的同名客户端优先。命名操作（`exchange`）仍要求显式配置客户端和 operation。
 每个代理由标准 `HttpServiceProxyFactory` + `RestClientAdapter` 执行；共享同名 HttpTemplate 客户端的 Apache 连接池和
 Boot RestClient 定制/Observation，保留 TLS Bundle、DNS 地址策略及无自动重试/重定向/Cookie 状态。
 接口的绝对 URI 也不能改变配置的 origin，防止把当次凭证发送给其他主机。

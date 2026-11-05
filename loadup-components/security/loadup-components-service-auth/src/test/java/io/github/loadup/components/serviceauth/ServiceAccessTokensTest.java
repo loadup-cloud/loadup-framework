@@ -138,6 +138,20 @@ class ServiceAccessTokensTest {
     }
 
     @Test
+    void derivesMissingRegistrationIdentityFromApplicationAndRegistrationKey() {
+        settings.setRegistrations(Map.of(
+                "payment",
+                new ServiceAuthProperties.Registration(null, null, null, null, List.of("pay:payment:read"))));
+        var tokens = ServiceAuthAutoConfiguration.create(settings, clock, "acquire");
+        Assertions.assertThat(TenantUtil.callWithTenant("__default__", () -> tokens.token("acquire", "payment")))
+                .isEqualTo("token-1");
+        String expected = "Basic "
+                + Base64.getEncoder()
+                        .encodeToString("acquire.default.payment:synthetic-secret".getBytes(StandardCharsets.UTF_8));
+        Assertions.assertThat(basic.getFirst()).isEqualTo(expected);
+    }
+
+    @Test
     void missingScopesCannotSilentlyAcquireAnUnprivilegedToken() {
         Assertions.assertThatThrownBy(() ->
                         new ServiceAuthProperties.Registration("client", "tenant", "acquire", "payment", List.of()))

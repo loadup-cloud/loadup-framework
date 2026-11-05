@@ -37,4 +37,19 @@ class ServiceAuthPropertiesBindingTest {
         assertThat(properties.getTokenUri()).isEqualTo("https://auth.example/token");
         assertThat(properties.getRegistrations().get("test").scopes()).containsExactly("other:scope");
     }
+
+    @Test
+    void bindsScopesOnlyRegistrationsForConventionDefaults() {
+        var environment = new MockEnvironment()
+                .withProperty("loadup.security.service-auth.registrations.payment.scopes[0]", "pay:payment:read");
+        var properties = Binder.get(environment)
+                .bind("loadup.security.service-auth", ServiceAuthProperties.class)
+                .get();
+        var registration = properties.getRegistrations().get("payment");
+        assertThat(registration.scopes()).containsExactly("pay:payment:read");
+        assertThat(registration.serviceId()).isNull();
+        assertThat(registration.audience()).isNull();
+        assertThat(registration.clientId()).isNull();
+        assertThat(registration.tenantId()).isNull();
+    }
 }

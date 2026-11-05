@@ -11,7 +11,7 @@
 | 失败 | 隐藏响应正文/凭证；不能获取令牌时终止当前调用，无旧文件回退，无自动重试业务写操作 |
 | 信任 | 接收方通过 JWKS 验证 JWT 并检查权限，客户端缓存不代替资源端验签 |
 
-`loadup.security.service-auth` 包含 token-uri、client-secret、registrations（每条配置显式 scopes）；默认只允许 HTTPS，开发 HTTP 必须显式开启 allow-insecure-http。Pay 配置见各调用方 bootstrap 的 application.yml。
+`loadup.security.service-auth` 包含 token-uri、client-secret、registrations（每条配置显式 scopes）；默认只允许 HTTPS，开发 HTTP 必须显式开启 allow-insecure-http。注册项的身份字段可省略：`service-id` 默认取 `spring.application.name`，`tenant-id` 默认 `__default__`，`audience` 默认注册键，`client-id` 默认 `<service-id>.default.<audience>`；仅在特殊环境显式覆盖。Pay 配置见各调用方 bootstrap 的 application.yml。
 
 缓存键不使用当前登录用户；用户/商户的委托 token 仍由原有 Actor 路径处理。默认配置只对应一个逻辑租户；扩展注册不会自动实现业务数据库的 schema 路由。
 

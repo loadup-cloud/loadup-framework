@@ -85,6 +85,14 @@ HttpTemplate.serviceClient 提供标准接口代理；内部仍由 HttpServicePr
 整个标准调用在读锁内完成，写锁等待调用结束后才关闭旧池；业务身份由方法参数或 HttpCredentialProvider 当次解析，
 没有额外 ThreadLocal/token 缓存。内部入口鉴权和业务错误白名单属于应用，不属于传输组件。
 
+## 应用名约定与隐式客户端
+
+`HttpProperties.default-port`（默认 8080）和客户端名共同定义内部目标约定：省略 `base-url` 的客户端按
+`http://<client-name>:<default-port>` 解析，并默认允许私有/集群地址。命名操作客户端仍应在配置中显式列出，以便在启动时校验
+operation 表；声明式 Service Client 在首次创建时，如果同名客户端既不存在于显式配置也不存在于隐式集合，则按约定创建隐式客户端。
+显式配置优先于隐式客户端。刷新时保留仍然有效且未被显式配置接管的隐式客户端，重新解析默认端口并替换连接池；关闭模板时一并释放。
+隐式客户端与显式客户端使用相同的连接池、DNS 策略、指标注册和 origin 约束，不引入第二套传输。
+
 ## 共享业务信封验证
 
 HttpServiceResponses 复用 commons-dto 的标准信封，只有 SUCCESS/S 且非空 data 才返回业务数据。

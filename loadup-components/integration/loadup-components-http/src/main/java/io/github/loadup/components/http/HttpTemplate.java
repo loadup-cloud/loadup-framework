@@ -71,6 +71,8 @@ public final class HttpTemplate implements AutoCloseable {
     private final HttpPoolMetrics poolMetrics;
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private Map<String, RuntimeClient> clients = Map.of();
+    private Map<String, RuntimeClient> conventionalClients = Map.of();
+    private int defaultPort = 8080;
     private long version;
     private boolean closed;
 
@@ -206,7 +208,9 @@ public final class HttpTemplate implements AutoCloseable {
         if (properties == null || properties.clients().size() > 256) {
             throw new IllegalArgumentException("Invalid HTTP clients");
         }
+        int port = properties.defaultPort();
         Map<String, RuntimeClient> replacement = new HashMap<>();
+        Map<String, RuntimeClient> conventionalReplacement = new HashMap<>();
         try {
             for (var entry : properties.clients().entrySet()) {
                 name(entry.getKey());
@@ -222,30 +226,44 @@ public final class HttpTemplate implements AutoCloseable {
                 if (config.credentialRef() != null && credentials == null) {
                     throw new IllegalArgumentException("HTTP credentials require a provider");
                 }
-                replacement.put(entry.getKey(), create(entry.getKey(), config));
+                replacement.put(entry.getKey(), create(entry.getKey(), config, port));
+            }
+            for (String name : conventionalClients.keySet()) {
+                if (!replacement.containsKey(name)) {
+                    name(name);
+                    conventionalReplacement.put(name, create(name, HttpProperties.Client.conventional(), port));
+                }
             }
         } catch (RuntimeException failure) {
             release(replacement);
+            release(conventionalReplacement);
             throw failure;
         }
         lock.writeLock().lock();
         try {
             if (closed) {
                 release(replacement);
+                release(conventionalReplacement);
                 throw new IllegalStateException("HTTP template is closed");
             }
             Map<String, RuntimeClient> previous = clients;
+            Map<String, RuntimeClient> previousConventional = conventionalClients;
             Map<String, HttpPoolMetrics.State> metricStates = new HashMap<>();
             replacement.forEach((name, client) -> metricStates.put(name, client.poolMetrics));
+            conventionalReplacement.forEach((name, client) -> metricStates.put(name, client.poolMetrics));
             try {
                 poolMetrics.activate(metricStates);
             } catch (RuntimeException failure) {
                 release(replacement);
+                release(conventionalReplacement);
                 throw failure;
             }
             clients = Map.copyOf(replacement);
+            conventionalClients = Map.copyOf(conventionalReplacement);
+            defaultPort = port;
             version++;
             release(previous);
+            release(previousConventional);
             return version;
         } finally {
             lock.writeLock().unlock();
@@ -264,15 +282,8 @@ public final class HttpTemplate implements AutoCloseable {
     }
 
     <S, T> T withServiceClient(String name, Class<S> serviceType, Function<S, T> action) {
-        lock.readLock().lock();
+        RuntimeClient runtime = acquireClient(name);
         try {
-            if (closed) {
-                throw new IllegalStateException("HTTP template is closed");
-            }
-            RuntimeClient runtime = clients.get(name);
-            if (runtime == null) {
-                throw new IllegalArgumentException("Unknown HTTP client");
-            }
             Object proxy =
                     runtime.serviceProxies.computeIfAbsent(serviceType, type -> runtime.services.createClient(type));
             return action.apply(serviceType.cast(proxy));
@@ -286,6 +297,55 @@ public final class HttpTemplate implements AutoCloseable {
             throw new HttpCallException(HttpCallException.Kind.RESPONSE_DECODING);
         } finally {
             lock.readLock().unlock();
+        }
+    }
+
+    /**
+     * Returns a client while holding the template read lock for the caller.
+     * A service client named after an application uses the framework default target
+     * {@code http://<name>:<default-port>} unless it is configured explicitly.
+     */
+    private RuntimeClient acquireClient(String name) {
+        while (true) {
+            lock.readLock().lock();
+            RuntimeClient runtime = clients.get(name);
+            if (runtime == null) {
+                runtime = conventionalClients.get(name);
+            }
+            if (runtime != null) {
+                return runtime;
+            }
+            lock.readLock().unlock();
+            createConventionalClient(name);
+        }
+    }
+
+    private synchronized void createConventionalClient(String name) {
+        name(name);
+        lock.writeLock().lock();
+        try {
+            if (closed) {
+                throw new IllegalStateException("HTTP template is closed");
+            }
+            if (clients.containsKey(name) || conventionalClients.containsKey(name)) {
+                return;
+            }
+            RuntimeClient created = create(name, HttpProperties.Client.conventional(), defaultPort);
+            Map<String, RuntimeClient> updated = new HashMap<>(conventionalClients);
+            updated.put(name, created);
+            Map<String, HttpPoolMetrics.State> metricStates = new HashMap<>();
+            clients.forEach((clientName, client) -> metricStates.put(clientName, client.poolMetrics));
+            updated.forEach((clientName, client) -> metricStates.put(clientName, client.poolMetrics));
+            try {
+                poolMetrics.activate(metricStates);
+            } catch (RuntimeException failure) {
+                release(Map.of(name, created));
+                throw failure;
+            }
+            conventionalClients = Map.copyOf(updated);
+            version++;
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
@@ -351,7 +411,7 @@ public final class HttpTemplate implements AutoCloseable {
             if (call == null) {
                 throw new IllegalArgumentException("call is required");
             }
-            URI uri = uri(runtime.config.baseUrl(), definition.path(), call);
+            URI uri = uri(runtime.baseUrl(), definition.path(), call);
             try {
                 runtime.policy.resolve(uri.getHost());
             } catch (UnknownHostException blocked) {
@@ -406,7 +466,8 @@ public final class HttpTemplate implements AutoCloseable {
         }
     }
 
-    private RuntimeClient create(String name, HttpProperties.Client config) {
+    private RuntimeClient create(String name, HttpProperties.Client config, int defaultPort) {
+        URI baseUrl = config.resolveBaseUrl(name, defaultPort);
         var policy = new HttpTargetPolicy(config.allowPrivateAddresses());
         var poolBuilder = PoolingHttpClientConnectionManagerBuilder.create()
                 .setDnsResolver(policy)
@@ -461,13 +522,13 @@ public final class HttpTemplate implements AutoCloseable {
                     .requestFactory(new HttpComponentsClientHttpRequestFactory(transport))
                     .build();
             RestClient serviceClient = client.mutate()
-                    .baseUrl(config.baseUrl().toString())
+                    .baseUrl(baseUrl.toString())
                     .configureMessageConverters(
                             converters -> converters.withJsonConverter(new JacksonJsonHttpMessageConverter(mapper)))
                     .defaultHeaders(h -> h.setAll(config.headers()))
                     .requestInterceptor((request, body, execution) -> {
                         URI target = request.getURI();
-                        URI base = config.baseUrl();
+                        URI base = baseUrl;
                         if (!base.getScheme().equals(target.getScheme())
                                 || !base.getHost().equals(target.getHost())
                                 || base.getPort() != target.getPort()
@@ -498,6 +559,7 @@ public final class HttpTemplate implements AutoCloseable {
                     .build();
             return new RuntimeClient(
                     config,
+                    baseUrl,
                     client,
                     HttpServiceProxyFactory.builderFor(RestClientAdapter.create(serviceClient))
                             .build(),
@@ -540,7 +602,9 @@ public final class HttpTemplate implements AutoCloseable {
         try {
             closed = true;
             release(clients);
+            release(conventionalClients);
             clients = Map.of();
+            conventionalClients = Map.of();
             poolMetrics.close();
         } finally {
             lock.writeLock().unlock();
@@ -554,6 +618,7 @@ public final class HttpTemplate implements AutoCloseable {
 
     private record RuntimeClient(
             HttpProperties.Client config,
+            URI baseUrl,
             RestClient client,
             HttpServiceProxyFactory services,
             Map<Class<?>, Object> serviceProxies,

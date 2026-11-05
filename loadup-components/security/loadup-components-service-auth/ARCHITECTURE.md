@@ -1,6 +1,6 @@
 # 服务凭证获取设计
 
-ServiceAccessTokens 是业务传输层的单一入口，输入为调用方与目标 audience；逻辑租户从执行上下文解析，调用前必须已绑定可信租户。配置建立这些身份组合到标准 ClientRegistration 的映射；未知组合或缺失租户上下文在发请求前拒绝。
+ServiceAccessTokens 是业务传输层的单一入口，输入为调用方与目标 audience；逻辑租户从执行上下文解析，调用前必须已绑定可信租户。配置建立这些身份组合到标准 ClientRegistration 的映射；未知组合或缺失租户上下文在发请求前拒绝。注册项只要求显式 scopes，其余身份按约定推导：service-id 取调用方 spring.application.name，tenant-id 取 `__default__`，audience 取注册键，client-id 取 `<service-id>.default.<audience>`；显式字段始终优先。
 
 缓存、client_credentials 请求和有效期判断由 Spring AuthorizedClientServiceOAuth2AuthorizedClientManager/ClientCredentialsOAuth2AuthorizedClientProvider 管理，使用独立的应用 principal，支持任务线程。每条注册的锁避免同时续取；不同注册独立缓存，不从当前用户 SecurityContext 推导缓存身份。
 

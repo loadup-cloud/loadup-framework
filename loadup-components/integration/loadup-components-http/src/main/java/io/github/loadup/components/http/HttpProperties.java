@@ -17,14 +17,31 @@ package io.github.loadup.components.http;
 
 import java.net.URI;
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.bind.ConstructorBinding;
 import org.springframework.http.HttpMethod;
 
 @ConfigurationProperties("loadup.http")
-public record HttpProperties(Map<String, Client> clients) {
+public record HttpProperties(Integer defaultPort, Map<String, Client> clients) {
+    public HttpProperties(Map<String, Client> clients) {
+        this(null, clients);
+    }
+
+    @ConstructorBinding
     public HttpProperties {
-        clients = clients == null ? Map.of() : Map.copyOf(clients);
+        defaultPort = defaultPort == null ? Integer.valueOf(8080) : defaultPort;
+        if (defaultPort < 1 || defaultPort > 65535) {
+            throw new IllegalArgumentException("Invalid HTTP default port");
+        }
+        if (clients == null) {
+            clients = Map.of();
+        } else {
+            var normalized = new HashMap<String, Client>();
+            clients.forEach((name, client) -> normalized.put(name, client == null ? Client.conventional() : client));
+            clients = Map.copyOf(normalized);
+        }
     }
 
     public record Client(
@@ -43,6 +60,7 @@ public record HttpProperties(Map<String, Client> clients) {
             Map<String, String> headers,
             Map<String, Operation> operations) {
         public Client {
+            boolean conventional = baseUrl == null;
             connectTimeout = connectTimeout == null ? Duration.ofSeconds(3) : connectTimeout;
             readTimeout = readTimeout == null ? Duration.ofSeconds(10) : readTimeout;
             acquireTimeout = acquireTimeout == null ? Duration.ofSeconds(3) : acquireTimeout;
@@ -52,15 +70,19 @@ public record HttpProperties(Map<String, Client> clients) {
             maxResponseBytes = maxResponseBytes == null ? Long.valueOf(10L * 1024 * 1024) : maxResponseBytes;
             headers = headers == null ? Map.of() : Map.copyOf(headers);
             operations = operations == null ? Map.of() : Map.copyOf(operations);
-            if (baseUrl == null
-                    || !("https".equals(baseUrl.getScheme()) || "http".equals(baseUrl.getScheme()))
-                    || baseUrl.getHost() == null
-                    || baseUrl.getUserInfo() != null
-                    || baseUrl.getQuery() != null
-                    || baseUrl.getFragment() != null
-                    || baseUrl.getRawPath().contains("{")) {
+            if (!conventional
+                    && (!("https".equals(baseUrl.getScheme()) || "http".equals(baseUrl.getScheme()))
+                            || baseUrl.getHost() == null
+                            || baseUrl.getUserInfo() != null
+                            || baseUrl.getQuery() != null
+                            || baseUrl.getFragment() != null
+                            || baseUrl.getRawPath().contains("{"))) {
                 throw new IllegalArgumentException(
                         "base-url must be an HTTP(S) URL without credentials, query or fragment");
+            }
+            if (conventional) {
+                // A client named after an application is an internal service target; resolve it later.
+                allowPrivateAddresses = true;
             }
             for (Duration timeout : new Duration[] {connectTimeout, readTimeout, acquireTimeout}) {
                 if (timeout.toMillis() < 1 || timeout.toMillis() > 86400000) {
@@ -84,6 +106,15 @@ public record HttpProperties(Map<String, Client> clients) {
                             || proxy.getFragment() != null)) {
                 throw new IllegalArgumentException("proxy must be an HTTP proxy URL with an explicit port");
             }
+        }
+
+        /** An internal service target addressed by application name and the framework default port. */
+        public static Client conventional() {
+            return new Client(null, null, null, null, null, null, null, null, null, null, true, null, null, null);
+        }
+
+        public URI resolveBaseUrl(String name, int defaultPort) {
+            return baseUrl == null ? URI.create("http://" + name + ":" + defaultPort) : baseUrl;
         }
     }
 

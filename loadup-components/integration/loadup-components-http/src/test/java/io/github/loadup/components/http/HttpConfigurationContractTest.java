@@ -47,7 +47,6 @@ class HttpConfigurationContractTest {
     }
 
     @ParameterizedTest
-    @NullSource
     @ValueSource(
             strings = {
                 "ftp://example.com",
@@ -57,9 +56,19 @@ class HttpConfigurationContractTest {
                 "https://example.com#fragment"
             })
     void rejectsUnsafeBaseUrls(String url) {
-        assertThatThrownBy(() ->
-                        client(url == null ? null : URI.create(url), null, null, null, null, null, null, null, null))
+        assertThatThrownBy(() -> client(URI.create(url), null, null, null, null, null, null, null, null))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void conventionalClientsUseTheApplicationNameAndDefaultPort() {
+        var client = HttpProperties.Client.conventional();
+        assertThat(client.baseUrl()).isNull();
+        assertThat(client.allowPrivateAddresses()).isTrue();
+        assertThat(client.resolveBaseUrl("payment", 8080)).isEqualTo(URI.create("http://payment:8080"));
+        assertThat(new HttpProperties(Map.of()).defaultPort()).isEqualTo(8080);
+        assertThat(new HttpProperties(8081, Map.of()).defaultPort()).isEqualTo(8081);
+        assertThatThrownBy(() -> new HttpProperties(0, Map.of())).isInstanceOf(IllegalArgumentException.class);
     }
 
     @ParameterizedTest

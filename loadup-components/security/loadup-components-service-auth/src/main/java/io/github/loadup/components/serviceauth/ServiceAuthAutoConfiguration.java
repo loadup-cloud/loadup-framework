@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
@@ -50,11 +51,15 @@ public class ServiceAuthAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ServiceAccessTokens.class)
-    ServiceAccessTokens serviceAccessTokens(ServiceAuthProperties properties, Clock clock) {
-        return create(properties, clock);
+    ServiceAccessTokens serviceAccessTokens(ServiceAuthProperties properties, Clock clock, Environment environment) {
+        return create(properties, clock, environment.getProperty("spring.application.name", "application"));
     }
 
     static ServiceAccessTokens create(ServiceAuthProperties properties, Clock clock) {
+        return create(properties, clock, "application");
+    }
+
+    static ServiceAccessTokens create(ServiceAuthProperties properties, Clock clock, String application) {
         URI endpoint = URI.create(properties.getTokenUri());
         if (endpoint.getHost() == null
                 || endpoint.getUserInfo() != null
@@ -72,16 +77,21 @@ public class ServiceAuthAutoConfiguration {
         Map<Route, String> routes = new HashMap<>();
         var clients = new ArrayList<ClientRegistration>();
         properties.getRegistrations().forEach((id, registration) -> {
-            requireText(registration.clientId());
-            requireText(registration.tenantId());
-            requireText(registration.serviceId());
-            requireText(registration.audience());
-            var route = new Route(registration.tenantId(), registration.serviceId(), registration.audience());
+            String serviceId = text(registration.serviceId()) ? registration.serviceId() : application;
+            String tenantId = text(registration.tenantId()) ? registration.tenantId() : "__default__";
+            String audience = text(registration.audience()) ? registration.audience() : id;
+            String clientId =
+                    text(registration.clientId()) ? registration.clientId() : serviceId + ".default." + audience;
+            requireText(clientId);
+            requireText(tenantId);
+            requireText(serviceId);
+            requireText(audience);
+            var route = new Route(tenantId, serviceId, audience);
             if (routes.putIfAbsent(route, id) != null) {
                 throw new IllegalArgumentException("Duplicate service authorization route");
             }
             clients.add(ClientRegistration.withRegistrationId(id)
-                    .clientId(registration.clientId())
+                    .clientId(clientId)
                     .clientSecret(properties.getClientSecret())
                     .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
                     .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
@@ -140,6 +150,10 @@ public class ServiceAuthAutoConfiguration {
                 }
             }
         };
+    }
+
+    private static boolean text(String value) {
+        return value != null && !value.isBlank();
     }
 
     private static void requireText(String value) {
