@@ -20,10 +20,12 @@ import static org.mockito.Mockito.mock;
 
 import io.github.loadup.components.gotone.NotificationChannelProvider;
 import io.github.loadup.components.gotone.channel.webhook.config.WebhookChannelAutoConfiguration;
+import io.github.loadup.components.runtime.json.JsonAutoConfiguration;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 class WebhookSupportContractTest {
@@ -44,7 +46,10 @@ class WebhookSupportContractTest {
     @Test
     void providerBeansCoexistAndAllowPerVendorDisableAndOverride() {
         var contexts = new ApplicationContextRunner()
-                .withConfiguration(AutoConfigurations.of(WebhookChannelAutoConfiguration.class));
+                .withConfiguration(AutoConfigurations.of(
+                        JsonAutoConfiguration.class,
+                        JacksonAutoConfiguration.class,
+                        WebhookChannelAutoConfiguration.class));
         contexts.run(context -> assertThat(context.getBeansOfType(NotificationChannelProvider.class))
                 .hasSize(3));
         var custom = mock(NotificationChannelProvider.class);
