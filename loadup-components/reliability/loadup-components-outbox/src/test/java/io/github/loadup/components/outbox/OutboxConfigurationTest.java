@@ -66,6 +66,36 @@ class OutboxConfigurationTest {
     }
 
     @Test
+    void invalidTenantIdFailsValidation() {
+        OutboxProperties settings = new OutboxProperties();
+        settings.setTenantId(" tenant");
+        assertThatThrownBy(settings::validate)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Invalid outbox tenant id");
+    }
+
+    @Test
+    void resolvesOutboxTenantFromExplicitOverrideThenDatabaseDefault() {
+        DataSource source = mock(DataSource.class);
+        runner.withBean(DataSource.class, () -> source)
+                .withBean(PlatformTransactionManager.class, () -> new DataSourceTransactionManager(source))
+                .run(context -> assertThat(context.getBean(OutboxWorker.class).tenantId())
+                        .isEqualTo("__default__"));
+        runner.withBean(DataSource.class, () -> source)
+                .withBean(PlatformTransactionManager.class, () -> new DataSourceTransactionManager(source))
+                .withPropertyValues("loadup.database.multi-tenant.default-tenant-id=tenant-db")
+                .run(context -> assertThat(context.getBean(OutboxWorker.class).tenantId())
+                        .isEqualTo("tenant-db"));
+        runner.withBean(DataSource.class, () -> source)
+                .withBean(PlatformTransactionManager.class, () -> new DataSourceTransactionManager(source))
+                .withPropertyValues(
+                        "loadup.database.multi-tenant.default-tenant-id=tenant-db",
+                        "loadup.outbox.tenant-id=tenant-outbox")
+                .run(context -> assertThat(context.getBean(OutboxWorker.class).tenantId())
+                        .isEqualTo("tenant-outbox"));
+    }
+
+    @Test
     void minimumAndMaximumSupportedSettingsAreAccepted() {
         OutboxProperties settings = new OutboxProperties();
         settings.setPollInterval(Duration.ofMillis(1));

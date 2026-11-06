@@ -15,6 +15,7 @@
  */
 package io.github.loadup.components.outbox;
 
+import io.github.loadup.commons.constant.CommonConstants;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.observation.ObservationRegistry;
 import java.util.List;
@@ -26,6 +27,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @AutoConfiguration(
@@ -75,7 +77,13 @@ public class OutboxAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public OutboxWorker outboxWorker(OutboxDispatcher dispatcher, OutboxProperties properties) {
-        return new OutboxWorker(dispatcher, properties);
+    public OutboxWorker outboxWorker(
+            OutboxDispatcher dispatcher, OutboxProperties properties, Environment environment) {
+        String tenantId = properties.getTenantId();
+        if (tenantId == null || tenantId.isBlank()) {
+            tenantId = environment.getProperty(
+                    "loadup.database.multi-tenant.default-tenant-id", CommonConstants.DEFAULT_TENANT_ID);
+        }
+        return new OutboxWorker(dispatcher, properties, tenantId);
     }
 }

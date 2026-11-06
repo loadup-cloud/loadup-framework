@@ -30,7 +30,13 @@ loadup:
     retry-delay: 5s
     max-attempts: 8
     batch-size: 20
+    # Optional; defaults to loadup.database.multi-tenant.default-tenant-id, then __default__.
+    # tenant-id: tenant-a
 ```
+
+`OutboxWorker` 在每个轮询批次绑定 `loadup.outbox.tenant-id`；未配置时依次回退到
+`loadup.database.multi-tenant.default-tenant-id` 和 `__default__`。处理器、事务和仓库访问因此读取同一可信租户，批次结束后恢复线程原上下文。
+多租户部署需要按租户分别运行 worker 或实例，不能用一个线程扫描多个 schema。
 
 `worker-enabled: false` 保留发布和查询能力，可在独立工作节点调用 `OutboxDispatcher.dispatchBatch()`
 。每个应用实例默认使用一个专属线程，不修改应用的全局调度配置。处理器应设置外部调用超时；租约须覆盖正常处理时间，否则可能发生并发重复执行。首版不续租。

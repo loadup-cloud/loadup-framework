@@ -26,6 +26,7 @@ public class OutboxProperties {
     private Duration retryDelay = Duration.ofSeconds(5);
     private int maxAttempts = 8;
     private int batchSize = 20;
+    private String tenantId;
 
     public void validate() {
         if (pollInterval == null
@@ -41,6 +42,13 @@ public class OutboxProperties {
                 || batchSize < 1
                 || batchSize > 1000) {
             throw new IllegalArgumentException("Invalid outbox delivery settings");
+        }
+        if (tenantId != null
+                && (tenantId.isBlank()
+                        || !tenantId.equals(tenantId.trim())
+                        || tenantId.length() > 64
+                        || tenantId.chars().anyMatch(Character::isISOControl))) {
+            throw new IllegalArgumentException("Invalid outbox tenant id");
         }
     }
 
@@ -90,5 +98,13 @@ public class OutboxProperties {
 
     public void setBatchSize(int value) {
         batchSize = value;
+    }
+
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(String value) {
+        tenantId = value;
     }
 }

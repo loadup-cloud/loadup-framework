@@ -334,7 +334,7 @@ class AlipayCredentialReaderTest {
                 () -> assertThrows(RuntimeException.class, () -> wrongTenantReader.verificationKey("tenant", direct)));
 
         var weakGenerator = KeyPairGenerator.getInstance("RSA");
-        weakGenerator.initialize(1024);
+        weakGenerator.initialize(2048);
         var weakPath = directory.resolve("weak-verification-key.json");
         Files.writeString(
                 weakPath,

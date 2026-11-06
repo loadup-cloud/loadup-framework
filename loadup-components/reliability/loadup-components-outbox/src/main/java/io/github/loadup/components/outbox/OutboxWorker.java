@@ -16,6 +16,7 @@
 package io.github.loadup.components.outbox;
 
 import io.github.loadup.commons.log.LogUtil;
+import io.github.loadup.commons.util.TenantUtil;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -25,11 +26,31 @@ public class OutboxWorker implements SmartLifecycle {
 
     private final OutboxDispatcher dispatcher;
     private final OutboxProperties properties;
+    private final String tenantId;
     private volatile ScheduledExecutorService executor;
 
     public OutboxWorker(OutboxDispatcher dispatcher, OutboxProperties properties) {
+        this(dispatcher, properties, null);
+    }
+
+    public OutboxWorker(OutboxDispatcher dispatcher, OutboxProperties properties, String tenantId) {
+        if (dispatcher == null || properties == null) {
+            throw new IllegalArgumentException("Outbox worker requires a dispatcher and settings");
+        }
+        if (tenantId != null
+                && (tenantId.isBlank()
+                        || !tenantId.equals(tenantId.trim())
+                        || tenantId.length() > 64
+                        || tenantId.chars().anyMatch(Character::isISOControl))) {
+            throw new IllegalArgumentException("Invalid outbox tenant id");
+        }
         this.dispatcher = dispatcher;
         this.properties = properties;
+        this.tenantId = tenantId;
+    }
+
+    String tenantId() {
+        return tenantId;
     }
 
     @Override
@@ -45,7 +66,11 @@ public class OutboxWorker implements SmartLifecycle {
         executor.scheduleWithFixedDelay(
                 () -> {
                     try {
-                        dispatcher.dispatchBatch();
+                        if (tenantId == null) {
+                            dispatcher.dispatchBatch();
+                        } else {
+                            TenantUtil.runWithTenant(tenantId, dispatcher::dispatchBatch);
+                        }
                     } catch (RuntimeException failure) {
                         LogUtil.error(
                                 OutboxWorker.class,

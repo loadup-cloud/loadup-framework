@@ -56,7 +56,7 @@ Inbox 使用 `(consumer_id, event_id)` 唯一索引，必须在可写业务事�
 
 ## 权限、观测与保留
 
-租户身份仍可随执行上下文传播，但当前数据库表不含 `tenant_id`，数据库操作也不按租户列过滤；运行时仅使用默认 schema，尚未提供租户间隔离。
+`OutboxWorker` 在每个轮询批次绑定可信租户：优先 `loadup.outbox.tenant-id`，其次 `loadup.database.multi-tenant.default-tenant-id`，最后 `__default__`；处理器、事务和仓库访问使用同一租户上下文，批次结束后恢复线程原上下文。当前数据库表不含 `tenant_id`，运行时仍使用默认 schema，尚未提供租户间 schema 路由；多租户部署必须按租户分别运行 worker 或实例。
 数据库现状见 [database README](../../data/loadup-components-database/README.md)。运营权限不得由未经验证的租户标识或请求头推断；管理端授权和人工重放权限属于消费工程。类型注册在启动时检测重复；日志仅包含事件
 ID、尝试次数和异常类型。
 

@@ -34,6 +34,7 @@ import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -236,6 +237,39 @@ class OutboxWorkerTest {
         worker.stop();
         properties.setWorkerEnabled(false);
         assertThat(worker.isAutoStartup()).isFalse();
+    }
+
+    @Test
+    void workerBindsConfiguredTenantForHandlers() throws Exception {
+        JdbcOutboxRepository repository = mock(JdbcOutboxRepository.class);
+        var claim = claim(null);
+        when(repository.claim()).thenReturn(Optional.of(claim)).thenReturn(Optional.empty());
+        when(repository.complete(claim)).thenReturn(true);
+        AtomicReference<String> observed = new AtomicReference<>();
+        CountDownLatch handled = new CountDownLatch(1);
+        OutboxHandler handler = handler(event -> {
+            observed.set(TenantUtil.getTenantId());
+            handled.countDown();
+        });
+        OutboxProperties properties = properties();
+        properties.setPollInterval(Duration.ofMillis(10));
+        OutboxWorker worker = new OutboxWorker(
+                new OutboxDispatcher(repository, properties, List.of(handler), null), properties, "tenant-a");
+        try {
+            worker.start();
+            assertThat(handled.await(3, TimeUnit.SECONDS)).isTrue();
+            assertThat(observed.get()).isEqualTo("tenant-a");
+            assertThat(TenantUtil.getTenantId()).isNull();
+        } finally {
+            worker.stop();
+        }
+    }
+
+    @Test
+    void rejectsInvalidOutboxTenantId() {
+        assertThatThrownBy(() -> new OutboxWorker(mock(OutboxDispatcher.class), properties(), " tenant"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Invalid outbox tenant id");
     }
 
     @FunctionalInterface
