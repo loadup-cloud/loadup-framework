@@ -100,7 +100,7 @@
         <resilience4j.version>2.3.0</resilience4j.version>
 
         <!-- Security and Auth -->
-        <spring-security-oauth2-authorization-server.version>7.1.1</spring-security-oauth2-authorization-server.version>
+        <spring-security-oauth2-authorization-server.version>7.1.2</spring-security-oauth2-authorization-server.version>
 
         <!-- API Documentation -->
         <swagger-annotations-jakarta.version>2.2.55</swagger-annotations-jakarta.version>
