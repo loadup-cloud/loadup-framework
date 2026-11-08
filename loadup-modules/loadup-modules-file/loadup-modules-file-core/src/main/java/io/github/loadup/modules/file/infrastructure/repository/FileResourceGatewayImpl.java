@@ -24,7 +24,6 @@ import io.github.loadup.modules.file.client.error.FileResultCodeEnum;
 import io.github.loadup.modules.file.domain.gateway.FileResourceGateway;
 import io.github.loadup.modules.file.domain.model.FileReference;
 import io.github.loadup.modules.file.domain.model.FileResource;
-import io.github.loadup.modules.file.infrastructure.dataobject.FileReferenceRow;
 import io.github.loadup.modules.file.infrastructure.dataobject.FileResourceInsert;
 import io.github.loadup.modules.file.infrastructure.mapper.FileReferenceRowMapper;
 import io.github.loadup.modules.file.infrastructure.mapper.FileResourceInsertMapper;
@@ -222,9 +221,7 @@ public class FileResourceGatewayImpl extends ServiceImpl<FileResourceInsertMappe
     @Override
     public long countReferences(String file) {
         Long count = jdbc.queryForObject(
-                "SELECT COUNT(*) FROM file_resource_reference WHERE file_id = ? AND deleted = FALSE",
-                Long.class,
-                file);
+                "SELECT COUNT(*) FROM file_resource_reference WHERE file_id = ? AND deleted = FALSE", Long.class, file);
         return count == null ? 0L : count;
     }
 
