@@ -41,6 +41,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -48,6 +49,7 @@ import org.springframework.transaction.support.TransactionTemplate;
         classes = NotificationSubmissionIT.Application.class,
         properties = {"loadup.outbox.worker-enabled=false", "spring.flyway.enabled=true"})
 @EnableTestContainers(ContainerType.POSTGRESQL)
+@Sql(scripts = "classpath:db/schema/outbox.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 class NotificationSubmissionIT {
     private static final String SOURCE = "notification-submission-it";
 

@@ -9,7 +9,7 @@ spring:
       schema-locations:
         - classpath:schema-test.sql
         - classpath:db/migration/V20261002000004__create_upms.sql
-        - classpath:db/migration/V2026101201__sequence_allocation.sql
+        - classpath:db/schema/sequence_allocation.sql
       continue-on-error: false
 
 loadup:

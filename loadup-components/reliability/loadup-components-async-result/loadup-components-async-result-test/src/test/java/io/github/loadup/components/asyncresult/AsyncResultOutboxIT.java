@@ -53,8 +53,7 @@ class AsyncResultOutboxIT {
                 SharedPostgreSQLContainer.getJdbcUrl(),
                 SharedPostgreSQLContainer.getUsername(),
                 SharedPostgreSQLContainer.getPassword());
-        new ResourceDatabasePopulator(new ClassPathResource("db/migration/V20261008000001__create_outbox.sql"))
-                .execute(ds);
+        new ResourceDatabasePopulator(new ClassPathResource("db/schema/outbox.sql")).execute(ds);
         var props = new OutboxProperties();
         var manager = new DataSourceTransactionManager(ds);
         var outbox = new JdbcOutboxRepository(ds, manager, props);

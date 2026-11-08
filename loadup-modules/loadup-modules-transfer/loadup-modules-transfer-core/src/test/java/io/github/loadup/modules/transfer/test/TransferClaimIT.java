@@ -36,9 +36,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest(classes = TransferClaimIT.Application.class)
 @EnableTestContainers(value = ContainerType.POSTGRESQL, reuse = false)
+@Sql(
+        scripts = "classpath:db/migration/V20261003000002__create_transfer_task.sql",
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 class TransferClaimIT {
     private final TransferGateway gateway;
 

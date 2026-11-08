@@ -1,6 +1,6 @@
 -- PostgreSQL initial schema.
 
-CREATE TABLE global_unique
+CREATE TABLE IF NOT EXISTS global_unique
 (
     id           VARCHAR(64) COLLATE "C"        NOT NULL,
 
@@ -14,8 +14,8 @@ CREATE TABLE global_unique
     PRIMARY KEY (id)
 );
 
-CREATE UNIQUE INDEX uk_global_unique_scope ON global_unique (biz_type, unique_key);
+CREATE UNIQUE INDEX IF NOT EXISTS uk_global_unique_scope ON global_unique (biz_type, unique_key);
 
-CREATE INDEX idx_global_unique_biz ON global_unique (deleted, biz_type, biz_id);
+CREATE INDEX IF NOT EXISTS idx_global_unique_biz ON global_unique (deleted, biz_type, biz_id);
 
-CREATE INDEX idx_global_unique_created_at ON global_unique (created_at);
+CREATE INDEX IF NOT EXISTS idx_global_unique_created_at ON global_unique (created_at);

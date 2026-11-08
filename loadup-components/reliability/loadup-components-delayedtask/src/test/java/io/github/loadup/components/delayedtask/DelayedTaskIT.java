@@ -46,12 +46,16 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @SpringBootTest(classes = DelayedTaskIT.Application.class)
 @EnableTestContainers(value = ContainerType.POSTGRESQL, reuse = false)
+@Sql(
+        scripts = {"classpath:db/schema/delayed_task.sql", "classpath:db/schema/sequence_allocation.sql"},
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 class DelayedTaskIT {
     private static final AtomicInteger calls = new AtomicInteger();
     private static final AtomicInteger failures = new AtomicInteger();

@@ -27,7 +27,7 @@ public final class SharedLocalStackContainer {
     /**
      * Default LocalStack version to use
      */
-    public static final String DEFAULT_LOCALSTACK_VERSION = "localstack/localstack:latest";
+    public static final String DEFAULT_LOCALSTACK_VERSION = "localstack/localstack:3.8.1";
     /**
      * Enable flag for TestContainers
      */

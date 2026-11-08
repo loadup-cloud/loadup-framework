@@ -44,7 +44,6 @@ import tools.jackson.databind.SerializationFeature;
 import tools.jackson.databind.cfg.DateTimeFeature;
 import tools.jackson.databind.cfg.EnumFeature;
 import tools.jackson.databind.ext.javatime.ser.LocalDateSerializer;
-import tools.jackson.databind.ext.javatime.ser.LocalDateTimeSerializer;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.module.SimpleModule;
 import tools.jackson.databind.node.ArrayNode;
@@ -91,9 +90,7 @@ public class JsonUtil {
         javaTimeModule.addSerializer(
                 LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT)));
         javaTimeModule.addDeserializer(LocalDate.class, new MultiLocalDateDeserializer());
-        javaTimeModule.addSerializer(
-                LocalDateTime.class,
-                new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_TIME_FORMAT)));
+        javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeOutSerializer());
         javaTimeModule.addDeserializer(LocalDateTime.class, new MultiLocalDateTimeDeserializer());
 
         SimpleModule module = new SimpleModule();

@@ -1,5 +1,5 @@
 -- Gotone JDBC store schema for PostgreSQL.
-CREATE TABLE gotone_notification_service
+CREATE TABLE IF NOT EXISTS gotone_notification_service
 (
     id           VARCHAR(64) PRIMARY KEY,
     service_code VARCHAR(100) NOT NULL,
@@ -11,9 +11,9 @@ CREATE TABLE gotone_notification_service
     updated_at   TIMESTAMP(6) NOT NULL,
     deleted      BOOLEAN      NOT NULL DEFAULT FALSE
 );
-CREATE UNIQUE INDEX uk_gotone_service_active ON gotone_notification_service (service_code) NULLS NOT DISTINCT WHERE deleted = FALSE;
-CREATE INDEX idx_service_enabled ON gotone_notification_service (service_code, enabled);
-CREATE TABLE gotone_service_channel
+CREATE UNIQUE INDEX IF NOT EXISTS uk_gotone_service_active ON gotone_notification_service (service_code) NULLS NOT DISTINCT WHERE deleted = FALSE;
+CREATE INDEX IF NOT EXISTS idx_service_enabled ON gotone_notification_service (service_code, enabled);
+CREATE TABLE IF NOT EXISTS gotone_service_channel
 (
     id                 VARCHAR(64) PRIMARY KEY,
     service_code       VARCHAR(100) NOT NULL,
@@ -28,8 +28,8 @@ CREATE TABLE gotone_service_channel
     updated_at         TIMESTAMP(6) NOT NULL,
     deleted            BOOLEAN      NOT NULL DEFAULT FALSE
 );
-CREATE UNIQUE INDEX uk_gotone_channel_active ON gotone_service_channel (service_code, channel) NULLS NOT DISTINCT WHERE deleted = FALSE;
-CREATE INDEX idx_channel_enabled ON gotone_service_channel (service_code, enabled);
+CREATE UNIQUE INDEX IF NOT EXISTS uk_gotone_channel_active ON gotone_service_channel (service_code, channel) NULLS NOT DISTINCT WHERE deleted = FALSE;
+CREATE INDEX IF NOT EXISTS idx_channel_enabled ON gotone_service_channel (service_code, enabled);
 
 CREATE TABLE IF NOT EXISTS gotone_notification_record
 (
@@ -48,5 +48,5 @@ CREATE TABLE IF NOT EXISTS gotone_notification_record
     updated_at    TIMESTAMP(6) NOT NULL,
     deleted       BOOLEAN      NOT NULL DEFAULT FALSE
 );
-CREATE INDEX idx_record_service ON gotone_notification_record (service_code, send_time);
-CREATE INDEX idx_record_channel_status ON gotone_notification_record (channel, status);
+CREATE INDEX IF NOT EXISTS idx_record_service ON gotone_notification_record (service_code, send_time);
+CREATE INDEX IF NOT EXISTS idx_record_channel_status ON gotone_notification_record (channel, status);

@@ -17,8 +17,8 @@ JDBC，支持多实例领取、租约恢复、有限重试、失败查询和人�
 应用提供唯一候选或 `@Primary` DataSource，以及使用该 DataSource 的 Spring JDBC
 事务管理器。组件使用这个事务管理器执行独立短事务，不另建事务管理器。发布要求业务事务真实绑定该数据源，且不是只读事务。
 
-应用负责引入并启用 Flyway 与 `flyway-database-postgresql`，将 `classpath:db/migration` 加入迁移位置，加载
-`V20261008000001__create_outbox.sql`。组件不在启动时自行建表。多数据源应用必须为选定的 DataSource 执行迁移。
+应用负责引入并启用 Flyway 与 `flyway-database-postgresql`，将 `classpath:db/migration` 加入迁移位置。组件不随 JAR 发布 Flyway 脚本；DDL 模板为
+`db/schema/outbox.sql`，由消费应用的 `scripts/gen-migrations.py` 复制到应用自己的迁移目录。组件不在启动时自行建表。多数据源应用必须为选定的 DataSource 执行迁移。
 
 ```yaml
 loadup:

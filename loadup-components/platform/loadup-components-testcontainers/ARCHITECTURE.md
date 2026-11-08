@@ -398,7 +398,7 @@ loadup:
   testcontainers:
     localstack:
       enabled: true
-      version: localstack/localstack:3.0
+      version: localstack/localstack:3.8.1
 ```
 
 **属性注入：**

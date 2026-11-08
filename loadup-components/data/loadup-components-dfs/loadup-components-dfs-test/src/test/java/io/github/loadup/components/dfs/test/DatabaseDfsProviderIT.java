@@ -41,11 +41,15 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest(classes = TestApplication.class)
 @EnableTestContainers(value = ContainerType.POSTGRESQL, reuse = false)
 @ActiveProfiles("test")
 @TestPropertySource(properties = "loadup.dfs.binder-type=database")
+@Sql(
+        scripts = {"classpath:db/schema/file_storage.sql", "classpath:db/schema/sequence_allocation.sql"},
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 class DatabaseDfsProviderIT {
     private final DfsService service;
     private final NamedParameterJdbcTemplate jdbc;

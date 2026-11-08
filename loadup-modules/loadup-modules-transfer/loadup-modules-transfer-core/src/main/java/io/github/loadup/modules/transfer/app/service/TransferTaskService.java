@@ -136,7 +136,8 @@ public class TransferTaskService implements TransferTaskFacade {
                 null);
         protectSource(task);
         repository.insert(task, args);
-        return converter.toDTO(repository.find(id).orElseThrow());
+        // The inserted row is already known; re-reading through a different connection could hide it.
+        return converter.toDTO(task);
     }
 
     public TransferTaskDTO get(String id, String actorId, boolean admin) {
@@ -178,7 +179,21 @@ public class TransferTaskService implements TransferTaskFacade {
             throw new CommonException(TransferResultCodeEnum.TASK_STATUS_CHANGED);
         }
         protectSource(task);
-        return converter.toDTO(repository.find(task.id()).orElseThrow());
+        // Requeue resets the durable row through JDBC; build the DTO from that known state.
+        return converter.toDTO(new TransferTask(
+                task.id(),
+                task.ownerId(),
+                task.kind(),
+                task.handlerKey(),
+                task.sourceFileId(),
+                null,
+                TransferStatus.QUEUED,
+                0,
+                0,
+                null,
+                task.createdAt(),
+                null,
+                null));
     }
 
     /**

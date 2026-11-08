@@ -33,11 +33,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -50,9 +54,22 @@ class DatabaseSequenceIT {
     private final PlatformTransactionManager manager;
 
     @Autowired
-    DatabaseSequenceIT(SequenceRangeAllocator allocator, PlatformTransactionManager manager) {
+    DatabaseSequenceIT(SequenceRangeAllocator allocator, PlatformTransactionManager manager, DataSource source) {
         this.allocator = allocator;
         this.manager = manager;
+        ensureSchema(source, "loadup_sequence_allocation", "db/schema/sequence_allocation.sql");
+    }
+
+    private static void ensureSchema(DataSource source, String table, String resource) {
+        JdbcTemplate jdbc = new JdbcTemplate(source);
+        Integer count = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM information_schema.tables"
+                        + " WHERE table_schema = current_schema() AND table_name = ?",
+                Integer.class,
+                table);
+        if (count == null || count == 0) {
+            new ResourceDatabasePopulator(new ClassPathResource(resource)).execute(source);
+        }
     }
 
     private SequenceScope scope(long maximum) {

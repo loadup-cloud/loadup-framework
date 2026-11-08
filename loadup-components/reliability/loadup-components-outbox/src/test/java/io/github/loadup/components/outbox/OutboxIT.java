@@ -43,8 +43,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -73,6 +75,19 @@ class OutboxIT {
         this.properties = properties;
         jdbc = new JdbcTemplate(source);
         transactions = new TransactionTemplate(manager);
+        ensureSchema(source, "loadup_outbox_inbox", "db/schema/outbox.sql");
+    }
+
+    private static void ensureSchema(DataSource source, String table, String resource) {
+        JdbcTemplate jdbc = new JdbcTemplate(source);
+        Integer count = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM information_schema.tables"
+                        + " WHERE table_schema = current_schema() AND table_name = ?",
+                Integer.class,
+                table);
+        if (count == null || count == 0) {
+            new ResourceDatabasePopulator(new ClassPathResource(resource)).execute(source);
+        }
     }
 
     @BeforeEach

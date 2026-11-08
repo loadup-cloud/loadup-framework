@@ -1,6 +1,6 @@
 -- PostgreSQL initial schema.
 
-CREATE TABLE delayed_task
+CREATE TABLE IF NOT EXISTS delayed_task
 (
     id              VARCHAR(64) COLLATE "C"        NOT NULL PRIMARY KEY,
 
@@ -19,8 +19,8 @@ CREATE TABLE delayed_task
     last_error      VARCHAR(256) COLLATE "C"
 );
 
-CREATE UNIQUE INDEX uk_delayed_business ON delayed_task (task_type, biz_id);
+CREATE UNIQUE INDEX IF NOT EXISTS uk_delayed_business ON delayed_task (task_type, biz_id);
 
-CREATE INDEX idx_delayed_due ON delayed_task (status, next_execute_at, id);
+CREATE INDEX IF NOT EXISTS idx_delayed_due ON delayed_task (status, next_execute_at, id);
 
-CREATE INDEX idx_delayed_lease ON delayed_task (status, lease_until, id);
+CREATE INDEX IF NOT EXISTS idx_delayed_lease ON delayed_task (status, lease_until, id);

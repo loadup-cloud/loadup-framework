@@ -1,6 +1,6 @@
 -- PostgreSQL initial schema.
 
-CREATE TABLE loadup_sequence_allocation
+CREATE TABLE IF NOT EXISTS loadup_sequence_allocation
 (
     id            VARCHAR(64) COLLATE "C"        NOT NULL PRIMARY KEY,
 
@@ -14,4 +14,4 @@ CREATE TABLE loadup_sequence_allocation
     CONSTRAINT chk_loadup_sequence_deleted CHECK (NOT deleted)
 );
 
-CREATE UNIQUE INDEX uk_loadup_sequence_scope ON loadup_sequence_allocation (scope_key);
+CREATE UNIQUE INDEX IF NOT EXISTS uk_loadup_sequence_scope ON loadup_sequence_allocation (scope_key);

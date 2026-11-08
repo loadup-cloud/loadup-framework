@@ -13,7 +13,7 @@
 | **🔴 Cache**     | Redis           | redis:7-alpine            | ✅       |
 | **📨 Messaging** | Kafka           | apache/kafka:4.1.1        | ✅       |
 | **🔍 Search**    | Elasticsearch   | elasticsearch:8.11.0      | ✅       |
-| **☁️ Cloud**     | LocalStack (S3) | localstack/localstack:3.0 | ✅       |
+| **☁️ Cloud**     | LocalStack (S3) | localstack/localstack:3.8.1 | ✅       |
 
 ## ✨ 核心特性
 

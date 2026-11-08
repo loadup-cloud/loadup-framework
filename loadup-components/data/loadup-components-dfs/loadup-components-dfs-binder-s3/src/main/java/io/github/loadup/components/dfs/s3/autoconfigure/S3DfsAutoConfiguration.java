@@ -30,6 +30,8 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.checksums.RequestChecksumCalculation;
+import software.amazon.awssdk.core.checksums.ResponseChecksumValidation;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3ClientBuilder;
@@ -65,6 +67,9 @@ public class S3DfsAutoConfiguration {
         S3ClientBuilder builder = S3Client.builder()
                 .region(Region.of(properties.getRegion()))
                 .credentialsProvider(credentialsProvider(properties))
+                // S3-compatible stores may reject the SDK's automatic CRC32 request checksum.
+                .requestChecksumCalculation(RequestChecksumCalculation.WHEN_REQUIRED)
+                .responseChecksumValidation(ResponseChecksumValidation.WHEN_REQUIRED)
                 .serviceConfiguration(S3Configuration.builder()
                         .pathStyleAccessEnabled(properties.isPathStyleAccessEnabled())
                         .build());

@@ -60,7 +60,8 @@ class TianaiCaptchaTemplateIT {
     void verify_wrongPercentage_rejects() {
         CaptchaResponse response = template.generate();
 
-        assertThat(template.verify(response.captchaId(), 0.5f)).isFalse();
+        // A random slider position can legitimately sit near 0.5; an out-of-range answer must always fail.
+        assertThat(template.verify(response.captchaId(), 100f)).isFalse();
     }
 
     @Test

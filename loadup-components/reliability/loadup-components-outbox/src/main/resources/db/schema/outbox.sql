@@ -1,6 +1,6 @@
 -- PostgreSQL initial schema.
 
-CREATE TABLE loadup_outbox_event
+CREATE TABLE IF NOT EXISTS loadup_outbox_event
 (
     id              VARCHAR(64) COLLATE "C"        NOT NULL PRIMARY KEY,
 
@@ -20,13 +20,13 @@ CREATE TABLE loadup_outbox_event
     last_error      VARCHAR(256) COLLATE "C"
 );
 
-CREATE INDEX idx_outbox_ready ON loadup_outbox_event (status, available_at, created_at);
+CREATE INDEX IF NOT EXISTS idx_outbox_ready ON loadup_outbox_event (status, available_at, created_at);
 
-CREATE INDEX idx_outbox_lease ON loadup_outbox_event (status, lease_until);
+CREATE INDEX IF NOT EXISTS idx_outbox_lease ON loadup_outbox_event (status, lease_until);
 
-CREATE INDEX idx_outbox_status_created ON loadup_outbox_event (status, created_at);
+CREATE INDEX IF NOT EXISTS idx_outbox_status_created ON loadup_outbox_event (status, created_at);
 
-CREATE TABLE loadup_outbox_replay
+CREATE TABLE IF NOT EXISTS loadup_outbox_replay
 (
     id          VARCHAR(64) COLLATE "C"        NOT NULL PRIMARY KEY,
 
@@ -38,9 +38,9 @@ CREATE TABLE loadup_outbox_replay
     reason      VARCHAR(512) COLLATE "C"       NOT NULL
 );
 
-CREATE INDEX idx_outbox_replay_event ON loadup_outbox_replay (event_id);
+CREATE INDEX IF NOT EXISTS idx_outbox_replay_event ON loadup_outbox_replay (event_id);
 
-CREATE TABLE loadup_outbox_inbox
+CREATE TABLE IF NOT EXISTS loadup_outbox_inbox
 (
     id          VARCHAR(64) COLLATE "C"        NOT NULL PRIMARY KEY,
 
@@ -51,4 +51,4 @@ CREATE TABLE loadup_outbox_inbox
     event_id    VARCHAR(64) COLLATE "C"        NOT NULL
 );
 
-CREATE UNIQUE INDEX uk_outbox_inbox ON loadup_outbox_inbox (consumer_id, event_id);
+CREATE UNIQUE INDEX IF NOT EXISTS uk_outbox_inbox ON loadup_outbox_inbox (consumer_id, event_id);

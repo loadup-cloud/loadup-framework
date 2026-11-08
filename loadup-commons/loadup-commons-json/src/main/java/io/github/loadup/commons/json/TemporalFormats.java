@@ -106,6 +106,20 @@ final class TemporalFormats {
         return List.copyOf(formatters);
     }
 
+    static String localDateTimeOut(LocalDateTime value) {
+        String base = value.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ROOT));
+        int nano = value.getNano();
+        if (nano == 0) {
+            return base;
+        }
+        String fraction = String.format(Locale.ROOT, "%09d", nano);
+        int end = fraction.length();
+        while (end > 0 && fraction.charAt(end - 1) == '0') {
+            end--;
+        }
+        return base + "." + fraction.substring(0, end);
+    }
+
     private static DateTimeParseException unsupported(String text) {
         return new DateTimeParseException("Unsupported or invalid temporal format", text, 0);
     }

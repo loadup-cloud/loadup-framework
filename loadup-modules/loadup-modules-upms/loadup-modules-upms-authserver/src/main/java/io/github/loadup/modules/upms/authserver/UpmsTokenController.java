@@ -106,6 +106,7 @@ public class UpmsTokenController {
                     .issuedAt(issuedAt)
                     .expiresAt(expiresAt)
                     .claim("token_use", "access")
+                    .claim("principal_type", "OPERATOR")
                     .claim("username", principal.username())
                     .claim("roles", roles)
                     .claim("permissions", permissions)

@@ -191,14 +191,18 @@ public class FileResourceGatewayImpl extends ServiceImpl<FileResourceInsertMappe
                 .filter(file -> "ACTIVE".equals(file.state()))
                 .orElseThrow(() -> new CommonException(FileResultCodeEnum.FILE_NOT_FOUND));
         LocalDateTime now = LocalDateTime.now(clock);
-        referenceMapper.insert(new FileReferenceRow(
+        // Raw JDBC keeps file references in the same local transaction as their owning business rows.
+        jdbc.update(
+                """
+                INSERT INTO file_resource_reference (id, file_id, reference_type, reference_id, created_at, updated_at, deleted)
+                VALUES (?, ?, ?, ?, ?, ?, FALSE)
+                """,
                 ref.id(),
                 parent.id(),
                 ref.referenceType(),
                 ref.referenceId(),
                 ref.createdAt() == null ? now : ref.createdAt(),
-                now,
-                false));
+                now);
     }
 
     @Override
@@ -217,18 +221,27 @@ public class FileResourceGatewayImpl extends ServiceImpl<FileResourceInsertMappe
 
     @Override
     public long countReferences(String file) {
-        return referenceMapper.selectCountByQuery(
-                QueryWrapper.create().where(Tables.FILE_REFERENCE_ROW.FILE_ID.eq(file)));
+        Long count = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM file_resource_reference WHERE file_id = ? AND deleted = FALSE",
+                Long.class,
+                file);
+        return count == null ? 0L : count;
     }
 
     @Override
     public List<FileReference> references(String file) {
-        var query = QueryWrapper.create()
-                .where(Tables.FILE_REFERENCE_ROW.FILE_ID.eq(file))
-                .orderBy(Tables.FILE_REFERENCE_ROW.CREATED_AT.asc(), Tables.FILE_REFERENCE_ROW.ID.asc());
-        return referenceMapper.selectListByQuery(query).stream()
-                .map(row -> new FileReference(
-                        row.getId(), row.getFileId(), row.getReferenceType(), row.getReferenceId(), row.getCreatedAt()))
-                .toList();
+        return jdbc.query(
+                """
+                SELECT id, file_id, reference_type, reference_id, created_at
+                FROM file_resource_reference WHERE file_id = ? AND deleted = FALSE
+                ORDER BY created_at, id
+                """,
+                (rs, index) -> new FileReference(
+                        rs.getString("id"),
+                        rs.getString("file_id"),
+                        rs.getString("reference_type"),
+                        rs.getString("reference_id"),
+                        rs.getObject("created_at", LocalDateTime.class)),
+                file);
     }
 }

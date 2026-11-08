@@ -33,12 +33,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 
 @SpringBootTest(classes = TestGotoneApplication.class)
 @EnableTestContainers(value = ContainerType.POSTGRESQL, reuse = false)
 @ActiveProfiles("test")
 @TestPropertySource(
         properties = {"loadup.database.multi-tenant.enabled=true", "loadup.database.multi-tenant.required=true"})
+@Sql(
+        scripts = {"classpath:db/schema/gotone_store.sql", "classpath:db/schema/sequence_allocation.sql"},
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 class JdbcStoreIT {
     @Autowired
     JdbcTemplate jdbc;

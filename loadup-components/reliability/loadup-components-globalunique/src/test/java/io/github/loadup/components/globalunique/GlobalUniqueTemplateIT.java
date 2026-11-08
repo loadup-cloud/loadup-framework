@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -39,6 +40,9 @@ import org.springframework.transaction.support.TransactionTemplate;
 @ActiveProfiles("test")
 @EnableTestContainers(value = ContainerType.POSTGRESQL, reuse = false)
 @DisplayName("GlobalUniqueTemplate integration tests")
+@Sql(
+        scripts = {"classpath:db/schema/global_unique.sql", "classpath:db/schema/sequence_allocation.sql"},
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 class GlobalUniqueTemplateIT {
     private final GlobalUniqueTemplate template;
     private final TransactionTemplate transactionTemplate;

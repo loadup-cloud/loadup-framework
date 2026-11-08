@@ -7,7 +7,7 @@
 
 引入 BOM 后添加 `io.github.loadup-cloud:loadup-components-delayedtask`，并在执行应用选择一个 Scheduler
 binder。注册任务与业务记录必须使用同一个 DataSource 和事务管理器。Flyway 需包含本组件 PostgreSQL
-`V20261019000001__create_delayed_task.sql` 和 database Sequence 迁移。业务主键使用统一 IdGenerator，持久化使用 Spring
+`db/schema/delayed_task.sql` 模板（由应用生成到自己的 `db/migration`）和 database Sequence 迁移。业务主键使用统一 IdGenerator，持久化使用 Spring
 JDBC。
 
 ## 注册与处理
