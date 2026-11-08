@@ -11,7 +11,7 @@
     </parent>
     <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-dependencies</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>LoadUp Dependencies</name>
     <description>BOM for framework modules and third-party dependency versions.</description>
@@ -56,7 +56,7 @@
         <tomcat.version>11.0.27</tomcat.version>
 
         <!-- Loadup Framework -->
-        <loadup.framework.version>0.0.2-SNAPSHOT</loadup.framework.version>
+        <loadup.framework.version>0.0.1-SNAPSHOT</loadup.framework.version>
 
         <!-- ORM and Database -->
         <mybatis-flex.version>1.11.8</mybatis-flex.version>
@@ -1132,4 +1132,74 @@
 
         </dependencies>
     </dependencyManagement>
+
+    <profiles>
+    <profile>
+        <id>github</id>
+        <activation>
+            <activeByDefault>false</activeByDefault>
+        </activation>
+        <distributionManagement>
+            <repository>
+                <id>github</id>
+                <name>LoadUp Apache Maven Packages</name>
+                <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
+            </repository>
+            <snapshotRepository>
+                <id>github</id>
+                <name>LoadUp Apache Maven Packages</name>
+                <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
+            </snapshotRepository>
+        </distributionManagement>
+        <repositories>
+            <repository>
+                <releases>
+                    <enabled>true</enabled>
+                </releases>
+                <snapshots>
+                    <enabled>true</enabled>
+                </snapshots>
+                <id>github</id>
+                <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
+            </repository>
+        </repositories>
+    </profile>
+    <profile>
+        <id>release</id>
+        <distributionManagement>
+            <repository>
+                <id>central</id>
+                <url>https://central.sonatype.com/repository/maven-releases/</url>
+            </repository>
+        </distributionManagement>
+        <build>
+            <plugins>
+                <plugin>
+                    <groupId>org.sonatype.central</groupId>
+                    <artifactId>central-publishing-maven-plugin</artifactId>
+                    <version>0.12.0</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <publishingServerId>central</publishingServerId>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>3.2.8</version>
+                    <executions>
+                        <execution>
+                            <id>sign-artifacts</id>
+                            <goals>
+                                <goal>sign</goal>
+                            </goals>
+                            <phase>verify</phase>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </build>
+    </profile>
+    </profiles>
+
 </project>

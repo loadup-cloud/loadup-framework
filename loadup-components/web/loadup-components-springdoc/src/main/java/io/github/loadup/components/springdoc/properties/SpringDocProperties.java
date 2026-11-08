@@ -38,7 +38,7 @@ public class SpringDocProperties {
     /**
      * OpenAPI {@code info.version}.
      */
-    private String version = "0.0.2-SNAPSHOT";
+    private String version = "0.0.1-SNAPSHOT";
 
     /**
      * Whether to register a global JWT Bearer security scheme.

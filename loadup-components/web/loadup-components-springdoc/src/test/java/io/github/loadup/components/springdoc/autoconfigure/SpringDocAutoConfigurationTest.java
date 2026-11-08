@@ -40,7 +40,7 @@ class SpringDocAutoConfigurationTest {
             OpenAPI api = context.getBean(OpenAPI.class);
             assertThat(api.getInfo().getTitle()).isEqualTo("LoadUp API");
             assertThat(api.getInfo().getDescription()).isEqualTo("LoadUp Framework REST API documentation.");
-            assertThat(api.getInfo().getVersion()).isEqualTo("0.0.2-SNAPSHOT");
+            assertThat(api.getInfo().getVersion()).isEqualTo("0.0.1-SNAPSHOT");
             assertThat(api.getInfo().getContact().getName()).isEqualTo("LoadUp Team");
             assertThat(api.getInfo().getLicense().getName()).isEqualTo("Apache-2.0");
             assertThat(api.getSecurity())

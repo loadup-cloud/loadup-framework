@@ -40,7 +40,7 @@ LoadUp 是供其他应用消费的 SDK。本仓库聚合可复用模块，不包
     <dependency>
       <groupId>io.github.loadup-cloud</groupId>
       <artifactId>loadup-dependencies</artifactId>
-      <version>0.0.2-SNAPSHOT</version>
+      <version>0.0.1-SNAPSHOT</version>
       <type>pom</type>
       <scope>import</scope>
     </dependency>
