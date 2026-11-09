@@ -10,7 +10,7 @@
         <relativePath/>
     </parent>
     <groupId>io.github.loadup-cloud</groupId>
-    <artifactId>loadup-dependencies</artifactId>
+    <artifactId>loadup-framework-bom</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>LoadUp Dependencies</name>

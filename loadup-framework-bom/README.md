@@ -1,6 +1,6 @@
 # LoadUp BOM
 
-`loadup-dependencies` 统一管理 LoadUp 发布坐标和第三方依赖版本，是纯 POM 模块，不提供运行时代码。
+`loadup-dependencies` 是 framework 的 BOM，管理 commons、components 与框架第三方依赖版本，是纯 POM 制品，不提供运行时代码。
 
 ## 引入
 
@@ -18,8 +18,9 @@
 </dependencyManagement>
 ```
 
-然后在消费工程中按需声明具体组件或业务模块，不需要为受 BOM
-管理的坐标重复写版本。版本调整及依赖边界见 [ARCHITECTURE.md](ARCHITECTURE.md)。
+然后按需声明具体 commons 或 components 制品，不需要为受本 BOM 管理的坐标重复写版本。
+消费通用业务模块时另外导入 `loadup-modules-bom`；使用 Testify 时另外导入 `loadup-testify-bom`。
+三个 BOM 分别跟随所属仓库版本，互不代管其他仓库的发布制品。版本调整及依赖边界见 [ARCHITECTURE.md](ARCHITECTURE.md)。
 
 测试栈使用 Spring Boot 4.1.1 BOM 管理的 JUnit 6.0.3，Jupiter 与 Platform 版本保持一致。
 架构规则在普通 Jupiter 测试中通过 `com.tngtech.archunit:archunit` 执行，版本由本 BOM 管理。
