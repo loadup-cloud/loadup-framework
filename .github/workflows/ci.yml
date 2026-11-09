@@ -55,6 +55,8 @@ jobs:
           fetch-depth: 0
       - name: Test repository tooling
         run: python3 -m unittest discover -s tools -p 'test_*.py'
+      - name: Check merged framework initialization SQL is regenerated
+        run: python3 tools/export-schema.py --check
       - name: Detect changed scope
         id: scope
         run: python3 tools/ci-changes.py

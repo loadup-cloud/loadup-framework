@@ -114,3 +114,9 @@ Outbox 后台在同一事务内锁定目标、写站内信、标记 DELIVERED；
 `SCOPE_notification:submit:in-app`。source 不从 body 获取；租户安全必须由部署应用验证（Pay notificationcenter 当前只支持配置租户）。
 Gotone 持久化由部署应用按需装配 gotone-store-jdbc，通知业务记录不依赖 Gotone 日志成功与否。
 此批次尚未运行构建、集成测试或真实数据库迁移。
+
+## Flyway 迁移目录
+
+正式迁移位于 `db/migration/framework/notification/`，文件名、版本和 SQL 内容保持不变。消费应用在
+`loadup.flyway.locations` 中显式加入 `classpath:db/migration/framework/notification`，与应用自己的迁移共同自动执行。
+不要用共享根 `classpath:db/migration` 表达应用隔离；它也会扫描依赖 JAR。已执行版本只追加升级，不改写历史。

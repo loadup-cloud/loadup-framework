@@ -102,6 +102,12 @@ Consumers that compile their own `@Table` entities add the processor to the comp
 Flyway support is optional; consumers using migrations must include Flyway and its PostgreSQL database module. Migration
 scripts assume a fresh PostgreSQL schema.
 
+`classpath:db/migration` scans matching locations across the classpath, including dependency JARs; it does not
+isolate the application. Configure `loadup.flyway.locations` with the application namespace and only approved
+framework module namespaces, such as `classpath:db/migration/pay/admin` and
+`classpath:db/migration/framework/upms`. Component templates remain under `db/schema`; freeze imported initial
+snapshots and append reviewed migrations for upgrades instead of overwriting existing versions.
+
 ## Business IDs and database sequences
 
 `BusinessIdGenerator` is the default `IdGenerator` when Sequence is available. Persistence code explicitly requests an

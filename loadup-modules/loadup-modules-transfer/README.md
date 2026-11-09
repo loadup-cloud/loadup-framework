@@ -89,3 +89,10 @@ BUILT_IN / STANDALONE / CRON 任务：processorInfo=`loadupSchedulerProcessor`�
 每次扫描最多 `loadup.modules.transfer.dispatch-batch-size`（默认 20，上限 100）项 QUEUED 任务。扫描器遍历处理，单项失败存为
 FAILED，扫描正常返回不代表所有业务任务成功。失败任务通过现有 retry API 重排；RUNNING 不自动重排。业务处理器以 taskId
 幂等；Worker 崩溃后的租约、对账和恢复仍是待办。
+
+## Flyway 迁移目录
+
+正式迁移位于 `db/migration/framework/transfer/`，文件名、版本和 SQL 内容保持不变。消费应用在
+`loadup.flyway.locations` 中显式加入 `classpath:db/migration/framework/transfer`，与应用自己的迁移共同自动执行。
+不要用共享根 `classpath:db/migration` 表达应用隔离；它也会扫描依赖 JAR。已执行版本只追加升级，不改写历史。
+Transfer 依赖 File 业务模块，消费应用还需加入 `classpath:db/migration/framework/file`。

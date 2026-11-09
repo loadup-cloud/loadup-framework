@@ -12,7 +12,7 @@ ConfigCenter 的应用配置职责。
 </dependency>
 ```
 
-提供 MySQL `DataSource` 和驱动。模块引入 Flyway，迁移脚本为 `db/migration/V20261002000002__create_data_dictionary.sql`
+提供 MySQL `DataSource` 和驱动。模块引入 Flyway，迁移脚本为 `db/migration/framework/dictionary/V20261002000002__create_data_dictionary.sql`
 。已有非空库首次启用 Flyway 时，按应用现有配置处理 baseline。需要 HTTP 接口时再引入 `loadup-modules-dictionary-web`。
 
 ## 业务 API
@@ -102,3 +102,9 @@ array. SuccessResponse serves ordinary success data only; its duplicate paginati
 removed. Empty PageDTO defaults to an empty array and metadata 0/1/20. Existing consumer code referencing removed
 business Page wrappers, DictionaryTypePageQuery, AccountLoginPageQuery or SuccessResponse.ofPage must use the shared
 contracts. No URL or frontend payload-field migration is required.
+
+## Flyway 迁移目录
+
+正式迁移位于 `db/migration/framework/dictionary/`，文件名、版本和 SQL 内容保持不变。消费应用在
+`loadup.flyway.locations` 中显式加入 `classpath:db/migration/framework/dictionary`，与应用自己的迁移共同自动执行。
+不要用共享根 `classpath:db/migration` 表达应用隔离；它也会扫描依赖 JAR。已执行版本只追加升级，不改写历史。

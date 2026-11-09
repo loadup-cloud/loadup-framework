@@ -60,6 +60,12 @@ LoadUp 是供其他应用消费的 SDK。本仓库聚合可复用模块，不包
 其他模块无需重复声明受 BOM 管理的版本。当前版本为 `SNAPSHOT`，接入前需要确保 BOM 和所选模块已安装在本地 Maven
 仓库，或已发布到你使用的制品仓库。具体配置请参阅[组件文档](loadup-components/README.md)。
 
+## 完整初始化 SQL
+
+组件 schema 与业务模块迁移保留原始资源及手动导入整合版两种形式。运行 `python3 tools/export-schema.py` 更新
+[`sql/framework-schema.sql`](sql/framework-schema.sql)，再用 psql 或数据库工具导入空 schema。
+整合顺序为组件模板在前、业务迁移按版本追加；原有自动迁移保留。生成范围与导入约束见 [初始化 SQL 说明](sql/README.md)。
+
 ## 架构边界
 
 依赖方向为 `commons → components → modules → 集成方应用`。业务模块按需提供 Spring MVC Web 适配；技术组件的不同后端通过独立

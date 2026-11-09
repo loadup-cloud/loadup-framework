@@ -11,7 +11,7 @@
 </dependency>
 ```
 
-需要配置 MySQL `DataSource` 和驱动；模块引入 Flyway 并提供 `db/migration/V20261002000001__create_audit_event.sql`。如需自动采集
+需要配置 MySQL `DataSource` 和驱动；模块引入 Flyway 并提供 `db/migration/framework/audit/V20261002000001__create_audit_event.sql`。如需自动采集
 MVC 操作和查询接口，引入 `loadup-modules-audit-web`。
 
 若将 Flyway 首次接入已有非空数据库，请按应用现有的 Flyway 配置决定是否设置 `spring.flyway.baseline-on-migrate`（使用
@@ -100,3 +100,9 @@ array. SuccessResponse serves ordinary success data only; its duplicate paginati
 removed. Empty PageDTO defaults to an empty array and metadata 0/1/20. Existing consumer code referencing removed
 business Page wrappers, DictionaryTypePageQuery, AccountLoginPageQuery or SuccessResponse.ofPage must use the shared
 contracts. No URL or frontend payload-field migration is required.
+
+## Flyway 迁移目录
+
+正式迁移位于 `db/migration/framework/audit/`，文件名、版本和 SQL 内容保持不变。消费应用在
+`loadup.flyway.locations` 中显式加入 `classpath:db/migration/framework/audit`，与应用自己的迁移共同自动执行。
+不要用共享根 `classpath:db/migration` 表达应用隔离；它也会扫描依赖 JAR。已执行版本只追加升级，不改写历史。

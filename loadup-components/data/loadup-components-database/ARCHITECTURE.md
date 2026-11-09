@@ -110,7 +110,10 @@ deletion is applied by the Flex global configuration for mapper operations and m
 Flyway support is optional; consumers using migrations include Flyway and its PostgreSQL module. Migration scripts are
 schema-agnostic (no schema-qualified names) and assume a fresh schema. `LoadUpFlywayAutoConfiguration` applies the
 configured default schema from `loadup.database.default-schema`; per-tenant execution is a
-deployment/routing responsibility.
+deployment/routing responsibility. Applications must select explicit migration namespaces: their own directory
+and approved `db/migration/framework/<module>` locations. The generic classpath migration root also discovers
+dependency JAR resources and is not an isolation mechanism. One application retains one Flyway history across
+its selected locations; published versioned migrations are immutable.
 
 ## ID generation and sequences
 

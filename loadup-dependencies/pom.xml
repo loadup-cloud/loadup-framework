@@ -115,6 +115,7 @@
         <archunit.version>1.5.1</archunit.version>
         <spotbugs.version>4.10.5</spotbugs.version>
         <spotless.version>3.10.3</spotless.version>
+        <maven-deploy-plugin.version>3.2.0</maven-deploy-plugin.version>
 
     </properties>
 
@@ -128,6 +129,14 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+        <!-- This standalone BOM does not inherit the framework parent's deploy plugin. -->
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>${maven-deploy-plugin.version}</version>
+            </plugin>
+        </plugins>
     </build>
 
     <dependencyManagement>
@@ -1132,18 +1141,6 @@
 
         </dependencies>
     </dependencyManagement>
-
-    <!-- This standalone BOM does not inherit the framework parent's deploy plugin.
-         Use the same version so id::url and deployAtEnd work for the entire reactor. -->
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>3.2.0</version>
-            </plugin>
-        </plugins>
-    </build>
 
     <profiles>
     <profile>
