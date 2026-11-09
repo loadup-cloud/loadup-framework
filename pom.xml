@@ -32,8 +32,6 @@
         <module>loadup-dependencies</module>
         <module>loadup-commons</module>
         <module>loadup-components</module>
-        <module>loadup-modules</module>
-        <module>loadup-testify</module>
     </modules>
     <scm>
         <connection>scm:git:git://github.com/loadup-cloud/loadup-framework.git</connection>

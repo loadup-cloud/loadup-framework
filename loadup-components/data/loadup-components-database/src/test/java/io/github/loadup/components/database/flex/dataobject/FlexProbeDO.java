@@ -16,7 +16,7 @@
 package io.github.loadup.components.database.flex.dataobject;
 
 import com.mybatisflex.annotation.Table;
-import io.github.loadup.commons.dataobject.BaseDO;
+import io.github.loadup.components.database.dataobject.BaseDO;
 
 @Table("flex_probe")
 public class FlexProbeDO extends BaseDO {

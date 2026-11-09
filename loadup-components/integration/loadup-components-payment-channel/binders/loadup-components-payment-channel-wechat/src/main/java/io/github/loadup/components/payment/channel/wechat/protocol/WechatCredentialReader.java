@@ -21,12 +21,12 @@ import static io.github.loadup.components.payment.channel.api.error.ChannelResul
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.UNSUPPORTED_CAPABILITY;
 
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.commons.payment.Channel;
 import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.kms.KmsKeyRef;
 import io.github.loadup.components.kms.KmsTemplate;
 import io.github.loadup.components.payment.channel.api.model.ChannelBindingRevision;
 import io.github.loadup.components.payment.channel.api.model.WechatAccountIdentity;
+import io.github.loadup.components.payment.channel.contract.Channel;
 import io.github.loadup.components.payment.channel.wechat.config.WechatProperties;
 import java.nio.file.Files;
 import java.security.KeyFactory;

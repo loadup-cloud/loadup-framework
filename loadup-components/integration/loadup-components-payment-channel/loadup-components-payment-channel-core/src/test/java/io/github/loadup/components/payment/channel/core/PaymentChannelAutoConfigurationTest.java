@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import io.github.loadup.commons.payment.Channel;
 import io.github.loadup.components.payment.channel.api.codec.ChannelActionCodec;
 import io.github.loadup.components.payment.channel.api.codec.ChannelActionTypeCodec;
 import io.github.loadup.components.payment.channel.api.facade.ChannelNotificationFacade;
@@ -27,6 +26,7 @@ import io.github.loadup.components.payment.channel.api.facade.ChannelPaymentFaca
 import io.github.loadup.components.payment.channel.api.facade.ChannelStatementFacade;
 import io.github.loadup.components.payment.channel.api.model.AlipayJsapiChannelAction;
 import io.github.loadup.components.payment.channel.api.spi.ChannelProvider;
+import io.github.loadup.components.payment.channel.contract.Channel;
 import io.github.loadup.components.payment.channel.core.config.PaymentChannelAutoConfiguration;
 import io.github.loadup.components.resilience4j.ResilienceRegistries;
 import io.github.resilience4j.bulkhead.BulkheadConfig;

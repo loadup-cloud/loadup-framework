@@ -215,3 +215,8 @@ mvnd clean test -pl loadup-components/data/loadup-components-database -am \
 
 The IT requires Docker and uses real PostgreSQL through the framework Testcontainers annotation. Consumer
 failover/restore rehearsals and P95/P99 capacity measurements are separate production acceptance work.
+
+## 持久化基类
+
+使用本组件的 `io.github.loadup.components.database.dataobject.BaseDO`。它保留 id、createdAt、updatedAt、deleted
+字段以及 MyBatis-Flex `@Id(keyType = KeyType.None)` 元数据；标识仍由应用显式提供，迁移不改变 JSON、数据库列或逻辑删除行为。

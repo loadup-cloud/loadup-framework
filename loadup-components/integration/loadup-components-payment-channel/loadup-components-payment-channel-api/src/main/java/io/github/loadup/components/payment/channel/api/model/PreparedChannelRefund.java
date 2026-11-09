@@ -21,6 +21,7 @@ import static io.github.loadup.commons.error.DomainViolation.require;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.commons.money.Money;
 import io.github.loadup.commons.validation.DomainChecks;
+import io.github.loadup.components.payment.channel.contract.ChannelAmounts;
 import java.util.Objects;
 
 public record PreparedChannelRefund(
@@ -34,8 +35,8 @@ public record PreparedChannelRefund(
         Objects.requireNonNull(original);
         DomainChecks.id(refundId);
         DomainChecks.text(channelRefundNo, 64);
-        DomainChecks.cnyAmount(amount);
-        DomainChecks.cnyAmount(originalAmount);
+        ChannelAmounts.cnyAmount(amount);
+        ChannelAmounts.cnyAmount(originalAmount);
         DomainChecks.text(originalChannelTransactionNo, 128);
         require(
                 amount.getCent() > 0

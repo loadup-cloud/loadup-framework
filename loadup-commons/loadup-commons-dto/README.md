@@ -1,6 +1,6 @@
 # Loadup Common DTO
 
-提供通用响应、分页、数据对象基类和 MapStruct 共享配置。
+提供通用响应、分页、金额值、事件信封和通用校验，不依赖 ORM、MapStruct 或 Spring 运行库。
 
 ## 引入
 
@@ -20,7 +20,6 @@
 ## 对外契约
 
 - [`DTO`](src/main/java/io/github/loadup/commons/dto/DTO.java)
-- [`LoadUpMapStructConfig`](src/main/java/io/github/loadup/commons/mapping/LoadUpMapStructConfig.java)
 - [`ResultCode`](../loadup-commons-error/src/main/java/io/github/loadup/commons/result/ResultCode.java)
 - [`IEnum`](src/main/java/io/github/loadup/commons/enums/IEnum.java)
 - [`CommonConstants`](src/main/java/io/github/loadup/commons/constant/CommonConstants.java)
@@ -94,10 +93,9 @@ removed. Empty PageDTO defaults to an empty array and metadata 0/1/20. Existing 
 business Page wrappers, DictionaryTypePageQuery, AccountLoginPageQuery or SuccessResponse.ofPage must use the shared
 contracts. No URL or frontend payload-field migration is required.
 
-## BaseDO persistent fields
+## 职责迁移
 
-`BaseDO.id` is annotated with MyBatis-Flex `@Id(keyType = KeyType.None)`; identifiers are application-assigned through
-`IdGenerator` or an explicit business value. `BaseDO.deleted` is `Boolean`; the database component's
-`MyBatisFlexCustomizer` configures the shared `deleted` logical-delete column with `false` normal and `true` deleted
-values. Subclass DOs inherit this metadata: do not redeclare the fields and do not add per-entity logic-delete
-annotations. PostgreSQL columns use `deleted BOOLEAN NOT NULL DEFAULT FALSE`.
+持久化基类使用 `io.github.loadup.components.database.dataobject.BaseDO`，来自 `loadup-components-database`。
+共享映射配置使用 `io.github.loadup.components.runtime.mapping.LoadUpMapStructConfig`，来自 `loadup-components-runtime`。
+渠道基础词汇和 `ChannelAmounts.cnyAmount` 来自 `loadup-components-payment-channel-contracts`；商业合约引用来自 Pay
+的 `pay-contracts-commercial`。消费方按实际源码直接声明依赖，不通过 DTO 隐式引入这些能力。

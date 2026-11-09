@@ -15,8 +15,8 @@
  */
 package io.github.loadup.components.delayedtask;
 
-import io.github.loadup.commons.mapping.LoadUpMapStructConfig;
 import io.github.loadup.components.delayedtask.dataobject.DelayedTaskDO;
+import io.github.loadup.components.runtime.mapping.LoadUpMapStructConfig;
 import org.mapstruct.Mapper;
 
 @Mapper(config = LoadUpMapStructConfig.class)

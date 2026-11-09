@@ -19,7 +19,7 @@ import static io.github.loadup.components.payment.channel.api.error.ChannelResul
 
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.ToStringAsJson;
-import io.github.loadup.commons.payment.Channel;
+import io.github.loadup.components.payment.channel.contract.Channel;
 import java.time.LocalDate;
 
 /**

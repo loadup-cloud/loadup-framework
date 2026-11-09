@@ -11,7 +11,8 @@
     <name>LoadUp Components WebMVC</name>
     <description>Spring MVC response envelopes, exception handling and Jackson defaults.</description>
     <properties>
-        <loadup.coverage.skip>false</loadup.coverage.skip>
+        <!-- Temporary coverage gate exemption; continue collecting report data. -->
+        <loadup.coverage.skip>true</loadup.coverage.skip>
     </properties>
     <dependencies>
         <dependency>

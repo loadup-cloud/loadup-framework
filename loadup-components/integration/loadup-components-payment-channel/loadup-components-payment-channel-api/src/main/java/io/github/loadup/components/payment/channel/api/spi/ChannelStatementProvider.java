@@ -15,10 +15,10 @@
  */
 package io.github.loadup.components.payment.channel.api.spi;
 
-import io.github.loadup.commons.payment.Channel;
 import io.github.loadup.components.payment.channel.api.model.ChannelExecutionContext;
 import io.github.loadup.components.payment.channel.api.model.ChannelStatementRequest;
 import io.github.loadup.components.payment.channel.api.model.VerifiedChannelStatement;
+import io.github.loadup.components.payment.channel.contract.Channel;
 
 /**
  * Official statement retrieval is separate from payment and notification strategies.

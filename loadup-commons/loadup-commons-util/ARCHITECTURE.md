@@ -18,10 +18,6 @@
 
 - `org.apache.commons:commons-lang3`
 - `org.apache.commons:commons-collections4`
-- `com.google.guava:guava`
-- `org.apache.commons:commons-text`
-- `org.apache.commons:commons-pool2`
-- `commons-io:commons-io`
 - `org.hibernate.validator:hibernate-validator`
 - `jakarta.validation:jakarta.validation-api`
 - `org.slf4j:slf4j-api`

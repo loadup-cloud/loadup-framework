@@ -21,8 +21,9 @@ import static io.github.loadup.commons.error.DomainViolation.require;
 import io.github.loadup.commons.json.DiagnosticHidden;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.commons.money.Money;
-import io.github.loadup.commons.payment.PaymentMethod;
 import io.github.loadup.commons.validation.DomainChecks;
+import io.github.loadup.components.payment.channel.contract.ChannelAmounts;
+import io.github.loadup.components.payment.channel.contract.PaymentMethod;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
@@ -38,7 +39,7 @@ public record ChannelPaymentValidation(
         @DiagnosticHidden ChannelPaymentInput input) {
     public ChannelPaymentValidation {
         Objects.requireNonNull(identity);
-        DomainChecks.cnyAmount(amount);
+        ChannelAmounts.cnyAmount(amount);
         require(amount.getCent() > 0, INVALID_ARGUMENT);
         Objects.requireNonNull(method);
         DomainChecks.text(subject, 256);

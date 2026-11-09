@@ -23,9 +23,6 @@ import static org.mockito.Mockito.when;
 
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.money.Money;
-import io.github.loadup.commons.payment.AccessMode;
-import io.github.loadup.commons.payment.Channel;
-import io.github.loadup.commons.payment.PaymentMethod;
 import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.payment.channel.api.model.AlipayAccountIdentity;
 import io.github.loadup.components.payment.channel.api.model.AlipayH5ChannelAction;
@@ -57,6 +54,9 @@ import io.github.loadup.components.payment.channel.api.model.VerifiedChannelStat
 import io.github.loadup.components.payment.channel.api.spi.ChannelNotificationProvider;
 import io.github.loadup.components.payment.channel.api.spi.ChannelProvider;
 import io.github.loadup.components.payment.channel.api.spi.ChannelStatementProvider;
+import io.github.loadup.components.payment.channel.contract.AccessMode;
+import io.github.loadup.components.payment.channel.contract.Channel;
+import io.github.loadup.components.payment.channel.contract.PaymentMethod;
 import io.github.loadup.components.resilience4j.ResilienceRegistries;
 import io.github.resilience4j.bulkhead.BulkheadConfig;
 import java.security.MessageDigest;

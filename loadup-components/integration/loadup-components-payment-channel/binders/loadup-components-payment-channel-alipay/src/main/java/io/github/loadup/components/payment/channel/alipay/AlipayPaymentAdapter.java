@@ -19,7 +19,6 @@ import static io.github.loadup.components.payment.channel.api.error.ChannelResul
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.INVALID_ARGUMENT;
 
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.commons.payment.PaymentMethod;
 import io.github.loadup.commons.util.DigestUtils;
 import io.github.loadup.components.payment.channel.alipay.protocol.AlipayBindingGuard;
 import io.github.loadup.components.payment.channel.alipay.protocol.AlipayMethod;
@@ -33,6 +32,7 @@ import io.github.loadup.components.payment.channel.api.model.ChannelPaymentRecov
 import io.github.loadup.components.payment.channel.api.model.ChannelPaymentSubmission;
 import io.github.loadup.components.payment.channel.api.model.ChannelPaymentTarget;
 import io.github.loadup.components.payment.channel.api.model.PaymentObservation;
+import io.github.loadup.components.payment.channel.contract.PaymentMethod;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Map;

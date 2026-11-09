@@ -21,7 +21,8 @@ DO extends BaseDO
       └─ explicit audit fields ──────────────────── createdAt / updatedAt / deleted
 ```
 
-`BaseDO` lives in `loadup-commons-dto` and is shared by framework modules. Its `id` is marked with
+`BaseDO` lives in `loadup-components-database` as
+`io.github.loadup.components.database.dataobject.BaseDO` and is shared by persistence adapters. Its `id` is marked with
 `@Id(keyType = KeyType.None)`, so MyBatis-Flex never generates or replaces an application-assigned identifier. Business
 tables do not contain `tenant_id`. Schema-per-tenant is the target isolation boundary, but runtime datasource routing
 and per-tenant Flyway orchestration are not implemented; the current application serves the configured default schema.

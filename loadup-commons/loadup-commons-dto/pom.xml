@@ -11,7 +11,7 @@
     <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-commons-dto</artifactId>
     <name>LoadUp Commons DTO</name>
-    <description>Shared commands, pagination, response envelopes and persistence base types.</description>
+    <description>Shared values, commands, pagination and response envelopes.</description>
 
     <dependencies>
         <dependency>
@@ -19,33 +19,13 @@
             <artifactId>loadup-commons-error</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>tools.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct</artifactId>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
@@ -55,11 +35,6 @@
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-commons-json</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.mybatis-flex</groupId>
-            <artifactId>mybatis-flex-annotation</artifactId>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

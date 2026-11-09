@@ -9,8 +9,13 @@
     </parent>
     <artifactId>loadup-components-runtime</artifactId>
     <name>LoadUp Components Runtime</name>
-    <description>Spring Boot assembly for shared clocks, logging and JSON conventions.</description>
+    <description>Spring Boot assembly for shared clocks, logging, JSON and constructor-injected mapping conventions.</description>
     <dependencies>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <optional>true</optional>
+        </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-commons-log</artifactId>

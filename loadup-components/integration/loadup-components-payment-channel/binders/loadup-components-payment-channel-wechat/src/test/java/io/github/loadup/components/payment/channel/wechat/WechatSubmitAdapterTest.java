@@ -32,8 +32,6 @@ import static org.mockito.Mockito.when;
 
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.money.Money;
-import io.github.loadup.commons.payment.Channel;
-import io.github.loadup.commons.payment.PaymentMethod;
 import io.github.loadup.commons.util.DigestUtils;
 import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.payment.channel.api.model.ChannelBindingRevision;
@@ -53,6 +51,8 @@ import io.github.loadup.components.payment.channel.api.model.PreparedChannelPaym
 import io.github.loadup.components.payment.channel.api.model.WechatAccountIdentity;
 import io.github.loadup.components.payment.channel.api.model.WechatH5ChannelAction;
 import io.github.loadup.components.payment.channel.api.model.WechatJsapiChannelAction;
+import io.github.loadup.components.payment.channel.contract.Channel;
+import io.github.loadup.components.payment.channel.contract.PaymentMethod;
 import io.github.loadup.components.payment.channel.wechat.config.WechatNotificationProperties;
 import io.github.loadup.components.payment.channel.wechat.protocol.WechatJsapiSigner;
 import io.github.loadup.components.payment.channel.wechat.protocol.WechatMethod;

@@ -1,2 +1,0 @@
-io.github.loadup.modules.dictionary.app.autoconfigure.DictionaryAutoConfiguration
-io.github.loadup.modules.dictionary.infrastructure.autoconfigure.DictionaryPersistenceAutoConfiguration

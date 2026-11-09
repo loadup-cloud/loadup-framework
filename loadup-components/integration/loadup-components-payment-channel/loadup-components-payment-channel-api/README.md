@@ -24,3 +24,8 @@
 - API 不依赖 Spring、数据库、HTTP/KMS 实现或任何 Pay 业务包。
 - 厂商类型（支付宝/微信账户身份、JSAPI/H5 动作）属于本组件的表示契约；新增厂商需要同步扩展 API。
 - Provider 实例由消费应用在启动模块通过 runtime 依赖装配，不在 API 中注册。
+
+## 基础词汇
+
+渠道、接入模式、支付方式和固定 CNY 金额约束来自平级 `loadup-components-payment-channel-contracts`。
+只共享这些词汇的事件或 DTO 可直接依赖 contracts，不必引入本 API 的 Facade / Provider SPI。

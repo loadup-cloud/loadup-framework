@@ -141,3 +141,9 @@ ChannelStatementFacade/Provider 使用独立 Registry，复用原 ChannelExecuti
 支付宝新增独立后端账单 grant 申请和私有原始响应凭证源码，下载/解析/StatementProvider 尚未实现；不会把 grant 当成
 ChannelStatement 结果。现有微信 receipt 的官方 SHA1 字段不能为支付宝伪造，后续须连同
 RPC/来源表显式扩展完整性模型。见 [支付宝来源边界](ARCHITECTURE.md)。
+
+## 基础契约归属
+
+`loadup-components-payment-channel-contracts` 提供 Channel、AccessMode、PaymentMethod 和 ChannelAmounts。
+API、core、binder 与共享词汇的消费方按需直接依赖它，不再从 commons-dto 引入支付词汇。
+本次归属迁移未运行构建、测试或真实渠道调用；前述历史验收不能代替当前变更的验证。

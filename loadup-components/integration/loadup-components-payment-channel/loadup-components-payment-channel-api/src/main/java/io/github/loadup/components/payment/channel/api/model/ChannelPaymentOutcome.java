@@ -18,13 +18,14 @@ package io.github.loadup.components.payment.channel.api.model;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.commons.money.Money;
 import io.github.loadup.commons.validation.DomainChecks;
+import io.github.loadup.components.payment.channel.contract.ChannelAmounts;
 import java.util.Objects;
 
 public record ChannelPaymentOutcome(Kind kind, ChannelPaymentIdentity identity, Money amount, String evidenceId) {
     public ChannelPaymentOutcome {
         Objects.requireNonNull(kind);
         Objects.requireNonNull(identity);
-        DomainChecks.cnyAmount(amount);
+        ChannelAmounts.cnyAmount(amount);
         if (kind == Kind.SUCCEEDED || kind == Kind.NO_COLLECTION || kind == Kind.CLOSED_WITH_FUNDS_RETURNED) {
             DomainChecks.id(evidenceId);
         }

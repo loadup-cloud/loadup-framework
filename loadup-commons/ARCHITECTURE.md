@@ -1,38 +1,27 @@
 # Commons 架构
 
-Commons 位于依赖链底部，供技术组件和业务模块复用，不依赖上层模块。
-
-- [DTO](loadup-commons-dto/README.md)：统一响应、分页、`BaseDO` 与 MapStruct 配置。
-- [Util](loadup-commons-util/README.md)：JSON、日期、字符串等无业务归属的工具。
-- [Log](loadup-commons-log/README.md)：日志格式及 MDC 键约定。
-
-数据库审计字段在 Java/JSON 中统一为 `createdAt`、`updatedAt`，列名为 `created_at`、`updated_at`。通用类型不承载业务授权、HTTP
-路由或具体存储决策。
-
-## 分层与调用路径
+Commons 提供通用值、数据契约和基础工具，生产代码依赖方向保持向下：
 
 ```text
-loadup-commons
-  └─ loadup-commons-dto
-  └─ loadup-commons-log
-  └─ loadup-commons-util
+error / context / masking / log
+             ↑
+            json
+             ↑
+             dto
+             ↑
+             util
 ```
 
-聚合 POM 组织模块与版本，运行时依赖由子模块决定。
+箭头表示上层可依赖下层；实际依赖以各 POM 为准。commons 不依赖 components、modules 或 Pay。
+error、context、masking 的生产代码只依赖 JDK；日志依赖 SLF4J，JSON 依赖 Jackson；DTO 可带 JSON、Validation
+和 OpenAPI 元数据，不引入 ORM 或 MapStruct。
 
-## 脱敏边界
+- `Money` 支持多币种和有符号金额。计算与格式化放 util，不在通用值对象中固定 CNY 或支付金额限制。
+- `DomainChecks` 只验证通用标识、文本和正整数。渠道金额限制由 payment-channel-contracts 的 `ChannelAmounts` 表达。
+- `EventEnvelope` 提供通用事件信封；商业合约引用归 Pay 的 commercial 契约制品。
+- `BaseDO` 和 ORM 注解归 database。Spring 装配和 `LoadUpMapStructConfig` 归 runtime。
+- `commons-util` 只声明源码或运行行为需要的依赖。`ValidateUtils` 使用 Jakarta Validation，因此保留 Hibernate Validator
+  provider；不再附带未使用的 Guava、Commons Text、Pool 或 IO。
 
-`loadup-commons-masking` 无 Spring/Jackson 运行依赖；只表达展示规则。响应适配由 WebMVC 承担，业务权限与明文查询由业务模块控制。
-
-## 业务上下文
-
-`loadup-commons-context` 无运行时三方依赖，提供业务执行链共享数据；`commons-util` 的 TenantUtil 复用 TENANT_ID。核心基于
-JDK 25 ScopedValue 绑定不可变 ExecutionContext，可选 ServiceTemplate 提供 init/clean。WebMVC 负责请求回调边界，Observability
-通过 TaskDecorator 组合业务与标准 Micrometer 传播，核心不依赖它们。
-
-## 时间与集成值
-
-commons-dto 的 BusinessTime 使用动态系统默认 zone，EventEnvelope/ContractReference 与共享支付词汇仅表达数据，不承载服务调用。
-Runtime 提供共享 `Clock` Bean，默认 `systemDefaultZone()`，应用可覆盖。gRPC/Spring Security 支持属于上层现有 gRPC binder，不放入 commons，避免依赖反转。
-
-Spring Boot 装配统一位于 `loadup-components/platform/loadup-components-runtime`；commons 无 Spring 运行依赖。
+上下文保持不可变，只绑定轻量业务值。登录身份与 Trace 分别使用安全和观测组件的标准上下文。JSON 诊断输出遵循
+脱敏、循环引用和资源访问限制，HTTP 输出由 WebMVC 适配。

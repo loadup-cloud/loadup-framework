@@ -15,8 +15,8 @@
  */
 package io.github.loadup.components.payment.channel.api.model;
 
-import io.github.loadup.commons.payment.Channel;
-import io.github.loadup.commons.payment.PaymentMethod;
+import io.github.loadup.components.payment.channel.contract.Channel;
+import io.github.loadup.components.payment.channel.contract.PaymentMethod;
 import java.time.OffsetDateTime;
 
 /**

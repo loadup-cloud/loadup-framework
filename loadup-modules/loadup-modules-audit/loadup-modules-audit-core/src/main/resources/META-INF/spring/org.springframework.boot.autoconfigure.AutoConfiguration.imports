@@ -1,2 +1,0 @@
-io.github.loadup.modules.audit.app.autoconfigure.AuditAutoConfiguration
-io.github.loadup.modules.audit.infrastructure.autoconfigure.AuditPersistenceAutoConfiguration

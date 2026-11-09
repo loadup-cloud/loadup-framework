@@ -19,9 +19,9 @@ import static io.github.loadup.commons.error.DomainViolation.Reason.INVALID_ARGU
 import static io.github.loadup.commons.error.DomainViolation.require;
 
 import io.github.loadup.commons.json.ToStringAsJson;
-import io.github.loadup.commons.payment.AccessMode;
-import io.github.loadup.commons.payment.Channel;
 import io.github.loadup.commons.validation.DomainChecks;
+import io.github.loadup.components.payment.channel.contract.AccessMode;
+import io.github.loadup.components.payment.channel.contract.Channel;
 
 public record WechatAccountIdentity(String appId, String merchantId, String subAppId, String subMerchantId)
         implements ChannelAccountIdentity {

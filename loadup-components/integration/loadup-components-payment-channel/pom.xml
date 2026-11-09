@@ -14,6 +14,7 @@
     <description>Payment acquiring channel contracts, routing engine and vendor protocol binders.</description>
 
     <modules>
+        <module>loadup-components-payment-channel-contracts</module>
         <module>loadup-components-payment-channel-api</module>
         <module>loadup-components-payment-channel-core</module>
         <module>binders/loadup-components-payment-channel-alipay</module>

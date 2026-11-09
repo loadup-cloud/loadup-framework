@@ -21,7 +21,6 @@ import static io.github.loadup.components.payment.channel.api.error.ChannelResul
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.UNSUPPORTED_CAPABILITY;
 
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.commons.payment.PaymentMethod;
 import io.github.loadup.components.payment.channel.api.model.ChannelExecutionContext;
 import io.github.loadup.components.payment.channel.api.model.ChannelPaymentCodeInput;
 import io.github.loadup.components.payment.channel.api.model.ChannelPaymentOutcome;
@@ -31,6 +30,7 @@ import io.github.loadup.components.payment.channel.api.model.ChannelPaymentTarge
 import io.github.loadup.components.payment.channel.api.model.ChannelPaymentValidation;
 import io.github.loadup.components.payment.channel.api.model.PaymentObservation;
 import io.github.loadup.components.payment.channel.api.model.WechatAccountIdentity;
+import io.github.loadup.components.payment.channel.contract.PaymentMethod;
 import io.github.loadup.components.payment.channel.wechat.config.WechatCodepayProperties;
 import io.github.loadup.components.payment.channel.wechat.protocol.WechatBindingGuard;
 import io.github.loadup.components.payment.channel.wechat.protocol.WechatV2Client;

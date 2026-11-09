@@ -18,7 +18,6 @@ package io.github.loadup.components.payment.channel.wechat;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.INVALID_ARGUMENT;
 
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.commons.payment.Channel;
 import io.github.loadup.components.payment.channel.api.model.ChannelExecutionContext;
 import io.github.loadup.components.payment.channel.api.model.ChannelNotificationAcknowledgement;
 import io.github.loadup.components.payment.channel.api.model.ChannelNotificationHint;
@@ -29,6 +28,7 @@ import io.github.loadup.components.payment.channel.api.model.PreparedChannelRefu
 import io.github.loadup.components.payment.channel.api.model.VerifiedChannelNotification;
 import io.github.loadup.components.payment.channel.api.model.VerifiedChannelRefundNotification;
 import io.github.loadup.components.payment.channel.api.spi.ChannelNotificationProvider;
+import io.github.loadup.components.payment.channel.contract.Channel;
 import io.github.loadup.components.payment.channel.wechat.protocol.WechatNotificationCodec;
 
 /**

@@ -21,8 +21,8 @@ import static io.github.loadup.commons.error.DomainViolation.require;
 import io.github.loadup.commons.json.DiagnosticHidden;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.commons.money.Money;
-import io.github.loadup.commons.payment.PaymentMethod;
-import io.github.loadup.commons.validation.DomainChecks;
+import io.github.loadup.components.payment.channel.contract.ChannelAmounts;
+import io.github.loadup.components.payment.channel.contract.PaymentMethod;
 import java.util.Objects;
 
 public record PreparedChannelPayment(
@@ -34,7 +34,7 @@ public record PreparedChannelPayment(
         implements ChannelPaymentExecution {
     public PreparedChannelPayment {
         Objects.requireNonNull(identity);
-        DomainChecks.cnyAmount(amount);
+        ChannelAmounts.cnyAmount(amount);
         Objects.requireNonNull(method);
         require(amount.getCent() > 0 && executionEpoch > 0, INVALID_ARGUMENT);
     }

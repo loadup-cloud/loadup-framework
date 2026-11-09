@@ -19,7 +19,6 @@ import static io.github.loadup.components.payment.channel.api.error.ChannelResul
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.UNSUPPORTED_CAPABILITY;
 
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.commons.payment.Channel;
 import io.github.loadup.components.payment.channel.alipay.protocol.AlipayNotificationCodec;
 import io.github.loadup.components.payment.channel.api.model.ChannelExecutionContext;
 import io.github.loadup.components.payment.channel.api.model.ChannelNotificationAcknowledgement;
@@ -31,6 +30,7 @@ import io.github.loadup.components.payment.channel.api.model.PreparedChannelRefu
 import io.github.loadup.components.payment.channel.api.model.VerifiedChannelNotification;
 import io.github.loadup.components.payment.channel.api.model.VerifiedChannelRefundNotification;
 import io.github.loadup.components.payment.channel.api.spi.ChannelNotificationProvider;
+import io.github.loadup.components.payment.channel.contract.Channel;
 
 /**
  * Alipay trade notification strategy; acknowledgements are fixed protocol values.

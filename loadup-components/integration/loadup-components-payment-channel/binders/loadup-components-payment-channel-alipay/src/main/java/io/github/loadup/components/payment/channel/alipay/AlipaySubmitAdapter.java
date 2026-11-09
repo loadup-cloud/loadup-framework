@@ -21,8 +21,6 @@ import static io.github.loadup.components.payment.channel.api.error.ChannelResul
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.UNSUPPORTED_CAPABILITY;
 
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.commons.payment.AccessMode;
-import io.github.loadup.commons.payment.PaymentMethod;
 import io.github.loadup.components.payment.channel.alipay.config.AlipayH5Properties;
 import io.github.loadup.components.payment.channel.alipay.config.AlipayNotificationProperties;
 import io.github.loadup.components.payment.channel.alipay.protocol.AlipayBindingGuard;
@@ -47,6 +45,8 @@ import io.github.loadup.components.payment.channel.api.model.ChannelPaymentValid
 import io.github.loadup.components.payment.channel.api.model.NoChannelInput;
 import io.github.loadup.components.payment.channel.api.model.PayerIdentityType;
 import io.github.loadup.components.payment.channel.api.model.PaymentObservation;
+import io.github.loadup.components.payment.channel.contract.AccessMode;
+import io.github.loadup.components.payment.channel.contract.PaymentMethod;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Duration;

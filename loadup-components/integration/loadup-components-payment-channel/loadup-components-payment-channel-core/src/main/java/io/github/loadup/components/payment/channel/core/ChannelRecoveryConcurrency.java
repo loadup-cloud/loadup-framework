@@ -19,7 +19,7 @@ import static io.github.loadup.components.payment.channel.api.error.ChannelResul
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.RECOVERY_CONFIGURATION_INVALID;
 
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.commons.payment.Channel;
+import io.github.loadup.components.payment.channel.contract.Channel;
 import io.github.loadup.components.resilience4j.ResilienceRegistries;
 import io.github.resilience4j.bulkhead.Bulkhead;
 import java.util.EnumMap;

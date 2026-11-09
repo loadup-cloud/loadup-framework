@@ -37,8 +37,6 @@ import static org.mockito.Mockito.when;
 
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.money.Money;
-import io.github.loadup.commons.payment.Channel;
-import io.github.loadup.commons.payment.PaymentMethod;
 import io.github.loadup.commons.util.DigestUtils;
 import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum;
@@ -49,6 +47,8 @@ import io.github.loadup.components.payment.channel.api.model.ChannelRefundOutcom
 import io.github.loadup.components.payment.channel.api.model.PreparedChannelRefund;
 import io.github.loadup.components.payment.channel.api.model.RefundObservation;
 import io.github.loadup.components.payment.channel.api.model.WechatAccountIdentity;
+import io.github.loadup.components.payment.channel.contract.Channel;
+import io.github.loadup.components.payment.channel.contract.PaymentMethod;
 import io.github.loadup.components.payment.channel.wechat.config.WechatNotificationProperties;
 import io.github.loadup.components.payment.channel.wechat.protocol.WechatMethod;
 import io.github.loadup.components.payment.channel.wechat.protocol.WechatProtocolClient;

@@ -15,7 +15,7 @@
  */
 package io.github.loadup.components.delayedtask.dataobject;
 
-import io.github.loadup.commons.dataobject.BaseDO;
+import io.github.loadup.components.database.dataobject.BaseDO;
 import io.github.loadup.components.delayedtask.DelayedTaskStatus;
 import java.time.LocalDateTime;
 

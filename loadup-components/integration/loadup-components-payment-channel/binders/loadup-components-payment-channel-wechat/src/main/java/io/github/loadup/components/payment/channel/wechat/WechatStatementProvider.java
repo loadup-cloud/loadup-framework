@@ -27,8 +27,6 @@ import static io.github.loadup.components.payment.channel.api.error.ChannelResul
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.UNSUPPORTED_CAPABILITY;
 
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.commons.payment.AccessMode;
-import io.github.loadup.commons.payment.Channel;
 import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.http.HttpCall;
 import io.github.loadup.components.http.HttpTemplate;
@@ -38,6 +36,8 @@ import io.github.loadup.components.payment.channel.api.model.ChannelStatementReq
 import io.github.loadup.components.payment.channel.api.model.VerifiedChannelStatement;
 import io.github.loadup.components.payment.channel.api.model.WechatAccountIdentity;
 import io.github.loadup.components.payment.channel.api.spi.ChannelStatementProvider;
+import io.github.loadup.components.payment.channel.contract.AccessMode;
+import io.github.loadup.components.payment.channel.contract.Channel;
 import io.github.loadup.components.payment.channel.wechat.converter.WechatStatementConverter;
 import io.github.loadup.components.payment.channel.wechat.protocol.WechatCredentialReader;
 import io.github.loadup.components.payment.channel.wechat.protocol.WechatMethod;

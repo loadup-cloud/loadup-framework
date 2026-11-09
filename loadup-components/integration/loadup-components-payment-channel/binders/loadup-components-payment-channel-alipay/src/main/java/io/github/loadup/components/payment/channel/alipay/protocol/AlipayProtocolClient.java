@@ -22,12 +22,12 @@ import static io.github.loadup.components.payment.channel.api.error.ChannelResul
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.UNSUPPORTED_CAPABILITY;
 
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.commons.payment.AccessMode;
 import io.github.loadup.commons.util.DigestUtils;
 import io.github.loadup.components.http.HttpCall;
 import io.github.loadup.components.http.HttpTemplate;
 import io.github.loadup.components.payment.channel.api.model.AlipayH5ChannelAction;
 import io.github.loadup.components.payment.channel.api.model.ChannelBindingRevision;
+import io.github.loadup.components.payment.channel.contract.AccessMode;
 import java.net.URI;
 import java.util.Map;
 import org.springframework.transaction.support.TransactionSynchronizationManager;

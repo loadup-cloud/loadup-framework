@@ -15,11 +15,11 @@
  */
 package io.github.loadup.components.payment.channel.wechat.converter;
 
-import io.github.loadup.commons.mapping.LoadUpMapStructConfig;
 import io.github.loadup.components.payment.channel.api.model.ChannelExecutionContext;
 import io.github.loadup.components.payment.channel.api.model.ChannelStatementReceipt;
 import io.github.loadup.components.payment.channel.api.model.ChannelStatementScope;
 import io.github.loadup.components.payment.channel.api.model.VerifiedChannelStatement;
+import io.github.loadup.components.runtime.mapping.LoadUpMapStructConfig;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

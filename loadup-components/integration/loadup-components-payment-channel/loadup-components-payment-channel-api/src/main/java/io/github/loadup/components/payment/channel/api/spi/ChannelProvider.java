@@ -15,8 +15,8 @@
  */
 package io.github.loadup.components.payment.channel.api.spi;
 
-import io.github.loadup.commons.payment.Channel;
 import io.github.loadup.components.payment.channel.api.facade.ChannelPaymentOperations;
+import io.github.loadup.components.payment.channel.contract.Channel;
 
 /**
  * One strategy per channel, shared by direct and service-provider access modes.

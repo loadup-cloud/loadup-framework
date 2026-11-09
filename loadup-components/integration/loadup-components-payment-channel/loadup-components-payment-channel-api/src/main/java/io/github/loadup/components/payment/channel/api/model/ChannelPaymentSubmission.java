@@ -21,7 +21,7 @@ import static io.github.loadup.commons.error.DomainViolation.require;
 import io.github.loadup.commons.json.DiagnosticHidden;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.commons.money.Money;
-import io.github.loadup.commons.validation.DomainChecks;
+import io.github.loadup.components.payment.channel.contract.ChannelAmounts;
 import java.util.Objects;
 
 /**
@@ -34,7 +34,7 @@ public record ChannelPaymentSubmission(
         @DiagnosticHidden ChannelPaymentAction action) {
     public ChannelPaymentSubmission {
         Objects.requireNonNull(identity);
-        DomainChecks.cnyAmount(amount);
+        ChannelAmounts.cnyAmount(amount);
         require(amount.getCent() > 0 && (observation != null || action != null), INVALID_ARGUMENT);
         if (observation != null) {
             require(identity.equals(observation.identity()) && amount.equals(observation.amount()), INVALID_ARGUMENT);

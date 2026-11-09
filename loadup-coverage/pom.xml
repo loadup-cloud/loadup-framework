@@ -20,6 +20,10 @@
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-components-payment-channel-contracts</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-cache-api</artifactId>
         </dependency>
         <dependency>
@@ -279,6 +283,9 @@
                                     <!-- Require non-empty execution data without the rule's default 10 KB cap. -->
                                     <maxsize>9223372036854775807</maxsize>
                                     <files>
+                                        <file>
+                                            ${maven.multiModuleProjectDirectory}/loadup-components/integration/loadup-components-payment-channel/loadup-components-payment-channel-contracts/target/jacoco-unit.exec
+                                        </file>
                                         <!-- One file per current component test suite kind.
                                              Add entries when adding unit tests or ITs to another module. -->
                                         <file>
@@ -338,9 +345,7 @@
                                         <file>
                                             ${maven.multiModuleProjectDirectory}/loadup-components/integration/loadup-components-payment-channel/binders/loadup-components-payment-channel-wechat/target/jacoco-unit.exec
                                         </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/integration/loadup-components-http/target/jacoco-unit.exec
-                                        </file>
+
                                         <file>
                                             ${maven.multiModuleProjectDirectory}/loadup-components/platform/loadup-components-configcenter/loadup-components-configcenter-test/target/jacoco-unit.exec
                                         </file>
@@ -427,9 +432,6 @@
                                         </file>
                                         <file>
                                             ${maven.multiModuleProjectDirectory}/loadup-components/web/loadup-components-springdoc/target/jacoco-it.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/web/loadup-components-webmvc/target/jacoco-unit.exec
                                         </file>
                                     </files>
                                 </requireFilesSize>

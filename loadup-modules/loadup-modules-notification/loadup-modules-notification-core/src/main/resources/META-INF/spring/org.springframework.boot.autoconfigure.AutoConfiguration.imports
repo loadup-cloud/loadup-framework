@@ -1,3 +1,0 @@
-io.github.loadup.modules.notification.app.autoconfigure.NotificationAutoConfiguration
-io.github.loadup.modules.notification.app.autoconfigure.NotificationSubmissionAutoConfiguration
-io.github.loadup.modules.notification.infrastructure.autoconfigure.NotificationPersistenceAutoConfiguration

@@ -15,7 +15,6 @@
  */
 package io.github.loadup.components.payment.channel.alipay;
 
-import io.github.loadup.commons.payment.Channel;
 import io.github.loadup.components.payment.channel.api.model.ChannelExecutionContext;
 import io.github.loadup.components.payment.channel.api.model.ChannelPaymentRecovery;
 import io.github.loadup.components.payment.channel.api.model.ChannelPaymentRequest;
@@ -26,6 +25,7 @@ import io.github.loadup.components.payment.channel.api.model.PaymentObservation;
 import io.github.loadup.components.payment.channel.api.model.PreparedChannelRefund;
 import io.github.loadup.components.payment.channel.api.model.RefundObservation;
 import io.github.loadup.components.payment.channel.api.spi.ChannelProvider;
+import io.github.loadup.components.payment.channel.contract.Channel;
 
 /**
  * Alipay collection and refund strategy, independent of payment application orchestration.

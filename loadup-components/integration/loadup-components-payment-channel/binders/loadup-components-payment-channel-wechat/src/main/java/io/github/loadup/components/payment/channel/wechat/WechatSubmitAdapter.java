@@ -22,7 +22,6 @@ import static io.github.loadup.components.payment.channel.api.error.ChannelResul
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.UNSUPPORTED_CAPABILITY;
 
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.commons.payment.PaymentMethod;
 import io.github.loadup.components.payment.channel.api.model.ChannelExecutionContext;
 import io.github.loadup.components.payment.channel.api.model.ChannelH5Input;
 import io.github.loadup.components.payment.channel.api.model.ChannelPayerIdentityInput;
@@ -36,6 +35,7 @@ import io.github.loadup.components.payment.channel.api.model.PayerIdentityType;
 import io.github.loadup.components.payment.channel.api.model.PaymentObservation;
 import io.github.loadup.components.payment.channel.api.model.WechatAccountIdentity;
 import io.github.loadup.components.payment.channel.api.model.WechatH5ChannelAction;
+import io.github.loadup.components.payment.channel.contract.PaymentMethod;
 import io.github.loadup.components.payment.channel.wechat.config.WechatNotificationProperties;
 import io.github.loadup.components.payment.channel.wechat.protocol.WechatBindingGuard;
 import io.github.loadup.components.payment.channel.wechat.protocol.WechatJsapiSigner;

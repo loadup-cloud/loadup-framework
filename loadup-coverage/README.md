@@ -41,6 +41,8 @@ CI 归档上述报告、原始 unit / IT exec 及 Surefire/Failsafe 报告。完
 1. 有生产源码的组件 jar 在自己的 POM 添加 `loadup.coverage.skip=false`；纯测试模块不添加。
    当前例外：`loadup-components-payment-channel-alipay/wechat` 因缺少 wire-level 协议夹具暂设 `true`，恢复门禁前须补齐
    分支覆盖，详见组件 README 的迁移状态。
+   `loadup-components-kms-api`、`loadup-components-http`、`loadup-components-webmvc` 也按当前要求临时设为 `true`，
+   跳过覆盖率门禁，仍收集测试执行数据和报告；恢复时将各模块的 `loadup.coverage.skip` 改回 `false`。
 2. 在本模块 POM 添加组件依赖，生产 jar 使用默认 compile scope，纯测试模块使用 test scope。版本由框架 BOM 管理。
 3. 在 `component-execution-data` 中维护预期文件：有 Surefire 用例列 `jacoco-unit.exec`，有 Failsafe 用例列
    `jacoco-it.exec`；两类都有则各列一条。移除测试类别时同步删除条目。

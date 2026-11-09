@@ -2,7 +2,7 @@
 
 LoadUp 是面向 Spring Boot 应用的可复用框架与 SDK。项目通过 BOM 统一依赖版本，集成方按需引入技术组件和通用业务模块，在自己的应用中组合所需能力。
 
-[阅读文档](https://loadup-docs.laysan.site/) · [技术组件](loadup-components/README.md) · [业务模块](loadup-modules/README.md) · [架构说明](ARCHITECTURE.md)
+[阅读文档](https://loadup-docs.laysan.site/) · [技术组件](loadup-components/README.md) · [业务模块](../loadup-modules/README.md) · [架构说明](ARCHITECTURE.md)
 
 ## 项目概况
 
@@ -22,10 +22,10 @@ LoadUp 是供其他应用消费的 SDK。本仓库聚合可复用模块，不包
 | 目录                                                   | 内容                                                                                                    |
 |--------------------------------------------------------|---------------------------------------------------------------------------------------------------------|
 | [`loadup-dependencies`](loadup-dependencies/README.md) | 统一依赖版本的 BOM                                                                                      |
-| [`loadup-commons`](loadup-commons/README.md)           | DTO、工具、日志与时间基础能力                                                                           |
+| [`loadup-commons`](loadup-commons/README.md)           | 通用数据契约、错误、上下文、JSON、日志、脱敏与工具                                                                           |
 | [`loadup-components`](loadup-components/README.md)     | Web MVC、认证授权、指标追踪、缓存、数据库、分布式锁、文件存储、通知、调度等技术组件                     |
-| [`loadup-modules`](loadup-modules/README.md)           | 可复用业务模块，包含 UPMS、审计中心、数据字典、文件资源、站内通知、导入导出任务、商户资料及动态合约管理 |
-| [`loadup-testify`](loadup-testify/README.md)           | 集成测试辅助能力                                                                                        |
+| [`loadup-modules`](../loadup-modules/README.md)           | 可复用业务模块，包含 UPMS、审计中心、数据字典、文件资源、站内通知、导入导出任务 |
+| [`loadup-testify`](../loadup-testify/README.md)           | 集成测试辅助能力                                                                                        |
 
 模块的接入方式、配置项和设计说明见各目录的 README 与 ARCHITECTURE
 文档，也可在[文档站](https://loadup-docs.laysan.site/docs/)按能力查找。

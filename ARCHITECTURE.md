@@ -2,7 +2,7 @@
 
 This repository publishes reusable framework modules for applications that consume the
 `loadup-dependencies` BOM. The default root Maven reactor aggregates the BOM, commons,
-technical components, reusable business modules, and Testify. It does not contain a runnable
+and technical components. Reusable business modules and Testify live in sibling repositories. It does not contain a runnable
 application. The `loadup-coverage` report aggregator is included only by the optional
 `component-coverage` profile.
 
