@@ -34,11 +34,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-testify-spring-boot-starter</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
             <scope>test</scope>
