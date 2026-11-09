@@ -61,7 +61,6 @@
         <maven-antrun-plugin.version>3.2.0</maven-antrun-plugin.version>
         <maven-assembly-plugin.version>3.8.0</maven-assembly-plugin.version>
         <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
-        <maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
         <maven-dependency-plugin.version>3.11.0</maven-dependency-plugin.version>
         <maven-deploy-plugin.version>3.2.0</maven-deploy-plugin.version>
         <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
@@ -91,10 +90,6 @@
 
         <!-- Code quality tool versions -->
         <palantir-java-format.version>2.98.0</palantir-java-format.version>
-
-        <!-- Annotation processor versions -->
-        <mapstruct.version>1.6.3</mapstruct.version>
-        <mybatis-flex.version>1.11.8</mybatis-flex.version>
 
         <spring.boot.version>4.1.2</spring.boot.version>
 
@@ -135,9 +130,23 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>${maven-compiler-plugin.version}</version>
+                    <version>3.16.0</version>
                     <configuration>
                         <proc>full</proc>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.mapstruct</groupId>
+                                <artifactId>mapstruct-processor</artifactId>
+                            </path>
+                            <path>
+                                <groupId>org.springframework.boot</groupId>
+                                <artifactId>spring-boot-configuration-processor</artifactId>
+                            </path>
+                        </annotationProcessorPaths>
+                        <annotationProcessors>
+                            <annotationProcessor>org.mapstruct.ap.MappingProcessor</annotationProcessor>
+                            <annotationProcessor>org.springframework.boot.configurationprocessor.ConfigurationMetadataAnnotationProcessor</annotationProcessor>
+                        </annotationProcessors>
                         <source>${java.version}</source>
                         <target>${java.version}</target>
                         <release>${java.version}</release>
@@ -146,24 +155,6 @@
                         <compilerArgs>
                             <arg>-Xlint:all</arg>
                         </compilerArgs>
-                        <annotationProcessorPaths>
-                            <path>
-                                <groupId>org.mapstruct</groupId>
-                                <artifactId>mapstruct-processor</artifactId>
-                                <version>${mapstruct.version}</version>
-                            </path>
-                            <path>
-                                <groupId>org.springframework.boot</groupId>
-                                <artifactId>spring-boot-configuration-processor</artifactId>
-                                <version>${spring.boot.version}</version>
-                            </path>
-                            <path>
-                                <groupId>com.mybatis-flex</groupId>
-                                <artifactId>mybatis-flex-processor</artifactId>
-                                <version>${mybatis-flex.version}</version>
-                            </path>
-
-                        </annotationProcessorPaths>
                     </configuration>
                 </plugin>
                 <plugin>

@@ -2,7 +2,7 @@
 
 ## Scope
 
-`loadup-components-database` is a single-jar integration for MyBatis-Flex and Spring JDBC. It owns persistence
+`loadup-components-database` is the runtime integration for MyBatis-Flex and Spring JDBC. It owns persistence
 conventions, generated mapper/table definitions, ID/sequence allocation, Flyway defaults and schema-per-tenant routing
 seams. Applications own datasource selection, JDBC drivers and deployment migrations.
 
@@ -40,7 +40,7 @@ Timestamps use the framework clock and the JVM system default time zone.
 
 ## Generated sources
 
-`mybatis-flex-processor` runs as an annotation processor in every module. For each `@Table` entity it generates:
+`loadup-components-database-processor` delegates generation to the official MyBatis-Flex processor in entity modules. For each `@Table` entity it generates:
 
 - `{entityPackage.parent}.mapper.XxxMapper` annotated with `@Mapper` and extending `BaseMapper<XxxDO>`;
 - `{entityPackage.parent}.table.XxxTableDef` and an aggregate `Tables` class with type-safe `QueryColumn` constants.
@@ -55,6 +55,23 @@ banner suppression and pagination defaults. Entity classes without a `deleted` c
 Because gateways mix mapper reads with explicit JDBC writes in the same transaction, the MyBatis local cache scope is
 `STATEMENT`. A session-scoped cache would return stale entities after an explicit JDBC update that MyBatis cannot
 observe.
+
+## APT build policy ownership
+
+Runtime customization stays in MyBatisFlexAutoConfiguration. The sibling database-processor module owns the
+single configuration resource under src/main/resources/META-INF/loadup/database/. Its official Flex processor
+dependency is transitive on the processor path; business POMs declare only the LoadUp database processor for Flex.
+
+LoadUp writes the fixed policy into the current compilation's CLASS_OUTPUT before initializing the upstream
+generator. stopBubbling=true prevents ancestor or module-local policies from changing generation. Configuration
+load/write failures abort compilation. The same mechanism handles main and test compilation outputs, without
+source-tree copies, sync scripts or Maven resource download steps.
+
+The parent compiler configuration explicitly selects LoadUp, MapStruct and Spring Boot metadata processors.
+This is necessary because the upstream JAR also registers its own processor through SPI; automatic discovery
+would run both generators. The processor module disables annotation processing while compiling itself and never
+depends on the runtime database component. Framework entity modules declare it provided/optional as a reactor
+dependency, so -am and parallel builds order the processor before its consumers without exporting it at runtime.
 
 ## Schema-per-tenant isolation
 

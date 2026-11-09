@@ -49,6 +49,7 @@ LoadUp 是一个 **被消费的框架/SDK**，通过 `loadup-dependencies` BOM �
   Maven。
 - 需要验证编译、注解处理或依赖装配时使用 Maven build；不完全禁止构建。优先选择受影响模块及其依赖，用户要求整体构建时执行整体构建。
 - Maven 编译必须带 `clean`，避免 MapStruct 等注解处理器增量生成时发生 `FilerException`。
+- 接入 database 编译期处理器时，处理器内部维护唯一配置，模块无需同步配置；版本由 framework BOM 管理。详见 [database processor 文档](loadup-components/data/loadup-components-database-processor/README.md)。
 - 明确区分格式化、编译、单测与真实环境集成测试；未运行的验证不得标为通过。根据任务需要选择测试和检查跳过参数，避免无收益的重复全量执行。
 - Spotless 不绑定 Maven 生命周期，`clean install/verify/package` 不会因格式问题中断；格式检查与修复手动执行
   `mvnd spotless:check` / `mvnd spotless:apply`（或 `./spotless.sh check|apply`）。CI 在快速质量任务中显式执行

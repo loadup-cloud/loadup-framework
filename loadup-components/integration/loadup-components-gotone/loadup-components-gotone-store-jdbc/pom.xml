@@ -14,6 +14,12 @@
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
+            <artifactId>loadup-components-database-processor</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-runtime</artifactId>
         </dependency>
 
@@ -66,13 +72,14 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <annotationProcessorPaths combine.children="append"/>
-                    <annotationProcessors>
-                        <annotationProcessor>org.mapstruct.ap.MappingProcessor</annotationProcessor>
-                        <annotationProcessor>org.springframework.boot.configurationprocessor.ConfigurationMetadataAnnotationProcessor</annotationProcessor>
-
-                        <annotationProcessor>com.mybatisflex.processor.MybatisFlexProcessor</annotationProcessor>
-
+                    <annotationProcessorPaths combine.children="append">
+                        <path>
+                            <groupId>io.github.loadup-cloud</groupId>
+                            <artifactId>loadup-components-database-processor</artifactId>
+                        </path>
+                    </annotationProcessorPaths>
+                    <annotationProcessors combine.children="append">
+                        <annotationProcessor>io.github.loadup.components.database.processor.LoadUpMyBatisFlexProcessor</annotationProcessor>
                     </annotationProcessors>
                 </configuration>
             </plugin>

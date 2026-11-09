@@ -70,6 +70,10 @@ class DocSyncTest(unittest.TestCase):
         source = self.root / 'loadup-components/data/loadup-components-cache/README.md'
         self.assertEqual(mapping[source], self.content / 'components/cache.md')
 
+    def test_framework_bom_keeps_the_existing_documentation_url(self):
+        module = self.pom('loadup-framework-bom')
+        self.assertEqual(sync.site_path(module), self.content / 'dependencies.md')
+
     def test_missing_declared_pom_is_reported_instead_of_silently_skipped(self):
         self.pom('loadup-components', ['data/missing-component'])
         with self.assertRaisesRegex(ValueError, 'missing-component'):

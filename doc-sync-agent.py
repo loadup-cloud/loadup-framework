@@ -79,6 +79,8 @@ def site_path(module: Path) -> Path:
         base = CONTENT / "modules" / "_index.md" if len(parts) == 1 else CONTENT / "modules" / f"{slug}.md"
     elif family == "loadup-testify":
         base = CONTENT / "testing" / "_index.md" if len(parts) == 1 else CONTENT / "testing" / f"{module.name}.md"
+    elif family == "loadup-framework-bom":
+        base = CONTENT / "dependencies.md"
     elif family in ("loadup-application", "loadup-dependencies"):
         base = CONTENT / (family.removeprefix("loadup-") + ".md")
     else:

@@ -74,30 +74,15 @@ filters, `FOR UPDATE`, `IN` lists, or requires explicit column lists and locking
 the infrastructure layer with named parameters and clear locking/pagination semantics. Current examples:
 `LoginLogGatewayImpl` and `InboxGatewayImpl`.
 
-Generated artifacts and their packages are controlled by `mybatis-flex.config`:
-`processor.mapper.generateEnable=true`, `processor.mapper.annotation=true`,
-`processor.mapper.package=${entityPackage.parent}.mapper`,
-`processor.tableDef.package=${entityPackage.parent}.table` and
-`processor.allInTables.package=${entityPackage.parent}.table`. Keep a copy of this file next to each module's `pom.xml`;
-the processor resolves the project root differently for shallow and nested module layouts.
+Generated artifacts use the [LoadUp database processor](../loadup-components-database-processor/README.md).
+It includes the official MyBatis-Flex processor as a transitive build dependency and owns the single generation
+configuration. Entity modules do not keep mybatis-flex.config files or run synchronization scripts. The root POMs
+select LoadUp's processor entry explicitly, alongside MapStruct and Spring Boot configuration metadata processing,
+so the upstream processor is not also discovered and executed.
 
-Consumers that compile their own `@Table` entities add the processor to the compiler plugin:
-
-```xml
-<plugin>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-compiler-plugin</artifactId>
-    <configuration>
-        <annotationProcessorPaths>
-            <path>
-                <groupId>com.mybatis-flex</groupId>
-                <artifactId>mybatis-flex-processor</artifactId>
-                <version>1.11.8</version>
-            </path>
-        </annotationProcessorPaths>
-    </configuration>
-</plugin>
-```
+Import the framework BOM for processor versions. BOM import does not inherit compiler-plugin configuration;
+independent repositories configure the compiler plugin in their own parent POM. Runtime database configuration
+and annotation processing remain separate dependencies.
 
 Flyway support is optional; consumers using migrations must include Flyway and its PostgreSQL database module. Migration
 scripts assume a fresh PostgreSQL schema.
