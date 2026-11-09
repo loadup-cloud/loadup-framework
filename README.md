@@ -145,10 +145,13 @@ Temurin 25、经 SHA-256 校验的 mvnd 1.0.6 和 Maven 依赖缓存；PR 更新
   聚合扫描，也不再需要 `NVD_API_KEY` 与 OWASP 数据缓存；如需 NVD 深度扫描，应在独立流水线或上游执行。PR 检查需要启用 GitHub
   Dependency Graph，私有仓库还需具备 Dependency Review
   权限。参见 [GitHub 配置说明](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/manage-your-dependency-security/configure-dependency-review-action)。
-- **发布**：默认关闭。设置仓库变量 `PUBLISH_PACKAGES=true`、`PACKAGES_USERNAME` 以及具有目标仓库访问和 `write:packages` 权限的
-  secret `PACKAGES_TOKEN` 后，仅存在后端改动的 `main` / `develop` push 且上述验证全部通过才发布至既有
-  `loadup-cloud/loadup-packages`。跨仓库发布凭证仅在发布步骤注入，PR 不接收此凭证；不再复用 OSSRH 凭证。发布重新 clean
-  编译并跳过已执行的测试，不复用其他 job 的 target。
+- **发布**：后端改动的 `main` / `develop` / `dev` push 通过上述全部检查后，发布至
+  `https://maven.pkg.github.com/loadup-cloud/loadup-packages`。也可以在上述分支手动运行 CI 并勾选 `publish-packages`，用于首次发布或补发。
+  仓库 Actions secrets 需配置 `OSSRH_USERNAME`（GitHub 用户名）和 `OSSRH_TOKEN`（该用户的 classic PAT，具有目标仓库访问权及
+  `write:packages` 权限；名称沿用现有配置，实际使用 GitHub 凭证）。凭证仅在发布 job 注入，PR 不发布。发布重新 clean
+  编译并跳过已执行的测试，不复用其他 job 的 target；独立 BOM 与框架模块统一使用 Deploy Plugin 3.2.0 和 `deployAtEnd`。
+- **消费**：Pay 通过 `OSSRH_USERNAME` / `OSSRH_TOKEN`（`read:packages`）从同一 registry 读取 `loadup-dependencies` BOM
+  与框架模块。首次运行 Pay CI 前，先完成相应 `loadup.framework.version`（当前 `0.0.1-SNAPSHOT`）的框架发布。
 
 仓库维护者应将 **Tests, Quality and Coverage** 与 **Dependency Review** 设为 PR 合并必需检查。前端在独立的 `loadup-admin`
 仓库执行 Node/pnpm CI；Hugo 站点在并列的 `docs` 仓库。本仓库不配置 npm Dependabot，也不构建前端或文档站。

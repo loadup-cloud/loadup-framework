@@ -11,8 +11,8 @@ runs:
         cache: maven
         cache-dependency-path: '**/pom.xml'
         server-id: github
-        server-username: PACKAGES_USERNAME
-        server-password: PACKAGES_TOKEN
+        server-username: OSSRH_USERNAME
+        server-password: OSSRH_TOKEN
     - name: Clear cached Maven download failures
       shell: bash
       run: |

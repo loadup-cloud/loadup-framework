@@ -393,7 +393,7 @@
                                             ${maven.multiModuleProjectDirectory}/loadup-components/reliability/loadup-components-outbox/target/jacoco-it.exec
                                         </file>
                                         <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/reliability/loadup-components-resilience4j/loadup-components-resilience4j-binder-core/target/jacoco-unit.exec
+                                            ${maven.multiModuleProjectDirectory}/loadup-components/reliability/loadup-components-resilience4j/target/jacoco-unit.exec
                                         </file>
                                         <file>
                                             ${maven.multiModuleProjectDirectory}/loadup-components/security/loadup-components-authorization/target/jacoco-unit.exec

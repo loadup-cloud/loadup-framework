@@ -49,7 +49,9 @@ import org.springframework.transaction.support.TransactionTemplate;
         classes = NotificationSubmissionIT.Application.class,
         properties = {"loadup.outbox.worker-enabled=false", "spring.flyway.enabled=true"})
 @EnableTestContainers(ContainerType.POSTGRESQL)
-@Sql(scripts = "classpath:db/schema/outbox.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
+@Sql(
+        scripts = {"classpath:db/schema/sequence_allocation.sql", "classpath:db/schema/outbox.sql"},
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 class NotificationSubmissionIT {
     private static final String SOURCE = "notification-submission-it";
 

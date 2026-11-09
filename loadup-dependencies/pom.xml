@@ -1133,6 +1133,18 @@
         </dependencies>
     </dependencyManagement>
 
+    <!-- This standalone BOM does not inherit the framework parent's deploy plugin.
+         Use the same version so id::url and deployAtEnd work for the entire reactor. -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>3.2.0</version>
+            </plugin>
+        </plugins>
+    </build>
+
     <profiles>
     <profile>
         <id>github</id>

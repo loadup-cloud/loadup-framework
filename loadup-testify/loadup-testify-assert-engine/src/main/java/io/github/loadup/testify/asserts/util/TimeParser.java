@@ -27,7 +27,9 @@ import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -39,6 +41,14 @@ import org.apache.commons.lang3.time.DateUtils;
 
 public class TimeParser {
 
+    /** Space-separated local date-time with a 1-9 digit fractional second parsed as nanoseconds. */
+    private static final DateTimeFormatter SPACE_DATE_TIME = new DateTimeFormatterBuilder()
+            .appendPattern("yyyy-MM-dd HH:mm:ss")
+            .optionalStart()
+            .appendFraction(ChronoField.NANO_OF_SECOND, 1, 9, true)
+            .optionalEnd()
+            .toFormatter(Locale.ROOT);
+
     private static final List<DateTimeFormatter> JAVA_TIME_FORMATTERS = Arrays.asList(
             DateTimeFormatter.ISO_INSTANT,
             DateTimeFormatter.ISO_ZONED_DATE_TIME,
@@ -49,8 +59,7 @@ public class TimeParser {
             DateTimeFormatter.ISO_DATE,
             DateTimeFormatter.ISO_DATE_TIME,
             DateTimeFormatter.RFC_1123_DATE_TIME,
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS"),
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"),
+            SPACE_DATE_TIME,
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"),
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"),
             DateTimeFormatter.ofPattern("yyyy-MM-dd"),

@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ main, develop, dev ]
   workflow_dispatch:
+    inputs:
+      publish-packages:
+        description: Publish framework packages after all checks pass (main, develop or dev only)
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -156,8 +161,9 @@ jobs:
     needs: [ changes, quality-gate ]
     if: >-
       needs.changes.outputs.backend == 'true' &&
-      github.event_name == 'push' && vars.PUBLISH_PACKAGES == 'true' &&
-      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+      (github.event_name == 'push' ||
+       (github.event_name == 'workflow_dispatch' && inputs.publish-packages)) &&
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/dev')
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:
@@ -166,18 +172,20 @@ jobs:
     concurrency:
       group: github-packages
       cancel-in-progress: false
+    env:
+      OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+      OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
     steps:
       - uses: actions/checkout@v7 # v7
         with:
           persist-credentials: false
-      - uses: ./.github/actions/setup-build
-      - name: Publish to the existing cross-repository package registry
-        env:
-          PACKAGES_USERNAME: ${{ vars.PACKAGES_USERNAME }}
-          PACKAGES_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
+      - name: Require cross-repository publishing credentials
         run: |
-          : "${PACKAGES_USERNAME:?Set the PACKAGES_USERNAME repository variable}"
-          : "${PACKAGES_TOKEN:?Set PACKAGES_TOKEN with access to loadup-cloud/loadup-packages}"
+          : "${OSSRH_USERNAME:?Set OSSRH_USERNAME to the GitHub username that owns the token}"
+          : "${OSSRH_TOKEN:?Set OSSRH_TOKEN to a classic PAT with write:packages and access to loadup-cloud/loadup-packages}"
+      - uses: ./.github/actions/setup-build
+      - name: Publish snapshots to GitHub Packages
+        run: |
           mvn -B -ntp -U -T 1 clean deploy -P github \
             -DaltDeploymentRepository=github::https://maven.pkg.github.com/loadup-cloud/loadup-packages \
             -DdeployAtEnd=true -DskipTests
