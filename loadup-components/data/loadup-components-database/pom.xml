@@ -8,7 +8,6 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
 
-    <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-components-database</artifactId>
     <name>LoadUp Components Database</name>
     <description>JDBC configuration, transactions, tenant context and ID generation.</description>
