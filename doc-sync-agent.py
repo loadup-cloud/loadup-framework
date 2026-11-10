@@ -81,7 +81,7 @@ def site_path(module: Path) -> Path:
         base = CONTENT / "testing" / "_index.md" if len(parts) == 1 else CONTENT / "testing" / f"{module.name}.md"
     elif family == "loadup-framework-bom":
         base = CONTENT / "dependencies.md"
-    elif family in ("loadup-application", "loadup-dependencies"):
+    elif family in ("loadup-application", "loadup-framework-bom"):
         base = CONTENT / (family.removeprefix("loadup-") + ".md")
     else:
         raise ValueError(f"No site location for {module.relative_to(ROOT)}")

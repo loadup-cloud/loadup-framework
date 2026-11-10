@@ -1,6 +1,6 @@
 # LoadUp BOM
 
-`loadup-dependencies` 是 framework 的 BOM，管理 commons、components 与框架第三方依赖版本，是纯 POM 制品，不提供运行时代码。
+`loadup-framework-bom` 是 framework 的 BOM，管理 commons、components 与框架第三方依赖版本，是纯 POM 制品，不提供运行时代码。
 
 ## 引入
 
@@ -9,7 +9,7 @@
   <dependencies>
     <dependency>
       <groupId>io.github.loadup-cloud</groupId>
-      <artifactId>loadup-dependencies</artifactId>
+      <artifactId>loadup-framework-bom</artifactId>
       <version>0.0.1-SNAPSHOT</version>
       <type>pom</type>
       <scope>import</scope>

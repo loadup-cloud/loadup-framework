@@ -22,7 +22,7 @@ KMS，不接受本地私钥参数。
 
 ## Maven 接入
 
-先导入 `loadup-dependencies` BOM：
+先导入 `loadup-framework-bom` BOM：
 
 ```xml
 <dependency>

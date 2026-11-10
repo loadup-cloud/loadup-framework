@@ -86,7 +86,7 @@ jobs:
         # Reuse exactly the bytecode and merged execution data from the successful build.
         # The standalone BOM does not inherit the parent's named plugin executions.
         run: |
-          mvn -B -ntp -T 1 -Pcomponent-coverage -pl '!loadup-dependencies' --fail-at-end \
+          mvn -B -ntp -T 1 -Pcomponent-coverage -pl '!loadup-framework-bom' --fail-at-end \
             enforcer:enforce@component-coverage-inputs \
             jacoco:check@component-coverage-check
       - name: Show container state on failure

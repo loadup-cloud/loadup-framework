@@ -11,7 +11,7 @@ LoadUp 是面向 Spring Boot 应用的可复用框架与 SDK。项目通过 BOM 
 - **通用业务能力**：UPMS 提供用户、权限与账号安全管理；审计中心记录关键操作；数据字典支持动态维护业务选项；文件资源管理复用
   DFS 存储；站内通知接入 Gotone 渠道；导入导出任务由 Scheduler 唤醒数据库扫描器并复用文件资源；DelayedTask
   保存业务截止时间并提供租约恢复与重试。
-- **统一版本管理**：`loadup-dependencies` BOM 管理 LoadUp 模块及相关依赖版本。
+- **统一版本管理**：`loadup-framework-bom` BOM 管理 LoadUp 模块及相关依赖版本。
 
 LoadUp 是供其他应用消费的 SDK。本仓库聚合可复用模块，不包含面向生产部署的应用入口。
 
@@ -21,7 +21,7 @@ LoadUp 是供其他应用消费的 SDK。本仓库聚合可复用模块，不包
 
 | 目录                                                   | 内容                                                                                                    |
 |--------------------------------------------------------|---------------------------------------------------------------------------------------------------------|
-| [`loadup-dependencies`](loadup-dependencies/README.md) | 统一依赖版本的 BOM                                                                                      |
+| [`loadup-framework-bom`](loadup-framework-bom/README.md) | 统一依赖版本的 BOM                                                                                      |
 | [`loadup-commons`](loadup-commons/README.md)           | 通用数据契约、错误、上下文、JSON、日志、脱敏与工具                                                                           |
 | [`loadup-components`](loadup-components/README.md)     | Web MVC、认证授权、指标追踪、缓存、数据库、分布式锁、文件存储、通知、调度等技术组件                     |
 | [`loadup-modules`](../loadup-modules/README.md)           | 可复用业务模块，包含 UPMS、审计中心、数据字典、文件资源、站内通知、导入导出任务 |
@@ -39,7 +39,7 @@ LoadUp 是供其他应用消费的 SDK。本仓库聚合可复用模块，不包
   <dependencies>
     <dependency>
       <groupId>io.github.loadup-cloud</groupId>
-      <artifactId>loadup-dependencies</artifactId>
+      <artifactId>loadup-framework-bom</artifactId>
       <version>0.0.1-SNAPSHOT</version>
       <type>pom</type>
       <scope>import</scope>
@@ -152,7 +152,7 @@ Temurin 25、经 SHA-256 校验的 mvnd 1.0.6 和 Maven 依赖缓存；PR 更新
   仓库 Actions secrets 需配置 `OSSRH_USERNAME`（GitHub 用户名）和 `OSSRH_TOKEN`（该用户的 classic PAT，具有目标仓库访问权及
   `write:packages` 权限；名称沿用现有配置，实际使用 GitHub 凭证）。凭证仅在发布 job 注入，PR 不发布。发布重新 clean
   编译并跳过已执行的测试，不复用其他 job 的 target；独立 BOM 与框架模块统一使用 Deploy Plugin 3.2.0 和 `deployAtEnd`。
-- **消费**：Pay 通过 `OSSRH_USERNAME` / `OSSRH_TOKEN`（`read:packages`）从同一 registry 读取 `loadup-dependencies` BOM
+- **消费**：Pay 通过 `OSSRH_USERNAME` / `OSSRH_TOKEN`（`read:packages`）从同一 registry 读取 `loadup-framework-bom` BOM
   与框架模块。首次运行 Pay CI 前，先完成相应 `loadup.framework.version`（当前 `0.0.1-SNAPSHOT`）的框架发布。
 
 仓库维护者应将 **Tests, Quality and Coverage** 与 **Dependency Review** 设为 PR 合并必需检查。前端在独立的 `loadup-admin`

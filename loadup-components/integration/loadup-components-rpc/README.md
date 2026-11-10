@@ -17,7 +17,7 @@ rpc (pom)
 
 ## 引入
 
-消费工程先导入 `loadup-dependencies` BOM，再引入 binder；业务 `*-client` 模块引入 `rpc-proto`：
+消费工程先导入 `loadup-framework-bom` BOM，再引入 binder；业务 `*-client` 模块引入 `rpc-proto`：
 
 ```xml
 <dependency>

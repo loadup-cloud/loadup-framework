@@ -1,6 +1,6 @@
 # BOM 架构
 
-`loadup-dependencies` 是纯 POM 模块，用于管理 framework 的发布坐标与第三方依赖版本；消费工程在 `dependencyManagement` 中
+`loadup-framework-bom` 是纯 POM 模块，用于管理 framework 的发布坐标与第三方依赖版本；消费工程在 `dependencyManagement` 中
 import。它不引入运行时代码，也不为应用选择组件或 binder。
 
 该 BOM 独立继承 Spring Boot 的依赖管理 POM，避免框架根聚合 POM 与 BOM 相互引用。新增外部依赖的版本应集中声明在这里；各子模块引用同项目坐标时不重复写版本。
@@ -10,7 +10,7 @@ import。它不引入运行时代码，也不为应用选择组件或 binder。
 ## 分层与调用路径
 
 ```text
-loadup-dependencies
+loadup-framework-bom
 ```
 
 聚合 POM 组织模块与版本，运行时依赖由子模块决定。
@@ -27,7 +27,7 @@ jar。
 
 | BOM | 所属仓库 | 管理范围 |
 |---|---|---|
-| `loadup-dependencies` | loadup-framework | commons、components、框架第三方依赖 |
+| `loadup-framework-bom` | loadup-framework | commons、components、框架第三方依赖 |
 | `loadup-modules-bom` | loadup-modules | 当前发布的通用业务 JAR |
 | `loadup-testify-bom` | loadup-testify | Testify core 与 starter |
 

@@ -33,9 +33,9 @@
         </developer>
     </developers>
     <scm>
-        <connection>scm:git:git://github.com/loadup-cloud/loadup-dependencies.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/loadup-cloud/loadup-dependencies.git</developerConnection>
-        <url>https://github.com/loadup-cloud/loadup-dependencies</url>
+        <connection>scm:git:git://github.com/loadup-cloud/loadup-framework-bom.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/loadup-cloud/loadup-framework-bom.git</developerConnection>
+        <url>https://github.com/loadup-cloud/loadup-framework-bom</url>
 
     </scm>
 

@@ -11,13 +11,13 @@ Python 覆盖率工具或 JaCoCo CLI；不提供运行时 API，不向制品仓�
 mvnd -B -ntp -T 1 -Pcomponent-coverage clean install \
   -DskipTests=false -Dskip.unit.tests=false -Dskip.integration.tests=false \
   -Dskip.spotless=true -Dskip.spotbugs=true -Dtestcontainers.reuse.enable=false
-mvnd -B -ntp -T 1 -Pcomponent-coverage -pl '!loadup-dependencies' --fail-at-end \
+mvnd -B -ntp -T 1 -Pcomponent-coverage -pl '!loadup-framework-bom' --fail-at-end \
   enforcer:enforce@component-coverage-inputs \
   jacoco:check@component-coverage-check
 ```
 
 第一步执行一次完整构建并安装 reactor 依赖；第二步仅调用命名插件 execution，复用同批 classes 与合并 exec，不运行生命周期，不需要也不能添加
-`clean`。排除 `loadup-dependencies` 是因为该 BOM 直接继承 Spring Boot，不继承根 POM 的命名 execution。
+`clean`。排除 `loadup-framework-bom` 是因为该 BOM 直接继承 Spring Boot，不继承根 POM 的命名 execution。
 
 上述命令跳过格式和 SpotBugs，供覆盖率验收使用；CI 首步还执行 SpotBugs/PMD，快速质量任务检查格式、License
 和依赖。不能通过跳过测试、降低阈值或删除执行文件来作为完整验收。

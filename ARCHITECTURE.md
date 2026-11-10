@@ -1,7 +1,7 @@
 # LoadUp Framework Architecture
 
 This repository publishes reusable framework modules for applications that consume the
-`loadup-dependencies` BOM. The default root Maven reactor aggregates the BOM, commons,
+`loadup-framework-bom` BOM. The default root Maven reactor aggregates the BOM, commons,
 and technical components. Reusable business modules and Testify live in sibling repositories. It does not contain a runnable
 application. The `loadup-coverage` report aggregator is included only by the optional
 `component-coverage` profile.
@@ -9,7 +9,7 @@ application. The `loadup-coverage` report aggregator is included only by the opt
 ## Dependency direction
 
 ```text
-loadup-dependencies (BOM)
+loadup-framework-bom (BOM)
           ↑
     loadup-commons
           ↑
