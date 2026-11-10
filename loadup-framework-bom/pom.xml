@@ -113,7 +113,7 @@
         <jsonassert.version>1.5.3</jsonassert.version>
         <archunit.version>1.5.1</archunit.version>
         <spotbugs.version>4.10.5</spotbugs.version>
-        <spotless.version>3.10.3</spotless.version>
+        <spotless.version>3.11.0</spotless.version>
 
         <maven-deploy-plugin.version>3.2.0</maven-deploy-plugin.version>
         <central-publishing.version>0.12.0</central-publishing.version>
@@ -923,16 +923,28 @@
 
 
     <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>com.diffplug.spotless</groupId>
-                    <artifactId>spotless-maven-plugin</artifactId>
-                    <version>${spotless.version}</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
         <plugins>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${spotless.version}</version>
+                <inherited>false</inherited>
+                <configuration>
+                    <pom>
+                        <includes>
+                            <include>pom.xml</include>
+                        </includes>
+                        <sortPom>
+                            <encoding>UTF-8</encoding>
+                            <expandEmptyElements>false</expandEmptyElements>
+                            <keepBlankLines>true</keepBlankLines>
+                            <nrOfIndentSpace>4</nrOfIndentSpace>
+                        </sortPom>
+                        <trimTrailingWhitespace/>
+                        <endWithNewline/>
+                    </pom>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
