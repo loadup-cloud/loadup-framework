@@ -44,8 +44,6 @@ jobs:
 
   lint:
     name: Backend Fast Quality
-    needs: changes
-    if: needs.changes.outputs.backend == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -62,8 +60,6 @@ jobs:
 
   verify:
     name: Backend Tests and Analysis
-    needs: changes
-    if: needs.changes.outputs.backend == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     env:
@@ -114,36 +110,26 @@ jobs:
 
   quality-gate:
     name: Tests, Quality and Coverage
-    needs: [ changes, lint, verify ]
+    needs: [ lint, verify ]
     if: always()
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - name: Require backend checks or acknowledge non-backend changes
+      - name: Require quality and test checks to pass
         env:
-          SCOPE_RESULT: ${{ needs.changes.result }}
-          BACKEND: ${{ needs.changes.outputs.backend }}
           LINT_RESULT: ${{ needs.lint.result }}
           VERIFY_RESULT: ${{ needs.verify.result }}
         run: |
-          if [[ "$SCOPE_RESULT" != success ]]; then
-            echo 'Change detection or tooling tests failed.' >&2
-            exit 1
-          fi
-          if [[ "$BACKEND" == false ]]; then
-            echo 'Documentation-only changes: backend build skipped.'
-          elif [[ "$BACKEND" == true && "$LINT_RESULT" == success && "$VERIFY_RESULT" == success ]]; then
-            echo 'All backend checks passed.'
-          else
+          if [[ "$LINT_RESULT" != success || "$VERIFY_RESULT" != success ]]; then
             echo "Backend checks did not pass: lint=$LINT_RESULT verify=$VERIFY_RESULT" >&2
             exit 1
           fi
+          echo 'All backend checks passed.'
 
   publish:
     name: Publish GitHub Packages
-    needs: [ changes, quality-gate ]
+    needs: quality-gate
     if: >-
-      needs.changes.outputs.backend == 'true' &&
       (github.event_name == 'push' ||
        (github.event_name == 'workflow_dispatch' && inputs.publish-packages)) &&
       (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/dev')

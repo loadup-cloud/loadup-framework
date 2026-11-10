@@ -95,7 +95,6 @@ python3 doc-sync-agent.py          # Preview changes
 python3 doc-sync-agent.py --apply  # Synchronize generated Markdown
 python3 doc-sync-agent.py --check  # Fail on stale generated pages
 python3 doc-sync-agent.py --build  # Synchronize and build Hugo
-python3 -m unittest discover -s tools -p test_doc_sync.py
 ```
 
 脚本只清理带生成标记的过期页面及其空父目录；`--build` 通过 Hugo 清理旧输出。IDEA 的 `.iml` 不属于文档产物，移动模块后需按根
@@ -135,10 +134,7 @@ BOM。
 Temurin 25、经 SHA-256 校验的 mvnd 1.0.6 和 Maven 依赖缓存；PR 更新取消同分支的旧运行。缓存恢复后清理 Maven 的
 `*.lastUpdated` 失败标记；CI 的 mvnd 命令使用 `-U` 重新检查缺失的 release 及更新的 SNAPSHOT，已下载的正常制品继续复用。
 
-- **变更范围**：轻量任务运行 Python 工具回归并比较 PR 的 merge-base 差异或 push 的 before/after。仅修改模块
-  README/ARCHITECTURE/AGENTS、根 LICENSE/NOTICE 及文档同步工具时，跳过后端 Java、Docker、Maven
-  与发布任务；混合后端改动、未知文件、手动运行或比较历史缺失时运行后端检查。删除/改名也参与判断，资源目录中的普通 Markdown
-  模板仍属于后端改动。
+- **执行范围**：每次触发直接并行运行快速质量与测试任务，不再通过 Python 脚本检测变更范围或执行工具回归及 SQL 同步校验。
 - **Backend Fast Quality**：与测试主任务并行，通过 validate 与显式 Spotless、License、Checkstyle
   门禁检查格式、头文件、依赖规则和结构规范，不编译项目；本地构建不自动执行 Spotless。
 - **Backend Tests and Analysis**：一次 `-Pcomponent-coverage clean install` 执行单测、真实容器 IT、SpotBugs 和 PMD。
@@ -146,12 +142,12 @@ Temurin 25、经 SHA-256 校验的 mvnd 1.0.6 和 Maven 依赖缓存；PR 更新
   拒绝预期执行文件缺失或为空。构建成功后，复用同一批 classes/exec，显式调用原生 `jacoco:check`，要求每个组件 jar 的行、分支覆盖率均
   ≥90%，不重复编译或测试。报告和原始执行数据无论成功失败均归档 14
   天；完整聚合报告需要测试构建成功。操作说明见 [覆盖率模块](loadup-coverage/README.md)。
-- **Tests, Quality and Coverage**：保留原必需检查名称作为轻量汇总门禁。纯前端/文档改动明确返回成功；后端改动必须同时通过快速质量和测试任务，检测失败、检查失败/取消不会放行。
+- **Tests, Quality and Coverage**：保留原必需检查名称作为轻量汇总门禁，快速质量和测试任务必须同时通过；检查失败、跳过或取消不会放行。
 - **依赖安全**：PR 的 Dependency Review 阻止新增 high / critical 漏洞。仓库不再声明或执行 OWASP `dependency-check-maven`
   聚合扫描，也不再需要 `NVD_API_KEY` 与 OWASP 数据缓存；如需 NVD 深度扫描，应在独立流水线或上游执行。PR 检查需要启用 GitHub
   Dependency Graph，私有仓库还需具备 Dependency Review
   权限。参见 [GitHub 配置说明](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/manage-your-dependency-security/configure-dependency-review-action)。
-- **发布**：后端改动的 `main` / `develop` / `dev` push 通过上述全部检查后，发布至
+- **发布**：`main` / `develop` / `dev` push 通过上述全部检查后，发布至
   `https://maven.pkg.github.com/loadup-cloud/loadup-packages`。也可以在上述分支手动运行 CI 并勾选 `publish-packages`，用于首次发布或补发。
   仓库 Actions secrets 需配置 `OSSRH_USERNAME`（GitHub 用户名）和 `OSSRH_TOKEN`（该用户的 classic PAT，具有目标仓库访问权及
   `write:packages` 权限；名称沿用现有配置，实际使用 GitHub 凭证）。凭证仅在发布 job 注入，PR 不发布。发布重新 clean
