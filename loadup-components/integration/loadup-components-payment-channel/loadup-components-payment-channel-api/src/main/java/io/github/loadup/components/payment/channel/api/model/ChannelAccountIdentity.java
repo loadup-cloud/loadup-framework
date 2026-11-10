@@ -18,7 +18,6 @@ package io.github.loadup.components.payment.channel.api.model;
 import io.github.loadup.components.payment.channel.contract.AccessMode;
 import io.github.loadup.components.payment.channel.contract.Channel;
 
-
 /**
  * Typed account semantics shared by bindings and providers, independent of payment orchestration.
  */

@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2025 LoadUp Framework Authors
+ * Copyright (C) 2025 LoadUp Cloud
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     https://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -72,20 +72,27 @@ class LoadUpMyBatisFlexProcessorTest {
                     List.of(
                             "-classpath",
                             System.getProperty("surefire.test.class.path", System.getProperty("java.class.path")),
-                            "-d", output.toString(),
-                            "-s", generated.toString()),
+                            "-d",
+                            output.toString(),
+                            "-s",
+                            generated.toString()),
                     null,
                     files.getJavaFileObjects(entity.toFile()));
             // The parent POM explicitly selects this entry, not the upstream SPI entry.
             task.setProcessors(List.of(new LoadUpMyBatisFlexProcessor()));
-            assertThat(task.call()).as("Compiler diagnostics: %s", diagnostics.getDiagnostics()).isTrue();
+            assertThat(task.call())
+                    .as("Compiler diagnostics: %s", diagnostics.getDiagnostics())
+                    .isTrue();
         }
         Path mapper = generated.resolve("sample/infrastructure/mapper/AccountMapper.java");
         assertThat(mapper).content().contains("@Mapper", "BaseMapper<AccountDO>");
-        assertThat(generated.resolve("sample/infrastructure/table/AccountTableDef.java")).exists();
+        assertThat(generated.resolve("sample/infrastructure/table/AccountTableDef.java"))
+                .exists();
         assertThat(generated.resolve("sample/infrastructure/table/Tables.java")).exists();
-        assertThat(output.resolve("sample/infrastructure/mapper/AccountMapper.class")).exists();
-        assertThat(output.resolve("sample/infrastructure/table/AccountTableDef.class")).exists();
+        assertThat(output.resolve("sample/infrastructure/mapper/AccountMapper.class"))
+                .exists();
+        assertThat(output.resolve("sample/infrastructure/table/AccountTableDef.class"))
+                .exists();
         assertThat(output.resolve("sample/infrastructure/table/Tables.class")).exists();
         assertThat(output.resolve("mybatis-flex.config")).content().contains("processor.stopBubbling = true");
         assertThat(project.resolve("mybatis-flex.config")).content().isEqualTo(conflictingPolicy);
