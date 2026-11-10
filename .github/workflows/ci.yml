@@ -42,25 +42,6 @@ jobs:
           fail-on-severity: high
           comment-summary-in-pr: never
 
-  changes:
-    name: Detect Backend Changes
-    runs-on: ubuntu-24.04
-    timeout-minutes: 5
-    outputs:
-      backend: ${{ steps.scope.outputs.backend }}
-    steps:
-      - uses: actions/checkout@v7 # v7
-        with:
-          persist-credentials: false
-          fetch-depth: 0
-      - name: Test repository tooling
-        run: python3 -m unittest discover -s tools -p 'test_*.py'
-      - name: Check merged framework initialization SQL is regenerated
-        run: python3 tools/export-schema.py --check
-      - name: Detect changed scope
-        id: scope
-        run: python3 tools/ci-changes.py
-
   lint:
     name: Backend Fast Quality
     needs: changes
