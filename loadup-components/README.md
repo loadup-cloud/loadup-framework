@@ -54,7 +54,7 @@ Docker，在仓库根目录依次执行：
 # 一次 clean 构建，完成测试并合并本次执行数据。
 mvnd -B -ntp -T 1 -Pcomponent-coverage clean install \
   -DskipTests=false -Dskip.unit.tests=false -Dskip.integration.tests=false \
-  -Dskip.spotless=true -Dskip.spotbugs=true -Dtestcontainers.reuse.enable=false
+  -Dspotless.skip=true -Dspotbugs.skip=true -Dtestcontainers.reuse.enable=false
 # 直接调用插件，不经过编译/测试生命周期；不要在这两步之间 clean 或修改源码。
 mvnd -B -ntp -T 1 -Pcomponent-coverage -pl '!loadup-framework-bom' --fail-at-end \
   enforcer:enforce@component-coverage-inputs \

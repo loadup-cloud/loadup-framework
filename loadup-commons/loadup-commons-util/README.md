@@ -56,7 +56,7 @@ String localized = MoneyFormatter.format(amount, Locale.US);
 
 ```bash
 mvnd clean test -pl loadup-commons/loadup-commons-util -am -Dtest=MoneyTest \
-  -Dsurefire.failIfNoSpecifiedTests=false -Dskip.spotless=true -Dskip.spotbugs=true
+  -Dsurefire.failIfNoSpecifiedTests=false -Dspotless.skip=true -Dspotbugs.skip=true
 ```
 
 ## 基础转换契约

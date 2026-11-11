@@ -18,7 +18,7 @@
 对应执行数据但不贡献代码分母。业务模块、commons 不作为组件报告的直接依赖或门禁对象。
 
 全局数据合并只读取 `loadup-components/**/target/jacoco-unit.exec` 与 `jacoco-it.exec`；聚合报告同样只读取这两类文件，避免重复加载模块本地
-merged 数据。执行文件检查独立于 `skip.enforcer`，快速质量阶段的依赖检查开关不能关闭它。
+merged 数据。执行文件检查独立于 `enforcer.skip`，快速质量阶段的依赖检查开关不能关闭它。
 
 ## 为什么分两次 Maven 调用
 

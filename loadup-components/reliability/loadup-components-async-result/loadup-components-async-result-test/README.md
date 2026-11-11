@@ -24,7 +24,7 @@ mvnd clean spotless:apply verify \
   -Dtest=AsyncResultTest,AsyncResultAutoConfigurationTest,LocalAsyncResultProviderTest \
   -Dsurefire.failIfNoSpecifiedTests=false \
   -Dit.test=RedisAsyncResultIT,AsyncResultOutboxIT,AsyncResultKafkaIT \
-  -Dfailsafe.failIfNoSpecifiedTests=false -Dskip.spotbugs=false
+  -Dfailsafe.failIfNoSpecifiedTests=false -Dspotbugs.skip=false
 ```
 
 Kafka 用例创建独立 request/reply Topic，两个消费者完成真实双向通信，结果接收端通过另一 Redis 客户端完成等待。Outbox 用例使用真实

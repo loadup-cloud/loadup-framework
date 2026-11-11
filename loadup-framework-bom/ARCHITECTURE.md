@@ -7,6 +7,9 @@ import。它不引入运行时代码，也不为应用选择组件或 binder。
 
 本模块没有 Java 源文件，因此 License 插件的文件头更新、检查和移除目标均跳过。
 
+本 BOM 只显式声明 Maven Deploy 插件；`spotless.skip=true` 与 `enforcer.skip=true` 让 reactor 中直接调用的质量检查跳过 BOM 本身。
+构建插件的其他配置由各仓库父 POM 管理，BOM import 不传递这些跳过属性。
+
 ## 分层与调用路径
 
 ```text
@@ -28,9 +31,11 @@ jar。
 | BOM | 所属仓库 | 管理范围 |
 |---|---|---|
 | `loadup-framework-bom` | loadup-framework | commons、components、框架第三方依赖 |
-| `loadup-modules-bom` | loadup-modules | 当前发布的通用业务 JAR |
-| `loadup-testify-bom` | loadup-testify | Testify core 与 starter |
+| `loadup-modules-bom` | loadup-modules | 通用业务 JAR 与配套 Framework BOM |
+| `loadup-testify-bom` | loadup-testify | Testify core、starter 与配套 Framework BOM |
+| `loadup-pay-bom` | loadup-pay | Pay 制品与配套 Framework、Modules BOM |
 
-各 BOM 是 `packaging=pom` 的独立发布制品，不需要独立 Git 仓库。消费工程显式导入所用产品族的 BOM。
-新 modules / Testify BOM 不继承导入它们的仓库父 POM，也不导入 framework 或彼此的 BOM，避免模型循环和跨产品版本覆盖。
-父 POM 负责构建配置，并通过导入所属 BOM 为子模块提供版本；普通 JAR 依赖不会把其父 POM 的 dependencyManagement 导出给消费方。
+各 BOM 是 `packaging=pom` 的独立发布制品，不继承所属仓库 parent。Framework BOM 的本仓库制品版本取自自身 `${project.version}`；
+Modules、Testify BOM 各自导入配套 Framework，Pay BOM 导入配套 Framework 与 Modules。Framework BOM 不反向导入这些上层产品，导入链保持无环。
+各 parent 导入自身同版本 BOM；Pay、Modules parent 额外导入内部测试所需的 Testify BOM，公开运行时 BOM 不导入 Testify。
+parent 负责构建插件与处理器路径，BOM 提供依赖版本；import 不传递插件或 properties，普通 JAR 的传递依赖也不导出版本管理清单。

@@ -195,7 +195,7 @@ Run focused validation using Maven Daemon:
 ```shell
 mvnd clean test -pl loadup-components/data/loadup-components-database -am \
   -Dtest=BusinessIdTest,SegmentSequenceTest,DatabaseSequenceIT \
-  -Dsurefire.failIfNoSpecifiedTests=false -Dskip.spotless=true -Dskip.spotbugs=true
+  -Dsurefire.failIfNoSpecifiedTests=false -Dspotless.skip=true -Dspotbugs.skip=true
 ```
 
 The IT requires Docker and uses real PostgreSQL through the framework Testcontainers annotation. Consumer

@@ -13,7 +13,7 @@
     <name>LoadUp Coverage</name>
     <description>Native JaCoCo aggregation of component unit and integration test coverage.</description>
     <properties>
-        <skip.deploy>true</skip.deploy>
+        <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
     <!-- Compile dependencies contribute code and data; test-only modules contribute data only.
          Keep this inventory aligned with the component reactor when adding or removing jars. -->

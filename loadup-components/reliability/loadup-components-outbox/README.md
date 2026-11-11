@@ -118,7 +118,7 @@ Controller；应用负责管理权限和租户授权。错误记录只保存异�
 ```shell
 mvnd clean verify -pl loadup-components/reliability/loadup-components-outbox -am \
   -Dskip.unit.tests=true -Dit.test=OutboxIT \
-  -Dfailsafe.failIfNoSpecifiedTests=false -Dskip.spotless=true -Dskip.spotbugs=true
+  -Dfailsafe.failIfNoSpecifiedTests=false -Dspotless.skip=true -Dspotbugs.skip=true
 ```
 
 该命令包含所需上游模块，需 Docker；本次实现未执行构建或测试。

@@ -52,10 +52,6 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.release>${java.version}</maven.compiler.release>
-        <loadup.framework.version>0.0.1-SNAPSHOT</loadup.framework.version>
-        <loadup.modules.version>0.0.1-SNAPSHOT</loadup.modules.version>
-        <loadup.pay.version>0.0.1-SNAPSHOT</loadup.pay.version>
-        <loadup.testify.version>0.0.1-SNAPSHOT</loadup.testify.version>
         <!-- Plugin versions managed here; dependency versions managed in loadup-framework-bom BOM -->
         <build-helper-maven-plugin.version>3.6.2</build-helper-maven-plugin.version>
         <maven-antrun-plugin.version>3.2.0</maven-antrun-plugin.version>
@@ -98,13 +94,13 @@
         <flyway.version>13.10.3</flyway.version>
 
         <!-- Skip flags -->
-        <skip.deploy>false</skip.deploy>
-        <skip.javadoc>true</skip.javadoc>
-        <skip.spotless>false</skip.spotless>
+        <maven.deploy.skip>false</maven.deploy.skip>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+        <spotless.skip>false</spotless.skip>
         <skip.unit.tests>false</skip.unit.tests>
         <skip.integration.tests>false</skip.integration.tests>
 
-        <skip.enforcer>false</skip.enforcer>
+        <enforcer.skip>false</enforcer.skip>
         <testcontainers.reuse.enable>true</testcontainers.reuse.enable>
 
         <!-- Appended by JaCoCo, which appends its agent to this property; silences the JDK
@@ -117,7 +113,7 @@
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-framework-bom</artifactId>
-                <version>${loadup.framework.version}</version>
+                <version>${project.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -232,7 +228,7 @@
                         <additionalJOptions>
                             <additionalJOption>-Xdoclint:none</additionalJOption>
                         </additionalJOptions>
-                        <skip>${skip.javadoc}</skip>
+                        <skip>${maven.javadoc.skip}</skip>
                         <encoding>UTF-8</encoding>
                         <docencoding>UTF-8</docencoding>
                         <charset>UTF-8</charset>
@@ -251,7 +247,7 @@
                     <artifactId>maven-deploy-plugin</artifactId>
                     <version>${maven-deploy-plugin.version}</version>
                     <configuration>
-                        <skip>${skip.deploy}</skip>
+                        <skip>${maven.deploy.skip}</skip>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -398,7 +394,7 @@
                     <artifactId>spotless-maven-plugin</artifactId>
                     <version>${spotless-plugin.version}</version>
                     <configuration>
-                        <skip>${skip.spotless}</skip>
+                        <skip>${spotless.skip}</skip>
                         <java>
                             <includes>
                                 <include>src/main/java/**/*.java</include>
@@ -505,7 +501,7 @@
                             </goals>
                             <phase>validate</phase>
                             <configuration>
-                                <skip>${skip.enforcer}</skip>
+                                <skip>${enforcer.skip}</skip>
                                 <fail>true</fail>
                                 <rules>
                                     <bannedDependencies>
@@ -608,8 +604,8 @@
         <profile>
             <id>skip-quality</id>
             <properties>
-                <skip.spotless>true</skip.spotless>
-                <skip.enforcer>true</skip.enforcer>
+                <spotless.skip>true</spotless.skip>
+                <enforcer.skip>true</enforcer.skip>
                 <jacoco.skip>true</jacoco.skip>
                 <loadup.coverage.skip>true</loadup.coverage.skip>
             </properties>

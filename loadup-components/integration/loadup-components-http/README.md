@@ -178,7 +178,7 @@ PowerJob/Outbox；不能让多个组件重复包装重试。
 mvnd clean test -pl loadup-components/integration/loadup-components-http -am \
   -Dmaven.test.skip=false -DskipTests=false -Dskip.unit.tests=false \
   -Dtest=HttpTemplateTest,HttpPoolMetricsTest,HttpServiceClientsTest,HttpServiceResponsesTest,HttpClientDefaultsTest,HttpAutoConfigurationTest,HttpTargetPolicyTest,HttpConfigurationContractTest \
-  -Dsurefire.failIfNoSpecifiedTests=false -Dskip.spotless=true -Dskip.spotbugs=true
+  -Dsurefire.failIfNoSpecifiedTests=false -Dspotless.skip=true -Dspotbugs.skip=true
 ```
 
 本次实现未执行构建或测试。设计见 [ARCHITECTURE.md](ARCHITECTURE.md)。

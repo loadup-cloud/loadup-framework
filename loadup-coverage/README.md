@@ -10,7 +10,7 @@ Python 覆盖率工具或 JaCoCo CLI；不提供运行时 API，不向制品仓�
 ```bash
 mvnd -B -ntp -T 1 -Pcomponent-coverage clean install \
   -DskipTests=false -Dskip.unit.tests=false -Dskip.integration.tests=false \
-  -Dskip.spotless=true -Dskip.spotbugs=true -Dtestcontainers.reuse.enable=false
+  -Dspotless.skip=true -Dspotbugs.skip=true -Dtestcontainers.reuse.enable=false
 mvnd -B -ntp -T 1 -Pcomponent-coverage -pl '!loadup-framework-bom' --fail-at-end \
   enforcer:enforce@component-coverage-inputs \
   jacoco:check@component-coverage-check

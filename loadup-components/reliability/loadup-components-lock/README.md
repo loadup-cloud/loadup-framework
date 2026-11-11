@@ -165,8 +165,8 @@ IT：独立客户端竞争、租户/全局隔离、虚拟线程、释放后再�
 在依赖已安装、Docker 可用时，由用户执行：
 
 ```bash
-mvn clean test -pl :loadup-components-lock -Dtest=LockTemplateTest,LockKeyOptionsTest,LockAutoConfigurationTest -Dskip.spotless=true -Dskip.spotbugs=true
-mvn clean verify -pl :loadup-components-lock -Dit.test=LockTemplateIT -Dskip.unit.tests=true -Dskip.spotless=true -Dskip.spotbugs=true
+mvn clean test -pl :loadup-components-lock -Dtest=LockTemplateTest,LockKeyOptionsTest,LockAutoConfigurationTest -Dspotless.skip=true -Dspotbugs.skip=true
+mvn clean verify -pl :loadup-components-lock -Dit.test=LockTemplateIT -Dskip.unit.tests=true -Dspotless.skip=true -Dspotbugs.skip=true
 ```
 
 生产验收还需覆盖部署环境的故障转移、长暂停、断网、固定租期过期及事务边界。设计见 [ARCHITECTURE.md](ARCHITECTURE.md)。

@@ -12,7 +12,7 @@
     <description>Unit and integration tests for notification routing, channels and storage.</description>
 
     <properties>
-        <skip.deploy>true</skip.deploy>
+        <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
 
     <dependencies>
