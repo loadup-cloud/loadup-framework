@@ -7,7 +7,8 @@ import。它不引入运行时代码，也不为应用选择组件或 binder。
 
 本模块没有 Java 源文件，因此 License 插件的文件头更新、检查和移除目标均跳过。
 
-本 BOM 只显式声明 Maven Deploy 插件；`spotless.skip=true` 与 `enforcer.skip=true` 让 reactor 中直接调用的质量检查跳过 BOM 本身。
+本 BOM 默认激活 `github` profile，只显式声明 Maven Deploy 插件；手动启用 `release` 后额外加载 Central Publishing 与 GPG，签名并上传 BOM 的 POM。
+POM 制品不需要 sources/Javadoc JAR。`spotless.skip=true` 与 `enforcer.skip=true` 让 reactor 中直接调用的质量检查跳过 BOM 本身。
 构建插件的其他配置由各仓库父 POM 管理，BOM import 不传递这些跳过属性。
 
 ## 分层与调用路径

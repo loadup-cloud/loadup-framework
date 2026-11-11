@@ -24,6 +24,7 @@
     <developers>
         <developer>
             <id>Laysan</id>
+            <name>Laysan</name>
             <email>lslvxy@gmail.com</email>
         </developer>
     </developers>
@@ -619,7 +620,7 @@
         <profile>
             <id>github</id>
             <activation>
-                <activeByDefault>false</activeByDefault>
+                <activeByDefault>true</activeByDefault>
             </activation>
             <distributionManagement>
                 <repository>
@@ -648,14 +649,45 @@
         </profile>
         <profile>
             <id>release</id>
-            <distributionManagement>
-                <repository>
-                    <id>central</id>
-                    <url>https://central.sonatype.com/repository/maven-releases/</url>
-                </repository>
-            </distributionManagement>
+            <properties>
+                <maven.javadoc.skip>false</maven.javadoc.skip>
+            </properties>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.4.0</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.12.0</version>
+                        <configuration>
+                            <doclint>none</doclint>
+                            <encoding>UTF-8</encoding>
+                            <docencoding>UTF-8</docencoding>
+                            <charset>UTF-8</charset>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.sonatype.central</groupId>
                         <artifactId>central-publishing-maven-plugin</artifactId>
@@ -663,6 +695,8 @@
                         <extensions>true</extensions>
                         <configuration>
                             <publishingServerId>central</publishingServerId>
+                            <autoPublish>false</autoPublish>
+                            <skipPublishing>${maven.deploy.skip}</skipPublishing>
                         </configuration>
                     </plugin>
                     <plugin>
@@ -672,10 +706,10 @@
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
+                                <phase>verify</phase>
                                 <goals>
                                     <goal>sign</goal>
                                 </goals>
-                                <phase>verify</phase>
                             </execution>
                         </executions>
                     </plugin>

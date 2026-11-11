@@ -54,7 +54,7 @@ jobs:
       - name: Check formatting, licenses, dependency rules without compilation
         run: |
           spotless_version=$(python3 -c 'import xml.etree.ElementTree as E; p=E.parse("pom.xml").find("{*}properties"); print(p.findtext("{*}spotless-plugin.version"))')
-          mvn -B -ntp -U -T 1 validate \
+          mvn -B -ntp -U -T 1 -Pgithub validate \
             "com.diffplug.spotless:spotless-maven-plugin:$spotless_version:check"
 
   verify:
@@ -76,7 +76,7 @@ jobs:
       - name: Build once and run tests
         id: build
         run: |
-          mvn -B -ntp -U -T 1 -Pcomponent-coverage clean install \
+          mvn -B -ntp -U -T 1 -Pgithub,component-coverage clean install \
             -DskipTests=false -Dskip.unit.tests=false -Dskip.integration.tests=false \
             -Denforcer.skip=true \
             -Dtestcontainers.reuse.enable=false -Dspring.profiles.active=ci
@@ -85,7 +85,7 @@ jobs:
         # Reuse exactly the bytecode and merged execution data from the successful build.
         # The standalone BOM does not inherit the parent's named plugin executions.
         run: |
-          mvn -B -ntp -T 1 -Pcomponent-coverage -pl '!loadup-framework-bom' --fail-at-end \
+          mvn -B -ntp -T 1 -Pgithub,component-coverage -pl '!loadup-framework-bom' --fail-at-end \
             enforcer:enforce@component-coverage-inputs \
             jacoco:check@component-coverage-check
       - name: Show container state on failure
@@ -154,6 +154,6 @@ jobs:
       - uses: ./.github/actions/setup-build
       - name: Publish snapshots to GitHub Packages
         run: |
-          mvn -B -ntp -U -T 1 clean deploy -P github \
+          mvn -B -ntp -U -T 1 -Pgithub clean deploy \
             -DaltDeploymentRepository=github::https://maven.pkg.github.com/loadup-cloud/loadup-packages \
             -DdeployAtEnd=true -DskipTests

@@ -157,3 +157,10 @@ Temurin 25、经 SHA-256 校验的 mvnd 1.0.6 和 Maven 依赖缓存；PR 更新
 
 仓库维护者应将 **Tests, Quality and Coverage** 与 **Dependency Review** 设为 PR 合并必需检查。前端在独立的 `loadup-admin`
 仓库执行 Node/pnpm CI；Hugo 站点在并列的 `docs` 仓库。本仓库不配置 npm Dependabot，也不构建前端或文档站。
+
+## GitHub Packages 与 Maven Central 发布
+
+Framework、Modules、Testify 及独立 BOM 默认激活 `github`，在各仓库根目录使用 `mvnd clean deploy -DdeployAtEnd=true`
+上传 GitHub Packages。现有 CI 固定 GitHub；Central 等正式版本准备好后，手动使用 `mvnd clean deploy -Prelease` 上传。
+中央库 profile 启用 GPG 签名，并为 JAR 生成 sources/Javadoc；
+独立 BOM 只签名并上传 POM。GitHub 发布不启用 Central/GPG 插件。凭证、版本与双仓发布说明见 [PUBLISHING.md](PUBLISHING.md)。

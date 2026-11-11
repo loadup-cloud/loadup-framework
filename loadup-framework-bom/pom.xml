@@ -28,30 +28,20 @@
     <developers>
         <developer>
             <id>Laysan</id>
+            <name>Laysan</name>
             <email>lslvxy@gmail.com</email>
         </developer>
     </developers>
     <scm>
-        <connection>scm:git:git://github.com/loadup-cloud/loadup-framework-bom.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/loadup-cloud/loadup-framework-bom.git</developerConnection>
-        <url>https://github.com/loadup-cloud/loadup-framework-bom</url>
+        <connection>scm:git:https://github.com/loadup-cloud/loadup-framework.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/loadup-cloud/loadup-framework.git</developerConnection>
+        <url>https://github.com/loadup-cloud/loadup-framework</url>
 
     </scm>
 
-    <distributionManagement>
-        <repository>
-            <id>github</id>
-            <name>LoadUp Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
-        </repository>
-        <snapshotRepository>
-            <id>github</id>
-            <name>LoadUp Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
-        </snapshotRepository>
-    </distributionManagement>
 
     <properties>
+        <maven.deploy.skip>false</maven.deploy.skip>
         <spotless.skip>true</spotless.skip>
         <enforcer.skip>true</enforcer.skip>
         <project.encoding>UTF-8</project.encoding>
@@ -937,15 +927,56 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>github</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <distributionManagement>
+                <repository>
+                    <id>github</id>
+                    <name>LoadUp Apache Maven Packages</name>
+                    <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
+                </repository>
+                <snapshotRepository>
+                    <id>github</id>
+                    <name>LoadUp Apache Maven Packages</name>
+                    <url>https://maven.pkg.github.com/loadup-cloud/loadup-packages</url>
+                </snapshotRepository>
+            </distributionManagement>
+        </profile>
 
         <profile>
             <id>release</id>
-            <distributionManagement>
-                <repository>
-                    <id>central</id>
-                    <url>https://central.sonatype.com/repository/maven-releases/</url>
-                </repository>
-            </distributionManagement>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>0.12.0</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                            <autoPublish>false</autoPublish>
+                            <skipPublishing>${maven.deploy.skip}</skipPublishing>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>3.2.8</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 

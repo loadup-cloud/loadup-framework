@@ -1,5 +1,8 @@
 # LoadUp BOM
 
+本 BOM 默认通过 Deploy 上传 GitHub Packages；中央库发布使用 `mvnd -f loadup-framework-bom/pom.xml clean deploy -Prelease`，
+会启用 Central Publishing 与 GPG，签名 POM。BOM 不需要 sources/Javadoc JAR；凭证和版本要求见 [发布说明](../PUBLISHING.md)。
+
 `loadup-framework-bom` 是 framework 的 BOM，管理 commons、components 与框架第三方依赖版本，是纯 POM 制品，不提供运行时代码。
 
 ## 引入
