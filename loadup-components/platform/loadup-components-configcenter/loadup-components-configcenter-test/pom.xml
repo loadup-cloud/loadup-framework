@@ -12,6 +12,10 @@
     <name>LoadUp Components ConfigCenter Test</name>
     <description>Unit and integration tests for configuration providers.</description>
 
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

@@ -10,6 +10,9 @@
     <artifactId>loadup-components-async-result-test</artifactId>
     <name>LoadUp Components Async Result Test</name>
     <description>Unit and container integration tests for asynchronous result coordination.</description>
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

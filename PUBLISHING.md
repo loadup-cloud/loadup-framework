@@ -4,7 +4,7 @@ Framework、Modules、Testify 及其独立 BOM 默认激活 `github` profile。�
 中央库等正式版本准备好后，再手动启用 `release` profile 发布。
 
 ```bash
-mvnd clean deploy -DdeployAtEnd=true
+mvnd clean deploy -Pgithub -DdeployAtEnd=true
 mvnd clean deploy -Prelease
 ```
 
@@ -27,9 +27,17 @@ mvnd clean deploy -Prelease
 
 测试和覆盖率等内部模块通过 `maven.deploy.skip=true` 排除发布。Central 插件的 `skipPublishing` 同样读取该属性，
 保证两个目标使用相同的制品范围。
+Framework 的 cache、dfs、gotone、authserver、captcha、async-result、configcenter 的 `*-test` 模块均不上传；
+这些模块仍参与正常构建和测试，跳过发布不等于跳过测试执行。
+
+普通模块与独立 BOM 默认使用 `maven.deploy.skip=false`，SNAPSHOT 每次 deploy 都上传，不因远程已存在相同的
+`0.0.1-SNAPSHOT` 版本而跳过。Maven 会上传新的时间戳构建并更新快照元数据，使该 SNAPSHOT 指向最新构建；
+这不需要额外的覆盖参数，也不会删除旧的时间戳构建。不要在发布命令中设置 `-Dmaven.deploy.skip=snapshots`，
+也不要设置全局 `-Dmaven.deploy.skip=false`，后者会覆盖测试模块的跳过发布配置。
 
 发布配置只做过源码、XML 和 IDE 静态检查；未执行构建、GPG 签名或远程上传。
 
 官方说明：[Central Maven 插件](https://central.sonatype.org/publish/publish-portal-maven/)、
 [制品与签名要求](https://central.sonatype.org/publish/requirements/)、
-[Maven profile 激活规则](https://maven.apache.org/guides/introduction/introduction-to-profiles.html)。
+[Maven profile 激活规则](https://maven.apache.org/guides/introduction/introduction-to-profiles.html)、
+[Maven SNAPSHOT 发布机制](https://maven.apache.org/repositories/remote.html)。

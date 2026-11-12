@@ -12,6 +12,10 @@
     <name>LoadUp Components Captcha Test</name>
     <description>Unit and integration tests for captcha providers.</description>
 
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
