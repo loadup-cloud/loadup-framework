@@ -94,7 +94,7 @@
 
         <!-- Cloud, Messaging and Resilience -->
         <redisson.version>4.8.0</redisson.version>
-        <nacos.version>2.4.3</nacos.version>
+        <nacos.version>3.3.0</nacos.version>
         <apollo.version>2.5.0</apollo.version>
         <tianai-captcha.version>1.5.6</tianai-captcha.version>
         <nanocaptcha.version>3.0</nanocaptcha.version>
