@@ -81,7 +81,7 @@
         <jackson-bom.version>3.2.3</jackson-bom.version>
         <jackson-annotations.version>2.22</jackson-annotations.version>
         <fastjson.version>2.0.66</fastjson.version>
-        <lz4-java.version>1.12.0</lz4-java.version>
+        <lz4-java.version>1.14.0</lz4-java.version>
         <jetcache.version>2.8.0.RC</jetcache.version>
         <powerjob.version>5.1.7</powerjob.version>
         <asm.version>9.11.1</asm.version>
