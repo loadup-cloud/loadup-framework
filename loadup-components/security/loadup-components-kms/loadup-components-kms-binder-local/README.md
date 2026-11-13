@@ -33,5 +33,5 @@ loadup:
 应用提供 LocalKmsKeyStore Bean 时不读取上述文件或密码，保留代码装配入口。
 密钥的生成、导入和持久化由集成方负责；RSA 私钥条目需证书链，AES 使用 SecretKeyEntry。
 
-AuthServer 可通过 kms-api 复用签名和公钥读取，详见 [AuthServer 接入与轮换](../../loadup-components-authserver/README.md)。
+AuthServer 可通过 kms-api 复用签名和公钥读取，详见 [AuthServer 接入与轮换](../../loadup-components-oauth-server/README.md)。
 详细原生 KeyStore 示例及密文边界见 [KMS 接入](../README.md#local-binder)。

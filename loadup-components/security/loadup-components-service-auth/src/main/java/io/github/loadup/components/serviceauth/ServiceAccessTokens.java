@@ -18,8 +18,8 @@ package io.github.loadup.components.serviceauth;
 /**
  * Application credentials only. Merchant/user delegation retains the original actor token.
  *
- * <p>The trusted tenant is resolved from the execution context; callers must bind it before
- * requesting a service token.
+ * <p>Service and audience pairs must match an explicitly configured registration. Caller identity
+ * and authorization are not inferred from the current user or tenant context.
  */
 @FunctionalInterface
 public interface ServiceAccessTokens {

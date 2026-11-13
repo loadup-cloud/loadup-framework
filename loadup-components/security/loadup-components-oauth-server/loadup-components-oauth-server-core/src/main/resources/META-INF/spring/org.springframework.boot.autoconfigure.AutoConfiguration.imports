@@ -1,0 +1,3 @@
+io.github.loadup.components.oauth.autoconfigure.OAuthJdbcAutoConfiguration
+io.github.loadup.components.authserver.sas.SasAuthServerAutoConfiguration
+io.github.loadup.components.resourceserver.ResourceServerAutoConfiguration

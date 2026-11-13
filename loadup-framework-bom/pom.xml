@@ -274,7 +274,7 @@
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-resource-server</artifactId>
+                <artifactId>loadup-components-oauth-server-core</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>
@@ -465,24 +465,16 @@
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-authserver</artifactId>
+                <artifactId>loadup-components-oauth-server</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-authserver-api</artifactId>
+                <artifactId>loadup-components-oauth-server-api</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-authserver-binder-sas</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-authserver-test</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
+
+
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-cache</artifactId>

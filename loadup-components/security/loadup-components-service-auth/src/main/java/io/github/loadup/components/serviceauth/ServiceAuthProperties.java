@@ -78,8 +78,7 @@ public class ServiceAuthProperties {
         registrations = value;
     }
 
-    public record Registration(
-            String clientId, String tenantId, String serviceId, String audience, List<String> scopes) {
+    public record Registration(String clientId, String serviceId, String audience, List<String> scopes) {
         public Registration {
             if (scopes == null
                     || scopes.isEmpty()

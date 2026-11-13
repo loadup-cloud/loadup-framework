@@ -213,17 +213,13 @@
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-authserver-api</artifactId>
+            <artifactId>loadup-components-oauth-server-api</artifactId>
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-authserver-binder-sas</artifactId>
+            <artifactId>loadup-components-oauth-server-core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-authserver-test</artifactId>
-            <scope>test</scope>
-        </dependency>
+
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-captcha-api</artifactId>
@@ -245,10 +241,7 @@
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-kms-binder-openbao</artifactId>
         </dependency>
-        <dependency>
-            <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-resource-server</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-signature</artifactId>
@@ -404,10 +397,10 @@
                                             ${maven.multiModuleProjectDirectory}/loadup-components/security/loadup-components-authorization/target/jacoco-unit.exec
                                         </file>
                                         <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/security/loadup-components-authserver/loadup-components-authserver-test/target/jacoco-unit.exec
+                                            ${maven.multiModuleProjectDirectory}/loadup-components/security/loadup-components-oauth-server/loadup-components-oauth-server-core/target/jacoco-unit.exec
                                         </file>
                                         <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/security/loadup-components-authserver/loadup-components-authserver-test/target/jacoco-it.exec
+                                            ${maven.multiModuleProjectDirectory}/loadup-components/security/loadup-components-oauth-server/loadup-components-oauth-server-core/target/jacoco-it.exec
                                         </file>
                                         <file>
                                             ${maven.multiModuleProjectDirectory}/loadup-components/security/loadup-components-captcha/loadup-components-captcha-binder-nanocaptcha/target/jacoco-unit.exec
@@ -421,9 +414,7 @@
                                         <file>
                                             ${maven.multiModuleProjectDirectory}/loadup-components/security/loadup-components-kms/loadup-components-kms-binder-openbao/target/jacoco-unit.exec
                                         </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/security/loadup-components-resource-server/target/jacoco-unit.exec
-                                        </file>
+
                                         <file>
                                             ${maven.multiModuleProjectDirectory}/loadup-components/security/loadup-components-signature/target/jacoco-unit.exec
                                         </file>

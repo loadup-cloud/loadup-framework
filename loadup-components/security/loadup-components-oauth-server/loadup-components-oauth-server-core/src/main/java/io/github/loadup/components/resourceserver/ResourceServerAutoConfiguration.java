@@ -1,0 +1,208 @@
+/*
+ * Copyright (C) 2025-2026 LoadUp Cloud
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.github.loadup.components.resourceserver;
+
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.proc.SecurityContext;
+import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.commons.result.FailureResponse;
+import io.github.loadup.components.authserver.properties.LoadUpAuthServerProperties;
+import io.github.loadup.components.observability.ApiResultMetrics;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.MediaType;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.converter.RsaKeyConverters;
+import org.springframework.security.oauth2.core.OAuth2Error;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtValidationException;
+import org.springframework.security.oauth2.jwt.JwtValidators;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.util.StringUtils;
+import tools.jackson.databind.ObjectMapper;
+
+@AutoConfiguration
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+@ConditionalOnProperty(prefix = "loadup.security.resource-server", name = "enabled", havingValue = "true")
+@EnableConfigurationProperties(ResourceServerProperties.class)
+public class ResourceServerAutoConfiguration {
+    static OAuth2TokenValidator<Jwt> accessTokenValidator(ResourceServerProperties properties) {
+        OAuth2TokenValidator<Jwt> issuer = JwtValidators.createDefaultWithIssuer(properties.getIssuerUri());
+        return jwt -> {
+            OAuth2TokenValidatorResult issuerResult = issuer.validate(jwt);
+            if (issuerResult.hasErrors()) {
+                return issuerResult;
+            }
+            boolean validUse = !StringUtils.hasText(properties.getAccessTokenUseClaim())
+                    || (StringUtils.hasText(properties.getAccessTokenUseValue())
+                            && properties
+                                    .getAccessTokenUseValue()
+                                    .equals(jwt.getClaimAsString(properties.getAccessTokenUseClaim())));
+            var audience = jwt.getAudience();
+            return validUse && audience != null && audience.contains(properties.getAudience())
+                    ? OAuth2TokenValidatorResult.success()
+                    : OAuth2TokenValidatorResult.failure(
+                            new OAuth2Error("invalid_token", "Invalid token use or audience", null));
+        };
+    }
+
+    private static void writeError(
+            HttpServletResponse response,
+            ObjectMapper objectMapper,
+            ApiResultMetrics resultMetrics,
+            CommonResultCodeEnum code)
+            throws IOException {
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("UTF-8");
+        response.getOutputStream().write(objectMapper.writeValueAsBytes(FailureResponse.of(code)));
+        resultMetrics.record(false);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public LoadUpJwtAuthenticationConverter loadUpJwtAuthenticationConverter() {
+        return new LoadUpJwtAuthenticationConverter();
+    }
+
+    @Bean(name = "resourceServerJwtDecoder")
+    @ConditionalOnMissingBean(JwtDecoder.class)
+    public JwtDecoder configuredResourceServerJwtDecoder(
+            ResourceServerProperties properties,
+            ResourceLoader resourceLoader,
+            ObjectProvider<JWKSource<SecurityContext>> localSigningKeys,
+            ObjectProvider<LoadUpAuthServerProperties> signingProperties) {
+        if (!StringUtils.hasText(properties.getIssuerUri()) || !StringUtils.hasText(properties.getAudience())) {
+            throw new IllegalArgumentException("Resource server requires issuer-uri and audience");
+        }
+        // An explicit external key source always wins. Combined signing/resource applications
+        // can verify locally without requiring their own disabled protocol endpoints.
+        var localKeys = localSigningKeys.getIfAvailable();
+        var signer = signingProperties.getIfAvailable();
+        if (localKeys == null
+                || signer == null
+                || !properties.getIssuerUri().equals(signer.getIssuer())
+                || StringUtils.hasText(properties.getPublicKeyLocation())
+                || StringUtils.hasText(properties.getJwkSetUri())) {
+            return resourceServerJwtDecoder(properties, resourceLoader);
+        }
+        JwtDecoder localDecoder = OAuth2AuthorizationServerConfiguration.jwtDecoder(localKeys);
+        var validator = accessTokenValidator(properties);
+        return token -> {
+            var jwt = localDecoder.decode(token);
+            var result = validator.validate(jwt);
+            if (result.hasErrors()) {
+                throw new JwtValidationException("Access token validation failed", result.getErrors());
+            }
+            return jwt;
+        };
+    }
+
+    public JwtDecoder resourceServerJwtDecoder(ResourceServerProperties properties, ResourceLoader resourceLoader) {
+        if (!StringUtils.hasText(properties.getIssuerUri()) || !StringUtils.hasText(properties.getAudience())) {
+            throw new IllegalArgumentException("Resource server requires issuer-uri and audience");
+        }
+        NimbusJwtDecoder decoder;
+        if (StringUtils.hasText(properties.getPublicKeyLocation())) {
+            if (StringUtils.hasText(properties.getJwkSetUri())) {
+                throw new IllegalArgumentException("Configure public-key-location or jwk-set-uri, not both");
+            }
+            try (var input = resourceLoader
+                    .getResource(properties.getPublicKeyLocation())
+                    .getInputStream()) {
+                var key = RsaKeyConverters.x509().convert(input);
+                decoder = NimbusJwtDecoder.withPublicKey(key).build();
+            } catch (IOException invalidKey) {
+                throw new IllegalArgumentException("Cannot read resource-server public key", invalidKey);
+            }
+        } else {
+            decoder = StringUtils.hasText(properties.getJwkSetUri())
+                    ? NimbusJwtDecoder.withJwkSetUri(properties.getJwkSetUri()).build()
+                    : NimbusJwtDecoder.withIssuerLocation(properties.getIssuerUri())
+                            .build();
+        }
+        decoder.setJwtValidator(accessTokenValidator(properties));
+        return decoder;
+    }
+
+    @Bean
+    @Order(100)
+    @ConditionalOnProperty(
+            prefix = "loadup.security.resource-server",
+            name = "default-security-filter-chain",
+            havingValue = "true",
+            matchIfMissing = true)
+    public SecurityFilterChain resourceServerApiSecurityFilterChain(
+            HttpSecurity http,
+            JwtDecoder jwtDecoder,
+            LoadUpJwtAuthenticationConverter jwtAuthenticationConverter,
+            ResourceServerProperties properties,
+            ObjectMapper objectMapper,
+            ApiResultMetrics resultMetrics)
+            throws Exception {
+        if (!StringUtils.hasText(properties.getIssuerUri()) || !StringUtils.hasText(properties.getAudience())) {
+            throw new IllegalArgumentException("Resource server requires issuer-uri and audience");
+        }
+        OAuth2TokenValidator<Jwt> validator = accessTokenValidator(properties);
+        JwtDecoder validatedDecoder = token -> {
+            Jwt jwt = jwtDecoder.decode(token);
+            OAuth2TokenValidatorResult result = validator.validate(jwt);
+            if (result.hasErrors()) {
+                throw new JwtValidationException("Access token validation failed", result.getErrors());
+            }
+            return jwt;
+        };
+        List<String> publicPaths = properties.getPermitAll();
+        http.securityMatcher("/api/**")
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(authorize -> {
+                    if (publicPaths != null && !publicPaths.isEmpty()) {
+                        authorize
+                                .requestMatchers(publicPaths.toArray(String[]::new))
+                                .permitAll();
+                    }
+                    authorize.anyRequest().authenticated();
+                })
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint((request, response, exception) ->
+                                writeError(response, objectMapper, resultMetrics, CommonResultCodeEnum.UNAUTHENTICATED))
+                        .accessDeniedHandler((request, response, exception) ->
+                                writeError(response, objectMapper, resultMetrics, CommonResultCodeEnum.ACCESS_DENIED)))
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt ->
+                                jwt.decoder(validatedDecoder).jwtAuthenticationConverter(jwtAuthenticationConverter))
+                        .authenticationEntryPoint((request, response, exception) -> writeError(
+                                response, objectMapper, resultMetrics, CommonResultCodeEnum.UNAUTHENTICATED)));
+        return http.build();
+    }
+}

@@ -16,7 +16,6 @@
 package io.github.loadup.components.serviceauth;
 
 import com.sun.net.httpserver.HttpServer;
-import io.github.loadup.commons.util.TenantUtil;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;
@@ -67,14 +66,10 @@ class ServiceAccessTokensTest {
         settings.setRegistrations(Map.of(
                 "payment",
                         new ServiceAuthProperties.Registration(
-                                "acquire.tenant.payment", "tenant", "acquire", "payment", List.of("pay:payment:read")),
+                                "acquire.payment", "acquire", "payment", List.of("pay:payment:read")),
                 "realtime",
                         new ServiceAuthProperties.Registration(
-                                "acquire.tenant.realtime",
-                                "tenant",
-                                "acquire",
-                                "realtime",
-                                List.of("pay:realtime:projection:order"))));
+                                "acquire.realtime", "acquire", "realtime", List.of("pay:realtime:projection:order"))));
     }
 
     @AfterEach
@@ -95,7 +90,7 @@ class ServiceAccessTokensTest {
         Assertions.assertThat(token(tokens, "acquire", "payment")).isEqualTo("token-3");
         String expected = "Basic "
                 + Base64.getEncoder()
-                        .encodeToString("acquire.tenant.payment:synthetic-secret".getBytes(StandardCharsets.UTF_8));
+                        .encodeToString("acquire.payment:synthetic-secret".getBytes(StandardCharsets.UTF_8));
         Assertions.assertThat(basic.getFirst()).isEqualTo(expected);
         Assertions.assertThat(bodies)
                 .allSatisfy(body -> Assertions.assertThat(body).contains("grant_type=client_credentials", "scope="));
@@ -103,11 +98,8 @@ class ServiceAccessTokensTest {
     }
 
     @Test
-    void unknownTenantContextCallerOrAudienceCannotAcquireCredentials() {
+    void unknownCallerOrAudienceCannotAcquireCredentials() {
         var tokens = ServiceAuthAutoConfiguration.create(settings, clock);
-        Assertions.assertThatThrownBy(
-                        () -> TenantUtil.callWithTenant("other", () -> tokens.token("acquire", "payment")))
-                .isInstanceOf(IllegalStateException.class);
         Assertions.assertThatThrownBy(() -> token(tokens, "payment", "payment"))
                 .isInstanceOf(IllegalStateException.class);
         Assertions.assertThatThrownBy(() -> token(tokens, "acquire", "customer"))
@@ -116,11 +108,9 @@ class ServiceAccessTokensTest {
     }
 
     @Test
-    void missingTenantContextCannotAcquireCredentials() {
+    void serviceAndAudienceRouteWorksWithoutTenantContext() {
         var tokens = ServiceAuthAutoConfiguration.create(settings, clock);
-        Assertions.assertThatThrownBy(() -> tokens.token("acquire", "payment"))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("Service authorization requires a trusted tenant context");
+        Assertions.assertThat(tokens.token("acquire", "payment")).isEqualTo("token-1");
     }
 
     @Test
@@ -140,11 +130,9 @@ class ServiceAccessTokensTest {
     @Test
     void derivesMissingRegistrationIdentityFromApplicationAndRegistrationKey() {
         settings.setRegistrations(Map.of(
-                "payment",
-                new ServiceAuthProperties.Registration(null, null, null, null, List.of("pay:payment:read"))));
+                "payment", new ServiceAuthProperties.Registration(null, null, null, List.of("pay:payment:read"))));
         var tokens = ServiceAuthAutoConfiguration.create(settings, clock, "acquire");
-        Assertions.assertThat(TenantUtil.callWithTenant("__default__", () -> tokens.token("acquire", "payment")))
-                .isEqualTo("token-1");
+        Assertions.assertThat(tokens.token("acquire", "payment")).isEqualTo("token-1");
         String expected = "Basic "
                 + Base64.getEncoder()
                         .encodeToString("acquire.default.payment:synthetic-secret".getBytes(StandardCharsets.UTF_8));
@@ -153,8 +141,8 @@ class ServiceAccessTokensTest {
 
     @Test
     void missingScopesCannotSilentlyAcquireAnUnprivilegedToken() {
-        Assertions.assertThatThrownBy(() ->
-                        new ServiceAuthProperties.Registration("client", "tenant", "acquire", "payment", List.of()))
+        Assertions.assertThatThrownBy(
+                        () -> new ServiceAuthProperties.Registration("client", "acquire", "payment", List.of()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -166,7 +154,7 @@ class ServiceAccessTokensTest {
     }
 
     private static String token(ServiceAccessTokens tokens, String service, String audience) {
-        return TenantUtil.callWithTenant("tenant", () -> tokens.token(service, audience));
+        return tokens.token(service, audience);
     }
 
     static class MutableClock extends Clock {

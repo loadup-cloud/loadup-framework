@@ -24,7 +24,7 @@ public void createOrder(OrderCreateCommand command) {
 }
 ```
 
-此组件不创建 HTTP `SecurityFilterChain`，也不验签。需要 JWT 认证时引入 `loadup-components-resource-server`；自定义认证场景可由应用自行提供
+此组件不创建 HTTP `SecurityFilterChain`，也不验签。需要 JWT 认证时引入 `loadup-components-oauth-server-core`；自定义认证场景可由应用自行提供
 `SecurityFilterChain`。
 
 `LoadUpUser` 实现 JDK `Principal`，`getName()` 返回稳定的 `userId`。因此 `Authentication.getName()` 与审计记录中的

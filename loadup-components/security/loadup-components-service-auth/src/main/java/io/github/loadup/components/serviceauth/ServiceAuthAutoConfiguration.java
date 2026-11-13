@@ -15,7 +15,6 @@
  */
 package io.github.loadup.components.serviceauth;
 
-import io.github.loadup.commons.util.TenantUtil;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.time.Clock;
@@ -47,7 +46,7 @@ import org.springframework.web.client.RestClient;
 @AutoConfiguration
 @EnableConfigurationProperties(ServiceAuthProperties.class)
 public class ServiceAuthAutoConfiguration {
-    private record Route(String tenant, String service, String audience) {}
+    private record Route(String service, String audience) {}
 
     @Bean
     @ConditionalOnMissingBean(ServiceAccessTokens.class)
@@ -78,15 +77,13 @@ public class ServiceAuthAutoConfiguration {
         var clients = new ArrayList<ClientRegistration>();
         properties.getRegistrations().forEach((id, registration) -> {
             String serviceId = text(registration.serviceId()) ? registration.serviceId() : application;
-            String tenantId = text(registration.tenantId()) ? registration.tenantId() : "__default__";
             String audience = text(registration.audience()) ? registration.audience() : id;
             String clientId =
                     text(registration.clientId()) ? registration.clientId() : serviceId + ".default." + audience;
             requireText(clientId);
-            requireText(tenantId);
             requireText(serviceId);
             requireText(audience);
-            var route = new Route(tenantId, serviceId, audience);
+            var route = new Route(serviceId, audience);
             if (routes.putIfAbsent(route, id) != null) {
                 throw new IllegalArgumentException("Duplicate service authorization route");
             }
@@ -126,11 +123,7 @@ public class ServiceAuthAutoConfiguration {
         Map<String, Object> locks = new HashMap<>();
         routes.values().forEach(id -> locks.put(id, new Object()));
         return (service, audience) -> {
-            String tenant = TenantUtil.getTenantId();
-            if (tenant == null || tenant.isBlank()) {
-                throw new IllegalStateException("Service authorization requires a trusted tenant context");
-            }
-            String id = routes.get(new Route(tenant, service, audience));
+            String id = routes.get(new Route(service, audience));
             if (id == null) {
                 throw new IllegalStateException("Service authorization route is not registered");
             }

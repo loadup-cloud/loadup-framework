@@ -346,7 +346,7 @@ Commons、Components、Modules、Testify，例如 `LoadUp Commons JSON`、`LoadU
 
 本地业务接口使用 Spring MVC Controller。JSON Controller 调用统一使用 POST + JSON 请求体；上传可以使用
 multipart，下载可以返回流式二进制。`loadup-components-webmvc` 对 API 响应统一封装 `result`、`data` 并处理错误及 Jackson 规则；
-`loadup-commons-dto` 定义报文类型。资源端令牌校验由 `loadup-components-resource-server` 装配，方法授权由
+`loadup-commons-dto` 定义报文类型。资源端令牌校验由 `loadup-components-oauth-server` 装配，方法授权由
 `loadup-components-authorization` 提供；UPMS 凭证校验和令牌签发由 `loadup-modules-upms-authserver` 对接。
 
 ## Vue 3 前端

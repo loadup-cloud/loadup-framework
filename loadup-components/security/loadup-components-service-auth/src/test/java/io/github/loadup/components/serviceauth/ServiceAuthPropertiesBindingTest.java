@@ -27,7 +27,6 @@ class ServiceAuthPropertiesBindingTest {
         var environment = new MockEnvironment()
                 .withProperty("loadup.security.service-auth.token-uri", "https://auth.example/token")
                 .withProperty("loadup.security.service-auth.registrations.test.client-id", "client")
-                .withProperty("loadup.security.service-auth.registrations.test.tenant-id", "tenant")
                 .withProperty("loadup.security.service-auth.registrations.test.service-id", "service")
                 .withProperty("loadup.security.service-auth.registrations.test.audience", "audience")
                 .withProperty("loadup.security.service-auth.registrations.test.scopes[0]", "other:scope");
@@ -50,6 +49,5 @@ class ServiceAuthPropertiesBindingTest {
         assertThat(registration.serviceId()).isNull();
         assertThat(registration.audience()).isNull();
         assertThat(registration.clientId()).isNull();
-        assertThat(registration.tenantId()).isNull();
     }
 }
