@@ -63,7 +63,7 @@
         <!-- ORM and Database -->
         <mybatis-flex.version>1.11.8</mybatis-flex.version>
         <mysql.version>9.7.0</mysql.version>
-        <flyway.version>12.11.0</flyway.version>
+        <flyway.version>13.12.1</flyway.version>
 
         <!-- Code Generation -->
         <mapstruct.version>1.6.3</mapstruct.version>
