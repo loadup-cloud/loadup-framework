@@ -1,0 +1,2 @@
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA task_isolation_a TO task_isolation_a;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA task_isolation_b TO task_isolation_b;

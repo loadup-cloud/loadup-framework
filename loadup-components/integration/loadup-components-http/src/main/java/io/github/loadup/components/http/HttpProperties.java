@@ -46,6 +46,7 @@ public record HttpProperties(Integer defaultPort, Map<String, Client> clients) {
 
     public record Client(
             URI baseUrl,
+            boolean internalService,
             Duration connectTimeout,
             Duration readTimeout,
             Duration acquireTimeout,
@@ -82,6 +83,7 @@ public record HttpProperties(Integer defaultPort, Map<String, Client> clients) {
             }
             if (conventional) {
                 // A client named after an application is an internal service target; resolve it later.
+                internalService = true;
                 allowPrivateAddresses = true;
             }
             for (Duration timeout : new Duration[] {connectTimeout, readTimeout, acquireTimeout}) {
@@ -110,7 +112,7 @@ public record HttpProperties(Integer defaultPort, Map<String, Client> clients) {
 
         /** An internal service target addressed by application name and the framework default port. */
         public static Client conventional() {
-            return new Client(null, null, null, null, null, null, null, null, null, null, true, null, null, null);
+            return new Client(null, true, null, null, null, null, null, null, null, null, null, true, null, null, null);
         }
 
         public URI resolveBaseUrl(String name, int defaultPort) {

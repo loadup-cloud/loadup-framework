@@ -22,6 +22,8 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
+import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitialization;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -31,7 +33,7 @@ import org.springframework.context.annotation.Configuration;
  * <p>The schema comes from {@code loadup.database.schema} only. Startup verifies that a physical
  * connection really resolves to it before workers, schedulers or scanners may start.
  */
-@AutoConfiguration
+@AutoConfiguration(after = DataSourceAutoConfiguration.class)
 @EnableConfigurationProperties(DatabaseProperties.class)
 public class DatabaseCoreAutoConfiguration {
 
@@ -40,6 +42,7 @@ public class DatabaseCoreAutoConfiguration {
     static class FixedSchemaVerification {
         @Bean
         @ConditionalOnMissingBean
+        @DependsOnDatabaseInitialization
         FixedSchemaVerifier fixedSchemaVerifier(DataSource dataSource, DatabaseProperties properties) {
             var verifier = new FixedSchemaVerifier(dataSource, properties.getSchema());
             verifier.verify();

@@ -156,6 +156,7 @@ class HttpServiceClientsTest {
                 "target",
                 new HttpProperties.Client(
                         URI.create("http://127.0.0.1:" + server.getAddress().getPort()),
+                        false,
                         Duration.ofSeconds(1),
                         readTimeout,
                         Duration.ofSeconds(1),

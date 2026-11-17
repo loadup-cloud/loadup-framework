@@ -441,7 +441,6 @@ public final class HttpTemplate implements AutoCloseable {
             requestHeaders.setAll(headers(runtime.config.headers()));
             requestHeaders.setAll(headers(definition.headers()));
             requestHeaders.setAll(headers(call.headers()));
-            applyDeploymentHeader(runtime, requestHeaders::set);
             if (runtime.config.credentialRef() != null) {
                 requestHeaders.setAll(headers(credentials.headers(runtime.config.credentialRef())));
             }
@@ -457,6 +456,7 @@ public final class HttpTemplate implements AutoCloseable {
                         signer.sign(definition.method(), uri, body == null ? new byte[0] : body.clone());
                 requestHeaders.setAll(headers(signed));
             }
+            applyDeploymentHeader(runtime.config(), requestHeaders);
             RestClient.RequestBodySpec request =
                     runtime.client.method(definition.method()).uri(uri).headers(h -> h.addAll(requestHeaders));
             if (body != null) {
@@ -561,12 +561,10 @@ public final class HttpTemplate implements AutoCloseable {
                             throw new HttpCallException(HttpCallException.Kind.SIZE_LIMIT);
                         }
                         policy.resolve(target.getHost());
-                        if (deploymentIdentity != null && config.baseUrl() == null) {
-                            request.getHeaders().set(DEPLOYMENT_HEADER, deploymentIdentity.code());
-                        }
                         if (config.credentialRef() != null) {
                             request.getHeaders().setAll(headers(credentials.headers(config.credentialRef())));
                         }
+                        applyDeploymentHeader(config, request.getHeaders());
                         try (ClientHttpResponse response = execution.execute(request, body)) {
                             if (response.getHeaders().getContentLength() > config.maxResponseBytes()) {
                                 throw new HttpCallException(HttpCallException.Kind.SIZE_LIMIT);
@@ -640,9 +638,11 @@ public final class HttpTemplate implements AutoCloseable {
         T read(InputStream body, long limit) throws IOException;
     }
 
-    private void applyDeploymentHeader(RuntimeClient runtime, java.util.function.BiConsumer<String, String> setter) {
-        if (deploymentIdentity != null && runtime.config().baseUrl() == null) {
-            setter.accept(DEPLOYMENT_HEADER, deploymentIdentity.code());
+    private void applyDeploymentHeader(HttpProperties.Client config, HttpHeaders headers) {
+        // Apply last: caller headers, credentials and signers cannot change the deployment boundary.
+        headers.remove(DEPLOYMENT_HEADER);
+        if (deploymentIdentity != null && config.internalService()) {
+            headers.set(DEPLOYMENT_HEADER, deploymentIdentity.code());
         }
     }
 

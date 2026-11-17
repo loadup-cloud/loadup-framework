@@ -25,6 +25,8 @@ loadup:
     clients:
       merchant:
         base-url: https://merchant.example.com
+        # Explicit URLs are external by default. Set true only for a trusted internal service.
+        internal-service: false
         connect-timeout: 3s
         read-timeout: 10s
         acquire-timeout: 3s
@@ -47,8 +49,8 @@ loadup:
 ```
 
 `base-url` 可省略。省略时客户端名被当作目标应用名，地址按 `http://<client-name>:<default-port>` 解析，默认端口
-`8080`；该约定的目标同时允许私有/集群地址。显式 `base-url` 仍默认禁止私有目标，需要时配置
-`allow-private-addresses: true`。连接、池和大小限制均有默认值，只有与默认值不同的客户端才需要单独覆盖。
+`8080`，并按内部服务处理。显式 `base-url` 默认作为外部目标；只有明确配置 `internal-service: true` 才会附加部署标识头。
+私有地址策略仍由 `allow-private-addresses` 单独控制。连接、池和大小限制均有默认值，只有与默认值不同的客户端才需要单独覆盖。
 
 配置中的客户端和操作名限定为 1–64 个字母、数字、下划线或连字符。路径模板与业务传入的变量分别处理，变量作为值编码，调用不能改变配置的
 origin。连接池等待、连接建立和响应读取超时分别配置；读取超时不是整个下载的总时长限制。
@@ -134,7 +136,7 @@ HTTP 非 2xx（含 3xx）抛出安全的 HttpCallException，不暴露原响应�
 ## 凭证与配置更新
 
 提供一个 `HttpCredentialProvider` Bean，将 `credential-ref`
-解析为认证头。每次调用解析引用，允许秘密设施自行轮换值；不把私钥、令牌直接放入普通操作配置。合并顺序为客户端头、操作头、调用头、凭证头；最后的凭证头优先。组件拒绝
+解析为认证头。每次调用解析引用，允许秘密设施自行轮换值；不把私钥、令牌直接放入普通操作配置。合并顺序为客户端头、操作头、调用头、凭证头、signer 签名头，后者覆盖前者。最后组件移除调用方提供的部署头；仅对内部服务客户端写入本部署标识，因此外部请求不会携带该头。组件拒绝
 CR/LF、Host、Content-Length 等非法或传输层管理的头。
 
 ```java

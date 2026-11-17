@@ -66,9 +66,10 @@ class FixedSchemaConfigurationTest {
         ResultSet result = mock(ResultSet.class);
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery("SELECT current_schema()")).thenReturn(result);
+        when(statement.executeQuery("SELECT current_schema(), current_setting('search_path')")).thenReturn(result);
         when(result.next()).thenReturn(true);
         when(result.getString(1)).thenReturn("customer_a_payment");
+        when(result.getString(2)).thenReturn("customer_a_payment");
 
         assertThatCode(() -> new FixedSchemaVerifier(dataSource, "customer_a_payment").verify())
                 .doesNotThrowAnyException();
@@ -82,7 +83,7 @@ class FixedSchemaConfigurationTest {
         ResultSet result = mock(ResultSet.class);
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery("SELECT current_schema()")).thenReturn(result);
+        when(statement.executeQuery("SELECT current_schema(), current_setting('search_path')")).thenReturn(result);
         when(result.next()).thenReturn(true);
         when(result.getString(1)).thenReturn("public");
 
@@ -99,7 +100,7 @@ class FixedSchemaConfigurationTest {
         ResultSet result = mock(ResultSet.class);
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery("SELECT current_schema()")).thenReturn(result);
+        when(statement.executeQuery("SELECT current_schema(), current_setting('search_path')")).thenReturn(result);
         when(result.next()).thenReturn(true);
         when(result.getString(1)).thenReturn(null);
 
@@ -172,7 +173,7 @@ class FixedSchemaConfigurationTest {
 
         assertThatThrownBy(() -> new FixedSchemaEnvironmentPostProcessor().postProcessEnvironment(environment, null))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("search_path");
+                .hasMessageContaining("options");
     }
 
     @Test
@@ -183,4 +184,84 @@ class FixedSchemaConfigurationTest {
                 .doesNotThrowAnyException();
         assertThat(environment.getProperty("spring.datasource.hikari.schema")).isNull();
     }
+
+    @Test
+    void rejectsAdditionalOrDisguisedConnectionSearchPaths() {
+        for (String initSql : new String[] {
+            "SET search_path TO customer_a_payment,public",
+            "SET search_path TO customer_a_payment_backup",
+            "SELECT set_config('search' || '_path', 'public', false)",
+            "SET search_path TO public /* customer_a_payment */"
+        }) {
+            var environment = new MockEnvironment()
+                    .withProperty("loadup.database.schema", "customer_a_payment")
+                    .withProperty("spring.datasource.hikari.connection-init-sql", initSql);
+            assertThatThrownBy(() -> new FixedSchemaEnvironmentPostProcessor().postProcessEnvironment(environment, null))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessageContaining("connection-init-sql");
+        }
+        for (String property : new String[] {"spring.datasource.url", "spring.datasource.hikari.jdbc-url"}) {
+            for (String query : new String[] {
+                "options=-c%20search_path%3Dcustomer_a_payment,public",
+                "options=-c%20search_path%3Dcustomer_a_payment_backup",
+                "currentSchema=customer_a_payment,public",
+                "currentSchema=customer_a_payment&currentSchema=public",
+                "current%53chema=public"
+            }) {
+                var environment = new MockEnvironment()
+                        .withProperty("loadup.database.schema", "customer_a_payment")
+                        .withProperty(property, "jdbc:postgresql://localhost/payments?" + query);
+                assertThatThrownBy(() -> new FixedSchemaEnvironmentPostProcessor().postProcessEnvironment(environment, null))
+                        .isInstanceOf(IllegalStateException.class);
+            }
+        }
+    }
+
+    @Test
+    void rejectsSchemaOverridesInDriverProperties() {
+        for (String property : new String[] {"options", "currentSchema"}) {
+            var environment = new MockEnvironment()
+                    .withProperty("loadup.database.schema", "customer_a_payment")
+                    .withProperty("spring.datasource.hikari.data-source-properties." + property,
+                            java.util.Objects.equals(property, "options") ? "-c search_path=customer_a_payment,public" : "public");
+            assertThatThrownBy(() -> new FixedSchemaEnvironmentPostProcessor().postProcessEnvironment(environment, null))
+                    .isInstanceOf(IllegalStateException.class);
+        }
+    }
+
+    @Test
+    void relaxedPoolPropertyNamesCannotBypassValidation() {
+        for (String property : new String[] {
+            "spring.datasource.hikari.connection-init-sql", "spring.datasource.hikari.connectionInitSql"
+        }) {
+            var environment = new MockEnvironment()
+                    .withProperty("loadup.database.schema", "customer_a_payment")
+                    .withProperty(property, "SET search_path TO customer_a_payment, public");
+            assertThatThrownBy(() -> new FixedSchemaEnvironmentPostProcessor().postProcessEnvironment(environment, null))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessageContaining("connection-init-sql");
+        }
+    }
+
+    @Test
+    void verifierRejectsFallbackSchemasEvenWhenTheFirstSchemaMatches() throws SQLException {
+        DataSource dataSource = mock(DataSource.class);
+        Connection connection = mock(Connection.class);
+        Statement statement = mock(Statement.class);
+        ResultSet result = mock(ResultSet.class);
+        when(dataSource.getConnection()).thenReturn(connection);
+        when(connection.createStatement()).thenReturn(statement);
+        when(statement.executeQuery("SELECT current_schema(), current_setting('search_path')")).thenReturn(result);
+        when(result.next()).thenReturn(true);
+        when(result.getString(1)).thenReturn("customer_a_payment");
+        for (String path : new String[] {"customer_a_payment, public", "customer_a_payment, customer_b_payment", "customer_a_payment, missing_schema"}) {
+            when(result.getString(2)).thenReturn(path);
+            assertThatThrownBy(() -> new FixedSchemaVerifier(dataSource, "customer_a_payment").verify())
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessageContaining("search_path");
+        }
+        when(result.getString(2)).thenReturn("\"customer_a_payment\"");
+        assertThatCode(() -> new FixedSchemaVerifier(dataSource, "customer_a_payment").verify()).doesNotThrowAnyException();
+    }
+
 }

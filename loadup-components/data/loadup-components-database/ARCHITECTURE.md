@@ -3,8 +3,8 @@
 ## Scope
 
 `loadup-components-database` is the runtime integration for MyBatis-Flex and Spring JDBC. It owns persistence
-conventions, generated mapper/table definitions, ID/sequence allocation, Flyway defaults and schema-per-tenant routing
-seams. Applications own datasource selection, JDBC drivers and deployment migrations.
+conventions, generated mapper/table definitions, ID/sequence allocation, Flyway defaults and one fixed schema target.
+Applications own datasource selection, JDBC drivers and deployment migrations.
 
 Spring Data JDBC is not part of the component. Simple aggregate reads use generated MyBatis-Flex mappers and
 `ServiceImpl`/`IService`; complex queries, locks, conditional writes and batches use parameterized Spring JDBC.
@@ -24,8 +24,8 @@ DO extends BaseDO
 `BaseDO` lives in `loadup-components-database` as
 `io.github.loadup.components.database.dataobject.BaseDO` and is shared by persistence adapters. Its `id` is marked with
 `@Id(keyType = KeyType.None)`, so MyBatis-Flex never generates or replaces an application-assigned identifier. Business
-tables do not contain `tenant_id`. Schema-per-tenant is the target isolation boundary, but runtime datasource routing
-and per-tenant Flyway orchestration are not implemented; the current application serves the configured default schema.
+tables do not contain `tenant_id`. A deployment serves one tenant through a single fixed schema; runtime tenant
+routing and per-request schema switching are not part of the contract.
 
 ## Common fields
 
@@ -73,50 +73,32 @@ would run both generators. The processor module disables annotation processing w
 depends on the runtime database component. Framework entity modules declare it provided/optional as a reactor
 dependency, so -am and parallel builds order the processor before its consumers without exporting it at runtime.
 
-## Schema-per-tenant isolation
+## Fixed schema isolation
 
-The target tenant isolation is physical: each tenant owns a PostgreSQL schema. Current deployments use one configured
-schema. `TenantContext`/`DatabaseTenant` compute the trusted tenant/schema, but do not switch JDBC connections.
-Public business DTOs and repository contracts do not expose tenant routing parameters; internal application transaction
-helpers may explicitly carry trusted deployment context, which is not a business-table tenant column.
+`loadup.database.schema` is the sole schema target. It configures the Hikari pool's physical schema and Flyway's
+`defaultSchema`/`schemas`; there is no `DatabaseTenant`, `TenantContext`, default schema fallback, default tenant ID,
+`AbstractRoutingDataSource`, or per-request `SET search_path` contract. Older tenant-routing descriptions in previous versions of this document are obsolete and do not describe current behavior.
+
+An explicitly configured Hikari `schema` and JDBC URL `currentSchema` must match `loadup.database.schema`. Any
+non-empty Hikari `connection-init-sql` or JDBC `options` value is rejected, including Hikari driver properties. The
+implementation does not parse arbitrary SQL. At startup `FixedSchemaVerifier` checks that `current_schema()` equals the
+target and the complete `search_path` contains only that schema, before workers or scanners can start.
 
 ```text
-request / worker entry
+application configuration: loadup.database.schema
         │
-        ▼
-WebMVC DeploymentScopeFilter / worker entry ── binds ExecutionContext
-        │
-        ▼
-AbstractRoutingDataSource (planned) ── determineCurrentLookupKey() = TenantContext.tenantId()
-        │
-        ├─ schema mode: per-tenant DataSource (same DB, different currentSchema)
-        └─ database mode: independent DataSource
-        │
-        ▼
-single-tenant repository / explicit SQL (no tenant predicate)
+        ├─ Hikari physical connection schema
+        ├─ Flyway defaultSchema / schemas
+        └─ startup verifier: current_schema + complete search_path
 ```
 
-Design rules:
+This startup check verifies the configured target; it does not prove cross-schema privilege isolation. Runtime roles
+must be denied access to other schemas and kept separate from migration accounts. Those grants and account boundaries
+require deployment acceptance against the actual database. Do not treat documentation or startup verification as
+proof of that operational isolation.
 
-- `loadup.database.default-schema` defaults to `public`; `DatabaseTenant.currentSchema()` validates
-  `[a-z_][a-z0-9_]{0,62}` before any connection is selected.
-- `enabled=false` always resolves the configured default tenant/schema. `enabled=true, required=true` fails closed when
-  the execution context has no tenant.
-- When enabled and a context tenant is present, `currentSchema()` validates that tenant directly as the schema string;
-  it does not map the default tenant ID back to default-schema. This computation is not active datasource routing.
-- The current phase serves only the default schema; routing, tenant registry lookup, per-tenant pools and per-tenant
-  Flyway are deliberately deferred.
-- Schema mode uses one pool per tenant so pooled `search_path` state cannot leak between tenants. Database mode is an
-  alternative target for the same routing key.
-- The tenant must be bound before the transaction starts. WebMVC `DeploymentScopeFilter` binds the default tenant in the current phase;
-  TaskWorker and SchedulerTemplate bind their trusted tenant at the worker entry point. Schema resolution remains in DatabaseTenant.
-- Per-tenant Flyway: run the same schema-agnostic migrations with `defaultSchema`/`schemas` set to the tenant schema. A
-  control-plane tenant registry maps tenant codes to schema names; business tables never carry a tenant column.
-
-Non-relational resources are outside schema isolation: Redis lock/async-result keys, DFS object paths and RPC identity
-continue to use `TenantUtil`/`MDCUtils`.
-
-Stage 1B removed MultiTenantAutoConfiguration and the optional Web starter. Runtime owns the existing deployment tenant property and supplies DeploymentDataScope; DatabaseTenant consumes it without Servlet types. WebMVC owns DeploymentScopeFilter at HIGHEST_PRECEDENCE +10, after ExecutionContextFilter, with REQUEST/ASYNC/ERROR dispatch. Source changes and regression sources are complete; builds and tests have not run.
+Non-relational resources use deployment-fixed namespaces: lock and async-result keys use their configured namespace,
+DFS object paths use the configured bucket/prefix, and internal service calls use `DeploymentIdentity`.
 
 ## Repository query style
 
@@ -132,8 +114,8 @@ deletion is applied by the Flex global configuration for mapper operations and m
 
 Flyway support is optional; consumers using migrations include Flyway and its PostgreSQL module. Migration scripts are
 schema-agnostic (no schema-qualified names) and assume a fresh schema. `LoadUpFlywayAutoConfiguration` applies the
-configured default schema from `loadup.database.default-schema`; per-tenant execution is a
-deployment/routing responsibility. Applications must select explicit migration namespaces: their own directory
+same fixed schema configured by `loadup.database.schema` to `defaultSchema` and `schemas`; runtime and migration targets
+must remain aligned. Applications must select explicit migration namespaces: their own directory
 and approved `db/migration/framework/<module>` locations. The generic classpath migration root also discovers
 dependency JAR resources and is not an isolation mechanism. One application retains one Flyway history across
 its selected locations; published versioned migrations are immutable.
@@ -147,8 +129,8 @@ operational rules.
 
 ## Background workers
 
-Task and Transfer workers scan only the schema they run in. A worker row has no tenant column;
-tenant/schema binding happens at the worker entry point. Deploy one worker per tenant schema (or a dispatcher that
-iterates schemas and switches context) when multiple tenants are active.
+Task and Transfer workers scan the configured fixed schema through the application's shared data source. A worker row
+has no tenant column, and background work runs without HTTP or tenant context.
 
-Deployment identity is supplied by runtime `DeploymentDataScope` from the existing `loadup.database.multi-tenant.default-tenant-id` property (default `__default__`). It does not choose schemas; `default-schema`, `enabled`, `required` and schema validation remain database responsibilities. Non-Web applications need no Servlet entry.
+Deployment identity is separate from database schema selection. The database target has no `DatabaseTenant` or
+`TenantContext` request contract; the only schema property is `loadup.database.schema`.

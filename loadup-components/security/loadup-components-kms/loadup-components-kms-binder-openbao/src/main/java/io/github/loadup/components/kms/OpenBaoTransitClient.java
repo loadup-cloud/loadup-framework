@@ -69,6 +69,7 @@ final class OpenBaoTransitClient implements AutoCloseable {
                 properties.namespace() == null ? Map.of() : Map.of("X-Vault-Namespace", properties.namespace());
         var config = new HttpProperties.Client(
                 properties.endpoint(),
+                false,
                 properties.connectTimeout(),
                 properties.readTimeout(),
                 null,

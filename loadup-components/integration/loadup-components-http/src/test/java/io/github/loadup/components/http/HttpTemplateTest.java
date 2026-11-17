@@ -42,6 +42,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.service.annotation.PostExchange;
 import tools.jackson.databind.json.JsonMapper;
 
 class HttpTemplateTest {
@@ -59,6 +62,7 @@ class HttpTemplateTest {
             Map<String, HttpProperties.Operation> operations) {
         return new HttpProperties.Client(
                 source.baseUrl(),
+                source.internalService(),
                 source.connectTimeout(),
                 source.readTimeout(),
                 source.acquireTimeout(),
@@ -274,6 +278,7 @@ class HttpTemplateTest {
         var operations = Map.of("slow", new HttpProperties.Operation(HttpMethod.GET, "/slow", null));
         var client = new HttpProperties.Client(
                 URI.create("http://127.0.0.1:" + server.getAddress().getPort()),
+                false,
                 null,
                 Duration.ofMillis(100),
                 null,
@@ -627,6 +632,7 @@ class HttpTemplateTest {
         var identity = new DeploymentIdentity("customer-a");
         var conventional = new HttpProperties.Client(
                 null,
+                true,
                 Duration.ofSeconds(1),
                 Duration.ofSeconds(1),
                 null,
@@ -669,9 +675,55 @@ class HttpTemplateTest {
         assertThat(tenantHeader.get()).isNull();
     }
 
+    @Test
+    void explicitInternalUrlsUseTheDeploymentCodeForOperationsAndServiceProxies() {
+        assertDeploymentBoundary(true, "customer-a");
+    }
+
+    @Test
+    void explicitExternalUrlsNeverReceiveCallerCredentialOrSignerDeploymentHeaders() {
+        assertDeploymentBoundary(false, null);
+    }
+
+    private void assertDeploymentBoundary(boolean internalService, String expectedHeader) {
+        var settings = new HttpProperties.Client(
+                URI.create("http://127.0.0.1:" + server.getAddress().getPort()),
+                internalService,
+                null, null, null, null, null, null, null, null, null,
+                true,
+                "test-credential",
+                Map.of("X-Tenant-Code", "configured-other"),
+                Map.of("echo", new HttpProperties.Operation(HttpMethod.POST, "/echo",
+                        Map.of("X-Tenant-Code", "operation-other"))));
+        try (var template = new HttpTemplate(
+                new HttpProperties(Map.of("payment-statements", settings)),
+                RestClient::builder,
+                JsonMapper.builder().build(),
+                ignored -> Map.of("X-Tenant-Code", "credential-other"),
+                null,
+                null,
+                "deployment-boundary",
+                new DeploymentIdentity("customer-a"))) {
+            template.exchange("payment-statements", "echo",
+                    new HttpCall(null, null, Map.of("X-Tenant-Code", "caller-other"), "payload"),
+                    (method, uri, body) -> Map.of("X-Tenant-Code", "signer-other"));
+            assertThat(tenantHeader.get()).isEqualTo(expectedHeader);
+            tenantHeader.set(null);
+            var service = template.serviceClient("payment-statements", DeploymentEchoService.class);
+            assertThat(service.echo("caller-other", "payload")).isEqualTo("payload");
+            assertThat(tenantHeader.get()).isEqualTo(expectedHeader);
+        }
+    }
+
+    interface DeploymentEchoService {
+        @PostExchange(value = "/echo", contentType = "text/plain", accept = "text/plain")
+        String echo(@RequestHeader("X-Tenant-Code") String code, @RequestBody String body);
+    }
+
     private HttpProperties config(long limit, boolean allowPrivate, Map<String, String> headers) {
         var client = new HttpProperties.Client(
                 URI.create("http://127.0.0.1:" + server.getAddress().getPort()),
+                false,
                 Duration.ofSeconds(1),
                 Duration.ofSeconds(1),
                 null,

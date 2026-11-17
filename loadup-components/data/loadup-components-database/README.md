@@ -49,10 +49,12 @@ spring:
 
 Startup behavior:
 
-- `FixedSchemaEnvironmentPostProcessor` applies the schema as the pool's physical-connection setting and fails startup
-  when an explicit Hikari `schema`, JDBC `currentSchema`, `search_path` option or init SQL names a different schema.
-- `FixedSchemaVerifier` opens one connection and checks `current_schema()` before workers, schedulers or scanners start.
-  A missing schema does not fall back to `public`.
+- `FixedSchemaEnvironmentPostProcessor` applies the schema as the pool's physical-connection setting. An explicit Hikari
+  `schema` or JDBC `currentSchema` must equal it. Any non-empty Hikari `connection-init-sql` or JDBC `options` value is
+  rejected, including driver properties supplied through Hikari; arbitrary SQL is not parsed to infer its effects.
+- `FixedSchemaVerifier` checks both `current_schema()` and the complete `search_path` on a connection before workers,
+  schedulers or scanners start. `search_path` must contain only the configured schema. A missing schema does not fall
+  back to `public`.
 - Flyway uses the same value as `defaultSchema`/`schemas`, so the migration target cannot drift from the runtime target.
 - There is no tenant map, no `default-tenant-id`, no per-request `SET search_path` and no routing `DataSource`. Data
   isolation is enforced by the fixed connection configuration and database role privileges, not by request headers.
@@ -203,4 +205,5 @@ failover/restore rehearsals and P95/P99 capacity measurements are separate produ
 使用本组件的 `io.github.loadup.components.database.dataobject.BaseDO`。它保留 id、createdAt、updatedAt、deleted
 字段以及 MyBatis-Flex `@Id(keyType = KeyType.None)` 元数据；标识仍由应用显式提供，迁移不改变 JSON、数据库列或逻辑删除行为。
 
-Deployment identity is supplied by runtime `DeploymentDataScope` from the existing `loadup.database.multi-tenant.default-tenant-id` property (default `__default__`). It does not choose schemas; `default-schema`, `enabled`, `required` and schema validation remain database responsibilities. Non-Web applications need no Servlet entry.
+Deployment identity is separate from database schema selection. The database target has no `DatabaseTenant` or
+`TenantContext` request contract; the only schema property is `loadup.database.schema`.

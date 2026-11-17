@@ -185,6 +185,7 @@ class TaskIT {
         server.start();
         var settings = new HttpProperties.Client(
                 URI.create("http://127.0.0.1:" + server.getAddress().getPort()),
+                false,
                 null,
                 null,
                 null,

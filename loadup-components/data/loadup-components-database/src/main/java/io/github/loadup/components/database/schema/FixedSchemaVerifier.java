@@ -47,21 +47,20 @@ public final class FixedSchemaVerifier {
      * Fails startup when a physical connection does not resolve to the configured schema.
      */
     public void verify() {
-        try (Connection connection = dataSource.getConnection()) {
-            String currentSchema = currentSchema(connection);
-            if (!Objects.equals(schema, currentSchema)) {
-                throw new IllegalStateException("Runtime connection resolves to schema " + currentSchema
-                        + " instead of the configured loadup.database.schema " + schema);
+        try (Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet result = statement.executeQuery("SELECT current_schema(), current_setting('search_path')")) {
+            if (!result.next() || !Objects.equals(schema, result.getString(1))) {
+                throw new IllegalStateException(
+                        "Runtime connection does not resolve to loadup.database.schema " + schema);
+            }
+            String searchPath = result.getString(2);
+            if (!Objects.equals(schema, searchPath) && !Objects.equals("\"" + schema + "\"", searchPath)) {
+                throw new IllegalStateException(
+                        "Runtime search_path must contain only loadup.database.schema " + schema);
             }
         } catch (SQLException failure) {
             throw new IllegalStateException("Unable to verify the configured database schema " + schema, failure);
-        }
-    }
-
-    private static String currentSchema(Connection connection) throws SQLException {
-        try (Statement statement = connection.createStatement();
-                ResultSet result = statement.executeQuery("SELECT current_schema()")) {
-            return result.next() ? result.getString(1) : null;
         }
     }
 }

@@ -29,6 +29,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.http.HttpMethod;
 
 class HttpConfigurationContractTest {
@@ -43,7 +45,7 @@ class HttpConfigurationContractTest {
             Long response,
             URI proxy) {
         return new HttpProperties.Client(
-                url, connect, read, acquire, total, perRoute, request, response, null, proxy, false, null, null, null);
+                url, false, connect, read, acquire, total, perRoute, request, response, null, proxy, false, null, null, null);
     }
 
     @ParameterizedTest
@@ -64,11 +66,25 @@ class HttpConfigurationContractTest {
     void conventionalClientsUseTheApplicationNameAndDefaultPort() {
         var client = HttpProperties.Client.conventional();
         assertThat(client.baseUrl()).isNull();
+        assertThat(client.internalService()).isTrue();
         assertThat(client.allowPrivateAddresses()).isTrue();
         assertThat(client.resolveBaseUrl("payment", 8080)).isEqualTo(URI.create("http://payment:8080"));
         assertThat(new HttpProperties(Map.of()).defaultPort()).isEqualTo(8080);
         assertThat(new HttpProperties(8081, Map.of()).defaultPort()).isEqualTo(8081);
         assertThatThrownBy(() -> new HttpProperties(0, Map.of())).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void bindsInternalServiceFlagAndDefaultsExternalGatewayToFalse() {
+        var source = new MapConfigurationPropertySource(Map.of(
+                "loadup.http.clients.payment.base-url", "http://payment:8080",
+                "loadup.http.clients.payment.internal-service", "true",
+                "loadup.http.clients.gateway.base-url", "https://gateway.example.test"));
+
+        var properties = new Binder(source).bind("loadup.http", HttpProperties.class).get();
+
+        assertThat(properties.clients().get("payment").internalService()).isTrue();
+        assertThat(properties.clients().get("gateway").internalService()).isFalse();
     }
 
     @ParameterizedTest
