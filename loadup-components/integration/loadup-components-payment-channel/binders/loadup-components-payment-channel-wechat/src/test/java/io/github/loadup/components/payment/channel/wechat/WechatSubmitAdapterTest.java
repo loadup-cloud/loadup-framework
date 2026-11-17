@@ -33,7 +33,6 @@ import static org.mockito.Mockito.when;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.money.Money;
 import io.github.loadup.commons.util.DigestUtils;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.payment.channel.api.model.ChannelBindingRevision;
 import io.github.loadup.components.payment.channel.api.model.ChannelExecutionContext;
 import io.github.loadup.components.payment.channel.api.model.ChannelH5Input;
@@ -80,7 +79,7 @@ class WechatSubmitAdapterTest {
     private final WechatProtocolClient client = mock(WechatProtocolClient.class);
     private final WechatJsapiSigner signer = mock(WechatJsapiSigner.class);
     private final WechatNotificationProperties notifications = new WechatNotificationProperties(
-            Map.of("tenant", Map.of("binding", URI.create("https://payments.example/wechat/notify"))), Map.of());
+            Map.of("binding", URI.create("https://payments.example/wechat/notify")), Map.of());
     private final WechatSubmitAdapter adapter = new WechatSubmitAdapter(client, signer, notifications, json, CLOCK);
 
     @Test
@@ -89,31 +88,16 @@ class WechatSubmitAdapterTest {
         var request = request("wx-app", UNTIL);
         var expiry = OffsetDateTime.now(CLOCK).plusHours(2);
         var expected = action("wx-app", expiry);
-        when(client.call(
-                        eq("tenant"),
-                        eq(context.binding()),
-                        eq(WechatMethod.DIRECT_JSAPI),
-                        anyMap(),
-                        anyMap(),
-                        anyString()))
+        when(client.call(eq(context.binding()), eq(WechatMethod.DIRECT_JSAPI), anyMap(), anyMap(), anyString()))
                 .thenReturn(response(WechatMethod.DIRECT_JSAPI, 200, "{\"prepay_id\":\"synthetic\"}"));
         when(signer.sign(context, identity(), "synthetic", expiry)).thenReturn(expected);
-        TenantUtil.runWithTenant("tenant", () -> {
-            var result = adapter.submit(context, request);
-            assertEquals(
-                    ChannelPaymentOutcome.Kind.ACCEPTED, result.observation().kind());
-            assertNull(result.observation().channelTransactionNo());
-            assertEquals(expected, result.action());
-        });
+        var result = adapter.submit(context, request);
+        assertEquals(ChannelPaymentOutcome.Kind.ACCEPTED, result.observation().kind());
+        assertNull(result.observation().channelTransactionNo());
+        assertEquals(expected, result.action());
         var body = ArgumentCaptor.forClass(String.class);
         verify(client)
-                .call(
-                        eq("tenant"),
-                        eq(context.binding()),
-                        eq(WechatMethod.DIRECT_JSAPI),
-                        eq(Map.of()),
-                        eq(Map.of()),
-                        body.capture());
+                .call(eq(context.binding()), eq(WechatMethod.DIRECT_JSAPI), eq(Map.of()), eq(Map.of()), body.capture());
         var data = json.readValue(body.getValue(), Map.class);
         assertEquals("wx-app", data.get("appid"));
         assertEquals("1900000001", data.get("mchid"));
@@ -136,29 +120,14 @@ class WechatSubmitAdapterTest {
             String appId = subAppId == null ? "wx-provider" : subAppId;
             var until = OffsetDateTime.now(CLOCK).plusMinutes(30);
             var expected = action(appId, until);
-            when(client.call(
-                            eq("tenant"),
-                            eq(context.binding()),
-                            eq(WechatMethod.PARTNER_JSAPI),
-                            anyMap(),
-                            anyMap(),
-                            anyString()))
+            when(client.call(eq(context.binding()), eq(WechatMethod.PARTNER_JSAPI), anyMap(), anyMap(), anyString()))
                     .thenReturn(response(WechatMethod.PARTNER_JSAPI, 200, "{\"prepay_id\":\"synthetic\"}"));
             when(signer.sign(context, identity(), "synthetic", until)).thenReturn(expected);
-            TenantUtil.runWithTenant(
-                    "tenant",
-                    () -> assertEquals(
-                            expected,
-                            adapter.submit(context, request(appId, until)).action()));
+            assertEquals(
+                    expected, adapter.submit(context, request(appId, until)).action());
             var body = ArgumentCaptor.forClass(String.class);
             verify(client)
-                    .call(
-                            eq("tenant"),
-                            eq(context.binding()),
-                            eq(WechatMethod.PARTNER_JSAPI),
-                            anyMap(),
-                            anyMap(),
-                            body.capture());
+                    .call(eq(context.binding()), eq(WechatMethod.PARTNER_JSAPI), anyMap(), anyMap(), body.capture());
             var data = json.readValue(body.getValue(), Map.class);
             assertEquals("wx-provider", data.get("sp_appid"));
             assertEquals("1900000001", data.get("sp_mchid"));
@@ -179,12 +148,10 @@ class WechatSubmitAdapterTest {
                 clearInvocations(client, signer);
                 var context = context(account);
                 var operation = account.subMerchantId() == null ? WechatMethod.DIRECT_H5 : WechatMethod.PARTNER_H5;
-                when(client.call(eq("tenant"), eq(context.binding()), eq(operation), anyMap(), anyMap(), anyString()))
+                when(client.call(eq(context.binding()), eq(operation), anyMap(), anyMap(), anyString()))
                         .thenReturn(response(operation, 200, "{\"h5_url\":\"" + providerUrl + "\"}"));
 
-                var result = TenantUtil.callWithTenant(
-                        "tenant",
-                        () -> adapter.submit(context, h5Request(UNTIL, new ChannelH5Input("8.8.8.8", sceneType))));
+                var result = adapter.submit(context, h5Request(UNTIL, new ChannelH5Input("8.8.8.8", sceneType)));
 
                 assertEquals(
                         ChannelPaymentOutcome.Kind.ACCEPTED,
@@ -195,14 +162,7 @@ class WechatSubmitAdapterTest {
                 assertEquals(OffsetDateTime.now(CLOCK).plusMinutes(5), action.expiresAt());
 
                 var body = ArgumentCaptor.forClass(String.class);
-                verify(client)
-                        .call(
-                                eq("tenant"),
-                                eq(context.binding()),
-                                eq(operation),
-                                eq(Map.of()),
-                                eq(Map.of()),
-                                body.capture());
+                verify(client).call(eq(context.binding()), eq(operation), eq(Map.of()), eq(Map.of()), body.capture());
                 var data = json.readValue(body.getValue(), Map.class);
                 var expectedType =
                         switch (sceneType) {
@@ -238,16 +198,14 @@ class WechatSubmitAdapterTest {
         var shortDeadline =
                 OffsetDateTime.ofInstant(start, clock.getZone()).plusMinutes(3).plusNanos(900_000_000);
         var providerUrl = "https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb?prepay_id=synthetic";
-        when(client.call(anyString(), any(), eq(WechatMethod.DIRECT_H5), anyMap(), anyMap(), anyString()))
+        when(client.call(any(), eq(WechatMethod.DIRECT_H5), anyMap(), anyMap(), anyString()))
                 .thenAnswer(invocation -> {
                     clock.advance(Duration.ofMinutes(2));
                     return response(WechatMethod.DIRECT_H5, 200, "{\"h5_url\":\"" + providerUrl + "\"}");
                 });
 
-        var result = TenantUtil.callWithTenant(
-                "tenant",
-                () -> adapterWithClock.submit(
-                        context, h5Request(shortDeadline, new ChannelH5Input("8.8.8.8", H5SceneType.WAP))));
+        var result = adapterWithClock.submit(
+                context, h5Request(shortDeadline, new ChannelH5Input("8.8.8.8", H5SceneType.WAP)));
 
         assertEquals(
                 OffsetDateTime.ofInstant(start, clock.getZone()).plusMinutes(3),
@@ -256,16 +214,14 @@ class WechatSubmitAdapterTest {
 
         var longDeadline =
                 OffsetDateTime.ofInstant(clock.instant(), clock.getZone()).plusHours(1);
-        when(client.call(anyString(), any(), eq(WechatMethod.DIRECT_H5), anyMap(), anyMap(), anyString()))
+        when(client.call(any(), eq(WechatMethod.DIRECT_H5), anyMap(), anyMap(), anyString()))
                 .thenAnswer(invocation -> {
                     clock.advance(Duration.ofMinutes(2));
                     return response(WechatMethod.DIRECT_H5, 200, "{\"h5_url\":\"" + providerUrl + "\"}");
                 });
         var secondStart = clock.instant();
-        var secondResult = TenantUtil.callWithTenant(
-                "tenant",
-                () -> adapterWithClock.submit(
-                        context, h5Request(longDeadline, new ChannelH5Input("8.8.8.8", H5SceneType.WAP))));
+        var secondResult = adapterWithClock.submit(
+                context, h5Request(longDeadline, new ChannelH5Input("8.8.8.8", H5SceneType.WAP)));
         assertEquals(
                 OffsetDateTime.ofInstant(secondStart, clock.getZone()).plusMinutes(5),
                 ((WechatH5ChannelAction) secondResult.action()).expiresAt());
@@ -279,7 +235,7 @@ class WechatSubmitAdapterTest {
         var adapterWithClock = new WechatSubmitAdapter(client, signer, notifications, json, clock);
         var context = context(new WechatAccountIdentity("wx-app", "1900000001", null, null));
         var deadline = OffsetDateTime.ofInstant(start, clock.getZone()).plusHours(1);
-        when(client.call(anyString(), any(), eq(WechatMethod.DIRECT_H5), anyMap(), anyMap(), anyString()))
+        when(client.call(any(), eq(WechatMethod.DIRECT_H5), anyMap(), anyMap(), anyString()))
                 .thenAnswer(invocation -> {
                     clock.advance(Duration.ofMinutes(6));
                     return response(
@@ -287,25 +243,20 @@ class WechatSubmitAdapterTest {
                             200,
                             "{\"h5_url\":\"https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb?prepay_id=synthetic\"}");
                 });
-        var result = TenantUtil.callWithTenant(
-                "tenant",
-                () -> adapterWithClock.submit(
-                        context, h5Request(deadline, new ChannelH5Input("8.8.8.8", H5SceneType.WAP))));
+        var result =
+                adapterWithClock.submit(context, h5Request(deadline, new ChannelH5Input("8.8.8.8", H5SceneType.WAP)));
         assertEquals(ChannelPaymentOutcome.Kind.ACCEPTED, result.observation().kind());
         assertNull(result.action());
 
         clearInvocations(client, signer);
-        when(client.call(anyString(), any(), eq(WechatMethod.DIRECT_H5), anyMap(), anyMap(), anyString()))
+        when(client.call(any(), eq(WechatMethod.DIRECT_H5), anyMap(), anyMap(), anyString()))
                 .thenReturn(response(
                         WechatMethod.DIRECT_H5,
                         200,
                         "{\"h5_url\":\"https://evil.example/cgi-bin/mmpayweb-bin/checkmweb?prepay_id=synthetic\"}"));
         assertThrows(
                 CommonException.class,
-                () -> TenantUtil.runWithTenant(
-                        "tenant",
-                        () -> adapter.submit(
-                                context, h5Request(UNTIL, new ChannelH5Input("8.8.8.8", H5SceneType.WAP)))));
+                () -> adapter.submit(context, h5Request(UNTIL, new ChannelH5Input("8.8.8.8", H5SceneType.WAP))));
         verifyNoInteractions(signer);
     }
 
@@ -314,20 +265,15 @@ class WechatSubmitAdapterTest {
         var account = new WechatAccountIdentity("wx-app", "1900000001", null, null);
         var context = context(account);
         var noH5Context = context(account, Set.of(PaymentMethod.JSAPI));
-        TenantUtil.runWithTenant("tenant", () -> {
-            assertThrows(
-                    CommonException.class,
-                    () -> adapter.submit(
-                            noH5Context, h5Request(UNTIL, new ChannelH5Input("8.8.8.8", H5SceneType.WAP))));
-            assertThrows(CommonException.class, () -> adapter.submit(context, h5Request(UNTIL, new NoChannelInput())));
-        });
+        assertThrows(
+                CommonException.class,
+                () -> adapter.submit(noH5Context, h5Request(UNTIL, new ChannelH5Input("8.8.8.8", H5SceneType.WAP))));
+        assertThrows(CommonException.class, () -> adapter.submit(context, h5Request(UNTIL, new NoChannelInput())));
         verifyNoInteractions(client, signer);
 
-        when(client.call(anyString(), any(), eq(WechatMethod.DIRECT_H5), anyMap(), anyMap(), anyString()))
+        when(client.call(any(), eq(WechatMethod.DIRECT_H5), anyMap(), anyMap(), anyString()))
                 .thenReturn(response(WechatMethod.DIRECT_H5, 400, "{\"code\":\"OUT_TRADE_NO_USED\"}"));
-        var result = TenantUtil.callWithTenant(
-                "tenant",
-                () -> adapter.submit(context, h5Request(UNTIL, new ChannelH5Input("8.8.8.8", H5SceneType.WAP))));
+        var result = adapter.submit(context, h5Request(UNTIL, new ChannelH5Input("8.8.8.8", H5SceneType.WAP)));
         assertEquals(ChannelPaymentOutcome.Kind.UNKNOWN, result.observation().kind());
         assertNull(result.action());
         verifyNoInteractions(signer);
@@ -336,56 +282,51 @@ class WechatSubmitAdapterTest {
     @Test
     void rejectsBadIdentityScopeUnsupportedMethodsAndMissingNotifyUrlWithoutExternalCalls() {
         var context = context(new WechatAccountIdentity("wx-app", "1900000001", null, null));
-        TenantUtil.runWithTenant("tenant", () -> {
-            assertThrows(
-                    CommonException.class,
-                    () -> adapter.validate(
-                            context,
-                            validation(
-                                    PaymentMethod.JSAPI,
-                                    new ChannelPayerIdentityInput(
-                                            Channel.WECHAT, PayerIdentityType.OPEN_ID, "openid", "wrong-app"))));
-            assertThrows(
-                    CommonException.class,
-                    () -> adapter.validate(
-                            context,
-                            validation(
-                                    PaymentMethod.JSAPI,
-                                    new ChannelPayerIdentityInput(
-                                            Channel.WECHAT, PayerIdentityType.USER_ID, "userid", "wx-app"))));
-            assertThrows(
-                    CommonException.class,
-                    () -> adapter.validate(context, validation(PaymentMethod.H5, new NoChannelInput())));
-            assertThrows(
-                    CommonException.class,
-                    () -> adapter.validate(
-                            context,
-                            validation(PaymentMethod.PAYMENT_CODE, new ChannelPaymentCodeInput("synthetic-code"))));
-            var missingUrl = new WechatSubmitAdapter(
-                    client, signer, new WechatNotificationProperties(Map.of(), Map.of()), json, CLOCK);
-            assertThrows(
-                    CommonException.class,
-                    () -> missingUrl.validate(
-                            context,
-                            validation(
-                                    PaymentMethod.JSAPI,
-                                    new ChannelPayerIdentityInput(
-                                            Channel.WECHAT, PayerIdentityType.OPEN_ID, "openid", "wx-app"))));
-        });
+        assertThrows(
+                CommonException.class,
+                () -> adapter.validate(
+                        context,
+                        validation(
+                                PaymentMethod.JSAPI,
+                                new ChannelPayerIdentityInput(
+                                        Channel.WECHAT, PayerIdentityType.OPEN_ID, "openid", "wrong-app"))));
+        assertThrows(
+                CommonException.class,
+                () -> adapter.validate(
+                        context,
+                        validation(
+                                PaymentMethod.JSAPI,
+                                new ChannelPayerIdentityInput(
+                                        Channel.WECHAT, PayerIdentityType.USER_ID, "userid", "wx-app"))));
+        assertThrows(
+                CommonException.class,
+                () -> adapter.validate(context, validation(PaymentMethod.H5, new NoChannelInput())));
+        assertThrows(
+                CommonException.class,
+                () -> adapter.validate(
+                        context,
+                        validation(PaymentMethod.PAYMENT_CODE, new ChannelPaymentCodeInput("synthetic-code"))));
+        var missingUrl = new WechatSubmitAdapter(
+                client, signer, new WechatNotificationProperties(Map.of(), Map.of()), json, CLOCK);
+        assertThrows(
+                CommonException.class,
+                () -> missingUrl.validate(
+                        context,
+                        validation(
+                                PaymentMethod.JSAPI,
+                                new ChannelPayerIdentityInput(
+                                        Channel.WECHAT, PayerIdentityType.OPEN_ID, "openid", "wx-app"))));
         verifyNoInteractions(client, signer);
     }
 
     @Test
     void signedErrorIsUnknownAndCannotProduceAnInvocationAction() {
         var context = context(new WechatAccountIdentity("wx-app", "1900000001", null, null));
-        when(client.call(anyString(), any(), eq(WechatMethod.DIRECT_JSAPI), anyMap(), anyMap(), anyString()))
+        when(client.call(any(), eq(WechatMethod.DIRECT_JSAPI), anyMap(), anyMap(), anyString()))
                 .thenReturn(response(WechatMethod.DIRECT_JSAPI, 400, "{\"code\":\"OUT_TRADE_NO_USED\"}"));
-        TenantUtil.runWithTenant("tenant", () -> {
-            var result = adapter.submit(context, request("wx-app", UNTIL));
-            assertEquals(
-                    ChannelPaymentOutcome.Kind.UNKNOWN, result.observation().kind());
-            assertNull(result.action());
-        });
+        var result = adapter.submit(context, request("wx-app", UNTIL));
+        assertEquals(ChannelPaymentOutcome.Kind.UNKNOWN, result.observation().kind());
+        assertNull(result.action());
         verifyNoInteractions(signer);
     }
 
@@ -394,18 +335,16 @@ class WechatSubmitAdapterTest {
     }
 
     private ChannelExecutionContext context(WechatAccountIdentity account, Set<PaymentMethod> capabilities) {
-        return new ChannelExecutionContext(
-                "tenant",
-                new ChannelBindingRevision(
-                        "binding",
-                        "merchant",
-                        Channel.WECHAT,
-                        account.accessMode(),
-                        "a".repeat(64),
-                        "credential",
-                        "v1",
-                        account,
-                        capabilities));
+        return new ChannelExecutionContext(new ChannelBindingRevision(
+                "binding",
+                "merchant",
+                Channel.WECHAT,
+                account.accessMode(),
+                "a".repeat(64),
+                "credential",
+                "v1",
+                account,
+                capabilities));
     }
 
     private ChannelPaymentIdentity identity() {

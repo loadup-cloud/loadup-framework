@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025-2026 LoadUp Cloud
+ * Copyright (C) 2026 LoadUp Cloud
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,24 +20,20 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Map;
 
-public record LockKey(String business, String tenantId, String resourceId) {
+/**
+ * Namespaced lock identity of one business resource.
+ *
+ * <p>The deployment namespace comes from the lock configuration, so two deployments sharing a
+ * Redis instance never contend for the same key. No request, task or actor selects the namespace.
+ */
+public record LockKey(String business, String resourceId) {
     public LockKey {
         business = required(business, "business", 64);
-        if (tenantId != null) {
-            tenantId = required(tenantId, "tenantId", 256);
-        }
         resourceId = required(resourceId, "resourceId", 512);
     }
 
-    public static LockKey global(String business, String resourceId) {
-        return new LockKey(business, null, resourceId);
-    }
-
-    public static LockKey tenant(String business, String tenantId, String resourceId) {
-        if (tenantId == null) {
-            throw new IllegalArgumentException("tenantId is required for tenant scope");
-        }
-        return new LockKey(business, tenantId, resourceId);
+    public static LockKey of(String business, String resourceId) {
+        return new LockKey(business, resourceId);
     }
 
     static String required(String value, String field, int max) {
@@ -59,11 +55,11 @@ public record LockKey(String business, String tenantId, String resourceId) {
 
     public String redisName(String namespace) {
         String prefix = "loadup:lock:" + encode(required(namespace, "namespace", 128)) + ":" + encode(business);
-        return prefix + (tenantId == null ? ":g:" : ":t:" + encode(tenantId) + ":") + encode(resourceId);
+        return prefix + ":" + encode(resourceId);
     }
 
     @Override
     public String toString() {
-        return ToStringAsJson.reflectionToString(Map.of("scope", tenantId == null ? "global" : "tenant"));
+        return ToStringAsJson.reflectionToString(Map.of("scope", "deployment"));
     }
 }

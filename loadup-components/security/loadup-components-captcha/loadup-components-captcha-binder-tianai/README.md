@@ -44,8 +44,7 @@ loadup:
 
 ## 自动装配
 
-- [
-  `TianaiCaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/tianai/autoconfigure/TianaiCaptchaAutoConfiguration.java)
+- [ `TianaiCaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/tianai/autoconfigure/TianaiCaptchaAutoConfiguration.java)
     - 启用条件：
       `@ConditionalOnProperty(prefix = "loadup.captcha", name = "binder-type", havingValue = "tianai", matchIfMissing = true)`。
 

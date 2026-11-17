@@ -15,6 +15,7 @@
  */
 package io.github.loadup.components.http;
 
+import io.github.loadup.components.runtime.deployment.DeploymentIdentity;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -42,13 +43,16 @@ public class HttpAutoConfiguration {
             ObjectMapper mapper,
             ObjectProvider<HttpCredentialProvider> credentials,
             ObjectProvider<SslBundles> sslBundles,
-            ObjectProvider<MeterRegistry> metrics) {
+            ObjectProvider<MeterRegistry> metrics,
+            ObjectProvider<DeploymentIdentity> deploymentIdentity) {
         return new HttpTemplate(
                 properties,
                 builders::getObject,
                 mapper,
                 credentials.getIfAvailable(),
                 sslBundles.getIfAvailable(),
-                metrics.getIfAvailable());
+                metrics.getIfAvailable(),
+                "application",
+                deploymentIdentity.getIfAvailable());
     }
 }

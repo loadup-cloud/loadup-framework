@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025-2026 LoadUp Cloud
+ * Copyright (C) 2026 LoadUp Cloud
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,46 +17,57 @@ package io.github.loadup.components.database.autoconfigure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.loadup.components.database.tenant.DatabaseTenant;
-import io.github.loadup.components.runtime.time.ClockAutoConfiguration;
+import io.github.loadup.components.database.config.DatabaseProperties;
+import io.github.loadup.components.database.schema.FixedSchemaVerifier;
 import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 class DatabaseCoreAutoConfigurationTest {
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
-            .withConfiguration(
-                    AutoConfigurations.of(DatabaseCoreAutoConfiguration.class, ClockAutoConfiguration.class));
+            .withConfiguration(AutoConfigurations.of(DatabaseCoreAutoConfiguration.class));
 
     @Test
-    void suppliesTenantResolverAndClock() {
-        runner.run(context -> {
-            assertThat(context).hasNotFailed().hasSingleBean(DatabaseTenant.class);
-            assertThat(context).hasSingleBean(Clock.class);
-            assertThat(context.getBean("clock", Clock.class).getZone()).isEqualTo(ZoneId.systemDefault());
+    void readsTheSchemaFromTheSingleConfiguredProperty() {
+        runner.withPropertyValues("loadup.database.schema=ledger").run(context -> {
+            assertThat(context).hasNotFailed().hasSingleBean(DatabaseProperties.class);
+            assertThat(context.getBean(DatabaseProperties.class).getSchema()).isEqualTo("ledger");
+            assertThat(context).doesNotHaveBean(Clock.class);
+            assertThat(context).doesNotHaveBean(FixedSchemaVerifier.class);
         });
     }
 
     @Test
-    void bindsDatabaseSchemaIndependentlyOfMultiTenancy() {
-        runner.withPropertyValues("loadup.database.default-schema=ledger", "loadup.database.multi-tenant.enabled=false")
+    void failsStartupWithoutASchema() {
+        runner.run(context -> assertThat(context).hasFailed());
+    }
+
+    @Test
+    void failsStartupForASharedReservedOrMalformedSchema() {
+        for (String invalid : new String[] {"public", "pg_catalog", "Invalid-Schema", "../../etc"}) {
+            runner.withPropertyValues("loadup.database.schema=" + invalid)
+                    .run(context -> assertThat(context).hasFailed());
+        }
+    }
+
+    @Test
+    void verifiesThePhysicalConnectionWhenADataSourceIsPresent() {
+        DataSource dataSource = Mockito.mock(DataSource.class);
+        runner.withPropertyValues("loadup.database.schema=ledger")
+                .withBean(DataSource.class, () -> dataSource)
+                .run(context -> assertThat(context).hasFailed());
+    }
+
+    @Test
+    void nonWebDatabaseAssemblyRegistersNoFilters() {
+        runner.withPropertyValues("loadup.database.schema=ledger", "loadup.deployment.code=deployment-a")
                 .run(context -> {
                     assertThat(context).hasNotFailed();
-                    assertThat(context.getBean(DatabaseTenant.class).currentSchema())
-                            .isEqualTo("ledger");
+                    assertThat(context).doesNotHaveBean("tenantFilterRegistration");
+                    assertThat(context).doesNotHaveBean(FixedSchemaVerifier.class);
                 });
-    }
-
-    @Test
-    void usesApplicationSuppliedClock() {
-        Clock fixed = Clock.fixed(Instant.parse("2026-01-01T00:00:00Z"), ZoneOffset.UTC);
-        runner.withBean("clock", Clock.class, () -> fixed).run(context -> {
-            assertThat(context).hasNotFailed().hasSingleBean(Clock.class);
-            assertThat(context.getBean(Clock.class)).isSameAs(fixed);
-        });
     }
 }

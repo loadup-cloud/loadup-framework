@@ -17,12 +17,16 @@ package io.github.loadup.components.oauth;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import io.github.loadup.components.authserver.sas.SasAuthServerAutoConfiguration;
 import io.github.loadup.components.oauth.autoconfigure.OAuthJdbcAutoConfiguration;
+import io.github.loadup.components.oauth.client.OAuthClientManager;
 import io.github.loadup.components.observability.ApiResultMetrics;
 import io.github.loadup.components.resourceserver.ResourceServerAutoConfiguration;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import java.time.Clock;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -31,6 +35,8 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
@@ -42,6 +48,7 @@ import tools.jackson.databind.json.JsonMapper;
 
 class OAuthAutoConfigurationIsolationTest {
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
+            .withBean(Clock.class, Clock::systemDefaultZone)
             .withConfiguration(AutoConfigurations.of(
                     OAuthJdbcAutoConfiguration.class,
                     SasAuthServerAutoConfiguration.class,
@@ -80,16 +87,31 @@ class OAuthAutoConfigurationIsolationTest {
 
     @Test
     void jdbcStoresRequireExplicitOptIn() {
-        runner.withBean(JdbcOperations.class, () -> mock(JdbcOperations.class))
-                .run(context -> assertThat(context).doesNotHaveBean(RegisteredClientRepository.class));
-        runner.withBean(JdbcOperations.class, () -> mock(JdbcOperations.class))
+        jdbcRunner().run(context -> assertThat(context).doesNotHaveBean(RegisteredClientRepository.class));
+        jdbcRunner()
                 .withPropertyValues("loadup.security.oauth.persistence.enabled=true")
                 .run(context -> assertThat(context)
                         .hasNotFailed()
                         .hasSingleBean(RegisteredClientRepository.class)
+                        .hasSingleBean(OAuthClientManager.class)
                         .hasSingleBean(OAuth2AuthorizationService.class)
                         .hasSingleBean(OAuth2AuthorizationConsentService.class)
                         .doesNotHaveBean(JwtEncoder.class));
+    }
+
+    @Test
+    void enabledDefaultJdbcStoresFailWithoutATransactionManager() {
+        runner.withBean(JdbcOperations.class, () -> mock(JdbcOperations.class))
+                .withPropertyValues("loadup.security.oauth.persistence.enabled=true")
+                .run(context -> assertThat(context).hasFailed());
+    }
+
+    private ApplicationContextRunner jdbcRunner() {
+        var dataSource = mock(DataSource.class);
+        var jdbc = mock(JdbcTemplate.class);
+        when(jdbc.getDataSource()).thenReturn(dataSource);
+        return runner.withBean(JdbcOperations.class, () -> jdbc)
+                .withBean(DataSourceTransactionManager.class, () -> new DataSourceTransactionManager(dataSource));
     }
 
     @Configuration(proxyBeanMethods = false)

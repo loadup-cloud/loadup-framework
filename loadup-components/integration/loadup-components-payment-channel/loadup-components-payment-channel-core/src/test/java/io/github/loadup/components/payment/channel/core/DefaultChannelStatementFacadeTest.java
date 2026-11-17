@@ -25,7 +25,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.payment.channel.api.model.ChannelBindingRevision;
 import io.github.loadup.components.payment.channel.api.model.ChannelExecutionContext;
 import io.github.loadup.components.payment.channel.api.model.ChannelStatementReceipt;
@@ -49,18 +48,16 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 class DefaultChannelStatementFacadeTest {
     final ChannelStatementProvider provider = mock(ChannelStatementProvider.class);
-    final ChannelExecutionContext context = new ChannelExecutionContext(
-            "tenant",
-            new ChannelBindingRevision(
-                    "revision",
-                    "merchant",
-                    Channel.WECHAT,
-                    AccessMode.DIRECT,
-                    "a".repeat(64),
-                    "credential",
-                    "v1",
-                    new WechatAccountIdentity("app", "190000001", null, null),
-                    Set.of(PaymentMethod.H5)));
+    final ChannelExecutionContext context = new ChannelExecutionContext(new ChannelBindingRevision(
+            "revision",
+            "merchant",
+            Channel.WECHAT,
+            AccessMode.DIRECT,
+            "a".repeat(64),
+            "credential",
+            "v1",
+            new WechatAccountIdentity("app", "190000001", null, null),
+            Set.of(PaymentMethod.H5)));
     final ChannelStatementScope scope = new ChannelStatementScope(
             Channel.WECHAT, "a".repeat(64), LocalDate.of(2026, 10, 27), "wechat-trade-all-20260116");
     final byte[] bytes = "complete-source".getBytes(StandardCharsets.UTF_8);
@@ -75,7 +72,7 @@ class DefaultChannelStatementFacadeTest {
         var result = result(bytes, digest(bytes));
         var request = new ChannelStatementRequest(scope, 1024);
         when(provider.download(context, request)).thenReturn(result);
-        assertSame(result, TenantUtil.callWithTenant("tenant", () -> facade.download(context, request)));
+        assertSame(result, facade.download(context, request));
         verify(other, never()).download(any(), any());
         var copy = result.content();
         copy[0]++;
@@ -84,36 +81,24 @@ class DefaultChannelStatementFacadeTest {
         proof[0]++;
         assertArrayEquals(evidence, result.receipt().evidence());
         when(provider.download(context, request)).thenReturn(result(bytes, "f".repeat(64)));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("tenant", () -> facade.download(context, request)));
+        assertThrows(CommonException.class, () -> facade.download(context, request));
         var changed = new ChannelStatementRequest(
                 new ChannelStatementScope(scope.channel(), "b".repeat(64), scope.billDate(), scope.statementProfile()),
                 1024);
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("tenant", () -> facade.download(context, changed)));
+        assertThrows(CommonException.class, () -> facade.download(context, changed));
     }
 
     @Test
-    void rejectsDuplicatesMissingProvidersTransactionsAndUntrustedTenantBeforeAnyDownload() {
+    void rejectsDuplicatesMissingProvidersTransactionsAndUntrustedBindingBeforeAnyDownload() {
         when(provider.channel()).thenReturn(Channel.WECHAT);
         assertThrows(CommonException.class, () -> new DefaultChannelStatementFacade(List.of(provider, provider)));
         var request = new ChannelStatementRequest(scope, 1024);
         var facade = new DefaultChannelStatementFacade(List.of(provider));
-        assertThrows(CommonException.class, () -> facade.download(context, request));
         assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("other", () -> facade.download(context, request)));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant(
-                        "tenant", () -> new DefaultChannelStatementFacade(List.of()).download(context, request)));
+                CommonException.class, () -> new DefaultChannelStatementFacade(List.of()).download(context, request));
         TransactionSynchronizationManager.setActualTransactionActive(true);
         try {
-            assertThrows(
-                    CommonException.class,
-                    () -> TenantUtil.callWithTenant("tenant", () -> facade.download(context, request)));
+            assertThrows(CommonException.class, () -> facade.download(context, request));
         } finally {
             TransactionSynchronizationManager.clear();
         }

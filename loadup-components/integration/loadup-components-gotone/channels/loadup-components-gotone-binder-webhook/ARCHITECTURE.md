@@ -20,14 +20,10 @@
 
 主要入口文件：
 
-- [
-  `WebhookChannelAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/channel/webhook/config/WebhookChannelAutoConfiguration.java)
-- [
-  `DingtalkWebhookProvider`](src/main/java/io/github/loadup/components/gotone/channel/webhook/provider/DingtalkWebhookProvider.java)
-- [
-  `FeishuWebhookProvider`](src/main/java/io/github/loadup/components/gotone/channel/webhook/provider/FeishuWebhookProvider.java)
-- [
-  `WechatWebhookProvider`](src/main/java/io/github/loadup/components/gotone/channel/webhook/provider/WechatWebhookProvider.java)
+- [ `WebhookChannelAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/channel/webhook/config/WebhookChannelAutoConfiguration.java)
+- [ `DingtalkWebhookProvider`](src/main/java/io/github/loadup/components/gotone/channel/webhook/provider/DingtalkWebhookProvider.java)
+- [ `FeishuWebhookProvider`](src/main/java/io/github/loadup/components/gotone/channel/webhook/provider/FeishuWebhookProvider.java)
+- [ `WechatWebhookProvider`](src/main/java/io/github/loadup/components/gotone/channel/webhook/provider/WechatWebhookProvider.java)
 
 ## 分层与调用路径
 
@@ -41,8 +37,7 @@ binder 实现框架契约，把实现库及其配置隔离在业务 API 之外�
 
 ## 装配规则
 
-- [
-  `WebhookChannelAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/channel/webhook/config/WebhookChannelAutoConfiguration.java)
+- [ `WebhookChannelAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/channel/webhook/config/WebhookChannelAutoConfiguration.java)
   是自动配置入口。
     -
     `@ConditionalOnProperty( prefix = "loadup.gotone.binder.webhook.dingtalk", name = "enabled", havingValue = "true", matchIfMissing = true)`

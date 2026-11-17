@@ -77,13 +77,13 @@ DNS、连接/命令超时的端到端截止时间，这些参数由原生客户�
 
 ```java
 public OrderDTO submit(OrderCommand command) throws InterruptedException {
-    var key = LockKey.tenant("order-submit", trustedTenantId, command.orderId());
+    var key = LockKey.of("order-submit", command.orderId());
     return lockTemplate.execute(key, () -> executeBusiness(command));
 }
 ```
 
 租户必须来自可信认证/授权范围。全局资源显式使用 `LockKey.global("configuration", resourceId)`。key 按
-namespace/business/scope/tenant/resource 分段进行 Base64URL 编码，区分全局与租户，避免分隔符和 Redis Cluster hash tag
+namespace/business/resource 分段进行 Base64URL 编码，避免分隔符和 Redis Cluster hash tag；部署隔离由配置的 namespace 决定
 注入；编码不是加密，不保存秘密数据。
 
 `execute` 支持返回值及原始 checked exception；`run(key, Runnable)` 用于无返回值。回调在当前线程执行，平台/虚拟线程使用同一语义。原生高级能力仍可通过
@@ -124,7 +124,7 @@ return lockTemplate.execute(key,
 ```
 
 或者在未标注 Transactional 的编排入口内调用另一个 Spring Bean 的 Transactional 方法。不要在同类自调用上假设 Spring
-代理生效。事务提交后的异步监听/消息投递不自动包含在锁范围；可靠副作用使用 Outbox。
+代理生效。事务提交后的异步监听/消息投递不自动包含在锁范围；可靠副作用使用 Task。
 
 ServiceTemplate 用于入口生命周期，LockTemplate 只用于需要互斥的临界区，可以显式组合；普通 Service 不自动套锁。
 
@@ -143,7 +143,7 @@ ServiceTemplate 用于入口生命周期，LockTemplate 只用于需要互斥的
 | Fencing、业务幂等、exactly-once | 不提供；由受保护资源及业务契约实现          |
 
 锁控制当前并发，GlobalUnique 控制持久唯一声明，数据库唯一约束与状态条件更新保证最终数据正确性。租期/网络故障可能导致失去锁的执行者继续工作；收单状态更新必须保留数据库约束，要求
-fencing 时受保护资源必须验证 token。Outbox 自己的租约不替换为此锁。
+fencing 时受保护资源必须验证 token。Task 自己的租约不替换为此锁。
 
 ## 指标与日志
 

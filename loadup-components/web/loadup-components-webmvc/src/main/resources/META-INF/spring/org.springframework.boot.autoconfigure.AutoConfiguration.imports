@@ -1,1 +1,2 @@
 io.github.loadup.components.webmvc.LoadUpWebMvcAutoConfiguration
+io.github.loadup.components.webmvc.DeploymentCodeWebAutoConfiguration

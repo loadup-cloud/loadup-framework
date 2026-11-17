@@ -22,7 +22,6 @@ import io.github.loadup.commons.json.ToStringAsJson;
  * Mounted immutable descriptor; contains a KMS reference, never an application private key.
  */
 public record AlipayCredentialDocument(
-        String tenantId,
         String reference,
         String version,
         String appId,

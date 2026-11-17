@@ -16,7 +16,7 @@ Lua、续期线程或锁协议。首版只有一个实现，采用单一 jar；�
 
 ## 公开类型
 
-- LockKey：显式业务/租户/资源，提供 global 和 tenant 工厂；namespace 为模板级应用隔离。
+- LockKey：显式业务/资源，提供 `of` 工厂；namespace 为模板级部署隔离，一套部署只使用自己的 namespace。
 - LockOptions：不可变等待/租期策略，WATCHDOG 无显式租期、FIXED 必填正租期。
 - LockTemplate：同步 execute/run 回调，支持 checked exception，中断使用标准 InterruptedException。
 - RedissonLockTemplate：单一实现，原生客户端和共享 Registry 构造器注入，不拥有客户端生命周期。
@@ -59,7 +59,7 @@ LockTemplate 会使默认模板退让，未配置 resource 时也不会创建无
 只表达有限失败原因；不使用动态业务键标签。计时记录 RuntimeException 用 LogUtil 记录，不阻断正常锁生命周期；组件不创建新的
 Registry/Tracer。
 
-Lock 与 GlobalUnique/Outbox/PowerJob 职责独立。租约锁不能保证 exactly-once，不能代替数据库约束、幂等、状态条件更新；要求防止旧持有者写入时由资源验证
+Lock 与 GlobalUnique/Task/PowerJob 职责独立。租约锁不能保证 exactly-once，不能代替数据库约束、幂等、状态条件更新；要求防止旧持有者写入时由资源验证
 fencing token。首版不提供注解切面、后端 SPI、HTTP 接口、管理页面或默认全服务加锁。
 
 ## 验证

@@ -15,14 +15,12 @@
  */
 package io.github.loadup.components.payment.channel.wechat.protocol;
 
-import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.ACTION_FORBIDDEN;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.CHANNEL_BINDING_MISMATCH;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.DEPENDENCY_UNAVAILABLE;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.INVALID_ARGUMENT;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.INVALID_STATE;
 
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.http.HttpCall;
 import io.github.loadup.components.http.HttpTemplate;
 import io.github.loadup.components.payment.channel.api.model.ChannelBindingRevision;
@@ -48,15 +46,12 @@ public class WechatV2Client {
     }
 
     public WechatV2VerifiedResponse call(
-            String tenant, ChannelBindingRevision binding, WechatV2Method method, Map<String, String> fields) {
+            ChannelBindingRevision binding, WechatV2Method method, Map<String, String> fields) {
         if (TransactionSynchronizationManager.isActualTransactionActive()) {
             throw new CommonException(INVALID_STATE);
         }
         if (method == null || fields == null) {
             throw new CommonException(INVALID_ARGUMENT);
-        }
-        if (tenant == null || !tenant.equals(TenantUtil.getTenantId())) {
-            throw new CommonException(ACTION_FORBIDDEN);
         }
         if (binding == null
                 || binding.channel() != Channel.WECHAT
@@ -69,7 +64,7 @@ public class WechatV2Client {
                 || !Objects.equals(account.subAppId(), fields.get("sub_appid"))) {
             throw new CommonException(CHANNEL_BINDING_MISMATCH);
         }
-        byte[] key = credentials.apiV2Key(tenant, binding);
+        byte[] key = credentials.apiV2Key(binding);
         try {
             var body = codec.encode(fields, key);
             var response = http.exchange(

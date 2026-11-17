@@ -18,9 +18,8 @@ package io.github.loadup.components.asyncresult;
 import io.github.loadup.commons.json.ToStringAsJson;
 import java.time.Duration;
 
-public record AsyncResultOptions(String tenantId, String operation, String businessId, Duration waitTimeout) {
+public record AsyncResultOptions(String operation, String businessId, Duration waitTimeout) {
     public AsyncResultOptions {
-        AsyncReplyKey.required(tenantId, 64);
         AsyncReplyKey.required(operation, 128);
         AsyncReplyKey.required(businessId, 128);
         if (waitTimeout != null && (waitTimeout.isNegative() || waitTimeout.isZero())) {

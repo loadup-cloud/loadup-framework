@@ -64,7 +64,7 @@ class LockTemplateIT {
         try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
             LockTemplate second =
                     new RedissonLockTemplate(client, "lock-it", LockOptions.watchdog(Duration.ZERO), null);
-            var key = LockKey.global("mutual-exclusion", UUID.randomUUID().toString());
+            var key = LockKey.of("mutual-exclusion", UUID.randomUUID().toString());
             var acquired = new CountDownLatch(1);
             var finish = new CountDownLatch(1);
             var holder = executor.submit(() -> first.execute(key, () -> {
@@ -79,7 +79,7 @@ class LockTemplateIT {
                 assertThat(acquired.await(10, TimeUnit.SECONDS)).isTrue();
                 assertThatThrownBy(() -> second.run(key, () -> fail("must not execute")))
                         .isInstanceOf(LockUnavailableException.class);
-                second.run(LockKey.tenant(key.business(), "tenant", key.resourceId()), () -> {});
+                second.run(LockKey.of(key.business(), key.resourceId()), () -> {});
             } finally {
                 finish.countDown();
             }
@@ -95,7 +95,7 @@ class LockTemplateIT {
         RedissonClient client = newClient();
         try {
             var second = new RedissonLockTemplate(client, "lock-it", LockOptions.watchdog(Duration.ZERO), null);
-            var key = LockKey.global("renewal", UUID.randomUUID().toString());
+            var key = LockKey.of("renewal", UUID.randomUUID().toString());
             first.execute(key, () -> {
                 first.run(key, () -> {});
                 Thread.sleep(3500);

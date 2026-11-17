@@ -23,7 +23,6 @@ import io.github.loadup.components.kms.KmsCiphertext;
  * The merchant's delegated authorization is a separate versioned resource.
  */
 public record AlipayAuthorizationDocument(
-        String tenantId,
         String reference,
         String version,
         String appId,

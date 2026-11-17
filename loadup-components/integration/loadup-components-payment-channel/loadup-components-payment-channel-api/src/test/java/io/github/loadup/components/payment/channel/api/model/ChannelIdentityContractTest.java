@@ -146,10 +146,9 @@ class ChannelIdentityContractTest {
     }
 
     @Test
-    void executionContextRequiresTenantAndBinding() {
-        assertEquals("tenant", ApiFixtures.context().tenantId());
-        assertThrows(RuntimeException.class, () -> new ChannelExecutionContext(" ", ApiFixtures.alipayBinding()));
-        assertThrows(RuntimeException.class, () -> new ChannelExecutionContext("tenant", null));
+    void executionContextRequiresABinding() {
+        assertEquals(ApiFixtures.alipayBinding(), ApiFixtures.context().binding());
+        assertThrows(RuntimeException.class, () -> new ChannelExecutionContext(null));
     }
 
     @Test

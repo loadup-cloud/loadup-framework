@@ -10,6 +10,7 @@
 | 客户端数据库管理 | RegisteredClientRepository | 不执行启动配置同步 |
 | 授权及同意持久化 | oauth.persistence.enabled | Spring 标准 JDBC 实现 |
 | 业务 claims | OAuth2TokenCustomizer | 应用负责身份与授权语义 |
+| 客户端生命周期 | OAuthClientManager | 标准注册字段、策略校验、停用与凭证轮换 |
 
 引入 `loadup-components-oauth-server-core` 使用实现；只需身份契约的消费者引入 `loadup-components-oauth-server-api`。
 开关完整前缀为 `loadup.security`。资源服务只需要：
@@ -24,6 +25,6 @@ loadup:
 ```
 
 独立授权服务还需启用 `auth-server.enabled`，配置 issuer、audience、KMS signing key；启用 JDBC 时显式引入 JDBC/Flyway/数据库驱动并加入 `classpath:db/loadup-oauth`。
-协议链需要管理方预先通过标准客户端仓储写入注册信息；不支持 YAML 客户端目录。
+协议链不读取 YAML 客户端目录。管理方通过 `OAuthClientManager` 创建和更新注册；它使用 Spring `RegisteredClient` 作为授权字段输入，并负责生成和散列客户端凭证。不要直接将此管理对象暴露为未经保护的 HTTP API；嵌入它的管理边界必须认证并授权调用者。
 
 详见 [架构](ARCHITECTURE.md)、[API](loadup-components-oauth-server-api/README.md)、[Core](loadup-components-oauth-server-core/README.md)。

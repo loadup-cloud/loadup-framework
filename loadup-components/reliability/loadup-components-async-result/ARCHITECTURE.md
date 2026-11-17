@@ -22,7 +22,7 @@ Caffeine 按注册时 TTL
 
 ## Redis 后端
 
-每个结果是一个 Redis Hash，包含 owner 与可选 result。键按 namespace、tenantId、operation、businessId 分段 Base64URL
+每个结果是一个 Redis Hash，包含 owner 与可选 result。键按 namespace、operation、businessId 分段 Base64URL
 编码，correlationId 为随机 UUID；不使用原始标识拼接 Redis Cluster hash tag。一次脚本只访问一个结果键。
 
 注册脚本使用 EXISTS + HSET + PEXPIRE，拒绝复用已有键。完成脚本先判断键存在与结果是否已写，首次完成执行 HSET，再 PUBLISH 到
@@ -42,7 +42,7 @@ ObjectMapper。编码相同才判断为相同结果，业务端应使用固定 D
 ## 事务与生命周期
 
 入口检测实际活动事务并拒绝；此检查不能替代业务对挂起事务、数据库锁与回调事务的正确设计。回调可调用独立事务
-Service，提交后才开始可见的 Outbox 投递。成功回传必须在业务提交后，可靠回传可使用消费者自己的 Outbox。
+Service，提交后才开始可见的 Task 投递。成功回传必须在业务提交后，可靠回传可使用消费者自己的 Task。
 
 关闭先禁止新请求，移除订阅并使等待失败，再停止自有调度器与虚拟线程执行器；应用持有的
 RedissonClient、MeterRegistry、ObjectMapper 不关闭。超时/取消不会删除共享结果，亦不撤销远端任务。服务恢复通过业务号查询数据库，而不是恢复已断开的原
@@ -51,4 +51,4 @@ HTTP 连接。
 ## 验收
 
 通过公开 Template/SPI 验证提前回调、乱序/并发、容量恢复、超时后晚到、取消/中断、重复/冲突、类型及大小拒绝、事务入口保护、后端故障和上下文恢复。真实环境测试覆盖
-Redis 跨实例、过期、Kafka 双向消息和 MySQL Outbox 提交后完成。部署前还需按目标环境执行负载与 K8s 故障演练。
+Redis 跨实例、过期、Kafka 双向消息和 PostgreSQL Task 提交后完成。部署前还需按目标环境执行负载与 K8s 故障演练。

@@ -21,8 +21,7 @@
 
 主要入口文件：
 
-- [
-  `PushChannelAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/channel/push/config/PushChannelAutoConfiguration.java)
+- [ `PushChannelAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/channel/push/config/PushChannelAutoConfiguration.java)
 - [`FcmPushProvider`](src/main/java/io/github/loadup/components/gotone/channel/push/FcmPushProvider.java)
 
 ## 分层与调用路径
@@ -37,8 +36,7 @@ binder 实现框架契约，把实现库及其配置隔离在业务 API 之外�
 
 ## 装配规则
 
-- [
-  `PushChannelAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/channel/push/config/PushChannelAutoConfiguration.java)
+- [ `PushChannelAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/channel/push/config/PushChannelAutoConfiguration.java)
   是自动配置入口。
     -
     `@ConditionalOnProperty( prefix = "loadup.gotone.binder.push.fcm", name = "enabled", havingValue = "true", matchIfMissing = true)`

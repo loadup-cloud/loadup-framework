@@ -43,6 +43,5 @@
 
 ## 自动装配
 
-- [
-  `ConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/autoconfigure/ConfigCenterAutoConfiguration.java)
+- [ `ConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/autoconfigure/ConfigCenterAutoConfiguration.java)
     - 启用条件：`@ConditionalOnSingleCandidate(ConfigCenterProvider.class)`。

@@ -144,9 +144,7 @@ class AsyncResultKafkaIT {
                 }
             });
             String result = caller.execute(
-                    new AsyncResultOptions("tenant", "echo.kafka.v1", "order", Duration.ofSeconds(15)),
-                    String.class,
-                    key -> {
+                    new AsyncResultOptions("echo.kafka.v1", "order", Duration.ofSeconds(15)), String.class, key -> {
                         var sent = new CompletableFuture<Void>();
                         producer.send(
                                 new ProducerRecord<>(request, mapper.writeValueAsString(key), "order"),

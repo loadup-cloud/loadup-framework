@@ -16,8 +16,7 @@
 
 主要入口文件：
 
-- [
-  `CaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/autoconfigure/CaptchaAutoConfiguration.java)
+- [ `CaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/autoconfigure/CaptchaAutoConfiguration.java)
 - [`CaptchaProvider`](src/main/java/io/github/loadup/components/captcha/CaptchaProvider.java)
 - [`CaptchaTemplate`](src/main/java/io/github/loadup/components/captcha/CaptchaTemplate.java)
 - [`DefaultCaptchaTemplate`](src/main/java/io/github/loadup/components/captcha/DefaultCaptchaTemplate.java)
@@ -34,8 +33,7 @@
 
 ## 装配规则
 
-- [
-  `CaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/autoconfigure/CaptchaAutoConfiguration.java)
+- [ `CaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/autoconfigure/CaptchaAutoConfiguration.java)
   是自动配置入口。
     - `@ConditionalOnSingleCandidate(CaptchaProvider.class)`
     - `@ConditionalOnMissingBean(CaptchaTemplate.class)`

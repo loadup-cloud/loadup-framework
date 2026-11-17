@@ -28,11 +28,10 @@ The current database constraint is:
 UNIQUE (biz_type, unique_key)
 ```
 
-The API retains a tenant-scoped identity contract, but the persisted row and unique index contain no
-tenant column. Runtime datasource routing is not implemented and the application currently serves
-only the default schema. Therefore the current database behavior is unique within that schema, not
-isolated per tenant. Do not enable multi-tenant operation until the routing and migration lifecycle
-described by the [database component](../../data/loadup-components-database/README.md) is implemented.
+The API declares idempotency inside one deployment. The persisted row and unique index contain no
+tenant column: a deployment serves one tenant through the fixed `loadup.database.schema`, so records
+belong to that deployment by construction. The fixed schema and database privileges are described by
+the [database component](../../data/loadup-components-database/README.md).
 
 `bizType` and `uniqueKey` are trimmed and required. Their maximum lengths are 64 and 255
 characters. `bizId` and `requestData` are diagnostic data and do not participate in uniqueness.

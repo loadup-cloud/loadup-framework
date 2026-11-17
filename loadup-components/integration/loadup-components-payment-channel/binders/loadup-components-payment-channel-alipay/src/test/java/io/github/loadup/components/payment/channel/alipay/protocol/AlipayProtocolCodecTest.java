@@ -53,7 +53,7 @@ class AlipayProtocolCodecTest {
     private final AlipayProtocolCodec codec = new AlipayProtocolCodec(
             JsonMapper.builder().build(), kms, Clock.fixed(Instant.parse("2026-10-23T10:11:12Z"), ZoneOffset.UTC));
     private final AlipayCredentials credentials =
-            new AlipayCredentials("tenant", "app", "seller", new KmsKeyRef("signer", 7), null, "secret-auth-token");
+            new AlipayCredentials("app", "seller", new KmsKeyRef("signer", 7), null, "secret-auth-token");
 
     private static KmsSignature signature(String name, int version, KmsSignatureAlgorithm algorithm) {
         return new KmsSignature(name, version, algorithm, new byte[] {1});
@@ -109,8 +109,7 @@ class AlipayProtocolCodecTest {
     @Test
     void verifiesExactRawNestedPayloadAndRejectsInvalidEnvelopes() throws Exception {
         var pair = keyPair();
-        var credentials =
-                new AlipayCredentials("tenant", "app", "seller", new KmsKeyRef("signer", 1), pair.getPublic(), null);
+        var credentials = new AlipayCredentials("app", "seller", new KmsKeyRef("signer", 1), pair.getPublic(), null);
         var raw = "{ \"message\":\"hello 中文\\nthere\", \"nested\":{\"x\": [1, true]} }";
         var response = response(AlipayMethod.QUERY, raw, pair);
         var verified = codec.verify(AlipayMethod.QUERY, credentials, response.getBytes(StandardCharsets.UTF_8));

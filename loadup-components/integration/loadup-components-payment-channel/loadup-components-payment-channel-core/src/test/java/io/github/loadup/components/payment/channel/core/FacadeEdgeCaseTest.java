@@ -23,7 +23,6 @@ import static org.mockito.Mockito.when;
 
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.money.Money;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.payment.channel.api.model.AlipayAccountIdentity;
 import io.github.loadup.components.payment.channel.api.model.AlipayH5ChannelAction;
 import io.github.loadup.components.payment.channel.api.model.AlipayJsapiChannelAction;
@@ -127,7 +126,7 @@ class FacadeEdgeCaseTest {
     }
 
     @Test
-    void paymentFacadeRejectsTransactionTenantAndBindingMismatchForEveryRoutedOperation() {
+    void paymentFacadeRejectsTransactionAndBindingMismatchForEveryRoutedOperation() {
         var prepared = prepared(PaymentMethod.PAYMENT_CODE);
         var request =
                 new ChannelPaymentRequest(prepared, "subject", PAYABLE_UNTIL, new ChannelPaymentCodeInput("code"));
@@ -141,63 +140,30 @@ class FacadeEdgeCaseTest {
         var target = new ChannelPaymentTarget(IDENTITY, AMOUNT);
         var recovery = new ChannelPaymentRecovery(IDENTITY, AMOUNT, PaymentMethod.PAYMENT_CODE, 1, PAYABLE_UNTIL);
         var refund = refund();
-        var wrongTenant = context("revision-1", HASH, "other");
         var wrongBinding = context("revision-2", HASH);
         var wrongHash = context("revision-1", "b".repeat(64));
         TransactionSynchronizationManager.setActualTransactionActive(true);
         try {
-            assertThrows(
-                    CommonException.class,
-                    () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.validate(context, validation)));
-            assertThrows(
-                    CommonException.class,
-                    () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.submit(context, request)));
-            assertThrows(
-                    CommonException.class,
-                    () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.query(context, target)));
-            assertThrows(
-                    CommonException.class,
-                    () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.recover(context, recovery)));
-            assertThrows(
-                    CommonException.class,
-                    () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.close(context, target)));
-            assertThrows(
-                    CommonException.class,
-                    () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.submitRefund(context, refund)));
-            assertThrows(
-                    CommonException.class,
-                    () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.queryRefund(context, refund)));
-            assertThrows(
-                    CommonException.class,
-                    () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.recoverRefund(context, refund)));
+            assertThrows(CommonException.class, () -> paymentFacade.validate(context, validation));
+            assertThrows(CommonException.class, () -> paymentFacade.submit(context, request));
+            assertThrows(CommonException.class, () -> paymentFacade.query(context, target));
+            assertThrows(CommonException.class, () -> paymentFacade.recover(context, recovery));
+            assertThrows(CommonException.class, () -> paymentFacade.close(context, target));
+            assertThrows(CommonException.class, () -> paymentFacade.submitRefund(context, refund));
+            assertThrows(CommonException.class, () -> paymentFacade.queryRefund(context, refund));
+            assertThrows(CommonException.class, () -> paymentFacade.recoverRefund(context, refund));
         } finally {
             TransactionSynchronizationManager.clear();
         }
-        for (var invalid : List.of(wrongTenant, wrongBinding, wrongHash)) {
-            assertThrows(
-                    CommonException.class,
-                    () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.validate(invalid, validation)));
-            assertThrows(
-                    CommonException.class,
-                    () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.submit(invalid, request)));
-            assertThrows(
-                    CommonException.class,
-                    () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.query(invalid, target)));
-            assertThrows(
-                    CommonException.class,
-                    () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.recover(invalid, recovery)));
-            assertThrows(
-                    CommonException.class,
-                    () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.close(invalid, target)));
-            assertThrows(
-                    CommonException.class,
-                    () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.submitRefund(invalid, refund)));
-            assertThrows(
-                    CommonException.class,
-                    () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.queryRefund(invalid, refund)));
-            assertThrows(
-                    CommonException.class,
-                    () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.recoverRefund(invalid, refund)));
+        for (var invalid : List.of(wrongBinding, wrongHash)) {
+            assertThrows(CommonException.class, () -> paymentFacade.validate(invalid, validation));
+            assertThrows(CommonException.class, () -> paymentFacade.submit(invalid, request));
+            assertThrows(CommonException.class, () -> paymentFacade.query(invalid, target));
+            assertThrows(CommonException.class, () -> paymentFacade.recover(invalid, recovery));
+            assertThrows(CommonException.class, () -> paymentFacade.close(invalid, target));
+            assertThrows(CommonException.class, () -> paymentFacade.submitRefund(invalid, refund));
+            assertThrows(CommonException.class, () -> paymentFacade.queryRefund(invalid, refund));
+            assertThrows(CommonException.class, () -> paymentFacade.recoverRefund(invalid, refund));
         }
     }
 
@@ -205,29 +171,19 @@ class FacadeEdgeCaseTest {
     void paymentFacadeRejectsUnsupportedCapabilityAndInvalidProviderResults() {
         var unsupported = new ChannelPaymentValidation(
                 IDENTITY, AMOUNT, PaymentMethod.H5, "subject", PAYABLE_UNTIL, new NoChannelInput());
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.validate(context, unsupported)));
+        assertThrows(CommonException.class, () -> paymentFacade.validate(context, unsupported));
         var request = new ChannelPaymentRequest(
                 prepared(PaymentMethod.PAYMENT_CODE), "subject", PAYABLE_UNTIL, new ChannelPaymentCodeInput("code"));
         when(paymentProvider.submit(context, request)).thenReturn(null);
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.submit(context, request)));
+        assertThrows(CommonException.class, () -> paymentFacade.submit(context, request));
         var target = new ChannelPaymentTarget(IDENTITY, AMOUNT);
         when(paymentProvider.query(context, target)).thenReturn(null);
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.query(context, target)));
+        assertThrows(CommonException.class, () -> paymentFacade.query(context, target));
         when(paymentProvider.close(context, target)).thenReturn(null);
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.close(context, target)));
+        assertThrows(CommonException.class, () -> paymentFacade.close(context, target));
         var recovery = new ChannelPaymentRecovery(IDENTITY, AMOUNT, PaymentMethod.PAYMENT_CODE, 1, PAYABLE_UNTIL);
         when(paymentProvider.recover(context, recovery)).thenReturn(null);
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.recover(context, recovery)));
+        assertThrows(CommonException.class, () -> paymentFacade.recover(context, recovery));
     }
 
     @Test
@@ -242,9 +198,7 @@ class FacadeEdgeCaseTest {
                 PAYABLE_UNTIL.plusMinutes(1));
         when(paymentProvider.submit(context, request))
                 .thenReturn(new ChannelPaymentSubmission(IDENTITY, AMOUNT, null, wrongChannelAction));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.submit(context, request)));
+        assertThrows(CommonException.class, () -> paymentFacade.submit(context, request));
         var lowerAmount = Money.ofMinor(1000, "CNY");
         var lowerObservation = new PaymentObservation(
                 IDENTITY,
@@ -257,23 +211,15 @@ class FacadeEdgeCaseTest {
                 HASH);
         when(paymentProvider.submit(context, request))
                 .thenReturn(new ChannelPaymentSubmission(IDENTITY, lowerAmount, lowerObservation, null));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.submit(context, request)));
+        assertThrows(CommonException.class, () -> paymentFacade.submit(context, request));
         var refund = refund();
         when(paymentProvider.canRefund(refund)).thenReturn(true);
         when(paymentProvider.submitRefund(context, refund)).thenReturn(null);
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.submitRefund(context, refund)));
+        assertThrows(CommonException.class, () -> paymentFacade.submitRefund(context, refund));
         when(paymentProvider.queryRefund(context, refund)).thenReturn(null);
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.queryRefund(context, refund)));
+        assertThrows(CommonException.class, () -> paymentFacade.queryRefund(context, refund));
         when(paymentProvider.recoverRefund(context, refund)).thenReturn(null);
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.recoverRefund(context, refund)));
+        assertThrows(CommonException.class, () -> paymentFacade.recoverRefund(context, refund));
         when(paymentProvider.recoverRefund(context, refund))
                 .thenReturn(new RefundObservation(
                         refund.refundId(),
@@ -288,49 +234,33 @@ class FacadeEdgeCaseTest {
                         "receipt",
                         HASH,
                         null));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.recoverRefund(context, refund)));
+        assertThrows(CommonException.class, () -> paymentFacade.recoverRefund(context, refund));
     }
 
     @Test
     void paymentFacadeCoversUnsupportedSubmitRecoverExpiryAndRefundBranches() {
         var h5Prepared = prepared(PaymentMethod.H5);
         var h5Request = new ChannelPaymentRequest(h5Prepared, "subject", PAYABLE_UNTIL, new NoChannelInput());
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.submit(context, h5Request)));
+        assertThrows(CommonException.class, () -> paymentFacade.submit(context, h5Request));
         var expiryAction = new AlipayH5ChannelAction(alipayH5Url(), PAYABLE_UNTIL.plusMinutes(1));
         when(paymentProvider.submit(context, h5Request))
                 .thenReturn(new ChannelPaymentSubmission(IDENTITY, AMOUNT, null, expiryAction));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.submit(context, h5Request)));
+        assertThrows(CommonException.class, () -> paymentFacade.submit(context, h5Request));
         var recover = new ChannelPaymentRecovery(IDENTITY, AMOUNT, PaymentMethod.H5, 1, PAYABLE_UNTIL);
         when(paymentProvider.recover(context, recover))
                 .thenReturn(new ChannelPaymentSubmission(IDENTITY, AMOUNT, null, expiryAction));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.recover(context, recover)));
+        assertThrows(CommonException.class, () -> paymentFacade.recover(context, recover));
         var jsapiRecovery = new ChannelPaymentRecovery(IDENTITY, AMOUNT, PaymentMethod.JSAPI, 1, PAYABLE_UNTIL);
         var jsapiObservation = acceptedObservation(IDENTITY, "trade-1");
         var expiredJsapi = new AlipayJsapiChannelAction("trade-1", PAYABLE_UNTIL.plusMinutes(1));
         when(paymentProvider.recover(context, jsapiRecovery))
                 .thenReturn(new ChannelPaymentSubmission(IDENTITY, AMOUNT, jsapiObservation, expiredJsapi));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.recover(context, jsapiRecovery)));
+        assertThrows(CommonException.class, () -> paymentFacade.recover(context, jsapiRecovery));
         var refund = refund();
         when(paymentProvider.canRefund(refund)).thenReturn(false);
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.submitRefund(context, refund)));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.queryRefund(context, refund)));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.recoverRefund(context, refund)));
+        assertThrows(CommonException.class, () -> paymentFacade.submitRefund(context, refund));
+        assertThrows(CommonException.class, () -> paymentFacade.queryRefund(context, refund));
+        assertThrows(CommonException.class, () -> paymentFacade.recoverRefund(context, refund));
         when(paymentProvider.canRefund(refund)).thenReturn(true);
         var failed = new RefundObservation(
                 refund.refundId(),
@@ -346,9 +276,7 @@ class FacadeEdgeCaseTest {
                 HASH,
                 null);
         when(paymentProvider.recoverRefund(context, refund)).thenReturn(failed);
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.recoverRefund(context, refund)));
+        assertThrows(CommonException.class, () -> paymentFacade.recoverRefund(context, refund));
         var wrongOriginal = new RefundObservation(
                 refund.refundId(),
                 wrongIdentity(),
@@ -363,9 +291,7 @@ class FacadeEdgeCaseTest {
                 HASH,
                 null);
         when(paymentProvider.submitRefund(context, refund)).thenReturn(wrongOriginal);
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.submitRefund(context, refund)));
+        assertThrows(CommonException.class, () -> paymentFacade.submitRefund(context, refund));
         var wrongRefundNo = new RefundObservation(
                 refund.refundId(),
                 refund.original(),
@@ -380,9 +306,7 @@ class FacadeEdgeCaseTest {
                 HASH,
                 null);
         when(paymentProvider.queryRefund(context, refund)).thenReturn(wrongRefundNo);
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.queryRefund(context, refund)));
+        assertThrows(CommonException.class, () -> paymentFacade.queryRefund(context, refund));
         var wrongTransactionNo = new RefundObservation(
                 refund.refundId(),
                 refund.original(),
@@ -397,9 +321,7 @@ class FacadeEdgeCaseTest {
                 HASH,
                 null);
         when(paymentProvider.recoverRefund(context, refund)).thenReturn(wrongTransactionNo);
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.recoverRefund(context, refund)));
+        assertThrows(CommonException.class, () -> paymentFacade.recoverRefund(context, refund));
         var wrongAmount = new RefundObservation(
                 refund.refundId(),
                 refund.original(),
@@ -414,13 +336,11 @@ class FacadeEdgeCaseTest {
                 HASH,
                 null);
         when(paymentProvider.recoverRefund(context, refund)).thenReturn(wrongAmount);
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> paymentFacade.recoverRefund(context, refund)));
+        assertThrows(CommonException.class, () -> paymentFacade.recoverRefund(context, refund));
     }
 
     @Test
-    void notificationFacadeRejectsNullTenantBindingAndInvalidResults() {
+    void notificationFacadeRejectsNullBindingAndInvalidResults() {
         assertThrows(CommonException.class, () -> notificationFacade.identify(null, input));
         assertThrows(CommonException.class, () -> notificationFacade.identify(context, null));
         assertThrows(CommonException.class, () -> notificationFacade.verify(null, target(), input));
@@ -431,40 +351,22 @@ class FacadeEdgeCaseTest {
         assertThrows(CommonException.class, () -> notificationFacade.verifyRefund(null, refund(), input));
         assertThrows(CommonException.class, () -> notificationFacade.verifyRefund(context, null, input));
         assertThrows(CommonException.class, () -> notificationFacade.verifyRefund(context, refund(), null));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("other", () -> notificationFacade.identify(context, input)));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("other", () -> notificationFacade.verify(context, target(), input)));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("other", () -> notificationFacade.identifyRefund(context, input)));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant(
-                        "other", () -> notificationFacade.verifyRefund(context, refund(), input)));
+        assertThrows(CommonException.class, () -> notificationFacade.identify(context, input));
+        assertThrows(CommonException.class, () -> notificationFacade.verify(context, target(), input));
+        assertThrows(CommonException.class, () -> notificationFacade.identifyRefund(context, input));
+        assertThrows(CommonException.class, () -> notificationFacade.verifyRefund(context, refund(), input));
         assertThrows(CommonException.class, () -> notificationFacade.acknowledgement(Channel.WECHAT, true));
         when(notificationProvider.identify(context, input)).thenReturn(null);
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> notificationFacade.identify(context, input)));
+        assertThrows(CommonException.class, () -> notificationFacade.identify(context, input));
         when(notificationProvider.identifyRefund(context, input)).thenReturn(null);
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> notificationFacade.identifyRefund(context, input)));
+        assertThrows(CommonException.class, () -> notificationFacade.identifyRefund(context, input));
         when(notificationProvider.acknowledgement(Channel.ALIPAY, true)).thenReturn(null);
         assertThrows(CommonException.class, () -> notificationFacade.acknowledgement(Channel.ALIPAY, true));
         when(notificationProvider.identify(context, input)).thenReturn(new ChannelNotificationHint("request-1"));
         when(notificationProvider.verify(context, target(), input)).thenReturn(null);
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> notificationFacade.verify(context, target(), input)));
+        assertThrows(CommonException.class, () -> notificationFacade.verify(context, target(), input));
         when(notificationProvider.verifyRefund(context, refund(), input)).thenReturn(null);
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant(
-                        "tenant", () -> notificationFacade.verifyRefund(context, refund(), input)));
+        assertThrows(CommonException.class, () -> notificationFacade.verifyRefund(context, refund(), input));
     }
 
     @Test
@@ -474,85 +376,52 @@ class FacadeEdgeCaseTest {
         var request = new ChannelStatementRequest(scope, 1024);
         when(statementProvider.download(context, request))
                 .thenReturn(statement("other-revision", scope, content, sha(content), HASH));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> statementFacade.download(context, request)));
+        assertThrows(CommonException.class, () -> statementFacade.download(context, request));
         var otherScope = new ChannelStatementScope(Channel.ALIPAY, HASH, LocalDate.of(2026, 10, 24), "profile");
         when(statementProvider.download(context, request))
                 .thenReturn(statement("revision-1", otherScope, content, sha(content), HASH));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> statementFacade.download(context, request)));
+        assertThrows(CommonException.class, () -> statementFacade.download(context, request));
         when(statementProvider.download(context, request))
                 .thenReturn(statement("revision-1", scope, content, "b".repeat(64), HASH));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> statementFacade.download(context, request)));
+        assertThrows(CommonException.class, () -> statementFacade.download(context, request));
         when(statementProvider.download(context, request))
                 .thenReturn(statement("revision-1", scope, content, sha(content), "b".repeat(64)));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> statementFacade.download(context, request)));
+        assertThrows(CommonException.class, () -> statementFacade.download(context, request));
         var tooSmall = new ChannelStatementRequest(scope, 1);
         when(statementProvider.download(context, tooSmall))
                 .thenReturn(statement("revision-1", scope, content, sha(content), HASH));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> statementFacade.download(context, tooSmall)));
+        assertThrows(CommonException.class, () -> statementFacade.download(context, tooSmall));
         var matching = statement("revision-1", scope, content, sha(content), sha(new byte[] {1}));
         when(statementProvider.download(context, request)).thenReturn(matching);
-        assertEquals(matching, TenantUtil.callWithTenant("tenant", () -> statementFacade.download(context, request)));
+        assertEquals(matching, statementFacade.download(context, request));
     }
 
     @Test
     void notificationFacadeRejectsTransactionsBindingMismatchAndResultMismatch() {
         TransactionSynchronizationManager.setActualTransactionActive(true);
         try {
-            assertThrows(
-                    CommonException.class,
-                    () -> TenantUtil.runWithTenant("tenant", () -> notificationFacade.identify(context, input)));
-            assertThrows(
-                    CommonException.class,
-                    () -> TenantUtil.runWithTenant(
-                            "tenant", () -> notificationFacade.verify(context, target(), input)));
-            assertThrows(
-                    CommonException.class,
-                    () -> TenantUtil.runWithTenant("tenant", () -> notificationFacade.identifyRefund(context, input)));
-            assertThrows(
-                    CommonException.class,
-                    () -> TenantUtil.runWithTenant(
-                            "tenant", () -> notificationFacade.verifyRefund(context, refund(), input)));
+            assertThrows(CommonException.class, () -> notificationFacade.identify(context, input));
+            assertThrows(CommonException.class, () -> notificationFacade.verify(context, target(), input));
+            assertThrows(CommonException.class, () -> notificationFacade.identifyRefund(context, input));
+            assertThrows(CommonException.class, () -> notificationFacade.verifyRefund(context, refund(), input));
         } finally {
             TransactionSynchronizationManager.clear();
         }
         var wrongBinding = context("revision-2", HASH);
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant(
-                        "tenant", () -> notificationFacade.verify(wrongBinding, target(), input)));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant(
-                        "tenant", () -> notificationFacade.verifyRefund(wrongBinding, refund(), input)));
+        assertThrows(CommonException.class, () -> notificationFacade.verify(wrongBinding, target(), input));
+        assertThrows(CommonException.class, () -> notificationFacade.verifyRefund(wrongBinding, refund(), input));
         var refundHint = new ChannelRefundNotificationHint("request-1", "refund-1");
         when(notificationProvider.identifyRefund(context, input)).thenReturn(refundHint);
-        assertEquals(
-                refundHint,
-                TenantUtil.callWithTenant("tenant", () -> notificationFacade.identifyRefund(context, input)));
+        assertEquals(refundHint, notificationFacade.identifyRefund(context, input));
         var wrongRefund = new PreparedChannelRefund(
                 IDENTITY, "refund-2", "refund-no", Money.ofMinor(500, "CNY"), AMOUNT, "trade-1");
         var wrongNotification =
                 new VerifiedChannelRefundNotification(wrongRefund, "notification-1", "refund-tx", "SUCCESS", HASH);
         when(notificationProvider.verifyRefund(context, refund(), input)).thenReturn(wrongNotification);
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant(
-                        "tenant", () -> notificationFacade.verifyRefund(context, refund(), input)));
+        assertThrows(CommonException.class, () -> notificationFacade.verifyRefund(context, refund(), input));
         var correct = new VerifiedChannelRefundNotification(refund(), "notification-1", "refund-tx", "SUCCESS", HASH);
         when(notificationProvider.verifyRefund(context, refund(), input)).thenReturn(correct);
-        assertEquals(
-                correct,
-                TenantUtil.callWithTenant("tenant", () -> notificationFacade.verifyRefund(context, refund(), input)));
+        assertEquals(correct, notificationFacade.verifyRefund(context, refund(), input));
     }
 
     @Test
@@ -560,43 +429,29 @@ class FacadeEdgeCaseTest {
         var request = new ChannelStatementRequest(statementScope(), 1024);
         assertThrows(CommonException.class, () -> statementFacade.download(null, request));
         assertThrows(CommonException.class, () -> statementFacade.download(context, null));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("other", () -> statementFacade.download(context, request)));
+        assertThrows(CommonException.class, () -> statementFacade.download(context, request));
         var wrongChannel = new ChannelStatementRequest(
                 new ChannelStatementScope(Channel.WECHAT, HASH, LocalDate.of(2026, 10, 23), "profile"), 1024);
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> statementFacade.download(context, wrongChannel)));
+        assertThrows(CommonException.class, () -> statementFacade.download(context, wrongChannel));
         var wrongHash = new ChannelStatementRequest(
                 new ChannelStatementScope(Channel.ALIPAY, "b".repeat(64), LocalDate.of(2026, 10, 23), "profile"), 1024);
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> statementFacade.download(context, wrongHash)));
+        assertThrows(CommonException.class, () -> statementFacade.download(context, wrongHash));
         when(statementProvider.download(context, request)).thenReturn(null);
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> statementFacade.download(context, request)));
+        assertThrows(CommonException.class, () -> statementFacade.download(context, request));
     }
 
     private static ChannelExecutionContext context(String revision, String hash) {
-        return context(revision, hash, "tenant");
-    }
-
-    private static ChannelExecutionContext context(String revision, String hash, String tenant) {
         var account = new AlipayAccountIdentity("app", "seller", null, null, null);
-        return new ChannelExecutionContext(
-                tenant,
-                new ChannelBindingRevision(
-                        revision,
-                        "merchant",
-                        Channel.ALIPAY,
-                        AccessMode.DIRECT,
-                        hash,
-                        "credential",
-                        "1",
-                        account,
-                        Set.of(PaymentMethod.PAYMENT_CODE)));
+        return new ChannelExecutionContext(new ChannelBindingRevision(
+                revision,
+                "merchant",
+                Channel.ALIPAY,
+                AccessMode.DIRECT,
+                hash,
+                "credential",
+                "1",
+                account,
+                Set.of(PaymentMethod.PAYMENT_CODE)));
     }
 
     private static PreparedChannelPayment prepared(PaymentMethod method) {

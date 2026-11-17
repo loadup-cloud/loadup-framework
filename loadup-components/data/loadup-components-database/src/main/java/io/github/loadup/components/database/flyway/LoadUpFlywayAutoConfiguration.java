@@ -48,7 +48,7 @@ public class LoadUpFlywayAutoConfiguration {
      *
      * @param dataSource         the primary DataSource
      * @param properties         LoadUp Flyway properties
-     * @param databaseProperties LoadUp database properties, including the default tenant schema
+     * @param databaseProperties LoadUp database properties, including the single configured schema
      * @return configured Flyway instance
      */
     @Bean
@@ -57,7 +57,7 @@ public class LoadUpFlywayAutoConfiguration {
         LogUtil.info(LoadUpFlywayAutoConfiguration.class, ">>> [FLYWAY] Configuring Flyway with LoadUp properties");
 
         FluentConfiguration config = Flyway.configure().dataSource(dataSource);
-        String schema = databaseProperties.getDefaultSchema();
+        String schema = databaseProperties.getSchema();
         config.defaultSchema(schema);
         config.schemas(schema);
         LogUtil.info(LoadUpFlywayAutoConfiguration.class, ">>> [FLYWAY] Default schema: {}", schema);

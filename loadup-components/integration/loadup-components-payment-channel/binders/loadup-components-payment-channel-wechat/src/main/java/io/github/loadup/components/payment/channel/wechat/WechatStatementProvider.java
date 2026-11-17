@@ -15,7 +15,6 @@
  */
 package io.github.loadup.components.payment.channel.wechat;
 
-import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.ACTION_FORBIDDEN;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.CHANNEL_BINDING_MISMATCH;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.CHANNEL_CREDENTIAL_UNAVAILABLE;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.CHANNEL_RESPONSE_INVALID;
@@ -27,7 +26,6 @@ import static io.github.loadup.components.payment.channel.api.error.ChannelResul
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.UNSUPPORTED_CAPABILITY;
 
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.http.HttpCall;
 import io.github.loadup.components.http.HttpTemplate;
 import io.github.loadup.components.payment.channel.api.model.ChannelExecutionContext;
@@ -95,11 +93,9 @@ public final class WechatStatementProvider implements ChannelStatementProvider {
     public VerifiedChannelStatement download(ChannelExecutionContext context, ChannelStatementRequest request) {
         guard(context, request);
         var account = (WechatAccountIdentity) context.binding().identity();
-        var original = credentials.read(
-                context.tenantId(),
-                context.binding()); // One immutable credential/pin for the whole grant/download exchange.
+        // One immutable credential/pin for the whole grant/download exchange.
+        var original = credentials.read(context.binding());
         if (original == null
-                || !context.tenantId().equals(original.tenantId())
                 || !account.appId().equals(original.appId())
                 || !account.merchantId().equals(original.merchantId())) {
             throw new CommonException(CHANNEL_CREDENTIAL_UNAVAILABLE);
@@ -209,9 +205,6 @@ public final class WechatStatementProvider implements ChannelStatementProvider {
         }
         if (context == null || request == null) {
             throw new CommonException(INVALID_ARGUMENT);
-        }
-        if (!context.tenantId().equals(TenantUtil.getTenantId())) {
-            throw new CommonException(ACTION_FORBIDDEN);
         }
         var binding = context.binding();
         if (binding.channel() != Channel.WECHAT

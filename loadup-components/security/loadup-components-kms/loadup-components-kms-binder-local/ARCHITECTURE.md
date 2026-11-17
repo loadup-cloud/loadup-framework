@@ -9,4 +9,4 @@ LocalKmsTemplate 支持 RSA SHA-256 PKCS1/PSS、AES-GCM、公钥和元数据；K
 不提供轮换或管理 Bean。local:v1: 密文保留原后端格式；不导出私钥。
 AuthServer 仅通过 kms-api 使用本组件，由集成应用选择 local binder；SAS 不依赖 local 的实现类。
 
-统一契约与边界见 [KMS 架构](../ARCHITECTURE.md)。本批次完成源码与静态检查，未执行构建或运行验收。
+统一契约与边界见 [KMS 架构](../ARCHITECTURE.md)。待验收：KeyStore 装载、密钥版本选择、重放及轮换。

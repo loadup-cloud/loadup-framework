@@ -41,7 +41,7 @@ class FlywayAutoConfigurationTest {
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(LoadUpFlywayAutoConfiguration.class))
             .withBean(DataSource.class, () -> dataSource)
-            .withPropertyValues("loadup.flyway.migrate-at-start=false");
+            .withPropertyValues("loadup.flyway.migrate-at-start=false", "loadup.database.schema=ledger");
 
     @Test
     void defaultsCreateSafeConfigurationWithoutOpeningDatabaseConnection() {
@@ -56,8 +56,8 @@ class FlywayAutoConfigurationTest {
             assertThat(config.isBaselineOnMigrate()).isTrue();
             assertThat(config.getBaselineVersion()).isEqualTo(MigrationVersion.fromVersion("0"));
             assertThat(config.getBaselineDescription()).isEqualTo("<<Flyway Baseline>>");
-            assertThat(config.getDefaultSchema()).isEqualTo("public");
-            assertThat(config.getSchemas()).containsExactly("public");
+            assertThat(config.getDefaultSchema()).isEqualTo("ledger");
+            assertThat(config.getSchemas()).containsExactly("ledger");
             assertThat(config.isValidateOnMigrate()).isTrue();
             assertThat(config.isOutOfOrder()).isTrue();
             assertThat(config.isCleanDisabled()).isTrue();
@@ -73,15 +73,14 @@ class FlywayAutoConfigurationTest {
     }
 
     @Test
-    void usesDatabaseSchemaWithMultiTenancyDisabled() {
-        runner.withPropertyValues("loadup.database.default-schema=ledger", "loadup.database.multi-tenant.enabled=false")
-                .run(context -> {
-                    assertThat(context).hasNotFailed();
-                    var config = context.getBean(Flyway.class).getConfiguration();
-                    assertThat(config.getDefaultSchema()).isEqualTo("ledger");
-                    assertThat(config.getSchemas()).containsExactly("ledger");
-                    verifyNoInteractions(dataSource);
-                });
+    void usesTheSingleConfiguredSchema() {
+        runner.withPropertyValues("loadup.database.schema=customer_a_payment").run(context -> {
+            assertThat(context).hasNotFailed();
+            var config = context.getBean(Flyway.class).getConfiguration();
+            assertThat(config.getDefaultSchema()).isEqualTo("customer_a_payment");
+            assertThat(config.getSchemas()).containsExactly("customer_a_payment");
+            verifyNoInteractions(dataSource);
+        });
     }
 
     @Test
@@ -147,8 +146,8 @@ class FlywayAutoConfigurationTest {
                     empty ? new String[0] : null,
                     null,
                     false);
-            var config = auto.flyway(dataSource, properties, new DatabaseProperties())
-                    .getConfiguration();
+            var config =
+                    auto.flyway(dataSource, properties, databaseProperties()).getConfiguration();
             assertThat(config.getLocations())
                     .extracting(Location::getDescriptor)
                     .containsExactly("classpath:db/migration");
@@ -167,7 +166,7 @@ class FlywayAutoConfigurationTest {
         FlywayProperties properties = new FlywayProperties();
         properties.setInitSqls(new String[] {null, " ", "SET @first = 1", "", "SET @second = 2"});
         var config = new LoadUpFlywayAutoConfiguration()
-                .flyway(dataSource, properties, new DatabaseProperties())
+                .flyway(dataSource, properties, databaseProperties())
                 .getConfiguration();
         assertThat(config.getCallbacks())
                 .extracting(callback -> callback.getCallbackName())
@@ -224,5 +223,11 @@ class FlywayAutoConfigurationTest {
                     assertThat(context).hasFailed();
                     assertThat(context.getStartupFailure()).hasRootCause(failure);
                 });
+    }
+
+    private static DatabaseProperties databaseProperties() {
+        var properties = new DatabaseProperties();
+        properties.setSchema("loadup_test");
+        return properties;
     }
 }

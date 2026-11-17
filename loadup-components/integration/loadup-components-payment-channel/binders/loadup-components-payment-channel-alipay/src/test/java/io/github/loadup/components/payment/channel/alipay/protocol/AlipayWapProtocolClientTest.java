@@ -72,27 +72,25 @@ class AlipayWapProtocolClientTest {
     @Test
     void pagePreparationSignsTheOriginalBodyWithoutCallingHttpOrVerifyingAnInventedResponse() {
         var binding = binding(AccessMode.DIRECT);
-        var resolved = new AlipayCredentials("tenant", "app", "seller", null, null, null);
+        var resolved = new AlipayCredentials("app", "seller", null, null, null);
         var options = Map.of("notify_url", "https://callbacks.example.test/alipay");
         var signed =
                 new AlipaySignedRequest(AlipayMethod.WAP_PAY, Map.of("method", "alipay.trade.wap.pay", "sign", "a+b="));
-        when(credentials.read("tenant", binding)).thenReturn(resolved);
+        when(credentials.read(binding)).thenReturn(resolved);
         when(codec.sign(AlipayMethod.WAP_PAY, resolved, business, options)).thenReturn(signed);
 
-        assertEquals(
-                gateway + "?" + signed.formBody(), client.directWapUrl("tenant", binding, gateway, business, options));
+        assertEquals(gateway + "?" + signed.formBody(), client.directWapUrl(binding, gateway, business, options));
         verify(codec).sign(AlipayMethod.WAP_PAY, resolved, business, options);
         verifyNoInteractions(http);
         verify(codec, never()).verify(any(), any(), any());
-        assertThrows(
-                CommonException.class, () -> client.call("tenant", binding, AlipayMethod.WAP_PAY, business, options));
+        assertThrows(CommonException.class, () -> client.call(binding, AlipayMethod.WAP_PAY, business, options));
     }
 
     @Test
     void delegatedModeForeignGatewayQueryAndTransactionAreRejectedBeforeCredentialAccess() {
         assertThrows(
                 CommonException.class,
-                () -> client.directWapUrl("tenant", binding(AccessMode.SERVICE_PROVIDER), gateway, business, Map.of()));
+                () -> client.directWapUrl(binding(AccessMode.SERVICE_PROVIDER), gateway, business, Map.of()));
         for (var invalid : Set.of(
                 "http://openapi.alipay.com/gateway.do",
                 "https://attacker.test/gateway.do",
@@ -100,22 +98,20 @@ class AlipayWapProtocolClientTest {
                 "https://openapi.alipay.com/other")) {
             assertThrows(
                     CommonException.class,
-                    () -> client.directWapUrl(
-                            "tenant", binding(AccessMode.DIRECT), URI.create(invalid), business, Map.of()));
+                    () -> client.directWapUrl(binding(AccessMode.DIRECT), URI.create(invalid), business, Map.of()));
         }
         TransactionSynchronizationManager.setActualTransactionActive(true);
         assertThrows(
                 CommonException.class,
-                () -> client.directWapUrl("tenant", binding(AccessMode.DIRECT), gateway, business, Map.of()));
+                () -> client.directWapUrl(binding(AccessMode.DIRECT), gateway, business, Map.of()));
         verifyNoInteractions(credentials, codec, http);
     }
 
     @Test
     void unexpectedAuthorizationOnDirectCredentialsIsNeverSignedOrReturned() {
         var binding = binding(AccessMode.DIRECT);
-        when(credentials.read("tenant", binding))
-                .thenReturn(new AlipayCredentials("tenant", "app", "seller", null, null, "secret"));
-        assertThrows(CommonException.class, () -> client.directWapUrl("tenant", binding, gateway, business, Map.of()));
+        when(credentials.read(binding)).thenReturn(new AlipayCredentials("app", "seller", null, null, "secret"));
+        assertThrows(CommonException.class, () -> client.directWapUrl(binding, gateway, business, Map.of()));
         verifyNoInteractions(codec, http);
     }
 }

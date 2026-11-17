@@ -146,11 +146,6 @@
 
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-delayedtask</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-globalunique</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
@@ -604,7 +599,7 @@
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-outbox</artifactId>
+                <artifactId>loadup-components-task</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>

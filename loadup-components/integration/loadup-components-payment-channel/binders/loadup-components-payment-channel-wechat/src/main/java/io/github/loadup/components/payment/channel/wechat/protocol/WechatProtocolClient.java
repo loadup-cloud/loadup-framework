@@ -42,7 +42,6 @@ public class WechatProtocolClient {
     }
 
     public WechatVerifiedResponse call(
-            String tenant,
             ChannelBindingRevision binding,
             WechatMethod method,
             Map<String, String> path,
@@ -54,7 +53,7 @@ public class WechatProtocolClient {
         if (method == null) {
             throw new CommonException(INVALID_ARGUMENT);
         }
-        var original = credentials.read(tenant, binding);
+        var original = credentials.read(binding);
         var call = new HttpCall(
                 path, query, Map.of("Accept", "application/json", "Content-Type", "application/json"), body);
         try {

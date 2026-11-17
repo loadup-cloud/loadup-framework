@@ -37,7 +37,6 @@ import static org.mockito.Mockito.when;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.money.Money;
 import io.github.loadup.commons.util.DigestUtils;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.payment.channel.alipay.config.AlipayH5Properties;
 import io.github.loadup.components.payment.channel.alipay.config.AlipayNotificationProperties;
 import io.github.loadup.components.payment.channel.alipay.protocol.AlipayMethod;
@@ -151,7 +150,7 @@ class AlipaySubmitAdapterTest {
                 "1",
                 account,
                 Set.of(PaymentMethod.PAYMENT_CODE, PaymentMethod.JSAPI, PaymentMethod.H5));
-        return new ChannelExecutionContext("tenant", binding);
+        return new ChannelExecutionContext(binding);
     }
 
     @Test
@@ -163,18 +162,17 @@ class AlipaySubmitAdapterTest {
                 queries,
                 json,
                 CLOCK,
-                new AlipayNotificationProperties(Map.of("tenant", Map.of("revision-1", callback))),
+                new AlipayNotificationProperties(Map.of("revision-1", callback)),
                 new AlipayH5Properties(
-                        URI.create("https://openapi.alipay.com/gateway.do"),
-                        Map.of("tenant", Map.of("revision-1", returnUrl))));
+                        URI.create("https://openapi.alipay.com/gateway.do"), Map.of("revision-1", returnUrl)));
         var request = request(direct, PaymentMethod.H5, new NoChannelInput(), EXPIRY);
         String url = wapUrl();
-        when(client.directWapUrl(eq("tenant"), eq(direct.binding()), any(), anyString(), anyMap()))
+        when(client.directWapUrl(eq(direct.binding()), any(), anyString(), anyMap()))
                 .thenReturn(url);
 
-        TenantUtil.runWithTenant("tenant", () -> configured.validate(direct, validation(request)));
+        configured.validate(direct, validation(request));
         verifyNoInteractions(client);
-        var result = TenantUtil.callWithTenant("tenant", () -> configured.submit(direct, request));
+        var result = configured.submit(direct, request);
 
         assertNull(result.observation());
         var action = assertInstanceOf(AlipayH5ChannelAction.class, result.action());
@@ -183,7 +181,6 @@ class AlipaySubmitAdapterTest {
         var body = ArgumentCaptor.forClass(String.class);
         verify(client)
                 .directWapUrl(
-                        eq("tenant"),
                         eq(direct.binding()),
                         eq(URI.create("https://openapi.alipay.com/gateway.do")),
                         body.capture(),
@@ -194,7 +191,7 @@ class AlipaySubmitAdapterTest {
         assertEquals("QUICK_WAP_WAY", business.get("product_code"));
         assertEquals("2026-10-23 19:00:00", business.get("time_expire"));
         assertFalse(business.containsKey("seller_id"));
-        verify(client, never()).call(anyString(), any(), any(), anyString(), anyMap());
+        verify(client, never()).call(any(), any(), anyString(), anyMap());
     }
 
     @Test
@@ -210,12 +207,10 @@ class AlipaySubmitAdapterTest {
                 json,
                 CLOCK,
                 new AlipayNotificationProperties(
-                        Map.of("tenant", Map.of("revision-1", URI.create("https://callbacks.example.test/alipay")))),
+                        Map.of("revision-1", URI.create("https://callbacks.example.test/alipay"))),
                 new AlipayH5Properties(URI.create("https://openapi.alipay.com/gateway.do"), Map.of()));
         var request = request(delegated, PaymentMethod.H5, new NoChannelInput(), EXPIRY);
-        var failure = assertThrows(
-                CommonException.class,
-                () -> TenantUtil.runWithTenant("tenant", () -> configured.validate(delegated, validation(request))));
+        var failure = assertThrows(CommonException.class, () -> configured.validate(delegated, validation(request)));
         assertEquals(ChannelResultCodeEnum.UNSUPPORTED_CAPABILITY, failure.getResultCode());
         verifyNoInteractions(client);
     }
@@ -227,12 +222,12 @@ class AlipaySubmitAdapterTest {
         var payPayload = "{\"code\":\"10000\",\"out_trade_no\":\"" + ORDER_NO
                 + "\",\"total_amount\":\"1250.00\",\"trade_no\":\"" + TRADE_NO + "\"}";
         var queryPayload = successQuery(TRADE_NO, "1250.00");
-        when(client.call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.PAY), anyString(), eq(Map.of())))
+        when(client.call(eq(direct.binding()), eq(AlipayMethod.PAY), anyString(), eq(Map.of())))
                 .thenReturn(verified(AlipayMethod.PAY, payPayload));
-        when(client.call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.QUERY), anyString(), eq(Map.of())))
+        when(client.call(eq(direct.binding()), eq(AlipayMethod.QUERY), anyString(), eq(Map.of())))
                 .thenReturn(verified(AlipayMethod.QUERY, queryPayload));
 
-        var result = TenantUtil.callWithTenant("tenant", () -> adapter.submit(direct, request));
+        var result = adapter.submit(direct, request);
 
         assertEquals(ChannelPaymentOutcome.Kind.SUCCEEDED, result.observation().kind());
         assertEquals(request.payment().identity(), result.identity());
@@ -251,35 +246,31 @@ class AlipaySubmitAdapterTest {
         assertEquals("2026-10-23 19:00:00", body.get("time_expire"));
         assertEquals("bar_code", body.get("scene"));
         assertEquals("2812345678901234", body.get("auth_code"));
-        verify(client, times(1))
-                .call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.PAY), anyString(), eq(Map.of()));
-        verify(client, times(1))
-                .call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.QUERY), anyString(), eq(Map.of()));
+        verify(client, times(1)).call(eq(direct.binding()), eq(AlipayMethod.PAY), anyString(), eq(Map.of()));
+        verify(client, times(1)).call(eq(direct.binding()), eq(AlipayMethod.QUERY), anyString(), eq(Map.of()));
     }
 
     @Test
     void acceptedAndOtherPayCodesDoNotAutomaticallyResubmitOrCreateActions() {
         var request =
                 request(direct, PaymentMethod.PAYMENT_CODE, new ChannelPaymentCodeInput("2812345678901234"), EXPIRY);
-        when(client.call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.PAY), anyString(), eq(Map.of())))
+        when(client.call(eq(direct.binding()), eq(AlipayMethod.PAY), anyString(), eq(Map.of())))
                 .thenReturn(verified(AlipayMethod.PAY, "{\"code\":\"10003\"}"));
 
-        var accepted = TenantUtil.callWithTenant("tenant", () -> adapter.submit(direct, request));
+        var accepted = adapter.submit(direct, request);
 
         assertEquals(ChannelPaymentOutcome.Kind.ACCEPTED, accepted.observation().kind());
         assertNull(accepted.action());
-        verify(client, times(1))
-                .call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.PAY), anyString(), eq(Map.of()));
+        verify(client, times(1)).call(eq(direct.binding()), eq(AlipayMethod.PAY), anyString(), eq(Map.of()));
         verifyNoMoreInteractions(client);
 
         clearInvocations(client);
-        when(client.call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.PAY), anyString(), eq(Map.of())))
+        when(client.call(eq(direct.binding()), eq(AlipayMethod.PAY), anyString(), eq(Map.of())))
                 .thenReturn(verified(AlipayMethod.PAY, "{\"code\":\"40004\"}"));
-        var unknown = TenantUtil.callWithTenant("tenant", () -> adapter.submit(direct, request));
+        var unknown = adapter.submit(direct, request);
         assertEquals(ChannelPaymentOutcome.Kind.UNKNOWN, unknown.observation().kind());
         assertNull(unknown.action());
-        verify(client, times(1))
-                .call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.PAY), anyString(), eq(Map.of()));
+        verify(client, times(1)).call(eq(direct.binding()), eq(AlipayMethod.PAY), anyString(), eq(Map.of()));
         verifyNoMoreInteractions(client);
     }
 
@@ -289,20 +280,14 @@ class AlipaySubmitAdapterTest {
                 request(direct, PaymentMethod.PAYMENT_CODE, new ChannelPaymentCodeInput("2812345678901234"), EXPIRY);
         stubPay("{\"code\":\"10000\",\"out_trade_no\":\"other-order\",\"total_amount\":\"1250.00\"," + "\"trade_no\":\""
                 + TRADE_NO + "\"}");
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("tenant", () -> adapter.submit(direct, request)));
+        assertThrows(CommonException.class, () -> adapter.submit(direct, request));
 
         stubPay("{\"code\":\"10000\",\"out_trade_no\":\"" + ORDER_NO + "\",\"total_amount\":\"1249.99\","
                 + "\"trade_no\":\"" + TRADE_NO + "\"}");
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("tenant", () -> adapter.submit(direct, request)));
+        assertThrows(CommonException.class, () -> adapter.submit(direct, request));
 
         stubPay("{\"code\":10000}");
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("tenant", () -> adapter.submit(direct, request)));
+        assertThrows(CommonException.class, () -> adapter.submit(direct, request));
     }
 
     @Test
@@ -312,12 +297,12 @@ class AlipaySubmitAdapterTest {
                 PaymentMethod.JSAPI,
                 new ChannelPayerIdentityInput(Channel.ALIPAY, PayerIdentityType.OPEN_ID, "payer-open-id", "main-app"),
                 EXPIRY);
-        when(client.call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.CREATE), anyString(), eq(Map.of())))
+        when(client.call(eq(direct.binding()), eq(AlipayMethod.CREATE), anyString(), eq(Map.of())))
                 .thenReturn(verified(
                         AlipayMethod.CREATE,
                         "{\"code\":\"10000\",\"out_trade_no\":\"" + ORDER_NO + "\",\"trade_no\":\"" + TRADE_NO
                                 + "\",\"buyer_open_id\":\"payer-open-id\"}"));
-        var main = TenantUtil.callWithTenant("tenant", () -> adapter.submit(direct, mainRequest));
+        var main = adapter.submit(direct, mainRequest);
         assertEquals(ChannelPaymentOutcome.Kind.ACCEPTED, main.observation().kind());
         assertEquals(TRADE_NO, main.observation().channelTransactionNo());
         var action = assertInstanceOf(AlipayJsapiChannelAction.class, main.action());
@@ -338,12 +323,12 @@ class AlipaySubmitAdapterTest {
                 new ChannelPayerIdentityInput(
                         Channel.ALIPAY, PayerIdentityType.OPEN_ID, "operator-open-id", "operator-app"),
                 EXPIRY);
-        when(client.call(eq("tenant"), eq(operator.binding()), eq(AlipayMethod.CREATE), anyString(), eq(Map.of())))
+        when(client.call(eq(operator.binding()), eq(AlipayMethod.CREATE), anyString(), eq(Map.of())))
                 .thenReturn(verified(
                         AlipayMethod.CREATE,
                         "{\"code\":\"10000\",\"out_trade_no\":\"" + ORDER_NO
                                 + "\",\"trade_no\":\"operator-trade\",\"op_buyer_open_id\":\"operator-open-id\"}"));
-        var provider = TenantUtil.callWithTenant("tenant", () -> adapter.submit(operator, providerRequest));
+        var provider = adapter.submit(operator, providerRequest);
         assertEquals(ChannelPaymentOutcome.Kind.ACCEPTED, provider.observation().kind());
         var providerBody = json.readValue(requestBody(AlipayMethod.CREATE), Map.class);
         assertEquals("operator-app", providerBody.get("op_app_id"));
@@ -353,9 +338,8 @@ class AlipaySubmitAdapterTest {
     @Test
     void onlyJsapiCreateUsesTenantAndFrozenBindingNotificationUrl() throws Exception {
         var callback = URI.create("https://callbacks.example/tenant/payment-notify");
-        var notifications = new AlipayNotificationProperties(Map.of(
-                "tenant", Map.of("revision-1", callback, "other-revision", URI.create("https://other.example/path")),
-                "other-tenant", Map.of("revision-1", URI.create("https://other-tenant.example/path"))));
+        var notifications = new AlipayNotificationProperties(
+                Map.of("revision-1", callback, "other-revision", URI.create("https://other.example/path")));
         var configured = new AlipaySubmitAdapter(
                 client, queries, json, CLOCK, notifications, new AlipayH5Properties(null, Map.of()));
         var expectedAdditional = Map.of("notify_url", callback.toASCIIString());
@@ -364,39 +348,28 @@ class AlipaySubmitAdapterTest {
                 PaymentMethod.JSAPI,
                 new ChannelPayerIdentityInput(Channel.ALIPAY, PayerIdentityType.OPEN_ID, "payer-open-id", "main-app"),
                 EXPIRY);
-        when(client.call(
-                        eq("tenant"),
-                        eq(direct.binding()),
-                        eq(AlipayMethod.CREATE),
-                        anyString(),
-                        eq(expectedAdditional)))
+        when(client.call(eq(direct.binding()), eq(AlipayMethod.CREATE), anyString(), eq(expectedAdditional)))
                 .thenReturn(verified(
                         AlipayMethod.CREATE,
                         "{\"code\":\"10000\",\"out_trade_no\":\"" + ORDER_NO + "\",\"trade_no\":\"" + TRADE_NO
                                 + "\",\"buyer_open_id\":\"payer-open-id\"}"));
 
-        var created = TenantUtil.callWithTenant("tenant", () -> configured.submit(direct, jsapiRequest));
+        var created = configured.submit(direct, jsapiRequest);
 
         assertEquals(TRADE_NO, created.observation().channelTransactionNo());
         var createCaptor = ArgumentCaptor.forClass(String.class);
         verify(client)
-                .call(
-                        eq("tenant"),
-                        eq(direct.binding()),
-                        eq(AlipayMethod.CREATE),
-                        createCaptor.capture(),
-                        eq(expectedAdditional));
+                .call(eq(direct.binding()), eq(AlipayMethod.CREATE), createCaptor.capture(), eq(expectedAdditional));
         assertFalse(json.readValue(createCaptor.getValue(), Map.class).containsKey("notify_url"));
 
         clearInvocations(client);
         var codeRequest =
                 request(direct, PaymentMethod.PAYMENT_CODE, new ChannelPaymentCodeInput("2812345678901234"), EXPIRY);
-        when(client.call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.PAY), anyString(), eq(Map.of())))
+        when(client.call(eq(direct.binding()), eq(AlipayMethod.PAY), anyString(), eq(Map.of())))
                 .thenReturn(verified(AlipayMethod.PAY, "{\"code\":\"10003\"}"));
-        TenantUtil.callWithTenant("tenant", () -> configured.submit(direct, codeRequest));
-        verify(client).call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.PAY), anyString(), eq(Map.of()));
-        verify(client, never())
-                .call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.CREATE), anyString(), anyMap());
+        configured.submit(direct, codeRequest);
+        verify(client).call(eq(direct.binding()), eq(AlipayMethod.PAY), anyString(), eq(Map.of()));
+        verify(client, never()).call(eq(direct.binding()), eq(AlipayMethod.CREATE), anyString(), anyMap());
     }
 
     @Test
@@ -407,12 +380,12 @@ class AlipaySubmitAdapterTest {
                 new ChannelPayerIdentityInput(
                         Channel.ALIPAY, PayerIdentityType.USER_ID, "2088123456789012", "main-app"),
                 EXPIRY);
-        when(client.call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.CREATE), anyString(), eq(Map.of())))
+        when(client.call(eq(direct.binding()), eq(AlipayMethod.CREATE), anyString(), eq(Map.of())))
                 .thenReturn(verified(
                         AlipayMethod.CREATE,
                         "{\"code\":\"10000\",\"out_trade_no\":\"" + ORDER_NO + "\",\"trade_no\":\"" + TRADE_NO
                                 + "\",\"buyer_id\":\"2088123456789012\"}"));
-        var created = TenantUtil.callWithTenant("tenant", () -> adapter.submit(direct, request));
+        var created = adapter.submit(direct, request);
         assertEquals(ChannelPaymentOutcome.Kind.ACCEPTED, created.observation().kind());
         assertInstanceOf(AlipayJsapiChannelAction.class, created.action());
         assertEquals(
@@ -420,9 +393,9 @@ class AlipaySubmitAdapterTest {
                 json.readValue(requestBody(AlipayMethod.CREATE), Map.class).get("buyer_id"));
 
         clearInvocations(client);
-        when(client.call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.CREATE), anyString(), eq(Map.of())))
+        when(client.call(eq(direct.binding()), eq(AlipayMethod.CREATE), anyString(), eq(Map.of())))
                 .thenReturn(verified(AlipayMethod.CREATE, "{\"code\":\"40004\"}"));
-        var failed = TenantUtil.callWithTenant("tenant", () -> adapter.submit(direct, request));
+        var failed = adapter.submit(direct, request);
         assertEquals(ChannelPaymentOutcome.Kind.UNKNOWN, failed.observation().kind());
         assertNull(failed.action());
     }
@@ -434,21 +407,15 @@ class AlipaySubmitAdapterTest {
         var request = request(direct, PaymentMethod.JSAPI, payer, EXPIRY);
         stubCreate("{\"code\":\"10000\",\"out_trade_no\":\"other-order\",\"trade_no\":\"" + TRADE_NO
                 + "\",\"buyer_open_id\":\"payer-open-id\"}");
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("tenant", () -> adapter.submit(direct, request)));
+        assertThrows(CommonException.class, () -> adapter.submit(direct, request));
 
         stubCreate("{\"code\":\"10000\",\"out_trade_no\":\"" + ORDER_NO + "\",\"trade_no\":\"" + TRADE_NO
                 + "\",\"buyer_open_id\":\"different-id\"}");
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("tenant", () -> adapter.submit(direct, request)));
+        assertThrows(CommonException.class, () -> adapter.submit(direct, request));
 
         stubCreate("{\"code\":\"10000\",\"out_trade_no\":\"" + ORDER_NO + "\",\"total_amount\":\"1.00\","
                 + "\"trade_no\":\"" + TRADE_NO + "\",\"buyer_open_id\":\"payer-open-id\"}");
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("tenant", () -> adapter.submit(direct, request)));
+        assertThrows(CommonException.class, () -> adapter.submit(direct, request));
 
         clearInvocations(client);
         var wrongScope = request(
@@ -456,9 +423,7 @@ class AlipaySubmitAdapterTest {
                 PaymentMethod.JSAPI,
                 new ChannelPayerIdentityInput(Channel.ALIPAY, PayerIdentityType.OPEN_ID, "payer-open-id", "other-app"),
                 EXPIRY);
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("tenant", () -> adapter.submit(direct, wrongScope)));
+        assertThrows(CommonException.class, () -> adapter.submit(direct, wrongScope));
         verifyNoInteractions(client);
     }
 
@@ -484,53 +449,32 @@ class AlipaySubmitAdapterTest {
                 new ChannelPayerIdentityInput(Channel.ALIPAY, PayerIdentityType.OPEN_ID, "payer-open-id", "other-app"),
                 EXPIRY);
 
-        TenantUtil.runWithTenant("tenant", () -> {
-            assertThrows(CommonException.class, () -> adapter.validate(direct, validation(h5)));
-            assertThrows(CommonException.class, () -> adapter.validate(direct, validation(badCode)));
-            assertThrows(CommonException.class, () -> adapter.validate(direct, validation(badScope)));
-            assertThrows(CommonException.class, () -> adapter.validate(direct, validation(tooSoon)));
-            assertThrows(CommonException.class, () -> adapter.validate(direct, validation(tooLate)));
-        });
+        assertThrows(CommonException.class, () -> adapter.validate(direct, validation(h5)));
+        assertThrows(CommonException.class, () -> adapter.validate(direct, validation(badCode)));
+        assertThrows(CommonException.class, () -> adapter.validate(direct, validation(badScope)));
+        assertThrows(CommonException.class, () -> adapter.validate(direct, validation(tooSoon)));
+        assertThrows(CommonException.class, () -> adapter.validate(direct, validation(tooLate)));
 
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("tenant", () -> adapter.submit(direct, tooSoon)));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("tenant", () -> adapter.submit(direct, tooLate)));
+        assertThrows(CommonException.class, () -> adapter.submit(direct, tooSoon));
+        assertThrows(CommonException.class, () -> adapter.submit(direct, tooLate));
 
-        var wrongTenant = context(
-                "revision-1",
-                HASH,
-                AccessMode.DIRECT,
-                new AlipayAccountIdentity("main-app", "fixed-seller", null, null, null));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("other", () -> adapter.submit(wrongTenant, codeRequest)));
         var wrongRevision = context(
                 "other-revision",
                 HASH,
                 AccessMode.DIRECT,
                 new AlipayAccountIdentity("main-app", "fixed-seller", null, null, null));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("tenant", () -> adapter.submit(wrongRevision, codeRequest)));
+        assertThrows(CommonException.class, () -> adapter.submit(wrongRevision, codeRequest));
         var wrongHash = context(
                 "revision-1",
                 "b".repeat(64),
                 AccessMode.DIRECT,
                 new AlipayAccountIdentity("main-app", "fixed-seller", null, null, null));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("tenant", () -> adapter.submit(wrongHash, codeRequest)));
+        assertThrows(CommonException.class, () -> adapter.submit(wrongHash, codeRequest));
 
-        assertThrows(
-                CommonException.class, () -> TenantUtil.callWithTenant("tenant", () -> adapter.submit(direct, h5)));
+        assertThrows(CommonException.class, () -> adapter.submit(direct, h5));
         TransactionSynchronizationManager.setActualTransactionActive(true);
         try {
-            assertThrows(
-                    CommonException.class,
-                    () -> TenantUtil.callWithTenant("tenant", () -> adapter.submit(direct, codeRequest)));
+            assertThrows(CommonException.class, () -> adapter.submit(direct, codeRequest));
         } finally {
             TransactionSynchronizationManager.clear();
         }
@@ -549,18 +493,18 @@ class AlipaySubmitAdapterTest {
     }
 
     private void stubPay(String payload) {
-        when(client.call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.PAY), anyString(), eq(Map.of())))
+        when(client.call(eq(direct.binding()), eq(AlipayMethod.PAY), anyString(), eq(Map.of())))
                 .thenReturn(verified(AlipayMethod.PAY, payload));
     }
 
     private void stubCreate(String payload) {
-        when(client.call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.CREATE), anyString(), eq(Map.of())))
+        when(client.call(eq(direct.binding()), eq(AlipayMethod.CREATE), anyString(), eq(Map.of())))
                 .thenReturn(verified(AlipayMethod.CREATE, payload));
     }
 
     private String requestBody(AlipayMethod method) throws Exception {
         var captor = ArgumentCaptor.forClass(String.class);
-        verify(client, atLeastOnce()).call(eq("tenant"), any(), eq(method), captor.capture(), eq(Map.of()));
+        verify(client, atLeastOnce()).call(any(), eq(method), captor.capture(), eq(Map.of()));
         return captor.getValue();
     }
 }

@@ -20,8 +20,7 @@
 
 主要入口文件：
 
-- [
-  `NanocaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/nanocaptcha/autoconfigure/NanocaptchaAutoConfiguration.java)
+- [ `NanocaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/nanocaptcha/autoconfigure/NanocaptchaAutoConfiguration.java)
 - [`NanocaptchaProvider`](src/main/java/io/github/loadup/components/captcha/nanocaptcha/NanocaptchaProvider.java)
 
 ## 分层与调用路径
@@ -36,8 +35,7 @@ binder 实现框架契约，把实现库及其配置隔离在业务 API 之外�
 
 ## 装配规则
 
-- [
-  `NanocaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/nanocaptcha/autoconfigure/NanocaptchaAutoConfiguration.java)
+- [ `NanocaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/nanocaptcha/autoconfigure/NanocaptchaAutoConfiguration.java)
   是自动配置入口。
     - `@ConditionalOnClass(ImageCaptcha.class)`
     - `@ConditionalOnProperty(prefix = "loadup.captcha", name = "binder-type", havingValue = "nanocaptcha")`

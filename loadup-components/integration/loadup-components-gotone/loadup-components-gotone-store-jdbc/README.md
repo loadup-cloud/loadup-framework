@@ -32,8 +32,7 @@ Mapper 由 APT 生成在 target 中，仅供存储实现使用。
 
 ## 自动装配
 
-- [
-  `GotoneStoreJdbcAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/store/config/GotoneStoreJdbcAutoConfiguration.java)
+- [ `GotoneStoreJdbcAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/store/config/GotoneStoreJdbcAutoConfiguration.java)
 
 ## 数据库迁移与记录语义
 

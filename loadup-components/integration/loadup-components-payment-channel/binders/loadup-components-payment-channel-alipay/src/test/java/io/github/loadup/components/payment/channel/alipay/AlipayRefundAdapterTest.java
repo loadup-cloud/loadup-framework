@@ -36,7 +36,6 @@ import static org.mockito.Mockito.when;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.money.Money;
 import io.github.loadup.commons.util.DigestUtils;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.payment.channel.alipay.protocol.AlipayMethod;
 import io.github.loadup.components.payment.channel.alipay.protocol.AlipayProtocolClient;
 import io.github.loadup.components.payment.channel.alipay.protocol.AlipayProtocolTime;
@@ -76,11 +75,7 @@ class AlipayRefundAdapterTest {
     private final JsonMapper json = JsonMapper.builder().build();
     private final AlipayRefundAdapter adapter = new AlipayRefundAdapter(client, json, CLOCK);
     private final ChannelExecutionContext direct = context(
-            "tenant",
-            "revision-1",
-            HASH,
-            AccessMode.DIRECT,
-            new AlipayAccountIdentity("app", "seller", null, null, null));
+            "revision-1", HASH, AccessMode.DIRECT, new AlipayAccountIdentity("app", "seller", null, null, null));
     private final PreparedChannelRefund refund = refund(REFUND_NO, identity("revision-1", HASH), TRADE_NO);
 
     private static String successPayload(
@@ -126,7 +121,7 @@ class AlipayRefundAdapterTest {
     }
 
     private static ChannelExecutionContext context(
-            String tenant, String revision, String hash, AccessMode mode, AlipayAccountIdentity account) {
+            String revision, String hash, AccessMode mode, AlipayAccountIdentity account) {
         var binding = new ChannelBindingRevision(
                 revision,
                 "merchant-1",
@@ -137,7 +132,7 @@ class AlipayRefundAdapterTest {
                 "1",
                 account,
                 Set.of(PaymentMethod.PAYMENT_CODE));
-        return new ChannelExecutionContext(tenant, binding);
+        return new ChannelExecutionContext(binding);
     }
 
     private static ChannelPaymentIdentity identity(String revision, String hash) {
@@ -153,10 +148,10 @@ class AlipayRefundAdapterTest {
         var payload = "{\"code\":\"10000\",\"trade_no\":\"" + TRADE_NO + "\",\"out_trade_no\":\""
                 + OUT_TRADE_NO + "\",\"out_request_no\":\"" + REFUND_NO
                 + "\",\"refund_fee\":\"300.00\",\"fund_change\":\"Y\"}";
-        when(client.call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.REFUND), anyString(), eq(Map.of())))
+        when(client.call(eq(direct.binding()), eq(AlipayMethod.REFUND), anyString(), eq(Map.of())))
                 .thenReturn(verified(AlipayMethod.REFUND, payload));
 
-        var result = TenantUtil.callWithTenant("tenant", () -> adapter.submit(direct, refund));
+        var result = adapter.submit(direct, refund);
 
         assertEquals(ChannelRefundOutcome.Kind.ACCEPTED, result.kind());
         assertEquals(REFUND_AMOUNT, result.amount());
@@ -166,17 +161,17 @@ class AlipayRefundAdapterTest {
         assertEquals(OUT_TRADE_NO, request.get("out_trade_no"));
         assertEquals(REFUND_NO, request.get("out_request_no"));
         assertEquals("100.00", request.get("refund_amount"));
-        verify(client).call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.REFUND), anyString(), eq(Map.of()));
+        verify(client).call(eq(direct.binding()), eq(AlipayMethod.REFUND), anyString(), eq(Map.of()));
     }
 
     @Test
     void onlyVerifiedSuccessfulOriginalRequestQueryProducesTerminalObservation() throws Exception {
-        when(client.call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of())))
+        when(client.call(eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of())))
                 .thenReturn(verified(
                         AlipayMethod.REFUND_QUERY,
                         successPayload(TRADE_NO, OUT_TRADE_NO, REFUND_NO, "100.00", "500.00", "2026-10-23 18:11:12")));
 
-        var result = TenantUtil.callWithTenant("tenant", () -> adapter.query(direct, refund));
+        var result = adapter.query(direct, refund);
 
         assertEquals(ChannelRefundOutcome.Kind.SUCCEEDED, result.kind());
         assertEquals(REFUND_AMOUNT, result.amount());
@@ -206,12 +201,12 @@ class AlipayRefundAdapterTest {
         var submitPayload = "{\"code\":\"10000\",\"trade_no\":\"" + TRADE_NO + "\",\"out_trade_no\":\"" + OUT_TRADE_NO
                 + "\",\"out_request_no\":\"" + REFUND_NO + "\"}";
         var submit = verified(AlipayMethod.REFUND, submitPayload);
-        when(client.call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of())))
+        when(client.call(eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of())))
                 .thenReturn(query);
-        when(client.call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.REFUND), anyString(), eq(Map.of())))
+        when(client.call(eq(direct.binding()), eq(AlipayMethod.REFUND), anyString(), eq(Map.of())))
                 .thenReturn(submit);
 
-        var result = TenantUtil.callWithTenant("tenant", () -> adapter.recover(direct, refund));
+        var result = adapter.recover(direct, refund);
 
         assertEquals(ChannelRefundOutcome.Kind.ACCEPTED, result.kind());
         assertEquals(RefundObservation.Source.SUBMIT_RESPONSE, result.source());
@@ -232,10 +227,8 @@ class AlipayRefundAdapterTest {
                         "100.00"),
                 request);
         var order = inOrder(client);
-        order.verify(client)
-                .call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of()));
-        order.verify(client)
-                .call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.REFUND), anyString(), eq(Map.of()));
+        order.verify(client).call(eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of()));
+        order.verify(client).call(eq(direct.binding()), eq(AlipayMethod.REFUND), anyString(), eq(Map.of()));
         order.verifyNoMoreInteractions();
     }
 
@@ -243,68 +236,44 @@ class AlipayRefundAdapterTest {
     void recoveryAcceptsOnlyZeroOrOriginalRefundAmountAndOriginalGrossTotal() {
         for (String amount : List.of("0", "0.0", "0.00", "100.00")) {
             reset(client);
-            when(client.call(
-                            eq("tenant"),
-                            eq(direct.binding()),
-                            eq(AlipayMethod.REFUND_QUERY),
-                            anyString(),
-                            eq(Map.of())))
+            when(client.call(eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of())))
                     .thenReturn(verified(
                             AlipayMethod.REFUND_QUERY,
                             recoveryPayload("10000", null, TRADE_NO, OUT_TRADE_NO, REFUND_NO, amount, "500.00")));
-            when(client.call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.REFUND), anyString(), eq(Map.of())))
+            when(client.call(eq(direct.binding()), eq(AlipayMethod.REFUND), anyString(), eq(Map.of())))
                     .thenReturn(verified(AlipayMethod.REFUND, "{\"code\":\"40004\"}"));
             assertEquals(
                     ChannelRefundOutcome.Kind.UNKNOWN,
-                    TenantUtil.callWithTenant("tenant", () -> adapter.recover(direct, refund))
-                            .kind());
+                    adapter.recover(direct, refund).kind());
             verify(client, times(1))
-                    .call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of()));
-            verify(client, times(1))
-                    .call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.REFUND), anyString(), eq(Map.of()));
+                    .call(eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of()));
+            verify(client, times(1)).call(eq(direct.binding()), eq(AlipayMethod.REFUND), anyString(), eq(Map.of()));
             verifyNoMoreInteractions(client);
         }
 
         var providerContext = context(
-                "tenant",
                 "revision-provider",
                 HASH,
                 AccessMode.SERVICE_PROVIDER,
                 new AlipayAccountIdentity("app", "seller", "operator", "auth-ref", "2"));
         var providerRefund = refund(REFUND_NO, identity("revision-provider", HASH), TRADE_NO);
         reset(client);
-        when(client.call(
-                        eq("tenant"),
-                        eq(providerContext.binding()),
-                        eq(AlipayMethod.REFUND_QUERY),
-                        anyString(),
-                        eq(Map.of())))
+        when(client.call(eq(providerContext.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of())))
                 .thenReturn(verified(
                         AlipayMethod.REFUND_QUERY,
                         recoveryPayload("10000", null, TRADE_NO, OUT_TRADE_NO, REFUND_NO, null, "500.00")));
-        when(client.call(
-                        eq("tenant"),
-                        eq(providerContext.binding()),
-                        eq(AlipayMethod.REFUND),
-                        anyString(),
-                        eq(Map.of())))
+        when(client.call(eq(providerContext.binding()), eq(AlipayMethod.REFUND), anyString(), eq(Map.of())))
                 .thenReturn(verified(AlipayMethod.REFUND, "{\"code\":\"40004\"}"));
         assertEquals(
                 ChannelRefundOutcome.Kind.UNKNOWN,
-                TenantUtil.callWithTenant("tenant", () -> adapter.recover(providerContext, providerRefund))
-                        .kind());
+                adapter.recover(providerContext, providerRefund).kind());
         var providerOrder = inOrder(client);
         providerOrder
                 .verify(client)
-                .call(
-                        eq("tenant"),
-                        eq(providerContext.binding()),
-                        eq(AlipayMethod.REFUND_QUERY),
-                        anyString(),
-                        eq(Map.of()));
+                .call(eq(providerContext.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of()));
         providerOrder
                 .verify(client)
-                .call(eq("tenant"), eq(providerContext.binding()), eq(AlipayMethod.REFUND), anyString(), eq(Map.of()));
+                .call(eq(providerContext.binding()), eq(AlipayMethod.REFUND), anyString(), eq(Map.of()));
         providerOrder.verifyNoMoreInteractions();
     }
 
@@ -328,14 +297,9 @@ class AlipayRefundAdapterTest {
                         recoveryPayload("10000", "REFUND_CLOSED", TRADE_NO, OUT_TRADE_NO, REFUND_NO, null, null)));
         for (var response : responses) {
             reset(client);
-            when(client.call(
-                            eq("tenant"),
-                            eq(direct.binding()),
-                            eq(AlipayMethod.REFUND_QUERY),
-                            anyString(),
-                            eq(Map.of())))
+            when(client.call(eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of())))
                     .thenReturn(response);
-            var result = TenantUtil.callWithTenant("tenant", () -> adapter.recover(direct, refund));
+            var result = adapter.recover(direct, refund);
             assertEquals(RefundObservation.Source.QUERY_RESPONSE, result.source());
             if (response.payload().contains("REFUND_SUCCESS")) {
                 assertEquals(ChannelRefundOutcome.Kind.SUCCEEDED, result.kind());
@@ -343,7 +307,7 @@ class AlipayRefundAdapterTest {
                 assertEquals(ChannelRefundOutcome.Kind.UNKNOWN, result.kind());
             }
             verify(client, times(1))
-                    .call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of()));
+                    .call(eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of()));
             verifyNoMoreInteractions(client);
         }
     }
@@ -354,67 +318,50 @@ class AlipayRefundAdapterTest {
                 recoveryPayload("10000", null, TRADE_NO, OUT_TRADE_NO, REFUND_NO, "99.99", "500.00"),
                 recoveryPayload("10000", null, TRADE_NO, OUT_TRADE_NO, REFUND_NO, "0.00", "499.99"))) {
             reset(client);
-            when(client.call(
-                            eq("tenant"),
-                            eq(direct.binding()),
-                            eq(AlipayMethod.REFUND_QUERY),
-                            anyString(),
-                            eq(Map.of())))
+            when(client.call(eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of())))
                     .thenReturn(verified(AlipayMethod.REFUND_QUERY, payload));
-            assertThrows(
-                    CommonException.class,
-                    () -> TenantUtil.callWithTenant("tenant", () -> adapter.recover(direct, refund)));
+            assertThrows(CommonException.class, () -> adapter.recover(direct, refund));
             verify(client, times(1))
-                    .call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of()));
+                    .call(eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of()));
             verifyNoMoreInteractions(client);
         }
 
         var identityMismatch = recoveryPayload("10000", null, "other-trade", OUT_TRADE_NO, REFUND_NO, "0.00", "500.00");
         reset(client);
-        when(client.call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of())))
+        when(client.call(eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of())))
                 .thenReturn(verified(AlipayMethod.REFUND_QUERY, identityMismatch));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("tenant", () -> adapter.recover(direct, refund)));
-        verify(client, times(1))
-                .call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of()));
+        assertThrows(CommonException.class, () -> adapter.recover(direct, refund));
+        verify(client, times(1)).call(eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of()));
         verifyNoMoreInteractions(client);
 
         var validPayload = recoveryPayload("10000", null, TRADE_NO, OUT_TRADE_NO, REFUND_NO, "0.00", "500.00");
         reset(client);
-        when(client.call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of())))
+        when(client.call(eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of())))
                 .thenReturn(new AlipayVerifiedResponse(AlipayMethod.REFUND_QUERY, validPayload, "b".repeat(64)));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("tenant", () -> adapter.recover(direct, refund)));
-        verify(client, times(1))
-                .call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of()));
+        assertThrows(CommonException.class, () -> adapter.recover(direct, refund));
+        verify(client, times(1)).call(eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of()));
         verifyNoMoreInteractions(client);
 
         reset(client);
-        when(client.call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of())))
+        when(client.call(eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of())))
                 .thenThrow(new CommonException(ChannelResultCodeEnum.CHANNEL_RESPONSE_INVALID));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("tenant", () -> adapter.recover(direct, refund)));
-        verify(client, times(1))
-                .call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of()));
+        assertThrows(CommonException.class, () -> adapter.recover(direct, refund));
+        verify(client, times(1)).call(eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of()));
         verifyNoMoreInteractions(client);
     }
 
     @Test
     void plainQueryNeverResubmitsAnOtherwiseEligibleRecoveryResponse() {
-        when(client.call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of())))
+        when(client.call(eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of())))
                 .thenReturn(verified(
                         AlipayMethod.REFUND_QUERY,
                         recoveryPayload("10000", null, TRADE_NO, OUT_TRADE_NO, REFUND_NO, "0.00", "500.00")));
 
-        var result = TenantUtil.callWithTenant("tenant", () -> adapter.query(direct, refund));
+        var result = adapter.query(direct, refund);
 
         assertEquals(ChannelRefundOutcome.Kind.UNKNOWN, result.kind());
         assertEquals(RefundObservation.Source.QUERY_RESPONSE, result.source());
-        verify(client, times(1))
-                .call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of()));
+        verify(client, times(1)).call(eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of()));
         verifyNoMoreInteractions(client);
     }
 
@@ -439,13 +386,12 @@ class AlipayRefundAdapterTest {
     @Test
     void refundReferenceIsStableForNaturalKeyAndDistinctAcrossRefundRequests() {
         stubSuccess(REFUND_NO);
-        var first = TenantUtil.callWithTenant("tenant", () -> adapter.query(direct, refund));
+        var first = adapter.query(direct, refund);
         var repeatedRequest = refund(REFUND_NO, refund.original(), TRADE_NO);
-        var repeated = TenantUtil.callWithTenant("tenant", () -> adapter.query(direct, repeatedRequest));
+        var repeated = adapter.query(direct, repeatedRequest);
         var anotherRefundNo = "refund-request-13";
         stubSuccess(anotherRefundNo);
-        var different = TenantUtil.callWithTenant(
-                "tenant", () -> adapter.query(direct, refund(anotherRefundNo, refund.original(), TRADE_NO)));
+        var different = adapter.query(direct, refund(anotherRefundNo, refund.original(), TRADE_NO));
         assertEquals(first.channelRefundTransactionNo(), repeated.channelRefundTransactionNo());
         assertNotEquals(first.channelRefundTransactionNo(), different.channelRefundTransactionNo());
     }
@@ -453,54 +399,35 @@ class AlipayRefundAdapterTest {
     @Test
     void acceptsDirectAndServiceProviderAlipayBindingsAndRejectsInvalidContextBeforeClientIo() {
         var providerContext = context(
-                "tenant",
                 "revision-provider",
                 HASH,
                 AccessMode.SERVICE_PROVIDER,
                 new AlipayAccountIdentity("app", "seller", "operator", "auth-ref", "2"));
-        when(client.call(
-                        eq("tenant"),
-                        eq(providerContext.binding()),
-                        eq(AlipayMethod.REFUND_QUERY),
-                        anyString(),
-                        eq(Map.of())))
+        when(client.call(eq(providerContext.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of())))
                 .thenReturn(verified(AlipayMethod.REFUND_QUERY, "{\"code\":\"40004\"}"));
         var providerRefund = refund(REFUND_NO, identity("revision-provider", HASH), TRADE_NO);
         assertEquals(
                 ChannelRefundOutcome.Kind.UNKNOWN,
-                TenantUtil.callWithTenant("tenant", () -> adapter.query(providerContext, providerRefund))
-                        .kind());
+                adapter.query(providerContext, providerRefund).kind());
 
         clearInvocations(client);
-        assertThrows(
-                CommonException.class, () -> TenantUtil.callWithTenant("other", () -> adapter.query(direct, refund)));
         var wrongRevision = context(
-                "tenant",
                 "other-revision",
                 HASH,
                 AccessMode.DIRECT,
                 new AlipayAccountIdentity("app", "seller", null, null, null));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("tenant", () -> adapter.query(wrongRevision, refund)));
+        assertThrows(CommonException.class, () -> adapter.query(wrongRevision, refund));
         var wrongHash = context(
-                "tenant",
                 "revision-1",
                 "b".repeat(64),
                 AccessMode.DIRECT,
                 new AlipayAccountIdentity("app", "seller", null, null, null));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("tenant", () -> adapter.submit(wrongHash, refund)));
+        assertThrows(CommonException.class, () -> adapter.submit(wrongHash, refund));
 
         TransactionSynchronizationManager.setActualTransactionActive(true);
         try {
-            assertThrows(
-                    CommonException.class,
-                    () -> TenantUtil.callWithTenant("tenant", () -> adapter.submit(direct, refund)));
-            assertThrows(
-                    CommonException.class,
-                    () -> TenantUtil.callWithTenant("tenant", () -> adapter.query(direct, refund)));
+            assertThrows(CommonException.class, () -> adapter.submit(direct, refund));
+            assertThrows(CommonException.class, () -> adapter.query(direct, refund));
         } finally {
             TransactionSynchronizationManager.clear();
         }
@@ -508,23 +435,22 @@ class AlipayRefundAdapterTest {
     }
 
     private void assertUnknown(String payload) {
-        when(client.call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of())))
+        when(client.call(eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of())))
                 .thenReturn(verified(AlipayMethod.REFUND_QUERY, payload));
-        var result = TenantUtil.callWithTenant("tenant", () -> adapter.query(direct, refund));
+        var result = adapter.query(direct, refund);
         assertEquals(ChannelRefundOutcome.Kind.UNKNOWN, result.kind());
         assertNull(result.channelRefundTransactionNo());
         assertNull(result.succeededAt());
     }
 
     private void assertInvalidQuery(String payload) {
-        when(client.call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of())))
+        when(client.call(eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of())))
                 .thenReturn(verified(AlipayMethod.REFUND_QUERY, payload));
-        assertThrows(
-                CommonException.class, () -> TenantUtil.callWithTenant("tenant", () -> adapter.query(direct, refund)));
+        assertThrows(CommonException.class, () -> adapter.query(direct, refund));
     }
 
     private void stubSuccess(String refundNo) {
-        when(client.call(eq("tenant"), eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of())))
+        when(client.call(eq(direct.binding()), eq(AlipayMethod.REFUND_QUERY), anyString(), eq(Map.of())))
                 .thenReturn(verified(
                         AlipayMethod.REFUND_QUERY,
                         successPayload(TRADE_NO, OUT_TRADE_NO, refundNo, "100.00", "500.00", "2026-10-23 18:11:12")));
@@ -532,7 +458,7 @@ class AlipayRefundAdapterTest {
 
     private String capturedRequest(AlipayMethod method) throws Exception {
         var captor = ArgumentCaptor.forClass(String.class);
-        verify(client, atLeastOnce()).call(eq("tenant"), any(), eq(method), captor.capture(), eq(Map.of()));
+        verify(client, atLeastOnce()).call(any(), eq(method), captor.capture(), eq(Map.of()));
         return captor.getValue();
     }
 }

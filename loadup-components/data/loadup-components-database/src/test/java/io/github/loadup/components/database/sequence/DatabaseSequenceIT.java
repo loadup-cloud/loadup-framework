@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.testcontainers.annotation.ContainerType;
 import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
 import java.time.Clock;
@@ -98,18 +97,14 @@ class DatabaseSequenceIT {
     }
 
     @Test
-    void independentCommitSurvivesCallerRollbackAndTenantChanges() {
+    void independentCommitSurvivesCallerRollback() {
         SequenceScope scope = scope(100);
         TransactionTemplate caller = new TransactionTemplate(manager);
         caller.executeWithoutResult(status -> {
-            assertThat(TenantUtil.callWithTenant("merchant-a", () -> allocator.reserve(scope, 10))
-                            .first())
-                    .isEqualTo(1);
+            assertThat(allocator.reserve(scope, 10).first()).isEqualTo(1);
             status.setRollbackOnly();
         });
-        assertThat(TenantUtil.callWithTenant("merchant-b", () -> allocator.reserve(scope, 10))
-                        .first())
-                .isEqualTo(11);
+        assertThat(allocator.reserve(scope, 10).first()).isEqualTo(11);
     }
 
     @Test

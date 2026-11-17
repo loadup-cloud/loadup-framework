@@ -26,6 +26,7 @@ import com.nimbusds.jose.proc.SecurityContext;
 import com.nimbusds.jwt.SignedJWT;
 import io.github.loadup.components.authserver.properties.LoadUpAuthServerProperties;
 import io.github.loadup.components.authserver.sas.SasAuthServerAutoConfiguration;
+import io.github.loadup.components.oauth.client.OAuthClientTokenValidator;
 import io.github.loadup.components.resourceserver.ResourceServerAutoConfiguration;
 import io.github.loadup.components.resourceserver.ResourceServerProperties;
 import java.nio.file.Path;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.springframework.beans.factory.support.StaticListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.core.ResolvableType;
@@ -141,7 +143,8 @@ class SasSigningAndClientTest {
                 .withPropertyValues("loadup.security.auth-server.audience=")
                 .run(context -> assertThat(context).hasFailed());
         var properties = new LoadUpAuthServerProperties();
-        assertThatThrownBy(() -> configuration.loadUpJwtTokenCustomizer(properties))
+        assertThatThrownBy(() -> configuration.loadUpJwtTokenCustomizer(
+                        properties, new StaticListableBeanFactory().getBeanProvider(OAuthClientTokenValidator.class)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

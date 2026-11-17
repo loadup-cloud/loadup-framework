@@ -145,7 +145,6 @@ public final class WechatStatementCodec {
         var out = new ByteArrayOutputStream();
         for (String field : List.of(
                 FORMAT,
-                context.tenantId(),
                 context.binding().id(),
                 scope.channel().name(),
                 scope.accountScopeHash(),

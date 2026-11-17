@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025-2026 LoadUp Cloud
+ * Copyright (C) 2026 LoadUp Cloud
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,34 @@
 package io.github.loadup.components.database.autoconfigure;
 
 import io.github.loadup.components.database.config.DatabaseProperties;
-import io.github.loadup.components.database.tenant.DatabaseTenant;
-import io.github.loadup.components.database.tenant.TenantContext;
+import io.github.loadup.components.database.schema.FixedSchemaVerifier;
+import javax.sql.DataSource;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
+/**
+ * Assembles the fixed database target of one deployment.
+ *
+ * <p>The schema comes from {@code loadup.database.schema} only. Startup verifies that a physical
+ * connection really resolves to it before workers, schedulers or scanners may start.
+ */
 @AutoConfiguration
 @EnableConfigurationProperties(DatabaseProperties.class)
 public class DatabaseCoreAutoConfiguration {
-    @Bean
-    @ConditionalOnMissingBean
-    public DatabaseTenant databaseTenant(DatabaseProperties properties) {
-        var databaseTenant = new DatabaseTenant(properties);
-        TenantContext.bind(databaseTenant);
-        return databaseTenant;
+
+    @Configuration(proxyBeanMethods = false)
+    @ConditionalOnSingleCandidate(DataSource.class)
+    static class FixedSchemaVerification {
+        @Bean
+        @ConditionalOnMissingBean
+        FixedSchemaVerifier fixedSchemaVerifier(DataSource dataSource, DatabaseProperties properties) {
+            var verifier = new FixedSchemaVerifier(dataSource, properties.getSchema());
+            verifier.verify();
+            return verifier;
+        }
     }
 }

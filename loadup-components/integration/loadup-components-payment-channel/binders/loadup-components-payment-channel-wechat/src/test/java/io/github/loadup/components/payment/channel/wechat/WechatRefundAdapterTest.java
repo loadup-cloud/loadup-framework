@@ -38,7 +38,6 @@ import static org.mockito.Mockito.when;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.money.Money;
 import io.github.loadup.commons.util.DigestUtils;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum;
 import io.github.loadup.components.payment.channel.api.model.ChannelBindingRevision;
 import io.github.loadup.components.payment.channel.api.model.ChannelExecutionContext;
@@ -80,7 +79,7 @@ class WechatRefundAdapterTest {
     private final WechatRefundAdapter adapter =
             new WechatRefundAdapter(client, json, CLOCK, new WechatNotificationProperties(Map.of(), Map.of()));
     private final ChannelExecutionContext direct =
-            context("tenant", "revision-1", HASH, new WechatAccountIdentity("app", "merchant", null, null));
+            context("revision-1", HASH, new WechatAccountIdentity("app", "merchant", null, null));
     private final PreparedChannelRefund refund = refund(REFUND_NO, identity("revision-1", HASH), TRANSACTION);
 
     private static String submitPayload(String status) {
@@ -104,8 +103,7 @@ class WechatRefundAdapterTest {
         return new WechatVerifiedResponse(method, status, payload, "a".repeat(64));
     }
 
-    private static ChannelExecutionContext context(
-            String tenant, String revision, String hash, WechatAccountIdentity account) {
+    private static ChannelExecutionContext context(String revision, String hash, WechatAccountIdentity account) {
         var binding = new ChannelBindingRevision(
                 revision,
                 "merchant-1",
@@ -116,7 +114,7 @@ class WechatRefundAdapterTest {
                 "1",
                 account,
                 Set.of(PaymentMethod.PAYMENT_CODE));
-        return new ChannelExecutionContext(tenant, binding);
+        return new ChannelExecutionContext(binding);
     }
 
     private static ChannelPaymentIdentity identity(String revision, String hash) {
@@ -130,16 +128,10 @@ class WechatRefundAdapterTest {
 
     @Test
     void submitsDirectRefundWithOriginalTransactionAndExactAmountFields() throws Exception {
-        when(client.call(
-                        eq("tenant"),
-                        eq(direct.binding()),
-                        eq(WechatMethod.REFUND),
-                        eq(Map.of()),
-                        eq(Map.of()),
-                        anyString()))
+        when(client.call(eq(direct.binding()), eq(WechatMethod.REFUND), eq(Map.of()), eq(Map.of()), anyString()))
                 .thenReturn(verified(WechatMethod.REFUND, 200, submitPayload("SUCCESS")));
 
-        var result = TenantUtil.callWithTenant("tenant", () -> adapter.submit(direct, refund));
+        var result = adapter.submit(direct, refund);
 
         assertEquals(ChannelRefundOutcome.Kind.ACCEPTED, result.kind());
         assertNull(result.channelRefundTransactionNo());
@@ -160,20 +152,12 @@ class WechatRefundAdapterTest {
         var properties = new WechatNotificationProperties(
                 Map.of(),
                 Map.of(
-                        "tenant",
-                        Map.of(
-                                "revision-1",
-                                URI.create("https://payments.example/api/payment/channel-callbacks/wx-v1/refund"))));
+                        "revision-1",
+                        URI.create("https://payments.example/api/payment/channel-callbacks/wx-v1/refund")));
         var configured = new WechatRefundAdapter(client, json, CLOCK, properties);
-        when(client.call(
-                        eq("tenant"),
-                        eq(direct.binding()),
-                        eq(WechatMethod.REFUND),
-                        eq(Map.of()),
-                        eq(Map.of()),
-                        anyString()))
+        when(client.call(eq(direct.binding()), eq(WechatMethod.REFUND), eq(Map.of()), eq(Map.of()), anyString()))
                 .thenReturn(verified(WechatMethod.REFUND, 200, submitPayload("PROCESSING")));
-        TenantUtil.callWithTenant("tenant", () -> configured.submit(direct, refund));
+        configured.submit(direct, refund);
         assertEquals(
                 "https://payments.example/api/payment/channel-callbacks/wx-v1/refund",
                 json.readValue(capturedBody(WechatMethod.REFUND), Map.class).get("notify_url"));
@@ -182,21 +166,11 @@ class WechatRefundAdapterTest {
     @Test
     void submitsAndQueriesPartnerRefundWithSubMerchantScope() throws Exception {
         var partner = context(
-                "tenant",
-                "revision-sp",
-                HASH,
-                new WechatAccountIdentity("sp-app", "sp-merchant", "sub-app", "sub-merchant"));
+                "revision-sp", HASH, new WechatAccountIdentity("sp-app", "sp-merchant", "sub-app", "sub-merchant"));
         var partnerRefund = refund(REFUND_NO, identity("revision-sp", HASH), TRANSACTION);
-        when(client.call(
-                        eq("tenant"),
-                        eq(partner.binding()),
-                        eq(WechatMethod.REFUND),
-                        eq(Map.of()),
-                        eq(Map.of()),
-                        anyString()))
+        when(client.call(eq(partner.binding()), eq(WechatMethod.REFUND), eq(Map.of()), eq(Map.of()), anyString()))
                 .thenReturn(verified(WechatMethod.REFUND, 200, submitPayload("PROCESSING")));
         when(client.call(
-                        eq("tenant"),
                         eq(partner.binding()),
                         eq(WechatMethod.REFUND_QUERY),
                         eq(Map.of("out_refund_no", REFUND_NO)),
@@ -206,17 +180,14 @@ class WechatRefundAdapterTest {
 
         assertEquals(
                 ChannelRefundOutcome.Kind.ACCEPTED,
-                TenantUtil.callWithTenant("tenant", () -> adapter.submit(partner, partnerRefund))
-                        .kind());
+                adapter.submit(partner, partnerRefund).kind());
         assertEquals(
                 ChannelRefundOutcome.Kind.ACCEPTED,
-                TenantUtil.callWithTenant("tenant", () -> adapter.query(partner, partnerRefund))
-                        .kind());
+                adapter.query(partner, partnerRefund).kind());
         var body = json.readValue(capturedBody(WechatMethod.REFUND), Map.class);
         assertEquals("sub-merchant", body.get("sub_mchid"));
         verify(client)
                 .call(
-                        eq("tenant"),
                         eq(partner.binding()),
                         eq(WechatMethod.REFUND_QUERY),
                         eq(Map.of("out_refund_no", REFUND_NO)),
@@ -226,16 +197,10 @@ class WechatRefundAdapterTest {
 
     @Test
     void successfulQueryRequiresExactOriginalAmountsAndConvertsTimeToClockZone() {
-        when(client.call(
-                        eq("tenant"),
-                        eq(direct.binding()),
-                        eq(WechatMethod.REFUND_QUERY),
-                        anyMap(),
-                        anyMap(),
-                        isNull()))
+        when(client.call(eq(direct.binding()), eq(WechatMethod.REFUND_QUERY), anyMap(), anyMap(), isNull()))
                 .thenReturn(verified(WechatMethod.REFUND_QUERY, 200, queryPayload("SUCCESS")));
 
-        var result = TenantUtil.callWithTenant("tenant", () -> adapter.query(direct, refund));
+        var result = adapter.query(direct, refund);
 
         assertEquals(ChannelRefundOutcome.Kind.SUCCEEDED, result.kind());
         assertEquals("wechat-refund-88", result.channelRefundTransactionNo());
@@ -246,92 +211,54 @@ class WechatRefundAdapterTest {
     @Test
     void submissionAndQueryStatusSemanticsKeepNonterminalAndAmbiguousResultsOpen() {
         for (String status : List.of("SUCCESS", "PROCESSING")) {
-            when(client.call(
-                            eq("tenant"),
-                            eq(direct.binding()),
-                            eq(WechatMethod.REFUND),
-                            eq(Map.of()),
-                            eq(Map.of()),
-                            anyString()))
+            when(client.call(eq(direct.binding()), eq(WechatMethod.REFUND), eq(Map.of()), eq(Map.of()), anyString()))
                     .thenReturn(verified(WechatMethod.REFUND, 200, submitPayload(status)));
             assertEquals(
                     ChannelRefundOutcome.Kind.ACCEPTED,
-                    TenantUtil.callWithTenant("tenant", () -> adapter.submit(direct, refund))
-                            .kind());
+                    adapter.submit(direct, refund).kind());
         }
         for (String status : List.of("PROCESSING", "ABNORMAL", "UNKNOWN")) {
-            when(client.call(
-                            eq("tenant"),
-                            eq(direct.binding()),
-                            eq(WechatMethod.REFUND_QUERY),
-                            anyMap(),
-                            anyMap(),
-                            isNull()))
+            when(client.call(eq(direct.binding()), eq(WechatMethod.REFUND_QUERY), anyMap(), anyMap(), isNull()))
                     .thenReturn(verified(WechatMethod.REFUND_QUERY, 200, queryPayload(status)));
-            var result = TenantUtil.callWithTenant("tenant", () -> adapter.query(direct, refund));
+            var result = adapter.query(direct, refund);
             assertEquals(
                     status.equals("PROCESSING")
                             ? ChannelRefundOutcome.Kind.ACCEPTED
                             : ChannelRefundOutcome.Kind.UNKNOWN,
                     result.kind());
         }
-        when(client.call(
-                        eq("tenant"),
-                        eq(direct.binding()),
-                        eq(WechatMethod.REFUND_QUERY),
-                        anyMap(),
-                        anyMap(),
-                        isNull()))
+        when(client.call(eq(direct.binding()), eq(WechatMethod.REFUND_QUERY), anyMap(), anyMap(), isNull()))
                 .thenReturn(verified(WechatMethod.REFUND_QUERY, 200, queryPayload("CLOSED")));
         assertEquals(
                 ChannelRefundOutcome.Kind.FAILED_WITH_NO_REFUND,
-                TenantUtil.callWithTenant("tenant", () -> adapter.query(direct, refund))
-                        .kind());
-        when(client.call(
-                        eq("tenant"),
-                        eq(direct.binding()),
-                        eq(WechatMethod.REFUND_QUERY),
-                        anyMap(),
-                        anyMap(),
-                        isNull()))
+                adapter.query(direct, refund).kind());
+        when(client.call(eq(direct.binding()), eq(WechatMethod.REFUND_QUERY), anyMap(), anyMap(), isNull()))
                 .thenReturn(verified(WechatMethod.REFUND_QUERY, 404, "{\"code\":\"RESOURCE_NOT_EXISTS\"}"));
         assertEquals(
-                ChannelRefundOutcome.Kind.UNKNOWN,
-                TenantUtil.callWithTenant("tenant", () -> adapter.query(direct, refund))
-                        .kind());
+                ChannelRefundOutcome.Kind.UNKNOWN, adapter.query(direct, refund).kind());
     }
 
     @Test
     void recoversDirectAndPartnerRefundOnlyAfterExactVerifiedNotFound() throws Exception {
         var partner = context(
-                "tenant",
-                "revision-sp",
-                HASH,
-                new WechatAccountIdentity("sp-app", "sp-merchant", "sub-app", "sub-merchant"));
+                "revision-sp", HASH, new WechatAccountIdentity("sp-app", "sp-merchant", "sub-app", "sub-merchant"));
         var partnerRefund = refund(REFUND_NO, identity("revision-sp", HASH), TRANSACTION);
         var properties = new WechatNotificationProperties(
-                Map.of(), Map.of("tenant", Map.of("revision-1", URI.create("https://trusted.example/refund"))));
+                Map.of(), Map.of("revision-1", URI.create("https://trusted.example/refund")));
         var configured = new WechatRefundAdapter(client, json, CLOCK, properties);
         var query404 = verified(WechatMethod.REFUND_QUERY, 404, "{\"code\":\"RESOURCE_NOT_EXISTS\"}");
         var submit = verified(WechatMethod.REFUND, 200, submitPayload("PROCESSING"));
         when(client.call(
-                        eq("tenant"),
                         eq(direct.binding()),
                         eq(WechatMethod.REFUND_QUERY),
                         eq(Map.of("out_refund_no", REFUND_NO)),
                         eq(Map.of()),
                         isNull()))
                 .thenReturn(query404);
-        when(client.call(
-                        eq("tenant"),
-                        eq(direct.binding()),
-                        eq(WechatMethod.REFUND),
-                        eq(Map.of()),
-                        eq(Map.of()),
-                        anyString()))
+        when(client.call(eq(direct.binding()), eq(WechatMethod.REFUND), eq(Map.of()), eq(Map.of()), anyString()))
                 .thenReturn(submit);
 
-        var directResult = TenantUtil.callWithTenant("tenant", () -> configured.recover(direct, refund));
+        var directResult = configured.recover(direct, refund);
 
         assertEquals(ChannelRefundOutcome.Kind.ACCEPTED, directResult.kind());
         assertEquals(RefundObservation.Source.SUBMIT_RESPONSE, directResult.source());
@@ -359,40 +286,26 @@ class WechatRefundAdapterTest {
         var order = inOrder(client);
         order.verify(client)
                 .call(
-                        eq("tenant"),
                         eq(direct.binding()),
                         eq(WechatMethod.REFUND_QUERY),
                         eq(Map.of("out_refund_no", REFUND_NO)),
                         eq(Map.of()),
                         isNull());
         order.verify(client)
-                .call(
-                        eq("tenant"),
-                        eq(direct.binding()),
-                        eq(WechatMethod.REFUND),
-                        eq(Map.of()),
-                        eq(Map.of()),
-                        anyString());
+                .call(eq(direct.binding()), eq(WechatMethod.REFUND), eq(Map.of()), eq(Map.of()), anyString());
         order.verifyNoMoreInteractions();
 
         reset(client);
         when(client.call(
-                        eq("tenant"),
                         eq(partner.binding()),
                         eq(WechatMethod.REFUND_QUERY),
                         eq(Map.of("out_refund_no", REFUND_NO)),
                         eq(Map.of("sub_mchid", List.of("sub-merchant"))),
                         isNull()))
                 .thenReturn(query404);
-        when(client.call(
-                        eq("tenant"),
-                        eq(partner.binding()),
-                        eq(WechatMethod.REFUND),
-                        eq(Map.of()),
-                        eq(Map.of()),
-                        anyString()))
+        when(client.call(eq(partner.binding()), eq(WechatMethod.REFUND), eq(Map.of()), eq(Map.of()), anyString()))
                 .thenReturn(submit);
-        var partnerResult = TenantUtil.callWithTenant("tenant", () -> configured.recover(partner, partnerRefund));
+        var partnerResult = configured.recover(partner, partnerRefund);
         assertEquals(ChannelRefundOutcome.Kind.ACCEPTED, partnerResult.kind());
         var partnerBody = json.readValue(capturedBody(WechatMethod.REFUND), Map.class);
         assertEquals("sub-merchant", partnerBody.get("sub_mchid"));
@@ -401,7 +314,6 @@ class WechatRefundAdapterTest {
         partnerOrder
                 .verify(client)
                 .call(
-                        eq("tenant"),
                         eq(partner.binding()),
                         eq(WechatMethod.REFUND_QUERY),
                         eq(Map.of("out_refund_no", REFUND_NO)),
@@ -409,13 +321,7 @@ class WechatRefundAdapterTest {
                         isNull());
         partnerOrder
                 .verify(client)
-                .call(
-                        eq("tenant"),
-                        eq(partner.binding()),
-                        eq(WechatMethod.REFUND),
-                        eq(Map.of()),
-                        eq(Map.of()),
-                        anyString());
+                .call(eq(partner.binding()), eq(WechatMethod.REFUND), eq(Map.of()), eq(Map.of()), anyString());
         partnerOrder.verifyNoMoreInteractions();
     }
 
@@ -423,24 +329,12 @@ class WechatRefundAdapterTest {
     void recoveryNeverResubmitsAnExistingRefundOrUnverifiedNotFound() {
         for (String status : List.of("SUCCESS", "CLOSED", "PROCESSING", "ABNORMAL")) {
             reset(client);
-            when(client.call(
-                            eq("tenant"),
-                            eq(direct.binding()),
-                            eq(WechatMethod.REFUND_QUERY),
-                            anyMap(),
-                            anyMap(),
-                            isNull()))
+            when(client.call(eq(direct.binding()), eq(WechatMethod.REFUND_QUERY), anyMap(), anyMap(), isNull()))
                     .thenReturn(verified(WechatMethod.REFUND_QUERY, 200, queryPayload(status)));
-            var result = TenantUtil.callWithTenant("tenant", () -> adapter.recover(direct, refund));
+            var result = adapter.recover(direct, refund);
             assertEquals(RefundObservation.Source.QUERY_RESPONSE, result.source());
             verify(client, times(1))
-                    .call(
-                            eq("tenant"),
-                            eq(direct.binding()),
-                            eq(WechatMethod.REFUND_QUERY),
-                            anyMap(),
-                            anyMap(),
-                            isNull());
+                    .call(eq(direct.binding()), eq(WechatMethod.REFUND_QUERY), anyMap(), anyMap(), isNull());
             verifyNoMoreInteractions(client);
         }
         for (var response : List.of(
@@ -448,104 +342,58 @@ class WechatRefundAdapterTest {
                 verified(WechatMethod.REFUND_QUERY, 404, "{\"code\":\"OTHER_ERROR\"}"),
                 verified(WechatMethod.REFUND_QUERY, 200, "{\"code\":\"RESOURCE_NOT_EXISTS\"}"))) {
             reset(client);
-            when(client.call(
-                            eq("tenant"),
-                            eq(direct.binding()),
-                            eq(WechatMethod.REFUND_QUERY),
-                            anyMap(),
-                            anyMap(),
-                            isNull()))
+            when(client.call(eq(direct.binding()), eq(WechatMethod.REFUND_QUERY), anyMap(), anyMap(), isNull()))
                     .thenReturn(response);
-            var result = TenantUtil.callWithTenant("tenant", () -> adapter.recover(direct, refund));
+            var result = adapter.recover(direct, refund);
             assertEquals(RefundObservation.Source.QUERY_RESPONSE, result.source());
             verify(client, times(1))
-                    .call(
-                            eq("tenant"),
-                            eq(direct.binding()),
-                            eq(WechatMethod.REFUND_QUERY),
-                            anyMap(),
-                            anyMap(),
-                            isNull());
+                    .call(eq(direct.binding()), eq(WechatMethod.REFUND_QUERY), anyMap(), anyMap(), isNull());
             verifyNoMoreInteractions(client);
         }
         reset(client);
-        when(client.call(
-                        eq("tenant"),
-                        eq(direct.binding()),
-                        eq(WechatMethod.REFUND_QUERY),
-                        anyMap(),
-                        anyMap(),
-                        isNull()))
+        when(client.call(eq(direct.binding()), eq(WechatMethod.REFUND_QUERY), anyMap(), anyMap(), isNull()))
                 .thenReturn(verified(WechatMethod.REFUND_QUERY, 404, "not-json"));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("tenant", () -> adapter.recover(direct, refund)));
+        assertThrows(CommonException.class, () -> adapter.recover(direct, refund));
         verify(client, times(1))
-                .call(eq("tenant"), eq(direct.binding()), eq(WechatMethod.REFUND_QUERY), anyMap(), anyMap(), isNull());
+                .call(eq(direct.binding()), eq(WechatMethod.REFUND_QUERY), anyMap(), anyMap(), isNull());
         verifyNoMoreInteractions(client);
     }
 
     @Test
     void recoveryDoesNotSubmitWhenMetadataBindingSignatureOrQueryCallIsInvalid() {
-        assertThrows(
-                CommonException.class, () -> TenantUtil.callWithTenant("tenant", () -> adapter.recover(direct, null)));
-        var wrongBinding =
-                context("tenant", "other-revision", HASH, new WechatAccountIdentity("app", "merchant", null, null));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("tenant", () -> adapter.recover(wrongBinding, refund)));
+        assertThrows(CommonException.class, () -> adapter.recover(direct, null));
+        var wrongBinding = context("other-revision", HASH, new WechatAccountIdentity("app", "merchant", null, null));
+        assertThrows(CommonException.class, () -> adapter.recover(wrongBinding, refund));
         verifyNoInteractions(client);
 
-        when(client.call(
-                        eq("tenant"),
-                        eq(direct.binding()),
-                        eq(WechatMethod.REFUND_QUERY),
-                        anyMap(),
-                        anyMap(),
-                        isNull()))
+        when(client.call(eq(direct.binding()), eq(WechatMethod.REFUND_QUERY), anyMap(), anyMap(), isNull()))
                 .thenReturn(new WechatVerifiedResponse(
                         WechatMethod.REFUND, 404, "{\"code\":\"RESOURCE_NOT_EXISTS\"}", HASH));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("tenant", () -> adapter.recover(direct, refund)));
+        assertThrows(CommonException.class, () -> adapter.recover(direct, refund));
         verify(client, times(1))
-                .call(eq("tenant"), eq(direct.binding()), eq(WechatMethod.REFUND_QUERY), anyMap(), anyMap(), isNull());
+                .call(eq(direct.binding()), eq(WechatMethod.REFUND_QUERY), anyMap(), anyMap(), isNull());
         verifyNoMoreInteractions(client);
 
         reset(client);
-        when(client.call(
-                        eq("tenant"),
-                        eq(direct.binding()),
-                        eq(WechatMethod.REFUND_QUERY),
-                        anyMap(),
-                        anyMap(),
-                        isNull()))
+        when(client.call(eq(direct.binding()), eq(WechatMethod.REFUND_QUERY), anyMap(), anyMap(), isNull()))
                 .thenThrow(new CommonException(ChannelResultCodeEnum.CHANNEL_RESPONSE_INVALID));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("tenant", () -> adapter.recover(direct, refund)));
+        assertThrows(CommonException.class, () -> adapter.recover(direct, refund));
         verify(client, times(1))
-                .call(eq("tenant"), eq(direct.binding()), eq(WechatMethod.REFUND_QUERY), anyMap(), anyMap(), isNull());
+                .call(eq(direct.binding()), eq(WechatMethod.REFUND_QUERY), anyMap(), anyMap(), isNull());
         verifyNoMoreInteractions(client);
     }
 
     @Test
     void plainQueryNeverSubmitsAfterVerifiedNotFound() {
-        when(client.call(
-                        eq("tenant"),
-                        eq(direct.binding()),
-                        eq(WechatMethod.REFUND_QUERY),
-                        anyMap(),
-                        anyMap(),
-                        isNull()))
+        when(client.call(eq(direct.binding()), eq(WechatMethod.REFUND_QUERY), anyMap(), anyMap(), isNull()))
                 .thenReturn(verified(WechatMethod.REFUND_QUERY, 404, "{\"code\":\"RESOURCE_NOT_EXISTS\"}"));
 
-        var result = TenantUtil.callWithTenant("tenant", () -> adapter.query(direct, refund));
+        var result = adapter.query(direct, refund);
 
         assertEquals(ChannelRefundOutcome.Kind.UNKNOWN, result.kind());
         assertEquals(RefundObservation.Source.QUERY_RESPONSE, result.source());
         verify(client, times(1))
-                .call(eq("tenant"), eq(direct.binding()), eq(WechatMethod.REFUND_QUERY), anyMap(), anyMap(), isNull());
+                .call(eq(direct.binding()), eq(WechatMethod.REFUND_QUERY), anyMap(), anyMap(), isNull());
         verifyNoMoreInteractions(client);
     }
 
@@ -578,37 +426,22 @@ class WechatRefundAdapterTest {
         var payload = queryPayload("SUCCESS")
                 .replace("\"refund\":10000", "\"refund\":2500000000,\"payer_refund\":2000000000")
                 .replace("\"total\":50000", "\"total\":3000000000,\"payer_total\":2200000000");
-        when(client.call(
-                        eq("tenant"),
-                        eq(direct.binding()),
-                        eq(WechatMethod.REFUND_QUERY),
-                        anyMap(),
-                        anyMap(),
-                        isNull()))
+        when(client.call(eq(direct.binding()), eq(WechatMethod.REFUND_QUERY), anyMap(), anyMap(), isNull()))
                 .thenReturn(verified(WechatMethod.REFUND_QUERY, 200, payload));
         assertTrue(adapter.canRefund(large));
-        var result = TenantUtil.callWithTenant("tenant", () -> adapter.query(direct, large));
+        var result = adapter.query(direct, large);
         assertEquals(ChannelRefundOutcome.Kind.SUCCEEDED, result.kind());
         assertEquals(2_500_000_000L, result.amount().getCent());
     }
 
     @Test
-    void rejectsWrongTenantBindingAndCallsMadeInsideTransactionBeforeNetwork() {
-        assertThrows(
-                CommonException.class, () -> TenantUtil.callWithTenant("other", () -> adapter.query(direct, refund)));
-        var wrongBinding =
-                context("tenant", "other-revision", HASH, new WechatAccountIdentity("app", "merchant", null, null));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("tenant", () -> adapter.submit(wrongBinding, refund)));
+    void rejectsWrongBindingAndCallsMadeInsideTransactionBeforeNetwork() {
+        var wrongBinding = context("other-revision", HASH, new WechatAccountIdentity("app", "merchant", null, null));
+        assertThrows(CommonException.class, () -> adapter.submit(wrongBinding, refund));
         TransactionSynchronizationManager.setActualTransactionActive(true);
         try {
-            assertThrows(
-                    CommonException.class,
-                    () -> TenantUtil.callWithTenant("tenant", () -> adapter.submit(direct, refund)));
-            assertThrows(
-                    CommonException.class,
-                    () -> TenantUtil.callWithTenant("tenant", () -> adapter.query(direct, refund)));
+            assertThrows(CommonException.class, () -> adapter.submit(direct, refund));
+            assertThrows(CommonException.class, () -> adapter.query(direct, refund));
         } finally {
             TransactionSynchronizationManager.clear();
         }
@@ -629,9 +462,9 @@ class WechatRefundAdapterTest {
 
     @Test
     void acceptanceMetadataComesFromVerifiedCreateTimeAndCannotReplaceSuccessTime() {
-        when(client.call(eq("tenant"), eq(direct.binding()), eq(WechatMethod.REFUND), anyMap(), anyMap(), anyString()))
+        when(client.call(eq(direct.binding()), eq(WechatMethod.REFUND), anyMap(), anyMap(), anyString()))
                 .thenReturn(verified(WechatMethod.REFUND, 200, submitPayload("PROCESSING")));
-        var accepted = TenantUtil.callWithTenant("tenant", () -> adapter.submit(direct, refund));
+        var accepted = adapter.submit(direct, refund);
         assertEquals(ChannelRefundOutcome.Kind.ACCEPTED, accepted.kind());
         assertEquals("2026-10-22T23:59", accepted.acceptedAt().toString());
         Assertions.assertNull(accepted.succeededAt());
@@ -641,21 +474,14 @@ class WechatRefundAdapterTest {
     }
 
     private void assertInvalidQuery(String payload) {
-        when(client.call(
-                        eq("tenant"),
-                        eq(direct.binding()),
-                        eq(WechatMethod.REFUND_QUERY),
-                        anyMap(),
-                        anyMap(),
-                        isNull()))
+        when(client.call(eq(direct.binding()), eq(WechatMethod.REFUND_QUERY), anyMap(), anyMap(), isNull()))
                 .thenReturn(verified(WechatMethod.REFUND_QUERY, 200, payload));
-        assertThrows(
-                CommonException.class, () -> TenantUtil.callWithTenant("tenant", () -> adapter.query(direct, refund)));
+        assertThrows(CommonException.class, () -> adapter.query(direct, refund));
     }
 
     private String capturedBody(WechatMethod method) {
         var captor = ArgumentCaptor.forClass(String.class);
-        verify(client, atLeastOnce()).call(eq("tenant"), any(), eq(method), anyMap(), anyMap(), captor.capture());
+        verify(client, atLeastOnce()).call(any(), eq(method), anyMap(), anyMap(), captor.capture());
         return captor.getValue();
     }
 }

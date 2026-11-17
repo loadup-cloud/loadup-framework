@@ -15,7 +15,6 @@
  */
 package io.github.loadup.components.payment.channel.alipay.protocol;
 
-import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.ACTION_FORBIDDEN;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.CHANNEL_RESPONSE_INVALID;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.CHANNEL_SIGNATURE_INVALID;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.DEPENDENCY_UNAVAILABLE;
@@ -41,7 +40,6 @@ import static org.mockito.Mockito.when;
 
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.util.DigestUtils;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.http.HttpCall;
 import io.github.loadup.components.http.HttpTemplate;
 import io.github.loadup.components.kms.KmsKeyRef;
@@ -148,10 +146,9 @@ class AlipayStatementGrantClientTest {
         payload.set(Map.of("code", "10000", "bill_download_url", URL));
         when(kms.sign(any(), eq(KmsSignatureAlgorithm.RSA_SHA256_PKCS1), any()))
                 .thenReturn(new KmsSignature("signer", 7, KmsSignatureAlgorithm.RSA_SHA256_PKCS1, new byte[256]));
-        when(credentials.read(eq("tenant"), any())).thenAnswer(call -> {
-            ChannelBindingRevision binding = call.getArgument(1);
+        when(credentials.read(any())).thenAnswer(call -> {
+            ChannelBindingRevision binding = call.getArgument(0);
             return new AlipayCredentials(
-                    "tenant",
                     "app",
                     "seller",
                     new KmsKeyRef("signer", 7),
@@ -219,23 +216,22 @@ class AlipayStatementGrantClientTest {
             }
             fields.add(bytes);
         }
-        assertEquals(18, fields.size());
+        assertEquals(17, fields.size());
         assertEquals(AlipayStatementGrantClient.FORMAT, text(fields.get(0)));
-        assertEquals("tenant", text(fields.get(1)));
-        assertEquals("seller", text(fields.get(7)));
-        assertEquals("operator", text(fields.get(8)));
-        assertEquals("credential", text(fields.get(9)));
-        assertEquals("v1", text(fields.get(10)));
-        assertEquals("authorization", text(fields.get(11)));
-        assertEquals("v2", text(fields.get(12)));
-        assertEquals(grant.requestSha256(), text(fields.get(14)));
-        assertArrayEquals(received.get(), fields.get(17));
+        assertEquals("seller", text(fields.get(6)));
+        assertEquals("operator", text(fields.get(7)));
+        assertEquals("credential", text(fields.get(8)));
+        assertEquals("v1", text(fields.get(9)));
+        assertEquals("authorization", text(fields.get(10)));
+        assertEquals("v2", text(fields.get(11)));
+        assertEquals(grant.requestSha256(), text(fields.get(13)));
+        assertArrayEquals(received.get(), fields.get(16));
         assertFalse(new String(grant.evidence(), StandardCharsets.UTF_8).contains(TOKEN));
         assertFalse(grant.toString().contains("private-file-grant"));
         byte[] changed = grant.evidence();
         changed[0] ^= 1;
         assertEquals(DigestUtils.sha256(grant.evidence()), grant.evidenceSha256());
-        verify(credentials).read("tenant", context.binding());
+        verify(credentials).read(context.binding());
         verify(http).exchange(eq("alipay"), eq("bill-download-url"), any(HttpCall.class));
         verifyNoMoreInteractions(http);
     }
@@ -319,17 +315,7 @@ class AlipayStatementGrantClientTest {
     void currentDayWrongTenantAndActiveTransactionFailBeforeCredentialResolution() {
         assertEquals(
                 INVALID_ARGUMENT,
-                assertThrows(
-                                CommonException.class,
-                                () -> TenantUtil.callWithTenant(
-                                        "tenant", () -> client.request(context(false), BILL_DATE.plusDays(1))))
-                        .getResultCode());
-        assertEquals(
-                ACTION_FORBIDDEN,
-                assertThrows(
-                                CommonException.class,
-                                () -> TenantUtil.callWithTenant(
-                                        "other", () -> client.request(context(false), BILL_DATE)))
+                assertThrows(CommonException.class, () -> client.request(context(false), BILL_DATE.plusDays(1)))
                         .getResultCode());
         TransactionSynchronizationManager.setActualTransactionActive(true);
         assertFailure(INVALID_STATE);
@@ -339,14 +325,11 @@ class AlipayStatementGrantClientTest {
     @Test
     void privateExchangeDefensivelyCopiesTheExactVerifiedResponse() {
         var context = context(false);
-        var exchange = TenantUtil.callWithTenant(
-                "tenant",
-                () -> protocol.exchangeVerified(
-                        "tenant",
-                        context.binding(),
-                        AlipayMethod.BILL_DOWNLOAD_URL,
-                        "{\"bill_type\":\"trade\",\"bill_date\":\"2026-10-27\"}",
-                        Map.of()));
+        var exchange = protocol.exchangeVerified(
+                context.binding(),
+                AlipayMethod.BILL_DOWNLOAD_URL,
+                "{\"bill_type\":\"trade\",\"bill_date\":\"2026-10-27\"}",
+                Map.of());
         assertArrayEquals(received.get(), exchange.responseBytes());
         received.get()[0] ^= 1;
         assertNotEquals(received.get()[0], exchange.responseBytes()[0]);
@@ -357,7 +340,7 @@ class AlipayStatementGrantClientTest {
     }
 
     private AlipayStatementGrant request(ChannelExecutionContext context) {
-        return TenantUtil.callWithTenant("tenant", () -> client.request(context, BILL_DATE));
+        return client.request(context, BILL_DATE);
     }
 
     private void assertFailure(ChannelResultCodeEnum code) {
@@ -370,17 +353,15 @@ class AlipayStatementGrantClientTest {
     private ChannelExecutionContext context(boolean partner) {
         var identity = new AlipayAccountIdentity(
                 "app", "seller", partner ? "operator" : null, partner ? "authorization" : null, partner ? "v2" : null);
-        return new ChannelExecutionContext(
-                "tenant",
-                new ChannelBindingRevision(
-                        "revision",
-                        "merchant",
-                        Channel.ALIPAY,
-                        identity.accessMode(),
-                        "a".repeat(64),
-                        "credential",
-                        "v1",
-                        identity,
-                        Set.of(PaymentMethod.JSAPI)));
+        return new ChannelExecutionContext(new ChannelBindingRevision(
+                "revision",
+                "merchant",
+                Channel.ALIPAY,
+                identity.accessMode(),
+                "a".repeat(64),
+                "credential",
+                "v1",
+                identity,
+                Set.of(PaymentMethod.JSAPI)));
     }
 }

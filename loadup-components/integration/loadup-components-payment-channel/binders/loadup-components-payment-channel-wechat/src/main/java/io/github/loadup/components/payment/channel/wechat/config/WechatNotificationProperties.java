@@ -22,43 +22,34 @@ import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.commons.validation.DomainChecks;
 import java.net.URI;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Trusted server callback URLs by tenant and immutable binding revision; never supplied by a merchant request.
+ * Trusted server callback URLs by immutable binding revision; never supplied by a merchant request.
  */
 @ConfigurationProperties("loadup.payment.channel.wechat.notifications")
-public record WechatNotificationProperties(
-        Map<String, Map<String, URI>> notifyUrls, Map<String, Map<String, URI>> refundNotifyUrls) {
+public record WechatNotificationProperties(Map<String, URI> notifyUrls, Map<String, URI> refundNotifyUrls) {
     public WechatNotificationProperties {
         notifyUrls = immutable(notifyUrls);
         refundNotifyUrls = immutable(refundNotifyUrls);
     }
 
-    private static Map<String, Map<String, URI>> immutable(Map<String, Map<String, URI>> values) {
-        var urls = values == null
-                ? Map.<String, Map<String, URI>>of()
-                : values.entrySet().stream()
-                        .collect(
-                                Collectors.toUnmodifiableMap(Map.Entry::getKey, entry -> Map.copyOf(entry.getValue())));
-        for (var tenant : urls.entrySet()) {
-            DomainChecks.id(tenant.getKey());
-            for (var binding : tenant.getValue().entrySet()) {
-                DomainChecks.id(binding.getKey());
-                var uri = binding.getValue();
-                require(
-                        uri != null
-                                && "https".equals(uri.getScheme())
-                                && uri.getHost() != null
-                                && uri.getRawUserInfo() == null
-                                && uri.getRawFragment() == null
-                                && uri.getRawQuery() == null
-                                && uri.getRawPath() != null
-                                && !uri.getRawPath().isBlank()
-                                && uri.toASCIIString().length() <= 2048,
-                        INVALID_ARGUMENT);
-            }
+    private static Map<String, URI> immutable(Map<String, URI> values) {
+        var urls = values == null ? Map.<String, URI>of() : Map.copyOf(values);
+        for (var binding : urls.entrySet()) {
+            DomainChecks.id(binding.getKey());
+            var uri = binding.getValue();
+            require(
+                    uri != null
+                            && "https".equals(uri.getScheme())
+                            && uri.getHost() != null
+                            && uri.getRawUserInfo() == null
+                            && uri.getRawFragment() == null
+                            && uri.getRawQuery() == null
+                            && uri.getRawPath() != null
+                            && !uri.getRawPath().isBlank()
+                            && uri.toASCIIString().length() <= 2048,
+                    INVALID_ARGUMENT);
         }
         return urls;
     }

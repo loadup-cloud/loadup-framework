@@ -87,15 +87,14 @@ class AsyncResultAutoConfigurationTest {
 
     @Test
     void keysValuesAndOptionsValidateTheirPublicContracts() {
-        assertThatThrownBy(() -> new AsyncReplyKey("t", "op", "b", "bad")).isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> new AsyncResultOptions("", "op", "b", null))
-                .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> new AsyncResultOptions("t", "op", "b", Duration.ZERO))
+        assertThatThrownBy(() -> new AsyncReplyKey("op", "b", "bad")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new AsyncResultOptions("op", null, null)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new AsyncResultOptions("op", "b", Duration.ZERO))
                 .isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> new AsyncResultValue(null, null)).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> new AsyncResultValue("1", "FAIL")).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> new AsyncResultValue(null, "bad code")).isInstanceOf(IllegalArgumentException.class);
-        assertThat(AsyncResultTest.options().toString()).contains("tenantId");
+        assertThat(AsyncResultTest.options().toString()).contains("operation");
         assertThat(LocalAsyncResultProviderTest.key().toString()).contains("correlationId");
     }
 
@@ -104,11 +103,11 @@ class AsyncResultAutoConfigurationTest {
         var properties = new AsyncResultProperties(false, null, null, null, null, 0, null, null, 0, 0);
         assertThat(properties.toString()).contains("maxPending");
         assertThat(properties.maxPending()).isEqualTo(10000);
-        assertThatThrownBy(() -> new AsyncReplyKey("tenant", "op", "b", "ABCDEFAB-ABCD-ABCD-ABCD-ABCDEFABCDEF"))
+        assertThatThrownBy(() -> new AsyncReplyKey("op", "b", "ABCDEFAB-ABCD-ABCD-ABCD-ABCDEFABCDEF"))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> new AsyncResultOptions("t".repeat(65), "op", "b", null))
+        assertThatThrownBy(() -> new AsyncResultOptions("o".repeat(129), "b", null))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> new AsyncResultOptions("t", "op", "b", Duration.ofMillis(-1)))
+        assertThatThrownBy(() -> new AsyncResultOptions("op", "b", Duration.ofMillis(-1)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

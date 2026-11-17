@@ -44,8 +44,7 @@ loadup:
 
 ## 自动装配
 
-- [
-  `JetCacheCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/jetcache/autoconfigure/JetCacheCacheAutoConfiguration.java)
+- [ `JetCacheCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/jetcache/autoconfigure/JetCacheCacheAutoConfiguration.java)
     - 启用条件：
       `@ConditionalOnProperty(prefix = "loadup.cache", name = "type", havingValue = CacheBackendType.JETCACHE)`。
 

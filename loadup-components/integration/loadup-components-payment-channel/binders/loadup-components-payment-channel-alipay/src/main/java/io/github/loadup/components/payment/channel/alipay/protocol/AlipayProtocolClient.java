@@ -50,11 +50,7 @@ public class AlipayProtocolClient {
      * Page generation has no network response and must never expose delegated authorization.
      */
     public String directWapUrl(
-            String tenant,
-            ChannelBindingRevision binding,
-            URI gateway,
-            String businessJson,
-            Map<String, String> options) {
+            ChannelBindingRevision binding, URI gateway, String businessJson, Map<String, String> options) {
         if (TransactionSynchronizationManager.isActualTransactionActive()) {
             throw new CommonException(INVALID_STATE);
         }
@@ -64,7 +60,7 @@ public class AlipayProtocolClient {
         if (!AlipayH5ChannelAction.isGateway(gateway) || gateway.getRawQuery() != null) {
             throw new CommonException(INVALID_ARGUMENT);
         }
-        var credential = credentials.read(tenant, binding);
+        var credential = credentials.read(binding);
         if (credential.appAuthToken() != null) {
             throw new CommonException(CHANNEL_CREDENTIAL_UNAVAILABLE);
         }
@@ -73,30 +69,22 @@ public class AlipayProtocolClient {
     }
 
     public AlipayVerifiedResponse call(
-            String tenant,
-            ChannelBindingRevision binding,
-            AlipayMethod method,
-            String businessJson,
-            Map<String, String> options) {
-        return exchangeVerified(tenant, binding, method, businessJson, options).response();
+            ChannelBindingRevision binding, AlipayMethod method, String businessJson, Map<String, String> options) {
+        return exchangeVerified(binding, method, businessJson, options).response();
     }
 
     /**
      * Exact verified envelope for private source provenance. Credentials/signing still resolve exactly once per API call.
      */
     public AlipayVerifiedExchange exchangeVerified(
-            String tenant,
-            ChannelBindingRevision binding,
-            AlipayMethod method,
-            String businessJson,
-            Map<String, String> options) {
+            ChannelBindingRevision binding, AlipayMethod method, String businessJson, Map<String, String> options) {
         if (TransactionSynchronizationManager.isActualTransactionActive()) {
             throw new CommonException(INVALID_STATE);
         }
         if (method == AlipayMethod.WAP_PAY) {
             throw new CommonException(INVALID_ARGUMENT);
         }
-        var credential = credentials.read(tenant, binding);
+        var credential = credentials.read(binding);
         var request = codec.sign(method, credential, businessJson, options);
         var body = request.formBody();
         try {

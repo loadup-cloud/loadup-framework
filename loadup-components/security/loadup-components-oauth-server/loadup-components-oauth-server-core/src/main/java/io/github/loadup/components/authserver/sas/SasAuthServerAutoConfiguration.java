@@ -21,6 +21,7 @@ import com.nimbusds.jose.proc.SecurityContext;
 import io.github.loadup.components.authserver.jwt.LoadUpJwtTokenCustomizer;
 import io.github.loadup.components.authserver.properties.LoadUpAuthServerProperties;
 import io.github.loadup.components.kms.KmsTemplate;
+import io.github.loadup.components.oauth.client.OAuthClientTokenValidator;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.ObjectProvider;
@@ -38,6 +39,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
@@ -119,10 +121,18 @@ public class SasAuthServerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(OAuth2TokenCustomizer.class)
-    public OAuth2TokenCustomizer<JwtEncodingContext> loadUpJwtTokenCustomizer(LoadUpAuthServerProperties properties) {
+    public OAuth2TokenCustomizer<JwtEncodingContext> loadUpJwtTokenCustomizer(
+            LoadUpAuthServerProperties properties, ObjectProvider<OAuthClientTokenValidator> validators) {
         if (StringUtils.isBlank(properties.getAudience())) {
             throw new IllegalArgumentException("loadup.security.auth-server.audience is required");
         }
-        return new LoadUpJwtTokenCustomizer(properties.getAudience());
+        var claims = new LoadUpJwtTokenCustomizer(properties.getAudience());
+        return context -> {
+            var validator = validators.getIfAvailable();
+            if (validator != null && OAuth2TokenType.ACCESS_TOKEN.equals(context.getTokenType())) {
+                validator.requireAuthorizedClient(context);
+            }
+            claims.customize(context);
+        };
     }
 }

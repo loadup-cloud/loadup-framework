@@ -22,8 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -32,7 +30,6 @@ import static org.mockito.Mockito.when;
 
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.money.Money;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.kms.KmsTemplate;
 import io.github.loadup.components.payment.channel.api.model.ChannelBindingRevision;
 import io.github.loadup.components.payment.channel.api.model.ChannelExecutionContext;
@@ -103,8 +100,8 @@ class WechatRefundNotificationCodecTest {
             "3",
             PARTNER,
             Set.of(PaymentMethod.PAYMENT_CODE));
-    private static final ChannelExecutionContext DIRECT_CONTEXT = new ChannelExecutionContext(TENANT, DIRECT_BINDING);
-    private static final ChannelExecutionContext PARTNER_CONTEXT = new ChannelExecutionContext(TENANT, PARTNER_BINDING);
+    private static final ChannelExecutionContext DIRECT_CONTEXT = new ChannelExecutionContext(DIRECT_BINDING);
+    private static final ChannelExecutionContext PARTNER_CONTEXT = new ChannelExecutionContext(PARTNER_BINDING);
     private static final Money ORIGINAL_AMOUNT = Money.ofMinor(125_000, "CNY");
     private static final Money REFUND_AMOUNT = Money.ofMinor(35_000, "CNY");
     private static final ChannelPaymentIdentity IDENTITY = new ChannelPaymentIdentity(
@@ -155,9 +152,9 @@ class WechatRefundNotificationCodecTest {
                 credentials, signatures, JsonMapper.builder().build());
         apiKeys = new ArrayList<>();
         lastApiKey = new AtomicReference<>();
-        when(credentials.read(TENANT, DIRECT_BINDING)).thenReturn(credentials(DIRECT));
-        when(credentials.read(TENANT, PARTNER_BINDING)).thenReturn(credentials(PARTNER));
-        when(credentials.apiV3Key(eq(TENANT), any())).thenAnswer(invocation -> {
+        when(credentials.read(DIRECT_BINDING)).thenReturn(credentials(DIRECT));
+        when(credentials.read(PARTNER_BINDING)).thenReturn(credentials(PARTNER));
+        when(credentials.apiV3Key(any())).thenAnswer(invocation -> {
             byte[] key = API_V3_KEY.getBytes(StandardCharsets.US_ASCII);
             apiKeys.add(key);
             lastApiKey.set(key);
@@ -169,10 +166,8 @@ class WechatRefundNotificationCodecTest {
     void identifiesAndVerifiesRefundReturningThePreparedTarget() throws Exception {
         var body = notification(refund(DIRECT, REFUND_JSON), "REFUND.SUCCESS", "refund", "refund-notify-18");
         var input = signedInput(body);
-        ChannelRefundNotificationHint hint =
-                TenantUtil.callWithTenant(TENANT, () -> codec.identifyRefund(DIRECT_CONTEXT, input));
-        VerifiedChannelRefundNotification verified =
-                TenantUtil.callWithTenant(TENANT, () -> codec.verifyRefund(DIRECT_CONTEXT, REFUND, input));
+        ChannelRefundNotificationHint hint = codec.identifyRefund(DIRECT_CONTEXT, input);
+        VerifiedChannelRefundNotification verified = codec.verifyRefund(DIRECT_CONTEXT, REFUND, input);
 
         assertEquals("payment-request-18", hint.channelRequestNo());
         assertEquals("refund-request-18", hint.channelRefundNo());
@@ -182,18 +177,17 @@ class WechatRefundNotificationCodecTest {
         assertEquals("SUCCESS", verified.channelStatus());
         assertTrue(verified.sourceDigest().matches("[0-9a-f]{64}"));
         assertEveryKeyWasZeroed();
-        verify(credentials, times(2)).apiV3Key(TENANT, DIRECT_BINDING);
+        verify(credentials, times(2)).apiV3Key(DIRECT_BINDING);
     }
 
     @Test
     void verifiesServiceProviderMerchantFieldsWithoutApplicationIds() throws Exception {
         var body = notification(refund(PARTNER, REFUND_JSON), "REFUND.SUCCESS", "refund", "partner-refund");
-        var verified = TenantUtil.callWithTenant(
-                TENANT, () -> codec.verifyRefund(PARTNER_CONTEXT, PARTNER_REFUND, signedInput(body)));
+        var verified = codec.verifyRefund(PARTNER_CONTEXT, PARTNER_REFUND, signedInput(body));
         assertEquals(PARTNER_REFUND, verified.refund());
         assertEquals("SUCCESS", verified.channelStatus());
         assertKeyWasZeroed();
-        verify(credentials).apiV3Key(TENANT, PARTNER_BINDING);
+        verify(credentials).apiV3Key(PARTNER_BINDING);
     }
 
     @Test
@@ -204,12 +198,10 @@ class WechatRefundNotificationCodecTest {
                     ? rawData
                     : rawData.replace(",\"success_time\":\"2026-10-24T12:00:00+08:00\"", "");
             String event = "REFUND." + status;
-            var verified = TenantUtil.callWithTenant(
-                    TENANT,
-                    () -> codec.verifyRefund(
-                            DIRECT_CONTEXT,
-                            REFUND,
-                            signedInput(notification(refund(DIRECT, data), event, "refund", "notify-" + status))));
+            var verified = codec.verifyRefund(
+                    DIRECT_CONTEXT,
+                    REFUND,
+                    signedInput(notification(refund(DIRECT, data), event, "refund", "notify-" + status)));
             assertEquals(REFUND, verified.refund());
             assertEquals(status, verified.channelStatus());
         }
@@ -294,9 +286,8 @@ class WechatRefundNotificationCodecTest {
         var goodHeaders = signedHeaders(body, false);
         var invalid = input(body, withHeader(goodHeaders, "Wechatpay-Signature", List.of("bad-signature")));
         assertRejected(invalid);
-        verify(credentials, never()).apiV3Key(anyString(), any());
-        var verified =
-                TenantUtil.callWithTenant(TENANT, () -> codec.verifyRefund(DIRECT_CONTEXT, REFUND, signedInput(body)));
+        verify(credentials, never()).apiV3Key(any());
+        var verified = codec.verifyRefund(DIRECT_CONTEXT, REFUND, signedInput(body));
         assertEquals(REFUND, verified.refund());
         assertKeyWasZeroed();
     }
@@ -308,13 +299,11 @@ class WechatRefundNotificationCodecTest {
         assertRejected(input(body, withHeader(headers, "Wechatpay-Timestamp", List.of("1"))));
         assertRejected(input(body, withHeader(headers, "Wechatpay-Nonce", List.of(NONCE, "duplicate"))));
         assertRejected(input(body, withHeader(headers, "Wechatpay-Signature", List.of("one", "two"))));
-        verify(credentials, never()).apiV3Key(anyString(), any());
+        verify(credentials, never()).apiV3Key(any());
     }
 
     private void assertRejected(ChannelNotificationInput input) {
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant(TENANT, () -> codec.verifyRefund(DIRECT_CONTEXT, REFUND, input)));
+        assertThrows(CommonException.class, () -> codec.verifyRefund(DIRECT_CONTEXT, REFUND, input));
     }
 
     private void assertEveryKeyWasZeroed() {
@@ -376,12 +365,6 @@ class WechatRefundNotificationCodecTest {
 
     private WechatCredentials credentials(WechatAccountIdentity identity) {
         return new WechatCredentials(
-                TENANT,
-                identity.appId(),
-                identity.merchantId(),
-                "1234ABCD",
-                null,
-                "PUB_KEY_ID_test",
-                signingKeys.getPublic());
+                identity.appId(), identity.merchantId(), "1234ABCD", null, "PUB_KEY_ID_test", signingKeys.getPublic());
     }
 }

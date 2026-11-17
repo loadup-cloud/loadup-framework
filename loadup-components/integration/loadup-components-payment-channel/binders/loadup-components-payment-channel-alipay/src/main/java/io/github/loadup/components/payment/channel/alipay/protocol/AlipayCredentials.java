@@ -24,7 +24,6 @@ import java.security.PublicKey;
  * Resolved only from the version frozen in an immutable channel binding.
  */
 public record AlipayCredentials(
-        String tenantId,
         String appId,
         String sellerId,
         KmsKeyRef signingKey,

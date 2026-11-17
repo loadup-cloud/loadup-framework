@@ -15,13 +15,11 @@
  */
 package io.github.loadup.components.payment.channel.wechat.protocol;
 
-import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.ACTION_FORBIDDEN;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.CHANNEL_BINDING_MISMATCH;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.INVALID_ARGUMENT;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.INVALID_STATE;
 
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.payment.channel.api.model.ChannelExecutionContext;
 import io.github.loadup.components.payment.channel.api.model.ChannelPaymentIdentity;
 import io.github.loadup.components.payment.channel.api.model.WechatAccountIdentity;
@@ -37,9 +35,6 @@ public final class WechatBindingGuard {
         }
         if (context == null || identity == null) {
             throw new CommonException(INVALID_ARGUMENT);
-        }
-        if (!context.tenantId().equals(TenantUtil.getTenantId())) {
-            throw new CommonException(ACTION_FORBIDDEN);
         }
         var binding = context.binding();
         if (binding.channel() != Channel.WECHAT

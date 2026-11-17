@@ -21,8 +21,7 @@
 
 主要入口文件：
 
-- [
-  `TianaiCaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/tianai/autoconfigure/TianaiCaptchaAutoConfiguration.java)
+- [ `TianaiCaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/tianai/autoconfigure/TianaiCaptchaAutoConfiguration.java)
 - [`TianaiCaptchaProvider`](src/main/java/io/github/loadup/components/captcha/tianai/TianaiCaptchaProvider.java)
 
 ## 分层与调用路径
@@ -37,8 +36,7 @@ binder 实现框架契约，把实现库及其配置隔离在业务 API 之外�
 
 ## 装配规则
 
-- [
-  `TianaiCaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/tianai/autoconfigure/TianaiCaptchaAutoConfiguration.java)
+- [ `TianaiCaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/tianai/autoconfigure/TianaiCaptchaAutoConfiguration.java)
   是自动配置入口。
     - `@ConditionalOnClass(TACBuilder.class)`
     -

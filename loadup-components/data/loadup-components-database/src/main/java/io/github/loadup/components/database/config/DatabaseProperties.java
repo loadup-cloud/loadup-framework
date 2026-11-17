@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025-2026 LoadUp Cloud
+ * Copyright (C) 2026 LoadUp Cloud
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,71 +15,31 @@
  */
 package io.github.loadup.components.database.config;
 
-import io.github.loadup.commons.constant.CommonConstants;
-import jakarta.validation.Valid;
+import io.github.loadup.components.database.schema.FixedSchemaNames;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
+/**
+ * Fixed database target of one deployment.
+ *
+ * <p>{@code loadup.database.schema} is the only schema source for the connection pool, the runtime
+ * transaction manager and the migration target. There is no tenant map, no default tenant and no
+ * schema fallback to {@code public}.
+ */
 @ConfigurationProperties(prefix = "loadup.database")
 @Validated
 public class DatabaseProperties {
 
-    /** Default database schema, independent of tenant isolation. */
-    @NotBlank @Pattern(regexp = "[a-z_][a-z0-9_]{0,62}") private String defaultSchema = CommonConstants.DEFAULT_SCHEMA;
+    /** Business schema that owns every table, sequence, outbox and task of this application. */
+    @NotBlank @Pattern(regexp = FixedSchemaNames.PATTERN) private String schema;
 
-    @Valid private MultiTenant multiTenant = new MultiTenant();
-
-    public String getDefaultSchema() {
-        return defaultSchema;
+    public String getSchema() {
+        return schema;
     }
 
-    public void setDefaultSchema(String defaultSchema) {
-        this.defaultSchema = defaultSchema;
-    }
-
-    public MultiTenant getMultiTenant() {
-        return multiTenant;
-    }
-
-    public void setMultiTenant(MultiTenant multiTenant) {
-        this.multiTenant = multiTenant;
-    }
-
-    /**
-     * Schema-per-tenant policy. The tenant identity selects the schema; business tables never carry
-     * a tenant column.
-     */
-    public static class MultiTenant {
-        private boolean enabled = false;
-        private boolean required = true;
-
-        @NotBlank @Size(max = 64) private String defaultTenantId = CommonConstants.DEFAULT_TENANT_ID;
-
-        public boolean isEnabled() {
-            return enabled;
-        }
-
-        public void setEnabled(boolean enabled) {
-            this.enabled = enabled;
-        }
-
-        public boolean isRequired() {
-            return required;
-        }
-
-        public void setRequired(boolean required) {
-            this.required = required;
-        }
-
-        public String getDefaultTenantId() {
-            return defaultTenantId;
-        }
-
-        public void setDefaultTenantId(String defaultTenantId) {
-            this.defaultTenantId = defaultTenantId;
-        }
+    public void setSchema(String schema) {
+        this.schema = schema == null ? null : FixedSchemaNames.require(schema);
     }
 }

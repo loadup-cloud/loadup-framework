@@ -19,10 +19,8 @@
 
 主要入口文件：
 
-- [
-  `ApolloConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/apollo/autoconfigure/ApolloConfigCenterAutoConfiguration.java)
-- [
-  `ApolloConfigCenterProvider`](src/main/java/io/github/loadup/components/configcenter/apollo/ApolloConfigCenterProvider.java)
+- [ `ApolloConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/apollo/autoconfigure/ApolloConfigCenterAutoConfiguration.java)
+- [ `ApolloConfigCenterProvider`](src/main/java/io/github/loadup/components/configcenter/apollo/ApolloConfigCenterProvider.java)
 
 ## 分层与调用路径
 
@@ -36,16 +34,14 @@ binder 实现框架契约，把实现库及其配置隔离在业务 API 之外�
 
 ## 装配规则
 
-- [
-  `ApolloConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/apollo/autoconfigure/ApolloConfigCenterAutoConfiguration.java)
+- [ `ApolloConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/apollo/autoconfigure/ApolloConfigCenterAutoConfiguration.java)
   是自动配置入口。
     - `@ConditionalOnClass(ConfigService.class)`
     - `@ConditionalOnProperty(prefix = "loadup.configcenter", name = "binder-type", havingValue = "apollo")`
 
 ## 配置归属
 
-- [
-  `ApolloConfigCenterProperties`](src/main/java/io/github/loadup/components/configcenter/apollo/ApolloConfigCenterProperties.java)
+- [ `ApolloConfigCenterProperties`](src/main/java/io/github/loadup/components/configcenter/apollo/ApolloConfigCenterProperties.java)
   绑定 `loadup.configcenter.binder.apollo`。
 
 ## 设计取舍

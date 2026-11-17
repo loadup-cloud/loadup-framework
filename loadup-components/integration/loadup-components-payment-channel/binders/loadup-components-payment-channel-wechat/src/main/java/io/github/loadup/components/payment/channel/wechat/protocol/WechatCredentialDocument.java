@@ -23,7 +23,6 @@ import io.github.loadup.components.kms.KmsCiphertext;
  * Immutable mounted descriptor. Merchant private keys remain in KMS.
  */
 public record WechatCredentialDocument(
-        String tenantId,
         String reference,
         String version,
         String appId,

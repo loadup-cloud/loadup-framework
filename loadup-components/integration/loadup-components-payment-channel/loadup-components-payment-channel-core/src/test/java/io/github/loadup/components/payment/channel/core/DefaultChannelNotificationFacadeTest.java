@@ -25,7 +25,6 @@ import static org.mockito.Mockito.when;
 
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.money.Money;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.payment.channel.api.model.AlipayAccountIdentity;
 import io.github.loadup.components.payment.channel.api.model.ChannelAccountIdentity;
 import io.github.loadup.components.payment.channel.api.model.ChannelBindingRevision;
@@ -79,7 +78,7 @@ class DefaultChannelNotificationFacadeTest {
                 "1",
                 identity,
                 Set.of(PaymentMethod.PAYMENT_CODE));
-        return new ChannelExecutionContext("tenant", binding);
+        return new ChannelExecutionContext(binding);
     }
 
     private static ChannelPaymentTarget target(
@@ -108,8 +107,8 @@ class DefaultChannelNotificationFacadeTest {
         when(alipay.acknowledgement(Channel.ALIPAY, false)).thenReturn(rejectedAcknowledgement);
         clearInvocations(alipay, wechat);
 
-        assertSame(hint, TenantUtil.callWithTenant("tenant", () -> facade.identify(context, input)));
-        assertSame(verified, TenantUtil.callWithTenant("tenant", () -> facade.verify(context, target, input)));
+        assertSame(hint, facade.identify(context, input));
+        assertSame(verified, facade.verify(context, target, input));
         assertSame(acknowledgement, facade.acknowledgement(Channel.ALIPAY, true));
         assertSame(rejectedAcknowledgement, facade.acknowledgement(Channel.ALIPAY, false));
 
@@ -127,33 +126,26 @@ class DefaultChannelNotificationFacadeTest {
                 () -> new DefaultChannelNotificationFacade(List.of(alipay, provider(Channel.ALIPAY))));
         var withoutWechat = new DefaultChannelNotificationFacade(List.of(alipay));
         var context = context(Channel.WECHAT, "wx-revision", HASH);
-        TenantUtil.runWithTenant(
-                "tenant", () -> assertThrows(CommonException.class, () -> withoutWechat.identify(context, input)));
+        assertThrows(CommonException.class, () -> withoutWechat.identify(context, input));
         assertThrows(CommonException.class, () -> withoutWechat.acknowledgement(Channel.WECHAT, false));
         var target = target(Channel.WECHAT, "wx-revision", HASH, ORDER_NO, AMOUNT);
-        TenantUtil.runWithTenant(
-                "tenant",
-                () -> assertThrows(CommonException.class, () -> withoutWechat.verify(context, target, input)));
+        assertThrows(CommonException.class, () -> withoutWechat.verify(context, target, input));
     }
 
     @Test
-    void verifyRejectsTenantAndFrozenBindingMismatchBeforeCallingProvider() {
+    void verifyRejectsFrozenBindingMismatchBeforeCallingProvider() {
         clearInvocations(alipay, wechat);
         var context = context(Channel.ALIPAY, "revision-1", HASH);
         var target = target(Channel.ALIPAY, "revision-1", HASH, ORDER_NO, AMOUNT);
-        TenantUtil.runWithTenant(
-                "other", () -> assertThrows(CommonException.class, () -> facade.verify(context, target, input)));
-        TenantUtil.runWithTenant("tenant", () -> {
-            assertThrows(
-                    CommonException.class,
-                    () -> facade.verify(context(Channel.WECHAT, "wx-revision", HASH), target, input));
-            assertThrows(
-                    CommonException.class,
-                    () -> facade.verify(context(Channel.ALIPAY, "wrong-revision", HASH), target, input));
-            assertThrows(
-                    CommonException.class,
-                    () -> facade.verify(context(Channel.ALIPAY, "revision-1", "b".repeat(64)), target, input));
-        });
+        assertThrows(
+                CommonException.class,
+                () -> facade.verify(context(Channel.WECHAT, "wx-revision", HASH), target, input));
+        assertThrows(
+                CommonException.class,
+                () -> facade.verify(context(Channel.ALIPAY, "wrong-revision", HASH), target, input));
+        assertThrows(
+                CommonException.class,
+                () -> facade.verify(context(Channel.ALIPAY, "revision-1", "b".repeat(64)), target, input));
         verifyNoInteractions(alipay, wechat);
     }
 
@@ -169,11 +161,9 @@ class DefaultChannelNotificationFacadeTest {
                 target.identity().accountScopeHash(),
                 ORDER_NO);
         when(alipay.verify(context, target, input)).thenReturn(verified(wrongIdentity, AMOUNT));
-        TenantUtil.runWithTenant(
-                "tenant", () -> assertThrows(CommonException.class, () -> facade.verify(context, target, input)));
+        assertThrows(CommonException.class, () -> facade.verify(context, target, input));
         when(alipay.verify(context, target, input))
                 .thenReturn(verified(target.identity(), Money.ofMinor(125_001, "CNY")));
-        TenantUtil.runWithTenant(
-                "tenant", () -> assertThrows(CommonException.class, () -> facade.verify(context, target, input)));
+        assertThrows(CommonException.class, () -> facade.verify(context, target, input));
     }
 }

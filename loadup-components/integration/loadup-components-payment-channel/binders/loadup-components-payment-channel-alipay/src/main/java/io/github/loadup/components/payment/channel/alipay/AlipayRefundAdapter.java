@@ -61,8 +61,7 @@ public final class AlipayRefundAdapter {
         request.put(
                 "refund_amount",
                 BigDecimal.valueOf(refund.amount().getCent(), 2).toPlainString());
-        var verified = client.call(
-                context.tenantId(), context.binding(), AlipayMethod.REFUND, json.writeValueAsString(request), Map.of());
+        var verified = client.call(context.binding(), AlipayMethod.REFUND, json.writeValueAsString(request), Map.of());
         var response = responses.read(verified, AlipayMethod.REFUND);
         optionalIdentity(response, refund);
         var kind = ChannelRefundOutcome.Kind.UNKNOWN;
@@ -124,12 +123,7 @@ public final class AlipayRefundAdapter {
     private AlipayVerifiedResponse lookup(ChannelExecutionContext context, PreparedChannelRefund refund) {
         var request = request(refund);
         request.put("query_options", List.of("gmt_refund_pay"));
-        return client.call(
-                context.tenantId(),
-                context.binding(),
-                AlipayMethod.REFUND_QUERY,
-                json.writeValueAsString(request),
-                Map.of());
+        return client.call(context.binding(), AlipayMethod.REFUND_QUERY, json.writeValueAsString(request), Map.of());
     }
 
     private RefundObservation interpret(PreparedChannelRefund refund, AlipayVerifiedResponse verified) {

@@ -37,10 +37,9 @@
         <!-- reliability -->
         <module>reliability/loadup-components-lock</module>
         <module>reliability/loadup-components-async-result</module>
-        <module>reliability/loadup-components-outbox</module>
         <module>reliability/loadup-components-globalunique</module>
         <module>reliability/loadup-components-resilience4j</module>
-        <module>reliability/loadup-components-delayedtask</module>
+        <module>reliability/loadup-components-task</module>
         <!-- execution -->
         <module>execution/loadup-components-scheduler</module>
         <module>execution/loadup-components-pipeline</module>

@@ -16,6 +16,7 @@
 package io.github.loadup.components.scheduler;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -23,6 +24,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import io.github.loadup.commons.context.ContextHolder;
+import io.github.loadup.commons.context.ContextKey;
+import io.github.loadup.commons.context.ExecutionContext;
 import io.github.loadup.commons.error.CommonException;
 import java.util.Arrays;
 import java.util.List;
@@ -116,5 +120,42 @@ class SchedulerTemplateTest {
         assertThatThrownBy(() -> retried.trigger("failed")).isInstanceOf(Exception.class);
         retried.trigger("failed");
         verify(failing, times(2)).execute();
+    }
+
+    @Test
+    void triggerKeepsTheCallerContextAndRestoresItAfterSuccessAndFailure() throws Exception {
+        var metadataKey = new ContextKey<String>("test.metadata", String.class);
+        var outer = ExecutionContext.empty().with(metadataKey, "outer-metadata");
+        var failure = new IllegalStateException("synthetic");
+        var scheduler = new SchedulerTemplate(
+                mock(SchedulerProvider.class),
+                List.of(
+                        new ScheduledTask() {
+                            public String name() {
+                                return "success";
+                            }
+
+                            public void execute() {
+                                assertThat(ContextHolder.get(metadataKey)).isEqualTo("outer-metadata");
+                            }
+                        },
+                        new ScheduledTask() {
+                            public String name() {
+                                return "failure";
+                            }
+
+                            public void execute() {
+                                assertThat(ContextHolder.get(metadataKey)).isEqualTo("outer-metadata");
+                                throw failure;
+                            }
+                        }));
+
+        ContextHolder.runWith(outer, () -> {
+            assertThatCode(() -> scheduler.trigger("success")).doesNotThrowAnyException();
+            assertThat(ContextHolder.current()).isSameAs(outer);
+            assertThatThrownBy(() -> scheduler.trigger("failure")).isSameAs(failure);
+            assertThat(ContextHolder.current()).isSameAs(outer);
+            assertThat(ContextHolder.get(metadataKey)).isEqualTo("outer-metadata");
+        });
     }
 }

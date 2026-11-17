@@ -22,8 +22,7 @@
 
 主要入口文件：
 
-- [
-  `DatabaseDfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/database/autoconfigure/DatabaseDfsAutoConfiguration.java)
+- [ `DatabaseDfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/database/autoconfigure/DatabaseDfsAutoConfiguration.java)
 - [`DatabaseDfsProvider`](src/main/java/io/github/loadup/components/dfs/database/DatabaseDfsProvider.java)
 
 ## 分层与调用路径
@@ -38,8 +37,7 @@ binder 实现框架契约，把实现库及其配置隔离在业务 API 之外�
 
 ## 装配规则
 
-- [
-  `DatabaseDfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/database/autoconfigure/DatabaseDfsAutoConfiguration.java)
+- [ `DatabaseDfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/database/autoconfigure/DatabaseDfsAutoConfiguration.java)
   是自动配置入口。
     - `@ConditionalOnClass({NamedParameterJdbcTemplate.class, ObjectMapper.class})`
     - `@ConditionalOnProperty(prefix = "loadup.dfs", name = "binder-type", havingValue = "database")`

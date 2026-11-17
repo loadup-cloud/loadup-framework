@@ -113,7 +113,9 @@ WebMVC 在入口绑定空上下文或请求属性 `ExecutionContext.class.getNam
 分派重新绑定该不可变对象；下层临时覆盖不会回写父请求。可信租户适配器可准备新的请求上下文、写入同一属性并包裹
 FilterChain，使重新分派能恢复元数据。请求属性是进程内部对象，不从客户端自动反序列化；认证仍由 Security 负责。
 
-`TenantUtil` 保留只读 get/has 和 `runWithTenant/callWithTenant`
+部署标识由 `loadup-components-runtime` 的 `DeploymentIdentity` 提供；commons-context 不再提供租户工具
 ，临时租户覆盖会继承其他键，去除空白并在退出后恢复。持久任务/消息必须保存必要元数据，并在执行入口重新验证权限；内存上下文不能替代持久化或跨进程协议。
 
 设计边界见 [ARCHITECTURE.md](ARCHITECTURE.md)。
+
+部署 code 由 runtime 的 `DeploymentIdentity` 统一装配；入口层只校验请求头，不再派生 tenant ExecutionContext，数据库和后台任务也不读取该值选择连接解析 schema。

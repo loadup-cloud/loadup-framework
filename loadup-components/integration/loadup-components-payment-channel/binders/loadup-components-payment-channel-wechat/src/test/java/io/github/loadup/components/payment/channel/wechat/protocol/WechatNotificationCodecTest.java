@@ -19,9 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -31,7 +29,6 @@ import static org.mockito.Mockito.when;
 
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.money.Money;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.kms.KmsTemplate;
 import io.github.loadup.components.payment.channel.api.model.ChannelBindingRevision;
 import io.github.loadup.components.payment.channel.api.model.ChannelExecutionContext;
@@ -96,8 +93,8 @@ class WechatNotificationCodecTest {
             "3",
             PARTNER,
             Set.of(PaymentMethod.PAYMENT_CODE));
-    private static final ChannelExecutionContext DIRECT_CONTEXT = new ChannelExecutionContext(TENANT, DIRECT_BINDING);
-    private static final ChannelExecutionContext PARTNER_CONTEXT = new ChannelExecutionContext(TENANT, PARTNER_BINDING);
+    private static final ChannelExecutionContext DIRECT_CONTEXT = new ChannelExecutionContext(DIRECT_BINDING);
+    private static final ChannelExecutionContext PARTNER_CONTEXT = new ChannelExecutionContext(PARTNER_BINDING);
     private static final Money AMOUNT = Money.ofMinor(125_000, "CNY");
     private static final ChannelPaymentIdentity IDENTITY =
             new ChannelPaymentIdentity("payment-1", "attempt-1", Channel.WECHAT, "revision-1", HASH, ORDER_NO);
@@ -168,9 +165,9 @@ class WechatNotificationCodecTest {
         codec = new WechatNotificationCodec(
                 credentials, signatures, JsonMapper.builder().build());
         lastApiKey = new AtomicReference<>();
-        when(credentials.read(TENANT, DIRECT_BINDING)).thenReturn(credentials(DIRECT));
-        when(credentials.read(TENANT, PARTNER_BINDING)).thenReturn(credentials(PARTNER));
-        when(credentials.apiV3Key(eq(TENANT), any())).thenAnswer(invocation -> {
+        when(credentials.read(DIRECT_BINDING)).thenReturn(credentials(DIRECT));
+        when(credentials.read(PARTNER_BINDING)).thenReturn(credentials(PARTNER));
+        when(credentials.apiV3Key(any())).thenAnswer(invocation -> {
             byte[] copy = API_V3_KEY.getBytes(StandardCharsets.US_ASCII);
             lastApiKey.set(copy);
             return copy;
@@ -183,8 +180,8 @@ class WechatNotificationCodecTest {
                 payment(DIRECT), "TRANSACTION.SUCCESS", "transaction", "wx-notify-18", "trade-table", false);
         var input = signedInput(body);
 
-        ChannelNotificationHint hint = TenantUtil.callWithTenant(TENANT, () -> codec.identify(DIRECT_CONTEXT, input));
-        var verified = TenantUtil.callWithTenant(TENANT, () -> codec.verify(DIRECT_CONTEXT, TARGET, input));
+        ChannelNotificationHint hint = codec.identify(DIRECT_CONTEXT, input);
+        var verified = codec.verify(DIRECT_CONTEXT, TARGET, input);
 
         assertEquals(ORDER_NO, hint.channelRequestNo());
         assertEquals(IDENTITY, verified.identity());
@@ -193,7 +190,7 @@ class WechatNotificationCodecTest {
         assertEquals("wx-transaction-18", verified.channelTransactionNo());
         assertEquals("SUCCESS", verified.channelStatus());
         assertKeyWasZeroed();
-        verify(credentials, times(2)).apiV3Key(TENANT, DIRECT_BINDING);
+        verify(credentials, times(2)).apiV3Key(DIRECT_BINDING);
     }
 
     @Test
@@ -205,12 +202,11 @@ class WechatNotificationCodecTest {
         for (boolean omitAssociatedData : List.of(false, true)) {
             var body = notification(
                     payment(PARTNER), "TRANSACTION.SUCCESS", "transaction", "partner-notify", "", omitAssociatedData);
-            var verified =
-                    TenantUtil.callWithTenant(TENANT, () -> codec.verify(PARTNER_CONTEXT, target, signedInput(body)));
+            var verified = codec.verify(PARTNER_CONTEXT, target, signedInput(body));
             assertEquals("partner-notify", verified.notificationId());
         }
         assertKeyWasZeroed();
-        verify(credentials, times(2)).apiV3Key(TENANT, PARTNER_BINDING);
+        verify(credentials, times(2)).apiV3Key(PARTNER_BINDING);
     }
 
     @Test
@@ -225,7 +221,7 @@ class WechatNotificationCodecTest {
                 body,
                 withHeader(signedHeaders(body, false), "wechatpay-signature-type", List.of("WECHATPAY2-RSA-SHA256"))));
         assertNotNull(valid);
-        verify(credentials, never()).apiV3Key(anyString(), any());
+        verify(credentials, never()).apiV3Key(any());
     }
 
     @Test
@@ -236,7 +232,7 @@ class WechatNotificationCodecTest {
         assertRejected(input(body, withHeader(headers, "wechatpay-serial", List.of("AAAAAAAA"))));
         assertRejected(input(body, withHeader(headers, "wechatpay-timestamp", List.of("1"))));
         assertRejected(input(body, withHeader(headers, "wechatpay-nonce", List.of(NONCE, "duplicate"))));
-        verify(credentials, never()).apiV3Key(anyString(), any());
+        verify(credentials, never()).apiV3Key(any());
     }
 
     @Test
@@ -275,14 +271,12 @@ class WechatNotificationCodecTest {
         assertRejected(signedInput(new String(valid, StandardCharsets.UTF_8)
                 .replace("AEAD_AES_256_GCM", "AES_256_GCM")
                 .getBytes(StandardCharsets.UTF_8)));
-        verify(credentials, atLeastOnce()).apiV3Key(TENANT, DIRECT_BINDING);
+        verify(credentials, atLeastOnce()).apiV3Key(DIRECT_BINDING);
         assertKeyWasZeroed();
     }
 
     private void assertRejected(ChannelNotificationInput input) {
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant(TENANT, () -> codec.verify(DIRECT_CONTEXT, TARGET, input)));
+        assertThrows(CommonException.class, () -> codec.verify(DIRECT_CONTEXT, TARGET, input));
     }
 
     private void assertKeyWasZeroed() {
@@ -344,12 +338,6 @@ class WechatNotificationCodecTest {
 
     private WechatCredentials credentials(WechatAccountIdentity identity) {
         return new WechatCredentials(
-                TENANT,
-                identity.appId(),
-                identity.merchantId(),
-                "1234ABCD",
-                null,
-                "PUB_KEY_ID_test",
-                signingKeys.getPublic());
+                identity.appId(), identity.merchantId(), "1234ABCD", null, "PUB_KEY_ID_test", signingKeys.getPublic());
     }
 }

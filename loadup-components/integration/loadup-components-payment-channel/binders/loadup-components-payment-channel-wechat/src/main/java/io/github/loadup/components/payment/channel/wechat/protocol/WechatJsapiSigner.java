@@ -60,7 +60,7 @@ public final class WechatJsapiSigner {
             throw new CommonException(CHANNEL_RESPONSE_INVALID);
         }
         String appId = account.subAppId() == null ? account.appId() : account.subAppId();
-        var original = credentials.read(context.tenantId(), context.binding());
+        var original = credentials.read(context.binding());
         byte[] nonceBytes = new byte[16];
         random.nextBytes(nonceBytes);
         String timestamp = Long.toString(clock.instant().getEpochSecond()),

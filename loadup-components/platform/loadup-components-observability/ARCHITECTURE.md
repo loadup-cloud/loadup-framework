@@ -42,7 +42,7 @@ Servlet 请求
 `ObservabilityEnvironmentPostProcessor` 以最低优先级属性源补充 `management.metrics.tags.application`，不替换消费工程的显式设置；由
 Boot 自己将该标签装配到 Registry。输出日志默认值由传递引入的 commons-log 管理。
 
-HTTP、KMS、Outbox 和 Resilience4j 使用容器中的共享 Micrometer 实例，导出由 Boot 统一负责。HTTP/KMS 的命名操作计时、Outbox
+HTTP、KMS、Task 和 Resilience4j 使用容器中的共享 Micrometer 实例，导出由 Boot 统一负责。HTTP/KMS 的命名操作计时、Task
 的投递计时与状态量只采用有界配置/结果维度；自定义 outcome 统一 success/failure，官方原生指标保留标准名称和标签。不创建静态全局
 Registry 或新的导出 API。
 

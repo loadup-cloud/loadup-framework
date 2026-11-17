@@ -43,7 +43,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 class LockTemplateTest {
     private final RedissonClient client = mock(RedissonClient.class);
     private final RLock lock = mock(RLock.class);
-    private final LockKey key = LockKey.tenant("payment", "tenant", "order");
+    private final LockKey key = LockKey.of("payment", "order");
     private final LockOptions defaults = LockOptions.watchdog(Duration.ofSeconds(1));
     private final SimpleMeterRegistry metrics = new SimpleMeterRegistry();
     private final LockTemplate template = new RedissonLockTemplate(client, "payments", defaults, metrics);
@@ -77,8 +77,9 @@ class LockTemplateTest {
                 .isEqualTo(1);
         assertThat(metrics.getMeters())
                 .allSatisfy(meter -> assertThat(meter.getId().getTags())
-                        .noneMatch(tag ->
-                                tag.getKey().equals("key") || tag.getKey().equals("tenant")));
+                        .noneMatch(tag -> tag.getKey().equals("key")
+                                || tag.getKey().equals("tenant")
+                                || tag.getKey().equals("resource")));
     }
 
     @Test
@@ -213,12 +214,12 @@ class LockTemplateTest {
     @Test
     void keyRejectsInvalidUnicodeControlCharactersAndOversizedFields() {
         for (String invalid : new String[] {"\uD800", "order\u0001", " order", "order ", "x".repeat(513)}) {
-            assertThatThrownBy(() -> LockKey.global("payment", invalid)).isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> LockKey.of("payment", invalid)).isInstanceOf(IllegalArgumentException.class);
         }
-        assertThatThrownBy(() -> LockKey.global("payment", "order").redisName("x".repeat(129)))
+        assertThatThrownBy(() -> LockKey.of("payment", "order").redisName("x".repeat(129)))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThat(LockKey.global("payment", "private-order").toString())
-                .contains("global")
+        assertThat(LockKey.of("payment", "private-order").toString())
+                .contains("deployment")
                 .doesNotContain("private-order");
     }
 }

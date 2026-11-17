@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.mock.env.MockEnvironment;
 
 class RpcClientDefaultsTest {
-    public record Settings(String tenantId, String serviceId, String audience, Path tokenFile) {}
+    public record Settings(String serviceId, String audience, Path tokenFile) {}
 
     @Test
     void infersCallerAndTargetWithoutPerClientConfiguration() {
@@ -30,15 +30,13 @@ class RpcClientDefaultsTest {
         var settings = RpcClientDefaults.bind(
                 environment, "loadup.modules.payment.limitcenter", "limitcenter", Settings.class);
         assertThat(settings)
-                .isEqualTo(new Settings(
-                        "__default__", "payment", "limitcenter", Path.of("/var/run/loadup/secrets/limitcenter.jwt")));
+                .isEqualTo(new Settings("payment", "limitcenter", Path.of("/var/run/loadup/secrets/limitcenter.jwt")));
     }
 
     @Test
     void sharedSettingsApplyToEveryClientAndSpecificSettingsOverrideOneField() {
         var environment = new MockEnvironment()
                 .withProperty("spring.application.name", "payment")
-                .withProperty("loadup.rpc.client.tenant-id", "tenant_a")
                 .withProperty("loadup.rpc.client.service-id", "custom-caller")
                 .withProperty("loadup.rpc.client.audience", "internal")
                 .withProperty("loadup.rpc.client.token-file", "/tmp/service.jwt")
@@ -46,10 +44,8 @@ class RpcClientDefaultsTest {
         var limit = RpcClientDefaults.bind(
                 environment, "loadup.modules.payment.limitcenter", "limitcenter", Settings.class);
         var acquire = RpcClientDefaults.bind(environment, "loadup.modules.payment.acquire", "acquire", Settings.class);
-        assertThat(limit)
-                .isEqualTo(new Settings("tenant_a", "custom-caller", "limit-api", Path.of("/tmp/service.jwt")));
-        assertThat(acquire)
-                .isEqualTo(new Settings("tenant_a", "custom-caller", "internal", Path.of("/tmp/service.jwt")));
+        assertThat(limit).isEqualTo(new Settings("custom-caller", "limit-api", Path.of("/tmp/service.jwt")));
+        assertThat(acquire).isEqualTo(new Settings("custom-caller", "internal", Path.of("/tmp/service.jwt")));
     }
 
     @Test

@@ -267,6 +267,8 @@
                         <skipTests>${skip.unit.tests}</skipTests>
                         <systemPropertyVariables>
                             <testcontainers.reuse.enable>${testcontainers.reuse.enable}</testcontainers.reuse.enable>
+                            <!-- Test-only deployment constant; production requires an explicit loadup.deployment.code. -->
+                            <loadup.deployment.code>test</loadup.deployment.code>
                         </systemPropertyVariables>
                         <forkCount>1</forkCount>
                         <reuseForks>false</reuseForks>
@@ -285,6 +287,8 @@
                         <skipITs>${skip.integration.tests}</skipITs>
                         <systemPropertyVariables>
                             <testcontainers.reuse.enable>${testcontainers.reuse.enable}</testcontainers.reuse.enable>
+                            <!-- Test-only deployment constant; production requires an explicit loadup.deployment.code. -->
+                            <loadup.deployment.code>test</loadup.deployment.code>
                         </systemPropertyVariables>
                     </configuration>
                     <executions>

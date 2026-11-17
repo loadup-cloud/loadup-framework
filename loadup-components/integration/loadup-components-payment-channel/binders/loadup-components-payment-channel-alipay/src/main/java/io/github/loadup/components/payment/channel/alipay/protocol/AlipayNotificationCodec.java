@@ -79,7 +79,7 @@ public final class AlipayNotificationCodec {
         canonical.remove("sign");
         canonical.remove("sign_type");
         String signed = AlipayProtocolCodec.canonical(canonical);
-        var key = credentials.verificationKey(context.tenantId(), context.binding());
+        var key = credentials.verificationKey(context.binding());
         try {
             var verifier = Signature.getInstance("SHA256withRSA");
             verifier.initVerify(key);

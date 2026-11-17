@@ -31,14 +31,14 @@ loadup:
   global-unique:
     enabled: true
   database:
-    multi-tenant:
+    schema: loadup_payment  # fixed business schema
       enabled: false
   flyway:
     locations: classpath:db/migration
 ```
 
-API 保留当前租户下声明幂等键的身份语义；数据库唯一维度实际为 `biz_type + unique_key`，不含 `tenant_id`。当前运行仅使用默认
-schema，未实现运行时租户 schema 路由，因此不得将其描述或部署为租户间隔离的幂等记录。启用 tenant 配置不会单独启用路由。组件显式设置
+API 在本部署范围内声明幂等键；数据库唯一维度为 `biz_type + unique_key`，不含 `tenant_id`。一套部署只服务一个租户并固定使用
+`loadup.database.schema`，因此幂等记录天然只属于该部署。组件显式设置
 ID、审计时间和删除标记。数据库隔离现状见 [database README](../../data/loadup-components-database/README.md)。
 
 ## 能力矩阵

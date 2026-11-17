@@ -25,7 +25,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.kms.KmsCiphertext;
 import io.github.loadup.components.kms.KmsKeyRef;
 import io.github.loadup.components.kms.KmsTemplate;
@@ -68,7 +67,7 @@ class WechatV2KeyReaderTest {
         var reader = reader(v2);
         byte[] value = "192006250b4c09247ec02edce69f6a2d".getBytes(StandardCharsets.UTF_8);
         when(kms.decrypt(new KmsKeyRef("wechat-v2", 7), v2)).thenReturn(value);
-        var actual = TenantUtil.callWithTenant("tenant", () -> reader.apiV2Key("tenant", binding));
+        var actual = reader.apiV2Key(binding);
         assertSame(value, actual);
         verify(kms).decrypt(new KmsKeyRef("wechat-v2", 7), v2);
         verify(kms, never()).decrypt(new KmsKeyRef("wechat-v3", 2), v3);
@@ -77,24 +76,19 @@ class WechatV2KeyReaderTest {
     @Test
     void absentV2KeyCannotFallBackToV3AndMalformedDecryptedKeyIsWiped() throws Exception {
         var absent = reader(null);
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("tenant", () -> absent.apiV2Key("tenant", binding)));
+        assertThrows(CommonException.class, () -> absent.apiV2Key(binding));
         verifyNoInteractions(kms);
         var configured = reader(v2);
         byte[] malformed = new byte[32];
         malformed[0] = 1;
         when(kms.decrypt(new KmsKeyRef("wechat-v2", 7), v2)).thenReturn(malformed);
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("tenant", () -> configured.apiV2Key("tenant", binding)));
+        assertThrows(CommonException.class, () -> configured.apiV2Key(binding));
         assertArrayEquals(new byte[32], malformed);
     }
 
     private WechatCredentialReader reader(KmsCiphertext apiV2Key) throws Exception {
         var path = directory.resolve("credential.json");
         var document = new WechatCredentialDocument(
-                "tenant",
                 "credential",
                 "v1",
                 "wx-app",

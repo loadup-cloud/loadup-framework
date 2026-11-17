@@ -252,7 +252,6 @@ class WechatProtocolCodecTest {
 
     private WechatCredentials credentials(KeyPair pair) {
         return new WechatCredentials(
-                "tenant",
                 "wx-app",
                 "1900000001",
                 SERIAL,

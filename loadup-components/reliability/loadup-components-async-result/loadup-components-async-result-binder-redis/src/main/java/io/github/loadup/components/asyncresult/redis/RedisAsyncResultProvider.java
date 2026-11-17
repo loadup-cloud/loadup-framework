@@ -66,8 +66,8 @@ public final class RedisAsyncResultProvider implements AsyncResultProvider {
     }
 
     private String key(AsyncReplyKey key) {
-        return prefix + "result:" + encode(key.tenantId()) + ":" + encode(key.operation()) + ":"
-                + encode(key.businessId()) + ":" + key.correlationId();
+        return prefix + "result:" + encode(key.operation()) + ":" + encode(key.businessId()) + ":"
+                + key.correlationId();
     }
 
     @Override

@@ -68,7 +68,6 @@ public final class WechatPaymentAdapter {
                 ? Map.of("sp_mchid", List.of(account.merchantId()), "sub_mchid", List.of(account.subMerchantId()))
                 : Map.of("mchid", List.of(account.merchantId()));
         var response = client.call(
-                context.tenantId(),
                 context.binding(),
                 operation,
                 Map.of("out_trade_no", target.identity().channelRequestNo()),
@@ -152,7 +151,6 @@ public final class WechatPaymentAdapter {
                 ? Map.of("sp_mchid", account.merchantId(), "sub_mchid", account.subMerchantId())
                 : Map.of("mchid", account.merchantId());
         var response = client.call(
-                context.tenantId(),
                 context.binding(),
                 operation,
                 Map.of("out_trade_no", target.identity().channelRequestNo()),

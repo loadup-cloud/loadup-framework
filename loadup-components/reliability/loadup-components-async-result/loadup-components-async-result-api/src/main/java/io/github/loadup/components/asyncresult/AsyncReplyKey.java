@@ -18,9 +18,9 @@ package io.github.loadup.components.asyncresult;
 import io.github.loadup.commons.json.ToStringAsJson;
 import java.util.UUID;
 
-public record AsyncReplyKey(String tenantId, String operation, String businessId, String correlationId) {
+public record AsyncReplyKey(String operation, String businessId, String correlationId) {
     public AsyncReplyKey {
-        required(tenantId, 64);
+
         required(operation, 128);
         required(businessId, 128);
         if (!UUID.fromString(correlationId).toString().equals(correlationId)) {

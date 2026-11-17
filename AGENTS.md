@@ -69,21 +69,13 @@ loadup-framework/
 │   ├── loadup-commons-log/     # 统一日志格式与 trace MDC 约定
 │   ├── loadup-commons-time/    # 共享 Clock 自动配置
 ├── loadup-components/          # 技术组件，分类目录不增加 Maven 层级
-│   ├── security/       # authorization, authserver, resource-server, captcha, kms, signature
+│   ├── security/       # authorization, oauth-server（含资源服务器装配）, service-auth, captcha, kms, signature
 │   ├── web/            # webmvc, springdoc
 │   ├── data/           # cache, database, dfs
 │   ├── integration/    # http, gotone, payment-channel
-│   ├── reliability/    # lock, outbox, delayedtask, globalunique, resilience4j
+│   ├── reliability/    # lock, task, globalunique, resilience4j
 │   ├── execution/      # scheduler, pipeline
 │   └── platform/       # configcenter, extension, observability, testcontainers
-├── loadup-modules/             # 通用业务聚合；小型模块采用 client/core/web，UPMS 保留完整 COLA 分层
-│   ├── loadup-modules-upms/    # 用户与权限管理、账号安全
-│   ├── loadup-modules-audit/   # 审计中心
-│   ├── loadup-modules-dictionary/ # 数据字典
-│   ├── loadup-modules-file/    # 文件资源
-│   ├── loadup-modules-notification/ # 站内通知
-│   └── loadup-modules-transfer/ # 导入导出任务
-├── loadup-testify/             # 集成测试框架
 ├── loadup-coverage/            # component-coverage profile 启用的 JaCoCo 聚合器
 └── doc-sync-agent.py           # 将模块源文档同步到并列 docs 文档站
 ```
@@ -99,7 +91,7 @@ loadup-framework-bom (BOM)
         ↑
   loadup-components/{category}/*   ← 通过 API/binder 模式解耦横向依赖
         ↑
-   loadup-modules/*     ← 模块间依赖应明确且尽量减少
+   并列 loadup-modules/*     ← 独立仓库，按公开工件依赖
         ↑
 集成方应用（由消费工程提供）
 
@@ -216,7 +208,7 @@ loadup-modules-{mod}/
 | 9  | 表主键 `BIGINT AUTO_INCREMENT`                          | 主键 `VARCHAR(64)`，默认由 database 的 `IdGenerator` 生成业务 ID；序列表元数据显式使用 UUID 防止递归                                                                          |
 | 10 | 无必要的业务模块横向依赖                                | 保持清晰依赖方向，跨模块能力优先通过公开接口集成                                                                                                                              |
 | 11 | Java 文件中写中文注释或 Javadoc                         | 注释/Javadoc 统一使用英文；中文只允许出现在 `*.md` 文档文件中                                                                                                                 |
-| 12 | `BOOLEAN`/`BOOL` 类型                                   | 统一使用 `TINYINT`（0/1）                                                                                                                                                     |
+| 12 | 脱离所属迁移改写字段类型 | PostgreSQL 布尔字段遵循所属迁移的 BOOLEAN 定义；整数标记保留其 CHECK 约束                                                                                                                                                     |
 | 13 | DO 中重复定义 id/createdAt/updatedAt/deleted            | 这些字段在 `BaseDO` 中已定义                                                                                                                                                  |
 | 14 | Mapper 中写额外 SQL 方法                                | 用 `QueryWrapper` 在 GatewayImpl 中操作                                                                                                                                       |
 | 15 | 新增三方依赖不在 BOM 中声明                             | 版本管理集中在 `loadup-framework-bom/pom.xml`                                                                                                                                  |
@@ -234,16 +226,15 @@ loadup-modules-{mod}/
 
 ```sql
 id         VARCHAR(64)  NOT NULL PRIMARY KEY,
-created_at DATETIME     NOT NULL,
-updated_at DATETIME     NOT NULL,
-deleted    TINYINT      NOT NULL DEFAULT 0
+created_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
+updated_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
+deleted    BOOLEAN NOT NULL DEFAULT FALSE
 ```
 
-- 多租户采用 **Schema 隔离**：每个租户一个 PostgreSQL schema，业务表不包含 `tenant_id` 列，唯一键和索引只包含业务列。租户身份由
-  `TenantContext` 作为数据源路由键解析；当前阶段只使用默认 schema。
-- 迁移脚本保持 schema 无关，不写死 schema 名；由 Flyway 的 `defaultSchema` 决定目标 schema。后台 worker（Outbox、DelayedTask
-  等）按 schema/租户运行，不跨 schema 扫描。
-- 非关系型资源（Redis 锁/异步结果 key、DFS 对象路径、RPC 身份）仍需租户命名空间，Schema 隔离不覆盖它们。
+- **固定部署与 Schema 隔离**：一套部署服务一个租户，`loadup.deployment.code` 是部署常量，`loadup.database.schema` 是唯一业务 schema；连接池与 Flyway 使用同一来源，启动时校验实际 schema。业务表不包含 `tenant_id` 列，唯一键和索引只包含业务列；不存在请求租户、动态路由或多租户连接配置。
+- 迁移脚本保持 schema 无关，不写死 schema 名；Flyway 使用与连接池同源的唯一 `loadup.database.schema`。后台 worker（Task、
+  Task 等）直接使用本应用固定 schema，不跨 schema 扫描。
+- 非关系型资源（Redis 锁/异步结果 key、DFS 对象路径）使用部署固定命名空间；部署之间不共享这些键空间。
 - 所有 Flyway 脚本统一放在资源目录的 `db/migration/` 下（即 `src/main/resources/db/migration/`）。
 - Flyway 版本统一使用 14 位时间戳，文件命名为 `V<yyyyMMddHHmmss>__desc.sql`，例如
   `V20261020153000__create_user_table.sql`。
@@ -450,8 +441,8 @@ multipart，下载可以返回流式二进制。`loadup-components-webmvc` 对 A
   tenant identifier in repository, gateway or facade methods. Schema selection is the routing layer's responsibility.
 - Explicit SQL maintains ID, audit and soft-delete fields; use the shared `IdGenerator` and injected `Clock` where
   applicable. Do not write a `tenant_id` predicate. Check affected rows for state and version updates.
-- Background workers and schedulers (Outbox, DelayedTask, Transfer) run per tenant schema; a worker must not assume it
-  can scan rows across schemas. Bind the tenant/schema at the worker entry point.
+- Background workers and schedulers (Task, Transfer) use the application's fixed schema directly. They do
+  not bind tenant or schema context, and a worker must not be configurable to scan another deployment's schema.
 - Business writes and reliability records use the same Spring-managed data source and JDBC transaction manager. Sort SQL
   uses fixed, whitelisted columns; schema changes target PostgreSQL and preserve business constraints.
 
@@ -490,7 +481,7 @@ multipart，下载可以返回流式二进制。`loadup-components-webmvc` 对 A
   persistence; login accepts existing credentials without applying a new-password policy.
 - Public business pagination defaults to page 1 and size 20; explicit invalid values are rejected and size is capped at
   100. Sort fields use declared whitelists; never pass user input to SQL ordering. Audit Controller and Facade share
-  AuditPageQuery; trusted tenant/schema identity is supplied by the execution context.
+  AuditPageQuery; the fixed schema is supplied by deployment configuration, not by the request.
 - JDBC writes explicitly maintain persistence createdAt/updatedAt. Business event and expiry timestamps use injected
   Clock with Clock.systemDefaultZone () defaults and convert using clock.getZone (). Each module qualifies its named
   `<module>Clock`; infrastructure lease clocks are separately qualified. Verification-code createdAt is an in-memory
@@ -545,12 +536,12 @@ multipart，下载可以返回流式二进制。`loadup-components-webmvc` 对 A
   configuration, dispatch, context and observation tests in the binder; real-platform acceptance runs against a
   separately provisioned environment.
 
-## Scheduler and DelayedTask
+## Scheduler and Task
 
-- For deadline tasks read Scheduler and DelayedTask README/ARCHITECTURE. Scheduler uses one Provider binder (local
+- For deadline tasks read Scheduler and Task README/ARCHITECTURE. Scheduler uses one Provider binder (local
   Spring @Scheduled or PowerJob); it only wakes scanners. Do not use @Async as a timer or create a remote engine job per
   business record.
-- DelayedTask owns bizId/executeAt, transactional registration, conditional claims, leases and retries. Register within
+- Task uses its own TaskWorker poller and owns transactional submission, planned execution, conditional claims, leases and retries. Submit within
   the business transaction on the same DataSource. Expired-lease recovery is at-least-once: handlers must be idempotent;
   token fencing protects task acknowledgements, not external side effects. XXL-JOB/JobRunr binders are not implemented.
 

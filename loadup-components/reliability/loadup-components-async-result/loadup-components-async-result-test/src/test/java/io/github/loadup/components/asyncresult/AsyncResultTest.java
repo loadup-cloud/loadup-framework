@@ -63,7 +63,7 @@ class AsyncResultTest {
     }
 
     static AsyncResultOptions options() {
-        return new AsyncResultOptions("tenant", "echo.v1", "order", null);
+        return new AsyncResultOptions("echo.v1", "order", null);
     }
 
     static CompletableFuture<Void> sent() {
@@ -144,7 +144,8 @@ class AsyncResultTest {
             });
             var key = issued.get(2, TimeUnit.SECONDS);
             assertThat(template.complete(
-                            new AsyncReplyKey("other", key.operation(), key.businessId(), key.correlationId()), "bad"))
+                            new AsyncReplyKey(key.operation() + ".other", key.businessId(), key.correlationId()),
+                            "bad"))
                     .isEqualTo(AsyncCompletionStatus.UNKNOWN);
             assertThat(template.complete(key, "ok")).isEqualTo(AsyncCompletionStatus.ACCEPTED);
             assertThat(template.complete(key, "ok")).isEqualTo(AsyncCompletionStatus.DUPLICATE);
@@ -238,7 +239,7 @@ class AsyncResultTest {
                 TransactionSynchronizationManager.clear();
             }
             assertThatThrownBy(() -> template.executeAsync(
-                            new AsyncResultOptions("t", "o", "b", Duration.ofSeconds(6)), String.class, k -> sent()))
+                            new AsyncResultOptions("o", "b", Duration.ofSeconds(6)), String.class, k -> sent()))
                     .isInstanceOf(IllegalArgumentException.class);
         }
     }
@@ -302,7 +303,7 @@ class AsyncResultTest {
                     .extracting(e -> ((CommonException) e).getResultCode())
                     .isEqualTo(AsyncResultCodeEnum.UNAVAILABLE);
             assertThatThrownBy(() -> template.complete(
-                            new AsyncReplyKey("t", "o", "b", UUID.randomUUID().toString()), "result"))
+                            new AsyncReplyKey("o", "b", UUID.randomUUID().toString()), "result"))
                     .isInstanceOf(CommonException.class)
                     .hasNoCause();
         }
@@ -368,7 +369,7 @@ class AsyncResultTest {
                     .hasNoCause()
                     .hasMessage(AsyncResultCodeEnum.INVALID_REPLY.getMessage());
             assertThatThrownBy(() -> template.executeAsync(
-                            new AsyncResultOptions("t", "op", "b", Duration.ofNanos(1)), String.class, k -> sent()))
+                            new AsyncResultOptions("op", "b", Duration.ofNanos(1)), String.class, k -> sent()))
                     .isInstanceOf(IllegalArgumentException.class);
         }
     }

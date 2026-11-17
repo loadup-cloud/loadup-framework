@@ -16,12 +16,10 @@
 
 主要入口文件：
 
-- [
-  `ConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/autoconfigure/ConfigCenterAutoConfiguration.java)
+- [ `ConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/autoconfigure/ConfigCenterAutoConfiguration.java)
 - [`ConfigCenterProvider`](src/main/java/io/github/loadup/components/configcenter/ConfigCenterProvider.java)
 - [`ConfigCenterTemplate`](src/main/java/io/github/loadup/components/configcenter/ConfigCenterTemplate.java)
-- [
-  `DefaultConfigCenterTemplate`](src/main/java/io/github/loadup/components/configcenter/DefaultConfigCenterTemplate.java)
+- [ `DefaultConfigCenterTemplate`](src/main/java/io/github/loadup/components/configcenter/DefaultConfigCenterTemplate.java)
 
 ## 分层与调用路径
 
@@ -35,8 +33,7 @@
 
 ## 装配规则
 
-- [
-  `ConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/autoconfigure/ConfigCenterAutoConfiguration.java)
+- [ `ConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/autoconfigure/ConfigCenterAutoConfiguration.java)
   是自动配置入口。
     - `@ConditionalOnSingleCandidate(ConfigCenterProvider.class)`
     - `@ConditionalOnMissingBean(ConfigCenterTemplate.class)`

@@ -32,7 +32,7 @@ Boot 的依赖 BOM 不包含这些 execution，第二步通过 Maven 项目选�
 
 ## 排除规则与约束
 
-父 POM 明列 MyBatis-Flex 的 `dataobject/table`、生成的 `DOMapper` 与 DelayedTask 的 MapStruct
+父 POM 明列 MyBatis-Flex 的 `dataobject/table`、生成的 `DOMapper` 与 Task 的 MapStruct
 实现，报告和门禁采用同一排除配置。手写源码全部计入；新增生成器需要维护配置，不能为达到阈值排除手写 DTO、异常或自动配置。
 
 原生方案不再提供 Python 工具的动态源码扫描、逐源码字节码完整性比对、陈旧数据硬失败及自定义 Markdown/JSON 摘要。使用显式
@@ -42,4 +42,4 @@ Maven 依赖/文件清单和原生 HTML/XML/CSV；新增模块和测试类别必
 文件存在检查不等于测试发现数量检查；测试发现、全套 skip、JUnit 条件及 bytecode mismatch 告警仍需要结合测试报告验收。第一步必须从
 clean 开始且完整成功，两步间不能修改源码、重新编译或混用历史 exec；单独运行 check 不代表完整验收。
 
-本次配置修改未执行构建或检查，不能宣称原生门禁已通过。
+待验收：当前版本的真实覆盖率产物、模块聚合清单及原生门禁结果。

@@ -132,7 +132,7 @@ public final class WechatCodepayAdapter {
         fields.put("auth_code", ((ChannelPaymentCodeInput) request.input()).paymentCode());
         fields.put("nonce_str", UUID.randomUUID().toString().replace("-", ""));
         fields.put("sign_type", "HMAC-SHA256");
-        var verified = client.call(context.tenantId(), context.binding(), WechatV2Method.MICROPAY, fields);
+        var verified = client.call(context.binding(), WechatV2Method.MICROPAY, fields);
         if (verified == null || verified.method() != WechatV2Method.MICROPAY) {
             throw new CommonException(CHANNEL_RESPONSE_INVALID);
         }
@@ -187,10 +187,7 @@ public final class WechatCodepayAdapter {
     }
 
     private String serverIp(ChannelExecutionContext context) {
-        return properties
-                .serverIps()
-                .getOrDefault(context.tenantId(), Map.of())
-                .get(context.binding().id());
+        return properties.serverIps().get(context.binding().id());
     }
 
     private void match(Map<String, String> fields, String name, String value) {

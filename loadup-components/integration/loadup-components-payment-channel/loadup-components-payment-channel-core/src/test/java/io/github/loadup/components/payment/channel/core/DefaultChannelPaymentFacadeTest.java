@@ -15,7 +15,6 @@
  */
 package io.github.loadup.components.payment.channel.core;
 
-import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.ACTION_FORBIDDEN;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.CHANNEL_RESPONSE_INVALID;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.CHANNEL_SIGNATURE_INVALID;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.RECOVERY_BUSY;
@@ -38,7 +37,6 @@ import static org.mockito.Mockito.when;
 
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.money.Money;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum;
 import io.github.loadup.components.payment.channel.api.model.AlipayAccountIdentity;
 import io.github.loadup.components.payment.channel.api.model.AlipayJsapiChannelAction;
@@ -128,7 +126,7 @@ class DefaultChannelPaymentFacadeTest {
                 "1",
                 account,
                 Set.of(PaymentMethod.PAYMENT_CODE));
-        return new ChannelExecutionContext("tenant", binding);
+        return new ChannelExecutionContext(binding);
     }
 
     private static PreparedChannelPayment payment(Channel channel, String bindingId, String hash) {
@@ -233,9 +231,7 @@ class DefaultChannelPaymentFacadeTest {
         when(wechat.submit(context, request)).thenThrow(failure);
         clearInvocations(alipay, wechat);
 
-        TenantUtil.runWithTenant(
-                "tenant",
-                () -> assertSame(failure, assertThrows(CommonException.class, () -> facade.submit(context, request))));
+        assertSame(failure, assertThrows(CommonException.class, () -> facade.submit(context, request)));
 
         verify(wechat).submit(context, request);
         verifyNoMoreInteractions(wechat);
@@ -251,7 +247,7 @@ class DefaultChannelPaymentFacadeTest {
         when(alipay.submit(context, request)).thenReturn(result);
         clearInvocations(alipay, wechat);
 
-        TenantUtil.runWithTenant("tenant", () -> assertSame(result, reversed.submit(context, request)));
+        assertSame(result, reversed.submit(context, request));
 
         verify(alipay).submit(context, request);
         verifyNoMoreInteractions(alipay);
@@ -286,24 +282,20 @@ class DefaultChannelPaymentFacadeTest {
         when(alipay.queryRefund(alipayContext, aliRefund)).thenReturn(aliRefundResult);
         when(wechat.queryRefund(wechatContext, wxRefund)).thenReturn(wxRefundResult);
 
-        TenantUtil.runWithTenant("tenant", () -> {
-            assertEquals(
-                    aliPayment.identity(),
-                    facade.submit(alipayContext, aliRequest).identity());
-            assertEquals(
-                    wxPayment.identity(),
-                    facade.submit(wechatContext, wxRequest).identity());
-            facade.query(alipayContext, aliTarget);
-            facade.query(wechatContext, wxTarget);
-            facade.close(alipayContext, aliTarget);
-            facade.close(wechatContext, wxTarget);
-            assertTrue(facade.canRefund(aliRefund));
-            assertTrue(facade.canRefund(wxRefund));
-            facade.submitRefund(alipayContext, aliRefund);
-            facade.submitRefund(wechatContext, wxRefund);
-            facade.queryRefund(alipayContext, aliRefund);
-            facade.queryRefund(wechatContext, wxRefund);
-        });
+        assertEquals(
+                aliPayment.identity(), facade.submit(alipayContext, aliRequest).identity());
+        assertEquals(
+                wxPayment.identity(), facade.submit(wechatContext, wxRequest).identity());
+        facade.query(alipayContext, aliTarget);
+        facade.query(wechatContext, wxTarget);
+        facade.close(alipayContext, aliTarget);
+        facade.close(wechatContext, wxTarget);
+        assertTrue(facade.canRefund(aliRefund));
+        assertTrue(facade.canRefund(wxRefund));
+        facade.submitRefund(alipayContext, aliRefund);
+        facade.submitRefund(wechatContext, wxRefund);
+        facade.queryRefund(alipayContext, aliRefund);
+        facade.queryRefund(wechatContext, wxRefund);
 
         verify(alipay).submit(alipayContext, aliRequest);
         verify(wechat).submit(wechatContext, wxRequest);
@@ -326,15 +318,13 @@ class DefaultChannelPaymentFacadeTest {
         var wxRefund = refund(payment(Channel.WECHAT, "wx-binding", HASH).identity());
         var wxIdentity = wxRefund.original();
         assertFalse(withoutWechat.canRefund(wxRefund));
-        TenantUtil.runWithTenant("tenant", () -> {
-            assertThrows(
-                    CommonException.class,
-                    () -> withoutWechat.query(
-                            context(Channel.WECHAT, "wx-binding", HASH), new ChannelPaymentTarget(wxIdentity, AMOUNT)));
-            assertThrows(
-                    CommonException.class,
-                    () -> withoutWechat.validate(context(Channel.WECHAT, "wx-binding", HASH), validation(wxIdentity)));
-        });
+        assertThrows(
+                CommonException.class,
+                () -> withoutWechat.query(
+                        context(Channel.WECHAT, "wx-binding", HASH), new ChannelPaymentTarget(wxIdentity, AMOUNT)));
+        assertThrows(
+                CommonException.class,
+                () -> withoutWechat.validate(context(Channel.WECHAT, "wx-binding", HASH), validation(wxIdentity)));
     }
 
     @Test
@@ -347,10 +337,8 @@ class DefaultChannelPaymentFacadeTest {
                 validation(payment(Channel.WECHAT, "wx-binding", HASH).identity());
         clearInvocations(alipay, wechat);
 
-        TenantUtil.runWithTenant("tenant", () -> {
-            facade.validate(alipayContext, alipayValidation);
-            facade.validate(wechatContext, wechatValidation);
-        });
+        facade.validate(alipayContext, alipayValidation);
+        facade.validate(wechatContext, wechatValidation);
 
         verify(alipay).validate(alipayContext, alipayValidation);
         verify(wechat).validate(wechatContext, wechatValidation);
@@ -369,28 +357,20 @@ class DefaultChannelPaymentFacadeTest {
         when(wechat.recover(wechatContext, wxRecovery)).thenReturn(wxResult);
         clearInvocations(alipay, wechat);
 
-        TenantUtil.runWithTenant("tenant", () -> {
-            assertSame(aliResult, facade.recover(alipayContext, aliRecovery));
-            assertSame(wxResult, facade.recover(wechatContext, wxRecovery));
-            assertThrows(
-                    CommonException.class,
-                    () -> facade.recover(context(Channel.WECHAT, "wx-binding", HASH), aliRecovery));
-            assertThrows(
-                    CommonException.class,
-                    () -> facade.recover(context(Channel.ALIPAY, "wrong-revision", HASH), aliRecovery));
-        });
-        TenantUtil.runWithTenant(
-                "other-tenant",
-                () -> assertThrows(CommonException.class, () -> facade.recover(alipayContext, aliRecovery)));
+        assertSame(aliResult, facade.recover(alipayContext, aliRecovery));
+        assertSame(wxResult, facade.recover(wechatContext, wxRecovery));
+        assertThrows(
+                CommonException.class, () -> facade.recover(context(Channel.WECHAT, "wx-binding", HASH), aliRecovery));
+        assertThrows(
+                CommonException.class,
+                () -> facade.recover(context(Channel.ALIPAY, "wrong-revision", HASH), aliRecovery));
 
         verify(alipay).recover(alipayContext, aliRecovery);
         verify(wechat).recover(wechatContext, wxRecovery);
         verifyNoMoreInteractions(alipay, wechat);
 
         var withoutWechat = new DefaultChannelPaymentFacade(List.of(alipay), concurrency());
-        TenantUtil.runWithTenant(
-                "tenant",
-                () -> assertThrows(CommonException.class, () -> withoutWechat.recover(wechatContext, wxRecovery)));
+        assertThrows(CommonException.class, () -> withoutWechat.recover(wechatContext, wxRecovery));
     }
 
     @Test
@@ -406,72 +386,52 @@ class DefaultChannelPaymentFacadeTest {
                 request.identity().channelRequestNo());
         when(alipay.recover(context, request))
                 .thenReturn(recovered(wrongIdentity, AMOUNT, PaymentObservation.Source.QUERY_RESPONSE, null));
-        TenantUtil.runWithTenant(
-                "tenant", () -> assertThrows(CommonException.class, () -> facade.recover(context, request)));
+        assertThrows(CommonException.class, () -> facade.recover(context, request));
 
         var wrongAmount = Money.ofMinor(2000, "CNY");
         when(alipay.recover(context, request))
                 .thenReturn(recovered(request.identity(), wrongAmount, PaymentObservation.Source.QUERY_RESPONSE, null));
-        TenantUtil.runWithTenant(
-                "tenant", () -> assertThrows(CommonException.class, () -> facade.recover(context, request)));
+        assertThrows(CommonException.class, () -> facade.recover(context, request));
 
         when(alipay.recover(context, request))
                 .thenReturn(recovered(request.identity(), AMOUNT, PaymentObservation.Source.SUBMIT_RESPONSE, null));
-        TenantUtil.runWithTenant(
-                "tenant", () -> assertThrows(CommonException.class, () -> facade.recover(context, request)));
+        assertThrows(CommonException.class, () -> facade.recover(context, request));
 
         var wrongMethodAction =
                 new AlipayJsapiChannelAction("trade-1", request.payableUntil().minusMinutes(1));
         when(alipay.recover(context, request))
                 .thenReturn(recovered(
                         request.identity(), AMOUNT, PaymentObservation.Source.QUERY_RESPONSE, wrongMethodAction));
-        TenantUtil.runWithTenant(
-                "tenant", () -> assertThrows(CommonException.class, () -> facade.recover(context, request)));
+        assertThrows(CommonException.class, () -> facade.recover(context, request));
 
         var lateAction =
                 new AlipayJsapiChannelAction("trade-1", request.payableUntil().plusSeconds(1));
         when(alipay.recover(context, request))
                 .thenReturn(
                         recovered(request.identity(), AMOUNT, PaymentObservation.Source.QUERY_RESPONSE, lateAction));
-        TenantUtil.runWithTenant(
-                "tenant", () -> assertThrows(CommonException.class, () -> facade.recover(context, request)));
+        assertThrows(CommonException.class, () -> facade.recover(context, request));
     }
 
     @Test
-    void bindingAndTenantMismatchesAreRejectedBeforeProviderCalls() {
+    void bindingMismatchesAreRejectedBeforeProviderCalls() {
         clearInvocations(alipay, wechat);
         var identity = payment(Channel.ALIPAY, "ali-binding", HASH).identity();
         var target = new ChannelPaymentTarget(identity, AMOUNT);
         var validation = validation(identity);
-        TenantUtil.runWithTenant(
-                "other-tenant",
-                () -> assertThrows(
-                        CommonException.class,
-                        () -> facade.query(context(Channel.ALIPAY, "ali-binding", HASH), target)));
-        TenantUtil.runWithTenant(
-                "other-tenant",
-                () -> assertThrows(
-                        CommonException.class,
-                        () -> facade.validate(context(Channel.ALIPAY, "ali-binding", HASH), validation)));
-
-        TenantUtil.runWithTenant("tenant", () -> {
-            assertThrows(
-                    CommonException.class, () -> facade.query(context(Channel.WECHAT, "wx-binding", HASH), target));
-            assertThrows(
-                    CommonException.class, () -> facade.query(context(Channel.ALIPAY, "wrong-revision", HASH), target));
-            assertThrows(
-                    CommonException.class,
-                    () -> facade.query(context(Channel.ALIPAY, "ali-binding", "b".repeat(64)), target));
-            assertThrows(
-                    CommonException.class,
-                    () -> facade.validate(context(Channel.WECHAT, "wx-binding", HASH), validation));
-            assertThrows(
-                    CommonException.class,
-                    () -> facade.validate(context(Channel.ALIPAY, "wrong-revision", HASH), validation));
-            assertThrows(
-                    CommonException.class,
-                    () -> facade.validate(context(Channel.ALIPAY, "ali-binding", "b".repeat(64)), validation));
-        });
+        assertThrows(CommonException.class, () -> facade.query(context(Channel.WECHAT, "wx-binding", HASH), target));
+        assertThrows(
+                CommonException.class, () -> facade.query(context(Channel.ALIPAY, "wrong-revision", HASH), target));
+        assertThrows(
+                CommonException.class,
+                () -> facade.query(context(Channel.ALIPAY, "ali-binding", "b".repeat(64)), target));
+        assertThrows(
+                CommonException.class, () -> facade.validate(context(Channel.WECHAT, "wx-binding", HASH), validation));
+        assertThrows(
+                CommonException.class,
+                () -> facade.validate(context(Channel.ALIPAY, "wrong-revision", HASH), validation));
+        assertThrows(
+                CommonException.class,
+                () -> facade.validate(context(Channel.ALIPAY, "ali-binding", "b".repeat(64)), validation));
         verifyNoInteractions(alipay, wechat);
     }
 
@@ -516,15 +476,12 @@ class DefaultChannelPaymentFacadeTest {
         when(alipay.query(context, target)).thenReturn(paymentObservation(wrongIdentity, AMOUNT));
         when(alipay.close(context, target))
                 .thenReturn(paymentObservation(payment.identity(), Money.ofMinor(2000, "CNY")));
-        TenantUtil.runWithTenant("tenant", () -> {
-            assertThrows(CommonException.class, () -> facade.submit(context, paymentRequest));
-            assertThrows(CommonException.class, () -> facade.query(context, target));
-            assertThrows(CommonException.class, () -> facade.close(context, target));
-        });
+        assertThrows(CommonException.class, () -> facade.submit(context, paymentRequest));
+        assertThrows(CommonException.class, () -> facade.query(context, target));
+        assertThrows(CommonException.class, () -> facade.close(context, target));
         when(alipay.query(context, target))
                 .thenReturn(paymentObservation(payment.identity(), Money.ofMinor(2000, "CNY")));
-        TenantUtil.runWithTenant(
-                "tenant", () -> assertThrows(CommonException.class, () -> facade.query(context, target)));
+        assertThrows(CommonException.class, () -> facade.query(context, target));
 
         var refund = refund(payment.identity());
         when(alipay.canRefund(refund)).thenReturn(true);
@@ -542,8 +499,7 @@ class DefaultChannelPaymentFacadeTest {
                         "receipt",
                         "c".repeat(64),
                         null));
-        TenantUtil.runWithTenant(
-                "tenant", () -> assertThrows(CommonException.class, () -> facade.submitRefund(context, refund)));
+        assertThrows(CommonException.class, () -> facade.submitRefund(context, refund));
     }
 
     @Test
@@ -559,8 +515,7 @@ class DefaultChannelPaymentFacadeTest {
                 payment.identity().accountScopeHash(),
                 payment.identity().channelRequestNo());
         when(alipay.submit(context, paymentRequest)).thenReturn(submission(otherIdentity, AMOUNT));
-        TenantUtil.runWithTenant(
-                "tenant", () -> assertThrows(CommonException.class, () -> facade.submit(context, paymentRequest)));
+        assertThrows(CommonException.class, () -> facade.submit(context, paymentRequest));
 
         var jsapiRequest = paymentRequest;
         var wrongMethodAction = new AlipayJsapiChannelAction("trade-1", PAYABLE_UNTIL.minusMinutes(1));
@@ -570,8 +525,7 @@ class DefaultChannelPaymentFacadeTest {
                         AMOUNT,
                         actionObservation(payment.identity(), AMOUNT, "trade-1"),
                         wrongMethodAction));
-        TenantUtil.runWithTenant(
-                "tenant", () -> assertThrows(CommonException.class, () -> facade.submit(context, jsapiRequest)));
+        assertThrows(CommonException.class, () -> facade.submit(context, jsapiRequest));
 
         var lateAction = new AlipayJsapiChannelAction("trade-2", PAYABLE_UNTIL.plusSeconds(1));
         when(alipay.submit(context, jsapiRequest))
@@ -580,8 +534,7 @@ class DefaultChannelPaymentFacadeTest {
                         AMOUNT,
                         actionObservation(payment.identity(), AMOUNT, "trade-2"),
                         lateAction));
-        TenantUtil.runWithTenant(
-                "tenant", () -> assertThrows(CommonException.class, () -> facade.submit(context, jsapiRequest)));
+        assertThrows(CommonException.class, () -> facade.submit(context, jsapiRequest));
     }
 
     @Test
@@ -604,10 +557,8 @@ class DefaultChannelPaymentFacadeTest {
                 "e".repeat(64),
                 null);
         when(wechat.recoverRefund(context, refund)).thenReturn(queried, submitted);
-        TenantUtil.runWithTenant("tenant", () -> {
-            assertSame(queried, facade.recoverRefund(context, refund));
-            assertSame(submitted, facade.recoverRefund(context, refund));
-        });
+        assertSame(queried, facade.recoverRefund(context, refund));
+        assertSame(submitted, facade.recoverRefund(context, refund));
         verify(wechat, times(2)).recoverRefund(context, refund);
         verify(alipay, never()).recoverRefund(any(), any());
     }
@@ -657,11 +608,9 @@ class DefaultChannelPaymentFacadeTest {
                 "e".repeat(64),
                 null);
         when(alipay.recoverRefund(context, refund)).thenReturn(callback, terminalSubmit, wrongAmount);
-        TenantUtil.runWithTenant("tenant", () -> {
-            assertThrows(CommonException.class, () -> facade.recoverRefund(context, refund));
-            assertThrows(CommonException.class, () -> facade.recoverRefund(context, refund));
-            assertThrows(CommonException.class, () -> facade.recoverRefund(context, refund));
-        });
+        assertThrows(CommonException.class, () -> facade.recoverRefund(context, refund));
+        assertThrows(CommonException.class, () -> facade.recoverRefund(context, refund));
+        assertThrows(CommonException.class, () -> facade.recoverRefund(context, refund));
     }
 
     @Test
@@ -677,19 +626,15 @@ class DefaultChannelPaymentFacadeTest {
         var budget = registries.bulkheadRegistry().bulkhead(ChannelRecoveryConcurrency.instanceName(Channel.WECHAT));
         assertTrue(budget.tryAcquirePermission());
         try {
-            TenantUtil.runWithTenant("tenant", () -> {
-                assertBusy(() -> limited.query(context, target));
-                assertBusy(() -> limited.recover(context, recovery(identity)));
-                assertBusy(() -> limited.close(context, target));
-                assertBusy(() -> limited.queryRefund(context, refund));
-                assertBusy(() -> limited.recoverRefund(context, refund));
-            });
-            TenantUtil.runWithTenant(
-                    "other-tenant",
-                    () -> assertEquals(
-                            ACTION_FORBIDDEN,
-                            assertThrows(CommonException.class, () -> limited.query(context, target))
-                                    .getResultCode()));
+            assertBusy(() -> limited.query(context, target));
+            assertBusy(() -> limited.recover(context, recovery(identity)));
+            assertBusy(() -> limited.close(context, target));
+            assertBusy(() -> limited.queryRefund(context, refund));
+            assertBusy(() -> limited.recoverRefund(context, refund));
+            assertEquals(
+                    RECOVERY_BUSY,
+                    assertThrows(CommonException.class, () -> limited.query(context, target))
+                            .getResultCode());
             verify(wechat, never()).query(any(), any());
             verify(wechat, never()).recover(any(), any());
             verify(wechat, never()).close(any(), any());
@@ -721,13 +666,10 @@ class DefaultChannelPaymentFacadeTest {
             } finally {
                 TransactionSynchronizationManager.clear();
             }
-            TenantUtil.runWithTenant("tenant", () -> {
-                limited.validate(context, validation(payment.identity()));
-                assertEquals(
-                        payment.identity(), limited.submit(context, request).identity());
-                assertEquals(
-                        refund.refundId(), limited.submitRefund(context, refund).refundId());
-            });
+            limited.validate(context, validation(payment.identity()));
+            assertEquals(payment.identity(), limited.submit(context, request).identity());
+            assertEquals(
+                    refund.refundId(), limited.submitRefund(context, refund).refundId());
             assertEquals(0, budget.getMetrics().getAvailableConcurrentCalls());
             verify(wechat).submit(context, request);
             verify(wechat).submitRefund(context, refund);
@@ -756,23 +698,17 @@ class DefaultChannelPaymentFacadeTest {
         });
         when(alipay.query(ali, aliTarget)).thenReturn(paymentObservation(aliTarget.identity(), AMOUNT));
         try (var workers = Executors.newVirtualThreadPerTaskExecutor()) {
-            var first = workers.submit(() -> TenantUtil.callWithTenant("tenant", () -> limited.query(wx, wxTarget)));
+            var first = workers.submit(() -> limited.query(wx, wxTarget));
             try {
                 assertTrue(entered.await(10, TimeUnit.SECONDS));
-                TenantUtil.runWithTenant("tenant", () -> {
-                    assertBusy(() -> limited.recover(wx, recovery(wxTarget.identity())));
-                    assertBusy(() -> limited.close(wx, wxTarget));
-                    assertEquals(
-                            aliTarget.identity(), limited.query(ali, aliTarget).identity());
-                });
+                assertBusy(() -> limited.recover(wx, recovery(wxTarget.identity())));
+                assertBusy(() -> limited.close(wx, wxTarget));
+                assertEquals(aliTarget.identity(), limited.query(ali, aliTarget).identity());
             } finally {
                 release.countDown();
             }
             assertEquals(wxTarget.identity(), first.get(20, TimeUnit.SECONDS).identity());
-            TenantUtil.runWithTenant(
-                    "tenant",
-                    () -> assertEquals(
-                            wxTarget.identity(), limited.query(wx, wxTarget).identity()));
+            assertEquals(wxTarget.identity(), limited.query(wx, wxTarget).identity());
             verify(wechat, times(2)).query(wx, wxTarget);
             verify(wechat, never()).recover(any(), any());
             verify(wechat, never()).close(any(), any());
@@ -791,26 +727,19 @@ class DefaultChannelPaymentFacadeTest {
                 payment(Channel.ALIPAY, "ali-binding", HASH).identity(), AMOUNT);
         var failure = new CommonException(CHANNEL_SIGNATURE_INVALID);
         when(alipay.query(context, target)).thenThrow(failure);
-        TenantUtil.runWithTenant(
-                "tenant",
-                () -> assertSame(failure, assertThrows(CommonException.class, () -> limited.query(context, target))));
+        assertSame(failure, assertThrows(CommonException.class, () -> limited.query(context, target)));
         var budget = registries.bulkheadRegistry().bulkhead(ChannelRecoveryConcurrency.instanceName(Channel.ALIPAY));
         assertEquals(1, budget.getMetrics().getAvailableConcurrentCalls());
         doReturn(paymentObservation(target.identity(), Money.ofMinor(1, "CNY")))
                 .when(alipay)
                 .query(context, target);
-        TenantUtil.runWithTenant(
-                "tenant",
-                () -> assertEquals(
-                        CHANNEL_RESPONSE_INVALID,
-                        assertThrows(CommonException.class, () -> limited.query(context, target))
-                                .getResultCode()));
+        assertEquals(
+                CHANNEL_RESPONSE_INVALID,
+                assertThrows(CommonException.class, () -> limited.query(context, target))
+                        .getResultCode());
         assertEquals(1, budget.getMetrics().getAvailableConcurrentCalls());
         doReturn(paymentObservation(target.identity(), AMOUNT)).when(alipay).query(context, target);
-        TenantUtil.runWithTenant(
-                "tenant",
-                () -> assertEquals(
-                        target.identity(), limited.query(context, target).identity()));
+        assertEquals(target.identity(), limited.query(context, target).identity());
     }
 
     @Test

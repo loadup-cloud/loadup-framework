@@ -128,11 +128,7 @@ public final class WechatSubmitAdapter {
         } else if (!(input instanceof ChannelH5Input)) {
             throw new CommonException(INVALID_ARGUMENT);
         }
-        if (notifications
-                        .notifyUrls()
-                        .getOrDefault(context.tenantId(), Map.of())
-                        .get(context.binding().id())
-                == null) {
+        if (notifications.notifyUrls().get(context.binding().id()) == null) {
             throw new CommonException(CHANNEL_CREDENTIAL_UNAVAILABLE);
         }
     }
@@ -167,11 +163,7 @@ public final class WechatSubmitAdapter {
         body.put("time_expire", request.payableUntil().withNano(0).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
         body.put(
                 "notify_url",
-                notifications
-                        .notifyUrls()
-                        .get(context.tenantId())
-                        .get(context.binding().id())
-                        .toASCIIString());
+                notifications.notifyUrls().get(context.binding().id()).toASCIIString());
         final WechatMethod operation;
         if (payment.method() == PaymentMethod.H5) {
             var scene = (ChannelH5Input) request.input();
@@ -193,8 +185,7 @@ public final class WechatSubmitAdapter {
             operation = partner ? WechatMethod.PARTNER_JSAPI : WechatMethod.DIRECT_JSAPI;
         }
         var startedAt = OffsetDateTime.now(clock).withNano(0);
-        var response = client.call(
-                context.tenantId(), context.binding(), operation, Map.of(), Map.of(), json.writeValueAsString(body));
+        var response = client.call(context.binding(), operation, Map.of(), Map.of(), json.writeValueAsString(body));
         var data = responses.read(response, operation);
         var kind = response.status() == 200 ? ChannelPaymentOutcome.Kind.ACCEPTED : ChannelPaymentOutcome.Kind.UNKNOWN;
         var observation = new PaymentObservation(

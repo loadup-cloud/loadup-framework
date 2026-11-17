@@ -24,7 +24,6 @@ import java.security.PublicKey;
  * Versioned signer and platform verification pin for the original direct or service-provider merchant.
  */
 public record WechatCredentials(
-        String tenantId,
         String appId,
         String merchantId,
         String merchantSerial,

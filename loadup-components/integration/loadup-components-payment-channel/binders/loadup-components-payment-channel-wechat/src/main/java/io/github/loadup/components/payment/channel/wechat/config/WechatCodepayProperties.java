@@ -22,26 +22,18 @@ import com.google.common.net.InetAddresses;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.commons.validation.DomainChecks;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Trusted API-calling machine IP by tenant and binding revision, never a browser forwarding header.
+ * Trusted API-calling machine IP by binding revision, never a browser forwarding header.
  */
 @ConfigurationProperties("loadup.payment.channel.wechat.codepay")
-public record WechatCodepayProperties(Map<String, Map<String, String>> serverIps) {
+public record WechatCodepayProperties(Map<String, String> serverIps) {
     public WechatCodepayProperties {
-        serverIps = serverIps == null
-                ? Map.of()
-                : serverIps.entrySet().stream()
-                        .collect(
-                                Collectors.toUnmodifiableMap(Map.Entry::getKey, entry -> Map.copyOf(entry.getValue())));
-        for (var tenant : serverIps.entrySet()) {
-            DomainChecks.id(tenant.getKey());
-            for (var binding : tenant.getValue().entrySet()) {
-                DomainChecks.id(binding.getKey());
-                require(validIp(binding.getValue()), INVALID_ARGUMENT);
-            }
+        serverIps = serverIps == null ? Map.of() : Map.copyOf(serverIps);
+        for (var binding : serverIps.entrySet()) {
+            DomainChecks.id(binding.getKey());
+            require(validIp(binding.getValue()), INVALID_ARGUMENT);
         }
     }
 

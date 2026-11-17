@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025-2026 LoadUp Cloud
+ * Copyright (C) 2026 LoadUp Cloud
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 package io.github.loadup.components.payment.channel.alipay.config;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.net.URI;
@@ -30,29 +29,21 @@ class AlipayNotificationPropertiesTest {
     private static void assertInvalid(String value) {
         assertThrows(
                 RuntimeException.class,
-                () -> new AlipayNotificationProperties(
-                        Map.of("tenant", Map.of("binding-revision", URI.create(value)))));
+                () -> new AlipayNotificationProperties(Map.of("binding-revision", URI.create(value))));
     }
 
     @Test
-    void acceptsHttpsPathAndDefensivelyCopiesTheNestedTenantAndBindingMaps() {
-        var tenantBindings = new HashMap<String, URI>();
-        tenantBindings.put("binding-revision", CALLBACK);
-        var source = new HashMap<String, Map<String, URI>>();
-        source.put("tenant", tenantBindings);
+    void acceptsHttpsPathAndDefensivelyCopiesTheBindingMap() {
+        var bindings = new HashMap<String, URI>();
+        bindings.put("binding-revision", CALLBACK);
 
-        var properties = new AlipayNotificationProperties(source);
-        tenantBindings.put("binding-revision", URI.create("https://attacker.example/changed"));
-        source.put("other-tenant", Map.of("other-binding", URI.create("https://other.example/path")));
+        var properties = new AlipayNotificationProperties(bindings);
+        bindings.put("binding-revision", URI.create("https://attacker.example/changed"));
 
-        assertEquals(CALLBACK, properties.notifyUrls().get("tenant").get("binding-revision"));
-        assertFalse(properties.notifyUrls().containsKey("other-tenant"));
+        assertEquals(CALLBACK, properties.notifyUrls().get("binding-revision"));
         assertThrows(
                 UnsupportedOperationException.class,
-                () -> properties.notifyUrls().put("new-tenant", Map.of("new-binding", CALLBACK)));
-        assertThrows(
-                UnsupportedOperationException.class,
-                () -> properties.notifyUrls().get("tenant").put("new-binding", CALLBACK));
+                () -> properties.notifyUrls().put("new-binding", CALLBACK));
     }
 
     @Test
@@ -67,12 +58,7 @@ class AlipayNotificationPropertiesTest {
     }
 
     @Test
-    void rejectsInvalidTenantAndFrozenBindingIdentifiers() {
-        assertThrows(
-                RuntimeException.class,
-                () -> new AlipayNotificationProperties(Map.of("../tenant", Map.of("binding", CALLBACK))));
-        assertThrows(
-                RuntimeException.class,
-                () -> new AlipayNotificationProperties(Map.of("tenant", Map.of("../binding", CALLBACK))));
+    void rejectsInvalidFrozenBindingIdentifiers() {
+        assertThrows(RuntimeException.class, () -> new AlipayNotificationProperties(Map.of("../binding", CALLBACK)));
     }
 }

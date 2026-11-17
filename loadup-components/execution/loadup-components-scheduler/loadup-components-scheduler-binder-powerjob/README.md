@@ -17,8 +17,7 @@ powerjob:
 ```
 
 先部署 Server 并创建应用。在管理台创建 BUILT_IN / STANDALONE / CRON 任务：processorInfo=`loadupSchedulerProcessor`
-，jobParams=`delayedtask.scan`，cron=`0 * * * * ?`，建议 maxInstanceNum=1、instanceRetryNum=0、taskRetryNum=0。Transfer
-另建任务，jobParams=`transfer.scan`。业务重试由各业务组件管理，避免平台重试与业务重试叠加。
+，jobParams=`transfer.scan`，cron=`0 * * * * ?`，建议 maxInstanceNum=1、instanceRetryNum=0、taskRetryNum=0。Task 使用自身轮询器，无需创建 PowerJob 扫描任务。业务重试由各业务组件管理，避免平台重试与业务重试叠加。
 
 不使用 PowerJob 时不要引入此 binder；若主动保留两个 binder 依赖，必须额外关闭未使用的原生 Worker/Client，binder 选择不会覆盖
 PowerJob 官方配置。

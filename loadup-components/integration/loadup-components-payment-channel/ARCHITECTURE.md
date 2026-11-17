@@ -88,7 +88,7 @@ subMerchantId 表示实际收款主体。payment 根据统一接口计算账户�
 2. 基础设施使用可信租户加载原 revision，构造 `ChannelExecutionContext`；请求不能提供任意渠道 URL 或密钥路径。
 3. Facade 按请求原身份的 channel 选择策略，并核验租户、原绑定和账户作用域。付款预检/提交还核验支付方式能力。
 4. 插件解析原绑定并处理协议，返回统一观察与可选唤起动作；Facade 核验结果属于原身份和原金额。
-5. payment 在本地事务中落状态、证据、动作与 Outbox。真实渠道调用在本地事务外进行；未知结果保留未知，不能因网络超时换渠道重扣。
+5. payment 在本地事务中落状态、证据、动作与 Task。真实渠道调用在本地事务外进行；未知结果保留未知，不能因网络超时换渠道重扣。
 
 渠道绑定发布不维护支付宝/微信白名单，也不把发布成功当成插件可用的证明。类型化账户身份校验 channel 与 accessMode 一致；实际支付预检由
 Facade 查找已注册 Provider，并由渠道策略判断支付方式、接入模式及参数。停用或未装配插件时明确拒绝执行。新增渠道的表示契约仍需同步，但无需修改
@@ -112,7 +112,7 @@ bootstrap 通过 runtime 依赖装配 core 和具体插件；消费应用业务�
 支付宝已有付款码/JSAPI、查询、关闭、退款和回调策略源码；直连 H5 源码已补，服务商 H5 待补。微信已条件注册直连/服务商
 JSAPI/H5、查询/关闭及普通退款 Provider，支付通知已有原字节验签/解密与 Y3 接线，退款通知也已接独立退款结果流程；V2
 付款码首提/查证源码已补，撤销补偿与异常退款处置待补。H5 的场景映射、固定 operation 与官方跳转 URL 校验属于微信插件；payment
-只传类型化输入和保存统一动作。银联待确定产品和接入机构后增加独立插件。上述源码未运行编译、测试或真实渠道验收。
+只传类型化输入和保存统一动作。银联待确定产品和接入机构后增加独立插件。当前支持范围与待验收项见各 binder 接入文档。
 
 加密通知的定位阶段需要可信原绑定：Notification Facade 的 identify (context,input) 先获得服务端 endpointRef
 固定的上下文；微信在验签/解密后提取订单号，支付宝继续解析自身 form。定位结果只用于寻找原 attempt，后续仍需 target
@@ -121,24 +121,24 @@ JSAPI/H5、查询/关闭及普通退款 Provider，支付通知已有原字节�
 退款通知在同一 Facade/Provider 中使用类型化 identifyRefund/verifyRefund，不把支付 target 与退款 target 混用。微信协议复用签名/解密后按
 refund 资源校验；退款 App 服务只查原计划、验原身份、查原渠道退款并调用既有退款结果事务。原回调控制器复用采集逻辑并增加独立退款路径，不添加业务厂商路由。
 
-## Review R3：恢复舱壁的边界
+## 恢复舱壁边界
 
 统一 Facade 对恢复、查询和关闭执行 ChannelRecoveryConcurrency，使用 LoadUp ResilienceRegistries 中的标准 Bulkhead。
 每个 Channel 一个固定命名实例，付款/退款相关恢复入口共享，不按 businessId/tenant 创建实例。原路由鉴权和绑定检查先执行，满额不能泄露或覆盖其错误。
 持有名额的范围是 Provider 操作，finally 释放；没有重试、自动降级或跨渠道 fallback 装饰。
 首提 submit/submitRefund 及本地预检不装饰，避免在已持久化的一次提交权后新增拒绝点。前移首提并发准入需另有覆盖 Y2 的设计和验证。
 Bootstrap 提供 Resilience4j core binder，loadup-components-payment-channel-core 只引用 API；默认装配拒绝缺少 registry 或非零等待配置。
-当前为单 JVM 恢复并发上限；集群配额、首提准入、QPS 以及实际吞吐/公平性证明未完成。新增源码未编译或运行。
+当前只提供单 JVM 恢复并发上限；集群配额、首提准入与 QPS 不在此能力范围，吞吐及公平性需实测。
 
 ## 只读账单来源策略
 
 ChannelStatementFacade/Provider 使用独立 Registry，复用原 ChannelExecutionContext
 和不可变账户作用域，不把账单读取作为付款/退款动作。渠道插件拥有申请/下载/验签/校验和，core 复核 scope/摘要；payment
 解析原历史绑定并提供受权服务契约。下载不跨本地数据库事务，结果不认定批次完成。当前微信 strategy 返回有界私有原件和来源凭证；File/Transfer
-封存与首次有效提交属于 reconciliation，相关接线源码已补，仍待验收，不复用 MANUAL_UPLOAD
+封存与首次有效提交属于 reconciliation，相关接线需运行验收，不复用 MANUAL_UPLOAD
 冒充官方来源。详见 [官方来源设计](ARCHITECTURE.md)。
 
-支付宝新增独立后端账单 grant 申请和私有原始响应凭证源码，下载/解析/StatementProvider 尚未实现；不会把 grant 当成
+支付宝提供独立后端账单 grant 申请及私有原始响应凭证，下载/解析/StatementProvider 尚未实现；不会把 grant 当成
 ChannelStatement 结果。现有微信 receipt 的官方 SHA1 字段不能为支付宝伪造，后续须连同
 RPC/来源表显式扩展完整性模型。见 [支付宝来源边界](ARCHITECTURE.md)。
 
@@ -146,4 +146,4 @@ RPC/来源表显式扩展完整性模型。见 [支付宝来源边界](ARCHITECT
 
 `loadup-components-payment-channel-contracts` 提供 Channel、AccessMode、PaymentMethod 和 ChannelAmounts。
 API、core、binder 与共享词汇的消费方按需直接依赖它，不再从 commons-dto 引入支付词汇。
-本次归属迁移未运行构建、测试或真实渠道调用；前述历史验收不能代替当前变更的验证。
+待验收：当前配套制品装配、各 binder 的真实协议/资金链路、恢复竞争与回调；历史结果不代替当前版本证明。

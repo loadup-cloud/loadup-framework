@@ -108,7 +108,7 @@ class ServiceAccessTokensTest {
     }
 
     @Test
-    void serviceAndAudienceRouteWorksWithoutTenantContext() {
+    void serviceAndAudienceRouteWorksWithoutDeploymentContext() {
         var tokens = ServiceAuthAutoConfiguration.create(settings, clock);
         Assertions.assertThat(tokens.token("acquire", "payment")).isEqualTo("token-1");
     }

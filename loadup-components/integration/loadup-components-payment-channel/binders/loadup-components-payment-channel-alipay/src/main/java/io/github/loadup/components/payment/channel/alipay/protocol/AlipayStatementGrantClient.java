@@ -15,7 +15,6 @@
  */
 package io.github.loadup.components.payment.channel.alipay.protocol;
 
-import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.ACTION_FORBIDDEN;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.CHANNEL_BINDING_MISMATCH;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.CHANNEL_RESPONSE_INVALID;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.DEPENDENCY_UNAVAILABLE;
@@ -27,7 +26,6 @@ import static io.github.loadup.components.payment.channel.api.error.ChannelResul
 
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.util.DigestUtils;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.payment.channel.api.model.AlipayAccountIdentity;
 import io.github.loadup.components.payment.channel.api.model.ChannelExecutionContext;
 import io.github.loadup.components.payment.channel.contract.Channel;
@@ -82,9 +80,6 @@ public final class AlipayStatementGrantClient {
                         .toLocalDate())) {
             throw new CommonException(INVALID_ARGUMENT);
         }
-        if (!context.tenantId().equals(TenantUtil.getTenantId())) {
-            throw new CommonException(ACTION_FORBIDDEN);
-        }
         var binding = context.binding();
         if (binding.channel() != Channel.ALIPAY || !(binding.identity() instanceof AlipayAccountIdentity)) {
             throw new CommonException(CHANNEL_BINDING_MISMATCH);
@@ -92,7 +87,6 @@ public final class AlipayStatementGrantClient {
         var started = now();
         // trade_zft_merchant/smid and platform-wide ledgers are different products and must never be inferred here.
         var exchange = client.exchangeVerified(
-                context.tenantId(),
                 binding,
                 AlipayMethod.BILL_DOWNLOAD_URL,
                 json.writeValueAsString(Map.of("bill_type", "trade", "bill_date", billDate.toString())),
@@ -164,7 +158,6 @@ public final class AlipayStatementGrantClient {
         var output = new ByteArrayOutputStream();
         for (String value : new String[] {
             FORMAT,
-            context.tenantId(),
             binding.id(),
             binding.accountScopeHash(),
             date.toString(),

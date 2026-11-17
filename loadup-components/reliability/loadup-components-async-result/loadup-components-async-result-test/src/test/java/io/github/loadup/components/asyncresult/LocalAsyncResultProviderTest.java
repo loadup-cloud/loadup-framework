@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 
 class LocalAsyncResultProviderTest {
     static AsyncReplyKey key() {
-        return new AsyncReplyKey("tenant", "echo", "order", UUID.randomUUID().toString());
+        return new AsyncReplyKey("echo", "order", UUID.randomUUID().toString());
     }
 
     @Test

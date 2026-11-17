@@ -112,19 +112,12 @@ public final class AlipaySubmitAdapter {
             var options = new TreeMap<String, String>();
             options.put(
                     "notify_url",
-                    notifications
-                            .notifyUrls()
-                            .get(context.tenantId())
-                            .get(context.binding().id())
-                            .toASCIIString());
-            var returnUrl = h5.returnUrls()
-                    .getOrDefault(context.tenantId(), Map.of())
-                    .get(context.binding().id());
+                    notifications.notifyUrls().get(context.binding().id()).toASCIIString());
+            var returnUrl = h5.returnUrls().get(context.binding().id());
             if (returnUrl != null) {
                 options.put("return_url", returnUrl.toASCIIString());
             }
-            var url = client.directWapUrl(
-                    context.tenantId(), context.binding(), h5.gateway(), json.writeValueAsString(business), options);
+            var url = client.directWapUrl(context.binding(), h5.gateway(), json.writeValueAsString(business), options);
             return new ChannelPaymentSubmission(
                     payment.identity(), payment.amount(), null, new AlipayH5ChannelAction(url, expiry));
         }
@@ -181,10 +174,7 @@ public final class AlipaySubmitAdapter {
             if (!(input instanceof NoChannelInput) && !(input instanceof ChannelH5Input)) {
                 throw new CommonException(INVALID_ARGUMENT);
             }
-            var notifyUrl = notifications
-                    .notifyUrls()
-                    .getOrDefault(context.tenantId(), Map.of())
-                    .get(context.binding().id());
+            var notifyUrl = notifications.notifyUrls().get(context.binding().id());
             if (notifyUrl == null || notifyUrl.toASCIIString().length() > 256) {
                 throw new CommonException(UNSUPPORTED_CAPABILITY);
             }
@@ -300,15 +290,11 @@ public final class AlipaySubmitAdapter {
 
     private AlipayVerifiedResponse call(
             ChannelExecutionContext context, AlipayMethod method, Map<String, Object> business) {
-        var notifyUrl = notifications
-                .notifyUrls()
-                .getOrDefault(context.tenantId(), Map.of())
-                .get(context.binding().id());
+        var notifyUrl = notifications.notifyUrls().get(context.binding().id());
         Map<String, String> additional = method == AlipayMethod.CREATE && notifyUrl != null
                 ? Map.of("notify_url", notifyUrl.toASCIIString())
                 : Map.of();
-        return client.call(
-                context.tenantId(), context.binding(), method, json.writeValueAsString(business), additional);
+        return client.call(context.binding(), method, json.writeValueAsString(business), additional);
     }
 
     private PaymentObservation observation(

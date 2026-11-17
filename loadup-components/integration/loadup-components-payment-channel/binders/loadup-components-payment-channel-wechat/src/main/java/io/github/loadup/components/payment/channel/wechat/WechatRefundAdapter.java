@@ -89,21 +89,13 @@ public final class WechatRefundAdapter {
                         refund.originalAmount().getCent(),
                         "currency",
                         "CNY"));
-        var notifyUrl = notifications
-                .refundNotifyUrls()
-                .getOrDefault(context.tenantId(), Map.of())
-                .get(context.binding().id());
+        var notifyUrl = notifications.refundNotifyUrls().get(context.binding().id());
         if (notifyUrl != null) {
             body.put("notify_url", notifyUrl.toASCIIString());
         }
         // An absent explicit refund URL preserves the separately configured merchant-platform refund callback.
-        var response = client.call(
-                context.tenantId(),
-                context.binding(),
-                WechatMethod.REFUND,
-                Map.of(),
-                Map.of(),
-                json.writeValueAsString(body));
+        var response =
+                client.call(context.binding(), WechatMethod.REFUND, Map.of(), Map.of(), json.writeValueAsString(body));
         var data = responses.read(response, WechatMethod.REFUND);
         var kind = ChannelRefundOutcome.Kind.UNKNOWN;
         LocalDateTime acceptedAt = null;
@@ -157,7 +149,6 @@ public final class WechatRefundAdapter {
                 ? Map.<String, List<String>>of()
                 : Map.of("sub_mchid", List.of(account.subMerchantId()));
         return client.call(
-                context.tenantId(),
                 context.binding(),
                 WechatMethod.REFUND_QUERY,
                 Map.of("out_refund_no", refund.channelRefundNo()),

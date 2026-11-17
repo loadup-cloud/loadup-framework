@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.loadup.commons.context.ContextHolder;
-import io.github.loadup.commons.context.ContextKeys;
+import io.github.loadup.commons.context.ContextKey;
 import io.github.loadup.commons.context.ExecutionContext;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.ServletException;
@@ -28,10 +28,12 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 class ExecutionContextFilterTest {
+    private static final ContextKey<String> DEPLOYMENT_KEY = new ContextKey<>("loadup.deployment", String.class);
+
     @Test
     void isolatesRequestAndRestoresOuterContextEvenOnFailure() {
         var filter = new ExecutionContextFilter();
-        var outer = ExecutionContext.empty().with(ContextKeys.TENANT_ID, "outer");
+        var outer = ExecutionContext.empty().with(DEPLOYMENT_KEY, "outer");
         ContextHolder.runWith(outer, () -> {
             assertThatThrownBy(() -> filter.doFilter(
                             new MockHttpServletRequest(), new MockHttpServletResponse(), (request, response) -> {
@@ -50,15 +52,14 @@ class ExecutionContextFilterTest {
         var filter = new ExecutionContextFilter();
         var request = new MockHttpServletRequest();
         request.setAttribute(
-                ExecutionContext.class.getName(), ExecutionContext.empty().with(ContextKeys.TENANT_ID, "tenant"));
+                ExecutionContext.class.getName(), ExecutionContext.empty().with(DEPLOYMENT_KEY, "tenant"));
         for (var dispatch : new DispatcherType[] {DispatcherType.REQUEST, DispatcherType.ASYNC, DispatcherType.ERROR}) {
             request.setDispatcherType(dispatch);
             filter.doFilter(request, new MockHttpServletResponse(), (r, response) -> {
-                assertThat(ContextHolder.get(ContextKeys.TENANT_ID)).isEqualTo("tenant");
+                assertThat(ContextHolder.get(DEPLOYMENT_KEY)).isEqualTo("tenant");
                 ContextHolder.runWith(
-                        ContextHolder.current().with(ContextKeys.TENANT_ID, "nested"),
-                        () -> assertThat(ContextHolder.get(ContextKeys.TENANT_ID))
-                                .isEqualTo("nested"));
+                        ContextHolder.current().with(DEPLOYMENT_KEY, "nested"),
+                        () -> assertThat(ContextHolder.get(DEPLOYMENT_KEY)).isEqualTo("nested"));
             });
             assertThat(ContextHolder.isBound()).isFalse();
         }

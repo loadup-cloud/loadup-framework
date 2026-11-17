@@ -75,15 +75,16 @@ dependency, so -am and parallel builds order the processor before its consumers 
 
 ## Schema-per-tenant isolation
 
-Tenant isolation is physical: each tenant owns a PostgreSQL schema. `TenantContext`/`DatabaseTenant` resolve the trusted
-tenant and its schema; business code, DTOs, facades, gateways and repositories never accept or expose a tenant
-parameter.
+The target tenant isolation is physical: each tenant owns a PostgreSQL schema. Current deployments use one configured
+schema. `TenantContext`/`DatabaseTenant` compute the trusted tenant/schema, but do not switch JDBC connections.
+Public business DTOs and repository contracts do not expose tenant routing parameters; internal application transaction
+helpers may explicitly carry trusted deployment context, which is not a business-table tenant column.
 
 ```text
 request / worker entry
         │
         ▼
-TenantFilter / worker bootstrap ── binds TenantContext
+WebMVC DeploymentScopeFilter / worker entry ── binds ExecutionContext
         │
         ▼
 AbstractRoutingDataSource (planned) ── determineCurrentLookupKey() = TenantContext.tenantId()
@@ -101,17 +102,21 @@ Design rules:
   `[a-z_][a-z0-9_]{0,62}` before any connection is selected.
 - `enabled=false` always resolves the configured default tenant/schema. `enabled=true, required=true` fails closed when
   the execution context has no tenant.
+- When enabled and a context tenant is present, `currentSchema()` validates that tenant directly as the schema string;
+  it does not map the default tenant ID back to default-schema. This computation is not active datasource routing.
 - The current phase serves only the default schema; routing, tenant registry lookup, per-tenant pools and per-tenant
   Flyway are deliberately deferred.
 - Schema mode uses one pool per tenant so pooled `search_path` state cannot leak between tenants. Database mode is an
   alternative target for the same routing key.
-- The tenant must be bound before the transaction starts. `TenantFilter` binds the default tenant in the current phase;
-  background workers bind their schema at the worker entry point.
+- The tenant must be bound before the transaction starts. WebMVC `DeploymentScopeFilter` binds the default tenant in the current phase;
+  TaskWorker and SchedulerTemplate bind their trusted tenant at the worker entry point. Schema resolution remains in DatabaseTenant.
 - Per-tenant Flyway: run the same schema-agnostic migrations with `defaultSchema`/`schemas` set to the tenant schema. A
   control-plane tenant registry maps tenant codes to schema names; business tables never carry a tenant column.
 
 Non-relational resources are outside schema isolation: Redis lock/async-result keys, DFS object paths and RPC identity
 continue to use `TenantUtil`/`MDCUtils`.
+
+Stage 1B removed MultiTenantAutoConfiguration and the optional Web starter. Runtime owns the existing deployment tenant property and supplies DeploymentDataScope; DatabaseTenant consumes it without Servlet types. WebMVC owns DeploymentScopeFilter at HIGHEST_PRECEDENCE +10, after ExecutionContextFilter, with REQUEST/ASYNC/ERROR dispatch. Source changes and regression sources are complete; builds and tests have not run.
 
 ## Repository query style
 
@@ -142,6 +147,8 @@ operational rules.
 
 ## Background workers
 
-Outbox, DelayedTask and Transfer workers scan only the schema they run in. A worker row has no tenant column;
+Task and Transfer workers scan only the schema they run in. A worker row has no tenant column;
 tenant/schema binding happens at the worker entry point. Deploy one worker per tenant schema (or a dispatcher that
 iterates schemas and switches context) when multiple tenants are active.
+
+Deployment identity is supplied by runtime `DeploymentDataScope` from the existing `loadup.database.multi-tenant.default-tenant-id` property (default `__default__`). It does not choose schemas; `default-schema`, `enabled`, `required` and schema validation remain database responsibilities. Non-Web applications need no Servlet entry.

@@ -66,7 +66,7 @@ class RedisAsyncResultIT {
             assertThat(second.complete(key, "other")).isEqualTo(AsyncCompletionStatus.CONFLICT);
             assertThat(waiting.get(3, TimeUnit.SECONDS)).isEqualTo("remote");
             assertThat(second.complete(
-                            new AsyncReplyKey("other", key.operation(), key.businessId(), key.correlationId()),
+                            new AsyncReplyKey(key.operation() + ".other", key.businessId(), key.correlationId()),
                             "wrong"))
                     .isEqualTo(AsyncCompletionStatus.UNKNOWN);
         } finally {

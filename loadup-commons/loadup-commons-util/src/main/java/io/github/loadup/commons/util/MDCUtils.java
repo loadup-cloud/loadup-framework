@@ -24,8 +24,6 @@ public class MDCUtils {
 
     public static final String MDC_SPAN_ID = LogContext.SPAN_ID;
 
-    public static final String MDC_TENANT_ID = LogContext.TENANT_ID;
-
     public static void logStoppedSpan() {
         MDC.remove(MDC_TRACE_ID);
         MDC.remove(MDC_SPAN_ID);
@@ -33,13 +31,5 @@ public class MDCUtils {
         //        if (span != null) {
         //            MDC.put(MDC_TRACE_ID, TracerUtils.getTracerId());
         //        }
-    }
-
-    public static void logTenantId(String tenantId) {
-        MDC.put(MDC_TENANT_ID, tenantId);
-    }
-
-    public static void clearTenantId() {
-        MDC.remove(MDC_TENANT_ID);
     }
 }

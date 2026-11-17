@@ -15,7 +15,6 @@
  */
 package io.github.loadup.components.payment.channel.wechat.protocol;
 
-import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.ACTION_FORBIDDEN;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.CHANNEL_BINDING_MISMATCH;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.CHANNEL_CREDENTIAL_UNAVAILABLE;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.CHANNEL_RESPONSE_INVALID;
@@ -27,7 +26,6 @@ import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.json.DiagnosticHidden;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.commons.util.DigestUtils;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.payment.channel.api.model.ChannelExecutionContext;
 import io.github.loadup.components.payment.channel.api.model.ChannelNotificationHint;
 import io.github.loadup.components.payment.channel.api.model.ChannelNotificationInput;
@@ -141,9 +139,6 @@ public final class WechatNotificationCodec {
         if (context == null || input == null) {
             throw new CommonException(INVALID_ARGUMENT);
         }
-        if (!context.tenantId().equals(TenantUtil.getTenantId())) {
-            throw new CommonException(ACTION_FORBIDDEN);
-        }
         if (!(context.binding().identity() instanceof WechatAccountIdentity account)) {
             throw new CommonException(CHANNEL_BINDING_MISMATCH);
         }
@@ -166,7 +161,7 @@ public final class WechatNotificationCodec {
         }
         byte[] body = input.body();
         // Verify the original bytes before parsing or unwrapping an APIv3 secret.
-        signatures.verifySignature(credentials.read(context.tenantId(), context.binding()), headers, body);
+        signatures.verifySignature(credentials.read(context.binding()), headers, body);
         var envelope = parse(body);
         String event = responses.text(envelope, "event_type", 32);
         if (refund) {
@@ -205,7 +200,7 @@ public final class WechatNotificationCodec {
             if (ciphertext.length <= 16 || ciphertext.length > ChannelNotificationInput.MAX_BODY_BYTES) {
                 throw new CommonException(CHANNEL_RESPONSE_INVALID);
             }
-            key = credentials.apiV3Key(context.tenantId(), context.binding());
+            key = credentials.apiV3Key(context.binding());
             if (key == null || key.length != 32) {
                 throw new CommonException(CHANNEL_CREDENTIAL_UNAVAILABLE);
             }

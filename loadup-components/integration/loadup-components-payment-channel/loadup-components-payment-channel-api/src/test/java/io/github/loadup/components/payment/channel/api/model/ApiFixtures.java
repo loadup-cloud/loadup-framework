@@ -71,11 +71,11 @@ final class ApiFixtures {
     }
 
     static ChannelExecutionContext context() {
-        return new ChannelExecutionContext("tenant", alipayBinding());
+        return new ChannelExecutionContext(alipayBinding());
     }
 
     static ChannelExecutionContext wechatContext() {
-        return new ChannelExecutionContext("tenant", wechatBinding());
+        return new ChannelExecutionContext(wechatBinding());
     }
 
     static PreparedChannelPayment prepared(PaymentMethod method) {

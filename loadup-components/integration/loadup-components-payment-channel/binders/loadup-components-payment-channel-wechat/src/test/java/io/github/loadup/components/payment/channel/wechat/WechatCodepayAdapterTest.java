@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
@@ -32,7 +31,6 @@ import static org.mockito.Mockito.when;
 
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.money.Money;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.payment.channel.api.model.ChannelBindingRevision;
 import io.github.loadup.components.payment.channel.api.model.ChannelExecutionContext;
 import io.github.loadup.components.payment.channel.api.model.ChannelPaymentCodeInput;
@@ -67,8 +65,7 @@ class WechatCodepayAdapterTest {
     private static final Clock CLOCK = Clock.fixed(Instant.parse("2026-10-27T03:00:00Z"), ZoneId.of("Asia/Shanghai"));
     private final WechatV2Client client = mock(WechatV2Client.class);
     private final WechatPaymentAdapter queries = mock(WechatPaymentAdapter.class);
-    private final WechatCodepayProperties properties =
-            new WechatCodepayProperties(Map.of("tenant", Map.of("binding", "203.0.113.10")));
+    private final WechatCodepayProperties properties = new WechatCodepayProperties(Map.of("binding", "203.0.113.10"));
     private final WechatCodepayAdapter adapter = new WechatCodepayAdapter(client, queries, properties, CLOCK);
 
     @Test
@@ -88,7 +85,7 @@ class WechatCodepayAdapterTest {
             fields.put("fee_type", "CNY");
             fields.put("trade_type", "MICROPAY");
             var verified = new WechatV2VerifiedResponse(WechatV2Method.MICROPAY, fields, "a".repeat(64));
-            when(client.call(eq("tenant"), eq(context.binding()), eq(WechatV2Method.MICROPAY), anyMap()))
+            when(client.call(eq(context.binding()), eq(WechatV2Method.MICROPAY), anyMap()))
                     .thenReturn(verified);
             var observed = new PaymentObservation(
                     request.payment().identity(),
@@ -106,14 +103,12 @@ class WechatCodepayAdapterTest {
                                     request.payment().amount())))
                     .thenReturn(observed);
 
-            TenantUtil.runWithTenant("tenant", () -> {
-                adapter.validate(context, validation(request));
-                var result = adapter.submit(context, request);
-                assertSame(observed, result.observation());
-                assertNull(result.action());
-            });
+            adapter.validate(context, validation(request));
+            var result = adapter.submit(context, request);
+            assertSame(observed, result.observation());
+            assertNull(result.action());
             var body = ArgumentCaptor.forClass(Map.class);
-            verify(client).call(eq("tenant"), eq(context.binding()), eq(WechatV2Method.MICROPAY), body.capture());
+            verify(client).call(eq(context.binding()), eq(WechatV2Method.MICROPAY), body.capture());
             assertEquals("wx-main", body.getValue().get("appid"));
             assertEquals("1900000001", body.getValue().get("mch_id"));
             assertEquals(partner ? "1900000002" : null, body.getValue().get("sub_mch_id"));
@@ -141,9 +136,9 @@ class WechatCodepayAdapterTest {
         for (String error : List.of("USERPAYING", "SYSTEMERROR", "AUTHCODEEXPIRE", "ORDERPAID")) {
             var fields = response(context, "FAIL");
             fields.put("err_code", error);
-            when(client.call(anyString(), any(), any(), anyMap()))
+            when(client.call(any(), any(), anyMap()))
                     .thenReturn(new WechatV2VerifiedResponse(WechatV2Method.MICROPAY, fields, "a".repeat(64)));
-            var result = TenantUtil.callWithTenant("tenant", () -> adapter.submit(context, request));
+            var result = adapter.submit(context, request);
             assertEquals(
                     error.equals("USERPAYING")
                             ? ChannelPaymentOutcome.Kind.ACCEPTED
@@ -173,17 +168,13 @@ class WechatCodepayAdapterTest {
                         1250,
                         "Meal",
                         OffsetDateTime.now(CLOCK).plusSeconds(59)))) {
-            assertThrows(
-                    CommonException.class,
-                    () -> TenantUtil.runWithTenant("tenant", () -> adapter.validate(context, validation(invalid))));
+            assertThrows(CommonException.class, () -> adapter.validate(context, validation(invalid)));
         }
         var missing = new WechatCodepayAdapter(client, queries, new WechatCodepayProperties(Map.of()), CLOCK);
         assertThrows(
                 CommonException.class,
-                () -> TenantUtil.runWithTenant(
-                        "tenant",
-                        () -> missing.validate(
-                                context, validation(request(context, "123456789012345678", 1250, "Meal", until)))));
+                () -> missing.validate(
+                        context, validation(request(context, "123456789012345678", 1250, "Meal", until))));
         verifyNoInteractions(client, queries);
     }
 
@@ -198,18 +189,16 @@ class WechatCodepayAdapterTest {
                 OffsetDateTime.now(CLOCK).plusHours(1));
         var fields = response(context, "FAIL");
         fields.put("sub_mch_id", "1900000003");
-        when(client.call(anyString(), any(), any(), anyMap()))
+        when(client.call(any(), any(), anyMap()))
                 .thenReturn(new WechatV2VerifiedResponse(WechatV2Method.MICROPAY, fields, "a".repeat(64)));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("tenant", () -> adapter.submit(context, request)));
+        assertThrows(CommonException.class, () -> adapter.submit(context, request));
         verifyNoInteractions(queries);
         fields = response(context, "SUCCESS");
         fields.put("out_trade_no", "original_01");
         fields.put("transaction_id", "4200000000001");
         fields.put("total_fee", "1250");
         fields.put("trade_type", "MICROPAY");
-        when(client.call(anyString(), any(), any(), anyMap()))
+        when(client.call(any(), any(), anyMap()))
                 .thenReturn(new WechatV2VerifiedResponse(WechatV2Method.MICROPAY, fields, "a".repeat(64)));
         when(queries.query(any(), any()))
                 .thenReturn(new PaymentObservation(
@@ -221,25 +210,21 @@ class WechatCodepayAdapterTest {
                         PaymentObservation.Source.QUERY_RESPONSE,
                         "query",
                         "b".repeat(64)));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("tenant", () -> adapter.submit(context, request)));
+        assertThrows(CommonException.class, () -> adapter.submit(context, request));
     }
 
     private ChannelExecutionContext context(boolean partner) {
-        return new ChannelExecutionContext(
-                "tenant",
-                new ChannelBindingRevision(
-                        "binding",
-                        "merchant",
-                        Channel.WECHAT,
-                        partner ? AccessMode.SERVICE_PROVIDER : AccessMode.DIRECT,
-                        "a".repeat(64),
-                        "credential",
-                        "v1",
-                        new WechatAccountIdentity(
-                                "wx-main", "1900000001", partner ? "wx-sub" : null, partner ? "1900000002" : null),
-                        Set.of(PaymentMethod.PAYMENT_CODE)));
+        return new ChannelExecutionContext(new ChannelBindingRevision(
+                "binding",
+                "merchant",
+                Channel.WECHAT,
+                partner ? AccessMode.SERVICE_PROVIDER : AccessMode.DIRECT,
+                "a".repeat(64),
+                "credential",
+                "v1",
+                new WechatAccountIdentity(
+                        "wx-main", "1900000001", partner ? "wx-sub" : null, partner ? "1900000002" : null),
+                Set.of(PaymentMethod.PAYMENT_CODE)));
     }
 
     private ChannelPaymentRequest request(

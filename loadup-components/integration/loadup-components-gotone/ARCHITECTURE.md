@@ -112,7 +112,7 @@ loadup-components-gotone/
 
 ### 4.4 与后台任务的分工
 
-通知的进程内降级与重试由 Gotone 引擎处理；跨实例的最终一致性补偿由消费方的 PowerJob/Outbox 编排，业务需保证幂等。执行历史和平台告警使用
+通知的进程内降级与重试由 Gotone 引擎处理；跨实例的最终一致性补偿由消费方的 PowerJob/Task 编排，业务需保证幂等。执行历史和平台告警使用
 PowerJob 原生能力，Gotone 不反向依赖调度组件。API 模型继续使用不可变 record。
 
 ## 5. 扩展点

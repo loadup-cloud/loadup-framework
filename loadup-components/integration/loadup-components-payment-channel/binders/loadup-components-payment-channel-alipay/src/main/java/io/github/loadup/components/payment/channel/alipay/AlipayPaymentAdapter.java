@@ -57,7 +57,6 @@ public final class AlipayPaymentAdapter {
     public PaymentObservation query(ChannelExecutionContext context, ChannelPaymentTarget target) {
         requireTarget(context, target);
         var verified = client.call(
-                context.tenantId(),
                 context.binding(),
                 AlipayMethod.QUERY,
                 json.writeValueAsString(Map.of("out_trade_no", target.identity().channelRequestNo())),
@@ -125,7 +124,6 @@ public final class AlipayPaymentAdapter {
             return before;
         }
         var verified = client.call(
-                context.tenantId(),
                 context.binding(),
                 AlipayMethod.CLOSE,
                 json.writeValueAsString(Map.of(

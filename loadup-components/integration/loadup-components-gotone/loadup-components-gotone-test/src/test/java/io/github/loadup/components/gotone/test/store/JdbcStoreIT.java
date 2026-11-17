@@ -38,8 +38,7 @@ import org.springframework.test.context.jdbc.Sql;
 @SpringBootTest(classes = TestGotoneApplication.class)
 @EnableTestContainers(value = ContainerType.POSTGRESQL, reuse = false)
 @ActiveProfiles("test")
-@TestPropertySource(
-        properties = {"loadup.database.multi-tenant.enabled=true", "loadup.database.multi-tenant.required=true"})
+@TestPropertySource(properties = {"loadup.database.schema=loadup_gotone_test"})
 @Sql(
         scripts = {"classpath:db/schema/gotone_store.sql", "classpath:db/schema/sequence_allocation.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)

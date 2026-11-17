@@ -11,7 +11,7 @@ binder。分类目录不是 Maven 模块，组件坐标、Java 包名、配置�
 | `web/`         | Web 接入   | [webmvc](web/loadup-components-webmvc/README.md)、[springdoc](web/loadup-components-springdoc/README.md)                                                                                                                                                                                                                                                                                             |
 | `data/`        | 数据与存储 | [cache](data/loadup-components-cache/README.md)、[database](data/loadup-components-database/README.md)、[dfs](data/loadup-components-dfs/README.md)                                                                                                                                                                                                                                                  |
 | `integration/` | 外部集成   | [http](integration/loadup-components-http/README.md)、[gotone](integration/loadup-components-gotone/README.md)、[payment-channel](integration/loadup-components-payment-channel/README.md)                                                                                                                                                                                                          |
-| `reliability/` | 可靠性     | [DelayedTask](reliability/loadup-components-delayedtask/README.md)、[async-result](reliability/loadup-components-async-result/README.md)、[lock](reliability/loadup-components-lock/README.md)、[outbox](reliability/loadup-components-outbox/README.md)、[globalunique](reliability/loadup-components-globalunique/README.md)、[resilience4j](reliability/loadup-components-resilience4j/README.md) |
+| `reliability/` | 可靠性     | [Task](reliability/loadup-components-task/README.md)、[async-result](reliability/loadup-components-async-result/README.md)、[lock](reliability/loadup-components-lock/README.md)、[globalunique](reliability/loadup-components-globalunique/README.md)、[resilience4j](reliability/loadup-components-resilience4j/README.md) |
 | `execution/`   | 任务与执行 | [Scheduler](execution/loadup-components-scheduler/README.md)、[pipeline](execution/loadup-components-pipeline/README.md)                                                                                                                                                                                                                                                                             |
 | `platform/`    | 平台基础   | [configcenter](platform/loadup-components-configcenter/README.md)、[extension](platform/loadup-components-extension/README.md)、[observability](platform/loadup-components-observability/README.md)、[testcontainers](platform/loadup-components-testcontainers/README.md)                                                                                                                           |
 
@@ -23,7 +23,7 @@ loadup-components/
 ├── web/            webmvc, springdoc
 ├── data/           cache, database, dfs
 ├── integration/    http, gotone, payment-channel
-├── reliability/    delayedtask, async-result, lock, outbox, globalunique, resilience4j
+├── reliability/    task, async-result, lock, globalunique, resilience4j
 ├── execution/      scheduler, pipeline
 └── platform/       configcenter, extension, observability, testcontainers
 ```
@@ -75,7 +75,7 @@ JaCoCo CLI 或 Python 覆盖率脚本。先收齐全部组件及兄弟测试模�
 
 新增或移除组件时，同时维护该模块的 `loadup.coverage.skip`、聚合 POM 的依赖清单和预期 unit / IT
 文件清单。跳过测试、只运行部分模块或使用历史产物均不属于完整验收；详细限制见 [覆盖率架构](../loadup-coverage/ARCHITECTURE.md)
-。本次原生配置迁移未运行构建或检查，等待手工验收。
+。原生配置绑定与运行效果需按消费应用验收。
 
 历史基线：2026-10-16 同一次完整本地运行的 **48/48 个运行时 jar 行、分支均 ≥90%**，653 项单测、148 项 IT
 通过。该历史结果不能证明当前原生配置或新提交已验收。

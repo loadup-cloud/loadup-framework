@@ -15,13 +15,11 @@
  */
 package io.github.loadup.components.payment.channel.wechat.protocol;
 
-import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.ACTION_FORBIDDEN;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.CHANNEL_CREDENTIAL_UNAVAILABLE;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.INVALID_STATE;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.UNSUPPORTED_CAPABILITY;
 
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.kms.KmsKeyRef;
 import io.github.loadup.components.kms.KmsTemplate;
 import io.github.loadup.components.payment.channel.api.model.ChannelBindingRevision;
@@ -59,11 +57,10 @@ public class WechatCredentialReader {
                 .build();
     }
 
-    public WechatCredentials read(String tenant, ChannelBindingRevision binding) {
-        var document = document(tenant, binding);
+    public WechatCredentials read(ChannelBindingRevision binding) {
+        var document = document(binding);
         try {
             return new WechatCredentials(
-                    tenant,
                     document.appId(),
                     document.merchantId(),
                     document.merchantSerial(),
@@ -78,8 +75,8 @@ public class WechatCredentialReader {
     /**
      * Caller owns and must zero the returned APIv3 key. No fallback to a current key version.
      */
-    public byte[] apiV3Key(String tenant, ChannelBindingRevision binding) {
-        var encrypted = document(tenant, binding).apiV3Key();
+    public byte[] apiV3Key(ChannelBindingRevision binding) {
+        var encrypted = document(binding).apiV3Key();
         if (encrypted == null) {
             throw new CommonException(CHANNEL_CREDENTIAL_UNAVAILABLE);
         }
@@ -101,8 +98,8 @@ public class WechatCredentialReader {
     /**
      * APIv2 and APIv3 keys are separate products; callers own and zero this exact-version key.
      */
-    public byte[] apiV2Key(String tenant, ChannelBindingRevision binding) {
-        var encrypted = document(tenant, binding).apiV2Key();
+    public byte[] apiV2Key(ChannelBindingRevision binding) {
+        var encrypted = document(binding).apiV2Key();
         if (encrypted == null) {
             throw new CommonException(CHANNEL_CREDENTIAL_UNAVAILABLE);
         }
@@ -129,12 +126,9 @@ public class WechatCredentialReader {
         return value;
     }
 
-    private WechatCredentialDocument document(String tenant, ChannelBindingRevision binding) {
+    private WechatCredentialDocument document(ChannelBindingRevision binding) {
         if (TransactionSynchronizationManager.isActualTransactionActive()) {
             throw new CommonException(INVALID_STATE);
-        }
-        if (tenant == null || !tenant.equals(TenantUtil.getTenantId())) {
-            throw new CommonException(ACTION_FORBIDDEN);
         }
         if (!properties.enabled()
                 || binding == null
@@ -156,7 +150,6 @@ public class WechatCredentialReader {
             }
             var document = json.readValue(bytes, WechatCredentialDocument.class);
             if (document == null
-                    || !tenant.equals(document.tenantId())
                     || !binding.credentialReference().equals(document.reference())
                     || !binding.credentialVersion().equals(document.version())
                     || !account.appId().equals(document.appId())

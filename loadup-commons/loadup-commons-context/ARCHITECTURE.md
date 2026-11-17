@@ -16,7 +16,7 @@ preview/结构化并发依赖。类型化键避免调用方自行强转；不可
 ## 类型与存储
 
 - `ContextKey<T>`：名称与 Class 共同标识键，校验非空名称/引用类型。
-- `ContextKeys`：提供共享 TENANT_ID；身份与 Trace 保持原权威来源。
+- 共享键：只保留 trace、请求与业务元数据；租户/部署 code 不进入 ExecutionContext，身份与 Trace 保持原权威来源。
 - `ExecutionContext`：Map.copyOf 固定绑定，with 复制并派生新对象；不暴露内部 Map，toString 仅包含数量。值必须遵循不可变契约，容器不保证深不可变。
 - `ContextHolder`：私有单一 ScopedValue<ExecutionContext>，通过 run/call 管理动态作用域；没有可变 frame、清理 API 或手动
   close。
@@ -50,5 +50,7 @@ ERROR 分派沿用当前作用域，独立 ASYNC/ERROR 分派从属性重新绑�
 ## 验证与后续
 
 已编写用例覆盖不可变派生、类型读取、嵌套异常恢复、普通线程池复用、空上下文覆盖、虚拟线程隔离和显式传播；覆盖模板生命周期、初始化失败、主异常保留及
-clean suppressed。TenantUtil、Servlet 重新分派与 Boot/Micrometer 装饰器组合有对应测试。未执行编译/测试，运行验收按根 AGENTS
+clean suppressed。Servlet 重新分派与 Boot/Micrometer 装饰器组合有对应测试。构建/测试结果按统一验证记录
 由集成方在真实入口、持久任务与目标性能场景中验证。
+
+部署 code 由 runtime 的 `DeploymentIdentity` 统一装配；入口层只校验请求头，不再派生 tenant ExecutionContext，数据库和后台任务也不读取该值选择连接解析 schema。

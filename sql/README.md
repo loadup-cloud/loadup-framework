@@ -20,7 +20,7 @@ python3 tools/export-schema.py --check
 | 业务模块资源中的 `db/migration/framework/<module>/V*.sql` | 保留原始 Flyway 自动迁移文件及版本、内容，应用显式选择该模块的 location |
 | `sql/framework-schema.sql` | 全部组件及业务模块的完整初始化整合版，可通过 psql 或数据库工具手动导入 |
 
-当前整合六份组件模板（Sequence Allocation、DFS Database、Gotone JDBC Store、DelayedTask、GlobalUnique、Outbox）
+当前整合六份组件模板（Sequence Allocation、DFS Database、Gotone JDBC Store、Task、GlobalUnique、Task）
 及七份业务迁移（Audit、Dictionary、File、UPMS、Notification、Transfer，Notification 有两份），共十三份 SQL。
 测试 SQL、历史独立 schema 示例不在合并范围，避免重复建表或混入测试数据。
 组件模板本身不会被 Flyway 自动扫描；Pay 的 `scripts/gen-migrations.py` 只创建初始快照，已有快照由锁文件冻结。

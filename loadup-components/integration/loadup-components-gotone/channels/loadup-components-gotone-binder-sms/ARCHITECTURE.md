@@ -19,8 +19,7 @@
 
 主要入口文件：
 
-- [
-  `SmsChannelAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/channel/sms/config/SmsChannelAutoConfiguration.java)
+- [ `SmsChannelAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/channel/sms/config/SmsChannelAutoConfiguration.java)
 - [`AliyunSmsProvider`](src/main/java/io/github/loadup/components/gotone/channel/sms/AliyunSmsProvider.java)
 - [`HuaweiSmsProvider`](src/main/java/io/github/loadup/components/gotone/channel/sms/HuaweiSmsProvider.java)
 - [`YunpianSmsProvider`](src/main/java/io/github/loadup/components/gotone/channel/sms/YunpianSmsProvider.java)
@@ -37,8 +36,7 @@ binder 实现框架契约，把实现库及其配置隔离在业务 API 之外�
 
 ## 装配规则
 
-- [
-  `SmsChannelAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/channel/sms/config/SmsChannelAutoConfiguration.java)
+- [ `SmsChannelAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/channel/sms/config/SmsChannelAutoConfiguration.java)
   是自动配置入口。
     -
     `@ConditionalOnProperty( prefix = "loadup.gotone.binder.sms.aliyun", name = "enabled", havingValue = "true", matchIfMissing = true)`

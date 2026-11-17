@@ -33,5 +33,4 @@
 
 ## 自动装配
 
-- [
-  `GotoneEngineAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/engine/GotoneEngineAutoConfiguration.java)
+- [ `GotoneEngineAutoConfiguration`](src/main/java/io/github/loadup/components/gotone/engine/GotoneEngineAutoConfiguration.java)

@@ -15,6 +15,7 @@
  */
 package io.github.loadup.components.http;
 
+import io.github.loadup.components.runtime.deployment.DeploymentIdentity;
 import io.micrometer.core.instrument.MeterRegistry;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -69,6 +70,8 @@ public final class HttpTemplate implements AutoCloseable {
     private final SslBundles sslBundles;
     private final MeterRegistry metrics;
     private final HttpPoolMetrics poolMetrics;
+    private final DeploymentIdentity deploymentIdentity;
+    private static final String DEPLOYMENT_HEADER = "X-Tenant-Code";
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private Map<String, RuntimeClient> clients = Map.of();
     private Map<String, RuntimeClient> conventionalClients = Map.of();
@@ -83,7 +86,7 @@ public final class HttpTemplate implements AutoCloseable {
             HttpCredentialProvider credentials,
             SslBundles sslBundles,
             MeterRegistry metrics) {
-        this(properties, builders, mapper, credentials, sslBundles, metrics, "application");
+        this(properties, builders, mapper, credentials, sslBundles, metrics, "application", null);
     }
 
     /** A fixed, unique scope separates templates sharing the same meter registry. */
@@ -95,7 +98,24 @@ public final class HttpTemplate implements AutoCloseable {
             SslBundles sslBundles,
             MeterRegistry metrics,
             String metricScope) {
+        this(properties, builders, mapper, credentials, sslBundles, metrics, metricScope, null);
+    }
+
+    /**
+     * A template bound to one deployment. Only named internal service clients receive the fixed
+     * deployment header; third-party targets and call-supplied values never do.
+     */
+    public HttpTemplate(
+            HttpProperties properties,
+            Supplier<RestClient.Builder> builders,
+            ObjectMapper mapper,
+            HttpCredentialProvider credentials,
+            SslBundles sslBundles,
+            MeterRegistry metrics,
+            String metricScope,
+            DeploymentIdentity deploymentIdentity) {
         name(metricScope);
+        this.deploymentIdentity = deploymentIdentity;
         this.builders = builders;
         if (!(mapper instanceof JsonMapper jsonMapper)) {
             throw new IllegalArgumentException("HTTP JSON conversion requires a JsonMapper");
@@ -421,6 +441,7 @@ public final class HttpTemplate implements AutoCloseable {
             requestHeaders.setAll(headers(runtime.config.headers()));
             requestHeaders.setAll(headers(definition.headers()));
             requestHeaders.setAll(headers(call.headers()));
+            applyDeploymentHeader(runtime, requestHeaders::set);
             if (runtime.config.credentialRef() != null) {
                 requestHeaders.setAll(headers(credentials.headers(runtime.config.credentialRef())));
             }
@@ -540,6 +561,9 @@ public final class HttpTemplate implements AutoCloseable {
                             throw new HttpCallException(HttpCallException.Kind.SIZE_LIMIT);
                         }
                         policy.resolve(target.getHost());
+                        if (deploymentIdentity != null && config.baseUrl() == null) {
+                            request.getHeaders().set(DEPLOYMENT_HEADER, deploymentIdentity.code());
+                        }
                         if (config.credentialRef() != null) {
                             request.getHeaders().setAll(headers(credentials.headers(config.credentialRef())));
                         }
@@ -614,6 +638,12 @@ public final class HttpTemplate implements AutoCloseable {
     @FunctionalInterface
     private interface BodyReader<T> {
         T read(InputStream body, long limit) throws IOException;
+    }
+
+    private void applyDeploymentHeader(RuntimeClient runtime, java.util.function.BiConsumer<String, String> setter) {
+        if (deploymentIdentity != null && runtime.config().baseUrl() == null) {
+            setter.accept(DEPLOYMENT_HEADER, deploymentIdentity.code());
+        }
     }
 
     private record RuntimeClient(

@@ -17,8 +17,7 @@
 
 主要入口文件：
 
-- [
-  `LoadupCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/autoconfigure/LoadupCacheAutoConfiguration.java)
+- [ `LoadupCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/autoconfigure/LoadupCacheAutoConfiguration.java)
 
 ## 分层与调用路径
 
@@ -32,8 +31,7 @@ Spring Cache 调用进入当前 `CacheManager`，由选中的 binder 处理缓�
 
 ## 装配规则
 
-- [
-  `LoadupCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/autoconfigure/LoadupCacheAutoConfiguration.java)
+- [ `LoadupCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/autoconfigure/LoadupCacheAutoConfiguration.java)
   是自动配置入口。
     - `@ConditionalOnClass(CacheManager.class)`
 

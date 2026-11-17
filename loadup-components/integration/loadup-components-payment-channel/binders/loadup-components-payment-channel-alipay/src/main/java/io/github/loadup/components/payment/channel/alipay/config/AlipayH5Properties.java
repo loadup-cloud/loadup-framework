@@ -23,38 +23,30 @@ import io.github.loadup.commons.validation.DomainChecks;
 import io.github.loadup.components.payment.channel.api.model.AlipayH5ChannelAction;
 import java.net.URI;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Explicit environment gateway and trusted return destinations; no merchant-supplied redirect.
  */
 @ConfigurationProperties("loadup.payment.channel.alipay.h5")
-public record AlipayH5Properties(URI gateway, Map<String, Map<String, URI>> returnUrls) {
+public record AlipayH5Properties(URI gateway, Map<String, URI> returnUrls) {
     public AlipayH5Properties {
         require(
                 gateway == null || AlipayH5ChannelAction.isGateway(gateway) && gateway.getRawQuery() == null,
                 INVALID_ARGUMENT);
-        returnUrls = returnUrls == null
-                ? Map.of()
-                : returnUrls.entrySet().stream()
-                        .collect(
-                                Collectors.toUnmodifiableMap(Map.Entry::getKey, entry -> Map.copyOf(entry.getValue())));
-        for (var tenant : returnUrls.entrySet()) {
-            DomainChecks.id(tenant.getKey());
-            for (var binding : tenant.getValue().entrySet()) {
-                DomainChecks.id(binding.getKey());
-                var uri = binding.getValue();
-                require(
-                        uri != null
-                                && "https".equals(uri.getScheme())
-                                && uri.getHost() != null
-                                && uri.getRawUserInfo() == null
-                                && uri.getRawFragment() == null
-                                && uri.getRawQuery() == null
-                                && uri.toASCIIString().length() <= 256,
-                        INVALID_ARGUMENT);
-            }
+        returnUrls = returnUrls == null ? Map.of() : Map.copyOf(returnUrls);
+        for (var binding : returnUrls.entrySet()) {
+            DomainChecks.id(binding.getKey());
+            var uri = binding.getValue();
+            require(
+                    uri != null
+                            && "https".equals(uri.getScheme())
+                            && uri.getHost() != null
+                            && uri.getRawUserInfo() == null
+                            && uri.getRawFragment() == null
+                            && uri.getRawQuery() == null
+                            && uri.toASCIIString().length() <= 256,
+                    INVALID_ARGUMENT);
         }
     }
 

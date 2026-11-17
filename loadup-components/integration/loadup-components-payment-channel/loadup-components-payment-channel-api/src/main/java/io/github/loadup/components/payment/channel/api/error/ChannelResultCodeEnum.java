@@ -21,7 +21,7 @@ import io.github.loadup.commons.result.ResultCode;
 public enum ChannelResultCodeEnum implements ResultCode {
     INVALID_ARGUMENT("CHANNEL_INVALID_ARGUMENT", "Invalid channel request"),
     INVALID_STATE("CHANNEL_INVALID_STATE", "External channel calls cannot run inside a local transaction"),
-    ACTION_FORBIDDEN("CHANNEL_ACTION_FORBIDDEN", "Channel tenant context is invalid"),
+    ACTION_FORBIDDEN("CHANNEL_ACTION_FORBIDDEN", "Channel action is not permitted"),
     CHANNEL_BINDING_MISMATCH("CHANNEL_BINDING_MISMATCH", "Channel identity differs from the frozen collecting account"),
     DUPLICATE_PROVIDER("CHANNEL_DUPLICATE_PROVIDER", "More than one provider is registered for a channel"),
     UNSUPPORTED_CAPABILITY("CHANNEL_UNSUPPORTED_CAPABILITY", "Channel capability is not implemented or enabled"),

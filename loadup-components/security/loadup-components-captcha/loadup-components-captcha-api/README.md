@@ -39,6 +39,5 @@
 
 ## 自动装配
 
-- [
-  `CaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/autoconfigure/CaptchaAutoConfiguration.java)
+- [ `CaptchaAutoConfiguration`](src/main/java/io/github/loadup/components/captcha/autoconfigure/CaptchaAutoConfiguration.java)
     - 启用条件：`@ConditionalOnSingleCandidate(CaptchaProvider.class)`。

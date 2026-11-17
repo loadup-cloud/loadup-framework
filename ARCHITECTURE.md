@@ -1,5 +1,9 @@
 # LoadUp Framework Architecture
 
+## Static architecture baseline
+
+The 2026-11-15 [phase 0 baseline](../loadup-pay/design/PHASE0_BASELINE.md) records current declared dependencies, ownership and assembly exceptions; [all source POM declarations](../loadup-pay/design/PHASE0_DEPENDENCIES.md) distinguish compile, runtime, test, provided and optional. This is a static audit, not build or runtime acceptance. Stage 1B now separates Web context binding from database parsing at source level: WebMVC owns DeploymentScopeFilter, runtime assembles DeploymentDataScope, and database no longer declares a Web starter. Builds and tests have not run.
+
 This repository publishes reusable framework modules for applications that consume the
 `loadup-framework-bom` BOM. The default root Maven reactor aggregates the BOM, commons,
 and technical components. Reusable business modules and Testify live in sibling repositories. It does not contain a runnable
@@ -26,8 +30,10 @@ Commons contains shared context, data contracts, errors, JSON, logging, masking,
 Components provide technical capabilities; category directories organize source but do not add
 Maven coordinates. Providers with interchangeable implementations are separated into API and
 binder artifacts. Business modules expose client contracts and can provide optional `*-web`
-Spring MVC adapters. Their application services do not depend on HTTP clients or web response
-types. Module-specific extension points and configuration are documented in that module's
+Spring MVC adapters. Business Facades and domain contracts are kept separate from HTTP response envelopes.
+There is a current adapter-placement exception: UPMS app's GitHubOAuthProvider directly owns RestTemplate token/userinfo
+calls. This is recorded as E15 in the phase 0 baseline, not presented as an already isolated infrastructure adapter.
+Module-specific extension points and configuration are documented in that module's
 `README.md` and `ARCHITECTURE.md`.
 
 ## Persistence and tenant boundary
@@ -42,12 +48,13 @@ queries and logical deletion, with explicit `JdbcClient` SQL for complex filters
 bulk operations.
 
 Relational tenant isolation is designed around PostgreSQL schemas. Business tables do not carry
-a `tenant_id` column. `DatabaseTenant` validates the schema derived from the current tenant and
-defaults to the configured `public` schema. At present, `TenantFilter` binds only the configured
-default tenant, and runtime data-source routing plus per-tenant Flyway orchestration are not
-implemented. The application therefore serves the default schema only; the schema-per-tenant
-model must not be treated as active multi-tenant request routing. Redis keys, DFS paths, and RPC
-identity still require their own tenant namespaces.
+a `tenant_id` column. `DatabaseTenant` resolves and validates the schema name. With multi-tenancy disabled it returns
+the configured default tenant and schema (normally `public`). When enabled, a nonblank context tenant is validated
+directly as the schema string; it is not specially remapped to the default schema. This helper does not route
+connections: WebMVC `DeploymentScopeFilter` binds only the configured deployment tenant, and the application
+data source and Flyway setup use the configured default schema. Per-tenant data-source routing and
+Flyway orchestration are not implemented, so schema-per-tenant is not active request isolation.
+Redis keys, DFS paths, and RPC identity still require their own tenant namespaces.
 
 See the [database component README](loadup-components/data/loadup-components-database/README.md)
 for current configuration and persistence details.

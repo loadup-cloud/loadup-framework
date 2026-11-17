@@ -32,8 +32,7 @@ capabilities only; presigned URLs and multipart upload are unsupported.
 
 ## 自动装配
 
-- [
-  `DatabaseDfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/database/autoconfigure/DatabaseDfsAutoConfiguration.java)
+- [ `DatabaseDfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/database/autoconfigure/DatabaseDfsAutoConfiguration.java)
     - 启用条件：`@ConditionalOnProperty(prefix = "loadup.dfs", name = "binder-type", havingValue = "database")`。
 
 设计边界与装配路径见 [ARCHITECTURE.md](ARCHITECTURE.md)。

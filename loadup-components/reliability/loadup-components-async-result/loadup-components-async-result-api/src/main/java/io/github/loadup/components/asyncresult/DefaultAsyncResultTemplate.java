@@ -125,10 +125,7 @@ public final class DefaultAsyncResultTemplate implements AsyncResultTemplate {
             throw new IllegalArgumentException("waitTimeout exceeds configured bounds");
         }
         var key = new AsyncReplyKey(
-                options.tenantId(),
-                options.operation(),
-                options.businessId(),
-                UUID.randomUUID().toString());
+                options.operation(), options.businessId(), UUID.randomUUID().toString());
         var p = new Pending<T>(key, type);
         synchronized (lifecycle) {
             if (closed) {

@@ -68,8 +68,8 @@ EnvironmentPostProcessor 通过标准 `management.metrics.tags.application` 提�
 | JSON API 结果          | `loadup.api.responses`，`outcome=success/failure`                               |
 | 命名出站调用（含 KMS） | `loadup.http.calls`，配置中的 client、operation 与 `outcome=success/failure`    |
 | 分布式锁               | `loadup.lock.acquire`、`loadup.lock.hold`；有限 outcome/reason；释放失败计数    |
-| Outbox 投递与状态      | `loadup.outbox.delivery` 的 success/failure；pending、failed、oldest.age 状态量 |
-| Outbox handler Trace   | `loadup.outbox.handle` Observation                                              |
+| Task 投递与状态      | `loadup.task.delivery` 的 success/failure；pending、failed、oldest.age 状态量 |
+| Task handler Trace   | `loadup.task.handle` Observation                                              |
 | Resilience4j           | 官方 Micrometer binder 的标准名称和配置实例维度                                 |
 
 HTTP 非 2xx 与传输失败均计为 failure；标准 HTTP 客户端观测仍保留协议状态分类。组件从容器注入共享 `MeterRegistry` /

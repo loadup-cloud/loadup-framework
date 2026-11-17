@@ -15,14 +15,12 @@
  */
 package io.github.loadup.components.payment.channel.core;
 
-import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.ACTION_FORBIDDEN;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.CHANNEL_BINDING_MISMATCH;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.CHANNEL_RESPONSE_INVALID;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.INVALID_ARGUMENT;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.INVALID_STATE;
 
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.payment.channel.api.facade.ChannelNotificationFacade;
 import io.github.loadup.components.payment.channel.api.model.ChannelExecutionContext;
 import io.github.loadup.components.payment.channel.api.model.ChannelNotificationAcknowledgement;
@@ -56,9 +54,6 @@ public final class DefaultChannelNotificationFacade implements ChannelNotificati
         if (context == null || input == null) {
             throw new CommonException(INVALID_ARGUMENT);
         }
-        if (!context.tenantId().equals(TenantUtil.getTenantId())) {
-            throw new CommonException(ACTION_FORBIDDEN);
-        }
         var result = provider(context.binding().channel()).identify(context, input);
         if (result == null) {
             throw new CommonException(CHANNEL_RESPONSE_INVALID);
@@ -74,9 +69,6 @@ public final class DefaultChannelNotificationFacade implements ChannelNotificati
         }
         if (context == null || target == null || input == null) {
             throw new CommonException(INVALID_ARGUMENT);
-        }
-        if (!context.tenantId().equals(TenantUtil.getTenantId())) {
-            throw new CommonException(ACTION_FORBIDDEN);
         }
         var identity = target.identity();
         if (context.binding().channel() != identity.channel()
@@ -102,9 +94,6 @@ public final class DefaultChannelNotificationFacade implements ChannelNotificati
         if (context == null || input == null) {
             throw new CommonException(INVALID_ARGUMENT);
         }
-        if (!context.tenantId().equals(TenantUtil.getTenantId())) {
-            throw new CommonException(ACTION_FORBIDDEN);
-        }
         var result = provider(context.binding().channel()).identifyRefund(context, input);
         if (result == null) {
             throw new CommonException(CHANNEL_RESPONSE_INVALID);
@@ -120,9 +109,6 @@ public final class DefaultChannelNotificationFacade implements ChannelNotificati
         }
         if (context == null || target == null || input == null) {
             throw new CommonException(INVALID_ARGUMENT);
-        }
-        if (!context.tenantId().equals(TenantUtil.getTenantId())) {
-            throw new CommonException(ACTION_FORBIDDEN);
         }
         var identity = target.original();
         if (context.binding().channel() != identity.channel()

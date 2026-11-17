@@ -15,13 +15,11 @@
  */
 package io.github.loadup.components.payment.channel.alipay.protocol;
 
-import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.ACTION_FORBIDDEN;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.CHANNEL_CREDENTIAL_UNAVAILABLE;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.INVALID_STATE;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.UNSUPPORTED_CAPABILITY;
 
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.kms.KmsKeyRef;
 import io.github.loadup.components.kms.KmsTemplate;
 import io.github.loadup.components.payment.channel.alipay.config.AlipayProperties;
@@ -59,12 +57,9 @@ public class AlipayCredentialReader {
                 .build();
     }
 
-    public AlipayCredentials read(String tenant, ChannelBindingRevision binding) {
+    public AlipayCredentials read(ChannelBindingRevision binding) {
         if (TransactionSynchronizationManager.isActualTransactionActive()) {
             throw new CommonException(INVALID_STATE);
-        }
-        if (tenant == null || !tenant.equals(TenantUtil.getTenantId())) {
-            throw new CommonException(ACTION_FORBIDDEN);
         }
         if (!properties.enabled()
                 || binding == null
@@ -78,8 +73,7 @@ public class AlipayCredentialReader {
                     binding.credentialReference(),
                     binding.credentialVersion(),
                     AlipayCredentialDocument.class);
-            if (!tenant.equals(document.tenantId())
-                    || !binding.credentialReference().equals(document.reference())
+            if (!binding.credentialReference().equals(document.reference())
                     || !binding.credentialVersion().equals(document.version())
                     || !identity.appId().equals(document.appId())
                     || document.signingKeyVersion() <= 0) {
@@ -101,8 +95,7 @@ public class AlipayCredentialReader {
                         identity.authorizationReference(),
                         identity.authorizationVersion(),
                         AlipayAuthorizationDocument.class);
-                if (!tenant.equals(delegated.tenantId())
-                        || !identity.authorizationReference().equals(delegated.reference())
+                if (!identity.authorizationReference().equals(delegated.reference())
                         || !identity.authorizationVersion().equals(delegated.version())
                         || !identity.appId().equals(delegated.appId())
                         || !identity.sellerId().equals(delegated.sellerId())
@@ -128,8 +121,7 @@ public class AlipayCredentialReader {
                     Arrays.fill(plaintext, (byte) 0);
                 }
             }
-            return new AlipayCredentials(
-                    tenant, identity.appId(), identity.sellerId(), signer, publicKey, authorization);
+            return new AlipayCredentials(identity.appId(), identity.sellerId(), signer, publicKey, authorization);
         } catch (RuntimeException failure) {
             throw new CommonException(CHANNEL_CREDENTIAL_UNAVAILABLE);
         }
@@ -138,12 +130,9 @@ public class AlipayCredentialReader {
     /**
      * Verification needs only the frozen descriptor's platform key, never a signing or merchant authorization decrypt.
      */
-    public PublicKey verificationKey(String tenant, ChannelBindingRevision binding) {
+    public PublicKey verificationKey(ChannelBindingRevision binding) {
         if (TransactionSynchronizationManager.isActualTransactionActive()) {
             throw new CommonException(INVALID_STATE);
-        }
-        if (tenant == null || !tenant.equals(TenantUtil.getTenantId())) {
-            throw new CommonException(ACTION_FORBIDDEN);
         }
         if (!properties.enabled()
                 || binding == null
@@ -157,8 +146,7 @@ public class AlipayCredentialReader {
                     binding.credentialReference(),
                     binding.credentialVersion(),
                     AlipayCredentialDocument.class);
-            if (!tenant.equals(document.tenantId())
-                    || !binding.credentialReference().equals(document.reference())
+            if (!binding.credentialReference().equals(document.reference())
                     || !binding.credentialVersion().equals(document.version())
                     || !identity.appId().equals(document.appId())
                     || document.sellerId() != null && !identity.sellerId().equals(document.sellerId())

@@ -15,7 +15,6 @@
  */
 package io.github.loadup.components.payment.channel.wechat;
 
-import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.ACTION_FORBIDDEN;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.CHANNEL_RESPONSE_INVALID;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.CHANNEL_SIGNATURE_INVALID;
 import static io.github.loadup.components.payment.channel.api.error.ChannelResultCodeEnum.INVALID_STATE;
@@ -38,7 +37,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.http.HttpCall;
 import io.github.loadup.components.http.HttpRequestSigner;
 import io.github.loadup.components.http.HttpTemplate;
@@ -138,9 +136,8 @@ class WechatStatementProviderTest {
                 "https://api.mch.weixin.qq.com/v3/billdownload/file?token=private%2Btoken%2Fvalue%3D"));
         when(kms.sign(any(), eq(KmsSignatureAlgorithm.RSA_SHA256_PKCS1), any()))
                 .thenReturn(new KmsSignature("signer", 1, KmsSignatureAlgorithm.RSA_SHA256_PKCS1, new byte[256]));
-        when(credentials.read(eq("tenant"), any()))
+        when(credentials.read(any()))
                 .thenReturn(new WechatCredentials(
-                        "tenant",
                         "app",
                         "190000001",
                         "ABCD1234ABCD1234",
@@ -231,14 +228,14 @@ class WechatStatementProviderTest {
             assertEquals(length, bytes.length);
             fields.add(bytes);
         }
-        assertEquals(17, fields.size());
-        assertEquals("credential", new String(fields.get(7), StandardCharsets.UTF_8));
-        assertEquals("v1", new String(fields.get(8), StandardCharsets.UTF_8));
-        assertTrue(new String(fields.get(10), StandardCharsets.UTF_8).startsWith("WECHATPAY2-SHA256-RSA2048 "));
-        assertArrayEquals(json.writeValueAsBytes(grant.get()), fields.get(16));
+        assertEquals(16, fields.size());
+        assertEquals("credential", new String(fields.get(6), StandardCharsets.UTF_8));
+        assertEquals("v1", new String(fields.get(7), StandardCharsets.UTF_8));
+        assertTrue(new String(fields.get(9), StandardCharsets.UTF_8).startsWith("WECHATPAY2-SHA256-RSA2048 "));
+        assertArrayEquals(json.writeValueAsBytes(grant.get()), fields.get(15));
         assertFalse(result.toString().contains("private+token"));
         assertFalse(result.receipt().toString().contains("private%2Btoken"));
-        verify(credentials, times(1)).read("tenant", context.binding());
+        verify(credentials, times(1)).read(context.binding());
         verify(http, times(1)).download(anyString(), anyString(), any(), any(), any());
     }
 
@@ -322,16 +319,7 @@ class WechatStatementProviderTest {
     }
 
     @Test
-    void wrongTenantActiveTransactionAndUnsupportedProfileFailBeforeCredentialsOrHttp() {
-        assertEquals(
-                ACTION_FORBIDDEN,
-                assertThrows(
-                                CommonException.class,
-                                () -> TenantUtil.callWithTenant(
-                                        "other",
-                                        () -> provider.download(
-                                                context(false), new ChannelStatementRequest(scope, 1024))))
-                        .getResultCode());
+    void activeTransactionAndUnsupportedProfileFailBeforeCredentialsOrHttp() {
         TransactionSynchronizationManager.setActualTransactionActive(true);
         try {
             assertEquals(
@@ -347,33 +335,27 @@ class WechatStatementProviderTest {
                 UNSUPPORTED_CAPABILITY,
                 assertThrows(
                                 CommonException.class,
-                                () -> TenantUtil.callWithTenant(
-                                        "tenant",
-                                        () -> provider.download(
-                                                context(false), new ChannelStatementRequest(invalid, 1024))))
+                                () -> provider.download(context(false), new ChannelStatementRequest(invalid, 1024)))
                         .getResultCode());
         verifyNoInteractions(credentials, http, kms);
     }
 
     private VerifiedChannelStatement fetch(ChannelExecutionContext context, int max) {
-        return TenantUtil.callWithTenant(
-                "tenant", () -> provider.download(context, new ChannelStatementRequest(scope, max)));
+        return provider.download(context, new ChannelStatementRequest(scope, max));
     }
 
     private ChannelExecutionContext context(boolean partner) {
         var identity = new WechatAccountIdentity("app", "190000001", null, partner ? "190000002" : null);
-        return new ChannelExecutionContext(
-                "tenant",
-                new ChannelBindingRevision(
-                        "revision",
-                        "merchant",
-                        Channel.WECHAT,
-                        identity.accessMode(),
-                        scope.accountScopeHash(),
-                        "credential",
-                        "v1",
-                        identity,
-                        Set.of(PaymentMethod.H5)));
+        return new ChannelExecutionContext(new ChannelBindingRevision(
+                "revision",
+                "merchant",
+                Channel.WECHAT,
+                identity.accessMode(),
+                scope.accountScopeHash(),
+                "credential",
+                "v1",
+                identity,
+                Set.of(PaymentMethod.H5)));
     }
 
     private URI uri(String host, String path, HttpCall request) {

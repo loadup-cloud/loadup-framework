@@ -16,8 +16,7 @@
 
 主要入口文件：
 
-- [
-  `ExtensionAutoConfiguration`](src/main/java/io/github/loadup/components/extension/config/ExtensionAutoConfiguration.java)
+- [ `ExtensionAutoConfiguration`](src/main/java/io/github/loadup/components/extension/config/ExtensionAutoConfiguration.java)
 - [`ExtensionProvider`](src/main/java/io/github/loadup/components/extension/spi/ExtensionProvider.java)
 
 ## 分层与调用路径
@@ -28,8 +27,7 @@
 
 ## 装配规则
 
-- [
-  `ExtensionAutoConfiguration`](src/main/java/io/github/loadup/components/extension/config/ExtensionAutoConfiguration.java)
+- [ `ExtensionAutoConfiguration`](src/main/java/io/github/loadup/components/extension/config/ExtensionAutoConfiguration.java)
   是自动配置入口。
     - `@ConditionalOnClass({ExtensionExecutor.class, ExtensionRegistry.class})`
     - `@ConditionalOnMissingBean(BizScenarioInterceptor.class)`

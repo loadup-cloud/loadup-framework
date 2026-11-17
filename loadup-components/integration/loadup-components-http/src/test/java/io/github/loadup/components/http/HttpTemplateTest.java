@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sun.net.httpserver.HttpServer;
+import io.github.loadup.components.runtime.deployment.DeploymentIdentity;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
@@ -45,6 +46,7 @@ import tools.jackson.databind.json.JsonMapper;
 
 class HttpTemplateTest {
     private final AtomicInteger calls = new AtomicInteger();
+    private final AtomicReference<String> tenantHeader = new AtomicReference<>();
     private HttpServer server;
     private HttpTemplate http;
     private SimpleMeterRegistry metrics;
@@ -77,6 +79,7 @@ class HttpTemplateTest {
         server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         server.createContext("/echo", exchange -> {
             calls.incrementAndGet();
+            tenantHeader.set(exchange.getRequestHeaders().getFirst("X-Tenant-Code"));
             byte[] body = exchange.getRequestBody().readAllBytes();
             exchange.sendResponseHeaders(200, body.length);
             exchange.getResponseBody().write(body);
@@ -617,6 +620,53 @@ class HttpTemplateTest {
                         (method, uri, body) -> Map.of("X-Test", "invalid\rheader")))
                 .isInstanceOf(IllegalArgumentException.class);
         assertThat(calls).hasValue(0);
+    }
+
+    @Test
+    void internalClientsSendTheFixedDeploymentCodeAndThirdPartyTargetsDoNot() {
+        var identity = new DeploymentIdentity("customer-a");
+        var conventional = new HttpProperties.Client(
+                null,
+                Duration.ofSeconds(1),
+                Duration.ofSeconds(1),
+                null,
+                null,
+                null,
+                null,
+                1024L,
+                null,
+                null,
+                true,
+                null,
+                Map.of(),
+                Map.of("echo", new HttpProperties.Operation(HttpMethod.POST, "/echo", null)));
+        try (var internal = new HttpTemplate(
+                new HttpProperties(server.getAddress().getPort(), Map.of("localhost", conventional)),
+                RestClient::builder,
+                JsonMapper.builder().build(),
+                null,
+                null,
+                null,
+                "internal",
+                identity)) {
+            internal.exchange(
+                    "localhost", "echo", new HttpCall(null, null, Map.of("X-Tenant-Code", "customer-b"), null));
+        }
+        assertThat(tenantHeader.get()).isEqualTo("customer-a");
+
+        tenantHeader.set(null);
+        try (var thirdParty = new HttpTemplate(
+                config(1024L, true, Map.of()),
+                RestClient::builder,
+                JsonMapper.builder().build(),
+                null,
+                null,
+                null,
+                "third-party",
+                identity)) {
+            thirdParty.exchange("test", "echo", new HttpCall(null, null, null, null));
+        }
+        assertThat(tenantHeader.get()).isNull();
     }
 
     private HttpProperties config(long limit, boolean allowPrivate, Map<String, String> headers) {

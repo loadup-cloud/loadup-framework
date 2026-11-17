@@ -13,7 +13,7 @@ Boot 的 RestClient 定制、Jackson 配置及 HTTP Observation。
 ```
 
 第三方版本由 LoadUp BOM 继承的 Spring Boot BOM 管理，Apache HttpClient 5 在 LoadUp BOM 中明确声明。组件不启动 Web 服务器，不依赖
-UPMS、Outbox 或渠道 SDK。
+UPMS、Task 或渠道 SDK。
 
 ## 配置
 
@@ -153,7 +153,7 @@ URL、报文或底层异常消息；HTTP 错误状态由 ResponseEntity 返回�
 HTTP 指标；另有 `loadup.http.calls`，使用配置中的 client、operation 和固定 outcome 标签，不放入订单、租户或 traceId。
 
 **不自动重试、不跟随重定向、不使用共享 Cookie 状态。** Apache 自动重试明确关闭。需要业务重试时使用稳定渠道请求号或下游幂等协议，再由业务选择
-PowerJob/Outbox；不能让多个组件重复包装重试。
+PowerJob/Task；不能让多个组件重复包装重试。
 
 ## 能力矩阵
 
@@ -181,7 +181,7 @@ mvnd clean test -pl loadup-components/integration/loadup-components-http -am \
   -Dsurefire.failIfNoSpecifiedTests=false -Dspotless.skip=true -Dspotbugs.skip=true
 ```
 
-本次实现未执行构建或测试。设计见 [ARCHITECTURE.md](ARCHITECTURE.md)。
+签名、大小限制、超时及失败传播需运行验收，设计见 [ARCHITECTURE.md](ARCHITECTURE.md)。
 
 ## 统一指标
 

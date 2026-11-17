@@ -34,7 +34,6 @@ import static org.mockito.Mockito.when;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.money.Money;
 import io.github.loadup.commons.util.DigestUtils;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.payment.channel.api.model.ChannelBindingRevision;
 import io.github.loadup.components.payment.channel.api.model.ChannelExecutionContext;
 import io.github.loadup.components.payment.channel.api.model.ChannelPaymentIdentity;
@@ -70,35 +69,30 @@ class WechatPaymentAdapterTest {
     private final ChannelPaymentIdentity identity =
             new ChannelPaymentIdentity("payment", "attempt", Channel.WECHAT, "binding", "a".repeat(64), "original_01");
     private final ChannelPaymentTarget target = new ChannelPaymentTarget(identity, AMOUNT);
-    private final ChannelExecutionContext context = new ChannelExecutionContext(
-            "tenant",
-            new ChannelBindingRevision(
-                    "binding",
-                    "merchant",
-                    Channel.WECHAT,
-                    AccessMode.SERVICE_PROVIDER,
-                    "a".repeat(64),
-                    "credential",
-                    "v1",
-                    new WechatAccountIdentity("wx-provider", "1900000001", "wx-sub-app", "1900000002"),
-                    Set.of(PaymentMethod.JSAPI)));
+    private final ChannelExecutionContext context = new ChannelExecutionContext(new ChannelBindingRevision(
+            "binding",
+            "merchant",
+            Channel.WECHAT,
+            AccessMode.SERVICE_PROVIDER,
+            "a".repeat(64),
+            "credential",
+            "v1",
+            new WechatAccountIdentity("wx-provider", "1900000001", "wx-sub-app", "1900000002"),
+            Set.of(PaymentMethod.JSAPI)));
 
     @Test
     void successAndRefundPreserveGrossAmountAndOriginalSuccessTime() {
         for (String state : List.of("SUCCESS", "REFUND")) {
-            when(client.call(anyString(), any(), eq(WechatMethod.PARTNER_QUERY), anyMap(), anyMap(), isNull()))
+            when(client.call(any(), eq(WechatMethod.PARTNER_QUERY), anyMap(), anyMap(), isNull()))
                     .thenReturn(query(200, body(state)));
-            TenantUtil.runWithTenant("tenant", () -> {
-                var result = adapter.query(context, target);
-                assertEquals(ChannelPaymentOutcome.Kind.SUCCEEDED, result.kind());
-                assertEquals(AMOUNT, result.amount());
-                assertEquals("wx-transaction", result.channelTransactionNo());
-                assertEquals(LocalDateTime.of(2026, 10, 24, 11, 0), result.succeededAt());
-            });
+            var result = adapter.query(context, target);
+            assertEquals(ChannelPaymentOutcome.Kind.SUCCEEDED, result.kind());
+            assertEquals(AMOUNT, result.amount());
+            assertEquals("wx-transaction", result.channelTransactionNo());
+            assertEquals(LocalDateTime.of(2026, 10, 24, 11, 0), result.succeededAt());
         }
         verify(client, times(2))
                 .call(
-                        eq("tenant"),
                         eq(context.binding()),
                         eq(WechatMethod.PARTNER_QUERY),
                         eq(Map.of("out_trade_no", "original_01")),
@@ -115,53 +109,46 @@ class WechatPaymentAdapterTest {
                 original.replace("original_01", "wrong-order"),
                 original.replace("1250", "1000"),
                 original.replace("1250", "1250.0"))) {
-            when(client.call(anyString(), any(), eq(WechatMethod.PARTNER_QUERY), anyMap(), anyMap(), isNull()))
+            when(client.call(any(), eq(WechatMethod.PARTNER_QUERY), anyMap(), anyMap(), isNull()))
                     .thenReturn(query(200, changed));
-            TenantUtil.runWithTenant(
-                    "tenant", () -> assertThrows(CommonException.class, () -> adapter.query(context, target)));
+            assertThrows(CommonException.class, () -> adapter.query(context, target));
         }
     }
 
     @Test
     void closedAndNotFoundRemainUnknownAndRecoveryOnlyQueriesOriginalOrder() {
-        when(client.call(anyString(), any(), eq(WechatMethod.PARTNER_QUERY), anyMap(), anyMap(), isNull()))
+        when(client.call(any(), eq(WechatMethod.PARTNER_QUERY), anyMap(), anyMap(), isNull()))
                 .thenReturn(query(200, body("CLOSED")), query(404, "{\"code\":\"ORDER_NOT_EXIST\"}"));
-        TenantUtil.runWithTenant("tenant", () -> {
-            assertEquals(
-                    ChannelPaymentOutcome.Kind.UNKNOWN,
-                    adapter.query(context, target).kind());
-            var result = adapter.recover(
-                    context,
-                    new ChannelPaymentRecovery(
-                            identity,
-                            AMOUNT,
-                            PaymentMethod.JSAPI,
-                            1,
-                            OffsetDateTime.now(CLOCK).plusHours(1)));
-            assertEquals(
-                    ChannelPaymentOutcome.Kind.UNKNOWN, result.observation().kind());
-            assertNull(result.action());
-        });
-        verify(client, times(2)).call(anyString(), any(), eq(WechatMethod.PARTNER_QUERY), anyMap(), anyMap(), isNull());
+        assertEquals(
+                ChannelPaymentOutcome.Kind.UNKNOWN,
+                adapter.query(context, target).kind());
+        var result = adapter.recover(
+                context,
+                new ChannelPaymentRecovery(
+                        identity,
+                        AMOUNT,
+                        PaymentMethod.JSAPI,
+                        1,
+                        OffsetDateTime.now(CLOCK).plusHours(1)));
+        assertEquals(ChannelPaymentOutcome.Kind.UNKNOWN, result.observation().kind());
+        assertNull(result.action());
+        verify(client, times(2)).call(any(), eq(WechatMethod.PARTNER_QUERY), anyMap(), anyMap(), isNull());
         verifyNoMoreInteractions(client);
     }
 
     @Test
     void onlySignedCloseAcknowledgementAfterOriginalPendingQueryProvesNoCollection() {
-        when(client.call(anyString(), any(), eq(WechatMethod.PARTNER_QUERY), anyMap(), anyMap(), isNull()))
+        when(client.call(any(), eq(WechatMethod.PARTNER_QUERY), anyMap(), anyMap(), isNull()))
                 .thenReturn(query(200, body("NOTPAY")));
-        when(client.call(anyString(), any(), eq(WechatMethod.PARTNER_CLOSE), anyMap(), anyMap(), anyString()))
+        when(client.call(any(), eq(WechatMethod.PARTNER_CLOSE), anyMap(), anyMap(), anyString()))
                 .thenReturn(new WechatVerifiedResponse(WechatMethod.PARTNER_CLOSE, 204, "", "b".repeat(64)));
-        TenantUtil.runWithTenant("tenant", () -> {
-            var result = adapter.close(context, target);
-            assertEquals(ChannelPaymentOutcome.Kind.NO_COLLECTION, result.kind());
-            assertEquals(PaymentObservation.Source.CLOSE_RESPONSE, result.source());
-            assertNotEquals("b".repeat(64), result.sourceDigest());
-        });
+        var result = adapter.close(context, target);
+        assertEquals(ChannelPaymentOutcome.Kind.NO_COLLECTION, result.kind());
+        assertEquals(PaymentObservation.Source.CLOSE_RESPONSE, result.source());
+        assertNotEquals("b".repeat(64), result.sourceDigest());
         var sent = ArgumentCaptor.forClass(String.class);
         verify(client)
                 .call(
-                        eq("tenant"),
                         eq(context.binding()),
                         eq(WechatMethod.PARTNER_CLOSE),
                         eq(Map.of("out_trade_no", "original_01")),
@@ -177,31 +164,26 @@ class WechatPaymentAdapterTest {
         for (String changed : List.of(
                 body("USERPAYING").replace("JSAPI", "MICROPAY"),
                 body("NOTPAY").replace("\"trade_type\":\"JSAPI\",", ""))) {
-            when(client.call(anyString(), any(), eq(WechatMethod.PARTNER_QUERY), anyMap(), anyMap(), isNull()))
+            when(client.call(any(), eq(WechatMethod.PARTNER_QUERY), anyMap(), anyMap(), isNull()))
                     .thenReturn(query(200, changed));
-            TenantUtil.runWithTenant("tenant", () -> {
-                var result = adapter.close(context, target);
-                assertEquals(ChannelPaymentOutcome.Kind.ACCEPTED, result.kind());
-                assertEquals(PaymentObservation.Source.QUERY_RESPONSE, result.source());
-            });
+            var result = adapter.close(context, target);
+            assertEquals(ChannelPaymentOutcome.Kind.ACCEPTED, result.kind());
+            assertEquals(PaymentObservation.Source.QUERY_RESPONSE, result.source());
         }
-        verify(client, never())
-                .call(anyString(), any(), eq(WechatMethod.PARTNER_CLOSE), anyMap(), anyMap(), anyString());
+        verify(client, never()).call(any(), eq(WechatMethod.PARTNER_CLOSE), anyMap(), anyMap(), anyString());
     }
 
     @Test
     void closeRaceRequeriesInsteadOfTreatingErrorAsAnUnpaidProof() {
-        when(client.call(anyString(), any(), eq(WechatMethod.PARTNER_QUERY), anyMap(), anyMap(), isNull()))
+        when(client.call(any(), eq(WechatMethod.PARTNER_QUERY), anyMap(), anyMap(), isNull()))
                 .thenReturn(query(200, body("USERPAYING")), query(200, body("SUCCESS")));
-        when(client.call(anyString(), any(), eq(WechatMethod.PARTNER_CLOSE), anyMap(), anyMap(), anyString()))
+        when(client.call(any(), eq(WechatMethod.PARTNER_CLOSE), anyMap(), anyMap(), anyString()))
                 .thenReturn(new WechatVerifiedResponse(
                         WechatMethod.PARTNER_CLOSE, 400, "{\"code\":\"ORDERPAID\"}", "b".repeat(64)));
-        TenantUtil.runWithTenant(
-                "tenant",
-                () -> assertEquals(
-                        ChannelPaymentOutcome.Kind.SUCCEEDED,
-                        adapter.close(context, target).kind()));
-        verify(client, times(2)).call(anyString(), any(), eq(WechatMethod.PARTNER_QUERY), anyMap(), anyMap(), isNull());
+        assertEquals(
+                ChannelPaymentOutcome.Kind.SUCCEEDED,
+                adapter.close(context, target).kind());
+        verify(client, times(2)).call(any(), eq(WechatMethod.PARTNER_QUERY), anyMap(), anyMap(), isNull());
     }
 
     private String body(String state) {

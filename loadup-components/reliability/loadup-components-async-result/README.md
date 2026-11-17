@@ -1,13 +1,13 @@
 # LoadUp Async Result
 
-通过关联 ID 等待 MQ、Outbox、Webhook 或本地异步处理的业务结果。支持同步方法返回和 CompletableFuture；Local 后端用于同进程，Redis
+通过关联 ID 等待 MQ、Task、Webhook 或本地异步处理的业务结果。支持同步方法返回和 CompletableFuture；Local 后端用于同进程，Redis
 后端支持结果到达任意实例。组件不发送 MQ 消息，不决定支付等业务的最终状态。
 
 ## 能力矩阵
 
 | 能力            | 契约                                                                 |
 |-----------------|----------------------------------------------------------------------|
-| 关联            | 可信 tenantId + operation + businessId + 每次随机 UUID correlationId |
+| 关联            | operation + businessId + 每次随机 UUID correlationId（部署隔离由配置 namespace 提供） |
 | 同步 / 异步     | execute / executeAsync，共用容量、超时和清理逻辑                     |
 | 单结果          | 首个终态生效；按编码后 payload 或错误码判断重复/冲突                 |
 | Redis 多实例    | 先存结果再通知原实例；丢失通知由查询兜底                             |
@@ -66,7 +66,7 @@ result-retention 必须不小于 max-wait-timeout，最长 7 天；同步等待�
 ```java
 public PaymentResultDTO submit(PaymentCreateCommand command) {
     var options = new AsyncResultOptions(
-            trustedTenantId, "payment.submit.v1", command.orderId(), Duration.ofSeconds(5));
+            "payment.submit.v1", command.orderId(), Duration.ofSeconds(5));
     return asyncResult.execute(options, PaymentResultDTO.class, key -> {
         // Put all AsyncReplyKey fields in the message envelope or headers.
         return paymentPublisher.send(command, key);
@@ -89,7 +89,7 @@ AsyncCompletionStatus status = asyncResult.complete(replyKey, paymentResult);
 asyncResult.completeFailure(replyKey, PaymentResultCodeEnum.CHANNEL_REJECTED);
 ```
 
-结果接收端验证消息来源、租户、operation 版本和 DTO，再调用组件。不要根据客户端提供的 tenantId 或 correlationId
+结果接收端验证消息来源、operation 版本和 DTO，再调用组件。不要根据客户端提供的 operation 或 correlationId
 直接授权。成功结果只接受调用方声明的 Class 类型，不携带 Java 类名或使用多态反序列化协议；泛型集合可以放在具体 DTO 中。
 
 | complete 返回 | 消费建议                                         |
@@ -113,9 +113,9 @@ ASYNC_RESULT_TIMEOUT 只表示本次等待超时；业务可按订单状态将�
 PROCESSING，后续查询数据库中的最终结果。发送失败、ACK 超时或连接中断也可能存在“消息已发送但确认丢失”的情况，不应自动重复扣款。取消
 Future、线程中断、应用退出均不向消费者下发业务撤销命令。
 
-## Outbox 与提交顺序
+## Task 与提交顺序
 
-入口先注册等待，回调调用独立事务 Service，保存业务与 Outbox，事务返回后等待后台处理结果。不能在等待外层包
+入口先注册等待，回调调用独立事务 Service，保存业务与 Task，事务返回后等待后台处理结果。不能在等待外层包
 @Transactional，也不能让消费者在事务提交前报告成功。
 
 ```java
@@ -125,7 +125,7 @@ return asyncResult.execute(options, PaymentResultDTO.class, key -> {
 });
 ```
 
-消费者需要可靠回传结果时，可将结果事件与业务变更一起写入其 Outbox，再通过 MQ 发送。现有 Outbox 的完成状态表示本地处理器完成，不自动等同于最终
+消费者需要可靠回传结果时，可将结果事件与业务变更一起写入其 Task，再通过 MQ 发送。现有 Task 的完成状态表示本地处理器完成，不自动等同于最终
 MQ 消费成功。业务数据库是最终状态来源，Redis 协调结果不能替代订单表。
 
 ## 观测与验证
@@ -136,5 +136,5 @@ loadup.async_result.read_failures；不把订单号、租户或 correlationId �
 异常消息。内部协议无日期字段；业务 DTO 日期格式沿用应用的 Jackson 配置和本地时区契约。
 
 测试及命令见 [test README](loadup-components-async-result-test/README.md)，包括 Local 并发、Redis 两客户端、Kafka
-request/reply 和真实 MySQL Outbox 提交顺序。测试编写不代表已执行；运行时应记录所执行的测试、环境及结果。内部设计见
+request/reply 和真实 PostgreSQL Task 提交顺序。测试编写不代表已执行；运行时应记录所执行的测试、环境及结果。内部设计见
 [ARCHITECTURE.md](ARCHITECTURE.md)。

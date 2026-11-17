@@ -22,44 +22,35 @@ import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.commons.validation.DomainChecks;
 import java.net.URI;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Trusted server callback URLs by tenant and immutable binding revision; never supplied by a merchant request.
+ * Trusted server callback URLs by immutable binding revision; never supplied by a merchant request.
  */
 @ConfigurationProperties("loadup.payment.channel.alipay.notifications")
-public record AlipayNotificationProperties(Map<String, Map<String, URI>> notifyUrls) {
+public record AlipayNotificationProperties(Map<String, URI> notifyUrls) {
     public AlipayNotificationProperties {
-        notifyUrls = notifyUrls == null
-                ? Map.of()
-                : notifyUrls.entrySet().stream()
-                        .collect(
-                                Collectors.toUnmodifiableMap(Map.Entry::getKey, entry -> Map.copyOf(entry.getValue())));
-        for (var tenant : notifyUrls.entrySet()) {
-            DomainChecks.id(tenant.getKey());
-            require(safeKey(tenant.getKey()), INVALID_ARGUMENT);
-            for (var binding : tenant.getValue().entrySet()) {
-                DomainChecks.id(binding.getKey());
-                require(safeKey(binding.getKey()), INVALID_ARGUMENT);
-                var uri = binding.getValue();
-                require(
-                        uri != null
-                                && "https".equals(uri.getScheme())
-                                && uri.getHost() != null
-                                && uri.getRawUserInfo() == null
-                                && uri.getRawFragment() == null
-                                && uri.getRawQuery() == null
-                                && uri.getRawPath() != null
-                                && !uri.getRawPath().isBlank()
-                                && uri.toASCIIString().length() <= 2048,
-                        INVALID_ARGUMENT);
-            }
+        notifyUrls = notifyUrls == null ? Map.of() : Map.copyOf(notifyUrls);
+        for (var binding : notifyUrls.entrySet()) {
+            DomainChecks.id(binding.getKey());
+            require(safeKey(binding.getKey()), INVALID_ARGUMENT);
+            var uri = binding.getValue();
+            require(
+                    uri != null
+                            && "https".equals(uri.getScheme())
+                            && uri.getHost() != null
+                            && uri.getRawUserInfo() == null
+                            && uri.getRawFragment() == null
+                            && uri.getRawQuery() == null
+                            && uri.getRawPath() != null
+                            && !uri.getRawPath().isBlank()
+                            && uri.toASCIIString().length() <= 2048,
+                    INVALID_ARGUMENT);
         }
     }
 
     private static boolean safeKey(String value) {
-        // Tenant and frozen binding identifiers are used as configuration keys; reject path-like values.
+        // Frozen binding identifiers are used as configuration keys; reject path-like values.
         return value.matches("[A-Za-z0-9_][A-Za-z0-9._:-]{0,63}");
     }
 

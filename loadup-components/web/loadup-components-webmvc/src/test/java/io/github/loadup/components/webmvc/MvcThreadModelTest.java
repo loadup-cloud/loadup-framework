@@ -18,7 +18,7 @@ package io.github.loadup.components.webmvc;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.loadup.commons.context.ContextHolder;
-import io.github.loadup.commons.context.ContextKeys;
+import io.github.loadup.commons.context.ContextKey;
 import io.github.loadup.commons.context.ExecutionContext;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -54,6 +54,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import tools.jackson.databind.ObjectMapper;
 
 class MvcThreadModelTest {
+    private static final ContextKey<String> DEPLOYMENT_KEY = new ContextKey<>("loadup.deployment", String.class);
+
     @ParameterizedTest
     @ValueSource(booleans = {false, true})
     void realServletRequestsUseTheSelectedThreadModelAndKeepContextsIsolated(boolean virtual) throws Exception {
@@ -64,6 +66,7 @@ class MvcThreadModelTest {
                                 "--server.port=0",
                                 "--server.tomcat.threads.max=2",
                                 "--server.tomcat.threads.min-spare=1",
+                                "--loadup.deployment.code=test-deployment",
                                 "--spring.threads.virtual.enabled=" + virtual,
                                 "--spring.task.execution.propagate-context=true",
                                 "--spring.main.keep-alive=true",
@@ -88,6 +91,7 @@ class MvcThreadModelTest {
                     var response = client.send(
                             HttpRequest.newBuilder(endpoint)
                                     .timeout(Duration.ofSeconds(5))
+                                    .header("X-Tenant-Code", "test-deployment")
                                     .header("X-Test-Tenant", tenant)
                                     .header("X-Test-Principal", principal)
                                     .GET()
@@ -106,6 +110,7 @@ class MvcThreadModelTest {
             }
             var failure = client.send(
                     HttpRequest.newBuilder(URI.create(endpoint + "?fail=true"))
+                            .header("X-Tenant-Code", "test-deployment")
                             .header("X-Test-Tenant", "failed")
                             .header("X-Test-Principal", "failed")
                             .timeout(Duration.ofSeconds(5))
@@ -115,6 +120,7 @@ class MvcThreadModelTest {
             assertThat(failure.statusCode()).isEqualTo(500);
             var empty = client.send(
                     HttpRequest.newBuilder(endpoint)
+                            .header("X-Tenant-Code", "test-deployment")
                             .timeout(Duration.ofSeconds(5))
                             .GET()
                             .build(),
@@ -156,7 +162,7 @@ class MvcThreadModelTest {
             var authentication = SecurityContextHolder.getContext().getAuthentication();
             return new State(
                     Thread.currentThread().isVirtual(),
-                    ContextHolder.get(ContextKeys.TENANT_ID),
+                    ContextHolder.get(DEPLOYMENT_KEY),
                     authentication == null ? null : authentication.getName());
         }
     }
@@ -179,7 +185,7 @@ class MvcThreadModelTest {
                 }
                 var metadata = tenant == null
                         ? ExecutionContext.empty()
-                        : ExecutionContext.empty().with(ContextKeys.TENANT_ID, tenant);
+                        : ExecutionContext.empty().with(DEPLOYMENT_KEY, tenant);
                 ContextHolder.<Void, ServletException>callWith(metadata, () -> {
                     try {
                         chain.doFilter(request, response);

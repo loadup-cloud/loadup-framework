@@ -23,17 +23,15 @@ import org.junit.jupiter.api.Test;
 
 class LockKeyOptionsTest {
     @Test
-    void scopeAndEncodedSegmentsPreventCollisions() {
-        var tenant = LockKey.tenant("payment", "a:b", "order");
-        assertThat(tenant.redisName("app"))
-                .isNotEqualTo(LockKey.tenant("payment:a", "b", "order").redisName("app"));
-        assertThat(LockKey.global("payment", "order").redisName("app"))
-                .isNotEqualTo(LockKey.tenant("payment", "__global__", "order").redisName("app"));
-        assertThat(tenant.redisName("app")).isNotEqualTo(tenant.redisName("other"));
-        assertThat(LockKey.tenant("payment", "a", "{order}").redisName("app")).doesNotContain("{", "}");
-        assertThat(tenant.toString()).doesNotContain("a:b", "order");
-        assertThatIllegalArgumentException().isThrownBy(() -> LockKey.tenant("payment", null, "order"));
-        assertThatIllegalArgumentException().isThrownBy(() -> LockKey.global(" payment", "order"));
+    void encodedSegmentsAndNamespacePreventCollisions() {
+        var key = LockKey.of("payment", "a:b");
+        assertThat(key.redisName("app"))
+                .isNotEqualTo(LockKey.of("payment:a", "b").redisName("app"));
+        assertThat(key.redisName("app")).isNotEqualTo(key.redisName("other"));
+        assertThat(LockKey.of("payment", "{order}").redisName("app")).doesNotContain("{", "}");
+        assertThat(key.toString()).doesNotContain("a:b", "order");
+        assertThatIllegalArgumentException().isThrownBy(() -> LockKey.of(" payment", "order"));
+        assertThatIllegalArgumentException().isThrownBy(() -> LockKey.of("payment", " order"));
     }
 
     @Test

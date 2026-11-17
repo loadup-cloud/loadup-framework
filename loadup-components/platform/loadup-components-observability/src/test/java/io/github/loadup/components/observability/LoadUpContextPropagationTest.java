@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.loadup.commons.context.ContextHolder;
-import io.github.loadup.commons.context.ContextKeys;
+import io.github.loadup.commons.context.ContextKey;
 import io.github.loadup.commons.context.ExecutionContext;
 import io.micrometer.context.ContextRegistry;
 import io.micrometer.context.ContextSnapshotFactory;
@@ -41,6 +41,8 @@ import org.springframework.core.task.support.CompositeTaskDecorator;
 import org.springframework.core.task.support.ContextPropagatingTaskDecorator;
 
 class LoadUpContextPropagationTest {
+    private static final ContextKey<String> DEPLOYMENT_KEY = new ContextKey<>("loadup.deployment", String.class);
+
     @Test
     void composesScopedBusinessBindingsWithMicrometerAndRestoresBoth() throws Exception {
         var marker = new ThreadLocal<String>();
@@ -70,23 +72,23 @@ class LoadUpContextPropagationTest {
         marker.set("caller-marker");
         try {
             Runnable task = ContextHolder.callWith(
-                    ExecutionContext.empty().with(ContextKeys.TENANT_ID, "caller"),
+                    ExecutionContext.empty().with(DEPLOYMENT_KEY, "caller"),
                     () -> decorator.decorate(() -> {
-                        assertThat(ContextHolder.get(ContextKeys.TENANT_ID)).isEqualTo("caller");
+                        assertThat(ContextHolder.get(DEPLOYMENT_KEY)).isEqualTo("caller");
                         assertThat(marker.get()).isEqualTo("caller-marker");
                         throw new IllegalStateException("failed");
                     }));
             marker.set("worker-marker");
-            ContextHolder.runWith(ExecutionContext.empty().with(ContextKeys.TENANT_ID, "worker"), () -> {
+            ContextHolder.runWith(ExecutionContext.empty().with(DEPLOYMENT_KEY, "worker"), () -> {
                 assertThatThrownBy(task::run).isInstanceOf(IllegalStateException.class);
-                assertThat(ContextHolder.get(ContextKeys.TENANT_ID)).isEqualTo("worker");
+                assertThat(ContextHolder.get(DEPLOYMENT_KEY)).isEqualTo("worker");
                 assertThat(marker.get()).isEqualTo("worker-marker");
             });
             Runnable empty =
                     decorator.decorate(() -> assertThat(ContextHolder.isEmpty()).isTrue());
             try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
-                executor.submit(() -> ContextHolder.runWith(
-                                ExecutionContext.empty().with(ContextKeys.TENANT_ID, "worker"), empty))
+                executor.submit(() ->
+                                ContextHolder.runWith(ExecutionContext.empty().with(DEPLOYMENT_KEY, "worker"), empty))
                         .get();
             }
         } finally {
@@ -128,11 +130,11 @@ class LoadUpContextPropagationTest {
                     .run(context -> {
                         assertThat(context).hasSingleBean(LoadUpContextTaskDecorator.class);
                         var executor = context.getBean("applicationTaskExecutor", AsyncTaskExecutor.class);
-                        ContextHolder.callWith(ExecutionContext.empty().with(ContextKeys.TENANT_ID, "tenant"), () -> {
+                        ContextHolder.callWith(ExecutionContext.empty().with(DEPLOYMENT_KEY, "tenant"), () -> {
                             var value = executor.submit(() -> {
                                 assertThat(Thread.currentThread().isVirtual()).isEqualTo(virtual);
                                 assertThat(marker.get()).isEqualTo("request-marker");
-                                return ContextHolder.get(ContextKeys.TENANT_ID);
+                                return ContextHolder.get(DEPLOYMENT_KEY);
                             });
                             assertThat(value.get(5, TimeUnit.SECONDS)).isEqualTo("tenant");
                             return null;

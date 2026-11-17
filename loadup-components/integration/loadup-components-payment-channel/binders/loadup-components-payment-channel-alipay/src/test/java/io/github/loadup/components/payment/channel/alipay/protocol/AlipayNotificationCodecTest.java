@@ -26,7 +26,6 @@ import static org.mockito.Mockito.when;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.commons.money.Money;
 import io.github.loadup.commons.util.DigestUtils;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.payment.channel.api.model.AlipayAccountIdentity;
 import io.github.loadup.components.payment.channel.api.model.ChannelBindingRevision;
 import io.github.loadup.components.payment.channel.api.model.ChannelExecutionContext;
@@ -65,7 +64,7 @@ class AlipayNotificationCodecTest {
             "3",
             new AlipayAccountIdentity("app", "seller", null, null, null),
             Set.of(PaymentMethod.PAYMENT_CODE));
-    private static final ChannelExecutionContext CONTEXT = new ChannelExecutionContext("tenant", BINDING);
+    private static final ChannelExecutionContext CONTEXT = new ChannelExecutionContext(BINDING);
     private static final ChannelPaymentIdentity IDENTITY =
             new ChannelPaymentIdentity("payment-1", "attempt-1", Channel.ALIPAY, "revision-1", HASH, ORDER_NO);
     private static final ChannelPaymentTarget TARGET = new ChannelPaymentTarget(IDENTITY, AMOUNT);
@@ -157,10 +156,10 @@ class AlipayNotificationCodecTest {
     void verifiesRsa2CanonicalFormWithUnknownSignedUnicodeAndFormEncodedValues() throws Exception {
         var keys = rsaKeyPair();
         var values = fields();
-        when(credentials.verificationKey("tenant", BINDING)).thenReturn(keys.getPublic());
+        when(credentials.verificationKey(BINDING)).thenReturn(keys.getPublic());
         var signed = signedForm(values, keys);
 
-        var verified = TenantUtil.callWithTenant("tenant", () -> codec.verify(CONTEXT, TARGET, input(signed)));
+        var verified = codec.verify(CONTEXT, TARGET, input(signed));
 
         assertEquals(IDENTITY, verified.identity());
         assertEquals(AMOUNT, verified.amount());
@@ -172,13 +171,13 @@ class AlipayNotificationCodecTest {
         assertEquals(DigestUtils.sha256(AlipayProtocolCodec.canonical(canonical)), verified.sourceDigest());
         assertFalse(verified.toString().contains(signatureFrom(signed)));
         assertFalse(verified.toString().contains(signed));
-        verify(credentials).verificationKey("tenant", BINDING);
+        verify(credentials).verificationKey(BINDING);
     }
 
     @Test
     void rejectsTamperingDuplicateFieldsMalformedUtf8PercentBase64AndProtocolParameters() throws Exception {
         var keys = rsaKeyPair();
-        when(credentials.verificationKey("tenant", BINDING)).thenReturn(keys.getPublic());
+        when(credentials.verificationKey(BINDING)).thenReturn(keys.getPublic());
         var signed = signedForm(fields(), keys);
         assertInvalid(signed.replace("1250.00", "1251.00"));
         assertInvalid(signed + "&notify_id=duplicate");
@@ -192,7 +191,7 @@ class AlipayNotificationCodecTest {
     @Test
     void rejectsMismatchedFrozenContextOwnerOrderAndAmount() throws Exception {
         var keys = rsaKeyPair();
-        when(credentials.verificationKey("tenant", BINDING)).thenReturn(keys.getPublic());
+        when(credentials.verificationKey(BINDING)).thenReturn(keys.getPublic());
         var signed = signedForm(fields(), keys);
         var wrongContextBinding = new ChannelBindingRevision(
                 "other-revision",
@@ -204,38 +203,25 @@ class AlipayNotificationCodecTest {
                 "3",
                 BINDING.identity(),
                 Set.of(PaymentMethod.PAYMENT_CODE));
-        var wrongContext = new ChannelExecutionContext("tenant", wrongContextBinding);
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant("tenant", () -> codec.verify(wrongContext, TARGET, input(signed))));
+        var wrongContext = new ChannelExecutionContext(wrongContextBinding);
+        assertThrows(CommonException.class, () -> codec.verify(wrongContext, TARGET, input(signed)));
 
         assertThrows(
                 CommonException.class,
-                () -> TenantUtil.callWithTenant(
-                        "tenant",
-                        () -> codec.verify(
-                                CONTEXT,
-                                new ChannelPaymentTarget(
-                                        new ChannelPaymentIdentity(
-                                                "payment-1",
-                                                "attempt-1",
-                                                Channel.ALIPAY,
-                                                "revision-1",
-                                                HASH,
-                                                "other-order"),
-                                        AMOUNT),
-                                input(signed))));
+                () -> codec.verify(
+                        CONTEXT,
+                        new ChannelPaymentTarget(
+                                new ChannelPaymentIdentity(
+                                        "payment-1", "attempt-1", Channel.ALIPAY, "revision-1", HASH, "other-order"),
+                                AMOUNT),
+                        input(signed)));
         assertInvalid(signedForm(with(fields(), "app_id", "other-app"), keys));
         assertInvalid(signedForm(with(fields(), "seller_id", "other-seller"), keys));
         assertInvalid(signedForm(with(fields(), "notify_type", "refund_status_sync"), keys));
         assertThrows(
                 CommonException.class,
-                () -> TenantUtil.callWithTenant(
-                        "tenant",
-                        () -> codec.verify(
-                                CONTEXT,
-                                new ChannelPaymentTarget(IDENTITY, Money.ofMinor(125_001, "CNY")),
-                                input(signed))));
+                () -> codec.verify(
+                        CONTEXT, new ChannelPaymentTarget(IDENTITY, Money.ofMinor(125_001, "CNY")), input(signed)));
     }
 
     private void assertInvalid(String form) {
@@ -243,9 +229,6 @@ class AlipayNotificationCodecTest {
     }
 
     private void assertInvalid(String form, String contentType) {
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant(
-                        "tenant", () -> codec.verify(CONTEXT, TARGET, input(form, contentType))));
+        assertThrows(CommonException.class, () -> codec.verify(CONTEXT, TARGET, input(form, contentType)));
     }
 }

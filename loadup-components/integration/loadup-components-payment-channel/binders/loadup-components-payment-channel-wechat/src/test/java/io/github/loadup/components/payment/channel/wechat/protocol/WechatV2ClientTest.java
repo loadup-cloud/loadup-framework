@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -29,7 +28,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import io.github.loadup.commons.error.CommonException;
-import io.github.loadup.commons.util.TenantUtil;
 import io.github.loadup.components.http.HttpTemplate;
 import io.github.loadup.components.payment.channel.api.model.ChannelBindingRevision;
 import io.github.loadup.components.payment.channel.api.model.WechatAccountIdentity;
@@ -81,48 +79,34 @@ class WechatV2ClientTest {
                         "sign_type",
                         "HMAC-SHA256"),
                 key);
-        when(credentials.apiV2Key("tenant", binding)).thenReturn(key);
+        when(credentials.apiV2Key(binding)).thenReturn(key);
         when(http.exchange(eq("wechat-v2"), eq("micropay"), any()))
                 .thenReturn(ResponseEntity.ok(body.getBytes(StandardCharsets.UTF_8)));
-        var result = TenantUtil.callWithTenant(
-                "tenant", () -> client.call("tenant", binding, WechatV2Method.MICROPAY, request));
+        var result = client.call(binding, WechatV2Method.MICROPAY, request);
         assertEquals("USERPAYING", result.fields().get("err_code"));
         assertArrayEquals(new byte[32], key);
         verify(http, times(1)).exchange(eq("wechat-v2"), eq("micropay"), any());
-        verify(credentials, never()).apiV3Key(anyString(), any());
+        verify(credentials, never()).apiV3Key(any());
     }
 
     @Test
     void failedTransportStillErasesKeyAndDoesNotRetry() {
         byte[] key = "192006250b4c09247ec02edce69f6a2d".getBytes(StandardCharsets.UTF_8);
-        when(credentials.apiV2Key("tenant", binding)).thenReturn(key);
+        when(credentials.apiV2Key(binding)).thenReturn(key);
         when(http.exchange(eq("wechat-v2"), eq("micropay"), any()))
                 .thenThrow(new IllegalStateException("synthetic transport failure"));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant(
-                        "tenant", () -> client.call("tenant", binding, WechatV2Method.MICROPAY, request)));
+        assertThrows(CommonException.class, () -> client.call(binding, WechatV2Method.MICROPAY, request));
         assertArrayEquals(new byte[32], key);
         verify(http, times(1)).exchange(eq("wechat-v2"), eq("micropay"), any());
     }
 
     @Test
-    void wrongTenantAccountAndAmbientTransactionNeverReadSecretsOrCallHttp() {
+    void wrongAccountAndAmbientTransactionNeverReadSecretsOrCallHttp() {
         assertThrows(
                 CommonException.class,
-                () -> TenantUtil.callWithTenant(
-                        "other", () -> client.call("tenant", binding, WechatV2Method.MICROPAY, request)));
-        assertThrows(
-                CommonException.class,
-                () -> TenantUtil.callWithTenant(
-                        "tenant",
-                        () -> client.call(
-                                "tenant",
-                                binding,
-                                WechatV2Method.MICROPAY,
-                                Map.of("appid", "wx-app", "mch_id", "wrong"))));
+                () -> client.call(binding, WechatV2Method.MICROPAY, Map.of("appid", "wx-app", "mch_id", "wrong")));
         TransactionSynchronizationManager.setActualTransactionActive(true);
-        assertThrows(CommonException.class, () -> client.call("tenant", binding, WechatV2Method.MICROPAY, request));
+        assertThrows(CommonException.class, () -> client.call(binding, WechatV2Method.MICROPAY, request));
         verifyNoInteractions(credentials, http);
     }
 }

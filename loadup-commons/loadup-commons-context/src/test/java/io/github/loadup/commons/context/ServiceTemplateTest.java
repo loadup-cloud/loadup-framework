@@ -24,10 +24,12 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class ServiceTemplateTest {
+    private static final ContextKey<String> DEPLOYMENT_KEY = new ContextKey<>("loadup.deployment", String.class);
+
     @Test
     void lifecycleRunsInOrderInsideBoundContext() {
         var events = new ArrayList<String>();
-        var context = ExecutionContext.empty().with(ContextKeys.TENANT_ID, "tenant");
+        var context = ExecutionContext.empty().with(DEPLOYMENT_KEY, "tenant");
         var lifecycle = new ServiceTemplate.Lifecycle() {
             public void init() {
                 assertThat(ContextHolder.current()).isSameAs(context);
@@ -79,7 +81,7 @@ class ServiceTemplateTest {
                 events.add("clean");
             }
         };
-        var outer = ExecutionContext.empty().with(ContextKeys.TENANT_ID, "outer");
+        var outer = ExecutionContext.empty().with(DEPLOYMENT_KEY, "outer");
         ContextHolder.runWith(outer, () -> {
             assertThatThrownBy(() -> ServiceTemplate.run(ExecutionContext.empty(), lifecycle, () -> events.add("work")))
                     .isSameAs(primary);

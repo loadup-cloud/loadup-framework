@@ -27,7 +27,6 @@ Cache 组件的 facade 模块：启用 Spring Cache 注解（`@EnableCaching`）
 
 ## 自动装配
 
-- [
-  `LoadupCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/autoconfigure/LoadupCacheAutoConfiguration.java)
+- [ `LoadupCacheAutoConfiguration`](src/main/java/io/github/loadup/components/cache/autoconfigure/LoadupCacheAutoConfiguration.java)
 
 设计边界与装配路径见 [ARCHITECTURE.md](ARCHITECTURE.md)。

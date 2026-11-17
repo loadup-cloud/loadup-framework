@@ -5,7 +5,7 @@
 ```text
 Local @Scheduled ─┐
                   ├─ SchedulerProvider → SchedulerTemplate → ScheduledTask
-PowerJob Worker ──┘                                      ├─ DelayedTaskDispatcher
+PowerJob Worker ──┘                                      ├─ TaskDispatcher
                                                         └─ TransferTaskProcessor
 ```
 
@@ -28,3 +28,5 @@ Bean，创建 SmartLifecycle Template。启动绑定 Provider；停止解除绑�
 
 SchedulerTemplate 为 final 类，扩展通过 SchedulerProvider 与 ScheduledTask
 组合完成。构造时仍拒绝非法或重复任务名；禁止继承可避免子类终结器接触构造失败后的半初始化对象。
+
+持久化 Task 由自身 TaskWorker 唤醒，不依赖 Scheduler；Scheduler 继续唤醒 Transfer 和其他 ScheduledTask 扫描器。
