@@ -1,0 +1,81 @@
+-- name: UPSERT
+INSERT INTO {{prefix}}task(id, created_at, updated_at, task_type, biz_id, payload, trace_id,
+    status, next_execute_at, max_attempts)
+VALUES (?, clock_timestamp()::timestamp, clock_timestamp()::timestamp, ?, ?, ?, ?, 'PENDING',
+    COALESCE(?, clock_timestamp()::timestamp), ?)
+ON CONFLICT (task_type, biz_id) DO UPDATE SET biz_id = EXCLUDED.biz_id
+
+-- name: LOCK_BY_BUSINESS
+SELECT * FROM {{prefix}}task WHERE task_type = ? AND biz_id = ? FOR UPDATE
+
+-- name: RECOVER_EXPIRED
+UPDATE {{prefix}}task
+SET status = 'FAILED', claim_token = NULL, lease_until = NULL, last_error = 'LeaseExpired', updated_at = clock_timestamp()::timestamp
+WHERE status = 'RUNNING' AND lease_until <= clock_timestamp()::timestamp AND attempts >= max_attempts
+  AND (CAST(? AS VARCHAR) IS NULL OR task_type = ?)
+
+-- name: CLAIM_CANDIDATE
+SELECT * FROM {{prefix}}task
+WHERE (CAST(? AS VARCHAR) IS NULL OR task_type = ?) AND attempts < max_attempts
+  AND ((status = 'PENDING' AND next_execute_at <= clock_timestamp()::timestamp)
+    OR (status = 'RUNNING' AND lease_until <= clock_timestamp()::timestamp))
+ORDER BY next_execute_at, id LIMIT 1 FOR UPDATE SKIP LOCKED
+
+-- name: CLAIM
+UPDATE {{prefix}}task
+SET status = 'RUNNING', attempts = attempts + 1, claim_token = ?,
+    lease_until = clock_timestamp()::timestamp + CAST(? AS BIGINT) * INTERVAL '1 millisecond', updated_at = clock_timestamp()::timestamp
+WHERE id = ?
+
+-- name: LOCK_OWNER
+SELECT id FROM {{prefix}}task
+WHERE id = ? AND status = 'RUNNING' AND claim_token = ? FOR UPDATE
+
+-- name: COMPLETE
+DELETE FROM {{prefix}}task
+WHERE id = ? AND status = 'RUNNING' AND claim_token = ? AND lease_until > clock_timestamp()::timestamp
+
+-- name: FAIL
+UPDATE {{prefix}}task
+SET status = ?, claim_token = NULL, lease_until = NULL, last_error = ?,
+    next_execute_at = COALESCE(clock_timestamp()::timestamp + CAST(? AS BIGINT) * INTERVAL '1 millisecond', next_execute_at), updated_at = clock_timestamp()::timestamp
+WHERE id = ? AND status = 'RUNNING' AND claim_token = ? AND lease_until > clock_timestamp()::timestamp
+
+-- name: FIND_BY_ID
+SELECT * FROM {{prefix}}task WHERE id = ?
+
+-- name: FIND_BY_BUSINESS
+SELECT * FROM {{prefix}}task WHERE task_type = ? AND biz_id = ?
+
+-- name: FIND_FAILURES
+SELECT * FROM {{prefix}}task WHERE status = 'FAILED' ORDER BY created_at, id LIMIT ?
+
+-- name: CANCEL
+UPDATE {{prefix}}task
+SET status = 'CANCELLED', claim_token = NULL, lease_until = NULL, updated_at = clock_timestamp()::timestamp
+WHERE id = ? AND status IN ('PENDING', 'RUNNING', 'FAILED')
+
+-- name: RESCHEDULE
+UPDATE {{prefix}}task
+SET status = 'PENDING', next_execute_at = ?, attempts = 0,
+    claim_token = NULL, lease_until = NULL, last_error = NULL, updated_at = clock_timestamp()::timestamp
+WHERE id = ? AND status IN ('PENDING', 'FAILED', 'CANCELLED')
+
+-- name: RETRY_FAILED
+UPDATE {{prefix}}task
+SET status = 'PENDING', next_execute_at = clock_timestamp()::timestamp, attempts = 0,
+    claim_token = NULL, lease_until = NULL, last_error = NULL, updated_at = clock_timestamp()::timestamp
+WHERE id = ? AND status = 'FAILED'
+
+-- name: INSERT_OPERATION
+INSERT INTO {{prefix}}task_operation(id, created_at, updated_at, task_id, operator_id, reason)
+VALUES (?, clock_timestamp()::timestamp, clock_timestamp()::timestamp, ?, ?, ?)
+
+-- name: COUNT_PENDING
+SELECT COUNT(*) FROM {{prefix}}task WHERE status IN ('PENDING', 'RUNNING')
+
+-- name: COUNT_FAILED
+SELECT COUNT(*) FROM {{prefix}}task WHERE status = 'FAILED'
+
+-- name: OLDEST_PENDING
+SELECT COALESCE(CAST(EXTRACT(EPOCH FROM (clock_timestamp()::timestamp - MIN(created_at))) AS BIGINT), 0) FROM {{prefix}}task WHERE status IN ('PENDING', 'RUNNING')
