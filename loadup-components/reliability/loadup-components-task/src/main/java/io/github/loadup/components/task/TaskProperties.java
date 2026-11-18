@@ -27,6 +27,11 @@ public class TaskProperties {
         MYSQL
     }
 
+    public enum Trigger {
+        LOCAL,
+        SCHEDULER
+    }
+
     private DbType dbType = DbType.PG;
     private String tablePrefix = "loadup_";
     private String taskType;
@@ -56,11 +61,12 @@ public class TaskProperties {
     }
 
     private boolean workerEnabled = true;
-    private Duration pollInterval = Duration.ofSeconds(1);
+    private Trigger trigger = Trigger.LOCAL;
+    private Duration pollInterval = Duration.ofMinutes(1);
     private Duration lease = Duration.ofMinutes(2);
     private Duration retryDelay = Duration.ofSeconds(5);
     private int maxAttempts = 8;
-    private int batchSize = 20;
+    private int batchSize = 10;
 
     private Map<String, Policy> types = new HashMap<>();
 
@@ -157,7 +163,8 @@ public class TaskProperties {
             TaskSubmission.required(type, "taskType", 128);
             policy(type).validate();
         });
-        if (pollInterval == null
+        if (trigger == null
+                || pollInterval == null
                 || pollInterval.toMillis() < 1
                 || lease == null
                 || lease.toMillis() < 1
@@ -179,6 +186,14 @@ public class TaskProperties {
 
     public void setWorkerEnabled(boolean value) {
         workerEnabled = value;
+    }
+
+    public Trigger getTrigger() {
+        return trigger;
+    }
+
+    public void setTrigger(Trigger value) {
+        trigger = value;
     }
 
     public Duration getPollInterval() {

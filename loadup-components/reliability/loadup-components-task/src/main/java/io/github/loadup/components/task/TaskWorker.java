@@ -37,7 +37,7 @@ public class TaskWorker implements SmartLifecycle {
 
     @Override
     public synchronized void start() {
-        if (isRunning()) {
+        if (isRunning() || !isAutoStartup()) {
             return;
         }
         executor = Executors.newSingleThreadScheduledExecutor(runnable -> {
@@ -76,6 +76,8 @@ public class TaskWorker implements SmartLifecycle {
 
     @Override
     public boolean isAutoStartup() {
-        return properties.isWorkerEnabled();
+        return properties.isWorkerEnabled()
+                && properties.getTrigger() == TaskProperties.Trigger.LOCAL
+                && dispatcher.hasHandlers();
     }
 }

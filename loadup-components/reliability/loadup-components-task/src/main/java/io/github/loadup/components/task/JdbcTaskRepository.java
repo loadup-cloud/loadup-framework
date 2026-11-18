@@ -22,12 +22,14 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import javax.sql.DataSource;
 import org.slf4j.MDC;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -38,6 +40,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 public class JdbcTaskRepository implements TaskTemplate {
     private final DataSource dataSource;
     private final JdbcTemplate jdbc;
+    private final NamedParameterJdbcTemplate namedJdbc;
     private final TransactionTemplate transactions;
     private final TaskProperties properties;
     private final TaskSql sql;
@@ -45,6 +48,7 @@ public class JdbcTaskRepository implements TaskTemplate {
     public JdbcTaskRepository(DataSource dataSource, PlatformTransactionManager manager, TaskProperties properties) {
         this.dataSource = dataSource;
         this.jdbc = new JdbcTemplate(dataSource);
+        this.namedJdbc = new NamedParameterJdbcTemplate(jdbc);
         this.properties = properties;
         properties.validate();
         sql = new TaskSql(properties);
@@ -130,14 +134,14 @@ public class JdbcTaskRepository implements TaskTemplate {
         return existing.id();
     }
 
-    public Optional<Claim> claim() {
-        return claim(null);
-    }
-
-    public Optional<Claim> claim(String taskType) {
+    public Optional<Claim> claim(List<String> taskTypes) {
+        if (taskTypes.isEmpty()) {
+            return Optional.empty();
+        }
+        var parameters = Map.of("taskTypes", taskTypes);
         return transactions.execute(status -> {
-            jdbc.update(sql.get(Query.RECOVER_EXPIRED), taskType, taskType);
-            var candidates = jdbc.query(sql.get(Query.CLAIM_CANDIDATE), JdbcTaskRepository::record, taskType, taskType);
+            namedJdbc.update(sql.get(Query.RECOVER_EXPIRED), parameters);
+            var candidates = namedJdbc.query(sql.get(Query.CLAIM_CANDIDATE), parameters, JdbcTaskRepository::record);
             if (candidates.isEmpty()) {
                 return Optional.empty();
             }

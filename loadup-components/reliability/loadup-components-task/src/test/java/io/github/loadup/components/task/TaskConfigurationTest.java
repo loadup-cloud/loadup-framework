@@ -19,13 +19,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import io.github.loadup.components.scheduler.SchedulerAutoConfiguration;
+import io.github.loadup.components.scheduler.SchedulerProvider;
+import io.github.loadup.components.scheduler.TaskSchedule;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.micrometer.observation.ObservationRegistry;
 import java.time.Duration;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import javax.sql.DataSource;
@@ -68,12 +74,72 @@ class TaskConfigurationTest {
     }
 
     @Test
-    void assemblesTheWorkerWithoutAnyTenantParameter() {
+    void localWorkerDoesNotStartWithoutHandlers() {
         DataSource source = mock(DataSource.class);
         runner.withBean(DataSource.class, () -> source)
                 .withBean(PlatformTransactionManager.class, () -> new DataSourceTransactionManager(source))
                 .withPropertyValues("loadup.task.worker-enabled=true")
-                .run(context -> assertThat(context).hasNotFailed().hasSingleBean(TaskWorker.class));
+                .run(context -> {
+                    assertThat(context).hasNotFailed().hasSingleBean(TaskWorker.class);
+                    assertThat(context.getBean(TaskWorker.class).isRunning()).isFalse();
+                });
+    }
+
+    @Test
+    void schedulerRegistersOnlyOneMinuteScannerAndKeepsLocalWorkerStopped() {
+        SchedulerProvider provider = mock(SchedulerProvider.class);
+        schedulerRunner()
+                .withBean(SchedulerProvider.class, () -> provider)
+                .withBean(TaskHandler.class, TaskConfigurationTest::handler)
+                .run(context -> {
+                    assertThat(context).hasNotFailed();
+                    TaskWorker worker = context.getBean(TaskWorker.class);
+                    worker.start();
+                    assertThat(worker.isRunning()).isFalse();
+                    var schedule = new TaskSchedule("loadup-task-scan", "0 * * * * ?");
+                    verify(provider).start(eq(List.of(schedule)), any());
+                });
+    }
+
+    @Test
+    void schedulerWithoutHandlersDoesNotRegisterAScanner() {
+        SchedulerProvider provider = mock(SchedulerProvider.class);
+        schedulerRunner().withBean(SchedulerProvider.class, () -> provider).run(context -> {
+            assertThat(context).hasNotFailed();
+            verify(provider).start(eq(List.of()), any());
+            assertThat(context.getBean(TaskWorker.class).isRunning()).isFalse();
+        });
+    }
+
+    @Test
+    void schedulerModeWithHandlersRequiresABinder() {
+        schedulerRunner()
+                .withBean(TaskHandler.class, TaskConfigurationTest::handler)
+                .run(context -> {
+                    assertThat(context).hasFailed();
+                    assertThat(context.getStartupFailure())
+                            .hasRootCauseMessage("loadup.task.trigger=scheduler requires a Scheduler binder");
+                });
+    }
+
+    private ApplicationContextRunner schedulerRunner() {
+        DataSource source = mock(DataSource.class);
+        return runner.withConfiguration(AutoConfigurations.of(SchedulerAutoConfiguration.class))
+                .withBean(DataSource.class, () -> source)
+                .withBean(PlatformTransactionManager.class, () -> new DataSourceTransactionManager(source))
+                .withPropertyValues("loadup.task.worker-enabled=true", "loadup.task.trigger=scheduler");
+    }
+
+    private static TaskHandler handler() {
+        return new TaskHandler() {
+            @Override
+            public String taskType() {
+                return "order.expire";
+            }
+
+            @Override
+            public void handle(TaskExecution task) {}
+        };
     }
 
     @Test
@@ -94,9 +160,6 @@ class TaskConfigurationTest {
         assertThat(settings.getRetryDelay()).isEqualTo(Duration.ofDays(1));
         assertThat(settings.getMaxAttempts()).isEqualTo(1000);
         assertThat(settings.getBatchSize()).isEqualTo(1000);
-        settings.setWorkerEnabled(true);
-        assertThat(new TaskWorker(mock(TaskDispatcher.class), settings).isAutoStartup())
-                .isTrue();
     }
 
     @Test

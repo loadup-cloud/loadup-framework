@@ -113,10 +113,10 @@ class TaskIT {
     @Test
     void expiredClaimIsRecoveredAndOldOwnerCannotAcknowledge() {
         String id = publish();
-        var first = repository.claim().orElseThrow();
+        var first = repository.claim(List.of("test.created")).orElseThrow();
         jdbc.update(
                 "UPDATE loadup_task SET lease_until = (clock_timestamp() + INTERVAL '-1 seconds') WHERE id = ?", id);
-        var recovered = repository.claim().orElseThrow();
+        var recovered = repository.claim(List.of("test.created")).orElseThrow();
         assertThat(recovered.event().id()).isEqualTo(id);
         assertThat(recovered.token()).isNotEqualTo(first.token());
         assertThat(repository.complete(first)).isFalse();
@@ -129,17 +129,42 @@ class TaskIT {
     @Test
     void exhaustedLeaseBecomesFailedAndReplayIsAudited() {
         String id = publish();
-        repository.claim().orElseThrow();
+        repository.claim(List.of("test.created")).orElseThrow();
         jdbc.update(
                 "UPDATE loadup_task SET attempts = ?, lease_until = (clock_timestamp() + INTERVAL '-1 seconds') WHERE id = ?",
                 properties.getMaxAttempts(),
                 id);
-        assertThat(repository.claim()).isEmpty();
+        assertThat(repository.claim(List.of("test.created"))).isEmpty();
         assertThat(repository.failures(10)).hasSize(1);
         repository.retryFailed(id, "operator", "reviewed");
-        assertThat(repository.claim().orElseThrow().event().id()).isEqualTo(id);
+        assertThat(repository
+                        .claim(List.of("test.created"))
+                        .orElseThrow()
+                        .event()
+                        .id())
+                .isEqualTo(id);
         assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM loadup_task_operation", Integer.class))
                 .isEqualTo(1);
+    }
+
+    @Test
+    void claimSkipsUnsupportedTypesEvenDuringExpiredLeaseRecovery() {
+        String expired = publish();
+        repository.claim(List.of("test.created")).orElseThrow();
+        jdbc.update(
+                "UPDATE loadup_task SET attempts = ?, lease_until = clock_timestamp() - INTERVAL '1 second' WHERE id = ?",
+                properties.getMaxAttempts(),
+                expired);
+        String unsupported = publish();
+        String supported = transactions.execute(
+                tx -> repository.submit(TaskSubmission.immediate("other.created", "supported", "{}")));
+
+        assertThat(repository.claim(List.of())).isEmpty();
+        var claim =
+                repository.claim(List.of("other.created", "another.created")).orElseThrow();
+        assertThat(claim.event().id()).isEqualTo(supported);
+        assertThat(repository.find(expired).orElseThrow().status()).isEqualTo(TaskStatus.RUNNING);
+        assertThat(repository.find(unsupported).orElseThrow().attempts()).isZero();
     }
 
     @Test
@@ -147,10 +172,10 @@ class TaskIT {
         publish();
         try (var executor = Executors.newFixedThreadPool(2)) {
             var first = executor.submit(() -> {
-                return repository.claim();
+                return repository.claim(List.of("test.created"));
             });
             var second = executor.submit(() -> {
-                return repository.claim();
+                return repository.claim(List.of("test.created"));
             });
             assertThat(List.of(first.get(), second.get()).stream()
                             .filter(Optional::isPresent)
@@ -281,7 +306,7 @@ class TaskIT {
         String pending = publish();
         assertThatThrownBy(() -> repository.retryFailed(pending, "operator", "reviewed"))
                 .isInstanceOf(CommonException.class);
-        var claim = repository.claim().orElseThrow();
+        var claim = repository.claim(List.of("test.created")).orElseThrow();
         assertThat(repository.complete(claim)).isTrue();
         assertThatThrownBy(() -> repository.retryFailed(pending, "operator", "reviewed"))
                 .isInstanceOf(CommonException.class);
@@ -308,18 +333,18 @@ class TaskIT {
     @Test
     void handlerFailuresScheduleRetriesThenExhaustTheAttemptBudget() {
         String id = publish();
-        var first = repository.claim().orElseThrow();
+        var first = repository.claim(List.of("test.created")).orElseThrow();
         repository.fail(first, new IllegalStateException("sensitive detail"));
         TaskExecution retry = repository.find(id).orElseThrow();
         assertThat(retry.status()).isEqualTo(TaskStatus.PENDING);
         assertThat(retry.attempts()).isEqualTo(1);
         assertThat(retry.lastError()).isEqualTo("IllegalStateException");
-        assertThat(repository.claim()).isEmpty();
+        assertThat(repository.claim(List.of("test.created"))).isEmpty();
         jdbc.update(
                 "UPDATE loadup_task SET attempts = ?, next_execute_at = CURRENT_TIMESTAMP(6) WHERE id = ?",
                 properties.getMaxAttempts() - 1,
                 id);
-        var last = repository.claim().orElseThrow();
+        var last = repository.claim(List.of("test.created")).orElseThrow();
         repository.fail(last, new IllegalArgumentException("sensitive detail"));
         var failed = repository.find(id).orElseThrow();
         assertThat(failed.status()).isEqualTo(TaskStatus.FAILED);
@@ -337,12 +362,12 @@ class TaskIT {
                 tx -> repository.submit(TaskSubmission.scheduled("order.expire", "order", deadline.plusDays(1))));
         assertThat(duplicate).isEqualTo(id);
         assertThat(repository.find(id).orElseThrow().nextExecuteAt()).isEqualTo(deadline);
-        assertThat(repository.claim()).isEmpty();
+        assertThat(repository.claim(List.of("order.expire"))).isEmpty();
         assertThatThrownBy(() -> transactions.execute(
                         tx -> repository.submit(new TaskSubmission("order.expire", "order", "different", deadline))))
                 .isInstanceOf(CommonException.class);
         repository.reschedule(id, LocalDateTime.now().minusMinutes(1));
-        var claim = repository.claim().orElseThrow();
+        var claim = repository.claim(List.of("order.expire")).orElseThrow();
         assertThat(repository.cancel(id)).isTrue();
         assertThat(repository.complete(claim)).isFalse();
         repository.reschedule(id, deadline);

@@ -23,6 +23,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import io.github.loadup.commons.context.ContextHolder;
@@ -36,7 +37,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.slf4j.MDC;
 
 class TaskWorkerTest {
@@ -85,7 +85,7 @@ class TaskWorkerTest {
                 .when(repository)
                 .withoutTransaction(any());
         var claim = claim("trace-origin");
-        when(repository.claim()).thenReturn(Optional.of(claim));
+        when(repository.claim(List.of("payment.completed"))).thenReturn(Optional.of(claim));
         when(repository.complete(claim)).thenReturn(true);
         SimpleMeterRegistry metrics = new SimpleMeterRegistry();
         try {
@@ -121,7 +121,7 @@ class TaskWorkerTest {
                 .when(repository)
                 .withoutTransaction(any());
         var claim = claim(null);
-        when(repository.claim()).thenReturn(Optional.of(claim));
+        when(repository.claim(List.of("payment.completed"))).thenReturn(Optional.of(claim));
         when(repository.complete(claim)).thenReturn(false);
         SimpleMeterRegistry metrics = new SimpleMeterRegistry();
         try {
@@ -150,7 +150,7 @@ class TaskWorkerTest {
                 .when(repository)
                 .withoutTransaction(any());
         var claim = claim(null);
-        when(repository.claim()).thenReturn(Optional.of(claim));
+        when(repository.claim(List.of("payment.completed"))).thenReturn(Optional.of(claim));
         Exception failure = new Exception("synthetic failure");
         when(repository.fail(claim, failure)).thenReturn(true);
         SimpleMeterRegistry metrics = new SimpleMeterRegistry();
@@ -176,19 +176,15 @@ class TaskWorkerTest {
     }
 
     @Test
-    void missingHandlerFailsClaimAndDuplicateHandlersAreRejected() {
+    void noHandlersSkipTheQueueAndDuplicateHandlersAreRejected() {
         JdbcTaskRepository repository = mock(JdbcTaskRepository.class);
-        doAnswer(call -> {
-                    ((Runnable) call.getArgument(0)).run();
-                    return null;
-                })
-                .when(repository)
-                .withoutTransaction(any());
-        var claim = claim(null);
-        when(repository.claim()).thenReturn(Optional.of(claim));
-        TaskDispatcher dispatcher = new TaskDispatcher(repository, properties(), List.of(), null);
+        var dispatcher = new TaskDispatcher(repository, properties(), List.of(), null);
         dispatcher.execute();
-        verify(repository).fail(ArgumentMatchers.eq(claim), ArgumentMatchers.isA(IllegalStateException.class));
+        var worker = new TaskWorker(dispatcher, properties());
+        worker.start();
+        assertThat(worker.isAutoStartup()).isFalse();
+        assertThat(worker.isRunning()).isFalse();
+        verifyNoInteractions(repository);
         TaskHandler handler = handler(event -> {});
         assertThatThrownBy(() -> new TaskDispatcher(repository, properties(), List.of(handler, handler), null))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -198,15 +194,15 @@ class TaskWorkerTest {
     @Test
     void emptyQueueStopsAndInterruptedHandlerPreventsFurtherClaims() {
         JdbcTaskRepository empty = mock(JdbcTaskRepository.class);
-        when(empty.claim()).thenReturn(Optional.empty());
+        when(empty.claim(List.of("payment.completed"))).thenReturn(Optional.empty());
         doAnswer(call -> {
                     ((Runnable) call.getArgument(0)).run();
                     return null;
                 })
                 .when(empty)
                 .withoutTransaction(any());
-        new TaskDispatcher(empty, properties(), List.of(), null).execute();
-        verify(empty, times(1)).claim();
+        new TaskDispatcher(empty, properties(), List.of(handler(event -> {})), null).execute();
+        verify(empty, times(1)).claim(List.of("payment.completed"));
         JdbcTaskRepository repository = mock(JdbcTaskRepository.class);
         doAnswer(call -> {
                     ((Runnable) call.getArgument(0)).run();
@@ -215,7 +211,7 @@ class TaskWorkerTest {
                 .when(repository)
                 .withoutTransaction(any());
         var claim = claim(null);
-        when(repository.claim()).thenReturn(Optional.of(claim));
+        when(repository.claim(List.of("payment.completed"))).thenReturn(Optional.of(claim));
         TaskProperties properties = properties();
         properties.setBatchSize(5);
         InterruptedException interrupted = new InterruptedException("synthetic interruption");
@@ -228,7 +224,7 @@ class TaskWorkerTest {
                 null);
         dispatcher.execute();
         assertThat(Thread.currentThread().isInterrupted()).isTrue();
-        verify(repository, times(1)).claim();
+        verify(repository, times(1)).claim(List.of("payment.completed"));
         verify(repository).fail(claim, interrupted);
         dispatcher.execute();
     }
@@ -236,6 +232,7 @@ class TaskWorkerTest {
     @Test
     void pollerSurvivesDispatchFailureAndSupportsIdempotentLifecycle() throws Exception {
         TaskDispatcher dispatcher = mock(TaskDispatcher.class);
+        when(dispatcher.hasHandlers()).thenReturn(true);
         AtomicInteger attempts = new AtomicInteger();
         CountDownLatch recovered = new CountDownLatch(1);
         doAnswer(invocation -> {
@@ -278,7 +275,9 @@ class TaskWorkerTest {
                 .when(repository)
                 .withoutTransaction(any());
         var claim = claim(null);
-        when(repository.claim()).thenReturn(Optional.of(claim)).thenReturn(Optional.empty());
+        when(repository.claim(List.of("payment.completed")))
+                .thenReturn(Optional.of(claim))
+                .thenReturn(Optional.empty());
         when(repository.complete(claim)).thenReturn(true);
         CountDownLatch handled = new CountDownLatch(1);
         TaskHandler handler = handler(event -> handled.countDown());

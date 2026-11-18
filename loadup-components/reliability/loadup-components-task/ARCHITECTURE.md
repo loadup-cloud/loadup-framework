@@ -3,7 +3,7 @@
 单一 jar、单一 TaskTemplate/TaskHandler 接口、单一任务主表。消息载荷与执行时间是任务属性，不设旧组件模式或双状态机。
 
 业务事务：业务写入 + submit，同步提交或回滚。
-领取事务：恢复耗尽租约，SKIP LOCKED 领取一条记录，生成新 token、递增 attempts、设置租约，提交。
+领取事务：仅在本实例可处理的类型中恢复已耗尽尝试次数的过期租约，再用 SKIP LOCKED 领取一条记录，生成新 token、递增 attempts、设置租约，提交。
 事务外：调用 Handler。
 确认事务：按 id、RUNNING、token 和有效租约条件删除或延后。
 
@@ -15,6 +15,6 @@ PENDING → RUNNING → 成功确认后删除；异常返回 PENDING 或耗尽�
 
 完成后查询从业务状态读取结果。应用可以从已提交的业务结果推导完成，任务尝试次数随队列行一起删除。
 
-TaskWorker 是唯一默认唤醒器；关闭 worker 后由独立工作应用调用 dispatcher。默认串行执行，有界批次，多实例扩展；慢任务与关键投递有容量隔离需求时可分别部署执行节点并设置 task-type 限定领取类型；当前不提供自动优先级或抢占。
+本地 TaskWorker 是默认触发入口，按固定延迟扫描。选择 Scheduler 后，本地 Worker 停止，由已有 binder 按 Cron 唤醒同一个 Dispatcher。两个入口默认每分钟扫描，每批最多 10 条，逐条领取并串行处理。Dispatcher 根据本地 Handler 生成类型白名单，task-type 只能缩小范围；白名单为空不扫描。慢任务和关键投递可分别部署执行节点。
 
-任务配置与操作接口不依赖 Scheduler、PowerJob、ORM 或消息中间件。同一 JDBC 实现根据配置加载 PostgreSQL 或 MySQL 语句。表前缀通过白名单校验，其余数据均通过 JDBC 参数绑定。测试源码与静态审阅不代表实际数据库故障恢复验收。
+Scheduler 只负责触发；提交、领取和确认的接口不依赖 Scheduler binder、PowerJob、ORM 或消息中间件。同一 JDBC 实现根据配置加载 PostgreSQL 或 MySQL 语句。表前缀通过白名单校验，其余数据均通过 JDBC 参数绑定。测试源码与静态审阅不代表实际数据库故障恢复验收。

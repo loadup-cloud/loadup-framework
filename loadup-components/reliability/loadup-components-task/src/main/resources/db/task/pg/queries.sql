@@ -12,11 +12,11 @@ SELECT * FROM {{prefix}}task WHERE task_type = ? AND biz_id = ? FOR UPDATE
 UPDATE {{prefix}}task
 SET status = 'FAILED', claim_token = NULL, lease_until = NULL, last_error = 'LeaseExpired', updated_at = clock_timestamp()::timestamp
 WHERE status = 'RUNNING' AND lease_until <= clock_timestamp()::timestamp AND attempts >= max_attempts
-  AND (CAST(? AS VARCHAR) IS NULL OR task_type = ?)
+  AND task_type IN (:taskTypes)
 
 -- name: CLAIM_CANDIDATE
 SELECT * FROM {{prefix}}task
-WHERE (CAST(? AS VARCHAR) IS NULL OR task_type = ?) AND attempts < max_attempts
+WHERE task_type IN (:taskTypes) AND attempts < max_attempts
   AND ((status = 'PENDING' AND next_execute_at <= clock_timestamp()::timestamp)
     OR (status = 'RUNNING' AND lease_until <= clock_timestamp()::timestamp))
 ORDER BY next_execute_at, id LIMIT 1 FOR UPDATE SKIP LOCKED

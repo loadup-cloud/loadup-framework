@@ -18,5 +18,10 @@ package io.github.loadup.components.scheduler;
 public interface ScheduledTask {
     String name();
 
+    /** Optional fallback schedule. An explicit schedule for this name takes precedence. */
+    default String defaultCron() {
+        return null;
+    }
+
     void execute() throws Exception;
 }

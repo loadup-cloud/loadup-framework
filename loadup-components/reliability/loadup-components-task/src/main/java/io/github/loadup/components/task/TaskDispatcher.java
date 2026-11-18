@@ -32,6 +32,7 @@ public final class TaskDispatcher {
     private final JdbcTaskRepository repository;
     private final TaskProperties properties;
     private final Map<String, TaskHandler> handlers;
+    private final List<String> taskTypes;
     private final MeterRegistry metrics;
     private final ObservationRegistry observations;
 
@@ -61,13 +62,20 @@ public final class TaskDispatcher {
             }
         }
         this.handlers = Map.copyOf(registry);
+        String configuredType = properties.getTaskType();
+        this.taskTypes = this.handlers.keySet().stream()
+                .filter(type -> configuredType == null || configuredType.equals(type))
+                .sorted()
+                .toList();
     }
 
-    private int dispatchBatch() {
-        int count = 0;
+    boolean hasHandlers() {
+        return !taskTypes.isEmpty();
+    }
+
+    private void dispatchBatch() {
         for (int i = 0; i < properties.getBatchSize() && !Thread.currentThread().isInterrupted(); i++) {
-            var next =
-                    properties.getTaskType() == null ? repository.claim() : repository.claim(properties.getTaskType());
+            var next = repository.claim(taskTypes);
             if (next.isEmpty()) {
                 break;
             }
@@ -84,9 +92,6 @@ public final class TaskDispatcher {
                 observation.start();
                 try (Observation.Scope unusedScope = observation.openScope()) {
                     TaskHandler handler = handlers.get(claim.event().taskType());
-                    if (handler == null) {
-                        throw new IllegalStateException("No handler registered");
-                    }
                     try {
                         handler.handle(claim.event());
                     } catch (Exception exception) {
@@ -123,13 +128,13 @@ public final class TaskDispatcher {
                     }
                 }
             }
-            count++;
         }
-        return count;
     }
 
     public void execute() {
-        repository.withoutTransaction(this::dispatchBatch);
+        if (hasHandlers()) {
+            repository.withoutTransaction(this::dispatchBatch);
+        }
     }
 
     private static final class HandlerFailure extends CommonException {

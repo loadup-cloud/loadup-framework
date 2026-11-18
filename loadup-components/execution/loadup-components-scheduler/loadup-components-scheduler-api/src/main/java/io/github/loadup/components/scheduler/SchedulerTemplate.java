@@ -18,7 +18,6 @@ package io.github.loadup.components.scheduler;
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,17 +48,25 @@ public final class SchedulerTemplate implements SmartLifecycle {
             }
         }
         this.tasks = Collections.unmodifiableMap(registry);
-        this.schedules = List.copyOf(schedules);
-        var names = new HashSet<String>();
-        for (var schedule : this.schedules) {
+        var definitions = new LinkedHashMap<String, TaskSchedule>();
+        for (var schedule : schedules) {
             if (!registry.containsKey(schedule.name())) {
                 throw new IllegalArgumentException("No ScheduledTask bean for '" + schedule.name() + "'");
             }
-            if (!names.add(schedule.name())) {
+            if (definitions.putIfAbsent(schedule.name(), schedule) != null) {
                 throw new IllegalArgumentException("Duplicate scheduler configuration for '" + schedule.name() + "'");
             }
         }
-        scheduledNames = Set.copyOf(names);
+        registry.forEach((name, task) -> {
+            if (!definitions.containsKey(name)) {
+                String cron = task.defaultCron();
+                if (cron != null) {
+                    definitions.put(name, new TaskSchedule(name, cron));
+                }
+            }
+        });
+        this.schedules = List.copyOf(definitions.values());
+        scheduledNames = Set.copyOf(definitions.keySet());
     }
 
     public Set<String> taskNames() {

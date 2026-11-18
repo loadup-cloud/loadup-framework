@@ -15,6 +15,8 @@
  */
 package io.github.loadup.components.task;
 
+import io.github.loadup.components.scheduler.ScheduledTask;
+import io.github.loadup.components.scheduler.SchedulerProvider;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.observation.ObservationRegistry;
 import java.util.List;
@@ -71,5 +73,33 @@ public class TaskAutoConfiguration {
     @ConditionalOnMissingBean
     public TaskWorker taskWorker(TaskDispatcher dispatcher, TaskProperties properties) {
         return new TaskWorker(dispatcher, properties);
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "loadup.task", name = "trigger", havingValue = "scheduler")
+    public ScheduledTask taskQueueScanner(
+            TaskDispatcher dispatcher, TaskProperties properties, ObjectProvider<SchedulerProvider> providers) {
+        if (!properties.isWorkerEnabled() || !dispatcher.hasHandlers()) {
+            return null;
+        }
+        if (providers.getIfAvailable() == null) {
+            throw new IllegalStateException("loadup.task.trigger=scheduler requires a Scheduler binder");
+        }
+        return new ScheduledTask() {
+            @Override
+            public String name() {
+                return "loadup-task-scan";
+            }
+
+            @Override
+            public String defaultCron() {
+                return "0 * * * * ?";
+            }
+
+            @Override
+            public void execute() {
+                dispatcher.execute();
+            }
+        };
     }
 }

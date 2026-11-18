@@ -24,6 +24,7 @@ import io.github.loadup.components.testcontainers.annotation.EnableTestContainer
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,10 +64,12 @@ class TaskMySqlIT {
                         status -> tasks.submit(new TaskSubmission("order.expire", "order", "different", deadline))))
                 .isInstanceOf(CommonException.class);
 
-        var previous = tasks.claim().orElseThrow();
+        assertThat(tasks.claim(List.of("ORDER.EXPIRE"))).isEmpty();
+        assertThat(tasks.find(id).orElseThrow().attempts()).isZero();
+        var previous = tasks.claim(List.of("another.type", "order.expire")).orElseThrow();
         new JdbcTemplate(source)
                 .update("UPDATE ops_task SET lease_until = CURRENT_TIMESTAMP(6) - INTERVAL 1 SECOND WHERE id = ?", id);
-        var current = tasks.claim().orElseThrow();
+        var current = tasks.claim(List.of("order.expire")).orElseThrow();
         assertThat(current.attempt()).isEqualTo(2);
         assertThat(tasks.complete(previous)).isFalse();
         assertThat(tasks.complete(current)).isTrue();
@@ -74,7 +77,7 @@ class TaskMySqlIT {
         assertThat(tasks.fail(previous, new IllegalStateException("stale"))).isFalse();
         String resubmitted = transaction.execute(status -> tasks.submit(submission));
         assertThat(resubmitted).isNotEqualTo(id);
-        var retry = tasks.claim().orElseThrow();
+        var retry = tasks.claim(List.of("order.expire")).orElseThrow();
         assertThat(tasks.fail(retry, new IllegalStateException("retry"))).isTrue();
         var pending = tasks.find(resubmitted).orElseThrow();
         assertThat(pending.status()).isEqualTo(TaskStatus.PENDING);

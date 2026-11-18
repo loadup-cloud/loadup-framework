@@ -101,7 +101,7 @@ class TaskSchemaIsolationIT {
             assertThat(seenA).containsExactly("deployment-a");
             assertThat(repositoryA.find(secondId)).isEmpty();
             assertThat(repositoryB.find(secondId).orElseThrow().status()).isEqualTo(TaskStatus.PENDING);
-            var claimB = repositoryB.claim().orElseThrow();
+            var claimB = repositoryB.claim(List.of("isolation.probe")).orElseThrow();
             assertThat(repositoryA.complete(claimB)).isFalse();
             assertThat(repositoryB.complete(claimB)).isTrue();
             String nextB = publish(second, repositoryB, "deployment-b-next");
