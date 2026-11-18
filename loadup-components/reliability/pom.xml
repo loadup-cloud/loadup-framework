@@ -8,7 +8,7 @@
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
-    <artifactId>loadup-components-reliability</artifactId>
+    <artifactId>reliability</artifactId>
     <packaging>pom</packaging>
     <name>ComponentReliability</name>
 

@@ -7,7 +7,7 @@
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
-    <artifactId>loadup-components-platform</artifactId>
+    <artifactId>platform</artifactId>
     <packaging>pom</packaging>
     <name>ComponentPlatform</name>
 
