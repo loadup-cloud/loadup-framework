@@ -8,7 +8,7 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-dfs-binder-local</artifactId>
-    <name>LoadUp Components DFS Binder Local</name>
+    <name>ComponentDFS Binder Local</name>
     <description>Local filesystem file storage.</description>
 
     <dependencies>

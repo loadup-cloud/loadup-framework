@@ -97,56 +97,6 @@ CREATE INDEX IF NOT EXISTS idx_record_service ON gotone_notification_record (ser
 CREATE INDEX IF NOT EXISTS idx_record_channel_status ON gotone_notification_record (channel, status);
 -- END loadup-components/integration/loadup-components-gotone/loadup-components-gotone-store-jdbc/src/main/resources/db/schema/gotone_store.sql
 
--- BEGIN loadup-components/reliability/loadup-components-task/src/main/resources/db/schema/task.sql
--- SHA-256: 61bbfd4dc04e1a7f599b9bfe2da7224522cdc225c7ac3d6adac9f4eabf736380
--- PostgreSQL initial schema; installed by the consuming application.
-CREATE TABLE loadup_task (
-    id VARCHAR(64) COLLATE "C" PRIMARY KEY,
-    created_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    updated_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    task_type VARCHAR(128) COLLATE "C" NOT NULL,
-    biz_id VARCHAR(128) COLLATE "C" NOT NULL,
-    payload_version INT NOT NULL CHECK (payload_version > 0),
-    payload TEXT,
-    trace_id VARCHAR(64),
-    dedup_key VARCHAR(512) COLLATE "C" UNIQUE,
-    execute_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    next_execute_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    status VARCHAR(16) NOT NULL CHECK (status IN ('PENDING','RUNNING','SUCCEEDED','FAILED','CANCELLED')),
-    attempts INT NOT NULL DEFAULT 0 CHECK (attempts >= 0),
-    max_attempts INT NOT NULL CHECK (max_attempts > 0),
-    retry_delay_ms BIGINT NOT NULL CHECK (retry_delay_ms > 0),
-    exponential BOOLEAN NOT NULL DEFAULT TRUE,
-    lease_ms BIGINT NOT NULL CHECK (lease_ms > 0),
-    lease_until TIMESTAMP(6) WITHOUT TIME ZONE,
-    claim_token VARCHAR(64),
-    last_error VARCHAR(256)
-);
-CREATE INDEX idx_task_ready ON loadup_task(status,next_execute_at,id);
-CREATE INDEX idx_task_lease ON loadup_task(status,lease_until,id);
-CREATE INDEX idx_task_business ON loadup_task(task_type,biz_id,created_at);
-CREATE TABLE loadup_task_operation (
-    id VARCHAR(64) PRIMARY KEY,
-    created_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    updated_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    task_id VARCHAR(64) NOT NULL,
-    operator_id VARCHAR(64) NOT NULL,
-    reason VARCHAR(512) NOT NULL
-);
-CREATE INDEX idx_task_operation ON loadup_task_operation(task_id);
-CREATE TABLE loadup_task_inbox (
-    id VARCHAR(64) PRIMARY KEY,
-    created_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    updated_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    consumer_id VARCHAR(128) COLLATE "C" NOT NULL,
-    event_id VARCHAR(64) COLLATE "C" NOT NULL,
-    UNIQUE(consumer_id,event_id)
-);
--- END loadup-components/reliability/loadup-components-task/src/main/resources/db/schema/task.sql
-
 -- BEGIN loadup-components/reliability/loadup-components-globalunique/src/main/resources/db/schema/global_unique.sql
 -- SHA-256: 219883e4560cc8be6df8078f5326c19df549b9a22ed00253e0582735ae70e02f
 -- PostgreSQL initial schema.
@@ -172,7 +122,38 @@ CREATE INDEX IF NOT EXISTS idx_global_unique_biz ON global_unique (deleted, biz_
 CREATE INDEX IF NOT EXISTS idx_global_unique_created_at ON global_unique (created_at);
 -- END loadup-components/reliability/loadup-components-globalunique/src/main/resources/db/schema/global_unique.sql
 
-
+-- BEGIN loadup-components/reliability/loadup-components-task/src/main/resources/db/task/pg/schema.sql
+-- SHA-256: 730a50763c836ea8477d51d648d0cfb0b0c8e6bd0abf0d168541bf4a7a82a52b
+-- PostgreSQL initial schema; installed by the consuming application.
+CREATE TABLE loadup_task (
+    id VARCHAR(64) COLLATE "C" PRIMARY KEY,
+    created_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
+    updated_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
+    task_type VARCHAR(128) COLLATE "C" NOT NULL,
+    biz_id VARCHAR(128) COLLATE "C" NOT NULL,
+    payload TEXT,
+    trace_id VARCHAR(64),
+    next_execute_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
+    status VARCHAR(16) NOT NULL CHECK (status IN ('PENDING','RUNNING','FAILED','CANCELLED')),
+    attempts INT NOT NULL DEFAULT 0 CHECK (attempts >= 0),
+    max_attempts INT NOT NULL CHECK (max_attempts > 0),
+    lease_until TIMESTAMP(6) WITHOUT TIME ZONE,
+    claim_token VARCHAR(64),
+    last_error VARCHAR(256)
+);
+CREATE INDEX loadup_task_ready ON loadup_task(status,next_execute_at,id);
+CREATE INDEX loadup_task_lease ON loadup_task(status,lease_until,id);
+CREATE UNIQUE INDEX loadup_task_business ON loadup_task(task_type,biz_id);
+CREATE TABLE loadup_task_operation (
+    id VARCHAR(64) PRIMARY KEY,
+    created_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
+    updated_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
+    task_id VARCHAR(64) NOT NULL,
+    operator_id VARCHAR(64) NOT NULL,
+    reason VARCHAR(512) NOT NULL
+);
+CREATE INDEX loadup_task_operation ON loadup_task_operation(task_id);
+-- END loadup-components/reliability/loadup-components-task/src/main/resources/db/task/pg/schema.sql
 
 -- BEGIN loadup-modules/loadup-modules-audit/loadup-modules-audit-core/src/main/resources/db/migration/framework/audit/V20261002000001__create_audit_event.sql
 -- SHA-256: d3b86adb792efc83d7d0b3bd209261ef7c8a7c3b0061e8b6c061c0f210aa989d

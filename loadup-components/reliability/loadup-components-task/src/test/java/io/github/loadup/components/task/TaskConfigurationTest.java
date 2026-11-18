@@ -106,7 +106,6 @@ class TaskConfigurationTest {
                 .withPropertyValues("loadup.task.enabled=false")
                 .run(context -> {
                     assertThat(context).doesNotHaveBean(TaskDispatcher.class);
-                    assertThat(context).doesNotHaveBean(IdempotentEventConsumer.class);
                 });
     }
 
@@ -117,9 +116,6 @@ class TaskConfigurationTest {
                 .withBean(PlatformTransactionManager.class, () -> new DataSourceTransactionManager(source))
                 .run(context -> {
                     assertThat(context).hasSingleBean(JdbcTaskRepository.class);
-                    assertThat(context).hasSingleBean(IdempotentEventConsumer.class);
-                    assertThat(context.getBean("idempotentEventConsumer"))
-                            .isSameAs(context.getBean(IdempotentEventConsumer.class));
                     assertThat(context).hasSingleBean(TaskDispatcher.class);
                     TaskWorker worker = context.getBean(TaskWorker.class);
                     assertThat(worker.isAutoStartup()).isFalse();

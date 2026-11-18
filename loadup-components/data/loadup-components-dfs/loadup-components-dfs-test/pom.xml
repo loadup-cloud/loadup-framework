@@ -8,7 +8,7 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-dfs-test</artifactId>
-    <name>LoadUp Components DFS Test</name>
+    <name>ComponentDFS Test</name>
     <description>Unit and integration tests for file storage providers.</description>
 
     <properties>

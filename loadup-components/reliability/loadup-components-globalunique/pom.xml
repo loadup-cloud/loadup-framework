@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>loadup-components-globalunique</artifactId>
-    <name>LoadUp Components GlobalUnique</name>
+    <name>ComponentGlobalUnique</name>
     <description>Database unique-constraint guards for business keys.</description>
 
     <properties>

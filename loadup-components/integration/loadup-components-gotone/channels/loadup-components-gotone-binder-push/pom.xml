@@ -8,7 +8,7 @@
         <relativePath>../../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-gotone-binder-push</artifactId>
-    <name>LoadUp Components Gotone Binder Push</name>
+    <name>ComponentGotone Binder Push</name>
     <description>FCM push provider configuration; delivery transport is not implemented.</description>
 
     <dependencies>

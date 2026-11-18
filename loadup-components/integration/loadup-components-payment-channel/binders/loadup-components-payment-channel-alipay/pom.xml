@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>loadup-components-payment-channel-alipay</artifactId>
-    <name>LoadUp Components Payment Channel Binder Alipay</name>
+    <name>ComponentPayment Channel Binder Alipay</name>
     <description>Alipay RSA2 payer-code, JSAPI, H5, query, close, refund and notification protocol binder.</description>
 
     <properties>

@@ -8,7 +8,7 @@
         <relativePath>../../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-gotone-binder-webhook</artifactId>
-    <name>LoadUp Components Gotone Binder Webhook</name>
+    <name>ComponentGotone Binder Webhook</name>
     <description>Webhook notification delivery for DingTalk, WeCom and Feishu.</description>
 
     <dependencies>

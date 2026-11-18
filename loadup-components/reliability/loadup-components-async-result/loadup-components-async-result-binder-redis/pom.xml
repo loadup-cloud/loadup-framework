@@ -8,7 +8,7 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-async-result-binder-redis</artifactId>
-    <name>LoadUp Components Async Result Redis Binder</name>
+    <name>ComponentAsync Result Redis Binder</name>
     <description>Redis result retention and cross-instance completion notifications.</description>
     <properties>
         <loadup.coverage.skip>false</loadup.coverage.skip>

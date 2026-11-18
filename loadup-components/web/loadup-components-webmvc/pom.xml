@@ -8,7 +8,7 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-webmvc</artifactId>
-    <name>LoadUp Components WebMVC</name>
+    <name>ComponentWebMVC</name>
     <description>Spring MVC response envelopes, exception handling and Jackson defaults.</description>
     <properties>
         <!-- Temporary coverage gate exemption; continue collecting report data. -->

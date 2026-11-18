@@ -15,17 +15,19 @@
  */
 package io.github.loadup.components.scheduler.powerjob;
 
+import io.github.loadup.components.scheduler.SchedulerAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import tech.powerjob.client.PowerJobClient;
 
-@AutoConfiguration
+@AutoConfiguration(before = SchedulerAutoConfiguration.class)
 @ConditionalOnProperty(prefix = "loadup.scheduler", name = "binder-type", havingValue = "powerjob")
 public class PowerJobSchedulerAutoConfiguration {
-    @Bean(name = "loadupSchedulerProcessor")
+    @Bean(name = PowerJobSchedulerProvider.PROCESSOR_NAME)
     @ConditionalOnMissingBean
-    public PowerJobSchedulerProvider powerJobSchedulerProvider() {
-        return new PowerJobSchedulerProvider();
+    public PowerJobSchedulerProvider powerJobSchedulerProvider(PowerJobClient client) {
+        return new PowerJobSchedulerProvider(client);
     }
 }

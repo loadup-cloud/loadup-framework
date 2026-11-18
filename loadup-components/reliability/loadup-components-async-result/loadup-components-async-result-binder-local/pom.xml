@@ -8,7 +8,7 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-async-result-binder-local</artifactId>
-    <name>LoadUp Components Async Result Local Binder</name>
+    <name>ComponentAsync Result Local Binder</name>
     <description>Process-local asynchronous result storage and notification.</description>
     <properties>
         <loadup.coverage.skip>false</loadup.coverage.skip>

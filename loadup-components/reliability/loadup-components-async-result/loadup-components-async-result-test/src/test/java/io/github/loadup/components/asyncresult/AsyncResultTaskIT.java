@@ -25,7 +25,6 @@ import io.github.loadup.components.task.TaskDispatcher;
 import io.github.loadup.components.task.TaskExecution;
 import io.github.loadup.components.task.TaskHandler;
 import io.github.loadup.components.task.TaskProperties;
-import io.github.loadup.components.task.TaskStatus;
 import io.github.loadup.components.task.TaskSubmission;
 import io.github.loadup.components.testcontainers.annotation.ContainerType;
 import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
@@ -55,7 +54,7 @@ class AsyncResultTaskIT {
                 SharedPostgreSQLContainer.getJdbcUrl(),
                 SharedPostgreSQLContainer.getUsername(),
                 SharedPostgreSQLContainer.getPassword());
-        new ResourceDatabasePopulator(new ClassPathResource("db/schema/task.sql")).execute(ds);
+        new ResourceDatabasePopulator(new ClassPathResource("db/task/pg/schema.sql")).execute(ds);
         var props = new TaskProperties();
         var manager = new DataSourceTransactionManager(ds);
         var tasks = new JdbcTaskRepository(ds, manager, props);
@@ -77,13 +76,12 @@ class AsyncResultTaskIT {
             var dispatcher = new TaskDispatcher(tasks, props, List.of(handler), null, ObservationRegistry.NOOP);
             String result = template.execute(AsyncResultTest.options(), String.class, key -> {
                 tx.executeWithoutResult(status -> eventId.set(tasks.submit(TaskSubmission.immediate(
-                        handler.taskType(), 1, key.businessId(), mapper.writeValueAsString(key)))));
+                        handler.taskType(), key.businessId(), mapper.writeValueAsString(key)))));
                 dispatcher.execute();
                 return AsyncResultTest.sent();
             });
             assertThat(result).isEqualTo("committed");
-            assertThat(tasks.find(eventId.get()))
-                    .hasValueSatisfying(task -> assertThat(task.status()).isEqualTo(TaskStatus.SUCCEEDED));
+            assertThat(tasks.find(eventId.get())).isEmpty();
             tx.executeWithoutResult(status -> assertThatThrownBy(
                             () -> template.execute(AsyncResultTest.options(), String.class, k -> {
                                 throw new AssertionError("must not dispatch inside transaction");

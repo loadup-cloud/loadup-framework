@@ -10,7 +10,7 @@
     </parent>
     <artifactId>loadup-coverage</artifactId>
     <packaging>pom</packaging>
-    <name>LoadUp Coverage</name>
+    <name>Coverage</name>
     <description>Native JaCoCo aggregation of component unit and integration test coverage.</description>
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
@@ -74,7 +74,7 @@
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-scheduler-api</artifactId>
+            <artifactId>loadup-components-scheduler</artifactId>
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

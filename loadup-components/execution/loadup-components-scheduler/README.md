@@ -1,23 +1,17 @@
 # LoadUp Scheduler
 
-为数据库扫描器和普通周期任务提供可切换的调度唤醒入口。业务实现 `ScheduledTask`；应用选择一个 binder。Scheduler
-不存储订单截止时间，也不为每个业务订单注册引擎任务。
+业务实现 `ScheduledTask`，应用用任务名匹配处理器，用 Cron 定义执行频率。Local 和 PowerJob 共用同一套任务配置。
 
-## 能力矩阵
-
-| 能力                | 状态     | 边界                                  |
-|---------------------|----------|---------------------------------------|
-| Spring `@Scheduled` | 已实现   | 默认本地 binder，每个应用实例均可触发 |
-| PowerJob            | 已实现   | 独立 Server，原生任务定义和运维       |
-| XXL-JOB / JobRunr   | 待实现   | 通过 SchedulerProvider 扩展           |
-| 单机重叠抑制        | 已实现   | 同名任务同一 JVM 同时只执行一次       |
-| 集群业务互斥        | 业务负责 | Task 使用数据库条件领取        |
+| 能力 | 契约 |
+| ---- | ---- |
+| Local | 每个应用实例按 Cron 触发配置的任务 |
+| PowerJob | 启动时同步任务定义，Server 按 Cron 调度，Worker 按任务名回调 |
+| 自定义平台 | 独立 binder 实现 `SchedulerProvider` |
+| 重叠执行 | 同一 JVM 的同名任务只运行一个，集群级幂等由业务负责 |
 
 ## 接入
 
-引入 BOM 后，业务代码依赖 `loadup-components-scheduler-api`，应用额外引入 `loadup-components-scheduler-binder-local` 或
-`loadup-components-scheduler-binder-powerjob`（groupId 均为 `io.github.loadup-cloud`）。两个 binder 的部署配置见各自
-README。
+业务模块依赖 `io.github.loadup-cloud:loadup-components-scheduler-api`，版本由 BOM 管理。注册一个有稳定名称的 Spring Bean。
 
 ```java
 @Component
@@ -27,10 +21,23 @@ public class OrderScanner implements ScheduledTask {
 }
 ```
 
-任务名为 1–64 位字母、数字、下划线、点或连字符，首字符为字母，禁止重复。异常由 binder 各自处理；本地 binder
-记录安全日志并继续其他任务，PowerJob binder 交给原生引擎判断实例失败。只引入 API 不启动调度；不存在 Provider 时不创建
-SchedulerTemplate，同时出现多个 Provider 则启动失败。
+部署时将需要的 binder 加入运行依赖。可以同时安装 Local 和 PowerJob binder，然后通过 `binder-type` 切换。
 
-Task 使用自身的 TaskWorker 轮询；Transfer 注册 `transfer.scan`。按扫描频率及单次处理时长设置延迟 SLA；分钟轮询不是精确秒级定时器。
+```yaml
+loadup:
+  scheduler:
+    binder-type: local
+    tasks:
+      - name: order.scan
+        cron: "0 */5 * * * *"
+```
 
-SchedulerTemplate 每次实际触发任务时，从当前 ExecutionContext 派生并绑定 runtime DeploymentDataScope，保留 PowerJob 等入口已建立的任务元数据，正常/异常退出均恢复外层绑定。同名重叠抑制、异常交给 binder 的语义保持不变。Transfer 等原生 ScheduledTask 扫描入口因此有明确部署范围；直接调用低层 dispatcher 的调用方仍须自行建立受信上下文。该范围不代表动态 schema 路由。
+Cron 包含秒、分、时、日、月和星期六个字段。星期使用 `MON` 至 `SUN`，支持列表和范围。日和星期最多限定一个字段，另一个用 `*` 或 `?`。
+Local 使用应用的 JVM 时区，PowerJob 使用 Server 的 JVM 时区。切换后端时保持两者一致。
+
+任务名以字母开头，最长 64 字符，可包含字母、数字、下划线、点和连字符。配置里列出的任务必须有同名 Bean，名称重复、Cron 非法或选定的 binder 缺失都会导致启动失败。未列出的 Bean 可通过 `SchedulerTemplate.trigger(name)` 手动执行。仅引入 API 可用于提供任务 Bean。
+
+现有应用从 `loadup.scheduler.local.interval` 和 `initial-delay` 迁移时，需要为每个任务填写 Cron。Cron 按日历时间触发。已手工创建 PowerJob 任务的部署按 binder 文档迁移。持久化 Task 继续由自己的 TaskWorker 轮询。
+
+- [Local binder](loadup-components-scheduler-binder-local/README.md)
+- [PowerJob binder](loadup-components-scheduler-binder-powerjob/README.md)

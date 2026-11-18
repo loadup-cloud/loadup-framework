@@ -10,7 +10,7 @@
 
     <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-commons-dto</artifactId>
-    <name>LoadUp Commons DTO</name>
+    <name>Common DTO</name>
     <description>Shared values, commands, pagination and response envelopes.</description>
 
     <dependencies>

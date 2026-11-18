@@ -8,7 +8,7 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-gotone-store-jdbc</artifactId>
-    <name>LoadUp Components Gotone Store JDBC</name>
+    <name>ComponentGotone Store JDBC</name>
     <description>JDBC storage for notification configuration and delivery records.</description>
 
     <dependencies>

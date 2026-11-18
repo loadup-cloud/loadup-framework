@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>loadup-components-springdoc</artifactId>
-    <name>LoadUp Components SpringDoc</name>
+    <name>ComponentSpringDoc</name>
     <description>OpenAPI documentation generation with SpringDoc and Scalar UI.</description>
 
     <dependencies>

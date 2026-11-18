@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>loadup-commons-log</artifactId>
-    <name>LoadUp Commons Log</name>
+    <name>Common Log</name>
     <description>Logging defaults, trace MDC conventions and service digest annotations.</description>
 
     <dependencies>

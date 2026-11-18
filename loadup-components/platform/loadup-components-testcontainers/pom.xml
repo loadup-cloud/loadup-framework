@@ -11,7 +11,7 @@
 
     <artifactId>loadup-components-testcontainers</artifactId>
     <packaging>jar</packaging>
-    <name>LoadUp Components Testcontainers</name>
+    <name>ComponentTestcontainers</name>
     <description>Shared Docker test containers and Spring connection property injection.</description>
 
     <dependencies>

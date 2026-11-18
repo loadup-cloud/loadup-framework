@@ -8,7 +8,7 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-dfs-binder-database</artifactId>
-    <name>LoadUp Components DFS Binder Database</name>
+    <name>ComponentDFS Binder Database</name>
     <description>Database-backed file content storage.</description>
 
     <dependencies>

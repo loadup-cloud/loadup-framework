@@ -8,7 +8,7 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-payment-channel-contracts</artifactId>
-    <name>LoadUp Components Payment Channel Contracts</name>
+    <name>ComponentPayment Channel Contracts</name>
     <description>Shared channel vocabulary and acquiring amount constraints without facade or provider dependencies.</description>
     <properties>
         <loadup.coverage.skip>false</loadup.coverage.skip>

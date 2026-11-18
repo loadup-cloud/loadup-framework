@@ -22,29 +22,27 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 public record TaskSubmission(
-        String taskType,
-        int payloadVersion,
-        String bizId,
-        @DiagnosticHidden String payload,
-        LocalDateTime executeAt,
-        String dedupKey) {
+        String taskType, String bizId, @DiagnosticHidden String payload, LocalDateTime executeAt) {
     public TaskSubmission {
         required(taskType, "taskType", 128);
         required(bizId, "bizId", 128);
-        if (payloadVersion < 1 || (payload != null && payload.getBytes(StandardCharsets.UTF_8).length > 1048576)) {
+        if (payload != null && payload.getBytes(StandardCharsets.UTF_8).length > 1048576) {
             throw new IllegalArgumentException("Invalid task payload");
         }
-        if (dedupKey != null) required(dedupKey, "dedupKey", 512);
-        if (executeAt != null) executeAt = executeAt.truncatedTo(ChronoUnit.MICROS);
+        if (executeAt != null) {
+            executeAt = executeAt.truncatedTo(ChronoUnit.MICROS);
+        }
     }
 
-    public static TaskSubmission immediate(String type, int version, String biz, String payload) {
-        return new TaskSubmission(type, version, biz, payload, null, null);
+    public static TaskSubmission immediate(String type, String biz, String payload) {
+        return new TaskSubmission(type, biz, payload, null);
     }
 
     public static TaskSubmission scheduled(String type, String biz, LocalDateTime time) {
-        if (time == null) throw new IllegalArgumentException("executeAt is required");
-        return new TaskSubmission(type, 1, biz, null, time, type.length() + ":" + type + biz);
+        if (time == null) {
+            throw new IllegalArgumentException("executeAt is required");
+        }
+        return new TaskSubmission(type, biz, null, time);
     }
 
     @Override
@@ -53,8 +51,9 @@ public record TaskSubmission(
     }
 
     static String required(String value, String name, int max) {
-        if (value == null || value.isBlank() || value.length() > max)
+        if (value == null || value.isBlank() || value.length() > max) {
             throw new IllegalArgumentException("Invalid " + name);
+        }
         return value;
     }
 }

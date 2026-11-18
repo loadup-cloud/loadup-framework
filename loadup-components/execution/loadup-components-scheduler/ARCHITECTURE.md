@@ -1,32 +1,13 @@
 # Scheduler 架构
 
-## 职责与依赖
-
 ```text
-Local @Scheduled ─┐
-                  ├─ SchedulerProvider → SchedulerTemplate → ScheduledTask
-PowerJob Worker ──┘                                      ├─ TaskDispatcher
-                                                        └─ TransferTaskProcessor
+loadup.scheduler.tasks → SchedulerTemplate → SchedulerProvider
+ ScheduledTask beans ────────┘      ↑              │
+                                    └── 任务名回调 ─┘
 ```
 
-采用单后端选择模式。API 只表达任务名、执行与 Provider 生命周期；PowerJob 的工作流、分片、实例管理等原生功能仍使用其原生
-SDK，不翻译成框架通用模型。组件不维护远程 jobId 映射，不自动创建/删除平台任务。
+Scheduler API 绑定并校验全部任务定义，`SchedulerTemplate` 管理任务分派和生命周期。自动触发限定在配置的任务名中，手动触发可使用任意已注册的任务。同一 JVM 的同名任务重叠时跳过本次触发，处理失败后释放执行标记。业务异常由 binder 接收。
 
-## 装配与执行
+Local binder 注册并取消 Spring Cron 触发器。PowerJob binder 通过原生 Client 同步持久化任务，通过 Worker 回调统一分派入口。工作流、分片和实例管理继续使用 PowerJob 原生 SDK。
 
-binder 根据 `loadup.scheduler.binder-type` 创建 Provider。API 自动配置在 binder 之后检查唯一 Provider，收集 ScheduledTask
-Bean，创建 SmartLifecycle Template。启动绑定 Provider；停止解除绑定。每个任务使用独立 AtomicBoolean 抑制同 JVM 重叠，finally
-释放，失败不阻塞下一轮。
-
-本地 fixedDelay 在一轮完成后等待，所有扫描器串行执行；多个实例可同时唤醒。PowerJob 根据原生 jobParams
-指定一个任务名。此处不提供集群锁或持久化幂等：业务记录的条件更新、租约和处理器语义属于业务组件。
-
-## 扩展与验证
-
-新增 binder 实现 SchedulerProvider 并独立装配，不修改业务扫描器。XXL-JOB / JobRunr 尚未实现。测试覆盖注册校验、生命周期、异常释放、重叠抑制、实际
-@Scheduled 唤醒与 PowerJob Processor 调用同一入口（不启动 Server）。
-
-SchedulerTemplate 为 final 类，扩展通过 SchedulerProvider 与 ScheduledTask
-组合完成。构造时仍拒绝非法或重复任务名；禁止继承可避免子类终结器接触构造失败后的半初始化对象。
-
-持久化 Task 由自身 TaskWorker 唤醒，不依赖 Scheduler；Scheduler 继续唤醒 Transfer 和其他 ScheduledTask 扫描器。
+新增阿里云、AWS 等平台时，独立模块按 `loadup.scheduler.binder-type` 装配一个 `SchedulerProvider`，并声明 `@AutoConfiguration(before = SchedulerAutoConfiguration.class)`。Provider 接收标准任务定义和按名称分派的回调，负责转换 Cron、校验平台支持的频率和管理平台任务生命周期。接收平台触发的方式与身份校验由 binder 实现。

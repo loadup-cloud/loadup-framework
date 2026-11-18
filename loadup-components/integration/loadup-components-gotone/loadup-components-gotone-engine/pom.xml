@@ -8,7 +8,7 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-gotone-engine</artifactId>
-    <name>LoadUp Components Gotone Engine</name>
+    <name>ComponentGotone Engine</name>
     <description>Notification routing, template rendering and channel fallback without persistence.</description>
     <properties>
         <loadup.coverage.skip>false</loadup.coverage.skip>

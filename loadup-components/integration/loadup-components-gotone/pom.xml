@@ -10,7 +10,7 @@
 
     <artifactId>loadup-components-gotone</artifactId>
     <packaging>pom</packaging>
-    <name>LoadUp Components Gotone</name>
+    <name>ComponentGotone</name>
     <description>Notification routing, templates and channel integrations.</description>
 
     <modules>

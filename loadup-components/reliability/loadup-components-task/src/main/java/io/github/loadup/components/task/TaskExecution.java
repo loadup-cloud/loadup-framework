@@ -24,14 +24,12 @@ public record TaskExecution(
         String id,
         String taskType,
         String bizId,
-        LocalDateTime executeAt,
         LocalDateTime nextExecuteAt,
         TaskStatus status,
         int attempts,
         int maxAttempts,
         LocalDateTime leaseUntil,
         String lastError,
-        int payloadVersion,
         @DiagnosticHidden String payload,
         Instant occurredAt,
         String traceId) {
@@ -39,18 +37,17 @@ public record TaskExecution(
             String id,
             String type,
             String biz,
-            LocalDateTime at,
             LocalDateTime next,
             TaskStatus state,
             int attempts,
             int max,
             LocalDateTime lease,
             String error) {
-        this(id, type, biz, at, next, state, attempts, max, lease, error, 1, null, null, null);
+        this(id, type, biz, next, state, attempts, max, lease, error, null, null, null);
     }
 
     public TaskExecution(String id, String type, String biz, String state, int attempts, String error) {
-        this(id, type, biz, null, null, TaskStatus.valueOf(state), attempts, 0, null, error, 1, null, null, null);
+        this(id, type, biz, null, TaskStatus.valueOf(state), attempts, 0, null, error, null, null, null);
     }
 
     public TaskExecution(String id, TaskSubmission task, Instant at, String trace) {
@@ -59,13 +56,11 @@ public record TaskExecution(
                 task.taskType(),
                 task.bizId(),
                 task.executeAt(),
-                task.executeAt(),
                 TaskStatus.RUNNING,
                 1,
                 1,
                 null,
                 null,
-                task.payloadVersion(),
                 task.payload(),
                 at,
                 trace);

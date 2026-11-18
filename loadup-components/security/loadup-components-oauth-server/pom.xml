@@ -11,7 +11,7 @@
 
     <artifactId>loadup-components-oauth-server</artifactId>
     <packaging>pom</packaging>
-    <name>LoadUp Components OAuth Server</name>
+    <name>ComponentOAuth Server</name>
     <description>OAuth2 authorization server contracts and embedded server integration.</description>
 
     <modules>

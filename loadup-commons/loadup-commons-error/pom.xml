@@ -8,7 +8,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-commons-error</artifactId>
-    <name>LoadUp Commons Error</name>
+    <name>Common Error</name>
     <description>Stable result codes and common business exception contracts.</description>
     <dependencies>
         <dependency>

@@ -20,10 +20,12 @@ import io.micrometer.observation.ObservationRegistry;
 import java.util.Arrays;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import tech.powerjob.client.PowerJobClient;
 import tech.powerjob.worker.autoconfigure.PowerJobProperties;
 
@@ -44,7 +46,7 @@ public class LoadUpPowerJobAutoConfiguration {
 
     @Bean(destroyMethod = "close")
     @ConditionalOnMissingBean(PowerJobClient.class)
-    @ConditionalOnProperty(prefix = "powerjob.client", name = "enabled", havingValue = "true")
+    @Conditional(ClientRequested.class)
     public PowerJobClient powerJobClient(PowerJobClientProperties client, PowerJobProperties properties) {
         String address = value(client.getServerAddress(), properties.getWorker().getServerAddress());
         String appName = value(client.getAppName(), properties.getWorker().getAppName());
@@ -57,5 +59,17 @@ public class LoadUpPowerJobAutoConfiguration {
             throw new CommonException(PowerJobResultCodeEnum.INVALID_CLIENT_CONFIGURATION);
         }
         return new PowerJobClient(addresses, appName, password);
+    }
+
+    static class ClientRequested extends AnyNestedCondition {
+        ClientRequested() {
+            super(ConfigurationPhase.REGISTER_BEAN);
+        }
+
+        @ConditionalOnProperty(prefix = "loadup.scheduler", name = "binder-type", havingValue = "powerjob")
+        static class SchedulerSelected {}
+
+        @ConditionalOnProperty(prefix = "powerjob.client", name = "enabled", havingValue = "true")
+        static class NativeClientEnabled {}
     }
 }

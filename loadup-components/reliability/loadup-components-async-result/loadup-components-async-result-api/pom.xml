@@ -8,7 +8,7 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-async-result-api</artifactId>
-    <name>LoadUp Components Async Result API</name>
+    <name>ComponentAsync Result API</name>
     <description>Typed asynchronous result contracts and bounded waiting lifecycle.</description>
     <properties>
         <loadup.coverage.skip>false</loadup.coverage.skip>

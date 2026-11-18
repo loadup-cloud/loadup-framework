@@ -14,10 +14,17 @@ OUTPUT = ROOT / "sql/framework-schema.sql"
 
 def render_schema() -> tuple[bytes, int]:
     components = sorted(ROOT.glob("loadup-components/**/src/main/resources/db/schema/**/*.sql"))
+    task_schema = ROOT / (
+        "loadup-components/reliability/loadup-components-task/src/main/resources/db/task/pg/schema.sql"
+    )
     if not components:
         raise ValueError("No component schema templates found")
+    components = sorted([*components, task_schema])
+    modules = ROOT / "loadup-modules"
+    if not modules.is_dir():
+        modules = ROOT.parent / "loadup-modules"
     migrations = sorted(
-        ROOT.glob("loadup-modules/**/src/main/resources/db/migration/framework/*/V*.sql"),
+        modules.glob("**/src/main/resources/db/migration/framework/*/V*.sql"),
         key=lambda path: (int(path.name[1:].split("__", 1)[0]), path.as_posix()),
     )
     if not migrations:
@@ -34,9 +41,10 @@ def render_schema() -> tuple[bytes, int]:
     for source in sources:
         content = source.read_bytes()
         if not content.strip():
-            raise ValueError(f"Empty SQL source: {source.relative_to(ROOT)}")
+            raise ValueError(f"Empty SQL source: {source}")
         content.decode("utf-8")
-        relative = source.relative_to(ROOT).as_posix()
+        relative = (Path("loadup-modules") / source.relative_to(modules) if source in migrations
+                    else source.relative_to(ROOT)).as_posix()
         digest = hashlib.sha256(content).hexdigest()
         sections.append(f"\n-- BEGIN {relative}\n-- SHA-256: {digest}\n".encode("utf-8"))
         sections.append(content)

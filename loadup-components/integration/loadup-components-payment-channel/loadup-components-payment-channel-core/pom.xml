@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>loadup-components-payment-channel-core</artifactId>
-    <name>LoadUp Components Payment Channel Core</name>
+    <name>ComponentPayment Channel Core</name>
     <description>In-process channel facade, provider registry and deterministic account-bound routing.</description>
 
     <properties>

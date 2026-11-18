@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>loadup-components-cache-test</artifactId>
-    <name>LoadUp Components Cache Test</name>
+    <name>ComponentCache Test</name>
     <description>Unit and integration tests for cache policies and backends.</description>
 
     <properties>

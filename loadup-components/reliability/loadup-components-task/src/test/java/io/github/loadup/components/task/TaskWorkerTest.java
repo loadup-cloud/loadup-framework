@@ -50,7 +50,7 @@ class TaskWorkerTest {
         return new JdbcTaskRepository.Claim(
                 new TaskExecution(
                         "event-id",
-                        TaskSubmission.immediate("payment.completed", 1, "order-id", "{}"),
+                        TaskSubmission.immediate("payment.completed", "order-id", "{}"),
                         Instant.parse("2026-10-14T00:00:00Z"),
                         traceId),
                 "lease-token",

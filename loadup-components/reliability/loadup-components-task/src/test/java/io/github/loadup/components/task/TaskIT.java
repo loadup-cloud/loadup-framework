@@ -27,10 +27,10 @@ import io.github.loadup.components.testcontainers.annotation.ContainerType;
 import io.github.loadup.components.testcontainers.annotation.EnableTestContainers;
 import java.net.InetSocketAddress;
 import java.net.URI;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -58,7 +58,6 @@ import tools.jackson.databind.json.JsonMapper;
 @EnableTestContainers(value = ContainerType.POSTGRESQL, reuse = false)
 class TaskIT {
     private final JdbcTaskRepository repository;
-    private final IdempotentEventConsumer inbox;
     private final TaskProperties properties;
     private final JdbcTemplate jdbc;
     private final TransactionTemplate transactions;
@@ -66,16 +65,14 @@ class TaskIT {
     @Autowired
     TaskIT(
             JdbcTaskRepository repository,
-            IdempotentEventConsumer inbox,
             TaskProperties properties,
             DataSource source,
             PlatformTransactionManager manager) {
         this.repository = repository;
-        this.inbox = inbox;
         this.properties = properties;
         jdbc = new JdbcTemplate(source);
         transactions = new TransactionTemplate(manager);
-        ensureSchema(source, "loadup_task_inbox", "db/schema/task.sql");
+        ensureSchema(source, "loadup_task", "db/task/pg/schema.sql");
     }
 
     private static void ensureSchema(DataSource source, String table, String resource) {
@@ -92,7 +89,6 @@ class TaskIT {
 
     @BeforeEach
     void reset() {
-        jdbc.update("DELETE FROM loadup_task_inbox");
         jdbc.update("DELETE FROM loadup_task_operation");
         jdbc.update("DELETE FROM loadup_task");
     }
@@ -108,6 +104,10 @@ class TaskIT {
         assertThat(repository.pendingCount()).isZero();
         String id = publish();
         assertThat(repository.find(id)).isPresent();
+        var sameWork = repository.find(id).orElseThrow();
+        String duplicate = transactions.execute(status ->
+                repository.submit(TaskSubmission.immediate(sameWork.taskType(), sameWork.bizId(), sameWork.payload())));
+        assertThat(duplicate).isEqualTo(id);
     }
 
     @Test
@@ -122,6 +122,8 @@ class TaskIT {
         assertThat(repository.complete(first)).isFalse();
         assertThat(repository.fail(first, new IllegalStateException("stale"))).isFalse();
         assertThat(repository.complete(recovered)).isTrue();
+        assertThat(repository.find(id)).isEmpty();
+        assertThat(repository.fail(first, new IllegalStateException("late"))).isFalse();
     }
 
     @Test
@@ -144,29 +146,17 @@ class TaskIT {
     void concurrentWorkersDoNotShareAnActiveClaim() throws Exception {
         publish();
         try (var executor = Executors.newFixedThreadPool(2)) {
-            //            var first = executor.submit(repository::claim);
-            //            var second = executor.submit(repository::claim);
-            //            assertThat(List.of(first.get(), second.get()).stream()
-            //                            .filter(Optional::isPresent)
-            //                            .count())
-            //                    .isEqualTo(1);
+            var first = executor.submit(() -> {
+                return repository.claim();
+            });
+            var second = executor.submit(() -> {
+                return repository.claim();
+            });
+            assertThat(List.of(first.get(), second.get()).stream()
+                            .filter(Optional::isPresent)
+                            .count())
+                    .isEqualTo(1);
         }
-    }
-
-    @Test
-    void inboxRollbackAllowsRetryAndCommittedConsumptionIsDeduplicated() {
-        publish();
-        TaskExecution event = repository.claim().orElseThrow().event();
-        assertThatThrownBy(() -> transactions.execute(status -> inbox.consume("consumer", event, () -> {
-                    throw new IllegalStateException("rollback");
-                })))
-                .isInstanceOf(IllegalStateException.class);
-        AtomicInteger work = new AtomicInteger();
-        Boolean consumed = transactions.execute(status -> inbox.consume("consumer", event, work::incrementAndGet));
-        assertThat(consumed).isTrue();
-        Boolean duplicate = transactions.execute(status -> inbox.consume("consumer", event, work::incrementAndGet));
-        assertThat(duplicate).isFalse();
-        assertThat(work).hasValue(1);
     }
 
     @Test
@@ -236,14 +226,14 @@ class TaskIT {
             dispatcher.execute();
             assertThat(calls).hasValue(2);
             assertThat(accepted).containsExactly(id);
-            assertThat(repository.find(id).orElseThrow().status()).isEqualTo(TaskStatus.SUCCEEDED);
+            assertThat(repository.find(id)).isEmpty();
         } finally {
             server.stop(0);
         }
     }
 
     @Test
-    void readOnlyTransactionsAndMissingArgumentsCannotPublishOrConsume() {
+    void readOnlyTransactionsAndMissingArgumentsCannotSubmit() {
         transactions.setReadOnly(true);
         try {
             assertThatThrownBy(() -> transactions.execute(status -> repository.submit(message())))
@@ -253,12 +243,6 @@ class TaskIT {
         }
         assertThatThrownBy(() -> transactions.execute(status -> repository.submit(null)))
                 .isInstanceOf(IllegalArgumentException.class);
-        TaskExecution event = new TaskExecution("event", message(), Instant.now(), null);
-        assertThatThrownBy(() -> inbox.consume("consumer", event, () -> {})).isInstanceOf(IllegalStateException.class);
-        assertThatThrownBy(() -> inbox.consume(" ", event, () -> {})).isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> inbox.consume("consumer", null, () -> {}))
-                .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> inbox.consume("consumer", event, null)).isInstanceOf(IllegalArgumentException.class);
         assertThat(repository.pendingCount()).isZero();
     }
 
@@ -322,32 +306,6 @@ class TaskIT {
     }
 
     @Test
-    void duplicateInboxRecordDoesNotAbortTheEnclosingPostgresqlTransaction() {
-        var event = new TaskExecution("duplicate-event", message(), Instant.now(), null);
-        transactions.executeWithoutResult(status -> {
-            assertThat(inbox.consume("consumer", event, () -> {})).isTrue();
-            assertThat(inbox.consume("consumer", event, () -> {})).isFalse();
-            repository.submit(message());
-        });
-        assertThat(repository.pendingCount()).isEqualTo(1);
-    }
-
-    @Test
-    void inboxDeduplicationIsScopedToConsumerAndEvent() {
-        String eventId = "shared-event-id";
-        TaskExecution event = new TaskExecution(eventId, message(), Instant.now(), null);
-        AtomicInteger calls = new AtomicInteger();
-        Boolean consumed = transactions.execute(status -> inbox.consume("consumer", event, calls::incrementAndGet));
-        Boolean secondConsumer =
-                transactions.execute(status -> inbox.consume("other-consumer", event, calls::incrementAndGet));
-        Boolean duplicate = transactions.execute(status -> inbox.consume("consumer", event, calls::incrementAndGet));
-        assertThat(consumed).isTrue();
-        assertThat(secondConsumer).isTrue();
-        assertThat(duplicate).isFalse();
-        assertThat(calls).hasValue(2);
-    }
-
-    @Test
     void handlerFailuresScheduleRetriesThenExhaustTheAttemptBudget() {
         String id = publish();
         var first = repository.claim().orElseThrow();
@@ -363,7 +321,9 @@ class TaskIT {
                 id);
         var last = repository.claim().orElseThrow();
         repository.fail(last, new IllegalArgumentException("sensitive detail"));
-        assertThat(repository.find(id).orElseThrow().status()).isEqualTo(TaskStatus.FAILED);
+        var failed = repository.find(id).orElseThrow();
+        assertThat(failed.status()).isEqualTo(TaskStatus.FAILED);
+        assertThat(failed.nextExecuteAt()).isEqualTo(last.event().nextExecuteAt());
         assertThat(repository.failedCount()).isEqualTo(1);
         assertThat(repository.pendingCount()).isZero();
     }
@@ -373,17 +333,20 @@ class TaskIT {
         var deadline = LocalDateTime.now().plusDays(1).withNano(0);
         var submission = TaskSubmission.scheduled("order.expire", "order", deadline);
         String id = transactions.execute(tx -> repository.submit(submission));
-        //        assertThat(transactions.execute(tx -> repository.submit(submission))).isEqualTo(id);
+        String duplicate = transactions.execute(
+                tx -> repository.submit(TaskSubmission.scheduled("order.expire", "order", deadline.plusDays(1))));
+        assertThat(duplicate).isEqualTo(id);
+        assertThat(repository.find(id).orElseThrow().nextExecuteAt()).isEqualTo(deadline);
         assertThat(repository.claim()).isEmpty();
-        assertThatThrownBy(() -> transactions.execute(tx ->
-                        repository.submit(TaskSubmission.scheduled("order.expire", "order", deadline.plusDays(1)))))
+        assertThatThrownBy(() -> transactions.execute(
+                        tx -> repository.submit(new TaskSubmission("order.expire", "order", "different", deadline))))
                 .isInstanceOf(CommonException.class);
         repository.reschedule(id, LocalDateTime.now().minusMinutes(1));
         var claim = repository.claim().orElseThrow();
         assertThat(repository.cancel(id)).isTrue();
         assertThat(repository.complete(claim)).isFalse();
         repository.reschedule(id, deadline);
-        assertThat(repository.find(id).orElseThrow().executeAt()).isEqualTo(deadline);
+        assertThat(repository.find(id).orElseThrow().nextExecuteAt()).isEqualTo(deadline);
         assertThat(repository.find(id).orElseThrow().attempts()).isZero();
     }
 
@@ -392,7 +355,7 @@ class TaskIT {
     }
 
     private TaskSubmission message() {
-        return TaskSubmission.immediate("test.created", 1, UUID.randomUUID().toString(), "{}");
+        return TaskSubmission.immediate("test.created", UUID.randomUUID().toString(), "{}");
     }
 
     @SpringBootConfiguration

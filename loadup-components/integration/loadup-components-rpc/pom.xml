@@ -9,7 +9,7 @@
     </parent>
     <artifactId>loadup-components-rpc</artifactId>
     <packaging>pom</packaging>
-    <name>LoadUp Components RPC</name>
+    <name>ComponentRPC</name>
     <description>Native Dubbo Triple communication binder and Protobuf IDL scalar helpers.</description>
     <modules>
         <module>loadup-components-rpc-binder-dubbo</module>

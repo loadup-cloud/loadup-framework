@@ -17,101 +17,54 @@ package io.github.loadup.components.scheduler.local;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import io.github.loadup.components.scheduler.ScheduledTask;
 import io.github.loadup.components.scheduler.SchedulerAutoConfiguration;
 import io.github.loadup.components.scheduler.SchedulerTemplate;
 import java.time.Duration;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 class LocalSchedulerTest {
-    @ParameterizedTest
-    @ValueSource(booleans = {false, true})
-    void springScheduledWakesScannersWithoutExternalServices(boolean virtual) {
-        var calls = new AtomicInteger();
-        var active = new AtomicInteger();
-        var overlapping = new AtomicBoolean();
-        new ApplicationContextRunner()
-                .withConfiguration(AutoConfigurations.of(
-                        LocalSchedulerAutoConfiguration.class,
-                        SchedulerAutoConfiguration.class,
-                        TaskSchedulingAutoConfiguration.class))
-                .withBean(ScheduledTask.class, () -> new ScheduledTask() {
-                    public String name() {
-                        return "scan";
-                    }
+    private final ApplicationContextRunner runner = new ApplicationContextRunner()
+            .withConfiguration(
+                    AutoConfigurations.of(LocalSchedulerAutoConfiguration.class, SchedulerAutoConfiguration.class));
 
-                    public void execute() {
-                        if (active.incrementAndGet() != 1) {
-                            overlapping.set(true);
-                        }
-                        try {
-                            calls.incrementAndGet();
-                            Thread.sleep(30);
-                        } catch (InterruptedException interrupted) {
-                            Thread.currentThread().interrupt();
-                        } finally {
-                            active.decrementAndGet();
-                        }
-                    }
-                })
+    @Test
+    void firesConfiguredCronAndKeepsOtherTasksIdle() throws Exception {
+        var failing = mock(ScheduledTask.class);
+        var fast = mock(ScheduledTask.class);
+        var manual = mock(ScheduledTask.class);
+        when(failing.name()).thenReturn("failing");
+        when(fast.name()).thenReturn("fast");
+        when(manual.name()).thenReturn("manual");
+        // The local scheduler must keep firing after a handler fails.
+        doThrow(new IllegalStateException("synthetic")).when(failing).execute();
+        runner.withBean("failing", ScheduledTask.class, () -> failing)
+                .withBean("fast", ScheduledTask.class, () -> fast)
+                .withBean("manual", ScheduledTask.class, () -> manual)
                 .withPropertyValues(
-                        "loadup.scheduler.local.interval=PT0.02S",
-                        "loadup.scheduler.local.initial-delay=PT0S",
-                        "spring.threads.virtual.enabled=" + virtual)
+                        "loadup.scheduler.tasks[0].name=failing",
+                        "loadup.scheduler.tasks[0].cron=* * * * * *",
+                        "loadup.scheduler.tasks[1].name=fast",
+                        "loadup.scheduler.tasks[1].cron=* * * * * *")
                 .run(context -> {
                     assertThat(context).hasSingleBean(SchedulerTemplate.class);
-                    await().atMost(Duration.ofSeconds(3)).until(() -> calls.get() > 1);
-                    assertThat(overlapping).isFalse();
+                    await().atMost(Duration.ofSeconds(5)).untilAsserted(() -> {
+                        verify(failing, atLeastOnce()).execute();
+                        verify(fast, atLeastOnce()).execute();
+                    });
+                    var scheduler = context.getBean(SchedulerTemplate.class);
+                    scheduler.stop();
+                    assertThat(scheduler.isRunning()).isFalse();
+                    verify(manual, never()).execute();
                 });
-    }
-
-    @Test
-    void failuresAreIsolatedAndStoppedProviderIsIdle() {
-        var provider = new LocalSchedulerProvider();
-        provider.wakeUp();
-        var calls = new AtomicInteger();
-        var tasks = List.of(
-                new ScheduledTask() {
-                    public String name() {
-                        return "bad";
-                    }
-
-                    public void execute() {
-                        throw new IllegalStateException("synthetic");
-                    }
-                },
-                new ScheduledTask() {
-                    public String name() {
-                        return "good";
-                    }
-
-                    public void execute() {
-                        calls.incrementAndGet();
-                    }
-                });
-        provider.start(new SchedulerTemplate(provider, tasks));
-        provider.wakeUp();
-        assertThat(calls).hasValue(1);
-        provider.stop();
-        provider.wakeUp();
-        assertThat(calls).hasValue(1);
-    }
-
-    @Test
-    void localBinderBacksOffForOtherSelection() {
-        new ApplicationContextRunner()
-                .withConfiguration(
-                        AutoConfigurations.of(LocalSchedulerAutoConfiguration.class, SchedulerAutoConfiguration.class))
-                .withPropertyValues("loadup.scheduler.binder-type=powerjob")
-                .run(context -> assertThat(context).doesNotHaveBean(LocalSchedulerProvider.class));
     }
 }

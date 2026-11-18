@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>loadup-components-configcenter-binder-local</artifactId>
-    <name>LoadUp Components ConfigCenter Binder Local</name>
+    <name>ComponentConfigCenter Binder Local</name>
     <description>Local file configuration loading and change detection.</description>
 
     <dependencies>

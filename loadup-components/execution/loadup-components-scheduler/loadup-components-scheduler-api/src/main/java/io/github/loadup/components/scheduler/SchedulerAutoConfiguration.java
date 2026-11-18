@@ -15,27 +15,44 @@
  */
 package io.github.loadup.components.scheduler;
 
-import io.github.loadup.commons.enums.CommonResultCodeEnum;
-import io.github.loadup.commons.error.CommonException;
+import io.github.loadup.components.scheduler.config.SchedulerProperties;
 import java.util.List;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 
-@AutoConfiguration(
-        afterName = {
-            "io.github.loadup.components.scheduler.local.LocalSchedulerAutoConfiguration",
-            "io.github.loadup.components.scheduler.powerjob.PowerJobSchedulerAutoConfiguration"
-        })
-@ConditionalOnBean(SchedulerProvider.class)
+@AutoConfiguration
+@EnableConfigurationProperties(SchedulerProperties.class)
+@Conditional(SchedulerAutoConfiguration.SchedulerRequested.class)
 public class SchedulerAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
-    public SchedulerTemplate schedulerTemplate(List<SchedulerProvider> providers, List<ScheduledTask> tasks) {
+    public SchedulerTemplate schedulerTemplate(
+            List<SchedulerProvider> providers, List<ScheduledTask> tasks, SchedulerProperties properties) {
         if (providers.size() != 1) {
-            throw new CommonException(CommonResultCodeEnum.CONFLICT);
+            throw new IllegalStateException("Expected one scheduler binder for loadup.scheduler.binder-type="
+                    + properties.binderType() + ", found " + providers.size());
         }
-        return new SchedulerTemplate(providers.getFirst(), tasks);
+        return new SchedulerTemplate(providers.getFirst(), tasks, properties.tasks());
+    }
+
+    static class SchedulerRequested extends AnyNestedCondition {
+        SchedulerRequested() {
+            super(ConfigurationPhase.REGISTER_BEAN);
+        }
+
+        @ConditionalOnBean(SchedulerProvider.class)
+        static class BinderAvailable {}
+
+        @ConditionalOnProperty("loadup.scheduler.binder-type")
+        static class BinderRequested {}
+
+        @ConditionalOnProperty("loadup.scheduler.tasks[0].name")
+        static class SchedulesConfigured {}
     }
 }

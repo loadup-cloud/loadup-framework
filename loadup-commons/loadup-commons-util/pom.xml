@@ -10,7 +10,7 @@
 
     <groupId>io.github.loadup-cloud</groupId>
     <artifactId>loadup-commons-util</artifactId>
-    <name>LoadUp Commons Util</name>
+    <name>Common Util</name>
     <description>General utilities for dates, strings, tenant context and monetary values.</description>
 
     <dependencies>

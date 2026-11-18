@@ -8,7 +8,7 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-gotone-api</artifactId>
-    <name>LoadUp Components Gotone API</name>
+    <name>ComponentGotone API</name>
     <description>Notification requests, provider contracts and sending facade.</description>
 
     <dependencies/>

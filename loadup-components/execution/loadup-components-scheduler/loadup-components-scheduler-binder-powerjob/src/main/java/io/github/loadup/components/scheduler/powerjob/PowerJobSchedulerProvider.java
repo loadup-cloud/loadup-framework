@@ -18,27 +18,37 @@ package io.github.loadup.components.scheduler.powerjob;
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.components.scheduler.SchedulerProvider;
-import io.github.loadup.components.scheduler.SchedulerTemplate;
+import io.github.loadup.components.scheduler.TaskSchedule;
+import java.util.List;
+import tech.powerjob.client.PowerJobClient;
 import tech.powerjob.worker.core.processor.ProcessResult;
 import tech.powerjob.worker.core.processor.TaskContext;
 import tech.powerjob.worker.core.processor.sdk.BasicProcessor;
 
 public class PowerJobSchedulerProvider implements SchedulerProvider, BasicProcessor {
-    private volatile SchedulerTemplate scheduler;
+    static final String PROCESSOR_NAME = "loadupSchedulerProcessor";
+
+    private final PowerJobScheduleRegistry registry;
+    private volatile TaskTrigger trigger;
+
+    public PowerJobSchedulerProvider(PowerJobClient client) {
+        registry = new PowerJobScheduleRegistry(client);
+    }
 
     @Override
-    public void start(SchedulerTemplate scheduler) {
-        this.scheduler = scheduler;
+    public void start(List<TaskSchedule> schedules, TaskTrigger trigger) {
+        registry.synchronize(schedules);
+        this.trigger = trigger;
     }
 
     @Override
     public void stop() {
-        this.scheduler = null;
+        trigger = null;
     }
 
     @Override
     public ProcessResult process(TaskContext task) throws Exception {
-        var current = scheduler;
+        var current = trigger;
         if (current == null) {
             throw new CommonException(CommonResultCodeEnum.INVALID_STATE);
         }

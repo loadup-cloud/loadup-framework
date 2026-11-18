@@ -8,7 +8,7 @@
         <relativePath>../../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-gotone-binder-email</artifactId>
-    <name>LoadUp Components Gotone Binder Email</name>
+    <name>ComponentGotone Binder Email</name>
     <description>SMTP email delivery through Spring Mail.</description>
 
     <dependencies>

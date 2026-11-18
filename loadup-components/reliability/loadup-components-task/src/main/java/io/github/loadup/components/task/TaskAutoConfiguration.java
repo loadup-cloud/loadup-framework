@@ -47,12 +47,6 @@ public class TaskAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public IdempotentEventConsumer idempotentEventConsumer(DataSource source, PlatformTransactionManager manager) {
-        return new IdempotentEventConsumer(source, manager);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
     public TaskDispatcher taskDispatcher(
             JdbcTaskRepository repository,
             TaskProperties properties,

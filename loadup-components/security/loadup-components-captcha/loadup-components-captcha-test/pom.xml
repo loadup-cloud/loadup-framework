@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>loadup-components-captcha-test</artifactId>
-    <name>LoadUp Components Captcha Test</name>
+    <name>ComponentCaptcha Test</name>
     <description>Unit and integration tests for captcha providers.</description>
 
     <properties>

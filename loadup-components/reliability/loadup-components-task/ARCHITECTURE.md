@@ -1,20 +1,20 @@
 # Task 架构
 
-单一 jar、单一 TaskTemplate/TaskHandler 接口、单一 loadup_task 主表。消息载荷与执行时间是任务属性，不设旧组件模式或双状态机。
+单一 jar、单一 TaskTemplate/TaskHandler 接口、单一任务主表。消息载荷与执行时间是任务属性，不设旧组件模式或双状态机。
 
 业务事务：业务写入 + submit，同步提交或回滚。
 领取事务：恢复耗尽租约，SKIP LOCKED 领取一条记录，生成新 token、递增 attempts、设置租约，提交。
 事务外：调用 Handler。
-确认事务：按 id、RUNNING、token 和有效租约条件完成或延后。
+确认事务：按 id、RUNNING、token 和有效租约条件删除或延后。
 
-TaskDispatcher 挂起调用方事务；领取、确认与人工操作使用独立短事务。数据库时间决定就绪、租约与重试，避免节点时钟差。逐条领取执行，不预领整批。
+TaskDispatcher 挂起调用方事务；领取、确认与人工操作使用独立短事务。数据库时间决定就绪、租约与重试，避免节点时钟差。逐条领取执行，不预领整批。任务行只保留下次执行时间与提交时的尝试上限。领取和失败时读取类型配置，分别计算租约截止时间和重试时间。业务截止时间仍由业务表维护。
 
-PENDING → RUNNING → SUCCEEDED；异常返回 PENDING 或耗尽进入 FAILED。过期 RUNNING 可重领或进入 FAILED。取消清空 token；改期和人工重试清零 attempts。旧执行者不能回写新状态，但可能仍产生外部副作用，业务幂等依然必要。
+PENDING → RUNNING → 成功确认后删除；异常返回 PENDING 或耗尽进入 FAILED。过期 RUNNING 可重领或进入 FAILED。取消清空 token；改期和人工重试清零 attempts。旧执行者不能回写新状态，但可能仍产生外部副作用，业务幂等依然必要。
 
-TaskSubmission 显式选择 dedupKey；businessId 只做关联。同一个业务可有多个目标、多代任务。任务 payload、version、type 和业务 ID 在登记后保持不变。去重重用同一记录，不能靠逻辑删除重新消费。
+数据库对 `(task_type, biz_id)` 建立唯一约束。同一业务下的独立投递或下一代任务使用不同 bizId。任务 payload、type 和业务 ID 在登记后保持不变。重复提交不会重置队列时间，主动改期通过 reschedule。去重只覆盖仍在队列表中的记录。成功删除后，由业务结果或唯一约束提供长效幂等。
 
-Inbox 是消费端同事务去重能力，不参与任务执行状态机。外部副作用不能因为使用 Inbox 就宣称恰好一次。
+完成后查询从业务状态读取结果。应用可以从已提交的业务结果推导完成，任务尝试次数随队列行一起删除。
 
 TaskWorker 是唯一默认唤醒器；关闭 worker 后由独立工作应用调用 dispatcher。默认串行执行，有界批次，多实例扩展；慢任务与关键投递有容量隔离需求时可分别部署执行节点并设置 task-type 限定领取类型；当前不提供自动优先级或抢占。
 
-任务配置与操作接口不依赖 Scheduler、PowerJob、ORM 或消息中间件。只提供 PostgreSQL JDBC 实现，不预建存储 binder。测试源码与静态审阅不代表实际数据库故障恢复验收。
+任务配置与操作接口不依赖 Scheduler、PowerJob、ORM 或消息中间件。同一 JDBC 实现根据配置加载 PostgreSQL 或 MySQL 语句。表前缀通过白名单校验，其余数据均通过 JDBC 参数绑定。测试源码与静态审阅不代表实际数据库故障恢复验收。

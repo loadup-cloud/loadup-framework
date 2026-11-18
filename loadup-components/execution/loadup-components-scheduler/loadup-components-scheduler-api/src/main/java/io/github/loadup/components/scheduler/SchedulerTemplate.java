@@ -18,6 +18,7 @@ package io.github.loadup.components.scheduler;
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
 import io.github.loadup.commons.error.CommonException;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,20 +30,36 @@ import org.springframework.context.SmartLifecycle;
 public final class SchedulerTemplate implements SmartLifecycle {
     private final SchedulerProvider provider;
     private final Map<String, ScheduledTask> tasks;
+    private final List<TaskSchedule> schedules;
+    private final Set<String> scheduledNames;
     private final Map<String, AtomicBoolean> active = new ConcurrentHashMap<>();
     private volatile boolean running;
 
-    public SchedulerTemplate(SchedulerProvider provider, List<ScheduledTask> scanners) {
+    public SchedulerTemplate(SchedulerProvider provider, List<ScheduledTask> tasks) {
+        this(provider, tasks, List.of());
+    }
+
+    public SchedulerTemplate(SchedulerProvider provider, List<ScheduledTask> tasks, List<TaskSchedule> schedules) {
         this.provider = provider;
         var registry = new LinkedHashMap<String, ScheduledTask>();
-        for (var task : scanners) {
-            if (task.name() == null
-                    || !task.name().matches("[A-Za-z][A-Za-z0-9_.-]{0,63}")
-                    || registry.putIfAbsent(task.name(), task) != null) {
+        for (var task : tasks) {
+            String name = task.name();
+            if (!TaskSchedule.isValidName(name) || registry.putIfAbsent(name, task) != null) {
                 throw new CommonException(CommonResultCodeEnum.PARAM_ILLEGAL);
             }
         }
-        tasks = Collections.unmodifiableMap(registry);
+        this.tasks = Collections.unmodifiableMap(registry);
+        this.schedules = List.copyOf(schedules);
+        var names = new HashSet<String>();
+        for (var schedule : this.schedules) {
+            if (!registry.containsKey(schedule.name())) {
+                throw new IllegalArgumentException("No ScheduledTask bean for '" + schedule.name() + "'");
+            }
+            if (!names.add(schedule.name())) {
+                throw new IllegalArgumentException("Duplicate scheduler configuration for '" + schedule.name() + "'");
+            }
+        }
+        scheduledNames = Set.copyOf(names);
     }
 
     public Set<String> taskNames() {
@@ -68,7 +85,12 @@ public final class SchedulerTemplate implements SmartLifecycle {
     @Override
     public synchronized void start() {
         if (!running) {
-            provider.start(this);
+            provider.start(schedules, name -> {
+                if (name == null || !scheduledNames.contains(name)) {
+                    throw new CommonException(CommonResultCodeEnum.NOT_FOUND);
+                }
+                trigger(name);
+            });
             running = true;
         }
     }

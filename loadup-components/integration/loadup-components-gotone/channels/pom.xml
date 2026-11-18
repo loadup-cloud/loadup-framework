@@ -10,7 +10,7 @@
 
     <artifactId>channels</artifactId>
     <packaging>pom</packaging>
-    <name>LoadUp Components Gotone Channels</name>
+    <name>ComponentGotone Channels</name>
     <description>Aggregation of Gotone notification channel providers.</description>
 
     <modules>

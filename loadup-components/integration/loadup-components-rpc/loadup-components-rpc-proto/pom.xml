@@ -8,7 +8,7 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-rpc-proto</artifactId>
-    <name>LoadUp Components RPC Proto</name>
+    <name>ComponentRPC Proto</name>
     <description>Scalar helpers shared by generated Protobuf IDL mappers.</description>
     <dependencies>
         <dependency>

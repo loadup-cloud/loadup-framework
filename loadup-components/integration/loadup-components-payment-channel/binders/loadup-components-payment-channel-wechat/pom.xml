@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>loadup-components-payment-channel-wechat</artifactId>
-    <name>LoadUp Components Payment Channel Binder WeChat</name>
+    <name>ComponentPayment Channel Binder WeChat</name>
     <description>WeChat V2 payer-code and APIv3 payment, refund, notification and statement protocol binder.</description>
 
     <properties>

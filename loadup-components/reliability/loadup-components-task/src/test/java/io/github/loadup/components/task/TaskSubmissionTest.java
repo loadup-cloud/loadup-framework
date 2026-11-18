@@ -28,39 +28,34 @@ class TaskSubmissionTest {
     @NullSource
     @ValueSource(strings = {"", " ", "\t\n"})
     void identityFieldsCannotBeAbsentOrBlank(String invalid) {
-        assertThatThrownBy(() -> TaskSubmission.immediate(invalid, 1, "business", "{}"))
+        assertThatThrownBy(() -> TaskSubmission.immediate(invalid, "business", "{}"))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> TaskSubmission.immediate("type", 1, invalid, "{}"))
+        assertThatThrownBy(() -> TaskSubmission.immediate("type", invalid, "{}"))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    void identityLimitsAreInclusiveAndVersionMustBePositive() {
-        TaskSubmission maximum = TaskSubmission.immediate("e".repeat(128), 1, "b".repeat(128), "");
+    void identityLimitsAreInclusive() {
+        TaskSubmission maximum = TaskSubmission.immediate("e".repeat(128), "b".repeat(128), "");
         assertThat(maximum.payload()).isEmpty();
-        assertThatThrownBy(() -> TaskSubmission.immediate("e".repeat(129), 1, "business", "{}"))
+        assertThatThrownBy(() -> TaskSubmission.immediate("e".repeat(129), "business", "{}"))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> TaskSubmission.immediate("type", 1, "b".repeat(129), "{}"))
-                .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> TaskSubmission.immediate("type", 0, "business", "{}"))
-                .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> TaskSubmission.immediate("type", -1, "business", "{}"))
+        assertThatThrownBy(() -> TaskSubmission.immediate("type", "b".repeat(129), "{}"))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     void payloadLimitCountsUtf8BytesRatherThanCharacters() {
         String ascii = "a".repeat(1024 * 1024);
-        assertThat(TaskSubmission.immediate("type", 1, "business", ascii).payload())
+        assertThat(TaskSubmission.immediate("type", "business", ascii).payload())
                 .isEqualTo(ascii);
-        assertThatThrownBy(() -> TaskSubmission.immediate("type", 1, "business", ascii + "a"))
+        assertThatThrownBy(() -> TaskSubmission.immediate("type", "business", ascii + "a"))
                 .isInstanceOf(IllegalArgumentException.class);
         String unicode = "€".repeat(349525);
-        assertThat(TaskSubmission.immediate("type", 1, "business", unicode).payload())
+        assertThat(TaskSubmission.immediate("type", "business", unicode).payload())
                 .isEqualTo(unicode);
-        assertThatThrownBy(() -> TaskSubmission.immediate("type", 1, "business", unicode + "€"))
+        assertThatThrownBy(() -> TaskSubmission.immediate("type", "business", unicode + "€"))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThat(TaskSubmission.immediate("type", 1, "business", null).payload())
-                .isNull();
+        assertThat(TaskSubmission.immediate("type", "business", null).payload()).isNull();
     }
 }

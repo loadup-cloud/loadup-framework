@@ -9,7 +9,7 @@
     </parent>
     <artifactId>loadup-components-kms</artifactId>
     <packaging>pom</packaging>
-    <name>LoadUp Components KMS</name>
+    <name>ComponentKMS</name>
     <modules>
         <module>loadup-components-kms-api</module>
         <module>loadup-components-kms-binder-openbao</module>

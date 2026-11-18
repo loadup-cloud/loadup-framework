@@ -1,13 +1,9 @@
 # LoadUp Scheduler API
 
-引入 `io.github.loadup-cloud:loadup-components-scheduler-api`（版本由 BOM 管理）。实现 ScheduledTask 并注册 Spring Bean。使用
-SchedulerTemplate.trigger (name) 可手动触发；需配置唯一 SchedulerProvider。只引入 API 可作为仅生产业务任务的应用，不会自行启动扫描。
+引入 `io.github.loadup-cloud:loadup-components-scheduler-api`，版本由 BOM 管理。实现 `ScheduledTask` 并注册 Spring Bean。任务名是业务处理器与 `loadup.scheduler.tasks[].name` 的匹配键。
 
-## 能力矩阵
-
-| 能力           | 支持               |
-|----------------|--------------------|
-| 调度接入       | 已实现，边界见上文 |
-| 业务数据持久化 | 由业务组件负责     |
-
-完整接入契约见上级 [Scheduler](../README.md)。
+| 能力 | 契约 |
+| ---- | ---- |
+| 自动触发 | 选择一个 binder，并在 `tasks` 中配置任务名和 Cron |
+| 手动触发 | 已装配 binder 的应用可调用 `SchedulerTemplate.trigger(name)` |
+| 仅提供任务 | 只引入 API 并注册任务 Bean，应用可由部署层装配 binder |

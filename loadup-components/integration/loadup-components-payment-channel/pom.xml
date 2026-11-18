@@ -10,7 +10,7 @@
 
     <artifactId>loadup-components-payment-channel</artifactId>
     <packaging>pom</packaging>
-    <name>LoadUp Components Payment Channel</name>
+    <name>ComponentPayment Channel</name>
     <description>Payment acquiring channel contracts, routing engine and vendor protocol binders.</description>
 
     <modules>

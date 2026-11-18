@@ -22,7 +22,7 @@ public enum TaskResultCodeEnum implements ResultCode {
     INVALID_ARGUMENT("Task argument is invalid"),
     TRANSACTION_REQUIRED("Task registration requires an active transaction"),
     INVALID_STATE("Task state does not permit this operation"),
-    CONFLICT("Task deduplication key conflicts with the submitted content or schedule"),
+    CONFLICT("Task deduplication key conflicts with the submitted payload"),
     HANDLER_MISSING("Task handler is not registered"),
     HANDLER_FAILED("Task handler failed");
     private final String message;

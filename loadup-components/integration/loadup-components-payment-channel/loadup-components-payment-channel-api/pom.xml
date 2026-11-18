@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>loadup-components-payment-channel-api</artifactId>
-    <name>LoadUp Components Payment Channel API</name>
+    <name>ComponentPayment Channel API</name>
     <description>Provider-neutral payment and refund facades, strategy SPI and immutable channel contracts.</description>
 
     <properties>

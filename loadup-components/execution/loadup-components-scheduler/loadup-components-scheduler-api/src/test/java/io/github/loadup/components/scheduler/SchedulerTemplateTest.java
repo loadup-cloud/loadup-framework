@@ -18,6 +18,8 @@ package io.github.loadup.components.scheduler;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -35,6 +37,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
@@ -54,6 +57,64 @@ class SchedulerTemplateTest {
     }
 
     @Test
+    void bindsConfiguredSchedulesAndDispatchesOnlyTheirTaskNames() throws Exception {
+        var provider = mock(SchedulerProvider.class);
+        var configured = mock(ScheduledTask.class);
+        var manual = mock(ScheduledTask.class);
+        when(configured.name()).thenReturn("configured");
+        when(manual.name()).thenReturn("manual");
+        var calls = ArgumentCaptor.forClass(SchedulerProvider.TaskTrigger.class);
+        new ApplicationContextRunner()
+                .withConfiguration(AutoConfigurations.of(SchedulerAutoConfiguration.class))
+                .withBean(SchedulerProvider.class, () -> provider)
+                .withBean("configured", ScheduledTask.class, () -> configured)
+                .withBean("manual", ScheduledTask.class, () -> manual)
+                .withPropertyValues(
+                        "loadup.scheduler.tasks[0].name=configured",
+                        "loadup.scheduler.tasks[0].cron=0 15 9 * * mon-fri")
+                .run(context -> {
+                    verify(provider)
+                            .start(eq(List.of(new TaskSchedule("configured", "0 15 9 ? * MON-FRI"))), calls.capture());
+                    calls.getValue().trigger("configured");
+                    verify(configured).execute();
+                    assertThatThrownBy(() -> calls.getValue().trigger("manual")).isInstanceOf(CommonException.class);
+                    context.getBean(SchedulerTemplate.class).trigger("manual");
+                    verify(manual).execute();
+                });
+    }
+
+    @Test
+    void rejectsMissingBinderUnknownDuplicateAndInvalidSchedules() {
+        var runner = new ApplicationContextRunner()
+                .withConfiguration(AutoConfigurations.of(SchedulerAutoConfiguration.class));
+        runner.withPropertyValues("loadup.scheduler.binder-type=missing")
+                .run(context -> assertThat(context).hasFailed());
+
+        var task = mock(ScheduledTask.class);
+        when(task.name()).thenReturn("configured");
+        var configured = runner.withBean(SchedulerProvider.class, () -> mock(SchedulerProvider.class))
+                .withBean(ScheduledTask.class, () -> task)
+                .withPropertyValues("loadup.scheduler.tasks[0].name=configured");
+        configured
+                .withPropertyValues("loadup.scheduler.tasks[0].cron=bad")
+                .run(context -> assertThat(context).hasFailed());
+        configured
+                .withPropertyValues(
+                        "loadup.scheduler.tasks[0].cron=0 * * * * *",
+                        "loadup.scheduler.tasks[1].name=missing",
+                        "loadup.scheduler.tasks[1].cron=0 * * * * *")
+                .run(context -> assertThat(context).hasFailed());
+        configured
+                .withPropertyValues(
+                        "loadup.scheduler.tasks[0].cron=0 * * * * *",
+                        "loadup.scheduler.tasks[1].name=configured",
+                        "loadup.scheduler.tasks[1].cron=0 * * * * *")
+                .run(context -> assertThat(context).hasFailed());
+        assertThatThrownBy(() -> new TaskSchedule("configured", "0 0 9 ? * 1"))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
     void lifecycleTriggerAndValidation() throws Exception {
         var provider = mock(SchedulerProvider.class);
         var task = mock(ScheduledTask.class);
@@ -62,7 +123,7 @@ class SchedulerTemplateTest {
         assertThat(scheduler.isRunning()).isFalse();
         scheduler.start();
         scheduler.start();
-        verify(provider).start(scheduler);
+        verify(provider).start(eq(List.of()), any(SchedulerProvider.TaskTrigger.class));
         assertThat(scheduler.isRunning()).isTrue();
         scheduler.trigger("test.scan");
         verify(task).execute();

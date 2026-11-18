@@ -15,9 +15,14 @@
  */
 package io.github.loadup.components.task;
 
+import io.github.loadup.commons.error.CommonException;
+import io.github.loadup.components.task.TaskSql.Query;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import javax.sql.DataSource;
@@ -35,12 +40,14 @@ public class JdbcTaskRepository implements TaskTemplate {
     private final JdbcTemplate jdbc;
     private final TransactionTemplate transactions;
     private final TaskProperties properties;
+    private final TaskSql sql;
 
     public JdbcTaskRepository(DataSource dataSource, PlatformTransactionManager manager, TaskProperties properties) {
         this.dataSource = dataSource;
         this.jdbc = new JdbcTemplate(dataSource);
         this.properties = properties;
         properties.validate();
+        sql = new TaskSql(properties);
         requireManager(dataSource, manager);
         transactions = new TransactionTemplate(manager);
         transactions.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
@@ -77,16 +84,12 @@ public class JdbcTaskRepository implements TaskTemplate {
                 rs.getString("id"),
                 rs.getString("task_type"),
                 rs.getString("biz_id"),
-                rs.getTimestamp("execute_at").toLocalDateTime(),
-                rs.getTimestamp("next_execute_at").toLocalDateTime(),
+                rs.getObject("next_execute_at", LocalDateTime.class),
                 TaskStatus.valueOf(rs.getString("status")),
                 rs.getInt("attempts"),
                 rs.getInt("max_attempts"),
-                rs.getTimestamp("lease_until") == null
-                        ? null
-                        : rs.getTimestamp("lease_until").toLocalDateTime(),
+                rs.getObject("lease_until", LocalDateTime.class),
                 rs.getString("last_error"),
-                rs.getInt("payload_version"),
                 rs.getString("payload"),
                 rs.getTimestamp("created_at").toInstant(),
                 rs.getString("trace_id"));
@@ -105,40 +108,24 @@ public class JdbcTaskRepository implements TaskTemplate {
         String id = UUID.randomUUID().toString();
         String trace = MDC.get("traceId");
         if (trace != null && !trace.matches("[a-fA-F0-9]{16,32}")) trace = null;
-        int inserted = jdbc.update(
-                """
-            INSERT INTO loadup_task(id,created_at,updated_at,task_type,payload_version,biz_id,payload,trace_id,
-                status,execute_at,next_execute_at,dedup_key,max_attempts,retry_delay_ms,lease_ms,exponential)
-            VALUES (?,clock_timestamp(),clock_timestamp(),?,?,?,?,?,'PENDING',
-                COALESCE(?,clock_timestamp()),COALESCE(?,clock_timestamp()),?,?,?,?,?)
-            ON CONFLICT (dedup_key) DO NOTHING
-            """,
+        jdbc.update(
+                sql.get(Query.UPSERT),
                 id,
                 task.taskType(),
-                task.payloadVersion(),
                 task.bizId(),
                 task.payload(),
                 trace,
                 task.executeAt(),
-                task.executeAt(),
-                task.dedupKey(),
-                policy.getMaxAttempts(),
-                policy.getRetryDelay().toMillis(),
-                policy.getLease().toMillis(),
-                policy.isExponential());
-        if (inserted == 1) return id;
-        var rows = jdbc.query(
-                "SELECT * FROM loadup_task WHERE dedup_key = ? AND deleted = FALSE FOR UPDATE",
-                JdbcTaskRepository::record,
-                task.dedupKey());
-        if (rows.isEmpty()) throw new IllegalStateException("Task deduplication record is unavailable");
+                policy.getMaxAttempts());
+        // Read the locked row instead of relying on driver-specific upsert update counts.
+        var rows =
+                jdbc.query(sql.get(Query.LOCK_BY_BUSINESS), JdbcTaskRepository::record, task.taskType(), task.bizId());
+        if (rows.isEmpty()) {
+            throw new IllegalStateException("Task deduplication record is unavailable");
+        }
         var existing = rows.getFirst();
-        if (!existing.taskType().equals(task.taskType())
-                || !existing.bizId().equals(task.bizId())
-                || existing.payloadVersion() != task.payloadVersion()
-                || !java.util.Objects.equals(existing.payload(), task.payload())
-                || (task.executeAt() != null && !existing.executeAt().equals(task.executeAt()))) {
-            throw new io.github.loadup.commons.error.CommonException(TaskResultCodeEnum.CONFLICT);
+        if (!Objects.equals(existing.payload(), task.payload())) {
+            throw new CommonException(TaskResultCodeEnum.CONFLICT);
         }
         return existing.id();
     }
@@ -149,88 +136,58 @@ public class JdbcTaskRepository implements TaskTemplate {
 
     public Optional<Claim> claim(String taskType) {
         return transactions.execute(status -> {
-            jdbc.update(
-                    "UPDATE loadup_task SET status='FAILED',claim_token=NULL,lease_until=NULL,last_error='LeaseExpired',updated_at=clock_timestamp() WHERE deleted=FALSE AND status='RUNNING' AND lease_until <= clock_timestamp() AND attempts >= max_attempts AND (CAST(? AS VARCHAR) IS NULL OR task_type = ?)",
-                    taskType,
-                    taskType);
-            List<Claim> rows = jdbc.query(
-                    "SELECT * FROM loadup_task WHERE deleted = FALSE AND (CAST(? AS VARCHAR) IS NULL OR task_type = ?) AND ("
-                            + "(status = 'PENDING' AND next_execute_at <= clock_timestamp()) OR "
-                            + "(status = 'RUNNING' AND lease_until <= clock_timestamp())) "
-                            + "ORDER BY next_execute_at, id LIMIT 1 FOR UPDATE SKIP LOCKED",
-                    (rs, row) -> new Claim(event(rs), UUID.randomUUID().toString(), rs.getInt("attempts") + 1),
-                    taskType,
-                    taskType);
-            if (rows.isEmpty()) {
+            jdbc.update(sql.get(Query.RECOVER_EXPIRED), taskType, taskType);
+            var candidates = jdbc.query(sql.get(Query.CLAIM_CANDIDATE), JdbcTaskRepository::record, taskType, taskType);
+            if (candidates.isEmpty()) {
                 return Optional.empty();
             }
-            Claim claim = rows.getFirst();
-            if (claim.attempt() > claim.event().maxAttempts()) {
-                int changed = jdbc.update(
-                        "UPDATE loadup_task SET status = 'FAILED', claim_token = NULL, lease_until = NULL, "
-                                + "last_error = 'LeaseExpired', updated_at = clock_timestamp() WHERE id = ? AND deleted = FALSE",
-                        claim.event().id());
-                if (changed != 1) {
-                    throw new IllegalStateException("Locked task event changed during recovery");
-                }
-                return Optional.empty();
+            var candidate = candidates.getFirst();
+            String id = candidate.id();
+            String token = UUID.randomUUID().toString();
+            long leaseMillis =
+                    properties.policy(candidate.taskType()).getLease().toMillis();
+            if (jdbc.update(sql.get(Query.CLAIM), token, leaseMillis, id) != 1) {
+                throw new IllegalStateException("Locked task changed during claim");
             }
-            int changed = jdbc.update(
-                    "UPDATE loadup_task SET status = 'RUNNING', attempts = ?, claim_token = ?, "
-                            + "lease_until = (clock_timestamp() + ? * INTERVAL '1 microsecond'), updated_at = clock_timestamp() "
-                            + "WHERE id = ? AND deleted = FALSE",
-                    claim.attempt(),
-                    claim.token(),
-                    leaseMillis(claim.event().id()) * 1000,
-                    claim.event().id());
-            if (changed != 1) {
-                throw new IllegalStateException("Locked task event changed during claim");
-            }
-            return Optional.of(new Claim(find(claim.event().id()).orElseThrow(), claim.token(), claim.attempt()));
+            var claimed = find(id).orElseThrow();
+            return Optional.of(new Claim(claimed, token, claimed.attempts()));
         });
     }
 
     public boolean complete(Claim claim) {
-        return Boolean.TRUE.equals(transactions.execute(status -> jdbc.update(
-                        "UPDATE loadup_task SET status = 'SUCCEEDED', claim_token = NULL, lease_until = NULL, "
-                                + "last_error = NULL, updated_at = clock_timestamp() "
-                                + "WHERE id = ? AND deleted = FALSE AND status = 'RUNNING' AND claim_token = ? AND lease_until > clock_timestamp()",
-                        claim.event().id(),
-                        claim.token())
-                == 1));
+        return Boolean.TRUE.equals(transactions.execute(status -> lockOwner(claim)
+                && jdbc.update(sql.get(Query.COMPLETE), claim.event().id(), claim.token()) == 1));
     }
 
     public boolean fail(Claim claim, Exception failure) {
-        long delayMillis = Math.min(
-                86400000L,
-                retryMillis(claim.event().id())
-                        * (isExponential(claim.event().id()) ? (1L << Math.min(20, claim.attempt() - 1)) : 1L));
-        String error = failure.getClass().getSimpleName();
-        if (error.length() > 256) {
-            error = error.substring(0, 256);
-        }
-        String errorCode = error;
-        return Boolean.TRUE.equals(transactions.execute(status -> jdbc.update(
-                        "UPDATE loadup_task SET status = ?, claim_token = NULL, lease_until = NULL, last_error = ?, "
-                                + "next_execute_at = (clock_timestamp() + ? * INTERVAL '1 microsecond'), updated_at = clock_timestamp() "
-                                + "WHERE id = ? AND deleted = FALSE AND status = 'RUNNING' AND claim_token = ? AND lease_until > clock_timestamp()",
-                        claim.attempt() >= claim.event().maxAttempts() ? "FAILED" : "PENDING",
-                        errorCode,
-                        delayMillis * 1000,
-                        claim.event().id(),
-                        claim.token())
-                == 1));
+        String errorType = failure.getClass().getSimpleName();
+        String error = errorType.substring(0, Math.min(256, errorType.length()));
+        boolean exhausted = claim.attempt() >= claim.event().maxAttempts();
+        String status = exhausted ? "FAILED" : "PENDING";
+        Long retryDelayMillis =
+                exhausted ? null : properties.policy(claim.event().taskType()).retryDelayMillis(claim.attempt());
+        return Boolean.TRUE.equals(transactions.execute(tx -> lockOwner(claim)
+                && jdbc.update(
+                                sql.get(Query.FAIL),
+                                status,
+                                error,
+                                retryDelayMillis,
+                                claim.event().id(),
+                                claim.token())
+                        == 1));
+    }
+
+    private boolean lockOwner(Claim claim) {
+        // MySQL's current timestamp is fixed at statement start. Check the lease after acquiring the lock.
+        return !jdbc.queryForList(
+                        sql.get(Query.LOCK_OWNER), String.class, claim.event().id(), claim.token())
+                .isEmpty();
     }
 
     @Override
-    public Optional<TaskExecution> find(String eventId) {
-        TaskSubmission.required(eventId, "eventId", 64);
-        return jdbc
-                .query(
-                        "SELECT * " + "FROM loadup_task WHERE id = ? AND deleted = FALSE",
-                        JdbcTaskRepository::record,
-                        eventId)
-                .stream()
+    public Optional<TaskExecution> find(String id) {
+        TaskSubmission.required(id, "id", 64);
+        return jdbc.query(sql.get(Query.FIND_BY_ID), JdbcTaskRepository::record, id).stream()
                 .findFirst();
     }
 
@@ -239,54 +196,38 @@ public class JdbcTaskRepository implements TaskTemplate {
         if (limit < 1 || limit > 1000) {
             throw new IllegalArgumentException("limit must be between 1 and 1000");
         }
-        return jdbc.query(
-                "SELECT * "
-                        + "FROM loadup_task WHERE deleted = FALSE AND status = 'FAILED' ORDER BY created_at, id LIMIT ?",
-                JdbcTaskRepository::record,
-                limit);
+        return jdbc.query(sql.get(Query.FIND_FAILURES), JdbcTaskRepository::record, limit);
     }
 
     @Override
     public Optional<TaskExecution> find(String type, String biz) {
         TaskSubmission.required(type, "taskType", 128);
         TaskSubmission.required(biz, "bizId", 128);
-        return jdbc
-                .query(
-                        "SELECT * FROM loadup_task WHERE task_type = ? AND biz_id = ? AND deleted = FALSE ORDER BY created_at DESC,id DESC LIMIT 1",
-                        JdbcTaskRepository::record,
-                        type,
-                        biz)
-                .stream()
+        return jdbc.query(sql.get(Query.FIND_BY_BUSINESS), JdbcTaskRepository::record, type, biz).stream()
                 .findFirst();
     }
 
     private TransactionTemplate management() {
-        TransactionTemplate template = new TransactionTemplate(transactions.getTransactionManager());
-        template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
-        return template;
+        return new TransactionTemplate(transactions.getTransactionManager());
     }
 
     @Override
     public boolean cancel(String id) {
         TaskSubmission.required(id, "id", 64);
-        return Boolean.TRUE.equals(management().execute(tx -> jdbc.update("""
-            UPDATE loadup_task SET status='CANCELLED',claim_token=NULL,lease_until=NULL,updated_at=clock_timestamp()
-            WHERE id=? AND deleted=FALSE AND status IN ('PENDING','RUNNING','FAILED')
-            """, id) == 1));
+        return Boolean.TRUE.equals(management().execute(tx -> jdbc.update(sql.get(Query.CANCEL), id) == 1));
     }
 
     @Override
-    public void reschedule(String id, java.time.LocalDateTime time) {
+    public void reschedule(String id, LocalDateTime time) {
         TaskSubmission.required(id, "id", 64);
-        if (time == null) throw new IllegalArgumentException("executeAt is required");
-        var deadline = time.truncatedTo(java.time.temporal.ChronoUnit.MICROS);
+        if (time == null) {
+            throw new IllegalArgumentException("executeAt is required");
+        }
+        var deadline = time.truncatedTo(ChronoUnit.MICROS);
         management().executeWithoutResult(tx -> {
-            if (jdbc.update("""
-                UPDATE loadup_task SET status='PENDING',execute_at=?,next_execute_at=?,attempts=0,
-                    claim_token=NULL,lease_until=NULL,last_error=NULL,updated_at=clock_timestamp()
-                WHERE id=? AND deleted=FALSE AND status IN ('PENDING','FAILED','CANCELLED')
-                """, deadline, deadline, id) != 1)
-                throw new io.github.loadup.commons.error.CommonException(TaskResultCodeEnum.INVALID_STATE);
+            if (jdbc.update(sql.get(Query.RESCHEDULE), deadline, id) != 1) {
+                throw new CommonException(TaskResultCodeEnum.INVALID_STATE);
+            }
         });
     }
 
@@ -296,59 +237,29 @@ public class JdbcTaskRepository implements TaskTemplate {
         TaskSubmission.required(operator, "operator", 64);
         TaskSubmission.required(reason, "reason", 512);
         management().executeWithoutResult(tx -> {
-            if (jdbc.update("""
-                UPDATE loadup_task SET status='PENDING',next_execute_at=clock_timestamp(),attempts=0,
-                    claim_token=NULL,lease_until=NULL,last_error=NULL,updated_at=clock_timestamp()
-                WHERE id=? AND deleted=FALSE AND status='FAILED'
-                """, id) != 1)
-                throw new io.github.loadup.commons.error.CommonException(TaskResultCodeEnum.INVALID_STATE);
-            jdbc.update(
-                    "INSERT INTO loadup_task_operation(id,created_at,updated_at,task_id,operator_id,reason) VALUES (?,clock_timestamp(),clock_timestamp(),?,?,?)",
-                    UUID.randomUUID().toString(),
-                    id,
-                    operator,
-                    reason);
+            if (jdbc.update(sql.get(Query.RETRY_FAILED), id) != 1) {
+                throw new CommonException(TaskResultCodeEnum.INVALID_STATE);
+            }
+            jdbc.update(sql.get(Query.INSERT_OPERATION), UUID.randomUUID().toString(), id, operator, reason);
         });
     }
 
-    private boolean isExponential(String id) {
-        return Boolean.TRUE.equals(
-                jdbc.queryForObject("SELECT exponential FROM loadup_task WHERE id=?", Boolean.class, id));
-    }
-
-    private long retryMillis(String id) {
-        return jdbc.queryForObject("SELECT retry_delay_ms FROM loadup_task WHERE id=?", Long.class, id);
-    }
-
-    private long leaseMillis(String id) {
-        return jdbc.queryForObject("SELECT lease_ms FROM loadup_task WHERE id=?", Long.class, id);
-    }
-
     public long pendingCount() {
-        Long count = jdbc.queryForObject(
-                "SELECT COUNT(*) FROM loadup_task WHERE deleted = FALSE AND status IN ('PENDING', 'RUNNING')",
-                Long.class);
-        return count == null ? 0 : count;
+        return jdbc.queryForObject(sql.get(Query.COUNT_PENDING), Long.class);
     }
 
     public long failedCount() {
-        Long count = jdbc.queryForObject(
-                "SELECT COUNT(*) FROM loadup_task WHERE deleted = FALSE AND status = 'FAILED'", Long.class);
-        return count == null ? 0 : count;
+        return jdbc.queryForObject(sql.get(Query.COUNT_FAILED), Long.class);
     }
 
     public long oldestPendingSeconds() {
-        Long age = jdbc.queryForObject(
-                "SELECT COALESCE(CAST(EXTRACT(EPOCH FROM (clock_timestamp() - MIN(created_at))) AS BIGINT), 0) "
-                        + "FROM loadup_task WHERE deleted = FALSE AND status IN ('PENDING', 'RUNNING')",
-                Long.class);
-        return age == null ? 0 : Math.max(0, age);
+        return Math.max(0, jdbc.queryForObject(sql.get(Query.OLDEST_PENDING), Long.class));
     }
 
     void withoutTransaction(Runnable work) {
         TransactionTemplate outside = new TransactionTemplate(transactions.getTransactionManager());
         outside.setPropagationBehavior(TransactionDefinition.PROPAGATION_NOT_SUPPORTED);
-        outside.executeWithoutResult(tx -> work.run());
+        outside.executeWithoutResult(_ -> work.run());
     }
 
     public record Claim(TaskExecution event, String token, int attempt) {}

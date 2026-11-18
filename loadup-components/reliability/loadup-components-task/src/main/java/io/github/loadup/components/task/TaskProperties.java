@@ -22,7 +22,30 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("loadup.task")
 public class TaskProperties {
+    public enum DbType {
+        PG,
+        MYSQL
+    }
+
+    private DbType dbType = DbType.PG;
+    private String tablePrefix = "loadup_";
     private String taskType;
+
+    public DbType getDbType() {
+        return dbType;
+    }
+
+    public void setDbType(DbType dbType) {
+        this.dbType = dbType;
+    }
+
+    public String getTablePrefix() {
+        return tablePrefix;
+    }
+
+    public void setTablePrefix(String tablePrefix) {
+        this.tablePrefix = tablePrefix;
+    }
 
     public String getTaskType() {
         return taskType;
@@ -46,7 +69,7 @@ public class TaskProperties {
     }
 
     public void setTypes(Map<String, Policy> value) {
-        types = Map.copyOf(value);
+        types = value == null ? Map.of() : Map.copyOf(value);
     }
 
     public Policy policy(String type) {
@@ -107,6 +130,11 @@ public class TaskProperties {
             exponential = value;
         }
 
+        long retryDelayMillis(int attempt) {
+            long multiplier = isExponential() ? (1L << Math.min(20, Math.max(0, attempt - 1))) : 1L;
+            return Math.min(Duration.ofDays(1).toMillis(), retryDelay.toMillis() * multiplier);
+        }
+
         void validate() {
             if (maxAttempts < 1
                     || maxAttempts > 1000
@@ -121,6 +149,9 @@ public class TaskProperties {
     }
 
     public void validate() {
+        if (dbType == null || tablePrefix == null || !tablePrefix.matches("(?:[a-z][a-z0-9_]{0,48})?")) {
+            throw new IllegalArgumentException("Invalid task database type or table prefix");
+        }
         if (taskType != null) TaskSubmission.required(taskType, "taskType", 128);
         types.keySet().forEach(type -> {
             TaskSubmission.required(type, "taskType", 128);

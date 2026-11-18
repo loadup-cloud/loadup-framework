@@ -10,7 +10,7 @@
 
     <artifactId>loadup-commons</artifactId>
     <packaging>pom</packaging>
-    <name>LoadUp Commons</name>
+    <name>Common</name>
     <description>Shared foundational libraries for LoadUp modules and components.</description>
 
     <modules>

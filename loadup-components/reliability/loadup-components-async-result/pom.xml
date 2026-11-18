@@ -9,7 +9,7 @@
     </parent>
     <artifactId>loadup-components-async-result</artifactId>
     <packaging>pom</packaging>
-    <name>LoadUp Components Async Result</name>
+    <name>ComponentAsync Result</name>
     <description>Bounded request and reply coordination for asynchronous work.</description>
     <modules>
         <module>loadup-components-async-result-api</module>

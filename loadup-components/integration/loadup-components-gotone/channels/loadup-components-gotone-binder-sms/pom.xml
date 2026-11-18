@@ -8,7 +8,7 @@
         <relativePath>../../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-gotone-binder-sms</artifactId>
-    <name>LoadUp Components Gotone Binder SMS</name>
+    <name>ComponentGotone Binder SMS</name>
     <description>SMS provider configuration; Aliyun, Huawei and Yunpian transports are pending.</description>
 
     <dependencies>

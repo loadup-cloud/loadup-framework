@@ -8,7 +8,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-commons-json</artifactId>
-    <name>LoadUp Commons JSON</name>
+    <name>Common JSON</name>
     <description>Jackson JSON utilities, date handling and safe diagnostic serialization.</description>
     <properties/>
     <dependencies>

@@ -8,7 +8,7 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-http</artifactId>
-    <name>LoadUp Components HTTP</name>
+    <name>ComponentHTTP</name>
     <description>Configuration-driven external API calls using Spring RestClient.</description>
     <properties>
         <!-- Temporary coverage gate exemption; continue collecting report data. -->

@@ -17,40 +17,57 @@ package io.github.loadup.components.scheduler.local;
 
 import io.github.loadup.commons.log.LogUtil;
 import io.github.loadup.components.scheduler.SchedulerProvider;
-import io.github.loadup.components.scheduler.SchedulerTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
+import io.github.loadup.components.scheduler.TaskSchedule;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ScheduledFuture;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.support.CronTrigger;
 
 public class LocalSchedulerProvider implements SchedulerProvider {
-    private volatile SchedulerTemplate scheduler;
+    private final List<ScheduledFuture<?>> scheduled = new ArrayList<>();
+    private ThreadPoolTaskScheduler scheduler;
 
     @Override
-    public void start(SchedulerTemplate scheduler) {
-        this.scheduler = scheduler;
+    public void start(List<TaskSchedule> schedules, TaskTrigger trigger) {
+        if (schedules.isEmpty()) {
+            return;
+        }
+        scheduler = new ThreadPoolTaskScheduler();
+        scheduler.setThreadNamePrefix("loadup-scheduler-");
+        scheduler.setWaitForTasksToCompleteOnShutdown(true);
+        try {
+            scheduler.initialize();
+            for (var task : schedules) {
+                var future = scheduler.schedule(() -> execute(task.name(), trigger), new CronTrigger(task.cron()));
+                scheduled.add(Objects.requireNonNull(future, "No future cron occurrence for " + task.name()));
+            }
+        } catch (RuntimeException | Error failure) {
+            stop();
+            throw failure;
+        }
     }
 
     @Override
     public void stop() {
-        this.scheduler = null;
+        scheduled.forEach(future -> future.cancel(false));
+        scheduled.clear();
+        if (scheduler != null) {
+            scheduler.shutdown();
+            scheduler = null;
+        }
     }
 
-    @Scheduled(
-            fixedDelayString = "${loadup.scheduler.local.interval:PT1M}",
-            initialDelayString = "${loadup.scheduler.local.initial-delay:PT1M}")
-    public void wakeUp() {
-        var current = scheduler;
-        if (current == null) {
-            return;
-        }
-        for (String task : current.taskNames()) {
-            try {
-                current.trigger(task);
-            } catch (Exception failure) {
-                LogUtil.warn(
-                        LocalSchedulerProvider.class,
-                        "Scanner failed task={} type={}",
-                        task,
-                        failure.getClass().getSimpleName());
-            }
+    private void execute(String name, TaskTrigger trigger) {
+        try {
+            trigger.trigger(name);
+        } catch (Exception failure) {
+            LogUtil.warn(
+                    LocalSchedulerProvider.class,
+                    "Scheduled task failed task={} type={}",
+                    name,
+                    failure.getClass().getSimpleName());
         }
     }
 }

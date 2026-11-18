@@ -8,7 +8,7 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-rpc-binder-dubbo</artifactId>
-    <name>LoadUp Components RPC Binder Dubbo</name>
+    <name>ComponentRPC Binder Dubbo</name>
     <description>Native Dubbo Triple client and server integration for Spring Boot applications.</description>
     <dependencies>
         <dependency>

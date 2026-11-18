@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.github.loadup-cloud</groupId>
+        <artifactId>loadup-framework</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+    <artifactId>loadup-components-platform</artifactId>
+    <packaging>pom</packaging>
+    <name>ComponentPlatform</name>
+
+    <modules>
+
+        <module>loadup-components-configcenter</module>
+        <module>loadup-components-extension</module>
+        <module>loadup-components-runtime</module>
+        <module>loadup-components-observability</module>
+        <module>loadup-components-testcontainers</module>
+    </modules>
+</project>

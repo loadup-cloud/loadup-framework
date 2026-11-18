@@ -28,7 +28,6 @@ import io.github.loadup.components.testcontainers.database.SharedPostgreSQLConta
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.sql.DataSource;
@@ -69,7 +68,7 @@ class TaskSchemaIsolationIT {
         for (String schema : List.of("task_isolation_a", "task_isolation_b")) {
             try (Connection connection = administrator.getConnection()) {
                 connection.setSchema(schema);
-                ScriptUtils.executeSqlScript(connection, new ClassPathResource("db/schema/task.sql"));
+                ScriptUtils.executeSqlScript(connection, new ClassPathResource("db/task/pg/schema.sql"));
             }
         }
         script("grants.sql");
@@ -98,9 +97,7 @@ class TaskSchemaIsolationIT {
         try {
             workerA.start();
             await().atMost(Duration.ofSeconds(5))
-                    .untilAsserted(() -> assertThat(
-                                    repositoryA.find(firstId).orElseThrow().status())
-                            .isEqualTo(TaskStatus.SUCCEEDED));
+                    .untilAsserted(() -> assertThat(repositoryA.find(firstId)).isEmpty());
             assertThat(seenA).containsExactly("deployment-a");
             assertThat(repositoryA.find(secondId)).isEmpty();
             assertThat(repositoryB.find(secondId).orElseThrow().status()).isEqualTo(TaskStatus.PENDING);
@@ -110,9 +107,7 @@ class TaskSchemaIsolationIT {
             String nextB = publish(second, repositoryB, "deployment-b-next");
             workerB.start();
             await().atMost(Duration.ofSeconds(5))
-                    .untilAsserted(() -> assertThat(
-                                    repositoryB.find(nextB).orElseThrow().status())
-                            .isEqualTo(TaskStatus.SUCCEEDED));
+                    .untilAsserted(() -> assertThat(repositoryB.find(nextB)).isEmpty());
             assertThat(seenB).containsExactly("deployment-b-next");
             assertThat(seenA).containsExactly("deployment-a");
         } finally {
@@ -122,22 +117,14 @@ class TaskSchemaIsolationIT {
     }
 
     @Test
-    void businessTaskAndInboxRollbackTogetherWithinEachRuntimeDataSource() {
+    void businessAndTaskRollbackTogetherWithinEachRuntimeDataSource() {
         for (DataSource source : List.of(first, second)) {
             var manager = new DataSourceTransactionManager(source);
             var repository = new JdbcTaskRepository(source, manager, properties);
-            var inbox = new IdempotentEventConsumer(source, manager);
             var jdbc = new JdbcTemplate(source);
-            var event = new TaskExecution(
-                    "same-event",
-                    TaskSubmission.immediate("isolation.probe", 1, "same-biz", "{}"),
-                    Instant.now(),
-                    null);
             assertThatThrownBy(() -> new TransactionTemplate(manager).executeWithoutResult(status -> {
                         jdbc.update("INSERT INTO business_probe (id) VALUES (?)", "same-biz");
-                        repository.submit(TaskSubmission.immediate("isolation.probe", 1, "same-biz", "{}"));
-                        assertThat(inbox.consume("same-consumer", event, () -> {}))
-                                .isTrue();
+                        repository.submit(TaskSubmission.immediate("isolation.probe", "same-biz", "{}"));
                         throw new IllegalStateException("force rollback");
                     }))
                     .isInstanceOf(IllegalStateException.class)
@@ -145,17 +132,10 @@ class TaskSchemaIsolationIT {
             assertThat(repository.pendingCount()).isZero();
             assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM business_probe", Integer.class))
                     .isZero();
-            assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM loadup_task_inbox", Integer.class))
-                    .isZero();
             new TransactionTemplate(manager).executeWithoutResult(status -> {
                 jdbc.update("INSERT INTO business_probe (id) VALUES (?)", "same-biz");
-                assertThat(inbox.consume("same-consumer", event, () -> {})).isTrue();
             });
         }
-        assertThat(new JdbcTemplate(first).queryForObject("SELECT COUNT(*) FROM loadup_task_inbox", Integer.class))
-                .isEqualTo(1);
-        assertThat(new JdbcTemplate(second).queryForObject("SELECT COUNT(*) FROM loadup_task_inbox", Integer.class))
-                .isEqualTo(1);
         assertThatThrownBy(() -> new JdbcTaskRepository(first, new DataSourceTransactionManager(second), properties))
                 .isInstanceOf(IllegalArgumentException.class);
     }
@@ -163,9 +143,9 @@ class TaskSchemaIsolationIT {
     @Test
     void runtimeRolesCannotReadOrChangeTheOtherTaskSchema() throws SQLException {
         denied(first, "SELECT * FROM task_isolation_b.loadup_task");
-        denied(first, "UPDATE task_isolation_b.loadup_task SET status = 'SUCCEEDED'");
+        denied(first, "UPDATE task_isolation_b.loadup_task SET status = 'CANCELLED'");
         denied(second, "SELECT * FROM task_isolation_a.loadup_task");
-        denied(second, "UPDATE task_isolation_a.loadup_task SET status = 'SUCCEEDED'");
+        denied(second, "UPDATE task_isolation_a.loadup_task SET status = 'CANCELLED'");
     }
 
     private TaskWorker worker(JdbcTaskRepository repository, List<String> seen) {
@@ -190,8 +170,7 @@ class TaskSchemaIsolationIT {
 
     private static String publish(DataSource source, JdbcTaskRepository repository, String payload) {
         return new TransactionTemplate(new DataSourceTransactionManager(source))
-                .execute(status ->
-                        repository.submit(TaskSubmission.immediate("isolation.probe", 1, "same-biz", payload)));
+                .execute(status -> repository.submit(TaskSubmission.immediate("isolation.probe", "same-biz", payload)));
     }
 
     private static HikariDataSource pool(String schema) {

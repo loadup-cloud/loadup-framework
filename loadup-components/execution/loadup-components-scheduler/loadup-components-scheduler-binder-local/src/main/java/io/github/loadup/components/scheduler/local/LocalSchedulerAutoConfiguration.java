@@ -15,14 +15,13 @@
  */
 package io.github.loadup.components.scheduler.local;
 
+import io.github.loadup.components.scheduler.SchedulerAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.annotation.EnableScheduling;
 
-@AutoConfiguration
-@EnableScheduling
+@AutoConfiguration(before = SchedulerAutoConfiguration.class)
 @ConditionalOnProperty(prefix = "loadup.scheduler", name = "binder-type", havingValue = "local", matchIfMissing = true)
 public class LocalSchedulerAutoConfiguration {
     @Bean

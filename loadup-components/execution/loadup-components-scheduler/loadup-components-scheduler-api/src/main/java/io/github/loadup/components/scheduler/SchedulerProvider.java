@@ -15,8 +15,19 @@
  */
 package io.github.loadup.components.scheduler;
 
+import java.util.List;
+
 public interface SchedulerProvider {
-    void start(SchedulerTemplate scheduler);
+    /**
+     * Apply the validated schedules and route firings back to the application.
+     * Implementations must release local resources if startup fails.
+     */
+    void start(List<TaskSchedule> schedules, TaskTrigger trigger);
 
     void stop();
+
+    @FunctionalInterface
+    interface TaskTrigger {
+        void trigger(String name) throws Exception;
+    }
 }
