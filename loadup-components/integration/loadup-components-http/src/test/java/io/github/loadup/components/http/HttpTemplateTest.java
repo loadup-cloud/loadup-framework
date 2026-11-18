@@ -727,7 +727,7 @@ class HttpTemplateTest {
         }
     }
 
-    interface DeploymentEchoService {
+    public interface DeploymentEchoService {
         @PostExchange(value = "/echo", contentType = "text/plain", accept = "text/plain")
         String echo(@RequestHeader("X-Tenant-Code") String code, @RequestBody String body);
     }
