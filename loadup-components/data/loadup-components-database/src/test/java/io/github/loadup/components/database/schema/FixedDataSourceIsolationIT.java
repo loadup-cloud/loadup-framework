@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2026 LoadUp Cloud
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.github.loadup.components.database.schema;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,7 +43,8 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest(classes = FixedDataSourceIsolationIT.Application.class,
+@SpringBootTest(
+        classes = FixedDataSourceIsolationIT.Application.class,
         webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @ActiveProfiles("test")
 @EnableTestContainers(value = ContainerType.POSTGRESQL, reuse = false)
@@ -86,11 +102,13 @@ class FixedDataSourceIsolationIT {
         try (Connection connection = first.getConnection()) {
             connection.setSchema("schema_isolation_b");
         }
-        assertThat(new JdbcTemplate(first).queryForObject("SELECT pg_backend_pid()", Integer.class)).isEqualTo(initialPid);
+        assertThat(new JdbcTemplate(first).queryForObject("SELECT pg_backend_pid()", Integer.class))
+                .isEqualTo(initialPid);
         new FixedSchemaVerifier(first, "schema_isolation_a").verify();
         assertThat(marker(first)).isEqualTo("deployment-a");
         first.getHikariPoolMXBean().softEvictConnections();
-        assertThat(new JdbcTemplate(first).queryForObject("SELECT pg_backend_pid()", Integer.class)).isNotEqualTo(initialPid);
+        assertThat(new JdbcTemplate(first).queryForObject("SELECT pg_backend_pid()", Integer.class))
+                .isNotEqualTo(initialPid);
         new FixedSchemaVerifier(first, "schema_isolation_a").verify();
         assertThat(marker(first)).isEqualTo("deployment-a");
         assertThat(marker(second)).isEqualTo("deployment-b");
@@ -98,7 +116,8 @@ class FixedDataSourceIsolationIT {
 
     @Test
     void verifierRejectsAnAdditionalSearchPathFromACustomDataSource() throws SQLException {
-        try (Connection connection = first.getConnection(); var statement = connection.createStatement()) {
+        try (Connection connection = first.getConnection();
+                var statement = connection.createStatement()) {
             statement.execute("SET search_path TO schema_isolation_a, public");
         }
         assertThatThrownBy(() -> new FixedSchemaVerifier(first, "schema_isolation_a").verify())
@@ -120,7 +139,8 @@ class FixedDataSourceIsolationIT {
 
     private ApplicationContextRunner runner(String expectedSchema, String poolSchema) {
         return new ApplicationContextRunner()
-                .withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class, DatabaseCoreAutoConfiguration.class))
+                .withConfiguration(
+                        AutoConfigurations.of(DataSourceAutoConfiguration.class, DatabaseCoreAutoConfiguration.class))
                 .withPropertyValues(
                         "loadup.database.schema=" + expectedSchema,
                         "spring.datasource.url=" + SharedPostgreSQLContainer.getJdbcUrl(),
@@ -143,13 +163,17 @@ class FixedDataSourceIsolationIT {
     }
 
     private static String marker(DataSource source) {
-        return new JdbcTemplate(source).queryForObject("SELECT marker FROM business_probe WHERE id = ?", String.class, "same-id");
+        return new JdbcTemplate(source)
+                .queryForObject("SELECT marker FROM business_probe WHERE id = ?", String.class, "same-id");
     }
 
     private static void denied(DataSource source, String sql) throws SQLException {
-        try (Connection connection = source.getConnection(); var statement = connection.createStatement()) {
+        try (Connection connection = source.getConnection();
+                var statement = connection.createStatement()) {
             assertThatThrownBy(() -> statement.execute(sql))
-                    .isInstanceOfSatisfying(SQLException.class, error -> assertThat(error.getSQLState()).isEqualTo("42501"));
+                    .isInstanceOfSatisfying(
+                            SQLException.class,
+                            error -> assertThat(error.getSQLState()).isEqualTo("42501"));
         }
     }
 

@@ -45,7 +45,8 @@ class HttpConfigurationContractTest {
             Long response,
             URI proxy) {
         return new HttpProperties.Client(
-                url, false, connect, read, acquire, total, perRoute, request, response, null, proxy, false, null, null, null);
+                url, false, connect, read, acquire, total, perRoute, request, response, null, proxy, false, null, null,
+                null);
     }
 
     @ParameterizedTest
@@ -81,7 +82,8 @@ class HttpConfigurationContractTest {
                 "loadup.http.clients.payment.internal-service", "true",
                 "loadup.http.clients.gateway.base-url", "https://gateway.example.test"));
 
-        var properties = new Binder(source).bind("loadup.http", HttpProperties.class).get();
+        var properties =
+                new Binder(source).bind("loadup.http", HttpProperties.class).get();
 
         assertThat(properties.clients().get("payment").internalService()).isTrue();
         assertThat(properties.clients().get("gateway").internalService()).isFalse();

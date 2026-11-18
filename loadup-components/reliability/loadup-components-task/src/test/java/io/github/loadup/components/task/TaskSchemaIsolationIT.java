@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2026 LoadUp Cloud
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.github.loadup.components.task;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,8 +48,7 @@ import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.support.TransactionTemplate;
 
-@SpringBootTest(classes = TaskSchemaIsolationIT.Application.class,
-        webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@SpringBootTest(classes = TaskSchemaIsolationIT.Application.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @ActiveProfiles("test")
 @EnableTestContainers(value = ContainerType.POSTGRESQL, reuse = false)
 class TaskSchemaIsolationIT {
@@ -83,8 +97,10 @@ class TaskSchemaIsolationIT {
         var workerB = worker(repositoryB, seenB);
         try {
             workerA.start();
-            await().atMost(Duration.ofSeconds(5)).untilAsserted(() ->
-                    assertThat(repositoryA.find(firstId).orElseThrow().status()).isEqualTo(TaskStatus.SUCCEEDED));
+            await().atMost(Duration.ofSeconds(5))
+                    .untilAsserted(() -> assertThat(
+                                    repositoryA.find(firstId).orElseThrow().status())
+                            .isEqualTo(TaskStatus.SUCCEEDED));
             assertThat(seenA).containsExactly("deployment-a");
             assertThat(repositoryA.find(secondId)).isEmpty();
             assertThat(repositoryB.find(secondId).orElseThrow().status()).isEqualTo(TaskStatus.PENDING);
@@ -93,8 +109,10 @@ class TaskSchemaIsolationIT {
             assertThat(repositoryB.complete(claimB)).isTrue();
             String nextB = publish(second, repositoryB, "deployment-b-next");
             workerB.start();
-            await().atMost(Duration.ofSeconds(5)).untilAsserted(() ->
-                    assertThat(repositoryB.find(nextB).orElseThrow().status()).isEqualTo(TaskStatus.SUCCEEDED));
+            await().atMost(Duration.ofSeconds(5))
+                    .untilAsserted(() -> assertThat(
+                                    repositoryB.find(nextB).orElseThrow().status())
+                            .isEqualTo(TaskStatus.SUCCEEDED));
             assertThat(seenB).containsExactly("deployment-b-next");
             assertThat(seenA).containsExactly("deployment-a");
         } finally {
@@ -110,23 +128,34 @@ class TaskSchemaIsolationIT {
             var repository = new JdbcTaskRepository(source, manager, properties);
             var inbox = new IdempotentEventConsumer(source, manager);
             var jdbc = new JdbcTemplate(source);
-            var event = new TaskExecution("same-event", TaskSubmission.immediate("isolation.probe", 1, "same-biz", "{}"), Instant.now(), null);
+            var event = new TaskExecution(
+                    "same-event",
+                    TaskSubmission.immediate("isolation.probe", 1, "same-biz", "{}"),
+                    Instant.now(),
+                    null);
             assertThatThrownBy(() -> new TransactionTemplate(manager).executeWithoutResult(status -> {
-                jdbc.update("INSERT INTO business_probe (id) VALUES (?)", "same-biz");
-                repository.submit(TaskSubmission.immediate("isolation.probe", 1, "same-biz", "{}"));
-                assertThat(inbox.consume("same-consumer", event, () -> {})).isTrue();
-                throw new IllegalStateException("force rollback");
-            })).isInstanceOf(IllegalStateException.class).hasMessage("force rollback");
+                        jdbc.update("INSERT INTO business_probe (id) VALUES (?)", "same-biz");
+                        repository.submit(TaskSubmission.immediate("isolation.probe", 1, "same-biz", "{}"));
+                        assertThat(inbox.consume("same-consumer", event, () -> {}))
+                                .isTrue();
+                        throw new IllegalStateException("force rollback");
+                    }))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("force rollback");
             assertThat(repository.pendingCount()).isZero();
-            assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM business_probe", Integer.class)).isZero();
-            assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM loadup_task_inbox", Integer.class)).isZero();
+            assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM business_probe", Integer.class))
+                    .isZero();
+            assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM loadup_task_inbox", Integer.class))
+                    .isZero();
             new TransactionTemplate(manager).executeWithoutResult(status -> {
                 jdbc.update("INSERT INTO business_probe (id) VALUES (?)", "same-biz");
                 assertThat(inbox.consume("same-consumer", event, () -> {})).isTrue();
             });
         }
-        assertThat(new JdbcTemplate(first).queryForObject("SELECT COUNT(*) FROM loadup_task_inbox", Integer.class)).isEqualTo(1);
-        assertThat(new JdbcTemplate(second).queryForObject("SELECT COUNT(*) FROM loadup_task_inbox", Integer.class)).isEqualTo(1);
+        assertThat(new JdbcTemplate(first).queryForObject("SELECT COUNT(*) FROM loadup_task_inbox", Integer.class))
+                .isEqualTo(1);
+        assertThat(new JdbcTemplate(second).queryForObject("SELECT COUNT(*) FROM loadup_task_inbox", Integer.class))
+                .isEqualTo(1);
         assertThatThrownBy(() -> new JdbcTaskRepository(first, new DataSourceTransactionManager(second), properties))
                 .isInstanceOf(IllegalArgumentException.class);
     }
@@ -160,8 +189,9 @@ class TaskSchemaIsolationIT {
     }
 
     private static String publish(DataSource source, JdbcTaskRepository repository, String payload) {
-        return new TransactionTemplate(new DataSourceTransactionManager(source)).execute(status ->
-                repository.submit(TaskSubmission.immediate("isolation.probe", 1, "same-biz", payload)));
+        return new TransactionTemplate(new DataSourceTransactionManager(source))
+                .execute(status ->
+                        repository.submit(TaskSubmission.immediate("isolation.probe", 1, "same-biz", payload)));
     }
 
     private static HikariDataSource pool(String schema) {
@@ -176,9 +206,12 @@ class TaskSchemaIsolationIT {
     }
 
     private static void denied(DataSource source, String sql) throws SQLException {
-        try (Connection connection = source.getConnection(); var statement = connection.createStatement()) {
+        try (Connection connection = source.getConnection();
+                var statement = connection.createStatement()) {
             assertThatThrownBy(() -> statement.execute(sql))
-                    .isInstanceOfSatisfying(SQLException.class, error -> assertThat(error.getSQLState()).isEqualTo("42501"));
+                    .isInstanceOfSatisfying(
+                            SQLException.class,
+                            error -> assertThat(error.getSQLState()).isEqualTo("42501"));
         }
     }
 

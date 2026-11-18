@@ -41,9 +41,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
-import org.springframework.web.client.RestClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.service.annotation.PostExchange;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -689,12 +689,22 @@ class HttpTemplateTest {
         var settings = new HttpProperties.Client(
                 URI.create("http://127.0.0.1:" + server.getAddress().getPort()),
                 internalService,
-                null, null, null, null, null, null, null, null, null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
                 true,
                 "test-credential",
                 Map.of("X-Tenant-Code", "configured-other"),
-                Map.of("echo", new HttpProperties.Operation(HttpMethod.POST, "/echo",
-                        Map.of("X-Tenant-Code", "operation-other"))));
+                Map.of(
+                        "echo",
+                        new HttpProperties.Operation(
+                                HttpMethod.POST, "/echo", Map.of("X-Tenant-Code", "operation-other"))));
         try (var template = new HttpTemplate(
                 new HttpProperties(Map.of("payment-statements", settings)),
                 RestClient::builder,
@@ -704,7 +714,9 @@ class HttpTemplateTest {
                 null,
                 "deployment-boundary",
                 new DeploymentIdentity("customer-a"))) {
-            template.exchange("payment-statements", "echo",
+            template.exchange(
+                    "payment-statements",
+                    "echo",
                     new HttpCall(null, null, Map.of("X-Tenant-Code", "caller-other"), "payload"),
                     (method, uri, body) -> Map.of("X-Tenant-Code", "signer-other"));
             assertThat(tenantHeader.get()).isEqualTo(expectedHeader);

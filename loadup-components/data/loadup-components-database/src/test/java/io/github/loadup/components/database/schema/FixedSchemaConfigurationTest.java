@@ -25,6 +25,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Objects;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.env.MockEnvironment;
@@ -66,7 +67,8 @@ class FixedSchemaConfigurationTest {
         ResultSet result = mock(ResultSet.class);
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery("SELECT current_schema(), current_setting('search_path')")).thenReturn(result);
+        when(statement.executeQuery("SELECT current_schema(), current_setting('search_path')"))
+                .thenReturn(result);
         when(result.next()).thenReturn(true);
         when(result.getString(1)).thenReturn("customer_a_payment");
         when(result.getString(2)).thenReturn("customer_a_payment");
@@ -83,7 +85,8 @@ class FixedSchemaConfigurationTest {
         ResultSet result = mock(ResultSet.class);
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery("SELECT current_schema(), current_setting('search_path')")).thenReturn(result);
+        when(statement.executeQuery("SELECT current_schema(), current_setting('search_path')"))
+                .thenReturn(result);
         when(result.next()).thenReturn(true);
         when(result.getString(1)).thenReturn("public");
 
@@ -100,7 +103,8 @@ class FixedSchemaConfigurationTest {
         ResultSet result = mock(ResultSet.class);
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery("SELECT current_schema(), current_setting('search_path')")).thenReturn(result);
+        when(statement.executeQuery("SELECT current_schema(), current_setting('search_path')"))
+                .thenReturn(result);
         when(result.next()).thenReturn(true);
         when(result.getString(1)).thenReturn(null);
 
@@ -196,7 +200,8 @@ class FixedSchemaConfigurationTest {
             var environment = new MockEnvironment()
                     .withProperty("loadup.database.schema", "customer_a_payment")
                     .withProperty("spring.datasource.hikari.connection-init-sql", initSql);
-            assertThatThrownBy(() -> new FixedSchemaEnvironmentPostProcessor().postProcessEnvironment(environment, null))
+            assertThatThrownBy(
+                            () -> new FixedSchemaEnvironmentPostProcessor().postProcessEnvironment(environment, null))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessageContaining("connection-init-sql");
         }
@@ -211,7 +216,8 @@ class FixedSchemaConfigurationTest {
                 var environment = new MockEnvironment()
                         .withProperty("loadup.database.schema", "customer_a_payment")
                         .withProperty(property, "jdbc:postgresql://localhost/payments?" + query);
-                assertThatThrownBy(() -> new FixedSchemaEnvironmentPostProcessor().postProcessEnvironment(environment, null))
+                assertThatThrownBy(() ->
+                                new FixedSchemaEnvironmentPostProcessor().postProcessEnvironment(environment, null))
                         .isInstanceOf(IllegalStateException.class);
             }
         }
@@ -222,9 +228,13 @@ class FixedSchemaConfigurationTest {
         for (String property : new String[] {"options", "currentSchema"}) {
             var environment = new MockEnvironment()
                     .withProperty("loadup.database.schema", "customer_a_payment")
-                    .withProperty("spring.datasource.hikari.data-source-properties." + property,
-                            java.util.Objects.equals(property, "options") ? "-c search_path=customer_a_payment,public" : "public");
-            assertThatThrownBy(() -> new FixedSchemaEnvironmentPostProcessor().postProcessEnvironment(environment, null))
+                    .withProperty(
+                            "spring.datasource.hikari.data-source-properties." + property,
+                            Objects.equals(property, "options")
+                                    ? "-c search_path=customer_a_payment,public"
+                                    : "public");
+            assertThatThrownBy(
+                            () -> new FixedSchemaEnvironmentPostProcessor().postProcessEnvironment(environment, null))
                     .isInstanceOf(IllegalStateException.class);
         }
     }
@@ -237,7 +247,8 @@ class FixedSchemaConfigurationTest {
             var environment = new MockEnvironment()
                     .withProperty("loadup.database.schema", "customer_a_payment")
                     .withProperty(property, "SET search_path TO customer_a_payment, public");
-            assertThatThrownBy(() -> new FixedSchemaEnvironmentPostProcessor().postProcessEnvironment(environment, null))
+            assertThatThrownBy(
+                            () -> new FixedSchemaEnvironmentPostProcessor().postProcessEnvironment(environment, null))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessageContaining("connection-init-sql");
         }
@@ -251,17 +262,20 @@ class FixedSchemaConfigurationTest {
         ResultSet result = mock(ResultSet.class);
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.createStatement()).thenReturn(statement);
-        when(statement.executeQuery("SELECT current_schema(), current_setting('search_path')")).thenReturn(result);
+        when(statement.executeQuery("SELECT current_schema(), current_setting('search_path')"))
+                .thenReturn(result);
         when(result.next()).thenReturn(true);
         when(result.getString(1)).thenReturn("customer_a_payment");
-        for (String path : new String[] {"customer_a_payment, public", "customer_a_payment, customer_b_payment", "customer_a_payment, missing_schema"}) {
+        for (String path : new String[] {
+            "customer_a_payment, public", "customer_a_payment, customer_b_payment", "customer_a_payment, missing_schema"
+        }) {
             when(result.getString(2)).thenReturn(path);
             assertThatThrownBy(() -> new FixedSchemaVerifier(dataSource, "customer_a_payment").verify())
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessageContaining("search_path");
         }
         when(result.getString(2)).thenReturn("\"customer_a_payment\"");
-        assertThatCode(() -> new FixedSchemaVerifier(dataSource, "customer_a_payment").verify()).doesNotThrowAnyException();
+        assertThatCode(() -> new FixedSchemaVerifier(dataSource, "customer_a_payment").verify())
+                .doesNotThrowAnyException();
     }
-
 }
