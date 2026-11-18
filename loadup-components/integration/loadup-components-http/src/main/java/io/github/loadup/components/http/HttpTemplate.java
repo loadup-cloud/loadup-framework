@@ -544,8 +544,9 @@ public final class HttpTemplate implements AutoCloseable {
                     .build();
             RestClient serviceClient = client.mutate()
                     .baseUrl(baseUrl.toString())
-                    .configureMessageConverters(
-                            converters -> converters.withJsonConverter(new JacksonJsonHttpMessageConverter(mapper)))
+                    .configureMessageConverters(converters -> converters
+                            .registerDefaults()
+                            .withJsonConverter(new JacksonJsonHttpMessageConverter(mapper)))
                     .defaultHeaders(h -> h.setAll(config.headers()))
                     .requestInterceptor((request, body, execution) -> {
                         URI target = request.getURI();
