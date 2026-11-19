@@ -79,7 +79,8 @@ class LockTemplateIT {
                 assertThat(acquired.await(10, TimeUnit.SECONDS)).isTrue();
                 assertThatThrownBy(() -> second.run(key, () -> fail("must not execute")))
                         .isInstanceOf(LockUnavailableException.class);
-                var independentKey = LockKey.of(key.business(), UUID.randomUUID().toString());
+                var independentKey =
+                        LockKey.of(key.business(), UUID.randomUUID().toString());
                 assertThat(second.execute(independentKey, () -> "independent")).isEqualTo("independent");
             } finally {
                 finish.countDown();
