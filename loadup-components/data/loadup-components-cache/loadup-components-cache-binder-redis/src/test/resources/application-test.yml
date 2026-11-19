@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: cache-test
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+
+loadup:
+  cache:
+    caches:
+      product:
+        ttl: 30m
+      productShortTtl:
+        ttl: 300ms
+      productJitter:
+        ttl: 300ms
+        random-expiration-range: 500ms
+      productNullable:
+        allow-null-values: true
+
+logging:
+  level:
+    io.github.loadup.components.cache: DEBUG

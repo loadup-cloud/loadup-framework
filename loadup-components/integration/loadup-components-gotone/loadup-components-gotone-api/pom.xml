@@ -11,5 +11,11 @@
     <name>ComponentGotone API</name>
     <description>Notification requests, provider contracts and sending facade.</description>
 
-    <dependencies/>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>

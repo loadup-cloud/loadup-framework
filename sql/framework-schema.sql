@@ -152,7 +152,7 @@ CREATE TABLE loadup_task_operation (
     operator_id VARCHAR(64) NOT NULL,
     reason VARCHAR(512) NOT NULL
 );
-CREATE INDEX loadup_task_operation ON loadup_task_operation(task_id);
+CREATE INDEX idx_loadup_task_operation_task_id ON loadup_task_operation(task_id);
 -- END loadup-components/reliability/loadup-components-task/src/main/resources/db/task/pg/schema.sql
 
 -- BEGIN loadup-modules/loadup-modules-audit/loadup-modules-audit-core/src/main/resources/db/migration/framework/audit/V20261002000001__create_audit_event.sql

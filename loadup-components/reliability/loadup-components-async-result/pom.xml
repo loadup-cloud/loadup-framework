@@ -15,6 +15,5 @@
         <module>loadup-components-async-result-api</module>
         <module>loadup-components-async-result-binder-local</module>
         <module>loadup-components-async-result-binder-redis</module>
-        <module>loadup-components-async-result-test</module>
     </modules>
 </project>

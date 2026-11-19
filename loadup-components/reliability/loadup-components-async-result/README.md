@@ -135,6 +135,6 @@ loadup.async_result.pending、loadup.async_result.wait（outcome）、loadup.asy
 loadup.async_result.read_failures；不把订单号、租户或 correlationId 用作标签。不打印结果 payload、凭证及 Jackson
 异常消息。内部协议无日期字段；业务 DTO 日期格式沿用应用的 Jackson 配置和本地时区契约。
 
-测试及命令见 [test README](loadup-components-async-result-test/README.md)，包括 Local 并发、Redis 两客户端、Kafka
+测试位于 Local 与 Redis binder，包括 Local 并发、Redis 两客户端、Kafka
 request/reply 和真实 PostgreSQL Task 提交顺序。测试编写不代表已执行；运行时应记录所执行的测试、环境及结果。内部设计见
 [ARCHITECTURE.md](ARCHITECTURE.md)。

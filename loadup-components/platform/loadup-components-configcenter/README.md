@@ -10,9 +10,10 @@ loadup-components-configcenter/
 ├── loadup-components-configcenter-api/          # ConfigCenterTemplate + ConfigCenterProvider + 自动装配
 ├── loadup-components-configcenter-binder-local/ # 本地内存实现（开发 / 测试）
 ├── loadup-components-configcenter-binder-nacos/ # Nacos 实现（整文件 properties/yaml 解析）
-├── loadup-components-configcenter-binder-apollo/# Apollo 实现（读 + 监听，写走 Portal OpenAPI）
-└── loadup-components-configcenter-test/         # 单测 + Local binder 集成测试
+└── loadup-components-configcenter-binder-apollo/# Apollo 实现（读 + 监听，写走 Portal OpenAPI）
 ```
+
+测试随对应 binder 一起维护。
 
 ## 快速开始
 

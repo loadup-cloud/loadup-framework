@@ -44,8 +44,9 @@ loadup-components-gotone/
 │   ├── loadup-components-gotone-binder-sms/      # stub
 │   ├── loadup-components-gotone-binder-push/     # stub
 │   └── loadup-components-gotone-binder-webhook/  # 真实 HTTP
-└── loadup-components-gotone-test/             # 引擎单测 + 渠道测试 + 存储容器测试
 ```
+
+模型、引擎、渠道和 JDBC 测试分别由 API、引擎、对应渠道 binder 和 JDBC store 模块维护。
 
 ### api（契约层，零框架依赖）
 

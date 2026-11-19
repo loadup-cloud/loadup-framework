@@ -18,6 +18,5 @@
         <module>loadup-components-gotone-engine</module>
         <module>loadup-components-gotone-store-jdbc</module>
         <module>channels</module>
-        <module>loadup-components-gotone-test</module>
     </modules>
 </project>

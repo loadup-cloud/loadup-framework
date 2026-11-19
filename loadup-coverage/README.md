@@ -17,7 +17,8 @@ mvnd -B -ntp -T 1 -Pcomponent-coverage -pl '!loadup-framework-bom' --fail-at-end
 ```
 
 第一步执行一次完整构建并安装 reactor 依赖；第二步仅调用命名插件 execution，复用同批 classes 与合并 exec，不运行生命周期，不需要也不能添加
-`clean`。排除 `loadup-framework-bom` 是因为该 BOM 直接继承 Spring Boot，不继承根 POM 的命名 execution。
+`clean`。第一步在各组件的 `verify` 阶段根据测试源码检查相应的 JaCoCo 文件存在且非空。排除 `loadup-framework-bom` 是因为该 BOM
+直接继承 Spring Boot，不继承根 POM 的命名 execution。
 
 上述命令跳过格式和 SpotBugs，供覆盖率验收使用；CI 首步还执行 SpotBugs/PMD，快速质量任务检查格式、License
 和依赖。不能通过跳过测试、降低阈值或删除执行文件来作为完整验收。
@@ -44,13 +45,9 @@ CI 归档上述报告、原始 unit / IT exec 及 Surefire/Failsafe 报告。完
    `loadup-components-kms-api`、`loadup-components-http`、`loadup-components-webmvc` 也按当前要求临时设为 `true`，
    跳过覆盖率门禁，仍收集测试执行数据和报告；恢复时将各模块的 `loadup.coverage.skip` 改回 `false`。
 2. 在本模块 POM 添加组件依赖，生产 jar 使用默认 compile scope，纯测试模块使用 test scope。版本由框架 BOM 管理。
-3. 在 `component-execution-data` 中维护预期文件：有 Surefire 用例列 `jacoco-unit.exec`，有 Failsafe 用例列
-   `jacoco-it.exec`；两类都有则各列一条。移除测试类别时同步删除条目。
+3. 测试按 Surefire/Failsafe 的命名规则放置，无需登记执行文件。新增或迁移测试时，校验自动检查所在组件
+   `target` 下的 `jacoco-unit.exec` 或 `jacoco-it.exec`。
 4. 新增生成器时只按实际生成类型维护父 POM 排除项，不排除手写 DTO、配置、异常或业务适配器。
 
 本模块不是所有业务模块的覆盖率门禁；`loadup-modules` / commons
 可运行测试，但不计入组件报告分母。组件范围及设计限制见 [ARCHITECTURE.md](ARCHITECTURE.md)。
-
-## 本次状态
-
-2026-10-19 完成配置迁移，按照用户要求未运行 Maven、测试、格式化、静态检查或文档同步。所有通过结论等待手工验证。

@@ -9,9 +9,10 @@
 loadup-components-captcha/
 ├── loadup-components-captcha-api/                # CaptchaTemplate + CaptchaProvider SPI + 自动装配
 ├── loadup-components-captcha-binder-tianai/      # 行为验证码（滑块/旋转/点选），tianai-captcha 1.5.5
-├── loadup-components-captcha-binder-nanocaptcha/ # 传统图像验证码（数字/字母），nanocaptcha 3.0
-└── loadup-components-captcha-test/               # facade 契约 IT + 单测
+└── loadup-components-captcha-binder-nanocaptcha/ # 传统图像验证码（数字/字母），nanocaptcha 3.0
 ```
+
+测试随对应 binder 一起维护。
 
 ## 快速开始
 

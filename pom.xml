@@ -100,6 +100,9 @@
         <spotless.skip>false</spotless.skip>
         <skip.unit.tests>false</skip.unit.tests>
         <skip.integration.tests>false</skip.integration.tests>
+        <loadup.test.unit.pattern>**/*Test.java</loadup.test.unit.pattern>
+        <loadup.test.it.pattern>**/*IT.java</loadup.test.it.pattern>
+        <loadup.test.integration.pattern>**/*IntegrationTest.java</loadup.test.integration.pattern>
 
         <enforcer.skip>false</enforcer.skip>
         <testcontainers.reuse.enable>true</testcontainers.reuse.enable>
@@ -258,11 +261,11 @@
                     <configuration>
                         <argLine>@{argLine}</argLine>
                         <includes>
-                            <include>**/*Test.java</include>
+                            <include>${loadup.test.unit.pattern}</include>
                         </includes>
                         <excludes>
-                            <exclude>**/*IT.java</exclude>
-                            <exclude>**/*IntegrationTest.java</exclude>
+                            <exclude>${loadup.test.it.pattern}</exclude>
+                            <exclude>${loadup.test.integration.pattern}</exclude>
                         </excludes>
                         <skipTests>${skip.unit.tests}</skipTests>
                         <systemPropertyVariables>
@@ -281,8 +284,8 @@
                     <configuration>
                         <argLine>@{argLine}</argLine>
                         <includes>
-                            <include>**/*IT.java</include>
-                            <include>**/*IntegrationTest.java</include>
+                            <include>${loadup.test.it.pattern}</include>
+                            <include>${loadup.test.integration.pattern}</include>
                         </includes>
                         <skipITs>${skip.integration.tests}</skipITs>
                         <systemPropertyVariables>
@@ -620,6 +623,62 @@
             <modules>
                 <module>loadup-coverage</module>
             </modules>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>${maven-antrun-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>component-execution-data</id>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <phase>verify</phase>
+                                <configuration>
+                                    <target xmlns:if="ant:if">
+                                        <condition property="loadup.coverage.component.tests">
+                                            <and>
+                                                <contains string="${project.basedir}${file.separator}" substring="${maven.multiModuleProjectDirectory}${file.separator}loadup-components${file.separator}"/>
+                                                <not>
+                                                    <equals arg1="${project.packaging}" arg2="pom"/>
+                                                </not>
+                                                <available file="${project.build.testSourceDirectory}" type="dir"/>
+                                            </and>
+                                        </condition>
+                                        <macrodef name="require-suite-exec">
+                                            <attribute name="suite"/>
+                                            <attribute name="includes"/>
+                                            <attribute default="" name="excludes"/>
+                                            <attribute name="exec"/>
+                                            <sequential>
+                                                <fail message="${project.artifactId}: @{suite} test sources found, but @{exec} is missing or empty. Run clean verify with tests and JaCoCo enabled.">
+                                                    <condition>
+                                                        <and>
+                                                            <resourcecount count="0" when="greater">
+                                                                <fileset dir="${project.build.testSourceDirectory}" excludes="@{excludes}" includes="@{includes}"/>
+                                                            </resourcecount>
+                                                            <not>
+                                                                <and>
+                                                                    <available file="@{exec}" type="file"/>
+                                                                    <length file="@{exec}" length="0" when="greater"/>
+                                                                </and>
+                                                            </not>
+                                                        </and>
+                                                    </condition>
+                                                </fail>
+                                            </sequential>
+                                        </macrodef>
+                                        <require-suite-exec excludes="${loadup.test.it.pattern},${loadup.test.integration.pattern}" exec="${project.build.directory}/jacoco-unit.exec" includes="${loadup.test.unit.pattern}" if:set="loadup.coverage.component.tests" suite="Surefire"/>
+                                        <require-suite-exec exec="${project.build.directory}/jacoco-it.exec" includes="${loadup.test.it.pattern},${loadup.test.integration.pattern}" if:set="loadup.coverage.component.tests" suite="Failsafe"/>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
         <profile>
             <id>github</id>

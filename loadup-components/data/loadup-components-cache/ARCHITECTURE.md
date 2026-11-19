@@ -76,18 +76,20 @@ JetCache 用每次写入的 `expire` 参数，保证同一配置在不同底层�
 2. 提供 `CacheManager` bean + `@ConditionalOnProperty(prefix="loadup.cache", name="type",
    havingValue="{type}")`，并在 `META-INF/spring/...AutoConfiguration.imports` 注册；
 3. TTL / 空值 / 随机过期必须复用 api 的 `LoadupCacheProperties` 与 `RandomExpiration`；
-4. 在 `-test` 的 `AbstractCacheBinderIT` 加一个子类跑同一套契约测试。
+4. 在 binder 的 `src/test` 中运行同一套缓存契约测试。
 
 ## 5. 反绕过契约（防止直接对接中间件）
 
 | 约束                           | 执行方式                                                                           |
 |--------------------------------|------------------------------------------------------------------------------------|
-| 业务模块只依赖 `-cache-api`    | binder 坐标只在集成方工程/`-test` 出现；BOM 单点管理版本                           |
+| 业务模块只依赖 `-cache-api`    | binder 由集成方工程选定；BOM 单点管理版本                                           |
 | 业务代码只用 Spring Cache 注解 | `CacheJsonCodec` / JetCache 适配不暴露给业务；API 层不提供手写 CRUD 门面           |
 | 切 binder 零代码修改           | `AbstractCacheBinderIT` 同一业务服务在 caffeine/redis/jetcache 上跑同一套用例      |
 | 中间件 API 不泄漏              | binder 的配置走 `loadup.cache.*` / `loadup.cache.binder.*`，不要求业务感知实现细节 |
 
 ## 6. 测试
+
+通用配置与过期策略测试放在 Cache API；后端契约与集成测试放在各自 binder。
 
 - `AbstractCacheBinderIT`：统一契约（读/写/失效/全清/空值/TTL/随机过期 + CacheManager 类型断言）。
 - `CaffeineCacheIT` / `RedisCacheIT`（Testcontainers Redis）/ `JetCacheLocalCacheIT` /

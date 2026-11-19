@@ -31,10 +31,11 @@ loadup-components-dfs
   └─ loadup-components-dfs-binder-database
   └─ loadup-components-dfs-binder-local
   └─ loadup-components-dfs-binder-s3
-  └─ loadup-components-dfs-test
 ```
 
 聚合 POM 组织模块与版本，运行时依赖由子模块决定。
+各 binder 在自己的 `src/test` 中验证存储行为；本地 binder 也覆盖 DFS 服务契约。
+数据库和 S3 集成测试分别通过 Testcontainers 启动 PostgreSQL 和 LocalStack。
 
 ## 设计取舍
 

@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: loadup-captcha-test
+
+loadup:
+  captcha:
+    binder-type: nanocaptcha
+
+logging:
+  level:
+    io.github.loadup: DEBUG

@@ -17,6 +17,5 @@
         <module>loadup-components-captcha-api</module>
         <module>loadup-components-captcha-binder-tianai</module>
         <module>loadup-components-captcha-binder-nanocaptcha</module>
-        <module>loadup-components-captcha-test</module>
     </modules>
 </project>

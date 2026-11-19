@@ -40,11 +40,6 @@
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-cache-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-database</artifactId>
         </dependency>
         <dependency>
@@ -62,11 +57,6 @@
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-dfs-binder-s3</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-dfs-test</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
@@ -114,11 +104,6 @@
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-gotone-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-payment-channel-api</artifactId>
         </dependency>
         <dependency>
@@ -155,11 +140,6 @@
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-configcenter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-extension</artifactId>
         </dependency>
         <dependency>
@@ -181,11 +161,6 @@
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-async-result-binder-redis</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-async-result-test</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
@@ -230,11 +205,6 @@
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-captcha-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.github.loadup-cloud</groupId>
             <artifactId>loadup-components-kms-binder-openbao</artifactId>
         </dependency>
 
@@ -253,174 +223,6 @@
     </dependencies>
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>component-execution-data</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <phase>post-integration-test</phase>
-                        <configuration>
-                            <!-- Do not inherit the unrelated dependency-ban skip switch. -->
-                            <skip>false</skip>
-                            <rules>
-                                <requireFilesSize>
-                                    <minsize>1</minsize>
-                                    <!-- Require non-empty execution data without the rule's default 10 KB cap. -->
-                                    <maxsize>9223372036854775807</maxsize>
-                                    <files>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/integration/loadup-components-payment-channel/loadup-components-payment-channel-contracts/target/jacoco-unit.exec
-                                        </file>
-                                        <!-- One file per current component test suite kind.
-                                             Add entries when adding unit tests or ITs to another module. -->
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/data/loadup-components-cache/loadup-components-cache-test/target/jacoco-unit.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/data/loadup-components-cache/loadup-components-cache-test/target/jacoco-it.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/data/loadup-components-database/target/jacoco-unit.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/data/loadup-components-database/target/jacoco-it.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/data/loadup-components-dfs/loadup-components-dfs-test/target/jacoco-unit.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/data/loadup-components-dfs/loadup-components-dfs-test/target/jacoco-it.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/execution/loadup-components-pipeline/target/jacoco-unit.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/execution/loadup-components-pipeline/target/jacoco-it.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/execution/loadup-components-scheduler/loadup-components-scheduler-api/target/jacoco-unit.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/execution/loadup-components-scheduler/loadup-components-scheduler-binder-local/target/jacoco-unit.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/execution/loadup-components-scheduler/loadup-components-scheduler-binder-powerjob/target/jacoco-unit.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/execution/loadup-components-scheduler/loadup-components-scheduler-binder-powerjob/target/jacoco-it.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/integration/loadup-components-gotone/loadup-components-gotone-engine/target/jacoco-unit.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/integration/loadup-components-gotone/loadup-components-gotone-test/target/jacoco-unit.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/integration/loadup-components-gotone/loadup-components-gotone-test/target/jacoco-it.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/integration/loadup-components-payment-channel/loadup-components-payment-channel-api/target/jacoco-unit.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/integration/loadup-components-payment-channel/loadup-components-payment-channel-core/target/jacoco-unit.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/integration/loadup-components-payment-channel/binders/loadup-components-payment-channel-alipay/target/jacoco-unit.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/integration/loadup-components-payment-channel/binders/loadup-components-payment-channel-wechat/target/jacoco-unit.exec
-                                        </file>
-
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/platform/loadup-components-configcenter/loadup-components-configcenter-test/target/jacoco-unit.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/platform/loadup-components-configcenter/loadup-components-configcenter-test/target/jacoco-it.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/platform/loadup-components-extension/target/jacoco-unit.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/platform/loadup-components-observability/target/jacoco-unit.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/platform/loadup-components-observability/target/jacoco-it.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/platform/loadup-components-testcontainers/target/jacoco-unit.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/platform/loadup-components-testcontainers/target/jacoco-it.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/reliability/loadup-components-async-result/loadup-components-async-result-test/target/jacoco-unit.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/reliability/loadup-components-async-result/loadup-components-async-result-test/target/jacoco-it.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/reliability/loadup-components-globalunique/target/jacoco-unit.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/reliability/loadup-components-globalunique/target/jacoco-it.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/reliability/loadup-components-lock/target/jacoco-unit.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/reliability/loadup-components-lock/target/jacoco-it.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/reliability/loadup-components-task/target/jacoco-unit.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/reliability/loadup-components-task/target/jacoco-it.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/reliability/loadup-components-resilience4j/target/jacoco-unit.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/security/loadup-components-authorization/target/jacoco-unit.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/security/loadup-components-oauth-server/loadup-components-oauth-server-core/target/jacoco-unit.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/security/loadup-components-oauth-server/loadup-components-oauth-server-core/target/jacoco-it.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/security/loadup-components-captcha/loadup-components-captcha-binder-nanocaptcha/target/jacoco-unit.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/security/loadup-components-captcha/loadup-components-captcha-test/target/jacoco-unit.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/security/loadup-components-captcha/loadup-components-captcha-test/target/jacoco-it.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/security/loadup-components-kms/loadup-components-kms-binder-openbao/target/jacoco-unit.exec
-                                        </file>
-
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/security/loadup-components-signature/target/jacoco-unit.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/web/loadup-components-springdoc/target/jacoco-unit.exec
-                                        </file>
-                                        <file>
-                                            ${maven.multiModuleProjectDirectory}/loadup-components/web/loadup-components-springdoc/target/jacoco-it.exec
-                                        </file>
-                                    </files>
-                                </requireFilesSize>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>

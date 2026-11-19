@@ -80,7 +80,6 @@ JaCoCo CLI 或 Python 覆盖率脚本。先收齐全部组件及兄弟测试模�
 历史基线：2026-10-16 同一次完整本地运行的 **48/48 个运行时 jar 行、分支均 ≥90%**，653 项单测、148 项 IT
 通过。该历史结果不能证明当前原生配置或新提交已验收。
 新增 AsyncResult 的 3 个运行时 jar 在独立定向运行中均达到行/分支 ≥90%，21 项单测及 4 项 Redis/Kafka/MySQL IT
-通过，报告见 [AsyncResult Test](reliability/loadup-components-async-result/loadup-components-async-result-test/README.md)
-。该结果不与前述 48 个 jar 合并宣称为同一次全量验收。
+通过；测试现位于各 binder。该结果不与前述 48 个 jar 合并宣称为同一次全量验收。
 
 `platform/loadup-components-runtime` 承接 Clock、日志、JSON 与容器访问工具的 Spring Boot 装配；commons 保留纯基础能力。

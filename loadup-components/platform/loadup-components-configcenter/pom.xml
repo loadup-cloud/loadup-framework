@@ -18,6 +18,5 @@
         <module>loadup-components-configcenter-binder-local</module>
         <module>loadup-components-configcenter-binder-nacos</module>
         <module>loadup-components-configcenter-binder-apollo</module>
-        <module>loadup-components-configcenter-test</module>
     </modules>
 </project>

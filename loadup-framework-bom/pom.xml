@@ -197,11 +197,6 @@
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-async-result-test</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-commons-json</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
@@ -497,11 +492,6 @@
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-cache-test</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-captcha</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
@@ -518,11 +508,6 @@
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-captcha-binder-nanocaptcha</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-captcha-test</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <!-- Third-party captcha engines -->
@@ -689,11 +674,6 @@
                 <artifactId>loadup-components-gotone-store-jdbc</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-gotone-test</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
             <!-- ========== loadup-components-payment-channel start ==========-->
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
@@ -749,12 +729,6 @@
 
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-dfs-test</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-signature</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
@@ -794,11 +768,6 @@
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-configcenter-binder-apollo</artifactId>
-                <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-configcenter-test</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <!-- Third-party config center clients -->

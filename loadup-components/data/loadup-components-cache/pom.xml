@@ -18,6 +18,5 @@
         <module>loadup-components-cache-binder-caffeine</module>
         <module>loadup-components-cache-binder-redis</module>
         <module>loadup-components-cache-binder-jetcache</module>
-        <module>loadup-components-cache-test</module>
     </modules>
 </project>
