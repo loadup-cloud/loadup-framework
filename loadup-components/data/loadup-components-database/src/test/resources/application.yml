@@ -1,3 +1,6 @@
 spring:
   profiles:
     active: test
+loadup:
+  database:
+    schema: loadup_database_test
