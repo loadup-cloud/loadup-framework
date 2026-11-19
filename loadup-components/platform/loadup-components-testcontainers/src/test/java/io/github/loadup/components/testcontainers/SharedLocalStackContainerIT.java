@@ -31,6 +31,8 @@ import org.testcontainers.localstack.LocalStackContainer;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.http.apache5.Apache5HttpClient;
+import software.amazon.awssdk.http.apache5.ProxyConfiguration;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
@@ -55,14 +57,10 @@ class SharedLocalStackContainerIT extends AbstractLocalStackContainerTest {
 
     @Test
     void testContainerProperties() {
-        assertNotNull(SharedLocalStackContainer.getS3Endpoint(), "S3 endpoint should not be null");
-        assertNotNull(SharedLocalStackContainer.getAccessKey(), "Access key should not be null");
-        assertNotNull(SharedLocalStackContainer.getSecretKey(), "Secret key should not be null");
-        assertNotNull(SharedLocalStackContainer.getRegion(), "Region should not be null");
-
-        LogUtil.info(SharedLocalStackContainerIT.class, "S3 Endpoint: {}", SharedLocalStackContainer.getS3Endpoint());
-        LogUtil.info(SharedLocalStackContainerIT.class, "Access Key: {}", SharedLocalStackContainer.getAccessKey());
-        LogUtil.info(SharedLocalStackContainerIT.class, "Region: {}", SharedLocalStackContainer.getRegion());
+        assertNotNull(getS3Endpoint(), "S3 endpoint should not be null");
+        assertNotNull(getAccessKey(), "Access key should not be null");
+        assertNotNull(getSecretKey(), "Secret key should not be null");
+        assertNotNull(getRegion(), "Region should not be null");
     }
 
     @Test
@@ -161,10 +159,16 @@ class SharedLocalStackContainerIT extends AbstractLocalStackContainerTest {
      */
     private S3Client createS3Client() {
         return S3Client.builder()
-                .endpointOverride(URI.create(SharedLocalStackContainer.getS3Endpoint()))
-                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(
-                        SharedLocalStackContainer.getAccessKey(), SharedLocalStackContainer.getSecretKey())))
-                .region(Region.of(SharedLocalStackContainer.getRegion()))
+                .endpointOverride(URI.create(getS3Endpoint()))
+                .credentialsProvider(
+                        StaticCredentialsProvider.create(AwsBasicCredentials.create(getAccessKey(), getSecretKey())))
+                .region(Region.of(getRegion()))
+                .forcePathStyle(true)
+                .httpClientBuilder(Apache5HttpClient.builder()
+                        .proxyConfiguration(ProxyConfiguration.builder()
+                                .useSystemPropertyValues(false)
+                                .useEnvironmentVariableValues(false)
+                                .build()))
                 .build();
     }
 }

@@ -24,9 +24,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
+import io.github.loadup.components.testcontainers.annotation.ContainerType;
 import io.github.loadup.components.testcontainers.cache.AbstractRedisContainerTest;
 import io.github.loadup.components.testcontainers.cache.SharedRedisContainer;
-import io.github.loadup.components.testcontainers.cloud.AbstractLocalStackContainerTest;
 import io.github.loadup.components.testcontainers.cloud.SharedLocalStackContainer;
 import io.github.loadup.components.testcontainers.config.TestContainersProperties.ContainerConfig;
 import io.github.loadup.components.testcontainers.database.AbstractMongoDBContainerTest;
@@ -43,8 +43,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
+import org.junit.jupiter.api.parallel.Resources;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Answers;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
@@ -55,11 +60,115 @@ import org.testcontainers.mysql.MySQLContainer;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
 class ContainerLifecycleTest {
+    private static final String GLOBAL_SWITCH = "loadup.testcontainers.enabled";
+    private static final String LOCALSTACK_SWITCH = "loadup.testcontainers.localstack.enabled";
+
     private static void restoreProperty(String name, String value) {
         if (value == null) {
             System.clearProperty(name);
         } else {
             System.setProperty(name, value);
+        }
+    }
+
+    @ParameterizedTest(name = "{0} startup can retry and publishes connection properties")
+    @EnumSource(ContainerType.class)
+    @ResourceLock(Resources.SYSTEM_PROPERTIES)
+    void startupCanRetryAndPublishesConnectionProperties(ContainerType type) throws Throwable {
+        try (var loader = newContainerClassLoader()) {
+            if (type == ContainerType.LOCALSTACK) {
+                initializeLocalStack(loader, true, true);
+            }
+            var checks = loader.loadClass(ContainerLifecycleChecks.class.getName());
+            var verifyStartup = checks.getDeclaredMethod("verifyStartup", ContainerType.class);
+            verifyStartup.setAccessible(true);
+            try {
+                verifyStartup.invoke(null, type);
+            } catch (InvocationTargetException failure) {
+                throw failure.getCause();
+            }
+        }
+    }
+
+    @Test
+    @ResourceLock(Resources.SYSTEM_PROPERTIES)
+    void localStackDisabledModesAreEvaluatedInFreshClassLoaders() throws Exception {
+        for (boolean globalEnabled : new boolean[] {false, true}) {
+            try (var loader = newContainerClassLoader()) {
+                Class<?> isolated = initializeLocalStack(loader, globalEnabled, !globalEnabled);
+                assertThat(isolated.getMethod("isEnabled").invoke(null)).isEqualTo(false);
+                assertThatThrownBy(() -> isolated.getMethod("getInstance").invoke(null))
+                        .isInstanceOf(InvocationTargetException.class)
+                        .hasCauseInstanceOf(IllegalStateException.class);
+            }
+        }
+    }
+
+    private static Class<?> initializeLocalStack(ClassLoader loader, boolean globalEnabled, boolean localEnabled)
+            throws ClassNotFoundException {
+        String global = System.getProperty(GLOBAL_SWITCH);
+        String local = System.getProperty(LOCALSTACK_SWITCH);
+        try {
+            System.setProperty(GLOBAL_SWITCH, Boolean.toString(globalEnabled));
+            System.setProperty(LOCALSTACK_SWITCH, Boolean.toString(localEnabled));
+            return Class.forName(SharedLocalStackContainer.class.getName(), true, loader);
+        } finally {
+            restoreProperty(GLOBAL_SWITCH, global);
+            restoreProperty(LOCALSTACK_SWITCH, local);
+        }
+    }
+
+    private static URLClassLoader newContainerClassLoader() {
+        String checksName = ContainerLifecycleChecks.class.getName();
+        String componentPackage = ContainerLifecycleTest.class.getPackageName() + ".";
+        var location = SharedLocalStackContainer.class
+                .getProtectionDomain()
+                .getCodeSource()
+                .getLocation();
+        var checksLocation = ContainerLifecycleChecks.class
+                .getProtectionDomain()
+                .getCodeSource()
+                .getLocation();
+        return new URLClassLoader(new URL[] {location, checksLocation}, ContainerLifecycleTest.class.getClassLoader()) {
+            @Override
+            protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+                synchronized (getClassLoadingLock(name)) {
+                    String simpleName = name.substring(name.lastIndexOf('.') + 1);
+                    boolean isolated = name.equals(checksName)
+                            || name.startsWith(checksName + "$")
+                            || name.startsWith(componentPackage)
+                                    && (simpleName.startsWith("Shared") && simpleName.endsWith("Container")
+                                            || simpleName.startsWith("Abstract")
+                                                    && simpleName.endsWith("ContainerTest"));
+                    if (!isolated) {
+                        return super.loadClass(name, resolve);
+                    }
+                    Class<?> loaded = findLoadedClass(name);
+                    if (loaded == null) {
+                        loaded = findClass(name);
+                    }
+                    if (resolve) {
+                        resolveClass(loaded);
+                    }
+                    return loaded;
+                }
+            }
+        };
+    }
+}
+
+final class ContainerLifecycleChecks {
+    private ContainerLifecycleChecks() {}
+
+    static void verifyStartup(ContainerType type) {
+        switch (type) {
+            case MYSQL -> mysqlStartupCanRetryAndPublishesConnectionProperties();
+            case POSTGRESQL -> postgresStartupCanRetryAndPublishesConnectionProperties();
+            case MONGODB -> mongoStartupCanRetryAndPublishesConnectionProperties();
+            case REDIS -> redisStartupCanRetryAndPublishesConnectionProperties();
+            case KAFKA -> kafkaStartupCanRetryAndPublishesConnectionProperties();
+            case ELASTICSEARCH -> elasticsearchStartupCanRetryAndPublishesConnectionProperties();
+            case LOCALSTACK -> localstackStartupCanRetryAndPublishesConnectionProperties();
         }
     }
 
@@ -74,8 +183,7 @@ class ContainerLifecycleTest {
         return config;
     }
 
-    @Test
-    void mysqlStartupCanRetryAndPublishesConnectionProperties() {
+    private static void mysqlStartupCanRetryAndPublishesConnectionProperties() {
         assertThatThrownBy(SharedMySQLContainer::getJdbcUrl).isInstanceOf(IllegalStateException.class);
         assertThat(SharedMySQLContainer.isStarted()).isFalse();
         AtomicBoolean fail = new AtomicBoolean(true);
@@ -124,8 +232,7 @@ class ContainerLifecycleTest {
         }
     }
 
-    @Test
-    void postgresStartupCanRetryAndPublishesConnectionProperties() {
+    private static void postgresStartupCanRetryAndPublishesConnectionProperties() {
         assertThatThrownBy(SharedPostgreSQLContainer::getJdbcUrl).isInstanceOf(IllegalStateException.class);
         assertThat(SharedPostgreSQLContainer.isStarted()).isFalse();
         AtomicBoolean fail = new AtomicBoolean(true);
@@ -171,8 +278,7 @@ class ContainerLifecycleTest {
         }
     }
 
-    @Test
-    void mongoStartupCanRetryAndPublishesConnectionProperties() {
+    private static void mongoStartupCanRetryAndPublishesConnectionProperties() {
         assertThat(SharedMongoDBContainer.isStarted()).isFalse();
         AtomicBoolean fail = new AtomicBoolean(true);
         try (var containers = mockConstruction(
@@ -214,8 +320,7 @@ class ContainerLifecycleTest {
         }
     }
 
-    @Test
-    void redisStartupCanRetryAndPublishesConnectionProperties() {
+    private static void redisStartupCanRetryAndPublishesConnectionProperties() {
         assertThat(SharedRedisContainer.isStarted()).isFalse();
         AtomicBoolean fail = new AtomicBoolean(true);
         try (var containers = mockConstruction(
@@ -255,8 +360,7 @@ class ContainerLifecycleTest {
         }
     }
 
-    @Test
-    void kafkaStartupCanRetryAndPublishesConnectionProperties() {
+    private static void kafkaStartupCanRetryAndPublishesConnectionProperties() {
         assertThatThrownBy(SharedKafkaContainer::getBootstrapServers).isInstanceOf(IllegalStateException.class);
         assertThat(SharedKafkaContainer.isStarted()).isFalse();
         AtomicBoolean fail = new AtomicBoolean(true);
@@ -299,8 +403,7 @@ class ContainerLifecycleTest {
         }
     }
 
-    @Test
-    void elasticsearchStartupCanRetryAndPublishesConnectionProperties() {
+    private static void elasticsearchStartupCanRetryAndPublishesConnectionProperties() {
         assertThatThrownBy(SharedElasticsearchContainer::getHttpHostAddress).isInstanceOf(IllegalStateException.class);
         assertThat(SharedElasticsearchContainer.isStarted()).isFalse();
         AtomicBoolean fail = new AtomicBoolean(true);
@@ -345,8 +448,7 @@ class ContainerLifecycleTest {
         }
     }
 
-    @Test
-    void localstackStartupCanRetryAndPublishesConnectionProperties() {
+    private static void localstackStartupCanRetryAndPublishesConnectionProperties() {
         AtomicBoolean fail = new AtomicBoolean(true);
         try (var containers = mockConstruction(
                 LocalStackContainer.class, withSettings().defaultAnswer(Answers.RETURNS_SELF), (container, context) -> {
@@ -381,55 +483,16 @@ class ContainerLifecycleTest {
             verify(container).withReuse(false);
             assertThat(SharedLocalStackContainer.getInstance()).isSameAs(container);
             assertThat(SharedLocalStackContainer.getProperties())
-                    .containsEntry("aws.s3.endpoint", "http://localhost:14566");
-            assertThat(SharedLocalStackContainer.isEnabled()).isTrue();
-            new LocalStackFixture().check();
-        }
-    }
-
-    @Test
-    void localStackDisabledModesAreEvaluatedInFreshClassLoaders() throws Exception {
-        String global = System.getProperty("loadup.testcontainers.enabled");
-        String local = System.getProperty("loadup.testcontainers.localstack.enabled");
-        String className = SharedLocalStackContainer.class.getName();
-        var location = SharedLocalStackContainer.class
-                .getProtectionDomain()
-                .getCodeSource()
-                .getLocation();
-        try {
-            for (String[] switches : new String[][] {{"false", "true"}, {"true", "false"}}) {
-                System.setProperty("loadup.testcontainers.enabled", switches[0]);
-                System.setProperty("loadup.testcontainers.localstack.enabled", switches[1]);
-                // The switches are read at class initialization, so each scenario needs a fresh class.
-                try (var loader =
-                        new URLClassLoader(new URL[] {location}, getClass().getClassLoader()) {
-                            @Override
-                            protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-                                synchronized (getClassLoadingLock(name)) {
-                                    if (!className.equals(name)) {
-                                        return super.loadClass(name, resolve);
-                                    }
-                                    Class<?> loaded = findLoadedClass(name);
-                                    if (loaded == null) {
-                                        loaded = findClass(name);
-                                    }
-                                    if (resolve) {
-                                        resolveClass(loaded);
-                                    }
-                                    return loaded;
-                                }
-                            }
-                        }) {
-                    Class<?> isolated = Class.forName(className, true, loader);
-                    assertThat(isolated.getMethod("isEnabled").invoke(null)).isEqualTo(false);
-                    assertThatThrownBy(() -> isolated.getMethod("getInstance").invoke(null))
-                            .isInstanceOf(InvocationTargetException.class)
-                            .hasCauseInstanceOf(IllegalStateException.class);
-                }
-            }
-        } finally {
-            restoreProperty("loadup.testcontainers.enabled", global);
-            restoreProperty("loadup.testcontainers.localstack.enabled", local);
+                    .isEqualTo(Map.of(
+                            "aws.s3.endpoint", "http://localhost:14566",
+                            "aws.access-key-id", "synthetic-access",
+                            "aws.secret-access-key", "synthetic-secret",
+                            "aws.region", "us-east-1",
+                            "spring.cloud.aws.s3.endpoint", "http://localhost:14566",
+                            "spring.cloud.aws.credentials.access-key", "synthetic-access",
+                            "spring.cloud.aws.credentials.secret-key", "synthetic-secret",
+                            "spring.cloud.aws.region.static", "us-east-1"));
+            assertThat(SharedLocalStackContainer.isEnabled()).isEqualTo(true);
         }
     }
 
@@ -483,15 +546,6 @@ class ContainerLifecycleTest {
             assertThat(getHttpHostAddress()).isEqualTo("localhost:19200");
             assertThat(getHost()).isEqualTo("localhost");
             assertThat(getPort()).isEqualTo(19200);
-        }
-    }
-
-    static class LocalStackFixture extends AbstractLocalStackContainerTest {
-        void check() {
-            assertThat(getS3Endpoint()).isEqualTo("http://localhost:14566");
-            assertThat(getAccessKey()).isEqualTo("synthetic-access");
-            assertThat(getSecretKey()).isEqualTo("synthetic-secret");
-            assertThat(getRegion()).isEqualTo("us-east-1");
         }
     }
 }
