@@ -52,6 +52,10 @@ when a gateway injects it and a single `DataSource` exists.
 `MyBatisFlexCustomizer` installs the shared conventions on the Flex global configuration: logical-delete column/values,
 banner suppression and pagination defaults. Entity classes without a `deleted` column are unaffected.
 
+The session factory reuses the Spring-bound connection for its DataSource or the single DataSource wrapped by
+MyBatis-Flex. When neither has a Spring-bound connection, the session factory uses MyBatis-Flex's default transaction
+factory behavior.
+
 Because gateways mix mapper reads with explicit JDBC writes in the same transaction, the MyBatis local cache scope is
 `STATEMENT`. A session-scoped cache would return stale entities after an explicit JDBC update that MyBatis cannot
 observe.

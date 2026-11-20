@@ -128,3 +128,17 @@ MvcThreadModelTest 使用独立配置名，在回环地址启动真实 Servlet �
   不用 `/actuator/**` 或 `/api/**` 泛化豁免。
 - 过滤器不建立 tenant 上下文、不选择 schema、不授予身份或权限；响应沿用现有错误 envelope。
 
+## HTTP 安全兜底
+
+使用 Spring Security 的 Servlet 应用可启用最低优先级的兜底链。JWT 和其他专用安全链先处理各自的请求，兜底链放行配置中的 GET 路径，其余请求拒绝访问。默认关闭，启用后未配置路径时拒绝所有落入兜底链的请求。
+
+```yaml
+loadup:
+  webmvc:
+    fallback-security:
+      enabled: true
+      permit-get-paths:
+        - /actuator/health
+```
+
+应用显式引入 `spring-boot-starter-security`。已有全局兜底安全链的应用可继续使用自有配置。

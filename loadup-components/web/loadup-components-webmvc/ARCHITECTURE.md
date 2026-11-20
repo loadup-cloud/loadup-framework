@@ -2,7 +2,7 @@
 
 ## 职责与边界
 
-提供Spring MVC 响应与错误处理能力的独立模块。
+提供 Spring MVC 响应、错误处理和可选 HTTP 入口兜底策略的独立模块。
 
 ## Maven 依赖边界
 
@@ -16,6 +16,7 @@
 直接依赖的外部坐标（不含测试与 provided scope）：
 
 - `org.springframework.boot:spring-boot-starter-webmvc`
+- `org.springframework.security:spring-security-config`、`org.springframework.security:spring-security-web`（可选兜底策略）
 
 ## 实现入口
 
@@ -44,8 +45,8 @@ DTO / JsonUtil   ← SmartInitializingSingleton   ← Boot ObjectMapper
 
 ## 设计边界
 
-组件只处理 MVC 报文与 Jackson 约定，不承担身份认证或授权。Spring Security 过滤器提前写出的
-认证错误由 Resource Server 自己使用相同 `FailureResponse` 格式，因此不经过 MVC Advice。
+身份认证和业务权限由安全组件或应用负责。Resource Server 的过滤器直接使用相同的 `FailureResponse` 格式写出认证错误。
+可选的 WebMVC 兜底链由应用显式启用，处理更高优先级安全链未匹配的请求，按应用配置放行指定 GET 路径。
 自动配置声明在 Boot 错误自动配置之前，并在已有 `ErrorController` 时退让，避免 `/error` 重复映射。
 
 ## 装配规则

@@ -22,6 +22,7 @@ import com.mybatisflex.core.FlexGlobalConfig;
 import com.mybatisflex.core.mybatis.FlexConfiguration;
 import com.mybatisflex.spring.boot.ConfigurationCustomizer;
 import com.mybatisflex.spring.boot.MyBatisFlexCustomizer;
+import com.mybatisflex.spring.boot.SqlSessionFactoryBeanCustomizer;
 import javax.sql.DataSource;
 import org.apache.ibatis.session.LocalCacheScope;
 import org.junit.jupiter.api.Test;
@@ -39,7 +40,8 @@ class MyBatisFlexAutoConfigurationTest {
             assertThat(context)
                     .hasNotFailed()
                     .hasSingleBean(MyBatisFlexCustomizer.class)
-                    .hasSingleBean(ConfigurationCustomizer.class);
+                    .hasSingleBean(ConfigurationCustomizer.class)
+                    .hasSingleBean(SqlSessionFactoryBeanCustomizer.class);
             var config = new FlexGlobalConfig();
             context.getBean(MyBatisFlexCustomizer.class).customize(config);
             assertThat(config.getLogicDeleteColumn()).isEqualTo("deleted");
@@ -66,6 +68,7 @@ class MyBatisFlexAutoConfigurationTest {
                 .run(context -> assertThat(context)
                         .hasNotFailed()
                         .doesNotHaveBean(MyBatisFlexCustomizer.class)
-                        .doesNotHaveBean(ConfigurationCustomizer.class));
+                        .doesNotHaveBean(ConfigurationCustomizer.class)
+                        .doesNotHaveBean(SqlSessionFactoryBeanCustomizer.class));
     }
 }

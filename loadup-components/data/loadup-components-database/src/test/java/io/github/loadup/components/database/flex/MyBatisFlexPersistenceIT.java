@@ -33,6 +33,8 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @SpringBootTest(classes = MyBatisFlexPersistenceIT.Application.class)
 @ActiveProfiles("test")
@@ -43,6 +45,9 @@ class MyBatisFlexPersistenceIT {
 
     @Autowired
     JdbcTemplate jdbc;
+
+    @Autowired
+    PlatformTransactionManager transactionManager;
 
     private static FlexProbeDO probe(String id, String name) {
         var now = LocalDateTime.of(2026, 1, 1, 0, 0);
@@ -96,6 +101,33 @@ class MyBatisFlexPersistenceIT {
 
         assertThat(page.getTotalRow()).isEqualTo(3);
         assertThat(page.getRecords()).extracting(FlexProbeDO::getId).containsExactly("probe-3");
+    }
+
+    @Test
+    void jdbcAndMapperSeeEachOthersWritesAndRollBackTogether() {
+        new TransactionTemplate(transactionManager).executeWithoutResult(status -> {
+            jdbc.update("""
+                INSERT INTO flex_probe (id, name, created_at, updated_at)
+                VALUES (?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                """, "jdbc-probe", "from JDBC");
+            assertThat(mapper.selectOneById("jdbc-probe"))
+                    .extracting(FlexProbeDO::getName)
+                    .isEqualTo("from JDBC");
+
+            jdbc.update("UPDATE flex_probe SET name = ? WHERE id = ?", "changed", "jdbc-probe");
+            assertThat(mapper.selectOneById("jdbc-probe"))
+                    .extracting(FlexProbeDO::getName)
+                    .isEqualTo("changed");
+
+            mapper.insert(probe("mapper-probe", "from MyBatis"));
+            assertThat(jdbc.queryForObject("SELECT name FROM flex_probe WHERE id = ?", String.class, "mapper-probe"))
+                    .isEqualTo("from MyBatis");
+
+            status.setRollbackOnly();
+        });
+
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM flex_probe", Long.class))
+                .isZero();
     }
 
     @SpringBootConfiguration

@@ -16,6 +16,10 @@ The component uses the shared Spring `Clock` and supplies a JDBC transaction man
 fixed schema target and sequence/ID configuration. It brings `mybatis-flex-spring-boot4-starter`, registers framework
 mappers and configures the shared Flex conventions. Applications configure their own data source and PostgreSQL driver.
 
+With the default single-DataSource setup, MyBatis-Flex mappers and Spring JDBC share the connection bound to the
+Spring transaction. A mapper can read JDBC writes before commit, and one rollback covers both APIs. The component
+configures this automatically.
+
 MyBatis-Flex is the default ORM for simple aggregate reads. Annotate infrastructure data objects with
 `com.mybatisflex.annotation.Table`; the annotation processor generates a `Tables` class, per-entity `TableDef` classes
 and a `@Mapper` interface under the module's `infrastructure.table` and `infrastructure.mapper` packages. Gateway
