@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
-        <version>4.1.2</version>
+        <version>4.2.0</version>
         <relativePath/>
     </parent>
     <groupId>io.github.loadup-cloud</groupId>
@@ -53,23 +53,20 @@
         <!-- This POM-only BOM has no source headers; direct license goals still require a license name. -->
         <license.licenseName>apache_v2</license.licenseName>
 
-        <spring.boot.version>4.1.2</spring.boot.version>
-        <spring-cloud.version>2025.1.4</spring-cloud.version>
-        <tomcat.version>11.0.27</tomcat.version>
+        <spring-cloud.version>2026.0.0</spring-cloud.version>
 
         <!-- Loadup Framework -->
         <loadup.framework.version>${project.version}</loadup.framework.version>
 
         <!-- ORM and Database -->
         <mybatis-flex.version>1.11.8</mybatis-flex.version>
-        <mysql.version>9.7.0</mysql.version>
-        <flyway.version>13.12.1</flyway.version>
+        <flyway.version>13.13.0</flyway.version>
 
         <!-- Code Generation -->
         <mapstruct.version>1.6.3</mapstruct.version>
         <!-- Apache Commons -->
         <commons-io.version>2.22.0</commons-io.version>
-        <commons-lang3.version>3.21.0</commons-lang3.version>
+        <commons-lang3.version>3.22.0</commons-lang3.version>
         <commons-collections4.version>4.6.0</commons-collections4.version>
         <commons-text.version>1.15.0</commons-text.version>
         <commons.csv.version>1.14.1</commons.csv.version>
@@ -77,11 +74,10 @@
         <commons-crypto.version>1.2.0</commons-crypto.version>
 
         <!-- Serialization and Utilities -->
-        <jackson-2-bom.version>2.21.7</jackson-2-bom.version>
-        <jackson-bom.version>3.2.3</jackson-bom.version>
+        <jackson-bom.version>3.2.4</jackson-bom.version>
         <jackson-annotations.version>2.22</jackson-annotations.version>
         <fastjson.version>2.0.66</fastjson.version>
-        <lz4-java.version>1.14.0</lz4-java.version>
+        <lz4-java.version>1.14.1</lz4-java.version>
         <jetcache.version>2.8.0.RC</jetcache.version>
         <powerjob.version>5.1.7</powerjob.version>
         <asm.version>9.11.1</asm.version>
@@ -99,21 +95,18 @@
         <tianai-captcha.version>1.5.6</tianai-captcha.version>
         <nanocaptcha.version>3.0</nanocaptcha.version>
         <dubbo.version>3.3.6</dubbo.version>
-        <aws.sdk.version>2.55.15</aws.sdk.version>
-        <resilience4j.version>2.3.0</resilience4j.version>
-
-        <!-- Security and Auth -->
-        <spring-security-oauth2-authorization-server.version>7.1.2</spring-security-oauth2-authorization-server.version>
+        <aws.sdk.version>2.59.7</aws.sdk.version>
+        <resilience4j.version>2.4.0</resilience4j.version>
 
         <!-- API Documentation -->
-        <swagger-annotations-jakarta.version>2.2.55</swagger-annotations-jakarta.version>
-        <springdoc.version>3.2.0</springdoc.version>
+        <swagger-annotations.version>3.0.0</swagger-annotations.version>
+        <springdoc.version>3.2.1</springdoc.version>
 
         <!-- Testing -->
         <testcontainers.version>2.0.5</testcontainers.version>
         <datafaker.version>2.7.0</datafaker.version>
         <mockito.version>5.24.0</mockito.version>
-        <javers.version>7.11.10</javers.version>
+        <javers.version>7.13.0</javers.version>
         <jsonassert.version>1.5.3</jsonassert.version>
         <archunit.version>1.5.1</archunit.version>
         <spotbugs.version>4.10.5</spotbugs.version>
@@ -522,11 +515,6 @@
                 <version>${nanocaptcha.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-oauth2-authorization-server</artifactId>
-                <version>${spring-security-oauth2-authorization-server.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-database</artifactId>
                 <version>${loadup.framework.version}</version>
@@ -586,11 +574,6 @@
                 <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-task</artifactId>
                 <version>${loadup.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-data-redis</artifactId>
-                <version>${spring.boot.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
@@ -806,8 +789,8 @@
 
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
-                <artifactId>swagger-annotations-jakarta</artifactId>
-                <version>${swagger-annotations-jakarta.version}</version>
+                <artifactId>swagger-annotations</artifactId>
+                <version>${swagger-annotations.version}</version>
             </dependency>
             <!-- SpringDoc OpenAPI and Scalar UI for Spring MVC -->
             <dependency>

@@ -9,7 +9,7 @@
 直接依赖的外部坐标（不含测试与 provided scope）：
 
 - `com.fasterxml.jackson.core:jackson-annotations`
-- `io.swagger.core.v3:swagger-annotations-jakarta`
+- `io.swagger.core.v3:swagger-annotations`
 
 ## 实现入口
 

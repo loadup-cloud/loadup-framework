@@ -6,7 +6,7 @@
 [LoadUp Pay Roadmap](../loadup-pay/ROADMAP.md) 为主。
 
 Framework 是可选组件组成的 SDK；本目标不要求所有消费方部署 Kubernetes 或网关。
-Spring Boot 保持 4.1.x，Java 保持 25。此前试接入的 Cloud Alibaba 模块、BOM 导入及应用默认依赖已撤回；
+当前基线为 Spring Boot 4.2 和 Java 25。此前试接入的 Cloud Alibaba 模块、BOM 导入及应用默认依赖已撤回；
 已有可选 ConfigCenter Nacos binder 和 Dubbo 能力保留，后续配套迁移仍待实施。
 
 | 方向 | 后续工作 |

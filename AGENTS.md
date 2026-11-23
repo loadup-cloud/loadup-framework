@@ -361,10 +361,10 @@ multipart，下载可以返回流式二进制。`loadup-components-webmvc` 对 A
 
 ## 技术栈速查
 
-- Java **25** | Spring Boot **4.1.1** | MyBatis-Flex **1.11.8**（简单聚合读取、Tables/Mapper 生成、逻辑删除）
+- Java **25** | Spring Boot **4.2.0** | MyBatis-Flex **1.11.8**（简单聚合读取、Tables/Mapper 生成、逻辑删除）
 - MySQL 8.0+ | Caffeine（本地）| Redis/Redisson（分布式）
-- Resilience4j **2.3.0**（容错；版本由 loadup-framework-bom BOM 统一，跟随 Spring Cloud 2025.1.x）
-- JUnit **6.0.3**（由 Spring Boot BOM 管理）+ `loadup-testify-spring-boot-starter` + Testcontainers
+- Resilience4j **2.4.0**（容错；版本由 loadup-framework-bom BOM 统一，跟随 Spring Cloud 2026.0.x）
+- JUnit **6.1.3**（由 Spring Boot BOM 管理）+ `loadup-testify-spring-boot-starter` + Testcontainers
 - SpringDoc + Scalar | Spotless (Palantir Java Format) | Maven
 - License: **Apache-2.0**
 

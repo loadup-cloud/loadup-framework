@@ -32,7 +32,7 @@ LoadUp 是供其他应用消费的 SDK。本仓库聚合可复用模块，不包
 
 ## 快速接入
 
-项目当前使用 **Java 25**、 **Spring Boot 4.1.1** 和 **Maven**。在消费工程中先导入 BOM：
+项目当前使用 **Java 25**、 **Spring Boot 4.2.0** 和 **Maven**。在消费工程中先导入 BOM：
 
 ```xml
 <dependencyManagement>

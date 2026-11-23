@@ -47,4 +47,4 @@ provider filter 把 `CommonException` 转换为 `RpcException(BIZ_EXCEPTION, "lo
 
 依赖型 binder 的静态检查包括聚合入口、父 POM 相对路径、BOM 声明和依赖版本来源。运行验收由真实消费工程
 覆盖客户端与服务端、JWT 透传、protobuf 编解码、异常、超时和资源关闭。未运行的检查不得视为通过。
-Dubbo 3.3.6 与 Spring Boot 4.1.1 的运行时兼容性仍需真实启动验收。
+Dubbo 3.3.6 与 Spring Boot 4.2.0 的运行时兼容性仍需真实启动验收。
