@@ -1,4 +1,4 @@
-# DFS database binder
+# DFS Binder Database
 
 Transitional binder for small files when object storage is unavailable. S3 is recommended for production and large
 files.
@@ -22,12 +22,12 @@ capabilities only; presigned URLs and multipart upload are unsupported.
 <dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-components-dfs-binder-database</artifactId></dependency>
 ```
 
-通过 `loadup.dfs.binder-type` 选择 local、s3 或 database；业务层注入 `DfsService`。
+通过 `loadup.dfs.binder-type` 选择 local、s3 或 database；业务层注入 `DfsTemplate`。
 此 jar 负责接入具体技术实现；业务模块继续面向 API/facade 编程。
 
 ## 对外契约
 
-- [`DatabaseDfsProvider`](src/main/java/io/github/loadup/components/dfs/database/DatabaseDfsProvider.java) implements the `DfsProvider` SPI.
+- [`DatabaseDfsTemplate`](src/main/java/io/github/loadup/components/dfs/database/DatabaseDfsTemplate.java) implements `DfsTemplate`.
 - [`DfsFileInsert`](src/main/java/io/github/loadup/components/dfs/database/dataobject/DfsFileInsert.java) maps the `dfs_file` table.
 
 ## 自动装配

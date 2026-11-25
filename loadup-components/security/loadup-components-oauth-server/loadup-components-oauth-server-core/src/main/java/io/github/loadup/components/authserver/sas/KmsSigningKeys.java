@@ -26,44 +26,66 @@ import io.github.loadup.components.kms.KmsKeyRef;
 import io.github.loadup.components.kms.KmsTemplate;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.security.interfaces.RSAPublicKey;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.springframework.security.converter.RsaKeyConverters;
 
 final class KmsSigningKeys {
+    record Active(KmsKeyRef request, KmsKeyRef actual, RSAKey jwk) {}
+
+    private final KmsTemplate kms;
     private final KmsKeyRef activeKey;
-    private final String activeKid;
-    private final JWKSet publicKeys;
+    private final Map<String, JWK> pinned = new LinkedHashMap<>();
+    private final Set<String> aliases = new HashSet<>();
+    private final Active fixed;
 
     KmsSigningKeys(KmsTemplate kms, Signing signing) {
         if (signing == null || signing.getVerificationKeys() == null) {
             throw new IllegalArgumentException("Authorization signing configuration is required");
         }
+        this.kms = kms;
         activeKey = reference(signing.getActiveKey());
-        activeKid = kid(activeKey);
-        var metadata = kms.metadata(activeKey.name());
-        if (!activeKey.name().equals(metadata.name())
-                || !metadata.supportsSigning()
-                || activeKey.version() > metadata.latestVersion()) {
-            throw new IllegalArgumentException("Authorization active key must support signing at the pinned version");
-        }
-        var keys = new ArrayList<JWK>();
-        keys.add(publicKey(kms, activeKey));
-        var seen = new HashSet<String>();
-        seen.add(activeKid);
-        for (SigningKey retained : signing.getVerificationKeys()) {
-            var reference = reference(retained);
-            if (!seen.add(kid(reference))) {
-                throw new IllegalArgumentException("Duplicate authorization signing/verification key");
+        if (activeKey.version() == 0) {
+            fixed = null;
+            aliases.add(activeKey.name());
+            active();
+        } else {
+            var metadata = kms.metadata(activeKey.name());
+            if (!activeKey.name().equals(metadata.name())
+                    || !metadata.supportsSigning()
+                    || activeKey.version() > metadata.latestVersion()) {
+                throw new IllegalArgumentException(
+                        "Authorization active key must support signing at the pinned version");
             }
-            keys.add(publicKey(kms, reference));
+            var jwk = publicKey(kms, activeKey);
+            fixed = new Active(activeKey, activeKey, jwk);
+            pinned.put(jwk.getKeyID(), jwk);
         }
-        publicKeys = new JWKSet(keys);
+        for (SigningKey retained : signing.getVerificationKeys()) {
+            var key = reference(retained);
+            if (key.version() == 0) {
+                if (!aliases.add(key.name())) {
+                    throw new IllegalArgumentException("Duplicate authorization signing/verification key");
+                }
+                if (kms.verificationKeys(key.name()).isEmpty()) {
+                    throw new IllegalArgumentException("Retained alias has no trusted verification keys");
+                }
+            } else {
+                if (pinned.containsKey(kid(key))) {
+                    throw new IllegalArgumentException("Duplicate authorization signing/verification key");
+                }
+                pinned.put(kid(key), publicKey(kms, key));
+            }
+        }
     }
 
     private static KmsKeyRef reference(SigningKey key) {
-        if (key == null || key.getVersion() < 1) {
-            throw new IllegalArgumentException("Authorization keys require an explicit name and positive version");
+        if (key == null || key.getVersion() < 0) {
+            throw new IllegalArgumentException("Authorization keys require a name and a non-negative version");
         }
         return new KmsKeyRef(key.getName(), key.getVersion());
     }
@@ -78,22 +100,34 @@ final class KmsSigningKeys {
         if (rsa.getModulus().bitLength() < 2048 || rsa.getModulus().bitLength() > 4096) {
             throw new IllegalArgumentException("Authorization signing requires RSA-2048 through RSA-4096");
         }
+        return jwk(kid(key), rsa);
+    }
+
+    private static RSAKey jwk(String kid, RSAPublicKey rsa) {
         return new RSAKey.Builder(rsa)
-                .keyID(kid(key))
+                .keyID(kid)
                 .keyUse(KeyUse.SIGNATURE)
                 .algorithm(JWSAlgorithm.RS256)
                 .build();
     }
 
-    KmsKeyRef activeKey() {
-        return activeKey;
-    }
-
-    String activeKid() {
-        return activeKid;
+    Active active() {
+        if (fixed != null) {
+            return fixed;
+        }
+        var current = kms.currentSigningKey(activeKey.name());
+        return new Active(
+                activeKey, current.actual(), jwk(activeKey.name() + "." + current.fingerprint(), current.publicKey()));
     }
 
     JWKSet publicKeys() {
-        return publicKeys;
+        Map<String, JWK> keys = new LinkedHashMap<>(pinned);
+        for (String alias : aliases) {
+            for (var key : kms.verificationKeys(alias)) {
+                String id = alias + "." + key.fingerprint();
+                keys.put(id, jwk(id, key.publicKey()));
+            }
+        }
+        return new JWKSet(List.copyOf(keys.values()));
     }
 }

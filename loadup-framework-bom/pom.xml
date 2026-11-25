@@ -98,6 +98,11 @@
         <nanocaptcha.version>3.0</nanocaptcha.version>
         <dubbo.version>3.3.7</dubbo.version>
         <aws.sdk.version>2.59.7</aws.sdk.version>
+        <aliyun-kms.version>2.3.2</aliyun-kms.version>
+        <aliyun-credentials.version>1.0.8</aliyun-credentials.version>
+        <aliyun-tea-util.version>0.2.28</aliyun-tea-util.version>
+        <aliyun-tea.version>1.4.1</aliyun-tea.version>
+        <aliyun-tea-openapi.version>0.3.19</aliyun-tea-openapi.version>
         <resilience4j.version>2.4.0</resilience4j.version>
 
         <!-- API Documentation -->
@@ -488,27 +493,27 @@
 
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-cache</artifactId>
+                <artifactId>loadup-components-kv</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-cache-api</artifactId>
+                <artifactId>loadup-components-kv-api</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-cache-binder-caffeine</artifactId>
+                <artifactId>loadup-components-kv-binder-caffeine</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-cache-binder-redis</artifactId>
+                <artifactId>loadup-components-kv-binder-redis</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-cache-binder-jetcache</artifactId>
+                <artifactId>loadup-components-kv-binder-jetcache</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>
@@ -646,6 +651,11 @@
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-kms-keystore</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-kms-binder-openbao</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
@@ -653,6 +663,41 @@
                 <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-components-kms-binder-local</artifactId>
                 <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-kms-binder-database</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.loadup-cloud</groupId>
+                <artifactId>loadup-components-kms-binder-aliyun</artifactId>
+                <version>${loadup.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.aliyun</groupId>
+                <artifactId>kms20160120</artifactId>
+                <version>${aliyun-kms.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.aliyun</groupId>
+                <artifactId>credentials-java</artifactId>
+                <version>${aliyun-credentials.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.aliyun</groupId>
+                <artifactId>tea-util</artifactId>
+                <version>${aliyun-tea-util.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.aliyun</groupId>
+                <artifactId>tea</artifactId>
+                <version>${aliyun-tea.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.aliyun</groupId>
+                <artifactId>tea-openapi</artifactId>
+                <version>${aliyun-tea-openapi.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>

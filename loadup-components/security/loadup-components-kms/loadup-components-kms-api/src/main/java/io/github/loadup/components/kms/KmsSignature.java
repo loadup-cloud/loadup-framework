@@ -19,10 +19,23 @@ import io.github.loadup.commons.json.ToStringAsJson;
 import java.util.Base64;
 import java.util.Map;
 
-public record KmsSignature(String keyName, int version, KmsSignatureAlgorithm algorithm, byte[] bytes) {
+public record KmsSignature(
+        String keyName,
+        int version,
+        KmsSignatureAlgorithm algorithm,
+        byte[] bytes,
+        KmsProviderVersion providerVersion) {
+    public KmsSignature(String keyName, int version, KmsSignatureAlgorithm algorithm, byte[] bytes) {
+        this(keyName, version, algorithm, bytes, null);
+    }
+
     public KmsSignature {
         KmsKeyRef.validateName(keyName);
-        if (version < 1 || algorithm == null || bytes == null || bytes.length == 0 || bytes.length > 512) {
+        if ((providerVersion == null ? version < 1 : version != 0)
+                || algorithm == null
+                || bytes == null
+                || bytes.length == 0
+                || bytes.length > 512) {
             throw new IllegalArgumentException("Invalid KMS signature");
         }
         bytes = bytes.clone();
@@ -39,6 +52,11 @@ public record KmsSignature(String keyName, int version, KmsSignatureAlgorithm al
 
     String transitValue() {
         return "vault:v" + version + ":" + base64();
+    }
+
+    /** Retain this reference from the original, trusted operation for use after an alias is rebound. */
+    public KmsKeyRef keyRef() {
+        return new KmsKeyRef(keyName, version, providerVersion);
     }
 
     @Override

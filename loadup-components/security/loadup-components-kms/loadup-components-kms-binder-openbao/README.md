@@ -5,3 +5,5 @@
 通过既有 HTTP 组件访问独立 OpenBao Transit，传递引入 kms-api。显式选择 loadup.kms.binder=openbao 并启用 KMS。
 endpoint、SSL Bundle、凭证 Provider、输入上限及可选管理身份见 [KMS OpenBao 接入](../README.md#openbao-接入)。
 组件不部署、初始化或解封 OpenBao。管理身份与业务运行身份分开，管理 Bean 仅在显式启用时创建。
+
+历史公钥来自 Transit 保存的版本，由 `min_decryption_version` 控制可验签的最小版本。版本 0 使用当前密钥签发，binder 按公钥指纹调 Transit 验证允许的历史版本。

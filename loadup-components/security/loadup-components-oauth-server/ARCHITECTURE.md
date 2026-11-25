@@ -49,3 +49,5 @@ Pay 特定的旧 settings 清理由 Pay 自身迁移负责。
 管理变更在 client settings 中递增内部 revision（无需新增表列）。协议认证中的密码散列升级同样锁行并核对 revision，旧认证快照不能覆盖刚发生的停用、轮换或授权修改。散列重编码不改变 revision；签发前检查的是管理版本，避免将同一密码的并发重编码误判为凭证轮换。低层 RegisteredClientRepository 写入口用于协议集成，管理变更统一调用 OAuthClientManager。
 
 创建时尚无可锁定的行，因此在 PostgreSQL 事务内分别锁定 client ID 与注册 ID（按固定顺序的标识级 advisory lock），防止标准仓储 upsert 覆盖并发创建；唯一索引继续作为最终约束。修改已有记录使用行锁。这些锁只覆盖单次管理操作，不存在启动目录同步或全局注册锁。
+
+版本 0 的签名始终按 alias 选择当前密钥。动态 JWKS 通过 `KmsTemplate.verificationKeys(alias)` 读取仍受信任的版本，公钥指纹组成 JWT 的 `kid`。

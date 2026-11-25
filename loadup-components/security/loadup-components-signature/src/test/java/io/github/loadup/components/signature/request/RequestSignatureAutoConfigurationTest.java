@@ -21,16 +21,22 @@ import static org.mockito.Mockito.mock;
 import io.github.loadup.components.kms.KmsTemplate;
 import io.github.loadup.components.runtime.time.ClockAutoConfiguration;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 class RequestSignatureAutoConfigurationTest {
     private final ApplicationContextRunner context = new ApplicationContextRunner()
             .withConfiguration(
-                    AutoConfigurations.of(ClockAutoConfiguration.class, RequestSignatureAutoConfiguration.class))
-            .withBean(KmsTemplate.class, () -> mock(KmsTemplate.class));
+                    AutoConfigurations.of(ClockAutoConfiguration.class, RequestSignatureAutoConfiguration.class));
+
+    private final ApplicationContextRunner withCustomTemplate =
+            context.withBean(KmsTemplate.class, () -> mock(KmsTemplate.class));
 
     @Test
     void isOptIn() {
@@ -40,23 +46,52 @@ class RequestSignatureAutoConfigurationTest {
 
     @Test
     void requiresReplayProtectionWhenVerificationIsEnabled() {
-        context.withPropertyValues("loadup.components.signature.request.enabled=true")
+        withCustomTemplate
+                .withPropertyValues("loadup.components.signature.request.enabled=true")
                 .run(application -> assertThat(application).hasFailed());
     }
 
     @Test
-    void assemblesUsingExistingRedisTemplate() {
-        context.withPropertyValues("loadup.components.signature.request.enabled=true")
+    void assemblesUsingBinderRegisteredAfterRequestSignatureAndExistingRedisTemplate() {
+        context.withConfiguration(AutoConfigurations.of(TestKmsBinder.class))
+                .withPropertyValues("loadup.components.signature.request.enabled=true")
                 .withBean(StringRedisTemplate.class, () -> mock(StringRedisTemplate.class))
                 .run(application -> assertThat(application)
+                        .hasSingleBean(KmsTemplate.class)
                         .hasSingleBean(RequestSigner.class)
                         .hasSingleBean(RequestVerifier.class)
                         .hasSingleBean(RedisRequestNonceStore.class));
     }
 
     @Test
+    void binderDefersToApplicationKmsTemplate() {
+        var customTemplate = mock(KmsTemplate.class);
+        context.withConfiguration(AutoConfigurations.of(TestKmsBinder.class))
+                .withPropertyValues(
+                        "loadup.components.signature.request.enabled=true",
+                        "loadup.components.signature.request.verification-enabled=false")
+                .withBean(KmsTemplate.class, () -> customTemplate)
+                .run(application -> {
+                    assertThat(application).hasSingleBean(RequestSigner.class).hasSingleBean(KmsTemplate.class);
+                    assertThat(application.getBean(KmsTemplate.class)).isSameAs(customTemplate);
+                });
+    }
+
+    @Test
+    void enablingRequestsWithoutKmsFailsStartup() {
+        context.withPropertyValues(
+                        "loadup.components.signature.request.enabled=true",
+                        "loadup.components.signature.request.verification-enabled=false")
+                .run(application -> assertThat(application)
+                        .getFailure()
+                        .hasRootCauseInstanceOf(NoSuchBeanDefinitionException.class)
+                        .hasStackTraceContaining(KmsTemplate.class.getName()));
+    }
+
+    @Test
     void customAtomicStoreOverridesRedisAdapter() {
-        context.withPropertyValues("loadup.components.signature.request.enabled=true")
+        withCustomTemplate
+                .withPropertyValues("loadup.components.signature.request.enabled=true")
                 .withBean(StringRedisTemplate.class, () -> mock(StringRedisTemplate.class))
                 .withBean(RequestNonceStore.class, () -> (key, ttl) -> true)
                 .run(application -> assertThat(application)
@@ -66,12 +101,22 @@ class RequestSignatureAutoConfigurationTest {
 
     @Test
     void outboundOnlyWorksWithoutRedisOnClasspath() {
-        context.withPropertyValues(
+        withCustomTemplate
+                .withPropertyValues(
                         "loadup.components.signature.request.enabled=true",
                         "loadup.components.signature.request.verification-enabled=false")
                 .withClassLoader(new FilteredClassLoader("org.springframework.data.redis"))
                 .run(application -> assertThat(application)
                         .hasSingleBean(RequestSigner.class)
                         .doesNotHaveBean(RequestVerifier.class));
+    }
+
+    @AutoConfiguration(after = RequestSignatureAutoConfiguration.class)
+    static class TestKmsBinder {
+        @Bean
+        @ConditionalOnMissingBean(KmsTemplate.class)
+        KmsTemplate testKmsTemplate() {
+            return mock(KmsTemplate.class);
+        }
     }
 }

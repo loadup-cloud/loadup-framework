@@ -1,11 +1,10 @@
 # DFS API
 
-The facade module defines `DfsService`, `DfsProvider`, immutable file models, and the Spring Boot auto-configuration
-that wires one provider into `DefaultDfsService`.
+The API defines `DfsTemplate` and immutable file models. The selected binder registers a `DfsTemplate` bean.
 
-Business code should use only `DfsService` and `io.github.loadup.components.dfs.model` types. The API covers object
+Business code should use only `DfsTemplate` and `io.github.loadup.components.dfs.model` types. The API covers object
 CRUD, metadata, presigned download URLs, and the multipart upload lifecycle. Multipart and presigned operations are
-optional provider capabilities and report `UnsupportedOperationException` when unavailable.
+optional binder capabilities and report `UnsupportedOperationException` when unavailable.
 
 ## 接入步骤
 
@@ -15,27 +14,19 @@ optional provider capabilities and report `UnsupportedOperationException` when u
 <dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-components-dfs-api</artifactId></dependency>
 ```
 
-通过 `loadup.dfs.binder-type` 选择 local、s3 或 database；业务层注入 `DfsService`。
+通过 `loadup.dfs.binder-type` 选择 local、s3 或 database；业务层注入 `DfsTemplate`。
 运行时还需在应用侧引入一种对应 binder；仅有接口 jar 不会创建实际后端能力。
-
-## 配置入口
-
-| 前缀         | 配置类                                                                              |
-|--------------|-------------------------------------------------------------------------------------|
-| `loadup.dfs` | [`DfsProperties`](src/main/java/io/github/loadup/components/dfs/DfsProperties.java) |
 
 ## 对外契约
 
-- [`DfsService`](src/main/java/io/github/loadup/components/dfs/DfsService.java)
-- [`DfsProvider`](src/main/java/io/github/loadup/components/dfs/DfsProvider.java)
+- [`DfsTemplate`](src/main/java/io/github/loadup/components/dfs/DfsTemplate.java)
 
-业务代码注入 `DfsService` 后，可调用 `upload(FileUploadRequest)`、`download(fileId)`、
+业务代码注入 `DfsTemplate` 后，可调用 `upload(FileUploadRequest)`、`download(fileId)`、
 `getMetadata(fileId)` 和 `delete(fileId)`。需要临时下载链接或分片上传时，先确认所选 binder
 支持对应能力；当前能力差异见父模块 [README](../README.md)。
 
 ## 自动装配
 
-- [`DfsAutoConfiguration`](src/main/java/io/github/loadup/components/dfs/autoconfigure/DfsAutoConfiguration.java)
-    - 启用条件：`@ConditionalOnSingleCandidate(DfsProvider.class)`。
+各 binder 按 `loadup.dfs.binder-type` 匹配并注册 `DfsTemplate`。应用可自行提供一个 `DfsTemplate` Bean。
 
-设计边界与装配路径见 [ARCHITECTURE.md](ARCHITECTURE.md)。
+设计与装配路径见 [ARCHITECTURE.md](ARCHITECTURE.md)。

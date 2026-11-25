@@ -33,9 +33,6 @@ public record AsyncResultProperties(
         int maxRetained) {
     public AsyncResultProperties {
         binderType = binderType == null ? "local" : binderType;
-        if (!binderType.equals("local") && !binderType.equals("redis")) {
-            throw new IllegalArgumentException("Unknown async result binder");
-        }
         if (enabled) {
             AsyncReplyKey.required(namespace, 128);
         }

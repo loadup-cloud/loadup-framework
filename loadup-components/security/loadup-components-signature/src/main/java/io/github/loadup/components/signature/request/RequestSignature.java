@@ -18,6 +18,7 @@ package io.github.loadup.components.signature.request;
 import io.github.loadup.commons.json.ToStringAsJson;
 import io.github.loadup.components.kms.KmsSignatureAlgorithm;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,7 +47,7 @@ public record RequestSignature(RequestSignatureParameters parameters, String sig
         }
         String version = single(headers, "X-Key-Version");
         String timestamp = single(headers, "X-Timestamp");
-        if (!version.matches("[1-9][0-9]{0,9}") || !timestamp.matches("0|[1-9][0-9]{0,17}")) {
+        if (!version.matches("0|[1-9][0-9]{0,9}") || !timestamp.matches("0|[1-9][0-9]{0,17}")) {
             throw malformed();
         }
         try {
@@ -57,7 +58,8 @@ public record RequestSignature(RequestSignatureParameters parameters, String sig
                             Integer.parseInt(version),
                             KmsSignatureAlgorithm.valueOf(single(headers, "X-Signature-Algorithm")),
                             Long.parseLong(timestamp),
-                            single(headers, "X-Nonce")),
+                            single(headers, "X-Nonce"),
+                            header(headers, "X-Key-Fingerprint", false)),
                     single(headers, "X-Signature"));
         } catch (IllegalArgumentException invalid) {
             throw new RequestSignatureException(RequestSignatureException.Code.MALFORMED);
@@ -65,6 +67,10 @@ public record RequestSignature(RequestSignatureParameters parameters, String sig
     }
 
     private static String single(Map<String, ? extends List<String>> headers, String name) {
+        return header(headers, name, true);
+    }
+
+    private static String header(Map<String, ? extends List<String>> headers, String name, boolean required) {
         String result = null;
         for (var entry : headers.entrySet()) {
             if (entry.getKey() != null && entry.getKey().equalsIgnoreCase(name)) {
@@ -79,7 +85,7 @@ public record RequestSignature(RequestSignatureParameters parameters, String sig
                 result = values.getFirst();
             }
         }
-        if (result == null) {
+        if (required && result == null) {
             throw malformed();
         }
         return result;
@@ -90,7 +96,7 @@ public record RequestSignature(RequestSignatureParameters parameters, String sig
     }
 
     public Map<String, String> toHeaders() {
-        return Map.of(
+        var headers = new HashMap<>(Map.of(
                 "X-Signature-Protocol",
                 RequestSignatureCanonicalizer.PROTOCOL,
                 "X-App-Id",
@@ -106,7 +112,11 @@ public record RequestSignature(RequestSignatureParameters parameters, String sig
                 "X-Nonce",
                 parameters.nonce(),
                 "X-Signature",
-                signature);
+                signature));
+        if (parameters.keyFingerprint() != null) {
+            headers.put("X-Key-Fingerprint", parameters.keyFingerprint());
+        }
+        return Map.copyOf(headers);
     }
 
     @Override

@@ -15,10 +15,10 @@
  */
 package io.github.loadup.components.dfs.local.autoconfigure;
 
-import io.github.loadup.components.dfs.DfsProvider;
+import io.github.loadup.components.dfs.DfsTemplate;
 import io.github.loadup.components.dfs.autoconfigure.DfsAutoConfiguration;
 import io.github.loadup.components.dfs.local.LocalDfsProperties;
-import io.github.loadup.components.dfs.local.LocalDfsProvider;
+import io.github.loadup.components.dfs.local.LocalDfsTemplate;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -31,8 +31,8 @@ import org.springframework.context.annotation.Bean;
 public class LocalDfsAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(DfsProvider.class)
-    public DfsProvider localDfsProvider(LocalDfsProperties properties) {
-        return new LocalDfsProvider(properties);
+    @ConditionalOnMissingBean(DfsTemplate.class)
+    public LocalDfsTemplate dfsTemplate(LocalDfsProperties properties) {
+        return new LocalDfsTemplate(properties);
     }
 }

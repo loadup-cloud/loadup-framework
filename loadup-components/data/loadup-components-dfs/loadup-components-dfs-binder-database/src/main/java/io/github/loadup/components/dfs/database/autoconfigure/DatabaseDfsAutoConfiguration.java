@@ -15,9 +15,9 @@
  */
 package io.github.loadup.components.dfs.database.autoconfigure;
 
-import io.github.loadup.components.dfs.DfsProvider;
+import io.github.loadup.components.dfs.DfsTemplate;
 import io.github.loadup.components.dfs.autoconfigure.DfsAutoConfiguration;
-import io.github.loadup.components.dfs.database.DatabaseDfsProvider;
+import io.github.loadup.components.dfs.database.DatabaseDfsTemplate;
 import io.github.loadup.components.dfs.database.mapper.DfsFileInsertMapper;
 import java.time.Clock;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -40,9 +40,9 @@ import tools.jackson.databind.ObjectMapper;
 public class DatabaseDfsAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(DfsProvider.class)
-    public DfsProvider databaseDfsProvider(
+    @ConditionalOnMissingBean(DfsTemplate.class)
+    public DatabaseDfsTemplate dfsTemplate(
             NamedParameterJdbcTemplate jdbc, DfsFileInsertMapper files, ObjectMapper objectMapper, Clock clock) {
-        return new DatabaseDfsProvider(jdbc, files, objectMapper, clock);
+        return new DatabaseDfsTemplate(jdbc, files, objectMapper, clock);
     }
 }

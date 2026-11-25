@@ -1,21 +1,20 @@
 # DFS architecture
 
-DFS uses a single-provider API/binder structure:
+Each binder directly implements and registers `DfsTemplate`.
 
 ```text
-Business code -> DfsService -> DfsProvider -> one selected binder -> storage system
+Business code → DfsTemplate implementation → storage system
 ```
 
-`DfsService` and the immutable models are the facade. `DfsProvider` is the only binder SPI. `DfsAutoConfiguration`
-creates `DefaultDfsService` only for a single provider, so binder selection is a build/deployment decision rather than
-runtime routing.
+Each binder declares its own `loadup.dfs.binder-type` value. Optional consumers such as File evaluate their bean conditions after
+`DfsAutoConfiguration`. Each binder orders its auto-configuration before that shared point.
 
 The S3 binder uses AWS SDK `S3Client` and `S3Presigner`, persists user metadata as object metadata, supports presigned
 GET URLs, and exposes the S3 multipart lifecycle. It accepts AWS S3, MinIO, OSS, COS, and LocalStack through endpoint
 and path-style settings.
 
 The local binder stores objects and sidecar metadata below the configured root. The database binder stores small objects
-and JSON metadata in `dfs_file`, using Spring Data JDBC and explicit audit fields. Database storage is retained as a
+and JSON metadata in `dfs_file`, using Spring JDBC and explicit audit fields. Database storage is retained as a
 transitional implementation and is not the production default.
 
 Download responses implement `AutoCloseable`; callers must close them after consuming the stream. Binders own their
@@ -23,7 +22,7 @@ clients and never expose SDK types through the facade.
 
 ## 分层与调用路径
 
-`DefaultDfsService` 把对象操作委派给唯一的 `DfsProvider`；预签名与分片操作取决于 provider 能力。
+预签名与分片操作取决于所选 binder 的能力。
 
 ```text
 loadup-components-dfs

@@ -25,7 +25,7 @@ flowchart LR
 
 - `RequestSigner.sign(identity, content)` 自动生成时间与随机 nonce，返回可发送的签名头。
 - `RequestVerifier.verify(trustedIdentity, content, signature)` 完成校验和 nonce 消费；只有正常返回才允许进入业务。
-- `RequestSigningIdentity` 由业务绑定提供名称、明确版本、允许算法和接收方；客户端元数据不是受信身份。
+- `RequestSigningIdentity` 由业务绑定提供 alias、可选版本、允许算法和接收方；客户端元数据不是受信身份。
 - `RequestContent` 保存实际原始请求目标与字节，防御性复制，不依赖 Servlet。
 - `RequestSignatureParameters` 及 `RequestSignature` 表达版本化协议，不在通用业务 DTO 中塞入签名字段。
 - `RequestNonceStore` 是唯一存储 seam，其契约要求跨实例原子占位和 TTL；Redis 是现有 Spring Data Redis 的小型 Adapter。
@@ -47,7 +47,7 @@ audience 约束接收服务，减少相同密钥跨服务部署的误用；它�
 Content-Type 纳入签名，body 处理方式不能被任意改变。未覆盖的 HTTP 头不能用于决定业务权限、租户或改变报文含义；影响业务的参数放入签名
 body/target 或通过认证身份确定。内容编码/代理重写须在消费工程规定并测试，首版按最终交给业务处理的相同原始内容验签。
 
-明确版本是前置条件：签名前必须知道版本以将其纳入原文。KMS 不缓存最新版本，本协议不擅自轮换/选择 latest；应用需协调接收方公钥登记和允许版本列表。
+正整数版本的签名延续原有字节格式。版本 0 的请求签名覆盖实际公钥指纹，发送方校验返回签名与所选公钥是否一致。接收方把可信 alias 和公钥指纹交给 KMS binder 验签。
 
 ## 安全执行顺序
 

@@ -33,6 +33,7 @@ public final class RequestSignatureCanonicalizer {
                 + "app-id:" + parameters.appId() + "\n"
                 + "audience:" + parameters.audience() + "\n"
                 + "key-version:" + parameters.keyVersion() + "\n"
+                + (parameters.keyFingerprint() == null ? "" : "key-fingerprint:" + parameters.keyFingerprint() + "\n")
                 + "algorithm:" + parameters.algorithm().name() + "\n"
                 + "method:" + content.method() + "\n"
                 + "path:" + content.path() + "\n"

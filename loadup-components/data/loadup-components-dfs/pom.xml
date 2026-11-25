@@ -10,7 +10,7 @@
 
     <artifactId>loadup-components-dfs</artifactId>
     <packaging>pom</packaging>
-    <name>ComponentDFS</name>
+    <name>LoadUp Components DFS</name>
     <description>File storage integration with local, database and S3 backends.</description>
 
     <modules>

@@ -136,8 +136,8 @@ class RequestSignatureContractTest {
         }
         assertThatThrownBy(() -> new RequestSigningIdentity("app", "api", null, ALGORITHM))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> new RequestSigningIdentity("app", "api", KmsKeyRef.latest("merchant-key"), ALGORITHM))
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThat(new RequestSigningIdentity("app", "api", new KmsKeyRef("merchant-key"), ALGORITHM).key())
+                .isEqualTo(new KmsKeyRef("merchant-key"));
         assertThatThrownBy(() -> new RequestSigningIdentity("app", "api", IDENTITY.key(), null))
                 .isInstanceOf(IllegalArgumentException.class);
     }
@@ -166,6 +166,9 @@ class RequestSignatureContractTest {
         assertMalformed(() -> RequestSignature.fromHeaders(null));
         assertMalformed(() -> RequestSignature.fromHeaders(Map.of()));
         var valid = signature(PARAMETERS, 256);
+        var zeroVersionWithoutFingerprint = headers(valid);
+        zeroVersionWithoutFingerprint.put("X-Key-Version", List.of("0"));
+        assertMalformed(() -> RequestSignature.fromHeaders(zeroVersionWithoutFingerprint));
         for (Map.Entry<String, String> replacement : Map.of(
                         "X-Signature-Protocol",
                         "loadup-request-v2",

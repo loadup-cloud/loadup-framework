@@ -123,7 +123,7 @@ CREATE INDEX IF NOT EXISTS idx_global_unique_created_at ON global_unique (create
 -- END loadup-components/reliability/loadup-components-globalunique/src/main/resources/db/schema/global_unique.sql
 
 -- BEGIN loadup-components/reliability/loadup-components-task/src/main/resources/db/task/pg/schema.sql
--- SHA-256: 730a50763c836ea8477d51d648d0cfb0b0c8e6bd0abf0d168541bf4a7a82a52b
+-- SHA-256: 263824f8b0f0e7a111fad565b325d3eeb943a3b1cacaa2f32b744601209a6825
 -- PostgreSQL initial schema; installed by the consuming application.
 CREATE TABLE loadup_task (
     id VARCHAR(64) COLLATE "C" PRIMARY KEY,
@@ -154,6 +154,18 @@ CREATE TABLE loadup_task_operation (
 );
 CREATE INDEX idx_loadup_task_operation_task_id ON loadup_task_operation(task_id);
 -- END loadup-components/reliability/loadup-components-task/src/main/resources/db/task/pg/schema.sql
+
+-- BEGIN loadup-components/security/loadup-components-kms/loadup-components-kms-binder-database/src/main/resources/db/schema/kms_key_file.sql
+-- SHA-256: 4b96b56aace48c5a5169b30b840d093e9c018b210bfe7bbb04293c5770837477
+CREATE TABLE IF NOT EXISTS kms_key_file
+(
+    id         VARCHAR(64) PRIMARY KEY,
+    content    BYTEA        NOT NULL CHECK (octet_length(content) BETWEEN 1 AND 4194304),
+    created_at TIMESTAMP(6) NOT NULL,
+    updated_at TIMESTAMP(6) NOT NULL,
+    deleted    BOOLEAN      NOT NULL DEFAULT FALSE
+);
+-- END loadup-components/security/loadup-components-kms/loadup-components-kms-binder-database/src/main/resources/db/schema/kms_key_file.sql
 
 -- BEGIN loadup-modules/loadup-modules-audit/loadup-modules-audit-core/src/main/resources/db/migration/framework/audit/V20261002000001__create_audit_event.sql
 -- SHA-256: d3b86adb792efc83d7d0b3bd209261ef7c8a7c3b0061e8b6c061c0f210aa989d
@@ -672,3 +684,174 @@ CREATE TABLE notification_delivery
 );
 CREATE INDEX idx_notification_delivery_status ON notification_delivery (status, created_at);
 -- END loadup-modules/loadup-modules-notification/loadup-modules-notification-core/src/main/resources/db/migration/framework/notification/V20261104100000__create_notification_requests.sql
+
+-- BEGIN loadup-modules/loadup-modules-form/loadup-modules-form-core/src/main/resources/db/migration/framework/form/V20261123000001__create_form.sql
+-- SHA-256: 555019064deafc0d737d3dbe210549a16a22c47c378f92447c29a9fde16e6442
+CREATE TABLE form_field (
+    id VARCHAR(36) PRIMARY KEY,
+    namespace VARCHAR(64) NOT NULL,
+    field_key VARCHAR(64) NOT NULL,
+    value_type VARCHAR(16) NOT NULL,
+    multiple BOOLEAN NOT NULL,
+    value_set_code VARCHAR(255),
+    unit VARCHAR(64),
+    system_owned BOOLEAN NOT NULL,
+    UNIQUE (namespace, field_key)
+);
+
+CREATE TABLE form_field_version (
+    id VARCHAR(36) PRIMARY KEY,
+    field_id VARCHAR(36) NOT NULL REFERENCES form_field(id),
+    version_no INTEGER NOT NULL CHECK (version_no > 0),
+    definition TEXT NOT NULL,
+    UNIQUE (field_id, version_no)
+);
+
+CREATE TABLE form_definition_version (
+    id VARCHAR(36) PRIMARY KEY,
+    namespace VARCHAR(64) NOT NULL,
+    kind VARCHAR(16) NOT NULL CHECK (kind IN ('GROUP', 'TEMPLATE')),
+    code VARCHAR(64) NOT NULL,
+    version_no INTEGER NOT NULL CHECK (version_no > 0),
+    status VARCHAR(16) NOT NULL CHECK (status IN ('DRAFT', 'PUBLISHED', 'RETIRED')),
+    row_version BIGINT NOT NULL CHECK (row_version > 0),
+    definition TEXT NOT NULL,
+    UNIQUE (namespace, kind, code, version_no)
+);
+
+CREATE TABLE form_release (
+    id VARCHAR(36) PRIMARY KEY,
+    template_version_id VARCHAR(36) NOT NULL UNIQUE REFERENCES form_definition_version(id),
+    snapshot TEXT NOT NULL,
+    schema_hash CHAR(64) NOT NULL,
+    published_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE form_instance (
+    id VARCHAR(36) PRIMARY KEY,
+    release_id VARCHAR(36) NOT NULL REFERENCES form_release(id),
+    namespace VARCHAR(64) NOT NULL,
+    actor VARCHAR(256) NOT NULL,
+    start_key VARCHAR(128) NOT NULL,
+    submit_key VARCHAR(128),
+    row_version BIGINT NOT NULL CHECK (row_version > 0),
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    submitted_at TIMESTAMP WITH TIME ZONE,
+    UNIQUE (namespace, actor, start_key),
+    CHECK ((submit_key IS NULL) = (submitted_at IS NULL))
+);
+
+CREATE TABLE form_instance_item (
+    instance_id VARCHAR(36) NOT NULL REFERENCES form_instance(id),
+    item_key VARCHAR(128) NOT NULL,
+    PRIMARY KEY (instance_id, item_key)
+);
+
+CREATE TABLE form_instance_value (
+    instance_id VARCHAR(36) NOT NULL,
+    item_key VARCHAR(128) NOT NULL,
+    field_version_id VARCHAR(36) NOT NULL REFERENCES form_field_version(id),
+    value_json TEXT NOT NULL,
+    value_origin VARCHAR(24) NOT NULL,
+    PRIMARY KEY (instance_id, item_key, field_version_id),
+    FOREIGN KEY (instance_id, item_key) REFERENCES form_instance_item(instance_id, item_key)
+);
+-- END loadup-modules/loadup-modules-form/loadup-modules-form-core/src/main/resources/db/migration/framework/form/V20261123000001__create_form.sql
+
+-- BEGIN loadup-modules/loadup-modules-approval/loadup-modules-approval-core/src/main/resources/db/migration/framework/approval/V20261125000001__create_approval.sql
+-- SHA-256: 95e26a92549582afbc3b385ffa628d3dc7bda318acce803e88996a74f6a86746
+CREATE TABLE approval_definition (
+    id varchar(36) PRIMARY KEY,
+    app_code varchar(64) NOT NULL,
+    flow_key varchar(64) NOT NULL,
+    version integer NOT NULL CHECK (version > 0),
+    name varchar(200) NOT NULL,
+    status varchar(16) NOT NULL CHECK (status IN ('DRAFT', 'ACTIVE', 'RETIRED')),
+    spec_jsonb jsonb NOT NULL,
+    spec_hash char(64) NOT NULL,
+    revision bigint NOT NULL CHECK (revision > 0),
+    created_by varchar(200) NOT NULL,
+    updated_by varchar(200) NOT NULL,
+    published_by varchar(200),
+    published_at timestamptz,
+    retired_by varchar(200),
+    retired_at timestamptz,
+    UNIQUE (app_code, flow_key, version),
+    UNIQUE (app_code, flow_key, id)
+);
+
+CREATE UNIQUE INDEX approval_definition_draft_idx ON approval_definition (app_code, flow_key) WHERE status = 'DRAFT';
+CREATE UNIQUE INDEX approval_definition_active_idx ON approval_definition (app_code, flow_key) WHERE status = 'ACTIVE';
+
+CREATE TABLE approval_instance (
+    id varchar(36) PRIMARY KEY,
+    definition_id varchar(36) NOT NULL,
+    app_code varchar(64) NOT NULL,
+    flow_key varchar(64) NOT NULL,
+    business_type varchar(64) NOT NULL,
+    business_id varchar(128) NOT NULL,
+    business_version varchar(64) NOT NULL,
+    content_hash varchar(128) NOT NULL,
+    title varchar(200) NOT NULL,
+    applicant_id varchar(200) NOT NULL,
+    start_key varchar(128) NOT NULL,
+    request_hash char(64) NOT NULL,
+    status varchar(16) NOT NULL CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED', 'WITHDRAWN')),
+    revision bigint NOT NULL CHECK (revision > 0),
+    created_at timestamptz NOT NULL DEFAULT now(),
+    finished_at timestamptz,
+    delivery_task_id varchar(64),
+    delivered_at timestamptz,
+    FOREIGN KEY (app_code, flow_key, definition_id) REFERENCES approval_definition(app_code, flow_key, id),
+    UNIQUE (app_code, start_key),
+    CHECK ((status = 'PENDING') = (finished_at IS NULL))
+);
+
+CREATE UNIQUE INDEX approval_instance_live_idx ON approval_instance
+    (app_code, flow_key, business_type, business_id, business_version) WHERE status = 'PENDING';
+CREATE INDEX approval_instance_business_idx ON approval_instance
+    (app_code, flow_key, business_type, business_id, business_version);
+CREATE INDEX approval_instance_applicant_idx ON approval_instance (app_code, applicant_id, created_at DESC);
+
+CREATE TABLE approval_instance_step (
+    id varchar(36) PRIMARY KEY,
+    instance_id varchar(36) NOT NULL REFERENCES approval_instance(id),
+    step_key varchar(64) NOT NULL,
+    step_order integer NOT NULL CHECK (step_order > 0),
+    step_name varchar(200) NOT NULL,
+    rule_snapshot jsonb NOT NULL,
+    assignee_user_id varchar(200),
+    assignee_role_id varchar(200),
+    status varchar(16) NOT NULL CHECK (status IN ('WAITING', 'PENDING', 'APPROVED', 'REJECTED', 'CANCELLED')),
+    activated_at timestamptz,
+    completed_at timestamptz,
+    completed_by varchar(200),
+    UNIQUE (instance_id, id),
+    UNIQUE (instance_id, step_key),
+    UNIQUE (instance_id, step_order),
+    CHECK ((assignee_user_id IS NULL) <> (assignee_role_id IS NULL))
+);
+
+CREATE UNIQUE INDEX approval_step_live_idx ON approval_instance_step (instance_id) WHERE status = 'PENDING';
+CREATE INDEX approval_step_user_idx ON approval_instance_step (assignee_user_id) WHERE status = 'PENDING';
+CREATE INDEX approval_step_role_idx ON approval_instance_step (assignee_role_id) WHERE status = 'PENDING';
+
+CREATE TABLE approval_action (
+    id varchar(36) PRIMARY KEY,
+    instance_id varchar(36) NOT NULL REFERENCES approval_instance(id),
+    step_id varchar(36),
+    action varchar(24) NOT NULL CHECK (action IN ('SUBMITTED', 'ASSIGNEE_CHANGED', 'APPROVED_STEP', 'REJECTED_STEP', 'WITHDRAWN')),
+    actor_id varchar(200) NOT NULL,
+    matched_principal varchar(205),
+    reason varchar(2000),
+    changes_jsonb jsonb NOT NULL DEFAULT '[]'::jsonb,
+    command_key varchar(128) NOT NULL,
+    command_hash char(64) NOT NULL,
+    result_revision bigint NOT NULL,
+    result_jsonb jsonb NOT NULL,
+    occurred_at timestamptz NOT NULL DEFAULT now(),
+    FOREIGN KEY (instance_id, step_id) REFERENCES approval_instance_step(instance_id, id),
+    UNIQUE (instance_id, command_key),
+    UNIQUE (instance_id, result_revision)
+);
+-- END loadup-modules/loadup-modules-approval/loadup-modules-approval-core/src/main/resources/db/migration/framework/approval/V20261125000001__create_approval.sql

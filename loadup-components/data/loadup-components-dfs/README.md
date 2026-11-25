@@ -1,6 +1,6 @@
 # LoadUp DFS
 
-DFS is a Mode A storage component. Application code depends on `DfsService`; the selected binder is supplied separately.
+Business code injects `DfsTemplate`. Each binder registers its own implementation.
 
 ## Maven
 
@@ -19,8 +19,8 @@ Import the LoadUp BOM, then add `loadup-components-dfs-api` and exactly one bind
 
 ## Configuration
 
-Set `loadup.dfs.binder-type` to `local`, `s3`, or `database`. Binder-specific settings live under
-`loadup.dfs.binder.<type>`.
+Select a binder by its identifier in `loadup.dfs.binder-type`. The built-in binders use `local`, `s3`, and `database`.
+Each additional binder supplies its own identifier. Binder-specific settings live under `loadup.dfs.binder.<type>`.
 
 ```yaml
 loadup:

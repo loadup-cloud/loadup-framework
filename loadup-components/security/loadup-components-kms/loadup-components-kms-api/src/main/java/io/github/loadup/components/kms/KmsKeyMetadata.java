@@ -26,7 +26,31 @@ public record KmsKeyMetadata(
         boolean supportsEncryption,
         boolean supportsDecryption,
         boolean supportsSigning,
-        Map<Integer, String> publicKeys) {
+        Map<Integer, String> publicKeys,
+        KmsProviderVersion providerVersion) {
+    public KmsKeyMetadata(
+            String name,
+            String type,
+            int latestVersion,
+            int minEncryptionVersion,
+            int minDecryptionVersion,
+            boolean supportsEncryption,
+            boolean supportsDecryption,
+            boolean supportsSigning,
+            Map<Integer, String> publicKeys) {
+        this(
+                name,
+                type,
+                latestVersion,
+                minEncryptionVersion,
+                minDecryptionVersion,
+                supportsEncryption,
+                supportsDecryption,
+                supportsSigning,
+                publicKeys,
+                null);
+    }
+
     public KmsKeyMetadata {
         publicKeys = Map.copyOf(publicKeys);
     }

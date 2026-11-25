@@ -22,8 +22,8 @@ public record RequestSigningIdentity(String appId, String audience, KmsKeyRef ke
     public RequestSigningIdentity {
         RequestSignatureParameters.validateIdentifier(appId);
         RequestSignatureParameters.validateIdentifier(audience);
-        if (key == null || key.version() < 1 || algorithm == null) {
-            throw new IllegalArgumentException("A trusted key with an explicit version and algorithm is required");
+        if (key == null || key.providerVersion() != null || algorithm == null) {
+            throw new IllegalArgumentException("A trusted alias or numbered key and an algorithm are required");
         }
     }
 }

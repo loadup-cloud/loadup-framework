@@ -2,9 +2,13 @@
 
 ## 目标与边界
 
-为 LoadUp 消费工程提供 OpenBao Transit 的小型 Java 门面。复用现有 HTTP
-技术栈，不建设独立密钥平台，不存储私钥、不依赖业务数据库、不接管认证登录与续租。首版仅针对一个已确认后端，采用单一
-jar；未来确有第二后端再评估 SPI/binder，当前不提前增加层次。
+业务侧通过 `KmsTemplate` 引用密钥。local binder 从应用 Bean 或资源加载 KeyStore，database binder 从 PostgreSQL 加载受密码保护的 PKCS#12 文件，两者分别加载和装配，共用独立的 [KeyStore 模块](loadup-components-kms-keystore/ARCHITECTURE.md) 执行 JCA 密码操作。文件生命周期见 [Database binder 架构](loadup-components-kms-binder-database/ARCHITECTURE.md)。
+
+Aliyun binder 通过阿里云 KMS OpenAPI 执行密码操作，按业务 alias 使用当前密钥，历史操作支持可信保存的云端密钥版本引用。见 [Aliyun binder 架构](loadup-components-kms-binder-aliyun/ARCHITECTURE.md)。
+
+## OpenBao Transit 后端
+
+OpenBao 将密钥材料保留在服务端。下图及后续章节描述其运行和管理身份、协议与资源生命周期。
 
 ```mermaid
 flowchart LR

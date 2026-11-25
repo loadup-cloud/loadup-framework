@@ -51,7 +51,10 @@ loadup:
       max-retained: 100000
 ```
 
-默认 enabled=false，binder-type=local，启用时 namespace 必填。max-pending 同时限制每个 Template
+默认 enabled=false，binder-type=local，启用时 namespace 必填。应用选择 binder 后，默认 Template 需要一个可注入的
+`AsyncResultProvider`。缺少 Provider 或存在多个无法选定的 Provider 时，应用启动失败。也可以提供自己的 `AsyncResultTemplate`。
+
+max-pending 同时限制每个 Template
 的本地等待数量和仍在执行的发送回调；等待超时不会立即归还尚未退出的回调执行许可，防止阻塞回调无限累积。max-retained 仅限制
 Local 存储条数，满时拒绝注册，不驱逐正在等待的记录。Redis 的存储预算由 TTL、应用流量和 Redis 容量共同控制，不提供全局条数配额。结果大小按业务
 payload 的 UTF-8 字节数计算；MQ 和 HTTP 入口还应配置自身载荷上限。

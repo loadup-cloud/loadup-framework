@@ -8,8 +8,8 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-dfs-api</artifactId>
-    <name>ComponentDFS API</name>
-    <description>File storage facade, provider contracts and metadata types.</description>
+    <name>LoadUp Components DFS API</name>
+    <description>File storage operations and metadata types.</description>
 
     <dependencies>
         <dependency>

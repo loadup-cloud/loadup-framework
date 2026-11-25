@@ -20,11 +20,30 @@ import java.time.DateTimeException;
 import java.time.Instant;
 
 public record RequestSignatureParameters(
-        String appId, String audience, int keyVersion, KmsSignatureAlgorithm algorithm, long timestamp, String nonce) {
+        String appId,
+        String audience,
+        int keyVersion,
+        KmsSignatureAlgorithm algorithm,
+        long timestamp,
+        String nonce,
+        String keyFingerprint) {
+    public RequestSignatureParameters(
+            String appId,
+            String audience,
+            int keyVersion,
+            KmsSignatureAlgorithm algorithm,
+            long timestamp,
+            String nonce) {
+        this(appId, audience, keyVersion, algorithm, timestamp, nonce, null);
+    }
+
     public RequestSignatureParameters {
         validateIdentifier(appId);
         validateIdentifier(audience);
-        if (keyVersion < 1
+        if (keyVersion < 0
+                || (keyVersion == 0
+                        ? keyFingerprint == null || !keyFingerprint.matches("[A-Za-z0-9_-]{43}")
+                        : keyFingerprint != null)
                 || algorithm == null
                 || timestamp < 0
                 || nonce == null

@@ -49,14 +49,14 @@ public final class OpenBaoKmsTemplate implements KmsTemplate, AutoCloseable {
     }
 
     private static void requireKey(KmsKeyRef key) {
-        if (key == null) {
+        if (key == null || key.providerVersion() != null) {
             throw new IllegalArgumentException("key is required");
         }
     }
 
     private static void expected(KmsKeyRef key, String name, int version) {
         requireKey(key);
-        if (!key.name().equals(name) || (key.version() != 0 && key.version() != version)) {
+        if (version < 1 || !key.name().equals(name) || (key.version() != 0 && key.version() != version)) {
             throw new IllegalArgumentException("Signature or ciphertext does not match expected key");
         }
     }

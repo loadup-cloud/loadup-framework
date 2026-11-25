@@ -88,26 +88,29 @@ class KmsSigningFailureTest {
                 .thenThrow(new KmsException(KmsException.Code.INVALID_REQUEST))
                 .thenReturn(
                         new KmsSignature("unexpected-key", 1, KmsSignatureAlgorithm.RSA_SHA256_PKCS1, new byte[] {1}));
-        TestKeyStores.runner(file).withBean(KmsTemplate.class, () -> kms).run(context -> {
-            assertThat(context).hasNotFailed().doesNotHaveBean(LocalKmsKeyStore.class);
-            var encoder = context.getBean(JwtEncoder.class);
-            var now = Instant.now();
-            var claims = JwtClaimsSet.builder()
-                    .subject("client")
-                    .issuedAt(now)
-                    .expiresAt(now.plusSeconds(60))
-                    .build();
-            for (int attempt = 0; attempt < 2; attempt++) {
-                assertThatThrownBy(() -> encoder.encode(JwtEncoderParameters.from(claims)))
-                        .isInstanceOf(JwtEncodingException.class)
-                        .hasMessage("KMS authorization token signing failed")
-                        .hasNoCause();
-            }
-            verify(kms, times(2)).sign(eq(key), eq(KmsSignatureAlgorithm.RSA_SHA256_PKCS1), any(byte[].class));
-            assertThatThrownBy(() -> encoder.encode(JwtEncoderParameters.from(
-                            JwsHeader.with(SignatureAlgorithm.RS512).build(), claims)))
-                    .isInstanceOf(JwtEncodingException.class);
-        });
+        TestKeyStores.runner(file)
+                .withPropertyValues("loadup.security.auth-server.signing.active-key.version=1")
+                .withBean(KmsTemplate.class, () -> kms)
+                .run(context -> {
+                    assertThat(context).hasNotFailed().doesNotHaveBean(LocalKmsKeyStore.class);
+                    var encoder = context.getBean(JwtEncoder.class);
+                    var now = Instant.now();
+                    var claims = JwtClaimsSet.builder()
+                            .subject("client")
+                            .issuedAt(now)
+                            .expiresAt(now.plusSeconds(60))
+                            .build();
+                    for (int attempt = 0; attempt < 2; attempt++) {
+                        assertThatThrownBy(() -> encoder.encode(JwtEncoderParameters.from(claims)))
+                                .isInstanceOf(JwtEncodingException.class)
+                                .hasMessage("KMS authorization token signing failed")
+                                .hasNoCause();
+                    }
+                    verify(kms, times(2)).sign(eq(key), eq(KmsSignatureAlgorithm.RSA_SHA256_PKCS1), any(byte[].class));
+                    assertThatThrownBy(() -> encoder.encode(JwtEncoderParameters.from(
+                                    JwsHeader.with(SignatureAlgorithm.RS512).build(), claims)))
+                            .isInstanceOf(JwtEncodingException.class);
+                });
     }
 
     @Test

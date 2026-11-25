@@ -27,12 +27,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
-@AutoConfiguration(
-        afterName = {
-            "io.github.loadup.components.kms.KmsAutoConfiguration",
-            "io.github.loadup.components.kms.LocalKmsAutoConfiguration",
-            "org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfiguration"
-        })
+@AutoConfiguration(afterName = "org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfiguration")
 @ConditionalOnProperty(
         prefix = "loadup.components.signature",
         name = "enabled",

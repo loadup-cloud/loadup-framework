@@ -18,7 +18,8 @@ package io.github.loadup.components.dfs.test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-import io.github.loadup.components.dfs.DfsProvider;
+import io.github.loadup.components.dfs.DfsTemplate;
+import io.github.loadup.components.dfs.s3.S3DfsTemplate;
 import io.github.loadup.components.dfs.s3.autoconfigure.S3DfsAutoConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -38,11 +39,22 @@ class S3DfsAssemblyContractTest {
                         .hasNotFailed()
                         .hasSingleBean(S3Client.class)
                         .hasSingleBean(S3Presigner.class)
-                        .hasSingleBean(DfsProvider.class));
+                        .hasSingleBean(DfsTemplate.class));
     }
 
     @Test
-    void partialCredentialPairsAreRejectedBeforeProvidersArePublished() {
+    void customTemplateBacksOffBeforeCreatingS3Clients() {
+        var template = mock(DfsTemplate.class);
+        contexts.withBean(DfsTemplate.class, () -> template)
+                .run(context -> assertThat(context)
+                        .hasNotFailed()
+                        .hasSingleBean(DfsTemplate.class)
+                        .doesNotHaveBean(S3Client.class)
+                        .doesNotHaveBean(S3Presigner.class));
+    }
+
+    @Test
+    void partialCredentialPairsPreventTemplateCreation() {
         for (String credential : new String[] {"access-key", "secret-key"}) {
             contexts.withPropertyValues("loadup.dfs.binder.s3." + credential + "=synthetic")
                     .run(context -> assertThat(context).hasFailed());
@@ -50,20 +62,22 @@ class S3DfsAssemblyContractTest {
     }
 
     @Test
-    void callerOwnedSdkClientsAndProviderAreKeptAndDifferentBinderDisablesAssembly() {
+    void callerOwnedSdkClientsAreUsedByTheSelectedBinder() {
         var client = mock(S3Client.class);
         var presigner = mock(S3Presigner.class);
-        var provider = mock(DfsProvider.class);
         contexts.withBean(S3Client.class, () -> client)
                 .withBean(S3Presigner.class, () -> presigner)
-                .withBean(DfsProvider.class, () -> provider)
                 .run(context -> {
                     assertThat(context.getBean(S3Client.class)).isSameAs(client);
                     assertThat(context.getBean(S3Presigner.class)).isSameAs(presigner);
-                    assertThat(context.getBean(DfsProvider.class)).isSameAs(provider);
+                    assertThat(context).hasSingleBean(S3DfsTemplate.class);
                 });
+    }
+
+    @Test
+    void differentBinderDisablesAssembly() {
         contexts.withPropertyValues("loadup.dfs.binder-type=local")
                 .run(context ->
-                        assertThat(context).doesNotHaveBean(S3Client.class).doesNotHaveBean(DfsProvider.class));
+                        assertThat(context).doesNotHaveBean(S3Client.class).doesNotHaveBean(DfsTemplate.class));
     }
 }

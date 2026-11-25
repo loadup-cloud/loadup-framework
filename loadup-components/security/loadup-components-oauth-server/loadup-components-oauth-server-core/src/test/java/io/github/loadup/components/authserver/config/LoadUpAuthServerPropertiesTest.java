@@ -68,7 +68,7 @@ class LoadUpAuthServerPropertiesTest {
             LoadUpAuthServerProperties properties = context.getBean(LoadUpAuthServerProperties.class);
             assertThat(properties.getIssuer()).isEqualTo("http://localhost:8080");
             assertThat(properties.getSigning().getActiveKey().getName()).isNull();
-            assertThat(properties.getSigning().getActiveKey().getVersion()).isEqualTo(1);
+            assertThat(properties.getSigning().getActiveKey().getVersion()).isZero();
             assertThat(properties.getSigning().getVerificationKeys()).isEmpty();
         });
     }

@@ -15,16 +15,24 @@
  */
 package io.github.loadup.components.kms;
 
-public record KmsKeyRef(String name, int version) {
+public record KmsKeyRef(String name, int version, KmsProviderVersion providerVersion) {
+    public KmsKeyRef(String name) {
+        this(name, 0);
+    }
+
+    public KmsKeyRef(String name, int version) {
+        this(name, version, null);
+    }
+
     public KmsKeyRef {
         validateName(name);
-        if (version < 0) {
-            throw new IllegalArgumentException("key version must not be negative");
+        if (version < 0 || (providerVersion != null && version != 0)) {
+            throw new IllegalArgumentException("Invalid KMS key version");
         }
     }
 
     public static KmsKeyRef latest(String name) {
-        return new KmsKeyRef(name, 0);
+        return new KmsKeyRef(name);
     }
 
     static void validateName(String name) {

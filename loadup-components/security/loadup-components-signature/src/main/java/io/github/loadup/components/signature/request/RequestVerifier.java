@@ -53,12 +53,9 @@ public final class RequestVerifier {
             throw new RequestSignatureException(RequestSignatureException.Code.IDENTITY_MISMATCH);
         }
         Instant expiresAt = validateTime(parameters);
-        var value = new KmsSignature(
-                trusted.key().name(),
-                parameters.keyVersion(),
-                parameters.algorithm(),
-                Base64.getDecoder().decode(signature.signature()));
-        if (!kms.verify(trusted.key(), value, RequestSignatureCanonicalizer.canonicalize(content, parameters))) {
+        var input = RequestSignatureCanonicalizer.canonicalize(content, parameters);
+        var bytes = Base64.getDecoder().decode(signature.signature());
+        if (!verifySignature(trusted, parameters, input, bytes)) {
             throw new RequestSignatureException(RequestSignatureException.Code.INVALID_SIGNATURE);
         }
         validateTime(parameters);
@@ -80,6 +77,17 @@ public final class RequestVerifier {
         if (!claimed) {
             throw new RequestSignatureException(RequestSignatureException.Code.REPLAY);
         }
+    }
+
+    private boolean verifySignature(
+            RequestSigningIdentity trusted, RequestSignatureParameters parameters, byte[] input, byte[] signature) {
+        String alias = trusted.key().name();
+        if (parameters.keyFingerprint() == null) {
+            var key = trusted.key();
+            var value = new KmsSignature(alias, key.version(), trusted.algorithm(), signature);
+            return kms.verify(key, value, input);
+        }
+        return kms.verify(alias, parameters.keyFingerprint(), trusted.algorithm(), input, signature);
     }
 
     private Instant validateTime(RequestSignatureParameters parameters) {

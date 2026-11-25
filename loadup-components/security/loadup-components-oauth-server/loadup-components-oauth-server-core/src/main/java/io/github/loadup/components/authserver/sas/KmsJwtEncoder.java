@@ -25,6 +25,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import io.github.loadup.components.kms.KmsSignatureAlgorithm;
 import io.github.loadup.components.kms.KmsTemplate;
+import io.github.loadup.components.kms.KmsVerificationKey;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
@@ -42,11 +43,15 @@ import org.springframework.security.oauth2.jwt.JwtEncodingException;
 final class KmsJwtEncoder implements JwtEncoder {
     private static final Set<String> TIMESTAMPS = Set.of("iat", "nbf", "exp");
     private final KmsSigningKeys keys;
-    private final JWSSigner signer;
+    private final KmsTemplate kms;
 
     KmsJwtEncoder(KmsTemplate kms, KmsSigningKeys keys) {
         this.keys = keys;
-        signer = new JWSSigner() {
+        this.kms = kms;
+    }
+
+    private JWSSigner signer(KmsSigningKeys.Active active) {
+        return new JWSSigner() {
             private final JCAContext context = new JCAContext();
 
             @Override
@@ -62,17 +67,25 @@ final class KmsJwtEncoder implements JwtEncoder {
             @Override
             public Base64URL sign(JWSHeader header, byte[] signingInput) throws JOSEException {
                 if (!JWSAlgorithm.RS256.equals(header.getAlgorithm())
-                        || !keys.activeKid().equals(header.getKeyID())
+                        || !active.jwk().getKeyID().equals(header.getKeyID())
                         || !header.isBase64URLEncodePayload()
                         || (header.getCriticalParams() != null
                                 && !header.getCriticalParams().isEmpty())) {
                     throw new JOSEException("Unsupported authorization token header");
                 }
-                var signature = kms.sign(keys.activeKey(), KmsSignatureAlgorithm.RSA_SHA256_PKCS1, signingInput);
-                if (!keys.activeKey().name().equals(signature.keyName())
-                        || keys.activeKey().version() != signature.version()
+                var signature = kms.sign(active.request(), KmsSignatureAlgorithm.RSA_SHA256_PKCS1, signingInput);
+                if (signature == null
+                        || !active.actual().equals(signature.keyRef())
                         || signature.algorithm() != KmsSignatureAlgorithm.RSA_SHA256_PKCS1) {
                     throw new JOSEException("KMS returned an unexpected signing identity");
+                }
+                if (active.request().version() == 0
+                        && !KmsVerificationKey.verify(
+                                active.jwk().toRSAPublicKey(),
+                                signature.algorithm(),
+                                signingInput,
+                                signature.bytes())) {
+                    throw new JOSEException("KMS signature does not match the selected public key");
                 }
                 return Base64URL.encode(signature.bytes());
             }
@@ -81,14 +94,21 @@ final class KmsJwtEncoder implements JwtEncoder {
 
     @Override
     public Jwt encode(JwtEncoderParameters parameters) throws JwtEncodingException {
+        KmsSigningKeys.Active active;
+        try {
+            active = keys.active();
+        } catch (RuntimeException failure) {
+            throw new JwtEncodingException("KMS authorization token signing failed");
+        }
         var supplied = parameters.getJwsHeader();
         if (supplied != null
                 && (!SignatureAlgorithm.RS256.equals(supplied.getAlgorithm())
-                        || (supplied.getKeyId() != null && !keys.activeKid().equals(supplied.getKeyId())))) {
+                        || (supplied.getKeyId() != null
+                                && !active.jwk().getKeyID().equals(supplied.getKeyId())))) {
             throw new JwtEncodingException("Authorization tokens require RS256 and the active KMS key");
         }
         var headers = (supplied == null ? JwsHeader.with(SignatureAlgorithm.RS256) : JwsHeader.from(supplied))
-                .keyId(keys.activeKid())
+                .keyId(active.jwk().getKeyID())
                 .build();
         var claims = parameters.getClaims();
         try {
@@ -108,7 +128,7 @@ final class KmsJwtEncoder implements JwtEncoder {
                 }
             }
             var token = new SignedJWT(JWSHeader.parse(joseHeaders), builder.build());
-            token.sign(signer);
+            token.sign(signer(active));
             return new Jwt(
                     token.serialize(),
                     claims.getIssuedAt(),

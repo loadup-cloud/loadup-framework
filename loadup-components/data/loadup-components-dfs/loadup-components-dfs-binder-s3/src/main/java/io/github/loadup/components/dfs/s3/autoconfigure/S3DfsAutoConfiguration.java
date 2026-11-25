@@ -15,10 +15,10 @@
  */
 package io.github.loadup.components.dfs.s3.autoconfigure;
 
-import io.github.loadup.components.dfs.DfsProvider;
+import io.github.loadup.components.dfs.DfsTemplate;
 import io.github.loadup.components.dfs.autoconfigure.DfsAutoConfiguration;
 import io.github.loadup.components.dfs.s3.S3DfsProperties;
-import io.github.loadup.components.dfs.s3.S3DfsProvider;
+import io.github.loadup.components.dfs.s3.S3DfsTemplate;
 import java.net.URI;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -42,6 +42,7 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 @ConditionalOnClass(S3Client.class)
 @ConditionalOnProperty(prefix = "loadup.dfs", name = "binder-type", havingValue = "s3")
 @EnableConfigurationProperties(S3DfsProperties.class)
+@ConditionalOnMissingBean(DfsTemplate.class)
 public class S3DfsAutoConfiguration {
 
     private static AwsCredentialsProvider credentialsProvider(S3DfsProperties properties) {
@@ -95,8 +96,7 @@ public class S3DfsAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(DfsProvider.class)
-    public DfsProvider s3DfsProvider(S3Client dfsS3Client, S3Presigner dfsS3Presigner, S3DfsProperties properties) {
-        return new S3DfsProvider(dfsS3Client, dfsS3Presigner, properties);
+    public S3DfsTemplate dfsTemplate(S3Client dfsS3Client, S3Presigner dfsS3Presigner, S3DfsProperties properties) {
+        return new S3DfsTemplate(dfsS3Client, dfsS3Presigner, properties);
     }
 }

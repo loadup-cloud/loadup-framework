@@ -1,0 +1,35 @@
+# Cache Redis Binder
+
+使用 Spring Data Redis 实现 Spring Cache 的 `CacheManager`。消费工程需要同时选择 `loadup-components-cache-api` 与本
+binder，并提供可用的 `RedisConnectionFactory`。
+
+## 引入
+
+```xml
+<dependency>
+  <groupId>io.github.loadup-cloud</groupId>
+  <artifactId>loadup-components-kv-binder-redis</artifactId>
+</dependency>
+```
+
+## 配置
+
+```yaml
+loadup:
+  cache:
+    type: redis
+    binder:
+      redis:
+        key-prefix: 'loadup:cache:'
+spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
+```
+
+连接地址、认证、Sentinel/Cluster 等连接设置由 Spring Boot 的 `spring.data.redis.*` 和 `RedisConnectionFactory` 管理。
+`loadup.cache.binder.redis.key-prefix` 仅控制缓存 key 前缀；TTL、空值和随机过期由公共的 `loadup.cache.*`
+配置管理。内部设计见 [ARCHITECTURE.md](ARCHITECTURE.md)。
+
+Spring 装配使用 `loadup-components-runtime` 提供的应用 JSON mapper / Clock；消费者通过参数注入，不创建默认兜底实例。独立测试需显式提供所需 Bean。

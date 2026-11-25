@@ -15,7 +15,6 @@
  */
 package io.github.loadup.components.authserver.sas;
 
-import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import io.github.loadup.components.authserver.jwt.LoadUpJwtTokenCustomizer;
@@ -48,10 +47,6 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 
 @AutoConfiguration(
-        afterName = {
-            "io.github.loadup.components.kms.LocalKmsAutoConfiguration",
-            "io.github.loadup.components.kms.KmsAutoConfiguration"
-        },
         beforeName = {
             "org.springframework.boot.security.oauth2.server.authorization.autoconfigure.servlet.OAuth2AuthorizationServerAutoConfiguration",
             "org.springframework.boot.security.oauth2.server.authorization.autoconfigure.servlet.OAuth2AuthorizationServerJwtAutoConfiguration",
@@ -92,20 +87,20 @@ public class SasAuthServerAutoConfiguration {
     }
 
     @Bean
-    KmsSigningKeys loadUpSigningKeys(ObjectProvider<KmsTemplate> kms, LoadUpAuthServerProperties properties) {
-        return new KmsSigningKeys(kms.getObject(), properties.getSigning());
+    KmsSigningKeys loadUpSigningKeys(KmsTemplate kms, LoadUpAuthServerProperties properties) {
+        return new KmsSigningKeys(kms, properties.getSigning());
     }
 
     @Bean
     @ConditionalOnMissingBean(JWKSource.class)
     JWKSource<SecurityContext> jwkSource(KmsSigningKeys keys) {
-        return new ImmutableJWKSet<>(keys.publicKeys());
+        return (selector, context) -> selector.select(keys.publicKeys());
     }
 
     @Bean
     @ConditionalOnMissingBean(JwtEncoder.class)
-    JwtEncoder loadUpJwtEncoder(ObjectProvider<KmsTemplate> kms, KmsSigningKeys keys) {
-        return new KmsJwtEncoder(kms.getObject(), keys);
+    JwtEncoder loadUpJwtEncoder(KmsTemplate kms, KmsSigningKeys keys) {
+        return new KmsJwtEncoder(kms, keys);
     }
 
     @Bean

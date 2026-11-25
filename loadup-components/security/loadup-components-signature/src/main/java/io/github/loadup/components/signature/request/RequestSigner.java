@@ -17,6 +17,7 @@ package io.github.loadup.components.signature.request;
 
 import io.github.loadup.components.kms.KmsException;
 import io.github.loadup.components.kms.KmsTemplate;
+import io.github.loadup.components.kms.KmsVerificationKey;
 import java.security.SecureRandom;
 import java.time.Clock;
 import java.util.Base64;
@@ -39,20 +40,27 @@ public final class RequestSigner {
         properties.validateContent(content);
         byte[] nonce = new byte[24];
         random.nextBytes(nonce);
+        var current = identity.key().version() == 0
+                ? kms.currentSigningKey(identity.key().name())
+                : null;
         var parameters = new RequestSignatureParameters(
                 identity.appId(),
                 identity.audience(),
                 identity.key().version(),
                 identity.algorithm(),
                 clock.instant().getEpochSecond(),
-                Base64.getUrlEncoder().withoutPadding().encodeToString(nonce));
-        var signed = kms.sign(
-                identity.key(), identity.algorithm(), RequestSignatureCanonicalizer.canonicalize(content, parameters));
-        if (signed == null
-                || !identity.key().name().equals(signed.keyName())
-                || identity.key().version() != signed.version()
-                || identity.algorithm() != signed.algorithm()) {
+                Base64.getUrlEncoder().withoutPadding().encodeToString(nonce),
+                current == null ? null : current.fingerprint());
+        var input = RequestSignatureCanonicalizer.canonicalize(content, parameters);
+        var signed = kms.sign(identity.key(), identity.algorithm(), input);
+        var expected = current == null ? identity.key() : current.actual();
+        if (signed == null || !expected.equals(signed.keyRef()) || identity.algorithm() != signed.algorithm()) {
             throw new KmsException(KmsException.Code.INVALID_RESPONSE);
+        }
+        if (current != null) {
+            if (!KmsVerificationKey.verify(current.publicKey(), signed.algorithm(), input, signed.bytes())) {
+                throw new KmsException(KmsException.Code.INVALID_RESPONSE);
+            }
         }
         try {
             return new RequestSignature(parameters, signed.base64());

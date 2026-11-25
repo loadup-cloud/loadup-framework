@@ -25,6 +25,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.nimbusds.jose.crypto.RSASSAVerifier;
+import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jwt.SignedJWT;
 import io.github.loadup.components.authserver.config.TestKeyStores;
 import io.github.loadup.components.authserver.properties.LoadUpAuthServerProperties.Signing;
@@ -81,7 +82,7 @@ class KmsJwtBoundaryTest {
     }
 
     @Test
-    void missingSigningConfigurationAndUnpinnedReferencesAreRejected() {
+    void missingSigningConfigurationAndUnpinnedRetainedReferencesAreRejected() {
         var kms = kms();
         assertThatThrownBy(() -> new KmsSigningKeys(kms, null)).isInstanceOf(IllegalArgumentException.class);
         var noRetainedKeys = signing();
@@ -91,19 +92,28 @@ class KmsJwtBoundaryTest {
         noActiveKey.setActiveKey(null);
         assertThatThrownBy(() -> new KmsSigningKeys(kms, noActiveKey)).isInstanceOf(IllegalArgumentException.class);
 
-        var unpinned = signing();
-        unpinned.getActiveKey().setVersion(0);
-        assertThatThrownBy(() -> new KmsSigningKeys(kms, unpinned))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Authorization keys require an explicit name and positive version");
         var retained = signing();
         var invalidKey = new SigningKey();
         invalidKey.setName("old");
-        invalidKey.setVersion(0);
+        invalidKey.setVersion(-1);
         retained.setVerificationKeys(List.of(invalidKey));
         assertThatThrownBy(() -> new KmsSigningKeys(kms, retained))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Authorization keys require an explicit name and positive version");
+                .hasMessage("Authorization keys require a name and a non-negative version");
+    }
+
+    @Test
+    void defaultActiveVersionFollowsTheAliasLatestVersion() {
+        var kms = local;
+        var signing = signing();
+        signing.getActiveKey().setVersion(0);
+
+        var keys = new KmsSigningKeys(kms, signing);
+
+        assertThat(keys.active().actual()).isEqualTo(ACTIVE);
+        assertThat(keys.publicKeys().getKeys())
+                .extracting("keyID")
+                .anyMatch(id -> id.toString().startsWith("auth-current."));
     }
 
     @Test
@@ -160,6 +170,54 @@ class KmsJwtBoundaryTest {
     }
 
     @Test
+    void rotatedSigningKeyKeepsHistoricalTokensVerifiableAcrossRestart() throws Exception {
+        var oldDirectory = Files.createDirectories(directory.resolve("old"));
+        var newDirectory = Files.createDirectories(directory.resolve("new"));
+        var oldStore = TestKeyStores.load(TestKeyStores.create(oldDirectory, "auth-current"));
+        var newStorePath = TestKeyStores.create(newDirectory, "auth-current");
+        var newStore = TestKeyStores.load(newStorePath);
+        var oldKms = new LocalKmsTemplate(oldStore, TestKeyStores.PASSWORD.toCharArray());
+        var oldKeys = new KmsSigningKeys(oldKms, signing("auth-current", 0));
+        var oldEncoder = new KmsJwtEncoder(oldKms, oldKeys);
+        var oldToken = SignedJWT.parse(
+                oldEncoder.encode(JwtEncoderParameters.from(claims())).getTokenValue());
+        var oldPublicKey =
+                (RSAPublicKey) oldStore.getCertificate("auth-current").getPublicKey();
+        assertThat(oldToken.verify(new RSASSAVerifier(oldPublicKey))).isTrue();
+
+        var replacement = new LocalKmsTemplate(newStore, TestKeyStores.PASSWORD.toCharArray());
+        var replacementEncoder =
+                new KmsJwtEncoder(replacement, new KmsSigningKeys(replacement, signing("auth-current", 0)));
+        var newToken = SignedJWT.parse(
+                replacementEncoder.encode(JwtEncoderParameters.from(claims())).getTokenValue());
+        var newPublicKey =
+                (RSAPublicKey) newStore.getCertificate("auth-current").getPublicKey();
+
+        assertThat(newToken.verify(new RSASSAVerifier(newPublicKey))).isTrue();
+        newStore.setCertificateEntry("auth-current.history.old", oldStore.getCertificate("auth-current"));
+        try (var output = Files.newOutputStream(newStorePath)) {
+            newStore.store(output, TestKeyStores.PASSWORD.toCharArray());
+        }
+        var reloadedStore = TestKeyStores.load(newStorePath);
+        var restartedKms = new LocalKmsTemplate(reloadedStore, TestKeyStores.PASSWORD.toCharArray());
+        var restartedKeys = new KmsSigningKeys(restartedKms, signing("auth-current", 0));
+        assertThat(restartedKeys.publicKeys().getKeys()).hasSize(2);
+        var retainedOldKey = (RSAKey)
+                restartedKeys.publicKeys().getKeyByKeyId(oldToken.getHeader().getKeyID());
+        assertThat(oldToken.verify(new RSASSAVerifier(retainedOldKey.toRSAPublicKey())))
+                .isTrue();
+        var retainedNewKey = (RSAKey)
+                restartedKeys.publicKeys().getKeyByKeyId(newToken.getHeader().getKeyID());
+        assertThat(newToken.verify(new RSASSAVerifier(retainedNewKey.toRSAPublicKey())))
+                .isTrue();
+        var segments = newToken.serialize().split("\\.");
+        segments[2] = (segments[2].charAt(0) == 'A' ? "B" : "A") + segments[2].substring(1);
+        var tampered = SignedJWT.parse(String.join(".", segments));
+        assertThat(tampered.verify(new RSASSAVerifier(retainedNewKey.toRSAPublicKey())))
+                .isFalse();
+    }
+
+    @Test
     void criticalAndUnencodedPayloadHeadersFailBeforeKmsSigning() {
         var kms = signingKms();
         var encoder = new KmsJwtEncoder(kms, new KmsSigningKeys(kms, signing()));
@@ -198,9 +256,13 @@ class KmsJwtBoundaryTest {
     }
 
     private static Signing signing() {
+        return signing(ACTIVE.name(), ACTIVE.version());
+    }
+
+    private static Signing signing(String alias, int version) {
         var active = new SigningKey();
-        active.setName(ACTIVE.name());
-        active.setVersion(ACTIVE.version());
+        active.setName(alias);
+        active.setVersion(version);
         var signing = new Signing();
         signing.setActiveKey(active);
         return signing;

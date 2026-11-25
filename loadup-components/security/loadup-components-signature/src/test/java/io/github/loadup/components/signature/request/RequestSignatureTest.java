@@ -18,19 +18,23 @@ package io.github.loadup.components.signature.request;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import io.github.loadup.components.kms.KmsException;
 import io.github.loadup.components.kms.KmsKeyRef;
+import io.github.loadup.components.kms.KmsProviderVersion;
 import io.github.loadup.components.kms.KmsSignature;
 import io.github.loadup.components.kms.KmsSignatureAlgorithm;
 import io.github.loadup.components.kms.KmsTemplate;
+import io.github.loadup.components.kms.KmsVerificationKey;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.Signature;
+import java.security.interfaces.RSAPublicKey;
 import java.security.spec.MGF1ParameterSpec;
 import java.security.spec.PSSParameterSpec;
 import java.time.Clock;
@@ -39,14 +43,18 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
 class RequestSignatureTest {
@@ -133,12 +141,115 @@ class RequestSignatureTest {
         var signed = signer.sign(identity, content);
         var parsed = RequestSignature.fromHeaders(headers(signed));
         assertThat(parsed).isEqualTo(signed);
+        assertThat(signed.toHeaders()).containsEntry("X-Key-Version", "1").doesNotContainKey("X-Key-Fingerprint");
         assertThat(signed.parameters().nonce()).hasSize(32);
         verifier.verify(identity, content, parsed);
         assertThat(claims).hasSize(1);
         assertThat(claims.values()).containsExactly(Duration.ofSeconds(330));
         assertThatThrownBy(() -> verifier.verify(identity, content, parsed))
                 .hasMessage("Request signature rejected: REPLAY");
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void aliasRotationDelegatesHistoricalVerificationToBinderAndRejectsTampering(boolean nativeVersion)
+            throws Exception {
+        var generator = KeyPairGenerator.getInstance("RSA");
+        generator.initialize(2048);
+        var first = generator.generateKeyPair();
+        var second = generator.generateKeyPair();
+        var currentVersion = new AtomicInteger(1);
+        var keys = Map.of(1, first, 2, second);
+        var aliasKms = mock(KmsTemplate.class);
+        when(aliasKms.currentSigningKey("merchant-key")).thenAnswer(ignored -> {
+            int version = currentVersion.get();
+            var ref = new KmsKeyRef(
+                    "merchant-key",
+                    nativeVersion ? 0 : version,
+                    nativeVersion ? new KmsProviderVersion("cmk-" + version, "generation-" + version) : null);
+            return new KmsVerificationKey(ref, (RSAPublicKey) keys.get(version).getPublic());
+        });
+        when(aliasKms.sign(any(), any(), any())).thenAnswer(invocation -> {
+            int version = currentVersion.get();
+            var jca = signature(invocation.getArgument(1));
+            jca.initSign(keys.get(version).getPrivate());
+            jca.update((byte[]) invocation.getArgument(2));
+            return new KmsSignature(
+                    "merchant-key",
+                    nativeVersion ? 0 : version,
+                    invocation.getArgument(1),
+                    jca.sign(),
+                    nativeVersion ? new KmsProviderVersion("cmk-" + version, "generation-" + version) : null);
+        });
+        var aliasIdentity = new RequestSigningIdentity(
+                identity.appId(), identity.audience(), new KmsKeyRef("merchant-key"), identity.algorithm());
+        var signer = new RequestSigner(aliasKms, clock, properties);
+        var oldRequest = signer.sign(aliasIdentity, content);
+        currentVersion.set(2);
+        var newRequest = signer.sign(aliasIdentity, content);
+        Mockito.verify(aliasKms, Mockito.times(2))
+                .sign(Mockito.eq(new KmsKeyRef("merchant-key")), Mockito.eq(identity.algorithm()), any());
+
+        assertThat(oldRequest.parameters().keyVersion()).isZero();
+        assertThat(newRequest.parameters().keyVersion()).isZero();
+        assertThat(oldRequest.toHeaders()).containsEntry("X-Key-Version", "0");
+        assertThat(newRequest.toHeaders()).containsEntry("X-Key-Version", "0");
+        assertThat(oldRequest.toHeaders().get("X-Key-Fingerprint")).matches("[A-Za-z0-9_-]{43}");
+        assertThat(newRequest.toHeaders().get("X-Key-Fingerprint")).matches("[A-Za-z0-9_-]{43}");
+        assertThat(oldRequest.toHeaders().get("X-Key-Fingerprint"))
+                .isEqualTo(KmsVerificationKey.fingerprint((RSAPublicKey) first.getPublic()));
+        assertThat(newRequest.toHeaders().get("X-Key-Fingerprint"))
+                .isEqualTo(KmsVerificationKey.fingerprint((RSAPublicKey) second.getPublic()));
+        assertThat(oldRequest.toHeaders().get("X-Key-Fingerprint"))
+                .isNotEqualTo(newRequest.toHeaders().get("X-Key-Fingerprint"));
+
+        var restartedKms = mock(KmsTemplate.class);
+        when(restartedKms.verify(eq("merchant-key"), any(String.class), any(), any(), any()))
+                .thenAnswer(invocation -> keys.values().stream()
+                        .map(key -> (RSAPublicKey) key.getPublic())
+                        .anyMatch(key -> KmsVerificationKey.fingerprint(key).equals(invocation.getArgument(1))
+                                && KmsVerificationKey.verify(
+                                        key,
+                                        invocation.getArgument(2),
+                                        invocation.getArgument(3),
+                                        invocation.getArgument(4))));
+        var verifier = new RequestVerifier(restartedKms, store, clock, properties);
+        verifier.verify(aliasIdentity, content, RequestSignature.fromHeaders(headers(oldRequest)));
+        verifier.verify(aliasIdentity, content, RequestSignature.fromHeaders(headers(newRequest)));
+
+        assertThatThrownBy(() -> verifier.verify(identity, content, newRequest))
+                .hasMessage("Request signature rejected: IDENTITY_MISMATCH");
+
+        var alteredSignature = headers(newRequest);
+        byte[] bytes = Base64.getDecoder().decode(newRequest.signature());
+        bytes[0] ^= 1;
+        alteredSignature.put("X-Signature", List.of(Base64.getEncoder().encodeToString(bytes)));
+        assertThatThrownBy(
+                        () -> verifier.verify(aliasIdentity, content, RequestSignature.fromHeaders(alteredSignature)))
+                .hasMessage("Request signature rejected: INVALID_SIGNATURE");
+
+        var unknownFingerprint = headers(newRequest);
+        unknownFingerprint.put("X-Key-Fingerprint", List.of("A".repeat(43)));
+        assertThatThrownBy(
+                        () -> verifier.verify(aliasIdentity, content, RequestSignature.fromHeaders(unknownFingerprint)))
+                .hasMessage("Request signature rejected: INVALID_SIGNATURE");
+
+        var substitutedFingerprint = headers(newRequest);
+        substitutedFingerprint.put(
+                "X-Key-Fingerprint", List.of(oldRequest.parameters().keyFingerprint()));
+        assertThatThrownBy(() ->
+                        verifier.verify(aliasIdentity, content, RequestSignature.fromHeaders(substitutedFingerprint)))
+                .hasMessage("Request signature rejected: INVALID_SIGNATURE");
+        assertThatThrownBy(() -> verifier.verify(aliasIdentity, content, oldRequest))
+                .hasMessage("Request signature rejected: REPLAY");
+        clock.now = clock.now.plus(properties.maxAge());
+        assertThatThrownBy(() -> verifier.verify(aliasIdentity, content, oldRequest))
+                .hasMessage("Request signature rejected: EXPIRED");
+
+        var missingFingerprint = headers(newRequest);
+        missingFingerprint.remove("X-Key-Fingerprint");
+        assertThatThrownBy(() -> RequestSignature.fromHeaders(missingFingerprint))
+                .hasMessage("Request signature rejected: MALFORMED");
     }
 
     @Test

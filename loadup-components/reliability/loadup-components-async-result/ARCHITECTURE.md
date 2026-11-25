@@ -6,6 +6,10 @@ Mode A：API 提供 AsyncResultTemplate、AsyncDispatch、AsyncReplyKey 与单�
 Caffeine，Redis 使用 Redisson。API 不依赖任何 binder，不引入 MQ。test 模块通过真实 Kafka/MySQL/Redis 验证组合路径，传输依赖仅为
 test scope。所有子模块直接继承根 parent，版本通过 BOM 管理。
 
+各 binder 通过自己的 `AutoConfiguration.imports` 注册配置，并按 `binder-type` 提供 `AsyncResultProvider`。
+启用组件后，公共配置通过 Bean 方法参数注入 Provider 创建 Template。Spring 在创建 Template 时解析依赖，因此 binder 可以在公共配置之后注册。
+应用自定义 `AsyncResultTemplate` 时，默认 Template 退让。
+
 ## 状态与并发
 
 本地 Pending 包含类型化 CompletableFuture、调用上下文、开始时间、超时任务和读取互斥标记。独立 Semaphore

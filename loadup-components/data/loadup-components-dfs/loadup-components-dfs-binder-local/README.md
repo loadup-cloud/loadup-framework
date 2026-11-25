@@ -1,4 +1,4 @@
-# DFS local binder
+# DFS Binder Local
 
 Use this binder for development, tests, or a single node with a shared filesystem.
 

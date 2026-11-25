@@ -35,3 +35,7 @@ loadup:
 
 AuthServer 可通过 kms-api 复用签名和公钥读取，详见 [AuthServer 接入与轮换](../../loadup-components-oauth-server/README.md)。
 详细原生 KeyStore 示例及密文边界见 [KMS 接入](../README.md#local-binder)。
+
+## 保留历史验签公钥
+
+更换同名 RSA 签名密钥前，将旧证书以 `<alias>.history.<label>` 作为受信证书条目导入新 KeyStore，例如 `payments.history.2026-11`。保留 `payments` 作为当前私钥条目。用新 KeyStore 重启后，binder 按公钥指纹查询和验证新旧签名。证书条目可在旧签名失效后移除。

@@ -12,7 +12,10 @@
     <name>ComponentKMS</name>
     <modules>
         <module>loadup-components-kms-api</module>
+        <module>loadup-components-kms-keystore</module>
         <module>loadup-components-kms-binder-openbao</module>
+        <module>loadup-components-kms-binder-aliyun</module>
         <module>loadup-components-kms-binder-local</module>
+        <module>loadup-components-kms-binder-database</module>
     </modules>
 </project>

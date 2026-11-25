@@ -20,22 +20,16 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import tools.jackson.databind.ObjectMapper;
 
-@AutoConfiguration(
-        afterName = {
-            "io.github.loadup.components.asyncresult.local.LocalAsyncResultAutoConfiguration",
-            "io.github.loadup.components.asyncresult.redis.RedisAsyncResultAutoConfiguration"
-        })
+@AutoConfiguration
 @ConditionalOnProperty(prefix = "loadup.components.async-result", name = "enabled", havingValue = "true")
 @EnableConfigurationProperties(AsyncResultProperties.class)
 public class AsyncResultAutoConfiguration {
     @Bean(destroyMethod = "close")
     @ConditionalOnMissingBean(AsyncResultTemplate.class)
-    @ConditionalOnSingleCandidate(AsyncResultProvider.class)
     public AsyncResultTemplate asyncResultTemplate(
             AsyncResultProvider provider,
             AsyncResultProperties properties,

@@ -1,4 +1,4 @@
-# DFS S3 binder
+# DFS Binder S3
 
 The recommended production binder for AWS S3 and S3-compatible services such as MinIO, OSS, COS, and LocalStack.
 

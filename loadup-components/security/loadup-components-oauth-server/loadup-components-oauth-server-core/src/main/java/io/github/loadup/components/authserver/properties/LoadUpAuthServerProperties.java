@@ -112,10 +112,10 @@ public class LoadUpAuthServerProperties {
         }
     }
 
-    /** A KMS name and pinned version; key IDs are derived as name-vN. */
+    /** A trusted KMS alias with an optional pinned version. */
     public static class SigningKey {
         private String name;
-        private int version = 1;
+        private int version;
 
         public String getName() {
             return name;

@@ -70,7 +70,7 @@ public final class TestKeyStores {
         return store;
     }
 
-    static KeyStore load(Path path) throws Exception {
+    public static KeyStore load(Path path) throws Exception {
         var store = KeyStore.getInstance("PKCS12");
         try (var input = Files.newInputStream(path)) {
             store.load(input, PASSWORD.toCharArray());

@@ -1,6 +1,6 @@
 # LoadUp Signature
 
-提供基于 OpenBao KMS 的请求签名协议，以及已有 JCA 签名/摘要工具。请求签名覆盖 HTTP 方法、path/query、timestamp、nonce、payload
+提供基于 KmsTemplate 的请求签名协议，以及已有 JCA 签名/摘要工具。请求签名覆盖 HTTP 方法、path/query、timestamp、nonce、payload
 摘要和可信应用上下文；服务端验签后使用原子 nonce 存储防重放。
 
 ## 能力矩阵
@@ -8,7 +8,7 @@
 | 能力         | 契约                                                                                       |
 |--------------|--------------------------------------------------------------------------------------------|
 | 请求签名     | `RequestSigner` → `KmsTemplate`，私钥不进入应用；默认关闭                                  |
-| 请求验签     | `RequestVerifier` → KMS，校验可信身份、算法/版本、时间、签名和 nonce                       |
+| 请求验签     | `RequestVerifier` 校验可信身份、签名、时间窗口和 nonce                       |
 | 算法         | RSA SHA-256 PKCS#1 v1.5 / PSS；沿用 KMS 算法与编码                                         |
 | 报文         | 原始 path/query 和 payload 字节；不重排参数、不重新序列化 JSON                             |
 | 防重放       | 默认复用已有 `StringRedisTemplate`；单条带 TTL 的 SET NX；可替换原子存储 SPI               |
@@ -79,7 +79,8 @@ MiB。这里只限制进入签名逻辑后的内容，HTTP 入口还必须限制
 | `X-Signature-Protocol`  | 固定 `loadup-request-v1`                                           |
 | `X-App-Id`              | 应用标识；服务端查找可信绑定，不是未经验签的认证结论               |
 | `X-Signature-Audience`  | 唯一接收服务标识，如 `acquiring-api`                               |
-| `X-Key-Version`         | 明确且大于 0 的密钥版本                                            |
+| `X-Key-Version`         | 0 表示 alias 模式，正整数表示固定版本                                            |
+| `X-Key-Fingerprint` | 版本 0 必填，取实际 RSA 公钥 SPKI DER 的 SHA-256，再用无填充 Base64URL 编码 |
 | `X-Signature-Algorithm` | `RSA_SHA256_PKCS1` 或 `RSA_SHA256_PSS`                             |
 | `X-Timestamp`           | Unix 秒，十进制，无正号、空格或非必要前导零                        |
 | `X-Nonce`               | 22–128 位 Base64URL 字符；生成器使用 24 个随机字节，输出 32 个字符 |
@@ -126,7 +127,7 @@ payload-sha256:4d4bbe59c6aad22442cde199a6a8a5f034405fcd78fb5a81c24ef249de1c45f1
 ```java
 RequestSigningIdentity identity = new RequestSigningIdentity(
         "merchant-app", "acquiring-api",
-        new KmsKeyRef("merchant-key", 1),
+        new KmsKeyRef("merchant-key"),
         KmsSignatureAlgorithm.RSA_SHA256_PKCS1);
 byte[] body = objectMapper.writeValueAsBytes(command);
 RequestContent content = new RequestContent(
@@ -148,7 +149,9 @@ http.exchange("acquiring", "pay", new HttpCall(
 此例要求 `acquiring/pay` 的方法为 POST、最终路径为 `/api/pay`，且没有额外 query。有变量/query 时，签名必须在最终 URI
 编码后进行，并保证发送 URI 完全相同；不能从未编码 Map 猜测最终字符串。HTTP 调用不负责自动插入签名。
 
-密钥版本不能用 `latest`：原文要先包含确定版本，而且渠道/接收方需已认可该版本。轮换时明确选择已登记的新版本；服务端可从已授权版本列表选择相应绑定，不能任意信任头中的版本或算法。
+省略版本或传 0 时，签发端从 KMS 读取当前公钥。签名原文在 `key-version:0` 和 `algorithm` 之间增加一行 `key-fingerprint:<指纹>`。使用正整数的原有报文继续使用上面的原文格式。先升级验签端，再启用 alias 签名。
+
+验签端将业务配置中的可信 alias 与报文指纹传给 KMS binder。binder 从后端查询该 alias 有权使用的签名密钥。旧密钥应至少保留到签名验签窗口结束。
 
 ### 服务端验签
 
@@ -168,7 +171,7 @@ requestVerifier.verify(trusted, content, incoming);
 `headersWithAllValues` 类型为 `Map<String, List<String>>`；Spring 7 的 `HttpHeaders` 使用 `asMultiValueMap()`
 转换，必须保留重复值，不能先用 `getHeader`/`toSingleValueMap` 隐藏重复头。绑定查询还须校验应用启停、租户范围和允许版本，接收方由服务配置决定。
 
-验签成功无返回值；失败抛安全错误。验签顺序为：输入/身份校验 → 时间窗口 → KMS 验签 → 再检查时间 → 原子占用 nonce →
+验签成功无返回值；失败抛安全错误。验签顺序为：输入/身份校验 → 时间窗口 → 公钥或 KMS 验签 → 再检查时间 → 原子占用 nonce →
 业务处理。业务失败不会释放 nonce；重试使用新 timestamp/nonce/签名，业务幂等键保持稳定。
 
 组件不自动注册 Servlet Filter；消费工程将验签接入指定开放接口的 Spring Security 认证链，使用可重复读取的 bounded body

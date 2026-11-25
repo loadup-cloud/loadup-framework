@@ -20,12 +20,24 @@ import io.github.loadup.commons.json.ToStringAsJson;
 import java.util.Map;
 
 public record KmsCiphertext(
-        String keyName, int version, @DiagnosticHidden String value) {
+        String keyName, int version, @DiagnosticHidden String value, KmsProviderVersion providerVersion) {
+    public KmsCiphertext(String keyName, int version, String value) {
+        this(keyName, version, value, null);
+    }
+
     public KmsCiphertext {
         KmsKeyRef.validateName(keyName);
-        if (version < 1 || value == null || !value.matches("(vault|local):v" + version + ":[A-Za-z0-9+/=]+")) {
+        boolean valid = providerVersion == null
+                ? version > 0 && value != null && value.matches("(vault|local|aliyun):v" + version + ":[A-Za-z0-9+/=]+")
+                : version == 0 && value != null && value.matches("aliyun:[A-Za-z0-9+/=]+");
+        if (!valid) {
             throw new IllegalArgumentException("Invalid KMS ciphertext");
         }
+    }
+
+    /** Retain this reference from the original, trusted operation for use after an alias is rebound. */
+    public KmsKeyRef keyRef() {
+        return new KmsKeyRef(keyName, version, providerVersion);
     }
 
     @Override

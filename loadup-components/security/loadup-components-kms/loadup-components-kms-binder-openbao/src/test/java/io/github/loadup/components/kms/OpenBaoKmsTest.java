@@ -49,6 +49,9 @@ class OpenBaoKmsTest {
     private OpenBaoKmsTemplate kms;
     private OpenBaoKeyManager manager;
     private KeyPair keyPair;
+    private KeyPair rotatedPair;
+    private KmsProperties config;
+    private int minVerificationVersion = 1;
     private int latestVersion = 1;
     private int errorStatus;
     private boolean malformedVerification;
@@ -64,7 +67,7 @@ class OpenBaoKmsTest {
         server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         server.createContext("/", this::respond);
         server.start();
-        var config = new KmsProperties(
+        config = new KmsProperties(
                 URI.create("http://127.0.0.1:" + server.getAddress().getPort() + "/"),
                 "payments/transit",
                 "tenant",
@@ -127,6 +130,26 @@ class OpenBaoKmsTest {
                         .path("key_version")
                         .asInt())
                 .isEqualTo(1);
+    }
+
+    @Test
+    void freshBinderVerifiesHistoricalFingerprintsWithinTransitsAllowedVersions() {
+        byte[] payload = {7, 8, 9};
+        var alias = KmsKeyRef.latest("merchant");
+        var old = kms.currentSigningKey(alias.name());
+        var signature = kms.sign(alias, KmsSignatureAlgorithm.RSA_SHA256_PKCS1, payload);
+        manager.rotate(alias.name());
+        try (var restarted = new OpenBaoKmsTemplate(
+                new OpenBaoTransitClient(config, token::get, false, RestClient::builder, mapper, null, null))) {
+            assertThat(restarted.currentSigningKey(alias.name()).fingerprint()).isNotEqualTo(old.fingerprint());
+            assertThat(restarted.verify(
+                            alias.name(), old.fingerprint(), signature.algorithm(), payload, signature.bytes()))
+                    .isTrue();
+            minVerificationVersion = 2;
+            assertThat(restarted.verify(
+                            alias.name(), old.fingerprint(), signature.algorithm(), payload, signature.bytes()))
+                    .isFalse();
+        }
     }
 
     @Test
@@ -452,7 +475,7 @@ class OpenBaoKmsTest {
             }
             if (path.contains("/sign/")) {
                 var signer = signature(request);
-                signer.initSign(keyPair.getPrivate());
+                signer.initSign((request.path("key_version").asInt() == 1 ? keyPair : rotatedPair).getPrivate());
                 signer.update(Base64.getDecoder().decode(request.path("input").asString()));
                 send(
                         exchange,
@@ -465,9 +488,9 @@ class OpenBaoKmsTest {
                                                 + Base64.getEncoder().encodeToString(signer.sign()))));
             } else if (path.contains("/verify/")) {
                 var verifier = signature(request);
-                verifier.initVerify(keyPair.getPublic());
-                verifier.update(Base64.getDecoder().decode(request.path("input").asString()));
                 String envelope = request.path("signature").asString();
+                verifier.initVerify((envelope.startsWith("vault:v1:") ? keyPair : rotatedPair).getPublic());
+                verifier.update(Base64.getDecoder().decode(request.path("input").asString()));
                 boolean valid = malformedVerification
                         ? false
                         : verifier.verify(Base64.getDecoder().decode(envelope.substring(envelope.indexOf(':', 7) + 1)));
@@ -512,7 +535,7 @@ class OpenBaoKmsTest {
                                         "min_encryption_version",
                                         0,
                                         "min_decryption_version",
-                                        1,
+                                        minVerificationVersion,
                                         "supports_encryption",
                                         true,
                                         "supports_decryption",
@@ -524,9 +547,12 @@ class OpenBaoKmsTest {
                                                 "1",
                                                 Map.of("public_key", publicPem()),
                                                 "2",
-                                                Map.of("public_key", publicPem())))));
+                                                Map.of(
+                                                        "public_key",
+                                                        publicPem(rotatedPair == null ? keyPair : rotatedPair))))));
             } else {
                 if (path.endsWith("/rotate")) {
+                    rotatedPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
                     latestVersion++;
                 }
                 exchange.sendResponseHeaders(204, -1);
@@ -555,8 +581,12 @@ class OpenBaoKmsTest {
     }
 
     private String publicPem() {
+        return publicPem(keyPair);
+    }
+
+    private String publicPem(KeyPair pair) {
         return "-----BEGIN PUBLIC KEY-----\n"
-                + Base64.getEncoder().encodeToString(keyPair.getPublic().getEncoded()) + "\n-----END PUBLIC KEY-----";
+                + Base64.getEncoder().encodeToString(pair.getPublic().getEncoded()) + "\n-----END PUBLIC KEY-----";
     }
 
     private void send(HttpExchange exchange, int status, Object body) throws Exception {

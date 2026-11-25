@@ -17,15 +17,22 @@ package io.github.loadup.components.asyncresult;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 
 import io.github.loadup.components.asyncresult.local.LocalAsyncResultAutoConfiguration;
+import io.github.loadup.components.asyncresult.local.LocalAsyncResultProvider;
 import io.github.loadup.components.asyncresult.redis.RedisAsyncResultAutoConfiguration;
 import io.github.loadup.components.runtime.json.JsonAutoConfiguration;
 import java.time.Duration;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
 
 class AsyncResultAutoConfigurationTest {
     private final ApplicationContextRunner runner = new ApplicationContextRunner()
@@ -56,11 +63,66 @@ class AsyncResultAutoConfigurationTest {
     }
 
     @Test
-    void missingNamespaceAndInvalidBinderOrLimitsFailStartup() {
+    void assemblesWithThirdPartyBinderRegisteredAfterTheApiConfiguration() {
+        runner.withConfiguration(AutoConfigurations.of(TestBinderAutoConfiguration.class))
+                .withPropertyValues(
+                        "loadup.components.async-result.enabled=true",
+                        "loadup.components.async-result.namespace=test",
+                        "loadup.components.async-result.binder-type=third-party")
+                .run(c -> {
+                    assertThat(c)
+                            .hasSingleBean(AsyncResultProvider.class)
+                            .hasBean("thirdPartyAsyncResultProvider")
+                            .hasSingleBean(AsyncResultTemplate.class);
+                    var template = c.getBean(AsyncResultTemplate.class);
+                    assertThat(template.execute(AsyncResultTest.options(), String.class, key -> {
+                                template.complete(key, "third-party result");
+                                return AsyncResultTest.sent();
+                            }))
+                            .isEqualTo("third-party result");
+                });
+    }
+
+    @Test
+    void enabledWithoutMatchingProviderFailsStartup() {
+        runner.withPropertyValues(
+                        "loadup.components.async-result.enabled=true",
+                        "loadup.components.async-result.namespace=test",
+                        "loadup.components.async-result.binder-type=unknown")
+                .run(c -> assertThat(c)
+                        .getFailure()
+                        .hasRootCauseInstanceOf(NoSuchBeanDefinitionException.class)
+                        .hasStackTraceContaining(AsyncResultProvider.class.getName()));
+    }
+
+    @Test
+    void enabledWithAmbiguousProvidersFailsStartup() {
+        runner.withPropertyValues(
+                        "loadup.components.async-result.enabled=true", "loadup.components.async-result.namespace=test")
+                .withBean("firstProvider", AsyncResultProvider.class, () -> mock(AsyncResultProvider.class))
+                .withBean("secondProvider", AsyncResultProvider.class, () -> mock(AsyncResultProvider.class))
+                .run(c -> assertThat(c).getFailure().hasRootCauseInstanceOf(NoUniqueBeanDefinitionException.class));
+    }
+
+    @Test
+    void customTemplateWorksWithoutABinder() {
+        var custom = mock(AsyncResultTemplate.class);
+        runner.withPropertyValues(
+                        "loadup.components.async-result.enabled=true",
+                        "loadup.components.async-result.namespace=test",
+                        "loadup.components.async-result.binder-type=custom")
+                .withBean(AsyncResultTemplate.class, () -> custom)
+                .run(c -> {
+                    assertThat(c).hasSingleBean(AsyncResultTemplate.class).doesNotHaveBean(AsyncResultProvider.class);
+                    assertThat(c.getBean(AsyncResultTemplate.class)).isSameAs(custom);
+                });
+    }
+
+    @Test
+    void missingNamespaceAndInvalidLimitsFailStartup() {
         runner.withPropertyValues("loadup.components.async-result.enabled=true")
                 .run(c -> assertThat(c).hasFailed());
         for (String setting : new String[] {
-            "binder-type=unknown",
             "wait-timeout=0ms",
             "max-wait-timeout=2d",
             "result-retention=8d",
@@ -109,5 +171,15 @@ class AsyncResultAutoConfigurationTest {
                 .isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> new AsyncResultOptions("op", "b", Duration.ofMillis(-1)))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @AutoConfiguration(after = AsyncResultAutoConfiguration.class)
+    @ConditionalOnProperty(prefix = "loadup.components.async-result", name = "enabled", havingValue = "true")
+    @ConditionalOnProperty(prefix = "loadup.components.async-result", name = "binder-type", havingValue = "third-party")
+    static class TestBinderAutoConfiguration {
+        @Bean(destroyMethod = "close")
+        LocalAsyncResultProvider thirdPartyAsyncResultProvider() {
+            return new LocalAsyncResultProvider(100);
+        }
     }
 }
