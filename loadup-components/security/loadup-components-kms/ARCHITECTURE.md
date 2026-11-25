@@ -28,15 +28,19 @@ flowchart LR
 |---------------------------------------------------|-----------------------------------------------------|
 | `KmsTemplate`                                     | 引用密钥执行密码操作，读取元数据和版本公钥          |
 | `KmsKeyManager`                                   | 可选的生成、轮换、最低版本和受控导入                |
+| `KmsSecretManager`                               | 可选的命名文本凭据创建、更新与当前值读取             |
+| `KeyStoreKmsSecretManager`                       | Local 和 Database 共用的 AES-GCM 密文封装及名称校验 |
 | `KmsKeyRef`                                       | 名称与调用方选择版本；0 表示操作时最新              |
 | `KmsSignature`                                    | 原始字节、算法与版本；防御性复制，安全 `toString`   |
 | `KmsCiphertext`                                   | 密钥身份及不透明 Transit 包装串，安全 `toString`    |
 | `KmsTokenProvider` / `KmsManagementTokenProvider` | 各自身份的动态令牌来源                              |
-| `OpenBaoTransitClient`                            | API 路径、Base64 JSON 协议、HTTP 状态映射与响应校验 |
-| `KmsAutoConfiguration`                            | 显式启用、可替换 Bean、两套独立资源生命周期         |
+| `OpenBaoClient`                                   | Transit 与 KV v2 路径、HTTP 状态映射与响应校验       |
+| `KmsAutoConfiguration`                            | 显式启用、可替换 Bean、独立客户端资源生命周期      |
 
 底层依赖为 KMS → HTTP → RestClient / Apache HttpClient 5；使用 Boot 提供的 Jackson 3 ObjectMapper、RestClient.Builder、可选
 SSL Bundle 和 MeterRegistry。无需 Spring Vault，避免额外引入一套客户端、连接池和 Jackson 依赖。
+
+Local 和 Database 复用 KeyStore 的 AES-GCM 加解密，将名称的 SHA-256 摘要绑定到加密内容中。两个 binder 以摘要定位记录，密文跨名称替换后无法正常读取。Local 文件和 PostgreSQL 表分别持久化当前密文，重启时根据配置加载原 AES 密钥。
 
 ## 密钥所有权与版本
 
@@ -63,8 +67,8 @@ RSA 加密采用服务端 Transit 算法，不提供跨渠道报文兼容保证�
 
 ## 认证与隔离
 
-两个接口有独立 Provider 类型、令牌环境变量和专用 HTTP
-池，管理开关默认关闭。每次调用获取当前令牌，支持集成方替换动态登录/续租实现；不定时缓存静态配置中的令牌。身份策略按实际密钥和操作授权，管理接口不能直接映射成开放
+Transit 运行和密钥管理接口有独立 Provider 类型、令牌环境变量和专用 HTTP
+池。OpenBao KV v2 使用运行身份和独立 HTTP 池。密钥管理与凭据管理分别通过开关启用。每次调用获取当前令牌，支持集成方替换动态登录/续租实现。身份策略按实际密钥和操作授权，管理接口不能直接映射成开放
 Controller。
 
 配置限制服务原点、挂载路径和密钥名称，避免动态输入控制远端地址。HTTPS 默认必需，本地 HTTP 明确启用；允许内部网络地址是因为
@@ -75,7 +79,7 @@ KMS 是可信配置中的内部服务。SSL Bundle 提供受信 CA/mTLS。HTTP �
 验签返回 `false` 仅代表正常响应中的不匹配；鉴权失败、服务异常、无效响应独立抛 `KmsException`。无远端正文、令牌或底层
 cause。输入在网络前限制大小，响应有有限长度，数字版本与布尔结果检查类型。创建/轮换超时属于结果未知，调用方先查状态再作决策。
 
-Spring 关闭上下文时释放两套池。通过 HTTP 固定标签 `client=kms|kms-admin`、`operation=metadata|sign|...`
+Spring 关闭上下文时释放已经创建的池。通过 HTTP 固定标签 `client=kms|kms-admin|kms-secrets`、`operation=metadata|sign|...`
 记录计时；不将密钥名、商户号、输入或签名作为指标标签。复用 Boot RestClient 观测机制；真实 Trace
 传播及日志采集需消费工程验证，不假定外部全局拦截器一定脱敏。
 

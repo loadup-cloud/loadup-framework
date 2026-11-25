@@ -15,6 +15,9 @@
  */
 package io.github.loadup.components.kms.aliyun;
 
+import static io.github.loadup.components.kms.aliyun.AliyunKmsRequests.cloud;
+import static io.github.loadup.components.kms.aliyun.AliyunKmsRequests.requireResponse;
+
 import com.aliyun.kms20160120.Client;
 import com.aliyun.kms20160120.models.AsymmetricSignRequest;
 import com.aliyun.kms20160120.models.AsymmetricVerifyRequest;
@@ -26,8 +29,6 @@ import com.aliyun.kms20160120.models.GetPublicKeyRequest;
 import com.aliyun.kms20160120.models.ListKeyVersionsRequest;
 import com.aliyun.kms20160120.models.ListKeysRequest;
 import com.aliyun.kms20160120.models.ListResourceTagsRequest;
-import com.aliyun.tea.TeaException;
-import com.aliyun.teautil.models.RuntimeOptions;
 import io.github.loadup.components.kms.KmsCiphertext;
 import io.github.loadup.components.kms.KmsException;
 import io.github.loadup.components.kms.KmsException.Code;
@@ -55,11 +56,11 @@ public final class AliyunKmsTemplate implements KmsTemplate {
     private static final int MAX_CIPHERTEXT_LENGTH = 16 * 1024;
     private static final String SIGNING_ALIAS_TAG = "loadup-signing-alias";
     private final Client client;
-    private final AliyunKmsProperties properties;
+    private final AliyunKmsRequests requests;
 
     public AliyunKmsTemplate(Client client, AliyunKmsProperties properties) {
         this.client = Objects.requireNonNull(client);
-        this.properties = Objects.requireNonNull(properties);
+        this.requests = new AliyunKmsRequests(properties);
     }
 
     @Override
@@ -77,7 +78,7 @@ public final class AliyunKmsTemplate implements KmsTemplate {
                 .setKeyVersionId(version.versionId())
                 .setAlgorithm(sdkAlgorithm)
                 .setDigest(digest);
-        var body = requireResponse(cloud(() -> client.asymmetricSignWithOptions(request, runtime()))
+        var body = requireResponse(cloud(() -> client.asymmetricSignWithOptions(request, requests.runtime()))
                 .getBody());
         requireIdentity(version, body.getKeyId(), body.getKeyVersionId());
         byte[] signature = decode(body.getValue(), 384);
@@ -110,7 +111,7 @@ public final class AliyunKmsTemplate implements KmsTemplate {
                 .setAlgorithm(algorithmName(signature.algorithm()))
                 .setDigest(digest)
                 .setValue(signature.base64());
-        var body = requireResponse(cloud(() -> client.asymmetricVerifyWithOptions(request, runtime()))
+        var body = requireResponse(cloud(() -> client.asymmetricVerifyWithOptions(request, requests.runtime()))
                 .getBody());
         requireIdentity(version, body.getKeyId(), body.getKeyVersionId());
         return requireResponse(body.getValue());
@@ -133,8 +134,8 @@ public final class AliyunKmsTemplate implements KmsTemplate {
                 .setKeyId(id)
                 .setPlaintext(Base64.getEncoder().encodeToString(plaintext))
                 .setEncryptionContext(Map.of("loadup-key", key.name()));
-        var body = requireResponse(
-                cloud(() -> client.encryptWithOptions(request, runtime())).getBody());
+        var body = requireResponse(cloud(() -> client.encryptWithOptions(request, requests.runtime()))
+                .getBody());
         var version = identity(body.getKeyId(), body.getKeyVersionId());
         if (!version.keyId().equals(metadata.getKeyId()) || !validCiphertextBlob(body.getCiphertextBlob())) {
             throw new KmsException(Code.INVALID_RESPONSE);
@@ -164,8 +165,8 @@ public final class AliyunKmsTemplate implements KmsTemplate {
                 ? Map.of("loadup-key", key.name(), "loadup-version", Integer.toString(ciphertext.version()))
                 : Map.of("loadup-key", key.name());
         var request = new DecryptRequest().setCiphertextBlob(blob).setEncryptionContext(context);
-        var body = requireResponse(
-                cloud(() -> client.decryptWithOptions(request, runtime())).getBody());
+        var body = requireResponse(cloud(() -> client.decryptWithOptions(request, requests.runtime()))
+                .getBody());
         var actual = identity(body.getKeyId(), body.getKeyVersionId());
         var expected = key.providerVersion() != null ? key.providerVersion() : ciphertext.providerVersion();
         if (!expectedId.equals(actual.keyId()) || (expected != null && !expected.equals(actual))) {
@@ -225,8 +226,8 @@ public final class AliyunKmsTemplate implements KmsTemplate {
                     .setFilters(filters)
                     .setPageNumber(page)
                     .setPageSize(100);
-            var body = requireResponse(
-                    cloud(() -> client.listKeysWithOptions(request, runtime())).getBody());
+            var body = requireResponse(cloud(() -> client.listKeysWithOptions(request, requests.runtime()))
+                    .getBody());
             int total = requireResponse(body.getTotalCount());
             var candidates = body.getKeys() == null ? null : body.getKeys().getKey();
             if (candidates == null) {
@@ -269,7 +270,7 @@ public final class AliyunKmsTemplate implements KmsTemplate {
 
     private boolean hasSigningAlias(String id, String alias) {
         var request = new ListResourceTagsRequest().setKeyId(id);
-        var body = requireResponse(cloud(() -> client.listResourceTagsWithOptions(request, runtime()))
+        var body = requireResponse(cloud(() -> client.listResourceTagsWithOptions(request, requests.runtime()))
                 .getBody());
         var tags = body.getTags();
         return tags != null
@@ -283,8 +284,8 @@ public final class AliyunKmsTemplate implements KmsTemplate {
 
     private String publicKey(String id, KmsProviderVersion version) {
         var request = new GetPublicKeyRequest().setKeyId(id).setKeyVersionId(version.versionId());
-        var body = requireResponse(
-                cloud(() -> client.getPublicKeyWithOptions(request, runtime())).getBody());
+        var body = requireResponse(cloud(() -> client.getPublicKeyWithOptions(request, requests.runtime()))
+                .getBody());
         requireIdentity(version, body.getKeyId(), body.getKeyVersionId());
         String pem = body.getPublicKey();
         if (pem == null
@@ -321,8 +322,8 @@ public final class AliyunKmsTemplate implements KmsTemplate {
 
     private DescribeKeyResponseBodyKeyMetadata describeKey(String id) {
         var request = new DescribeKeyRequest().setKeyId(id);
-        var body = requireResponse(
-                cloud(() -> client.describeKeyWithOptions(request, runtime())).getBody());
+        var body = requireResponse(cloud(() -> client.describeKeyWithOptions(request, requests.runtime()))
+                .getBody());
         var metadata = requireResponse(body.getKeyMetadata());
         requireCloudId(metadata.getKeyId());
         if (!Objects.equals("Enabled", metadata.getKeyState())) {
@@ -333,7 +334,7 @@ public final class AliyunKmsTemplate implements KmsTemplate {
 
     private KmsProviderVersion rsaVersion(String id) {
         var request = new ListKeyVersionsRequest().setKeyId(id).setPageNumber(1).setPageSize(2);
-        var body = requireResponse(cloud(() -> client.listKeyVersionsWithOptions(request, runtime()))
+        var body = requireResponse(cloud(() -> client.listKeyVersionsWithOptions(request, requests.runtime()))
                 .getBody());
         var versions = requireResponse(requireResponse(body.getKeyVersions()).getKeyVersion());
         if (!Objects.equals(1, body.getTotalCount()) || versions.size() != 1) {
@@ -434,58 +435,5 @@ public final class AliyunKmsTemplate implements KmsTemplate {
         } catch (IllegalArgumentException malformed) {
             throw new KmsException(Code.INVALID_RESPONSE);
         }
-    }
-
-    private RuntimeOptions runtime() {
-        return new RuntimeOptions()
-                .setAutoretry(false)
-                .setIgnoreSSL(false)
-                .setConnectTimeout((int) properties.connectTimeout().toMillis())
-                .setReadTimeout((int) properties.readTimeout().toMillis());
-    }
-
-    private static <T> T cloud(SdkCall<T> call) {
-        T result;
-        try {
-            result = call.invoke();
-        } catch (TeaException failure) {
-            throw new KmsException(errorCode(failure));
-        } catch (InterruptedException failure) {
-            Thread.currentThread().interrupt();
-            throw new KmsException(Code.TRANSPORT);
-        } catch (Exception failure) {
-            throw new KmsException(Code.TRANSPORT);
-        }
-        return requireResponse(result);
-    }
-
-    private static Code errorCode(TeaException failure) {
-        String code = Objects.toString(failure.getCode(), "");
-        int status = failure.getStatusCode() == null ? 0 : failure.getStatusCode();
-        if (status == 401
-                || code.startsWith("InvalidAccessKeyId")
-                || code.startsWith("InvalidSecurityToken")
-                || code.equals("SignatureDoesNotMatch")) {
-            return Code.AUTHENTICATION;
-        }
-        return switch (status) {
-            case 400 -> Code.INVALID_REQUEST;
-            case 403 -> Code.ACCESS_DENIED;
-            case 404 -> Code.NOT_FOUND;
-            case 409, 429 -> Code.UNAVAILABLE;
-            default -> status >= 500 ? Code.UNAVAILABLE : Code.TRANSPORT;
-        };
-    }
-
-    private static <T> T requireResponse(T value) {
-        if (value == null) {
-            throw new KmsException(Code.INVALID_RESPONSE);
-        }
-        return value;
-    }
-
-    @FunctionalInterface
-    private interface SdkCall<T> {
-        T invoke() throws Exception;
     }
 }

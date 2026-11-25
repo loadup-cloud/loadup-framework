@@ -10,6 +10,7 @@
 | 停用 | `retireFile` 逻辑停用指定文件，后续加载失败。已启动的实例继续使用内存中的密钥。 |
 | 业务操作 | RSA SHA-256 PKCS#1/PSS 签名、验签及公钥读取；AES-GCM 加解密。 |
 | 密钥引用 | KeyStore 别名对应密钥名称，版本为 1。使用相同密钥时可读取 local binder 生成的 `local:v1:` 密文。 |
+| 字符串凭据 | `KmsSecretManager` 按名称创建、更新及读取，`kms_secret` 表保存当前密文。 |
 
 ## 首次导入
 
@@ -45,6 +46,12 @@ loadup:
 运行身份只需对 `kms_key_file` 有 SELECT 权限。密码配置填写 Spring Environment 属性名。条目密码默认使用文件密码。缺少指定文件或密码、文件无法解析、条目密码错误会导致启动失败。
 
 需要在管理应用中注入 `DatabaseKmsKeyFiles` 时，设置 `loadup.kms.management-enabled=true`，并给管理数据源授予 INSERT 和更新停用标记、更新时间的权限。在管理流程中调用 `files.retireFile("payments-2026")`，首次停用返回 true。
+
+## 字符串凭据
+
+在目标 schema 执行 [`kms_secret` 建表脚本](src/main/resources/db/schema/kms_secret.sql)。使用 Flyway 的应用可将脚本纳入自己的增量迁移。
+设置 `loadup.kms.secrets-enabled=true`，并用 `loadup.kms.secret-key-alias` 指定已导入 PKCS#12 中的专用 AES 条目。
+为应用身份按需授予 `kms_secret` 的 SELECT、INSERT 和 UPDATE 权限。重启或更换 PKCS#12 文件时，保留原 AES 条目即可继续读取已保存的凭据。
 
 ## 更换文件
 

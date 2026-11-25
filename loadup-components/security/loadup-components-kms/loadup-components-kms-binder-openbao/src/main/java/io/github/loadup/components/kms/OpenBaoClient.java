@@ -24,18 +24,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestClient;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
-final class OpenBaoTransitClient implements AutoCloseable {
+final class OpenBaoClient implements AutoCloseable {
     private final HttpTemplate http;
     private final ObjectMapper mapper;
     private final int maxInputBytes;
     private final String clientName;
 
-    OpenBaoTransitClient(
+    OpenBaoClient(
             KmsProperties properties,
             KmsTokenProvider tokens,
             boolean management,
@@ -43,28 +44,68 @@ final class OpenBaoTransitClient implements AutoCloseable {
             ObjectMapper mapper,
             SslBundles sslBundles,
             MeterRegistry metrics) {
+        this(
+                properties,
+                tokens,
+                builders,
+                mapper,
+                sslBundles,
+                metrics,
+                management ? "kms-admin" : "kms",
+                management ? "openbao-admin" : "openbao-transit",
+                properties.maxInputBytes() * 2 + 4096,
+                transitOperations(properties.mount(), management));
+    }
+
+    static OpenBaoClient secrets(
+            KmsProperties properties,
+            String mount,
+            KmsTokenProvider tokens,
+            Supplier<RestClient.Builder> builders,
+            ObjectMapper mapper,
+            SslBundles sslBundles,
+            MeterRegistry metrics) {
+        if (mount == null || mount.length() > 128 || !mount.matches("[A-Za-z0-9_-]+(?:/[A-Za-z0-9_-]+)*")) {
+            throw new IllegalArgumentException("Invalid OpenBao secret mount");
+        }
+        String prefix = "/v1/" + mount;
+        String path = prefix + "/data/{key}";
+        return new OpenBaoClient(
+                properties,
+                tokens,
+                builders,
+                mapper,
+                sslBundles,
+                metrics,
+                "kms-secrets",
+                "openbao-secrets",
+                KmsSecretManager.MAX_VALUE_BYTES * 6 + 4096,
+                Map.of(
+                        "get", new HttpProperties.Operation(HttpMethod.GET, path, null),
+                        "secret-metadata",
+                                new HttpProperties.Operation(HttpMethod.GET, prefix + "/metadata/{key}", null),
+                        "create", new HttpProperties.Operation(HttpMethod.POST, path, null),
+                        "update",
+                                new HttpProperties.Operation(
+                                        HttpMethod.PATCH,
+                                        path,
+                                        Map.of(HttpHeaders.CONTENT_TYPE, "application/merge-patch+json"))));
+    }
+
+    private OpenBaoClient(
+            KmsProperties properties,
+            KmsTokenProvider tokens,
+            Supplier<RestClient.Builder> builders,
+            ObjectMapper mapper,
+            SslBundles sslBundles,
+            MeterRegistry metrics,
+            String clientName,
+            String observerName,
+            int requestLimit,
+            Map<String, HttpProperties.Operation> operations) {
         this.mapper = mapper;
         maxInputBytes = properties.maxInputBytes();
-        String prefix = "/v1/" + properties.mount();
-        Map<String, HttpProperties.Operation> operations = new HashMap<>();
-        operations.put("metadata", new HttpProperties.Operation(HttpMethod.GET, prefix + "/keys/{key}", null));
-        if (management) {
-            operations.put("create", new HttpProperties.Operation(HttpMethod.POST, prefix + "/keys/{key}", null));
-            operations.put(
-                    "rotate", new HttpProperties.Operation(HttpMethod.POST, prefix + "/keys/{key}/rotate", null));
-            operations.put(
-                    "configure", new HttpProperties.Operation(HttpMethod.POST, prefix + "/keys/{key}/config", null));
-            operations.put("wrapping", new HttpProperties.Operation(HttpMethod.GET, prefix + "/wrapping_key", null));
-            operations.put(
-                    "import", new HttpProperties.Operation(HttpMethod.POST, prefix + "/keys/{key}/import", null));
-        } else {
-            operations.put("encrypt", new HttpProperties.Operation(HttpMethod.POST, prefix + "/encrypt/{key}", null));
-            operations.put("decrypt", new HttpProperties.Operation(HttpMethod.POST, prefix + "/decrypt/{key}", null));
-            operations.put(
-                    "sign", new HttpProperties.Operation(HttpMethod.POST, prefix + "/sign/{key}/sha2-256", null));
-            operations.put(
-                    "verify", new HttpProperties.Operation(HttpMethod.POST, prefix + "/verify/{key}/sha2-256", null));
-        }
+        this.clientName = clientName;
         Map<String, String> headers =
                 properties.namespace() == null ? Map.of() : Map.of("X-Vault-Namespace", properties.namespace());
         var config = new HttpProperties.Client(
@@ -75,8 +116,8 @@ final class OpenBaoTransitClient implements AutoCloseable {
                 null,
                 null,
                 null,
-                maxInputBytes * 2 + 4096,
-                (long) maxInputBytes * 2 + 65536,
+                requestLimit,
+                (long) requestLimit + 61440,
                 properties.sslBundle(),
                 null,
                 true,
@@ -84,7 +125,7 @@ final class OpenBaoTransitClient implements AutoCloseable {
                 headers,
                 operations);
         http = new HttpTemplate(
-                new HttpProperties(Map.of(management ? "kms-admin" : "kms", config)),
+                new HttpProperties(Map.of(clientName, config)),
                 builders,
                 mapper,
                 reference -> {
@@ -105,8 +146,31 @@ final class OpenBaoTransitClient implements AutoCloseable {
                 },
                 sslBundles,
                 metrics,
-                management ? "openbao-admin" : "openbao-transit");
-        clientName = management ? "kms-admin" : "kms";
+                observerName);
+    }
+
+    private static Map<String, HttpProperties.Operation> transitOperations(String mount, boolean management) {
+        String prefix = "/v1/" + mount;
+        Map<String, HttpProperties.Operation> operations = new HashMap<>();
+        operations.put("metadata", new HttpProperties.Operation(HttpMethod.GET, prefix + "/keys/{key}", null));
+        if (management) {
+            operations.put("create", new HttpProperties.Operation(HttpMethod.POST, prefix + "/keys/{key}", null));
+            operations.put(
+                    "rotate", new HttpProperties.Operation(HttpMethod.POST, prefix + "/keys/{key}/rotate", null));
+            operations.put(
+                    "configure", new HttpProperties.Operation(HttpMethod.POST, prefix + "/keys/{key}/config", null));
+            operations.put("wrapping", new HttpProperties.Operation(HttpMethod.GET, prefix + "/wrapping_key", null));
+            operations.put(
+                    "import", new HttpProperties.Operation(HttpMethod.POST, prefix + "/keys/{key}/import", null));
+        } else {
+            operations.put("encrypt", new HttpProperties.Operation(HttpMethod.POST, prefix + "/encrypt/{key}", null));
+            operations.put("decrypt", new HttpProperties.Operation(HttpMethod.POST, prefix + "/decrypt/{key}", null));
+            operations.put(
+                    "sign", new HttpProperties.Operation(HttpMethod.POST, prefix + "/sign/{key}/sha2-256", null));
+            operations.put(
+                    "verify", new HttpProperties.Operation(HttpMethod.POST, prefix + "/verify/{key}/sha2-256", null));
+        }
+        return operations;
     }
 
     static String text(JsonNode node, String field) {

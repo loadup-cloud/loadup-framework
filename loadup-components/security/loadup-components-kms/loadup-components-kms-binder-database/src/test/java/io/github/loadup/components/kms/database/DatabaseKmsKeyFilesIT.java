@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.loadup.components.kms.KmsException;
 import io.github.loadup.components.kms.KmsKeyRef;
+import io.github.loadup.components.kms.KmsSecretManager;
 import io.github.loadup.components.kms.KmsSignatureAlgorithm;
 import io.github.loadup.components.kms.KmsTemplate;
 import io.github.loadup.components.kms.database.autoconfigure.DatabaseKmsAutoConfiguration;
@@ -43,12 +44,18 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.util.ClassUtils;
 
 @SpringBootTest(classes = DatabaseKmsKeyFilesIT.Application.class)
 @EnableTestContainers(value = ContainerType.POSTGRESQL, reuse = false)
-@Sql(scripts = "classpath:db/schema/kms_key_file.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
+@Sql(
+        scripts = {
+            "classpath:db/schema/kms_key_file.sql",
+            "classpath:db/schema/kms_secret.sql"
+        },
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 class DatabaseKmsKeyFilesIT {
     @SpringBootConfiguration
     @EnableAutoConfiguration
@@ -131,6 +138,49 @@ class DatabaseKmsKeyFilesIT {
                 .isTrue();
         assertThat(restarted.verify(alias.name(), fingerprint, algorithm, new byte[] {4}, historical.bytes()))
                 .isFalse();
+    }
+
+    @Test
+    void persistsCiphertextOnlyAndReadsUpdatedSecretAfterRestart() throws Exception {
+        String fileId = UUID.randomUUID().toString();
+        char[] password = "fixture-password".toCharArray();
+        byte[] file = testFile(password, password);
+        new DatabaseKmsKeyFiles(dataSource).importFile(fileId, new ByteArrayInputStream(file), password, password);
+
+        var runner = new ApplicationContextRunner()
+                .withConfiguration(AutoConfigurations.of(DatabaseKmsAutoConfiguration.class))
+                .withBean(DataSource.class, () -> dataSource)
+                .withPropertyValues(
+                        "loadup.kms.enabled=true",
+                        "loadup.kms.binder=database",
+                        "loadup.kms.secrets-enabled=true",
+                        "loadup.kms.secret-key-alias=payments",
+                        "loadup.kms.database.file-id=" + fileId,
+                        "KMS_KEYSTORE_PASSWORD=fixture-password");
+        runner.run(context -> {
+            assertThat(context).hasSingleBean(KmsSecretManager.class);
+            var secrets = context.getBean(KmsSecretManager.class);
+            assertThatThrownBy(() -> secrets.get("payments-token")).hasMessage("KMS operation failed: NOT_FOUND");
+            assertThatThrownBy(() -> secrets.update("payments-token", "missing"))
+                    .hasMessage("KMS operation failed: NOT_FOUND");
+            secrets.create("payments-token", "原始凭据");
+            assertThatThrownBy(() -> secrets.create("payments-token", "duplicate"))
+                    .hasMessage("KMS operation failed: INVALID_REQUEST");
+            assertThat(secrets.get("payments-token")).isEqualTo("原始凭据");
+            secrets.update("payments-token", "更新凭据");
+        });
+
+        var jdbc = JdbcClient.create(dataSource);
+        assertThat(jdbc.sql("SELECT id FROM kms_secret").query(String.class).single())
+                .matches("[a-f0-9]{64}");
+        assertThat(jdbc.sql("SELECT ciphertext FROM kms_secret")
+                        .query(String.class)
+                        .single())
+                .startsWith("local:v1:")
+                .doesNotContain("原始凭据", "更新凭据", "payments-token");
+
+        runner.run(context -> assertThat(context.getBean(KmsSecretManager.class).get("payments-token"))
+                .isEqualTo("更新凭据"));
     }
 
     private static KeyStore rsaStore(Path path, String password) throws Exception {

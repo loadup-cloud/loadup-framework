@@ -17,6 +17,7 @@ package io.github.loadup.components.kms;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -45,10 +46,32 @@ public class KmsAutoConfiguration {
             ObjectProvider<SslBundles> ssl,
             ObjectProvider<MeterRegistry> metrics) {
         KmsTokenProvider provider = tokens.getIfAvailable(() -> () -> System.getenv(properties.tokenEnv()));
-        return new OpenBaoKmsTemplate(new OpenBaoTransitClient(
+        return new OpenBaoKmsTemplate(new OpenBaoClient(
                 properties,
                 provider,
                 false,
+                builders::getObject,
+                mapper,
+                ssl.getIfAvailable(),
+                metrics.getIfAvailable()));
+    }
+
+    @Bean(destroyMethod = "close")
+    @ConditionalOnMissingBean(KmsSecretManager.class)
+    @ConditionalOnProperty(prefix = "loadup.kms", name = "secrets-enabled", havingValue = "true")
+    OpenBaoKmsSecretManager openBaoKmsSecretManager(
+            KmsProperties properties,
+            @Value("${loadup.kms.secret-mount:secret}") String mount,
+            ObjectProvider<KmsTokenProvider> tokens,
+            ObjectProvider<RestClient.Builder> builders,
+            ObjectMapper mapper,
+            ObjectProvider<SslBundles> ssl,
+            ObjectProvider<MeterRegistry> metrics) {
+        KmsTokenProvider provider = tokens.getIfAvailable(() -> () -> System.getenv(properties.tokenEnv()));
+        return new OpenBaoKmsSecretManager(OpenBaoClient.secrets(
+                properties,
+                mount,
+                provider,
                 builders::getObject,
                 mapper,
                 ssl.getIfAvailable(),
@@ -67,7 +90,7 @@ public class KmsAutoConfiguration {
             ObjectProvider<MeterRegistry> metrics) {
         KmsManagementTokenProvider provider =
                 tokens.getIfAvailable(() -> () -> System.getenv(properties.managementTokenEnv()));
-        return new OpenBaoKeyManager(new OpenBaoTransitClient(
+        return new OpenBaoKeyManager(new OpenBaoClient(
                 properties,
                 provider::token,
                 true,

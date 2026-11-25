@@ -10,3 +10,5 @@
 `new KmsKeyRef(name)` 与 `KmsKeyRef.latest(name)` 等价，默认版本为 0。使用云端原生版本的 binder 可通过结果的 `keyRef()` 返回实际密钥版本，用于之后按原密钥验签或解密。
 
 `currentSigningKey(alias)` 返回实际签名版本及公钥，`verificationKeys(alias)` 列出该 alias 仍受信任的公钥。按指纹调用 `verify` 时由业务提供可信 alias，binder 从后端筛选匹配的版本。
+
+`KmsSecretManager` 是可选的字符串凭据接口，支持按名称创建、更新及读取当前值。运行时由选中的 binder 装配，配置见 [接入说明](../README.md#字符串凭据管理)。

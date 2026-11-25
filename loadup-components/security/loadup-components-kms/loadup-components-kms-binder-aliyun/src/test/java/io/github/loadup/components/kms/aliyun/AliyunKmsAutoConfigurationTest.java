@@ -21,6 +21,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import com.aliyun.kms20160120.Client;
 import io.github.loadup.components.kms.KmsKeyManager;
+import io.github.loadup.components.kms.KmsSecretManager;
 import io.github.loadup.components.kms.KmsTemplate;
 import io.github.loadup.components.kms.aliyun.autoconfigure.AliyunKmsAutoConfiguration;
 import org.junit.jupiter.api.Test;
@@ -40,7 +41,21 @@ class AliyunKmsAutoConfigurationTest {
                 .run(context -> assertThat(context)
                         .hasSingleBean(AliyunKmsTemplate.class)
                         .hasSingleBean(KmsTemplate.class)
-                        .doesNotHaveBean(KmsKeyManager.class));
+                        .doesNotHaveBean(KmsKeyManager.class)
+                        .doesNotHaveBean(KmsSecretManager.class));
+        verifyNoInteractions(client);
+    }
+
+    @Test
+    void secretsAreOptInAndAssembleIndependentlyOfAnOverriddenTemplate() {
+        var client = mock(Client.class);
+        runner.withPropertyValues(
+                        "loadup.kms.enabled=true", "loadup.kms.binder=aliyun", "loadup.kms.secrets-enabled=true")
+                .withBean(Client.class, () -> client)
+                .withBean(KmsTemplate.class, () -> mock(KmsTemplate.class))
+                .run(context -> assertThat(context)
+                        .hasSingleBean(KmsSecretManager.class)
+                        .doesNotHaveBean(AliyunKmsTemplate.class));
         verifyNoInteractions(client);
     }
 

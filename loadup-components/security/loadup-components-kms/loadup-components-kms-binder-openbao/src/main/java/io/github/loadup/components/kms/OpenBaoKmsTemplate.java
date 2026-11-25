@@ -20,9 +20,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class OpenBaoKmsTemplate implements KmsTemplate, AutoCloseable {
-    private final OpenBaoTransitClient client;
+    private final OpenBaoClient client;
 
-    OpenBaoKmsTemplate(OpenBaoTransitClient client) {
+    OpenBaoKmsTemplate(OpenBaoClient client) {
         this.client = client;
     }
 
@@ -70,14 +70,14 @@ public final class OpenBaoKmsTemplate implements KmsTemplate, AutoCloseable {
             throw new IllegalArgumentException("Key does not support encryption");
         }
         int version = selectVersion(key, metadata);
-        String value = OpenBaoTransitClient.text(
+        String value = OpenBaoClient.text(
                 client.call(
                         "encrypt",
                         key.name(),
                         Map.of("plaintext", Base64.getEncoder().encodeToString(plaintext), "key_version", version),
                         true),
                 "ciphertext");
-        int actual = OpenBaoTransitClient.version(value);
+        int actual = OpenBaoClient.version(value);
         if (actual != version) {
             throw new KmsException(KmsException.Code.INVALID_RESPONSE);
         }
@@ -116,8 +116,8 @@ public final class OpenBaoKmsTemplate implements KmsTemplate, AutoCloseable {
         Map<String, Object> request = signatureParameters(algorithm, message);
         int version = selectVersion(key, metadata);
         request.put("key_version", version);
-        String value = OpenBaoTransitClient.text(client.call("sign", key.name(), request, true), "signature");
-        int actual = OpenBaoTransitClient.version(value);
+        String value = OpenBaoClient.text(client.call("sign", key.name(), request, true), "signature");
+        int actual = OpenBaoClient.version(value);
         if (actual != version) {
             throw new KmsException(KmsException.Code.INVALID_RESPONSE);
         }
@@ -151,7 +151,7 @@ public final class OpenBaoKmsTemplate implements KmsTemplate, AutoCloseable {
     @Override
     public KmsKeyMetadata metadata(String name) {
         var data = client.call("metadata", name, null, true);
-        if (!name.equals(OpenBaoTransitClient.text(data, "name"))
+        if (!name.equals(OpenBaoClient.text(data, "name"))
                 || !data.path("latest_version").isIntegralNumber()
                 || !data.path("latest_version").canConvertToInt()
                 || data.path("latest_version").asInt() < 1
@@ -171,7 +171,7 @@ public final class OpenBaoKmsTemplate implements KmsTemplate, AutoCloseable {
         }
         return new KmsKeyMetadata(
                 name,
-                OpenBaoTransitClient.text(data, "type"),
+                OpenBaoClient.text(data, "type"),
                 data.path("latest_version").asInt(),
                 data.path("min_encryption_version").asInt(),
                 data.path("min_decryption_version").asInt(),

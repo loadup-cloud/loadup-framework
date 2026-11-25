@@ -1,7 +1,7 @@
 # KMS Local binder
 
 坐标：io.github.loadup-cloud:loadup-components-kms-binder-local，版本由 LoadUp BOM 管理；传递引入 kms-api。
-显式设置 loadup.kms.enabled=true，binder 默认为 local。已有 KmsTemplate Bean 时整套 local 装配退让。
+显式设置 loadup.kms.enabled=true，binder 默认为 local。应用可独立提供 `KmsTemplate` 或 `KmsSecretManager` Bean。
 
 ## 能力矩阵
 
@@ -13,6 +13,7 @@
 | 加解密 | AES-GCM；保留 local:v1: 格式 |
 | 签名验签 | RSA SHA-256 PKCS1/PSS；公钥和元数据读取 |
 | 密钥版本 | alias 对应名称，仅版本 1；不支持隐式创建、自动轮换或私钥导出 |
+| 字符串凭据 | `KmsSecretManager` 按名称创建、更新及读取，目录中仅保存当前密文 |
 
 ## 文件配置
 
@@ -35,6 +36,21 @@ loadup:
 
 AuthServer 可通过 kms-api 复用签名和公钥读取，详见 [AuthServer 接入与轮换](../../loadup-components-oauth-server/README.md)。
 详细原生 KeyStore 示例及密文边界见 [KMS 接入](../README.md#local-binder)。
+
+## 字符串凭据
+
+在已有 local 配置上启用以下选项，并在 KeyStore 导入对应的专用 AES 条目。
+
+```yaml
+loadup:
+  kms:
+    secrets-enabled: true
+    secret-key-alias: credentials
+    local:
+      secret-directory: /var/lib/loadup/kms-secrets
+```
+
+为目录提供持久存储和应用写权限。文件系统需支持文件锁与原子替换。应用重启时使用同一目录和原 AES 密钥，更新值时替换对应密文。
 
 ## 保留历史验签公钥
 

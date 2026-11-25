@@ -9,6 +9,7 @@
 | 后端     | API + local/database/OpenBao/Aliyun 独立 binder；OpenBao 复用 LoadUp HTTP                                           |
 | OpenBao 密钥生成 | RSA 2048/3072/4096、AES-256-GCM；新建请求关闭导出与明文备份                           |
 | 加解密   | 字节输入；密文保留密钥名称、版本及后端包装串                                      |
+| 字符串凭据 | 四种 binder 均支持按名称创建、更新和读取。Local 写入密文文件，Database 写入 PostgreSQL，远程 binder 使用原生凭据存储 |
 | 签名验签 | SHA-256 + RSA PKCS#1 v1.5 / RSA-PSS；输入为原始字节，组件不做参数排序                 |
 | 签名输出 | 原始签名字节及 Base64；保存名称、版本、算法以支持历史验签                             |
 | OpenBao 管理操作 | 创建、轮换、最低版本配置、读取公钥、导入公钥或已经按 BYOK 包装的密钥                  |
@@ -107,6 +108,31 @@ byte[] original = kms.decrypt(KmsKeyRef.latest("sensitive-fields"), ciphertext);
 
 PSS 使用 SHA-256、MGF1-SHA256、32 字节 salt；PKCS#1 输出等价于 Java `SHA256withRSA`。组件不提供渠道规范化、证书解析、nonce
 防重放或商户授权，这些由上层协议负责。Transit 密文不等同于微信等渠道要求的特定 AES 报文格式。
+
+## 字符串凭据管理
+
+选择 binder，启用 `loadup.kms.enabled=true` 和 `loadup.kms.secrets-enabled=true`，再注入 `KmsSecretManager`。
+凭据名称由业务传入。Local 和 Database 共用 `loadup.kms.secret-key-alias` 指定专用 AES 条目，OpenBao 可另设 `loadup.kms.secret-mount`。
+
+```java
+secrets.create("payments-api-token", initialValue);
+secrets.update("payments-api-token", rotatedValue);
+String currentValue = secrets.get("payments-api-token");
+```
+
+`create` 保留已有凭据，`update` 替换已有凭据的当前值，`get` 直接读取当前值。远程后端管理各自的历史版本。名称接受 1 到 128 个英文字母、数字、
+下划线或连字符，值为 1 到 30,720 个 UTF-8 字节。调用方从受控来源提供明文，并避免把返回值写入日志。
+
+- **Aliyun** 复用现有 Java V2.0 SDK 和 RAM Role 或 AK/SK。创建通用文本凭据时使用服务端默认加密配置，已有凭据沿用原来的加密密钥。
+  读取授予 `kms:GetSecretValue`，受控写入流程按需授予 `kms:CreateSecret` 和 `kms:PutSecretValue`，自管密钥还需相应的密钥权限。
+  [Aliyun 凭据授权](https://www.alibabacloud.com/help/en/kms/key-management-service/security-and-compliance/authorization-information)
+- **OpenBao** 先启用 KV v2，默认挂载点为 `secret`，凭据保存为 `value` 字段。读取身份需要 `<mount>/data/<name>` 的 `read`，
+  创建需要 `create`，更新需要同一路径的 `patch` 和 `<mount>/metadata/<name>` 的 `read`。更新用当前版本执行比较并写入，遇到并发变更会失败。
+  [OpenBao KV v2](https://openbao.org/docs/secrets/kv/kv-v2/)
+- **Local** 将 AES-GCM 密文写入 `loadup.kms.local.secret-directory`，应用重启后用同一个目录和 AES 密钥读取。
+  [Local 接入](loadup-components-kms-binder-local/README.md#字符串凭据)
+- **Database** 将 AES-GCM 密文写入应用 schema 的 `kms_secret` 表，应用重启后用同一个 schema 和 AES 密钥读取。
+  [Database 接入](loadup-components-kms-binder-database/README.md#字符串凭据)
 
 ## 密钥管理与导入
 

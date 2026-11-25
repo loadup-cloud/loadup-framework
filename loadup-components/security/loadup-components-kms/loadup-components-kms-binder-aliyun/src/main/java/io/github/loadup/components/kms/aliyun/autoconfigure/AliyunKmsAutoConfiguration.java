@@ -17,32 +17,43 @@ package io.github.loadup.components.kms.aliyun.autoconfigure;
 
 import com.aliyun.kms20160120.Client;
 import com.aliyun.teaopenapi.models.Config;
+import io.github.loadup.components.kms.KmsSecretManager;
 import io.github.loadup.components.kms.KmsTemplate;
+import io.github.loadup.components.kms.aliyun.AliyunKmsSecretManager;
 import io.github.loadup.components.kms.aliyun.AliyunKmsTemplate;
 import io.github.loadup.components.kms.aliyun.config.AliyunKmsProperties;
 import io.github.loadup.components.kms.aliyun.config.AliyunKmsProperties.Credentials;
 import java.util.Objects;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 
 @AutoConfiguration
 @ConditionalOnProperty(prefix = "loadup.kms", name = "enabled", havingValue = "true")
 @ConditionalOnProperty(prefix = "loadup.kms", name = "binder", havingValue = "aliyun")
-@ConditionalOnMissingBean(KmsTemplate.class)
 @EnableConfigurationProperties(AliyunKmsProperties.class)
 public class AliyunKmsAutoConfiguration {
     @Bean
-    AliyunKmsTemplate aliyunKmsTemplate(
-            AliyunKmsProperties properties, ObjectProvider<Client> clients, Environment environment) {
-        return new AliyunKmsTemplate(clients.getIfAvailable(() -> createClient(properties, environment)), properties);
+    @ConditionalOnMissingBean(KmsTemplate.class)
+    AliyunKmsTemplate aliyunKmsTemplate(Client client, AliyunKmsProperties properties) {
+        return new AliyunKmsTemplate(client, properties);
     }
 
-    private static Client createClient(AliyunKmsProperties properties, Environment environment) {
+    @Bean
+    @ConditionalOnMissingBean(KmsSecretManager.class)
+    @ConditionalOnProperty(prefix = "loadup.kms", name = "secrets-enabled", havingValue = "true")
+    KmsSecretManager aliyunKmsSecretManager(Client client, AliyunKmsProperties properties) {
+        return new AliyunKmsSecretManager(client, properties);
+    }
+
+    @Bean
+    @Lazy
+    @ConditionalOnMissingBean(Client.class)
+    Client aliyunKmsClient(AliyunKmsProperties properties, Environment environment) {
         String region = properties.regionId();
         if (region == null || !region.matches("[a-z0-9]+(?:-[a-z0-9]+)+")) {
             throw new IllegalArgumentException("A valid loadup.kms.aliyun.region-id is required");

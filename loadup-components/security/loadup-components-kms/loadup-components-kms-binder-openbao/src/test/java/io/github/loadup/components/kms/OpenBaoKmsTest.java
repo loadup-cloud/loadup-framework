@@ -58,6 +58,9 @@ class OpenBaoKmsTest {
     private String forcedPath;
     private Object forcedResponse;
     private String rawResponse;
+    private final Map<String, String> secretValues = new HashMap<>();
+    private final Map<String, Integer> secretVersions = new HashMap<>();
+    private final AtomicReference<String> concurrentSecretValue = new AtomicReference<>();
 
     @BeforeEach
     void start() throws Exception {
@@ -79,9 +82,9 @@ class OpenBaoKmsTest {
                 null,
                 1024);
         kms = new OpenBaoKmsTemplate(
-                new OpenBaoTransitClient(config, token::get, false, RestClient::builder, mapper, null, null));
-        manager = new OpenBaoKeyManager(new OpenBaoTransitClient(
-                config, () -> "management-token", true, RestClient::builder, mapper, null, null));
+                new OpenBaoClient(config, token::get, false, RestClient::builder, mapper, null, null));
+        manager = new OpenBaoKeyManager(
+                new OpenBaoClient(config, () -> "management-token", true, RestClient::builder, mapper, null, null));
     }
 
     @AfterEach
@@ -140,7 +143,7 @@ class OpenBaoKmsTest {
         var signature = kms.sign(alias, KmsSignatureAlgorithm.RSA_SHA256_PKCS1, payload);
         manager.rotate(alias.name());
         try (var restarted = new OpenBaoKmsTemplate(
-                new OpenBaoTransitClient(config, token::get, false, RestClient::builder, mapper, null, null))) {
+                new OpenBaoClient(config, token::get, false, RestClient::builder, mapper, null, null))) {
             assertThat(restarted.currentSigningKey(alias.name()).fingerprint()).isNotEqualTo(old.fingerprint());
             assertThat(restarted.verify(
                             alias.name(), old.fingerprint(), signature.algorithm(), payload, signature.bytes()))
@@ -391,7 +394,7 @@ class OpenBaoKmsTest {
                 null,
                 null,
                 1024);
-        try (OpenBaoKmsTemplate failing = new OpenBaoKmsTemplate(new OpenBaoTransitClient(
+        try (OpenBaoKmsTemplate failing = new OpenBaoKmsTemplate(new OpenBaoClient(
                 configuration,
                 () -> {
                     throw new IllegalStateException("synthetic secret token failure");
@@ -429,6 +432,48 @@ class OpenBaoKmsTest {
         manager.importPublicKey("merchant", KmsKeyType.RSA_2048, publicPem());
         assertThat(requests.getLast().body().path("public_key").asString()).isEqualTo(publicPem());
         assertThat(requests.getLast().body().path("allow_rotation").asBoolean()).isFalse();
+    }
+
+    @Test
+    void keepsNamedValuesInKvV2AndReadsTheCurrentVersionFromANewManager() {
+        try (var secrets = secretManager()) {
+            assertThatThrownBy(() -> secrets.get("payments-token"))
+                    .hasMessage("KMS operation failed: NOT_FOUND")
+                    .hasNoCause();
+            assertThatThrownBy(() -> secrets.update("payments-token", "absent"))
+                    .hasMessage("KMS operation failed: NOT_FOUND");
+            secrets.create("payments-token", "凭据初始值");
+            assertThatThrownBy(() -> secrets.create("payments-token", "duplicate"))
+                    .hasMessage("KMS operation failed: INVALID_REQUEST");
+            assertThat(secrets.get("payments-token")).isEqualTo("凭据初始值");
+            secrets.update("payments-token", "凭据更新值");
+        }
+        try (var secrets = secretManager()) {
+            assertThat(secrets.get("payments-token")).isEqualTo("凭据更新值");
+        }
+        assertThat(requests)
+                .extracting(Request::path)
+                .contains("/v1/payments/secrets/data/payments-token", "/v1/payments/secrets/metadata/payments-token");
+        assertThat(requests).allSatisfy(request -> {
+            assertThat(request.token()).isEqualTo("runtime-token");
+            assertThat(request.namespace()).isEqualTo("tenant");
+        });
+    }
+
+    private OpenBaoKmsSecretManager secretManager() {
+        return new OpenBaoKmsSecretManager(
+                OpenBaoClient.secrets(config, "payments/secrets", token::get, RestClient::builder, mapper, null, null));
+    }
+
+    @Test
+    void patchDoesNotOverwriteAConcurrentSecretUpdate() {
+        try (var secrets = secretManager()) {
+            secrets.create("payments-token", "original");
+            concurrentSecretValue.set("concurrent");
+            assertThatThrownBy(() -> secrets.update("payments-token", "stale-writer"))
+                    .hasMessage("KMS operation failed: INVALID_REQUEST");
+            assertThat(secrets.get("payments-token")).isEqualTo("concurrent");
+        }
     }
 
     private Map<String, Object> metadataData() {
@@ -473,7 +518,9 @@ class OpenBaoKmsTest {
                 send(exchange, 200, forcedResponse);
                 return;
             }
-            if (path.contains("/sign/")) {
+            if (path.startsWith("/v1/payments/secrets/")) {
+                respondToSecret(exchange, path, request);
+            } else if (path.contains("/sign/")) {
                 var signer = signature(request);
                 signer.initSign((request.path("key_version").asInt() == 1 ? keyPair : rotatedPair).getPrivate());
                 signer.update(Base64.getDecoder().decode(request.path("input").asString()));
@@ -565,6 +612,45 @@ class OpenBaoKmsTest {
                 exchange.close();
             }
         }
+    }
+
+    private void respondToSecret(HttpExchange exchange, String path, JsonNode request) throws Exception {
+        String name = path.substring(path.lastIndexOf('/') + 1);
+        int version = secretVersions.getOrDefault(name, 0);
+        if ("GET".equals(exchange.getRequestMethod())) {
+            if (version == 0) {
+                send(exchange, 404, Map.of("errors", List.of("synthetic internal details")));
+            } else if (path.contains("/metadata/")) {
+                send(exchange, 200, Map.of("data", Map.of("current_version", version)));
+            } else {
+                send(exchange, 200, Map.of("data", Map.of("data", Map.of("value", secretValues.get(name)))));
+            }
+            return;
+        }
+        String concurrentValue = concurrentSecretValue.getAndSet(null);
+        if (concurrentValue != null && "PATCH".equals(exchange.getRequestMethod())) {
+            version++;
+            secretVersions.put(name, version);
+            secretValues.put(name, concurrentValue);
+        }
+        int cas = request.path("options").path("cas").asInt(-1);
+        boolean valid =
+                switch (exchange.getRequestMethod()) {
+                    case "POST" -> version == 0 && cas == 0;
+                    case "PATCH" ->
+                        version > 0
+                                && cas == version
+                                && "application/merge-patch+json"
+                                        .equals(exchange.getRequestHeaders().getFirst("Content-Type"));
+                    default -> false;
+                };
+        if (!valid) {
+            send(exchange, 400, Map.of("errors", List.of("synthetic write failure")));
+            return;
+        }
+        secretValues.put(name, request.path("data").path("value").asString());
+        secretVersions.put(name, version + 1);
+        send(exchange, 200, Map.of("data", Map.of("version", version + 1)));
     }
 
     private Signature signature(JsonNode request) throws Exception {

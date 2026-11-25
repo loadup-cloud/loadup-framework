@@ -19,9 +19,9 @@ import java.util.Base64;
 import java.util.Map;
 
 public final class OpenBaoKeyManager implements KmsKeyManager, AutoCloseable {
-    private final OpenBaoTransitClient client;
+    private final OpenBaoClient client;
 
-    OpenBaoKeyManager(OpenBaoTransitClient client) {
+    OpenBaoKeyManager(OpenBaoClient client) {
         this.client = client;
     }
 
@@ -60,7 +60,7 @@ public final class OpenBaoKeyManager implements KmsKeyManager, AutoCloseable {
 
     @Override
     public String wrappingPublicKey() {
-        return OpenBaoTransitClient.text(client.call("wrapping", null, null, true), "public_key");
+        return OpenBaoClient.text(client.call("wrapping", null, null, true), "public_key");
     }
 
     @Override

@@ -167,6 +167,18 @@ CREATE TABLE IF NOT EXISTS kms_key_file
 );
 -- END loadup-components/security/loadup-components-kms/loadup-components-kms-binder-database/src/main/resources/db/schema/kms_key_file.sql
 
+-- BEGIN loadup-components/security/loadup-components-kms/loadup-components-kms-binder-database/src/main/resources/db/schema/kms_secret.sql
+-- SHA-256: 7e864b54aa5df45e11b33c6639ce1ae28656e800d88d51628ffa0bb45640606c
+CREATE TABLE IF NOT EXISTS kms_secret
+(
+    id         VARCHAR(64) NOT NULL PRIMARY KEY,
+    ciphertext TEXT         NOT NULL CHECK (char_length(ciphertext) BETWEEN 1 AND 42000),
+    created_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
+    updated_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
+    deleted    BOOLEAN      NOT NULL DEFAULT FALSE
+);
+-- END loadup-components/security/loadup-components-kms/loadup-components-kms-binder-database/src/main/resources/db/schema/kms_secret.sql
+
 -- BEGIN loadup-modules/loadup-modules-audit/loadup-modules-audit-core/src/main/resources/db/migration/framework/audit/V20261002000001__create_audit_event.sql
 -- SHA-256: d3b86adb792efc83d7d0b3bd209261ef7c8a7c3b0061e8b6c061c0f210aa989d
 CREATE TABLE IF NOT EXISTS audit_event

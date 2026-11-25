@@ -13,6 +13,7 @@
 | 版本 | 签名和密文携带 KMS 返回的原始密钥及版本 ID |
 | 凭证 | ECS/ECI 实例 RAM Role 或 RAM 用户 AK/SK |
 | 密钥管理 | 在阿里云控制台或管理流程中创建、轮换和导入密钥 |
+| 字符串凭据 | 可选的 `KmsSecretManager`，通过 `CreateSecret`、`PutSecretValue`、`GetSecretValue` 管理通用文本凭据 |
 
 ## 配置
 
@@ -49,6 +50,8 @@ loadup:
 ## 所用 SDK
 
 `kms20160120` 是阿里云 KMS Java SDK V2.0，提供签名、验签、加解密和密钥元数据接口。`alibabacloud-secretsmanager-client-v2` 的 Java 接入入口按 Secret 名称读取及缓存凭据，例如数据库密码。参见 [阿里云 KMS OpenAPI Java SDK](https://www.alibabacloud.com/help/en/kms/key-management-service/developer-reference/install-the-alibaba-cloud-sdk-java) 和 [凭据客户端文档](https://help.aliyun.com/zh/kms/key-management-service/developer-reference/secrets-manager-client)。
+
+设置 `loadup.kms.secrets-enabled=true` 后，binder 使用同一个 `kms20160120` 客户端执行凭据生命周期操作。写入时生成版本 ID，读取时使用 KMS 当前版本 `ACSCurrent`。接入与权限见 [字符串凭据管理](../README.md#字符串凭据管理)。
 
 ## 轮换与历史数据
 

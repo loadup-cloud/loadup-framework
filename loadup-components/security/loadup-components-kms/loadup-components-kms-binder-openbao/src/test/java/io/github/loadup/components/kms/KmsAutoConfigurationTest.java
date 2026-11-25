@@ -50,6 +50,7 @@ class KmsAutoConfigurationTest {
         context.run(application -> {
             assertThat(application).doesNotHaveBean(KmsTemplate.class);
             assertThat(application).doesNotHaveBean(KmsKeyManager.class);
+            assertThat(application).doesNotHaveBean(KmsSecretManager.class);
         });
     }
 
@@ -61,10 +62,27 @@ class KmsAutoConfigurationTest {
                         "loadup.kms.endpoint=https://bao.example.test/")
                 .withBean(KmsTokenProvider.class, () -> () -> "runtime")
                 .run(application -> {
-                    assertThat(application).hasSingleBean(KmsTemplate.class).doesNotHaveBean(KmsKeyManager.class);
+                    assertThat(application)
+                            .hasSingleBean(KmsTemplate.class)
+                            .doesNotHaveBean(KmsKeyManager.class)
+                            .doesNotHaveBean(KmsSecretManager.class);
                     assertThat(application.getBean(KmsProperties.class).endpoint())
                             .isEqualTo(URI.create("https://bao.example.test"));
                 });
+    }
+
+    @Test
+    void secretManagerCanBeEnabledWithoutEnablingKeyAdministration() {
+        context.withPropertyValues(
+                        "loadup.kms.binder=openbao",
+                        "loadup.kms.enabled=true",
+                        "loadup.kms.secrets-enabled=true",
+                        "loadup.kms.secret-mount=payments/secrets",
+                        "loadup.kms.endpoint=https://bao.example.test")
+                .withBean(KmsTokenProvider.class, () -> () -> "runtime")
+                .run(application -> assertThat(application)
+                        .hasSingleBean(KmsSecretManager.class)
+                        .doesNotHaveBean(KmsKeyManager.class));
     }
 
     @Test

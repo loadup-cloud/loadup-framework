@@ -15,11 +15,15 @@
  */
 package io.github.loadup.components.kms.database.autoconfigure;
 
+import io.github.loadup.components.kms.KmsSecretManager;
 import io.github.loadup.components.kms.KmsTemplate;
 import io.github.loadup.components.kms.database.DatabaseKmsKeyFiles;
+import io.github.loadup.components.kms.database.DatabaseKmsSecretStore;
 import io.github.loadup.components.kms.database.config.DatabaseKmsProperties;
+import io.github.loadup.components.kms.keystore.KeyStoreKmsSecretManager;
 import java.util.Arrays;
 import javax.sql.DataSource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -51,6 +55,15 @@ public class DatabaseKmsAutoConfiguration {
                 Arrays.fill(keyPassword, '\0');
             }
         }
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(KmsSecretManager.class)
+    @ConditionalOnProperty(prefix = "loadup.kms", name = "secrets-enabled", havingValue = "true")
+    @DependsOnDatabaseInitialization
+    KmsSecretManager databaseKmsSecretManager(
+            DataSource dataSource, KmsTemplate kms, @Value("${loadup.kms.secret-key-alias:}") String keyAlias) {
+        return new KeyStoreKmsSecretManager(kms, keyAlias, new DatabaseKmsSecretStore(dataSource));
     }
 
     @Bean
