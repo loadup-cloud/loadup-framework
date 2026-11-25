@@ -72,7 +72,7 @@ loadup-framework/
 │   ├── security/       # authorization, oauth-server（含资源服务器装配）, service-auth, captcha, kms, signature
 │   ├── web/            # webmvc, springdoc
 │   ├── data/           # cache, database, dfs
-│   ├── integration/    # http, gotone, payment-channel
+│   ├── integration/    # http, rpc
 │   ├── reliability/    # lock, task, globalunique, resilience4j
 │   ├── execution/      # scheduler, pipeline
 │   └── platform/       # configcenter, extension, observability, testcontainers
@@ -127,7 +127,7 @@ loadup-components-{domain}/
 
 ### 多后端共存模式（Mode B）
 
-适用于多个 Provider 同时活跃、运行时数据驱动路由。当前为 Gotone 与 payment-channel。
+适用于多个 Provider 同时活跃、运行时数据驱动路由。业务侧实例见 Modules Notification 的 Gotone 和 Pay 的 Payment Channel。
 
 ```
 loadup-components-{domain}/

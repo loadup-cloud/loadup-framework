@@ -27,7 +27,7 @@ mvnd clean deploy -Prelease
 
 测试和覆盖率等内部模块通过 `maven.deploy.skip=true` 排除发布。Central 插件的 `skipPublishing` 同样读取该属性，
 保证两个目标使用相同的制品范围。
-Framework 的 cache、dfs、gotone、authserver、captcha、async-result、configcenter 的 `*-test` 模块均不上传；
+Framework 的 cache、dfs、authserver、captcha、async-result、configcenter 的 `*-test` 模块均不上传；
 这些模块仍参与正常构建和测试，跳过发布不等于跳过测试执行。
 
 普通模块与独立 BOM 默认使用 `maven.deploy.skip=false`，SNAPSHOT 每次 deploy 都上传，不因远程已存在相同的

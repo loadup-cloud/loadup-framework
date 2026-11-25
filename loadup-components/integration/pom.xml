@@ -15,8 +15,6 @@
 
         <module>loadup-components-http</module>
         <module>loadup-components-rpc</module>
-        <module>loadup-components-gotone</module>
-        <module>loadup-components-payment-channel</module>
     </modules>
 
 </project>

@@ -19,7 +19,7 @@ Spring Boot 的 Clock、日志、JSON 装配与 MapStruct 共享配置由
 `BusinessTime` 跟随系统默认时区，通用 `Money` 保留多币种、有符号金额语义。
 
 `BaseDO` 由 [database](../loadup-components/data/loadup-components-database/README.md) 提供；渠道枚举与固定 CNY
-金额校验由 [payment-channel-contracts](../loadup-components/integration/loadup-components-payment-channel/loadup-components-payment-channel-contracts/README.md)
+金额校验由 [payment-channel-contracts](https://github.com/loadup-cloud/loadup-pay/tree/main/loadup-pay-payment-channel/loadup-pay-payment-channel-contracts)
 提供。商业合约引用由消费方 Pay 的 `pay-contracts-commercial` 拥有。
 
 依赖方向和职责见 [ARCHITECTURE.md](ARCHITECTURE.md)。
