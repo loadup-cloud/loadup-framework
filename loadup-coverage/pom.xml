@@ -60,7 +60,7 @@
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-scheduler</artifactId>
+            <artifactId>loadup-components-scheduler-api</artifactId>
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
