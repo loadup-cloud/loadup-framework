@@ -33,8 +33,9 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
+import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import tech.powerjob.client.PowerJobClient;
 import tech.powerjob.worker.core.processor.ProcessResult;
@@ -72,10 +73,10 @@ class PowerJobIntegrationTest {
                     case "jdk", "cglib" -> new DelegatingProcessor(processor);
                     default -> processor;
                 };
-        var factory = new AspectJProxyFactory(target);
+        var factory = new ProxyFactory(target);
         factory.setProxyTargetClass("cglib".equals(implementation));
-        factory.addAspect(new PowerJobProcessorAspect(registry));
-        return factory.getProxy();
+        factory.addAdvisor(new PowerJobProcessorAdvisor(registry));
+        return (BasicProcessor) factory.getProxy();
     }
 
     @Test
@@ -122,14 +123,34 @@ class PowerJobIntegrationTest {
 
     @Test
     void clientIsOptInAndCustomClientIsClosedBySpring() throws Exception {
-        runner.run(context ->
-                assertThat(context).doesNotHaveBean(PowerJobClient.class).hasSingleBean(PowerJobProcessorAspect.class));
+        runner.run(context -> assertThat(context)
+                .doesNotHaveBean(PowerJobClient.class)
+                .hasSingleBean(PowerJobProcessorAdvisor.class));
         var client = mock(PowerJobClient.class);
         runner.withBean(PowerJobClient.class, () -> client, definition -> definition.setDestroyMethodName("close"))
                 .withPropertyValues("powerjob.client.enabled=true")
                 .run(context ->
                         assertThat(context.getBean(PowerJobClient.class)).isSameAs(client));
         verify(client).close();
+    }
+
+    @Test
+    void autoConfigurationAdvisesSpringManagedLambdaProcessors() {
+        runner.withConfiguration(AutoConfigurations.of(AopAutoConfiguration.class))
+                .withPropertyValues("spring.aop.proxy-target-class=false")
+                .withBean(BasicProcessor.class, () -> context -> {
+                    assertThat(ContextHolder.get(PowerJobExecutionContext.JOB_ID))
+                            .isEqualTo(context.getJobId());
+                    return new ProcessResult(true);
+                })
+                .run(context -> {
+                    assertThat(context).hasNotFailed();
+                    assertThat(context.getBean(BasicProcessor.class)
+                                    .process(task())
+                                    .isSuccess())
+                            .isTrue();
+                    assertThat(ContextHolder.isBound()).isFalse();
+                });
     }
 
     @Test

@@ -19,6 +19,7 @@ import io.github.loadup.commons.error.CommonException;
 import io.micrometer.observation.ObservationRegistry;
 import java.util.Arrays;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -26,6 +27,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Role;
 import tech.powerjob.client.PowerJobClient;
 import tech.powerjob.worker.autoconfigure.PowerJobProperties;
 
@@ -39,9 +41,10 @@ public class LoadUpPowerJobAutoConfiguration {
     }
 
     @Bean
+    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     @ConditionalOnMissingBean
-    public PowerJobProcessorAspect powerJobProcessorAspect(ObjectProvider<ObservationRegistry> observations) {
-        return new PowerJobProcessorAspect(observations.getIfAvailable(() -> ObservationRegistry.NOOP));
+    public PowerJobProcessorAdvisor powerJobProcessorAdvisor(ObjectProvider<ObservationRegistry> observations) {
+        return new PowerJobProcessorAdvisor(observations.getIfAvailable(() -> ObservationRegistry.NOOP));
     }
 
     @Bean(destroyMethod = "close")

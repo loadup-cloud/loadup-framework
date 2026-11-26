@@ -20,24 +20,34 @@ import io.github.loadup.commons.context.ExecutionContext;
 import io.github.loadup.commons.error.CommonException;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
+import java.lang.reflect.Method;
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.aop.support.AopUtils;
+import org.springframework.aop.support.StaticMethodMatcherPointcutAdvisor;
 import tech.powerjob.worker.core.processor.ProcessResult;
 import tech.powerjob.worker.core.processor.TaskContext;
+import tech.powerjob.worker.core.processor.sdk.BasicProcessor;
 
-@Aspect
-public class PowerJobProcessorAspect {
+@SuppressWarnings("serial")
+public final class PowerJobProcessorAdvisor extends StaticMethodMatcherPointcutAdvisor {
     private final ObservationRegistry observations;
 
-    public PowerJobProcessorAspect(ObservationRegistry observations) {
+    public PowerJobProcessorAdvisor(ObservationRegistry observations) {
         this.observations = observations;
+        setClassFilter(BasicProcessor.class::isAssignableFrom);
+        setAdvice((MethodInterceptor) this::process);
     }
 
-    @Around("target(tech.powerjob.worker.core.processor.sdk.BasicProcessor)"
-            + " && execution(* process(tech.powerjob.worker.core.processor.TaskContext)) && args(task)")
-    public Object process(ProceedingJoinPoint invocation, TaskContext task) throws Throwable {
+    @Override
+    public boolean matches(Method method, Class<?> targetClass) {
+        return method.getName().equals("process")
+                && method.getParameterCount() == 1
+                && method.getParameterTypes()[0] == TaskContext.class;
+    }
+
+    private Object process(MethodInvocation invocation) throws Throwable {
+        var task = (TaskContext) invocation.getArguments()[0];
         var context = ExecutionContext.empty()
                 .with(PowerJobExecutionContext.JOB_ID, task.getJobId())
                 .with(PowerJobExecutionContext.INSTANCE_ID, task.getInstanceId())
@@ -47,7 +57,7 @@ public class PowerJobProcessorAspect {
             Observation observation = Observation.createNotStarted("loadup.powerjob.process", observations)
                     .lowCardinalityKeyValue(
                             "processor",
-                            AopUtils.getTargetClass(invocation.getTarget()).getName())
+                            AopUtils.getTargetClass(invocation.getThis()).getName())
                     .start();
             try (var _ = observation.openScope()) {
                 ProcessResult result = (ProcessResult) invocation.proceed();
