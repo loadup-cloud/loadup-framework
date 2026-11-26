@@ -2,6 +2,25 @@
 
 单一 jar、单一 TaskTemplate/TaskHandler 接口、单一任务主表。消息载荷与执行时间是任务属性，不设旧组件模式或双状态机。
 
+## 提交、执行与确认
+
+```mermaid
+sequenceDiagram
+    participant App as 业务服务
+    participant DB as PostgreSQL
+    participant Worker as Task Worker
+    participant Handler as Task Handler
+    App->>DB: 同事务写入业务记录与待执行任务
+    Worker->>DB: 短事务领取并设置 token 与租约
+    DB-->>Worker: 返回已提交的任务快照
+    Worker->>Handler: 在领取事务之外执行
+    alt 执行成功
+        Worker->>DB: 按 token 与有效租约确认删除
+    else 执行失败
+        Worker->>DB: 条件更新下次时间或标记 FAILED
+    end
+```
+
 业务事务：业务写入 + submit，同步提交或回滚。
 领取事务：仅在本实例可处理的类型中恢复已耗尽尝试次数的过期租约，再用 SKIP LOCKED 领取一条记录，生成新 token、递增 attempts、设置租约，提交。
 事务外：调用 Handler。

@@ -91,14 +91,12 @@ client.error，HTTP 报文由 commons-dto/WebMVC 装配。
 README 和 ARCHITECTURE 合并为一页，文档站首页与文档入口页手工维护。
 
 ```bash
-python3 doc-sync-agent.py          # Preview changes
-python3 doc-sync-agent.py --apply  # Synchronize generated Markdown
-python3 doc-sync-agent.py --check  # Fail on stale generated pages
-python3 doc-sync-agent.py --build  # Synchronize and build Hugo
+python3 doc-sync-agent.py --module loadup-components/data/loadup-components-database
+python3 doc-sync-agent.py --module loadup-components/data/loadup-components-database --apply
+python3 doc-sync-agent.py --module loadup-components/data/loadup-components-database --check
 ```
 
-脚本只清理带生成标记的过期页面及其空父目录；`--build` 通过 Hugo 清理旧输出。IDEA 的 `.iml` 不属于文档产物，移动模块后需按根
-POM 同步 Maven 项目。
+依次预览、更新和核对同一模块。多个模块可重复传入 `--module`。在与 Modules、Testify 共享的站点上使用定向同步，避免全量清理其他仓库的页面。站点维护见 [文档站说明](../docs/README.md)。
 
 ## Maven 质量检查
 

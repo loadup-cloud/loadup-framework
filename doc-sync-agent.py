@@ -165,8 +165,8 @@ def render(module: Path, target: Path, mapping: dict[Path, Path]) -> str:
     title = navigation_title(match.group(1)) if match else module.name
     relative = module.relative_to(ROOT).as_posix()
     if module.relative_to(ROOT).parts[0] == "loadup-components":
-        # Functional category directories are not Maven modules; keep their component pages visible.
-        technical = module != ROOT / "loadup-components" and (module.parent / "pom.xml").is_file()
+        # Keep the category and component pages visible. Only their implementation submodules are technical.
+        technical = len(module.relative_to(ROOT).parts) > 3
     else:
         technical = len(module.relative_to(ROOT).parts) > 2 or module.parent.name == "loadup-testify"
     frontmatter = f"---\ntitle: {json.dumps(title, ensure_ascii=False)}\n"

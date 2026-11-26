@@ -1,4 +1,4 @@
-# LoadUp Cache — Architecture
+# KV 缓存架构
 
 ## 1. 设计定位
 
@@ -10,18 +10,13 @@ LoadUp Cache 的 facade 就是 **Spring Cache 标准门面**：业务代码只�
 
 ## 2. 架构图
 
-```
-业务代码（@Cacheable / @CacheEvict / @CachePut）
-        │
-        ▼
-Spring Cache 抽象（CacheManager / Cache 接口）          ← 标准门面
-        │
-        ▼
-loadup-components-cache-api（LoadupCacheProperties + CacheJsonCodec + 防雪崩语义）
-        │                        │
-        ├── binder-caffeine ─────┤  LoadupCaffeineCacheManager（Caffeine Expiry 实现 TTL/抖动）
-        ├── binder-redis ────────┤  RedisCacheManager + GenericJacksonJsonRedisSerializer
-        └── binder-jetcache ─────┘  JetCacheSpringCacheManager（本地 Caffeine + 可选 Redis 远程）
+```mermaid
+flowchart TD
+    Business["业务缓存注解"] --> Cache["Spring Cache"]
+    Settings["KV API 的统一配置与 TTL 规则"] --> Cache
+    Cache --> Caffeine["Caffeine · 进程内"]
+    Cache --> Redis["Redis · 共享缓存"]
+    Cache --> JetCache["JetCache · 可选多级缓存"]
 ```
 
 - `loadup.cache.type` 与 binder 自动配置的 `@ConditionalOnProperty` 绑定：classpath 上有哪个
@@ -72,7 +67,7 @@ JetCache 用每次写入的 `expire` 参数，保证同一配置在不同底层�
 
 ## 4. 扩展点：新增 binder
 
-1. 新建 `loadup-components-cache-binder-{impl}`，只依赖 `-api`；
+1. 新建 `loadup-components-kv-binder-{impl}`，只依赖 `-api`；
 2. 提供 `CacheManager` bean + `@ConditionalOnProperty(prefix="loadup.cache", name="type",
    havingValue="{type}")`，并在 `META-INF/spring/...AutoConfiguration.imports` 注册；
 3. TTL / 空值 / 随机过期必须复用 api 的 `LoadupCacheProperties` 与 `RandomExpiration`；
@@ -82,7 +77,7 @@ JetCache 用每次写入的 `expire` 参数，保证同一配置在不同底层�
 
 | 约束                           | 执行方式                                                                           |
 |--------------------------------|------------------------------------------------------------------------------------|
-| 业务模块只依赖 `-cache-api`    | binder 由集成方工程选定；BOM 单点管理版本                                           |
+| 业务模块只依赖 `-kv-api`    | binder 由集成方工程选定；BOM 单点管理版本                                           |
 | 业务代码只用 Spring Cache 注解 | `CacheJsonCodec` / JetCache 适配不暴露给业务；API 层不提供手写 CRUD 门面           |
 | 切 binder 零代码修改           | `AbstractCacheBinderIT` 同一业务服务在 caffeine/redis/jetcache 上跑同一套用例      |
 | 中间件 API 不泄漏              | binder 的配置走 `loadup.cache.*` / `loadup.cache.binder.*`，不要求业务感知实现细节 |

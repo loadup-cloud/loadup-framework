@@ -11,35 +11,28 @@ commons → components → modules → 消费工程
 
 ## 功能分类与职责
 
-| 分类          | 定位       | 组件职责                                                                                                                                               |
-|---------------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `security`    | 安全与身份 | authorization：方法授权；authserver：OAuth2 令牌签发；resource-server：JWT 校验；captcha：验证码；kms：OpenBao 密钥管理；signature：数字签名及请求验签 |
-| `web`         | Web 接入   | webmvc：JSON 报文和错误处理；springdoc：OpenAPI 与 Scalar                                                                                              |
-| `data`        | 数据与存储 | cache：缓存；database：数据库集成；dfs：文件存储                                                                                                       |
-| `integration` | 外部集成   | http：出站 HTTP；rpc：服务间调用                       |
-| `reliability` | 可靠性     | async-result：异步业务结果等待与跨实例回传；lock：同步分布式互斥；task：事务内持久化任务、定时执行与可靠投递；globalunique：幂等控制；resilience4j：熔断、重试、限流         |
-| `execution`   | 任务与执行 | Scheduler：可切换本地 / PowerJob 唤醒（PowerJob 能力归属 binder）；pipeline：流水线编排                |
-| `platform`    | 平台基础   | configcenter：配置中心；extension：扩展机制；observability：Micrometer 指标与追踪；testcontainers：测试容器                                            |
+| 分类 | 组件 |
+| --- | --- |
+| [数据与存储](data/ARCHITECTURE.md) | KV 与缓存、数据库、数据库处理器、文件存储 |
+| [调度与执行](execution/ARCHITECTURE.md) | 任务调度、执行流水线 |
+| [应用集成](integration/ARCHITECTURE.md) | HTTP 客户端、RPC |
+| [平台基础](platform/ARCHITECTURE.md) | 配置中心、运行时装配、应用观测、业务扩展、测试容器 |
+| [应用可靠性](reliability/ARCHITECTURE.md) | 持久化任务、异步结果、分布式锁、幂等声明、调用容错 |
+| [安全与身份](security/ARCHITECTURE.md) | OAuth2 与 JWT、方法授权、服务身份、密钥与机密管理、报文签名、验证码 |
+| [Web 接入](web/ARCHITECTURE.md) | WebMVC、接口文档 |
 
-## 分类目录与 Maven 边界
+## Maven 与运行边界
 
-分类目录只负责源码导航，不承担自动装配、共享配置、运行接口或依赖约束。分类下不存在新的聚合 Parent，根 components POM 直接通过
-`security/loadup-components-kms` 等路径聚合原组件。
-
-- artifactId、版本归属、Java 包、配置前缀与自动配置文件保持原契约。
-- 所有组件及其子模块的 Parent 都是根 `loadup-parent`，`relativePath` 显式指向根 POM。
-- 分类不对应部署单元，也不意味着同类组件必须一起引入。
-- 横向协作仍通过明确的公开 API 或 binder；目录分类不代替真实依赖边界。
+父 reactor 通过七个分类 POM 聚合具体组件。组件继承的 Maven Parent 由各自 POM 声明，依赖通过 BOM 对齐。运行期选择以具体组件的依赖、自动配置和宿主设置为准。
 
 ## 组件内部结构
 
-一次选择一个后端的组件使用 API + binder。只有一个实现的组件采用单一 JAR。Gotone 由 Modules Notification 提供，
+一次选择一个后端的组件使用 API + binder。只有一个实现的组件采用单一 JAR。Gotone 由 Modules 提供，
 Payment Channel 由 Pay 提供。两者通过各自 BOM 发布。
 
 ## 文档与开发工具
 
-每个 Maven 模块保留 README 和 ARCHITECTURE。组件根 README 提供分类索引；文档站同步器按 Maven 模块名保留原页面
-URL，新增目录层级不会隐藏组件主页面，子实现页面继续作为技术细节隐藏在侧栏之外。
+每个 Maven 模块维护 README 和 ARCHITECTURE。组件根 README 提供分类索引，文档站按工件名保留组件与实现的独立页面。
 
 源码引用、定向 Maven 路径及根 Parent 的相对路径随目录迁移更新。优先采用 `-pl :artifactId` 的选择方式减少路径耦合。CodeGraph
 与 IDE 的本地索引应在迁移后刷新。

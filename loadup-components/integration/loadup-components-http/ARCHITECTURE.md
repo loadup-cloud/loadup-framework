@@ -1,4 +1,4 @@
-# HTTP Architecture
+# HTTP 客户端架构
 
 ## 定位与技术栈
 
@@ -9,18 +9,16 @@
 
 ## 调用流程
 
-```text
-读取不可变客户端快照
-→ 解析配置中的操作及编码变量
-→ 校验目标
-→ 将请求体序列化为受限 byte[]
-→ 合并客户端头、操作头、调用头和凭证头
-→ 可选 signer 接收最终 method/URI/原字节并写入签名头
-→ 清理部署头，仅对内部服务目标写入当前部署标识
-→ RestClient exchange
-→ 读取受限响应或复制到调用方输出流
-→ 保留协议状态与头
-→ 释放响应及快照读锁
+```mermaid
+flowchart TD
+    Read["读取不可变客户端快照"] --> Target["解析操作并校验目标"]
+    Target --> Bytes["生成有大小限制的请求字节"]
+    Bytes --> Headers["合并允许的请求头与凭证"]
+    Headers --> Sign["按需签名最终 URI 与原始字节"]
+    Sign --> Deploy["为内部服务写入部署标识"]
+    Deploy --> Request["通过 RestClient 发送"]
+    Request --> Response["有界读取响应或复制到输出流"]
+    Response --> Close["返回协议状态和头并释放资源"]
 ```
 
 HTTP 状态错误与传输失败分别表达。4xx/5xx 不触发自动异常或重试，调用方检查业务协议；传输异常只保留安全分类，不暴露可能包含敏感

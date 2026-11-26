@@ -1,24 +1,21 @@
-# DFS architecture
+# DFS 架构
 
-Each binder directly implements and registers `DfsTemplate`.
+## 运行时装配
 
-```text
-Business code → DfsTemplate implementation → storage system
+```mermaid
+flowchart LR
+    App["File 模块或业务代码"] --> API["DfsTemplate"]
+    Config["binder-type"] -.-> API
+    API --> Local["Local 实现与文件系统"]
+    API --> S3["S3 实现与对象存储"]
+    API --> DB["Database 实现与 dfs_file"]
 ```
 
-Each binder declares its own `loadup.dfs.binder-type` value. Optional consumers such as File evaluate their bean conditions after
-`DfsAutoConfiguration`. Each binder orders its auto-configuration before that shared point.
+每个 binder 直接实现并注册 `DfsTemplate`，通过 `loadup.dfs.binder-type` 控制生效。配置在共享的 `DfsAutoConfiguration` 之前加载，File 等可选消费者在共享装配点之后检查 Bean。
 
-The S3 binder uses AWS SDK `S3Client` and `S3Presigner`, persists user metadata as object metadata, supports presigned
-GET URLs, and exposes the S3 multipart lifecycle. It accepts AWS S3, MinIO, OSS, COS, and LocalStack through endpoint
-and path-style settings.
+S3 binder 管理 AWS SDK 的 `S3Client` 和 `S3Presigner`，通过对象元数据记录文件名和用户数据，提供预签名 GET 与分片操作。通过 endpoint 和 path-style 参数可连接兼容服务。Local binder 将文件和旁车元数据分别写在根目录下。Database binder 使用 Spring JDBC 在 `dfs_file` 保存内容、JSON 元数据和审计字段，适合过渡期小文件。
 
-The local binder stores objects and sidecar metadata below the configured root. The database binder stores small objects
-and JSON metadata in `dfs_file`, using Spring JDBC and explicit audit fields. Database storage is retained as a
-transitional implementation and is not the production default.
-
-Download responses implement `AutoCloseable`; callers must close them after consuming the stream. Binders own their
-clients and never expose SDK types through the facade.
+公开契约使用组件自身的请求、响应和能力接口。binder 持有底层客户端，下载响应负责关闭数据流，由调用方在读取结束后关闭。
 
 ## 分层与调用路径
 

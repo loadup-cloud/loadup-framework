@@ -8,7 +8,7 @@
 
 直接依赖的框架模块：
 
-- `loadup-components-cache-api`
+- `loadup-components-kv-api`
 
 直接依赖的外部坐标（不含测试与 provided scope）：
 

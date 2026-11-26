@@ -1,140 +1,55 @@
-# Database Component Architecture
+# Database 组件架构
 
-## Scope
+## 持久化边界
 
-`loadup-components-database` is the runtime integration for MyBatis-Flex and Spring JDBC. It owns persistence
-conventions, generated mapper/table definitions, ID/sequence allocation, Flyway defaults and one fixed schema target.
-Applications own datasource selection, JDBC drivers and deployment migrations.
+组件为 MyBatis-Flex 和 Spring JDBC 提供持久化约定、共享事务、固定 schema、Flyway 装配以及 ID 和序列能力。宿主选择数据源、驱动和部署迁移。简单查询由生成 Mapper、`ServiceImpl` 和 `QueryWrapper` 处理，复杂筛选、加锁、条件更新与批处理使用参数化 JDBC。
 
-Spring Data JDBC is not part of the component. Simple aggregate reads use generated MyBatis-Flex mappers and
-`ServiceImpl`/`IService`; complex queries, locks, conditional writes and batches use parameterized Spring JDBC.
-
-## Runtime flow
-
-```text
-DO extends BaseDO
-      │
-      ├─ generated Mapper / ServiceImpl(IService) ── simple reads, paging, logical delete
-      ├─ QueryWrapper ───────────────────────────── fixed predicates and ordering
-      ├─ JdbcClient gateway ─────────────────────── complex/paginated/locking SQL
-      ├─ IdGenerator ────────────────────────────── application-assigned business IDs
-      └─ explicit audit fields ──────────────────── createdAt / updatedAt / deleted
+```mermaid
+flowchart TD
+    Gateway["Infrastructure Gateway"] --> Mapper["生成的 MyBatis-Flex Mapper"]
+    Gateway --> JDBC["Spring JdbcClient"]
+    Gateway --> ID["IdGenerator"]
+    Mapper --> Tx["Spring 事务连接"]
+    JDBC --> Tx
+    Config["loadup.database.schema"] --> Pool["Hikari 固定物理连接 schema"]
+    Config --> Flyway["Flyway defaultSchema 与 schemas"]
+    Config --> Verifier["启动验证当前 schema 与搜索路径"]
+    Pool --> Tx
+    Tx --> Schema["固定 PostgreSQL schema"]
+    Flyway --> Schema
 ```
 
-`BaseDO` lives in `loadup-components-database` as
-`io.github.loadup.components.database.dataobject.BaseDO` and is shared by persistence adapters. Its `id` is marked with
-`@Id(keyType = KeyType.None)`, so MyBatis-Flex never generates or replaces an application-assigned identifier. Business
-tables do not contain `tenant_id`. A deployment serves one tenant through a single fixed schema; runtime tenant
-routing and per-request schema switching are not part of the contract.
+`BaseDO` 维护公共字段。MyBatis-Flex 保留应用指定的 ID。审计时间使用共享业务 Clock 及其时区。
 
-## Common fields
+| 字段 | 列 | 类型 | 行为 |
+| --- | --- | --- | --- |
+| `id` | `id` | `VARCHAR(64)` | 显式赋值，Flex 主键策略为 `KeyType.None` |
+| `createdAt` | `created_at` | `TIMESTAMP(6)` | 插入时写入 |
+| `updatedAt` | `updated_at` | `TIMESTAMP(6)` | 插入与更新时写入 |
+| `deleted` | `deleted` | `BOOLEAN` | false 为有效，true 为已删除 |
 
-| Java field  | Database column | Type           | Behavior                                                                             |
-|-------------|-----------------|----------------|--------------------------------------------------------------------------------------|
-| `id`        | `id`            | `VARCHAR(64)`  | Assigned explicitly or by `IdGenerator`; Flex key type `None`                        |
-| `createdAt` | `created_at`    | `TIMESTAMP(6)` | Set on insert                                                                        |
-| `updatedAt` | `updated_at`    | `TIMESTAMP(6)` | Set on insert and every update                                                       |
-| `deleted`   | `deleted`       | `BOOLEAN`      | `FALSE` normal, `TRUE` logically deleted; configured through `MyBatisFlexCustomizer` |
+`MyBatisFlexCustomizer` 统一逻辑删除、分页缺省值和 banner 设置。带 `deleted` 列的 Mapper 按全局约定读写，显式 SQL 自行设置审计字段及筛选删除标记。
 
-Timestamps use the framework clock and the JVM system default time zone.
+## 编译生成与事务
 
-## Generated sources
+[注解处理器](../loadup-components-database-processor/ARCHITECTURE.md) 维护唯一的生成策略。每个 `@Table` 实体会得到上一级包下的 `mapper.XxxMapper` 与 `table.XxxTableDef`，表定义汇总于 `Tables`。Mapper 带 `@Mapper` 并继承 `BaseMapper<XxxDO>`。处理器输出与运行时配置各由对应工件维护。
 
-`loadup-components-database-processor` delegates generation to the official MyBatis-Flex processor in entity modules. For each `@Table` entity it generates:
+自动配置扫描 `io.github.loadup` 下的 `BaseMapper` 子类型。存在单个数据源且 Gateway 注入时，懒加载的 Mapper 初始化。会话工厂优先复用其 DataSource 或 Flex 包装的单一 DataSource 上的 Spring 连接，其他情形使用 Flex 的默认事务行为。MyBatis 本地缓存为 `STATEMENT`，避免同一事务中 JDBC 更新后读取到会话缓存的旧数据。
 
-- `{entityPackage.parent}.mapper.XxxMapper` annotated with `@Mapper` and extending `BaseMapper<XxxDO>`;
-- `{entityPackage.parent}.table.XxxTableDef` and an aggregate `Tables` class with type-safe `QueryColumn` constants.
+## 固定 schema 与迁移归属
 
-The database auto-configuration scans `io.github.loadup` for `BaseMapper` subtypes so framework mappers are visible
-outside the consuming application's auto-configuration packages. Mapper beans are lazy; a mapper is only materialized
-when a gateway injects it and a single `DataSource` exists.
+`FixedSchemaEnvironmentPostProcessor` 对齐连接池的 schema，拒绝不一致的显式 schema 和可改变连接初始状态的配置。`FixedSchemaVerifier` 在 Worker 等后台执行器开始前验证 `current_schema()` 与完整 `search_path`。请求和后台任务共用固定数据源，部署身份与连接目标分别配置。
 
-`MyBatisFlexCustomizer` installs the shared conventions on the Flex global configuration: logical-delete column/values,
-banner suppression and pagination defaults. Entity classes without a `deleted` column are unaffected.
+数据库角色负责实际访问边界。迁移与运行账号按部署分权，跨 schema 权限需在目标数据库验收。非关系存储按部署配置自己的命名空间。
 
-The session factory reuses the Spring-bound connection for its DataSource or the single DataSource wrapped by
-MyBatis-Flex. When neither has a Spring-bound connection, the session factory uses MyBatis-Flex's default transaction
-factory behavior.
+`LoadUpFlywayAutoConfiguration` 将相同 schema 应用于 `defaultSchema` 和 `schemas`。应用选择明确的迁移位置，每个应用的所选脚本共享一个历史记录。脚本使用当前 schema 下的未限定表名，已发布版本保留原内容。
 
-Because gateways mix mapper reads with explicit JDBC writes in the same transaction, the MyBatis local cache scope is
-`STATEMENT`. A session-scoped cache would return stale entities after an explicit JDBC update that MyBatis cannot
-observe.
+## 序列分配
 
-## APT build policy ownership
+`BusinessIdGenerator` 在 Sequence 可用时提供默认应用 ID。Sequence 通过 Spring JDBC 以独立的 `REQUIRES_NEW` 事务预留区间，按 schema 内唯一 `scope_key` 更新分配上界，业务回滚后号码仍然有效。
 
-Runtime customization stays in MyBatisFlexAutoConfiguration. The sibling database-processor module owns the
-single configuration resource under src/main/resources/META-INF/loadup/database/. Its official Flex processor
-dependency is transitive on the processor path; business POMs declare only the LoadUp database processor for Flex.
+每个作用域持有一个活跃区间和最多一个备用区间，剩余 20% 时开始预取。热路径用原子操作领取号段中的号码，并发冷启动共享一次分配。初始化和死锁等短暂故障在新事务中有限重试并加入抖动。预取失败保留当前区间，失败冷却抑制重复分配请求。队列拒绝、超时、容量耗尽、最大值不一致和作用域接纳失败通过带 `DatabaseResultCodeEnum` 的 `CommonException` 报告。
 
-LoadUp writes the fixed policy into the current compilation's CLASS_OUTPUT before initializing the upstream
-generator. stopBubbling=true prevents ancestor or module-local policies from changing generation. Configuration
-load/write failures abort compilation. The same mechanism handles main and test compilation outputs, without
-source-tree copies, sync scripts or Maven resource download steps.
+作用域达到上限时可清理过往日期的缓存。未用号段丢弃，已在运行的分配可能提交但对新的缓存条目不可见。常驻与当前日期作用域保留，超出的请求返回错误。关闭应用会停止预取并结束未完成的等待。
 
-The parent compiler configuration explicitly selects LoadUp, MapStruct and Spring Boot metadata processors.
-This is necessary because the upstream JAR also registers its own processor through SPI; automatic discovery
-would run both generators. The processor module disables annotation processing while compiling itself and never
-depends on the runtime database component. Framework entity modules declare it provided/optional as a reactor
-dependency, so -am and parallel builds order the processor before its consumers without exporting it at runtime.
-
-## Fixed schema isolation
-
-`loadup.database.schema` is the sole schema target. It configures the Hikari pool's physical schema and Flyway's
-`defaultSchema`/`schemas`; there is no `DatabaseTenant`, `TenantContext`, default schema fallback, default tenant ID,
-`AbstractRoutingDataSource`, or per-request `SET search_path` contract. Older tenant-routing descriptions in previous versions of this document are obsolete and do not describe current behavior.
-
-An explicitly configured Hikari `schema` and JDBC URL `currentSchema` must match `loadup.database.schema`. Any
-non-empty Hikari `connection-init-sql` or JDBC `options` value is rejected, including Hikari driver properties. The
-implementation does not parse arbitrary SQL. At startup `FixedSchemaVerifier` checks that `current_schema()` equals the
-target and the complete `search_path` contains only that schema, before workers or scanners can start.
-
-```text
-application configuration: loadup.database.schema
-        │
-        ├─ Hikari physical connection schema
-        ├─ Flyway defaultSchema / schemas
-        └─ startup verifier: current_schema + complete search_path
-```
-
-This startup check verifies the configured target; it does not prove cross-schema privilege isolation. Runtime roles
-must be denied access to other schemas and kept separate from migration accounts. Those grants and account boundaries
-require deployment acceptance against the actual database. Do not treat documentation or startup verification as
-proof of that operational isolation.
-
-Non-relational resources use deployment-fixed namespaces: lock and async-result keys use their configured namespace,
-DFS object paths use the configured bucket/prefix, and internal service calls use `DeploymentIdentity`.
-
-## Repository query style
-
-Generated MyBatis-Flex mappers and `QueryWrapper` are used for simple aggregates (one or two fixed predicates), paging
-and logical deletion. `JdbcClient` is used in infrastructure gateways for complex queries: three or more predicates,
-optional filters, `FOR UPDATE`, `IN` lists, or explicit column lists. `JdbcClient` keeps SQL in infrastructure with
-named parameters and clear locking/pagination semantics.
-
-Mappers expose tenant-free, single-tenant signatures. Gateways and facades do not accept tenant identifiers. Logical
-deletion is applied by the Flex global configuration for mapper operations and must be written explicitly in raw SQL.
-
-## Flyway
-
-Flyway support is optional; consumers using migrations include Flyway and its PostgreSQL module. Migration scripts are
-schema-agnostic (no schema-qualified names) and assume a fresh schema. `LoadUpFlywayAutoConfiguration` applies the
-same fixed schema configured by `loadup.database.schema` to `defaultSchema` and `schemas`; runtime and migration targets
-must remain aligned. Applications must select explicit migration namespaces: their own directory
-and approved `db/migration/framework/<module>` locations. The generic classpath migration root also discovers
-dependency JAR resources and is not an isolation mechanism. One application retains one Flyway history across
-its selected locations; published versioned migrations are immutable.
-
-## ID generation and sequences
-
-`IdGenerator` supplies application-assigned IDs; `BusinessIdGenerator` is the default when Sequence is available.
-Sequence persistence uses Spring JDBC and an independent `REQUIRES_NEW` transaction. Allocation rows are per schema and
-use a unique `scope_key`; business rollback does not reclaim issued numbers. See README for encoding, capacity and
-operational rules.
-
-## Background workers
-
-Task and Transfer workers scan the configured fixed schema through the application's shared data source. A worker row
-has no tenant column, and background work runs without HTTP or tenant context.
-
-Deployment identity is separate from database schema selection. The database target has no `DatabaseTenant` or
-`TenantContext` request contract; the only schema property is `loadup.database.schema`.
+[接入、配置与业务 ID 格式](README.md)

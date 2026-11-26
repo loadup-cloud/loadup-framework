@@ -1,18 +1,6 @@
 # DFS Binder Database
 
-Transitional binder for small files when object storage is unavailable. S3 is recommended for production and large
-files.
-
-```xml
-<dependency>
-  <groupId>io.github.loadup-cloud</groupId>
-  <artifactId>loadup-components-dfs-binder-database</artifactId>
-</dependency>
-```
-
-Select it with `loadup.dfs.binder-type=database`. Flyway creates the PostgreSQL `dfs_file` table. The binder uses Spring
-JDBC, stores file bytes in `BYTEA`, and stores JSON metadata as text. It supports the common CRUD and metadata
-capabilities only; presigned URLs and multipart upload are unsupported.
+Database binder 适用于对象存储接入前的过渡期小文件场景。Flyway 初始化 PostgreSQL 的 `dfs_file` 表，Spring JDBC 将文件内容写入 `BYTEA`，将 JSON 元数据写为文本。预签名和分片相关能力见 [DFS 能力矩阵](../README.md#能力矩阵)。
 
 ## 接入步骤
 
@@ -22,13 +10,13 @@ capabilities only; presigned URLs and multipart upload are unsupported.
 <dependency><groupId>io.github.loadup-cloud</groupId><artifactId>loadup-components-dfs-binder-database</artifactId></dependency>
 ```
 
-通过 `loadup.dfs.binder-type` 选择 local、s3 或 database；业务层注入 `DfsTemplate`。
+将 `loadup.dfs.binder-type` 设为 `database`，业务层注入 `DfsTemplate`。
 此 jar 负责接入具体技术实现；业务模块继续面向 API/facade 编程。
 
 ## 对外契约
 
-- [`DatabaseDfsTemplate`](src/main/java/io/github/loadup/components/dfs/database/DatabaseDfsTemplate.java) implements `DfsTemplate`.
-- [`DfsFileInsert`](src/main/java/io/github/loadup/components/dfs/database/dataobject/DfsFileInsert.java) maps the `dfs_file` table.
+- [`DatabaseDfsTemplate`](src/main/java/io/github/loadup/components/dfs/database/DatabaseDfsTemplate.java)实现 `DfsTemplate`。
+- [`DfsFileInsert`](src/main/java/io/github/loadup/components/dfs/database/dataobject/DfsFileInsert.java)映射 `dfs_file` 表。
 
 ## 自动装配
 
@@ -45,7 +33,7 @@ loadup:
     binder-type: database
 ```
 
-同一应用只启用与该值对应的 binder；其他可选项见下方配置类及父模块 README。
+同一应用启用与该值对应的 binder。其他后端见 [DFS 接入](../README.md)。
 
 ## 默认时区
 

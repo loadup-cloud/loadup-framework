@@ -6,7 +6,7 @@ Cache 组件的 facade 模块：启用 Spring Cache 注解（`@EnableCaching`）
 
 本模块 **不提供手写缓存 CRUD 门面**——业务代码直接使用 Spring Cache 标准注解，底层实现由
 `-binder-{caffeine|redis|jetcache}` 提供。Maven 坐标与用法见上层
-[loadup-components-cache](../README.md)。
+[loadup-components-kv](../README.md)。
 
 ## 接入步骤
 

@@ -1,9 +1,10 @@
-# LoadUp Components Database
+# Database 组件接入手册
 
-MyBatis-Flex and Spring JDBC support for persistent IDs, PostgreSQL transactions, sequence allocation and one fixed
-business schema per deployment.
+提供 MyBatis-Flex 和 Spring JDBC 集成、PostgreSQL 固定 schema、事务及业务 ID 分配。宿主负责数据源、驱动和业务迁移。
 
-## Maven
+## Maven 依赖
+
+导入 Framework BOM 后添加运行时组件。需要生成 Mapper 的实体模块另行配置 [Database 处理器](../loadup-components-database-processor/README.md)。
 
 ```xml
 <dependency>
@@ -12,33 +13,11 @@ business schema per deployment.
 </dependency>
 ```
 
-The component uses the shared Spring `Clock` and supplies a JDBC transaction manager for a single data source, the
-fixed schema target and sequence/ID configuration. It brings `mybatis-flex-spring-boot4-starter`, registers framework
-mappers and configures the shared Flex conventions. Applications configure their own data source and PostgreSQL driver.
+组件引入 MyBatis-Flex Spring Boot starter，注册框架 Mapper，使用共享 Spring `Clock`，并在单数据源下提供 JDBC 事务管理器。在同一 Spring 事务内，MyBatis-Flex 和 Spring JDBC 使用同一连接，Mapper 可读取未提交的 JDBC 写入，回滚覆盖两种访问方式。
 
-With the default single-DataSource setup, MyBatis-Flex mappers and Spring JDBC share the connection bound to the
-Spring transaction. A mapper can read JDBC writes before commit, and one rollback covers both APIs. The component
-configures this automatically.
+## 固定 schema 与迁移
 
-MyBatis-Flex is the default ORM for simple aggregate reads. Annotate infrastructure data objects with
-`com.mybatisflex.annotation.Table`; the annotation processor generates a `Tables` class, per-entity `TableDef` classes
-and a `@Mapper` interface under the module's `infrastructure.table` and `infrastructure.mapper` packages. Gateway
-implementations extend `ServiceImpl<Mapper, DO>` (and therefore `IService<DO>`) so standard reads, paging and logical
-deletion come from the framework; complex conditional writes remain explicit parameterized SQL.
-
-The component applies the logical-delete convention through a `MyBatisFlexCustomizer`: the `deleted` column is the
-logic-delete flag, normal rows use `false`, deleted rows use `true`, and mapper reads, updates, counts and `deleteById`
-automatically add or apply that condition. Paging defaults are 20 items per page with a maximum of 100.
-
-Explicit SQL must still set IDs, audit timestamps and `deleted`, and must filter `deleted` rows itself. Business tables
-do not carry a `tenant_id` column: a deployment serves one tenant and every table lives in that deployment's schema.
-PostgreSQL schemas use boolean `deleted`.
-
-## Fixed schema per deployment
-
-One deployment serves one tenant. `loadup.database.schema` is the only application source of the target schema; the
-connection pool, transaction manager and Flyway all use it. Schema names are validated against
-`[a-z_][a-z0-9_]{0,62}`, and the shared `public` schema plus the reserved `pg_` prefix are rejected.
+单个部署使用一个租户和一套固定 schema。`loadup.database.schema` 同时配置连接池和 Flyway。校验规则为 `[a-z_][a-z0-9_]{0,62}`，`public` 和 `pg_` 保留。
 
 ```yaml
 loadup:
@@ -51,64 +30,25 @@ spring:
     password: ${PAYMENT_JDBC_PASSWORD}
 ```
 
-Startup behavior:
+- Hikari `schema` 或 JDBC URL 的 `currentSchema` 如有显式配置，必须与目标一致。启动拒绝非空的 Hikari `connection-init-sql` 和 JDBC `options`，包括 Hikari 提供的驱动属性。
+- 启动校验 `current_schema()` 和完整 `search_path`。搜索路径只能包含配置的 schema，应用运行账号需获得相应权限。
+- 启用 Flyway 时添加 Flyway 和 PostgreSQL 适配工件。通过 `loadup.flyway.locations` 纳入应用自有与获准的模块目录，例如 `classpath:db/migration/pay/admin` 或 `classpath:db/migration/framework/upms`。通用迁移根也会发现依赖 JAR 的匹配资源。
+- 组件表模板位于 `db/schema`。在空 schema 初始化时将需要的模板纳入应用迁移。已发布的迁移版本保持内容不变，升级追加新版本。
 
-- `FixedSchemaEnvironmentPostProcessor` applies the schema as the pool's physical-connection setting. An explicit Hikari
-  `schema` or JDBC `currentSchema` must equal it. Any non-empty Hikari `connection-init-sql` or JDBC `options` value is
-  rejected, including driver properties supplied through Hikari; arbitrary SQL is not parsed to infer its effects.
-- `FixedSchemaVerifier` checks both `current_schema()` and the complete `search_path` on a connection before workers,
-  schedulers or scanners start. `search_path` must contain only the configured schema. A missing schema does not fall
-  back to `public`.
-- Flyway uses the same value as `defaultSchema`/`schemas`, so the migration target cannot drift from the runtime target.
-- There is no tenant map, no `default-tenant-id`, no per-request `SET search_path` and no routing `DataSource`. Data
-  isolation is enforced by the fixed connection configuration and database role privileges, not by request headers.
+Task、Scheduler 和 Transfer 使用同一数据源。部署身份通过 `DeploymentIdentity` 表达，锁、AsyncResult 和 DFS 使用各自配置的部署命名空间。
 
-Background workers (Task, Scheduler, Transfer) run without any tenant context against the same
-application data source. Rows do not store a tenant.
+## 持久化接入
 
-Non-relational resources use deployment-fixed namespaces: lock and async-result keys use their configured namespace,
-DFS object paths use the configured bucket/prefix, and internal service calls use `DeploymentIdentity`.
+1. 在 infrastructure 中定义带 `com.mybatisflex.annotation.Table` 的 DO，继承 `io.github.loadup.components.database.dataobject.BaseDO`。基类包含 id、createdAt、updatedAt 和 deleted，Flex 主键策略为 `KeyType.None`。
+2. 在实体模块父 POM 配置编译器处理器。Framework BOM 管理处理器版本，编译器选项由消费工程维护。按处理器文档显式选择 LoadUp、MapStruct 和 Spring Boot 元数据处理器。
+3. 用生成的 Mapper、`ServiceImpl<Mapper, DO>` 和 `QueryWrapper` 实现简单筛选、分页和逻辑删除。复杂筛选、`FOR UPDATE`、`IN` 列表及显式列查询通过 infrastructure Gateway 中的 `JdbcClient` 和命名参数完成。可参考 `LoginLogGatewayImpl` 和 `InboxGatewayImpl`。
+4. 显式 SQL 自行设置 ID、审计时间和 Boolean `deleted`，查询显式过滤已删除记录。业务表按部署 schema 隔离。MyBatis-Flex 的读写、计数和 `deleteById` 使用统一逻辑删除配置。分页缺省每页 20 条，上限 100。
 
-## Repository query style
+## 业务 ID 与序列
 
-Use generated MyBatis-Flex mappers and `QueryWrapper` for simple aggregates (one or two fixed predicates), paging and
-logical deletion. Use `JdbcClient` in the infrastructure gateway when a query has three or more predicates, optional
-filters, `FOR UPDATE`, `IN` lists, or requires explicit column lists and locking semantics. `JdbcClient` keeps SQL in
-the infrastructure layer with named parameters and clear locking/pagination semantics. Current examples:
-`LoginLogGatewayImpl` and `InboxGatewayImpl`.
+启用 Sequence 时，默认 `IdGenerator` 为 `BusinessIdGenerator`。持久化写入显式申请 ID。消费应用可以提供单一 `IdGenerator` Bean（如 `UuidV7IdGenerator`）替换默认实现。关闭 `loadup.database.sequence.enabled` 时必须提供替代实现。显式设置的 ID 保留。
 
-Generated artifacts use the [LoadUp database processor](../loadup-components-database-processor/README.md).
-It includes the official MyBatis-Flex processor as a transitive build dependency and owns the single generation
-configuration. Entity modules do not keep mybatis-flex.config files or run synchronization scripts. The root POMs
-select LoadUp's processor entry explicitly, alongside MapStruct and Spring Boot configuration metadata processing,
-so the upstream processor is not also discovered and executed.
-
-Import the framework BOM for processor versions. BOM import does not inherit compiler-plugin configuration;
-independent repositories configure the compiler plugin in their own parent POM. Runtime database configuration
-and annotation processing remain separate dependencies.
-
-Flyway support is optional; consumers using migrations must include Flyway and its PostgreSQL database module. Migration
-scripts assume a fresh PostgreSQL schema.
-
-`classpath:db/migration` scans matching locations across the classpath, including dependency JARs; it does not
-isolate the application. Configure `loadup.flyway.locations` with the application namespace and only approved
-framework module namespaces, such as `classpath:db/migration/pay/admin` and
-`classpath:db/migration/framework/upms`. Component templates remain under `db/schema`; freeze imported initial
-snapshots and append reviewed migrations for upgrades instead of overwriting existing versions.
-
-## Business IDs and database sequences
-
-`BusinessIdGenerator` is the default `IdGenerator` when Sequence is available. Persistence code explicitly requests an
-ID when needed; `BaseDO` and JDBC inserts do not automatically assign one. Sequence is enabled by default. Apply its
-migration before using the default generator.
-
-Sequence persistence uses Spring JDBC and requires a suitable DataSource and transaction manager. A consumer-provided
-`IdGenerator` takes precedence over the default generator.
-
-Default generator metadata uses data version 0, system version 1, event code `00000000`, no extension, site 000 and
-shard 000. Reserve `00000000` for generic persistence IDs; explicit business generation may use registered event codes.
-All entities using the same default scope share its eight-digit daily capacity. Configure stable site ownership when
-independent databases issue IDs.
+Sequence 默认开启。使用前将 `db/schema/sequence_allocation.sql` 作为应用自有版本化迁移纳入 Flyway。每个编码站点应有一个权威分配数据库。故障切换或恢复时保留已提交的分配上界，限制序列行被删除或重置。
 
 ```yaml
 loadup:
@@ -129,20 +69,9 @@ loadup:
       shard: 0
 ```
 
-Apply the `db/schema/sequence_allocation.sql` template before enabling traffic. Copy it into the integrating
-application's own `classpath:db/migration` history (for example via `scripts/gen-migrations.py`), retaining all other
-module locations. The component does not create tables on the request path. Use one authoritative allocation database
-for each encoded site, preserve committed allocation maxima during failover/restoration, and restrict deletion/reset of
-allocation rows. The migration and allocation SQL target PostgreSQL.
+默认元数据为数据版本 0、系统版本 1、事件码 `00000000`、空扩展、站点 000 和分片 000。通用持久化 ID 使用 `00000000`，显式业务生成可使用已登记的事件码。使用默认作用域的实体共享其每日八位容量。独立的发号数据库需明确站点所有权。
 
-Inject `IdGenerator` when a persistence operation needs an application-generated ID. Explicit SQL is responsible for
-setting its ID and audit columns.
-
-An application may supply one `IdGenerator` bean (for example `UuidV7IdGenerator`) to replace the default.
-`loadup.database.sequence.enabled=false` requires such an alternative because the default generator depends on Sequence.
-Existing explicitly supplied IDs, including UUIDs assigned by application services, are preserved.
-
-Inject `BusinessIdGenerator` and reuse immutable metadata where practical:
+注入 `BusinessIdGenerator` 后可复用不可变的命令元数据。
 
 ```java
 BusinessIdCommand command = new BusinessIdCommand(
@@ -152,17 +81,11 @@ String[] businessIds = generator.generateBatch(command, 100);
 BusinessIdParts parts = formatter.parse(businessId);
 ```
 
-Encoding: date (8) + dataVersion (1) + systemVersion (1) + eventCode (8) + extension (0..32) + site (3) + shard (3) +
-sequence (8). Length is 32..64; numeric fields preserve leading zeros. Date uses the shared `Clock` and its local zone,
-captured once per generation call. Business sequence scope is date + versions + event + site, shared across
-shards/extensions. It allows at most 99,999,999 allocated numbers per scope per day, including unused reservations.
+编码顺序为日期（8）、数据版本（1）、系统版本（1）、事件码（8）、扩展（0 至 32）、站点（3）、分片（3）、序列（8）。总长度为 32 至 64，数字保留前导零。每次调用从共享 `Clock` 的时区取一次日期。日期、版本、事件及站点决定分配作用域，分片和扩展共享计数。每个作用域每日最多分配 99,999,999 个号码，含未用完的保留号码。
 
-`shard` is a logical bucket from 000 to 999. The application registers event codes and chooses a stable routing policy,
-for example customer affinity via a versioned hash. Supply the resolved bucket in the command. For sequence-derived
-routing, use the numeric Sequence and formatter together; do not invent a second random bucket or assume 1,000 physical
-tables. A shard field does not provide authorization or tenant isolation.
+`shard` 是 000 至 999 的逻辑桶，调用方按稳定路由规则传入，例如按客户路由的版本化散列。需要基于序号路由时组合数值 Sequence 和格式器。分片字段用于业务标识和路由。
 
-For numeric sequences, inject `Sequence`:
+需要纯数字时注入 `Sequence`。
 
 ```java
 SequenceScope scope = new SequenceScope("payment", LocalDate.now(clock), 99_999_999L);
@@ -170,30 +93,15 @@ long number = sequence.next(scope);
 long[] batch = sequence.nextBatch(scope, 100);
 ```
 
-Reuse `SequenceScope` for hot numeric loops; its cache key is precomputed. A null date creates a persistent scope.
-Numbers are unique within a scope; different scopes can repeat numbers. Maximum is persisted on first initialization and
-cannot subsequently change. `nextBatch` accepts 1..10,000 and may cross noncontiguous segments. Failure returns no
-partial batch; consumed values are not reclaimed. Business idempotency must reuse an already-persisted ID.
+热点调用可复用已计算缓存键的 `SequenceScope`。日期为空表示持久作用域。唯一性在单个作用域内成立，最大值首次建立后固定。`nextBatch` 支持 1 至 10,000，可跨不连续区间，失败时不返回部分批次，已消耗号码仍保留。业务幂等复用已保存的 ID。
 
-Each scope has an active range and at most one standby range. Prefetch begins at 20% remaining capacity. Warm issuance
-uses atomic range claims without database access; concurrent cold callers share one allocation task. Database
-reservations commit independently of business transactions. Transient initialization/deadlock failures retry in fresh
-transactions with bounded jitter; failed prefetch preserves the current range. On allocation failure a short cooldown
-avoids repeated database attempts. Queue rejection, timeout, exhausted capacity, conflicting maxima and scope admission
-failures use `DatabaseResultCodeEnum` through `CommonException`.
+## 容量与接入检查
 
-Scope admission is bounded. At capacity, past-date entries may be discarded; their unused numbers are lost and
-already-running reservations may finish without becoming visible in the new cache entry. Persistent/current-date scopes
-remain protected from automatic eviction; additional scopes fail explicitly. Shutdown stops prefetch workers and fails
-outstanding waits. Size the pool for independent allocation transactions and distinguish cold/refill latency from warm
-issuance latency.
+正常发号使用内存区间，冷启动和补段需要数据库连接。预取、缓存、独立事务、失败冷却与淘汰策略见 [数据库架构](ARCHITECTURE.md#序列分配)。号码允许跳号，业务排序使用自己的顺序字段。
 
-Shared Boot `MeterRegistry`, when present, receives `loadup.database.sequence.issued`, `loadup.database.sequence.refill`
-and `loadup.database.sequence.failures` (bounded `reason` enum labels for allocation failures). No raw
-scope/date/customer IDs are metric tags. Throughput is deployment-dependent; gaps are permitted and global chronological
-ordering is not guaranteed.
+存在共享 `MeterRegistry` 时，组件记录 `loadup.database.sequence.issued`、`loadup.database.sequence.refill` 和 `loadup.database.sequence.failures`。失败指标使用低基数的 `reason` 枚举。部署验收检查固定 schema、数据库权限、冷启动与补段延迟，并演练分配数据库切换和恢复。
 
-Run focused validation using Maven Daemon:
+需要验证该组件时可执行以下定向测试，数据库 IT 需要 Docker 和 PostgreSQL 容器。
 
 ```shell
 mvnd clean test -pl loadup-components/data/loadup-components-database -am \
@@ -201,13 +109,4 @@ mvnd clean test -pl loadup-components/data/loadup-components-database -am \
   -Dsurefire.failIfNoSpecifiedTests=false -Dspotless.skip=true -Dspotbugs.skip=true
 ```
 
-The IT requires Docker and uses real PostgreSQL through the framework Testcontainers annotation. Consumer
-failover/restore rehearsals and P95/P99 capacity measurements are separate production acceptance work.
-
-## 持久化基类
-
-使用本组件的 `io.github.loadup.components.database.dataobject.BaseDO`。它保留 id、createdAt、updatedAt、deleted
-字段以及 MyBatis-Flex `@Id(keyType = KeyType.None)` 元数据；标识仍由应用显式提供，迁移不改变 JSON、数据库列或逻辑删除行为。
-
-Deployment identity is separate from database schema selection. The database target has no `DatabaseTenant` or
-`TenantContext` request contract; the only schema property is `loadup.database.schema`.
+[数据库架构](ARCHITECTURE.md)

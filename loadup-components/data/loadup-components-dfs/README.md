@@ -1,10 +1,12 @@
-# LoadUp DFS
+# LoadUp DFS 接入手册
 
-Business code injects `DfsTemplate`. Each binder registers its own implementation.
+应用通过 `DfsTemplate` 上传、读取与删除对象。宿主选择存储后端，由对应 binder 注册实现。
 
-## Maven
+[架构设计](ARCHITECTURE.md)
 
-Import the LoadUp BOM, then add `loadup-components-dfs-api` and exactly one binder:
+## Maven 依赖
+
+导入 Framework BOM，添加 `loadup-components-dfs-api` 和一个 binder。以下示例使用 S3。
 
 ```xml
 <dependency>
@@ -17,10 +19,9 @@ Import the LoadUp BOM, then add `loadup-components-dfs-api` and exactly one bind
 </dependency>
 ```
 
-## Configuration
+## 配置
 
-Select a binder by its identifier in `loadup.dfs.binder-type`. The built-in binders use `local`, `s3`, and `database`.
-Each additional binder supplies its own identifier. Binder-specific settings live under `loadup.dfs.binder.<type>`.
+通过 `loadup.dfs.binder-type` 选择 `local`、`s3` 或 `database`。自定义 binder 声明自己的标识，后端配置位于 `loadup.dfs.binder.<type>`。
 
 ```yaml
 loadup:
@@ -30,14 +31,17 @@ loadup:
     binder.s3.region: us-east-1
 ```
 
-## Capabilities
+## 能力矩阵
 
-| Capability                                 | local | s3 | database |
+| 能力                                 | local | s3 | database |
 |--------------------------------------------|------:|---:|---------:|
-| Upload, download, delete, exists, metadata |    ✓ | ✓ |       ✓ |
-| Metadata survives process restart          |    ✓ | ✓ |       ✓ |
-| Presigned download URL                     |    ✗ | ✓ |       ✗ |
-| Multipart upload                           |    ✗ | ✓ |       ✗ |
+| 上传、下载、删除、存在性检查、元数据 |    ✓ | ✓ |       ✓ |
+| 元数据可跨进程重启保留          |    ✓ | ✓ |       ✓ |
+| 预签名下载 URL                     |    ✗ | ✓ |       ✗ |
+| 分片上传                           |    ✗ | ✓ |       ✗ |
 
-S3 is the recommended production binder. Local is for development and single-node deployments; database is a
-transitional small-file binder.
+- [S3](loadup-components-dfs-binder-s3/README.md) 适用于对象存储。
+- [Local](loadup-components-dfs-binder-local/README.md) 适用于开发、测试或单节点文件系统。
+- [Database](loadup-components-dfs-binder-database/README.md) 适用于过渡期的小文件。
+
+下载响应实现 `AutoCloseable`。调用方使用 try-with-resources 消费数据流。

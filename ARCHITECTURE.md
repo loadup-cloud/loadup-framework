@@ -1,60 +1,33 @@
-# LoadUp Framework Architecture
+# LoadUp Framework 架构
 
-## Static architecture baseline
+## 职责与发布
 
-The 2026-11-15 [phase 0 baseline](../loadup-pay/design/PHASE0_BASELINE.md) records current declared dependencies, ownership and assembly exceptions; [all source POM declarations](../loadup-pay/design/PHASE0_DEPENDENCIES.md) distinguish compile, runtime, test, provided and optional. This is a static audit, not build or runtime acceptance. Stage 1B now separates Web context binding from database parsing at source level: WebMVC owns DeploymentScopeFilter, runtime assembles DeploymentDataScope, and database no longer declares a Web starter. Builds and tests have not run.
+Framework 发布由 `loadup-framework-bom` 对齐的基础库和技术组件。根 Maven reactor 聚合 BOM、Commons 和 Components，`loadup-coverage` 由 `component-coverage` profile 额外装配。业务模块和 Testify 分别在独立仓库维护，Boot 和 Pay 等应用负责运行时组合。
 
-This repository publishes reusable framework modules for applications that consume the
-`loadup-framework-bom` BOM. The default root Maven reactor aggregates the BOM, commons,
-and technical components. Reusable business modules and Testify live in sibling repositories. It does not contain a runnable
-application. The `loadup-coverage` report aggregator is included only by the optional
-`component-coverage` profile.
-
-## Dependency direction
-
-```text
-loadup-framework-bom (BOM)
-          ↑
-    loadup-commons
-          ↑
-   loadup-components
-          ↑
-     loadup-modules
-          ↑
-  consuming application
-
-loadup-testify is test support for consuming applications and framework module tests.
+```mermaid
+flowchart TD
+    Boot["Boot / Pay / 消费应用"] --> Modules["业务模块"]
+    Boot --> Components["技术组件"]
+    Modules --> Components
+    Modules --> Commons["Commons"]
+    Components --> Commons
+    Tests["Testify 测试支持"] -.-> Components
+    BOM["Framework BOM"] -.-> Commons
+    BOM -.-> Components
 ```
 
-Commons contains shared context, data contracts, errors, JSON, logging, masking, and utilities.
-Components provide technical capabilities; category directories organize source but do not add
-Maven coordinates. Providers with interchangeable implementations are separated into API and
-binder artifacts. Business modules expose client contracts and can provide optional `*-web`
-Spring MVC adapters. Business Facades and domain contracts are kept separate from HTTP response envelopes.
-There is a current adapter-placement exception: UPMS app's GitHubOAuthProvider directly owns RestTemplate token/userinfo
-calls. This is recorded as E15 in the phase 0 baseline, not presented as an already isolated infrastructure adapter.
-Module-specific extension points and configuration are documented in that module's
-`README.md` and `ARCHITECTURE.md`.
+实线表示运行时可依赖方向，虚线表示测试关系或版本管理。
 
-## Persistence and tenant boundary
+## 组件划分与装配
 
-Small business modules publish `client`, `core`, and optional `web` artifacts; `core` keeps the
-`domain`, `app`, and `infrastructure` package boundaries in one JAR. Modules that need independent
-layer publication or separate application integration (UPMS authserver) keep the full
-client/domain/infrastructure/app/web/test split. Persistence models and mappers belong in
-infrastructure; domain objects remain free of Spring
-and ORM annotations. The database component uses MyBatis-Flex generated mappers for simple
-queries and logical deletion, with explicit `JdbcClient` SQL for complex filters, locking, and
-bulk operations.
+Commons 提供执行上下文、DTO、错误码、JSON、日志、脱敏和工具。Runtime 负责将共享 Clock 等能力装配到 Spring Boot。Components 按数据、安全、Web、集成、可靠性、执行和平台划分。可替换后端的技术组件通过 API 和 binder 发布，业务模块按需引入公开契约与 Web 适配工件。
 
-Relational tenant isolation is designed around PostgreSQL schemas. Business tables do not carry
-a `tenant_id` column. `DatabaseTenant` resolves and validates the schema name. With multi-tenancy disabled it returns
-the configured default tenant and schema (normally `public`). When enabled, a nonblank context tenant is validated
-directly as the schema string; it is not specially remapped to the default schema. This helper does not route
-connections: WebMVC `DeploymentScopeFilter` binds only the configured deployment tenant, and the application
-data source and Flyway setup use the configured default schema. Per-tenant data-source routing and
-Flyway orchestration are not implemented, so schema-per-tenant is not active request isolation.
-Redis keys, DFS paths, and RPC identity still require their own tenant namespaces.
+业务 Facade 使用客户端契约，HTTP 报文由 Web 适配层处理。小型业务模块以 client、core、web 发布，core 内保留 app、domain、infrastructure 边界。UPMS 等需要独立装配的模块分别发布更多层。
 
-See the [database component README](loadup-components/data/loadup-components-database/README.md)
-for current configuration and persistence details.
+## 数据库与部署边界
+
+每个部署使用一个固定的 PostgreSQL schema。宿主通过 `loadup.database.schema` 对齐连接池和 Flyway，启动时校验物理连接的当前 schema 与完整搜索路径。关系表以部署为边界，业务 API 和持久化查询使用各自的业务键。应用内部调用身份由 `DeploymentIdentity` 表达。
+
+基础读取与逻辑删除使用 MyBatis-Flex 生成的 Mapper，复杂筛选、行锁和批量更新使用参数化 Spring JDBC。两条访问路径共享 Spring 事务连接。宿主确保非关系存储的命名空间与部署边界一致。
+
+[框架接入](README.md) · [组件设计](loadup-components/ARCHITECTURE.md) · [数据库架构](loadup-components/data/loadup-components-database/ARCHITECTURE.md)

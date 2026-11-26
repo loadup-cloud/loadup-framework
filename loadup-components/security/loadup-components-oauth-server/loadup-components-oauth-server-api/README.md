@@ -1,12 +1,14 @@
-# OAuth Server API
+# OAuth Server API 接入
 
-| 契约 | 用途 |
-| --- | --- |
-| LoadUpSubject | 稳定的主体 ID，与显示用户名区分 |
-| OAuthClientSettings | enabled、audience 可选客户端元数据键 |
-| OAuthClientAuthorization / CreateRequest / ExpiryRequest | 客户端管理请求及字段校验 |
-| OAuthClientDetails / CredentialResponse | 不含散列的管理详情；创建和轮换返回的凭证 |
-| OAuthClientManagementPaths | 内部管理 HTTP 路径契约 |
+需要共享主体接口、OAuth 客户端管理 DTO 或路径契约的模块可在导入 Framework BOM 后引入此工件。
 
-API 使用 Jakarta Validation 和公共 JSON 脱敏能力，无自动配置、KMS、JDBC 或授权服务器实现依赖。标准 OAuth 存储及令牌接口直接使用 Spring 类型，不另作包装。
-配置绑定和默认 claim 实现属于 core，参见 [架构](../ARCHITECTURE.md)。
+```xml
+<dependency>
+    <groupId>io.github.loadup-cloud</groupId>
+    <artifactId>loadup-components-oauth-server-api</artifactId>
+</dependency>
+```
+
+业务身份实现可用 `LoadUpSubject.subjectId()` 暴露统一主体标识。客户端管理接入方按需复用 `OAuthClientCreateRequest`、`OAuthClientDetails` 和 `OAuthClientCredentialResponse` 等契约。运行时启用签发、验签或 JDBC 存储时，按 [Core 接入说明](../loadup-components-oauth-server-core/README.md) 配置宿主。
+
+[API 架构](ARCHITECTURE.md)

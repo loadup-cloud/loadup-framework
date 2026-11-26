@@ -1,6 +1,6 @@
 # Cache Redis Binder
 
-使用 Spring Data Redis 实现 Spring Cache 的 `CacheManager`。消费工程需要同时选择 `loadup-components-cache-api` 与本
+使用 Spring Data Redis 实现 Spring Cache 的 `CacheManager`。消费工程需要同时选择 `loadup-components-kv-api` 与本
 binder，并提供可用的 `RedisConnectionFactory`。
 
 ## 引入

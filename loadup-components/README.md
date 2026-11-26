@@ -1,37 +1,21 @@
 # 技术组件
 
 LoadUp 组件通过功能分类目录组织源码。消费工程引入 `loadup-framework-bom` BOM 后，按需选择组件坐标；多后端组件再选择
-binder。分类目录不是 Maven 模块，组件坐标、Java 包名、配置前缀和 API 保持不变。
+binder。分类聚合 POM 组织 Maven 子模块，具体工件决定运行时能力。
 
 ## 功能分类
 
-| 目录           | 职责       | 组件                                                                                                                                                                                                                                                                                                                                                                                                 |
-|----------------|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `security/`    | 安全与身份 | [authorization](security/loadup-components-authorization/README.md)、[oauth-server](security/loadup-components-oauth-server/README.md)、[captcha](security/loadup-components-captcha/README.md)、[kms](security/loadup-components-kms/README.md)、[signature](security/loadup-components-signature/README.md)                   |
-| `web/`         | Web 接入   | [webmvc](web/loadup-components-webmvc/README.md)、[springdoc](web/loadup-components-springdoc/README.md)                                                                                                                                                                                                                                                                                             |
-| `data/`        | 数据与存储 | [cache](data/loadup-components-cache/README.md)、[database](data/loadup-components-database/README.md)、[dfs](data/loadup-components-dfs/README.md)                                                                                                                                                                                                                                                  |
-| `integration/` | 外部集成   | [http](integration/loadup-components-http/README.md)、[rpc](integration/loadup-components-rpc/README.md)                                                                                                                                                                                                          |
-| `reliability/` | 可靠性     | [Task](reliability/loadup-components-task/README.md)、[async-result](reliability/loadup-components-async-result/README.md)、[lock](reliability/loadup-components-lock/README.md)、[globalunique](reliability/loadup-components-globalunique/README.md)、[resilience4j](reliability/loadup-components-resilience4j/README.md) |
-| `execution/`   | 任务与执行 | [Scheduler](execution/loadup-components-scheduler/README.md)、[pipeline](execution/loadup-components-pipeline/README.md)                                                                                                                                                                                                                                                                             |
-| `platform/`    | 平台基础   | [configcenter](platform/loadup-components-configcenter/README.md)、[extension](platform/loadup-components-extension/README.md)、[observability](platform/loadup-components-observability/README.md)、[testcontainers](platform/loadup-components-testcontainers/README.md)                                                                                                                           |
+| 分类 | 能力 |
+| --- | --- |
+| [数据与存储](data/README.md) | KV 与缓存、数据库、数据库处理器、文件存储 |
+| [调度与执行](execution/README.md) | 任务调度、执行流水线 |
+| [应用集成](integration/README.md) | HTTP 客户端、RPC |
+| [平台基础](platform/README.md) | 配置中心、运行时装配、应用观测、业务扩展、测试容器 |
+| [应用可靠性](reliability/README.md) | 持久化任务、异步结果、分布式锁、幂等声明、调用容错 |
+| [安全与身份](security/README.md) | OAuth2 与 JWT、方法授权、服务身份、密钥与机密管理、报文签名、验证码 |
+| [Web 接入](web/README.md) | WebMVC、接口文档 |
 
-## 目录与接入
-
-```text
-loadup-components/
-├── security/       authorization, authserver, resource-server, captcha, kms, signature
-├── web/            webmvc, springdoc
-├── data/           cache, database, dfs
-├── integration/    http, rpc
-├── reliability/    task, async-result, lock, globalunique, resilience4j
-├── execution/      scheduler, pipeline
-└── platform/       configcenter, extension, observability, testcontainers
-```
-
-每个组件目录仍使用 `loadup-components-{name}`，内部 API / binder / engine / store / test 结构沿用该组件的设计。所有 Maven
-模块直接继承根 `loadup-parent`，分类目录没有额外 POM 或发布坐标。
-
-组件选择与参数以对应 README 为准；分类仅帮助定位，不表示必须整组引入。
+分类目录设有 reactor 聚合 POM。消费应用选用具体的组件或 binder 工件，Java 包名和配置前缀由组件维护。以下示例引入 WebMVC。
 
 ```xml
 <dependency>
