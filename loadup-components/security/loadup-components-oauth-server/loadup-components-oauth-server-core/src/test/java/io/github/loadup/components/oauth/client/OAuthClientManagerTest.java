@@ -16,6 +16,7 @@
 package io.github.loadup.components.oauth.client;
 
 import static io.github.loadup.commons.enums.CommonResultCodeEnum.CONFLICT;
+import static io.github.loadup.commons.enums.CommonResultCodeEnum.NOT_FOUND;
 import static io.github.loadup.commons.enums.CommonResultCodeEnum.PARAM_ILLEGAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -33,12 +34,19 @@ import static org.mockito.Mockito.when;
 import io.github.loadup.commons.error.CommonException;
 import io.github.loadup.components.oauth.OAuthClientSettings;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -46,6 +54,7 @@ import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
+import org.springframework.security.oauth2.server.authorization.settings.ConfigurationSettingNames;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -236,6 +245,122 @@ class OAuthClientManagerTest {
                 IllegalStateException.class, () -> manager.create(template("rejected-id", "rejected-client"), FUTURE));
 
         assertNull(storage.findById("rejected-id"));
+    }
+
+    @Test
+    void refusesIncompleteRequestsAndUnknownRegistrations() {
+        OAuthClientManager manager = manager(List.of());
+        assertInvalid(() -> manager.create(null, FUTURE));
+        assertInvalid(() -> manager.create(template("unwritten", "new-client"), null));
+        assertInvalid(() -> manager.setCredentialExpiry("seed-id", null));
+        assertInvalid(() -> manager.updateAuthorization("seed-id", null));
+        assertEquals(
+                NOT_FOUND,
+                assertThrows(CommonException.class, () -> manager.get("unknown"))
+                        .getResultCode());
+        when(jdbc.queryForList(anyString(), eq(String.class), eq("missing-row")))
+                .thenReturn(List.of());
+        assertEquals(
+                NOT_FOUND,
+                assertThrows(CommonException.class, () -> manager.disable("missing-row"))
+                        .getResultCode());
+        assertNull(storage.findById("unwritten"));
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {"", " seed-id", "seed\tid"})
+    void rejectsMalformedRegistrationId(String id) {
+        assertInvalid(() -> manager(List.of()).get(id));
+    }
+
+    @Test
+    void rejectsIdentityChangesAndOversizedIdentifiers() {
+        OAuthClientManager manager = manager(List.of());
+        assertInvalid(() -> manager.get("s".repeat(101)));
+        assertInvalid(() -> manager.updateAuthorization("seed-id", template("renamed", "seed-client")));
+        assertInvalid(() -> manager.updateAuthorization("seed-id", template("seed-id", "renamed")));
+        assertEquals("seed-client", storage.findById("seed-id").getClientId());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", "comma,scope"})
+    void invalidScopesCannotReplaceExistingAuthorization(String scope) {
+        var desired = RegisteredClient.from(template("seed-id", "seed-client"))
+                .scope(scope)
+                .build();
+        assertInvalid(() -> manager(List.of()).updateAuthorization("seed-id", desired));
+        assertEquals(
+                List.of("read"),
+                storage.findById("seed-id").getScopes().stream().toList());
+    }
+
+    @Test
+    void rejectsScopesThatExceedTheJdbcColumnCapacity() {
+        var desired = RegisteredClient.from(template("seed-id", "seed-client"))
+                .scope("s".repeat(1000))
+                .build();
+        assertInvalid(() -> manager(List.of()).updateAuthorization("seed-id", desired));
+        assertEquals(
+                List.of("read"),
+                storage.findById("seed-id").getScopes().stream().toList());
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidTokenLifetimes")
+    void rejectsInvalidAccessAndRefreshTokenLifetimes(Duration ttl) {
+        var current = storage.findById("seed-id");
+        for (String field : List.of(
+                ConfigurationSettingNames.Token.ACCESS_TOKEN_TIME_TO_LIVE,
+                ConfigurationSettingNames.Token.REFRESH_TOKEN_TIME_TO_LIVE)) {
+            var settings = TokenSettings.withSettings(current.getTokenSettings().getSettings())
+                    .settings(values -> values.put(field, ttl))
+                    .build();
+            var desired = RegisteredClient.from(current).tokenSettings(settings).build();
+            assertInvalid(() -> manager(List.of()).updateAuthorization("seed-id", desired));
+            assertEquals(current.getTokenSettings(), storage.findById("seed-id").getTokenSettings());
+        }
+    }
+
+    private static Stream<Duration> invalidTokenLifetimes() {
+        return Stream.of(Duration.ZERO, Duration.ofSeconds(-1));
+    }
+
+    @Test
+    void acceptsSecretPostForEnabledClientsAndRejectsOtherMethods() {
+        var manager = manager(List.of());
+        var current = storage.findById("seed-id");
+        var unsupported = withAuthenticationMethod(current, ClientAuthenticationMethod.PRIVATE_KEY_JWT);
+        assertInvalid(() -> manager.updateAuthorization("seed-id", unsupported));
+        assertEquals(current, storage.findById("seed-id"));
+
+        var secretPost = withAuthenticationMethod(current, ClientAuthenticationMethod.CLIENT_SECRET_POST);
+        manager.updateAuthorization("seed-id", secretPost);
+        var stored = storage.findById("seed-id");
+        assertTrue(stored.getClientAuthenticationMethods().contains(ClientAuthenticationMethod.CLIENT_SECRET_POST));
+        assertEquals(Boolean.TRUE, stored.getClientSettings().getSetting(OAuthClientSettings.ENABLED));
+    }
+
+    @Test
+    void authorizationUpdatesKeepLegacyRegistrationsEnabled() {
+        var legacy = RegisteredClient.from(storage.findById("seed-id"))
+                .clientSettings(ClientSettings.builder().build())
+                .build();
+        storage.save(legacy);
+        manager(List.of()).updateAuthorization("seed-id", template("seed-id", "seed-client"));
+        assertNotNull(clients.findById("seed-id"));
+    }
+
+    private static RegisteredClient withAuthenticationMethod(
+            RegisteredClient client, ClientAuthenticationMethod method) {
+        return RegisteredClient.from(client)
+                .clientAuthenticationMethods(methods -> methods.clear())
+                .clientAuthenticationMethod(method)
+                .build();
+    }
+
+    private static void assertInvalid(Executable action) {
+        assertEquals(PARAM_ILLEGAL, assertThrows(CommonException.class, action).getResultCode());
     }
 
     private OAuthClientManager manager(List<OAuthClientPolicy> policies) {

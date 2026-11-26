@@ -26,6 +26,7 @@ import io.github.loadup.components.oauth.OAuthClientSettings;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcOperations;
@@ -101,6 +102,45 @@ class OAuthClientProtocolLifecycleTest {
 
         assertThatThrownBy(() -> protocol.save(staleUpgrade)).isInstanceOf(OAuth2AuthenticationException.class);
         verify(storage, never()).save(staleUpgrade);
+    }
+
+    @Test
+    void savesPasswordUpgradesAtTheCurrentRevisionAndNewRegistrations() {
+        var original = withRevision(client(true, NOW.plusSeconds(60), "old"), 2L);
+        when(storage.findById("client")).thenReturn(original);
+        var upgraded = RegisteredClient.from(original).clientSecret("new-hash").build();
+        protocol.save(upgraded);
+        verify(storage).save(upgraded);
+
+        var newClient = RegisteredClient.withId("different")
+                .clientId("new-application")
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+                .build();
+        protocol.save(newClient);
+        verify(storage).save(newClient);
+    }
+
+    @Test
+    void rejectsMalformedRevisionMetadataWithoutSaving() {
+        var original = client(true, NOW.plusSeconds(60), "old");
+        for (Object malformed : List.of("2", -1L)) {
+            var invalid = withRevision(original, malformed);
+            when(storage.findById("client")).thenReturn(invalid);
+            assertThatThrownBy(() -> protocol.save(original))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("Invalid OAuth client revision");
+        }
+        verify(storage, never()).save(original);
+    }
+
+    private static RegisteredClient withRevision(RegisteredClient client, Object revision) {
+        return RegisteredClient.from(client)
+                .clientSettings(
+                        ClientSettings.withSettings(client.getClientSettings().getSettings())
+                                .setting(LifecycleRegisteredClientRepository.REVISION, revision)
+                                .build())
+                .build();
     }
 
     @Test

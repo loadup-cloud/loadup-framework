@@ -18,6 +18,7 @@ package io.github.loadup.components.task;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
@@ -57,5 +58,17 @@ class TaskSubmissionTest {
         assertThatThrownBy(() -> TaskSubmission.immediate("type", "business", unicode + "€"))
                 .isInstanceOf(IllegalArgumentException.class);
         assertThat(TaskSubmission.immediate("type", "business", null).payload()).isNull();
+    }
+
+    @Test
+    void scheduledSubmissionRequiresATimestampAndUsesDatabasePrecision() {
+        assertThatThrownBy(() -> TaskSubmission.scheduled("order.expire", "order-1", null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("executeAt is required");
+        var scheduled =
+                TaskSubmission.scheduled("order.expire", "order-1", LocalDateTime.of(2027, 1, 1, 0, 0, 0, 123456789));
+        assertThat(scheduled.executeAt()).isEqualTo(LocalDateTime.of(2027, 1, 1, 0, 0, 0, 123456000));
+        var immediate = TaskSubmission.immediate("order.expire", "order-1", "synthetic-payload");
+        assertThat(immediate.toString()).contains("order-1").doesNotContain("synthetic-payload");
     }
 }

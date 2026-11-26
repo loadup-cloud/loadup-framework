@@ -32,6 +32,7 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.micrometer.observation.ObservationRegistry;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import javax.sql.DataSource;
@@ -50,10 +51,12 @@ class TaskConfigurationTest {
 
     static Stream<Consumer<TaskProperties>> invalidSettings() {
         return Stream.of(
+                p -> p.setTrigger(null),
                 p -> p.setPollInterval(null),
                 p -> p.setPollInterval(Duration.ZERO),
                 p -> p.setLease(null),
                 p -> p.setLease(Duration.ofMillis(-1)),
+                p -> p.setLease(Duration.ofDays(30).plusMillis(1)),
                 p -> p.setRetryDelay(null),
                 p -> p.setRetryDelay(Duration.ofNanos(1)),
                 p -> p.setRetryDelay(Duration.ofDays(1).plusMillis(1)),
@@ -71,6 +74,77 @@ class TaskConfigurationTest {
         assertThatThrownBy(settings::validate)
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid task delivery settings");
+    }
+
+    static Stream<Consumer<TaskProperties>> invalidTypePolicies() {
+        return Stream.of(
+                p -> p.setMaxAttempts(0),
+                p -> p.setMaxAttempts(1001),
+                p -> p.setLease(null),
+                p -> p.setLease(Duration.ofNanos(1)),
+                p -> p.setLease(Duration.ofDays(30).plusMillis(1)),
+                p -> p.setRetryDelay(null),
+                p -> p.setRetryDelay(Duration.ZERO),
+                p -> p.setRetryDelay(Duration.ofDays(1).plusMillis(1)));
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidTypePolicies")
+    void rejectsAnOutOfRangeEffectivePolicyForAConfiguredTask(Consumer<TaskProperties> mutation) {
+        var properties = new TaskProperties();
+        properties.setTypes(Map.of("order.expire", new TaskProperties.Policy()));
+        mutation.accept(properties);
+        assertThatThrownBy(properties::validate)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Invalid task type policy");
+    }
+
+    @Test
+    void typePoliciesInheritUnsetValuesAndApplyOnlyTheirOwnOverrides() {
+        var settings = new TaskProperties();
+        settings.setTaskType("order.expire");
+        settings.setMaxAttempts(4);
+        settings.setLease(Duration.ofSeconds(15));
+        settings.setRetryDelay(Duration.ofSeconds(3));
+        var partial = new TaskProperties.Policy();
+        partial.setMaxAttempts(2);
+        var fixed = new TaskProperties.Policy();
+        fixed.setLease(Duration.ofSeconds(30));
+        fixed.setRetryDelay(Duration.ofHours(8));
+        fixed.setExponential(false);
+        var capped = new TaskProperties.Policy();
+        capped.setRetryDelay(Duration.ofHours(8));
+        capped.setExponential(true);
+        settings.setTypes(Map.of("order.expire", partial, "fixed", fixed, "capped", capped));
+
+        settings.validate();
+        var expiration = settings.policy("order.expire");
+        assertThat(expiration.getMaxAttempts()).isEqualTo(2);
+        assertThat(expiration.getLease()).isEqualTo(Duration.ofSeconds(15));
+        assertThat(expiration.getRetryDelay()).isEqualTo(Duration.ofSeconds(3));
+        assertThat(expiration.retryDelayMillis(3)).isEqualTo(12000);
+        assertThat(settings.policy("fixed").getLease()).isEqualTo(Duration.ofSeconds(30));
+        assertThat(settings.policy("fixed").retryDelayMillis(3))
+                .isEqualTo(Duration.ofHours(8).toMillis());
+        assertThat(settings.policy("capped").retryDelayMillis(12))
+                .isEqualTo(Duration.ofDays(1).toMillis());
+        settings.setTypes(null);
+        assertThat(settings.getTypes()).isEmpty();
+        assertThat(settings.policy("order.expire").getMaxAttempts()).isEqualTo(4);
+    }
+
+    @Test
+    void validatesSqlDialectAndTablePrefixAtStartup() {
+        var properties = new TaskProperties();
+        properties.setDbType(null);
+        assertThatThrownBy(properties::validate).hasMessage("Invalid task database type or table prefix");
+        properties.setDbType(TaskProperties.DbType.MYSQL);
+        for (String prefix : new String[] {null, "Invalid_", "task name"}) {
+            properties.setTablePrefix(prefix);
+            assertThatThrownBy(properties::validate).hasMessage("Invalid task database type or table prefix");
+        }
+        properties.setTablePrefix("");
+        assertThatCode(properties::validate).doesNotThrowAnyException();
     }
 
     @Test
@@ -109,6 +183,18 @@ class TaskConfigurationTest {
             verify(provider).start(eq(List.of()), any());
             assertThat(context.getBean(TaskWorker.class).isRunning()).isFalse();
         });
+    }
+
+    @Test
+    void disabledWorkerDoesNotRequireASchedulerBinderWithRegisteredHandlers() {
+        schedulerRunner()
+                .withPropertyValues("loadup.task.worker-enabled=false")
+                .withBean(TaskHandler.class, TaskConfigurationTest::handler)
+                .run(context -> {
+                    assertThat(context).hasNotFailed();
+                    assertThat(context.getBean(TaskWorker.class).isAutoStartup())
+                            .isFalse();
+                });
     }
 
     @Test

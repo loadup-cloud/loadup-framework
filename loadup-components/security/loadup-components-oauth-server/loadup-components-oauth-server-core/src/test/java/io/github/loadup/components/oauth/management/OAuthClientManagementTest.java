@@ -15,10 +15,12 @@
  */
 package io.github.loadup.components.oauth.management;
 
+import static io.github.loadup.commons.enums.CommonResultCodeEnum.PARAM_ILLEGAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -34,11 +36,20 @@ import io.github.loadup.components.oauth.client.IssuedClientCredential;
 import io.github.loadup.components.oauth.client.OAuthClientManager;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -178,11 +189,118 @@ class OAuthClientManagementTest {
         assertThrows(CommonException.class, () -> management.create("invalid/id", createRequest()));
         assertThrows(CommonException.class, () -> management.detail("../billing"));
         assertThrows(CommonException.class, () -> management.detail(".."));
+        assertThrows(CommonException.class, () -> management.detail("."));
+        assertThrows(CommonException.class, () -> management.detail(null));
         assertThrows(
                 CommonException.class,
                 () -> management.updateAuthorization(
                         "", authorization("Billing", Set.of("payments:read"), "payments-api", Map.of())));
         verifyNoInteractions(manager);
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {"", " billing", "bill\ting"})
+    void invalidClientIdsDoNotReachTheManager(String clientId) {
+        assertInvalid(() -> management.create(
+                REGISTRATION_ID,
+                new OAuthClientCreateRequest(clientId, createRequest().authorization(), EXPIRES_AT)));
+        verifyNoInteractions(manager);
+    }
+
+    @Test
+    void rejectsMissingCreateRequestAndOversizedClientId() {
+        assertInvalid(() -> management.create(REGISTRATION_ID, null));
+        assertInvalid(() -> management.create(
+                REGISTRATION_ID,
+                new OAuthClientCreateRequest("c".repeat(101), createRequest().authorization(), EXPIRES_AT)));
+        verifyNoInteractions(manager);
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidAuthorizations")
+    void invalidAuthorizationDoesNotCreateAClient(OAuthClientAuthorization authorization) {
+        assertInvalid(() ->
+                management.create(REGISTRATION_ID, new OAuthClientCreateRequest(CLIENT_ID, authorization, EXPIRES_AT)));
+        verifyNoInteractions(manager);
+    }
+
+    private static Stream<OAuthClientAuthorization> invalidAuthorizations() {
+        var scopes = Set.of("payments:read");
+        var audience = "payments-api";
+        Map<String, String> attributes = Map.of();
+        var tooManyScopes =
+                IntStream.rangeClosed(1, 101).mapToObj(i -> "scope-" + i).collect(Collectors.toSet());
+        var tooManyAttributes =
+                IntStream.rangeClosed(1, 9).boxed().collect(Collectors.toMap(i -> "tag-" + i, i -> "billing"));
+        return Stream.of(
+                null,
+                authorization(null, scopes, audience, attributes),
+                authorization(" ", scopes, audience, attributes),
+                authorization("n".repeat(201), scopes, audience, attributes),
+                authorization(" Billing", scopes, audience, attributes),
+                authorization("Bill\ting", scopes, audience, attributes),
+                authorization("Billing", null, audience, attributes),
+                authorization("Billing", Set.of(), audience, attributes),
+                authorization("Billing", tooManyScopes, audience, attributes),
+                authorization("Billing", Collections.singleton(null), audience, attributes),
+                authorization("Billing", Set.of(" "), audience, attributes),
+                authorization("Billing", Set.of("s".repeat(129)), audience, attributes),
+                authorization("Billing", scopes, audience, null),
+                authorization("Billing", scopes, null, attributes),
+                authorization("Billing", scopes, " ", attributes),
+                authorization("Billing", scopes, "a".repeat(129), attributes),
+                new OAuthClientAuthorization("Billing", scopes, audience, attributes, null),
+                new OAuthClientAuthorization("Billing", scopes, audience, attributes, Duration.ZERO),
+                new OAuthClientAuthorization("Billing", scopes, audience, attributes, Duration.ofSeconds(-1)),
+                authorization("Billing", scopes, audience, tooManyAttributes),
+                authorization("Billing", scopes, audience, Collections.singletonMap(null, "billing")),
+                authorization("Billing", scopes, audience, Map.of("owner/team", "billing")),
+                authorization("Billing", scopes, audience, Collections.singletonMap("owner", null)),
+                authorization("Billing", scopes, audience, Map.of("owner", " ")),
+                authorization("Billing", scopes, audience, Map.of("owner", "o".repeat(257))),
+                authorization("Billing", scopes, audience, Map.of("owner", "bill\ting")));
+    }
+
+    @Test
+    void lifecycleCommandsPassTheRegistrationAndExpiryToTheManager() {
+        var issued = mock(IssuedClientCredential.class);
+        when(issued.registrationId()).thenReturn(REGISTRATION_ID);
+        when(issued.clientId()).thenReturn(CLIENT_ID);
+        when(issued.secret()).thenReturn(SECRET);
+        when(issued.expiresAt()).thenReturn(EXPIRES_AT);
+        when(manager.rotateCredential(REGISTRATION_ID, EXPIRES_AT)).thenReturn(issued);
+        var expiry = new OAuthClientExpiryRequest(EXPIRES_AT);
+
+        assertInvalid(() -> management.setCredentialExpiry(REGISTRATION_ID, null));
+        assertInvalid(() -> management.rotateCredential(REGISTRATION_ID, null));
+        verifyNoInteractions(manager);
+
+        management.disable(REGISTRATION_ID);
+        management.setCredentialExpiry(REGISTRATION_ID, expiry);
+        var rotated = management.rotateCredential(REGISTRATION_ID, expiry);
+
+        verify(manager).disable(REGISTRATION_ID);
+        verify(manager).setCredentialExpiry(REGISTRATION_ID, EXPIRES_AT);
+        assertEquals(new OAuthClientCredentialResponse(REGISTRATION_ID, CLIENT_ID, SECRET, EXPIRES_AT), rotated);
+    }
+
+    @Test
+    void detailTreatsLegacyAndExplicitlyEnabledClientsAsEnabled() {
+        var legacy = registeredClient();
+        var enabled = RegisteredClient.from(legacy)
+                .clientSettings(
+                        ClientSettings.withSettings(legacy.getClientSettings().getSettings())
+                                .setting(OAuthClientSettings.ENABLED, true)
+                                .build())
+                .build();
+        when(manager.get(REGISTRATION_ID)).thenReturn(legacy, enabled);
+        assertTrue(management.detail(REGISTRATION_ID).enabled());
+        assertTrue(management.detail(REGISTRATION_ID).enabled());
+    }
+
+    private static void assertInvalid(Executable action) {
+        assertEquals(PARAM_ILLEGAL, assertThrows(CommonException.class, action).getResultCode());
     }
 
     private static OAuthClientCreateRequest createRequest() {

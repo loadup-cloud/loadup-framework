@@ -23,10 +23,14 @@ import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.proc.SecurityContext;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.sun.net.httpserver.HttpServer;
 import io.github.loadup.commons.enums.CommonResultCodeEnum;
+import io.github.loadup.components.authserver.properties.LoadUpAuthServerProperties;
 import io.github.loadup.components.observability.ApiResultMetrics;
 import io.github.loadup.components.runtime.json.JsonAutoConfiguration;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
@@ -43,6 +47,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -60,6 +65,8 @@ import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtException;
+import org.springframework.security.oauth2.jwt.JwtValidationException;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -216,6 +223,83 @@ class ResourceServerSecurityTest {
         properties.setJwkSetUri("https://issuer.test/jwks");
         assertThat(configuration.resourceServerJwtDecoder(properties, new DefaultResourceLoader()))
                 .isNotNull();
+    }
+
+    @Test
+    void configuredDecoderRequiresIssuerAndAudienceBeforeSelectingAKeySource() {
+        var configuration = new ResourceServerAutoConfiguration();
+        var properties = new ResourceServerProperties();
+        var loader = new DefaultResourceLoader();
+        ObjectProvider<JWKSource<SecurityContext>> keys = provider(null);
+        ObjectProvider<LoadUpAuthServerProperties> issuer = provider(null);
+        assertThatThrownBy(() -> configuration.configuredResourceServerJwtDecoder(properties, loader, keys, issuer))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Resource server requires issuer-uri and audience");
+        properties.setIssuerUri("https://issuer.test");
+        assertThatThrownBy(() -> configuration.configuredResourceServerJwtDecoder(properties, loader, keys, issuer))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Resource server requires issuer-uri and audience");
+    }
+
+    @Test
+    void matchingIssuerUsesLocalKeysAndExplicitKeySourcesTakePrecedence() throws Exception {
+        var generator = KeyPairGenerator.getInstance("RSA");
+        generator.initialize(2048);
+        var pair = generator.generateKeyPair();
+        var key = new RSAKey.Builder((RSAPublicKey) pair.getPublic())
+                .privateKey(pair.getPrivate())
+                .build();
+        var properties = new ResourceServerProperties();
+        properties.setIssuerUri("https://issuer.test");
+        properties.setAudience("merchant-api");
+        var signing = new LoadUpAuthServerProperties();
+        signing.setIssuer(properties.getIssuerUri());
+        ObjectProvider<JWKSource<SecurityContext>> keys = provider(new ImmutableJWKSet<>(new JWKSet(key)));
+        var signingProperties = provider(signing);
+        var configuration = new ResourceServerAutoConfiguration();
+        var loader = new DefaultResourceLoader();
+        var decoder = configuration.configuredResourceServerJwtDecoder(properties, loader, keys, signingProperties);
+        var valid = new JWTClaimsSet.Builder()
+                .issuer(signing.getIssuer())
+                .audience("merchant-api")
+                .subject("local-client")
+                .claim("token_use", "access")
+                .expirationTime(Date.from(Instant.now().plusSeconds(300)))
+                .build();
+        assertThat(decoder.decode(sign(valid, key)).getSubject()).isEqualTo("local-client");
+        var wrongAudience =
+                new JWTClaimsSet.Builder(valid).audience("other-api").build();
+        String wrongAudienceToken = sign(wrongAudience, key);
+        assertThatThrownBy(() -> decoder.decode(wrongAudienceToken)).isInstanceOf(JwtValidationException.class);
+
+        properties.setJwkSetUri("https://external.test/jwks");
+        assertThat(configuration.configuredResourceServerJwtDecoder(properties, loader, keys, signingProperties))
+                .isInstanceOf(NimbusJwtDecoder.class);
+        signing.setIssuer("https://other-issuer.test");
+        assertThat(configuration.configuredResourceServerJwtDecoder(properties, loader, keys, signingProperties))
+                .isInstanceOf(NimbusJwtDecoder.class);
+        assertThat(configuration.configuredResourceServerJwtDecoder(properties, loader, keys, provider(null)))
+                .isInstanceOf(NimbusJwtDecoder.class);
+        signing.setIssuer(properties.getIssuerUri());
+        properties.setPublicKeyLocation("classpath:unneeded-public-key.pem");
+        assertThatThrownBy(() ->
+                        configuration.configuredResourceServerJwtDecoder(properties, loader, keys, signingProperties))
+                .hasMessage("Configure public-key-location or jwk-set-uri, not both");
+    }
+
+    private static String sign(JWTClaimsSet claims, RSAKey key) throws Exception {
+        var token = new SignedJWT(new JWSHeader(JWSAlgorithm.RS256), claims);
+        token.sign(new RSASSASigner(key));
+        return token.serialize();
+    }
+
+    private static <T> ObjectProvider<T> provider(T bean) {
+        return new ObjectProvider<>() {
+            @Override
+            public T getIfAvailable() {
+                return bean;
+            }
+        };
     }
 
     @Test

@@ -192,6 +192,32 @@ class TaskWorkerTest {
     }
 
     @Test
+    void workerRequiresBothDispatcherAndSettings() {
+        var settings = properties();
+        var dispatcher = new TaskDispatcher(mock(JdbcTaskRepository.class), settings, List.of(), null);
+        assertThatThrownBy(() -> new TaskWorker(null, settings)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new TaskWorker(dispatcher, null)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void configuredTaskTypeLimitsTheClaimsEvenWithOtherHandlersRegistered() {
+        var settings = properties();
+        settings.setTaskType("payment.completed");
+        var repository = mock(JdbcTaskRepository.class);
+        when(repository.claim(List.of("payment.completed"))).thenReturn(Optional.empty());
+        doAnswer(call -> {
+                    ((Runnable) call.getArgument(0)).run();
+                    return null;
+                })
+                .when(repository)
+                .withoutTransaction(any());
+        var other = mock(TaskHandler.class);
+        when(other.taskType()).thenReturn("refund.completed");
+        new TaskDispatcher(repository, settings, List.of(handler(event -> {}), other), null).execute();
+        verify(repository).claim(List.of("payment.completed"));
+    }
+
+    @Test
     void emptyQueueStopsAndInterruptedHandlerPreventsFurtherClaims() {
         JdbcTaskRepository empty = mock(JdbcTaskRepository.class);
         when(empty.claim(List.of("payment.completed"))).thenReturn(Optional.empty());
