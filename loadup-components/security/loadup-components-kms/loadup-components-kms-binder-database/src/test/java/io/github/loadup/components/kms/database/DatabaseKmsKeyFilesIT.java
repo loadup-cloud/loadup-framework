@@ -51,10 +51,7 @@ import org.springframework.util.ClassUtils;
 @SpringBootTest(classes = DatabaseKmsKeyFilesIT.Application.class)
 @EnableTestContainers(value = ContainerType.POSTGRESQL, reuse = false)
 @Sql(
-        scripts = {
-            "classpath:db/schema/kms_key_file.sql",
-            "classpath:db/schema/kms_secret.sql"
-        },
+        scripts = {"classpath:db/schema/kms_key_file.sql", "classpath:db/schema/kms_secret.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 class DatabaseKmsKeyFilesIT {
     @SpringBootConfiguration
