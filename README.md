@@ -106,8 +106,10 @@ POM 同步 Maven 项目。
 检查空语句、equals/hashCode、switch fall-through 和 import 等结构规范，不叠加 Sun 格式规则。Checkstyle 引擎支持 Java 25，PMD
 排除 `target/generated-sources` 和 `target/generated-test-sources`，生成文件由 APT 管理。
 
-Spotless 不绑定 Maven 生命周期，`clean install`、`clean verify`、`package` 等构建不会因格式问题中断；格式检查与修复需手动执行，例如
-`./spotless.sh check`、`./spotless.sh apply` 或 `mvnd spotless:check`、`mvnd spotless:apply`。
+Spotless 独立于 Maven 构建生命周期。可用 `./spotless.sh check` 检查格式，或用 `./spotless.sh apply` 修复格式。
+运行 `./spotless.sh install` 安装 pre-commit hook。提交时，hook 会格式化已暂存的 Java 文件和 POM，并重新暂存格式化结果。
+同一文件有未暂存改动时，hook 会中止提交，请先处理这些改动再重试。
+使用 `git commit -- <文件>` 时，若 hook 修改了格式，按提示重试提交。
 
 本地统一使用根目录脚本，默认检查全部模块及六项质量门禁：SpotBugs、Spotless、License、Enforcer、PMD 和 Checkstyle。
 
