@@ -89,6 +89,7 @@
         <palantir-java-format.version>2.98.0</palantir-java-format.version>
 
         <spring.boot.version>4.2.0</spring.boot.version>
+        <loadup.framework.version>${project.version}</loadup.framework.version>
 
         <!-- Flyway plugin support -->
         <flyway.version>13.13.0</flyway.version>
@@ -116,7 +117,7 @@
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
                 <artifactId>loadup-framework-bom</artifactId>
-                <version>${project.version}</version>
+                <version>${loadup.framework.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
