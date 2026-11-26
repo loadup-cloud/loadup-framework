@@ -38,7 +38,12 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 @SpringBootTest(
         classes = TaskIT.Application.class,
-        properties = {"loadup.task.db-type=mysql", "loadup.task.table-prefix=ops_", "loadup.task.worker-enabled=false"})
+        properties = {
+            "spring.flyway.enabled=false",
+            "loadup.task.db-type=mysql",
+            "loadup.task.table-prefix=ops_",
+            "loadup.task.worker-enabled=false"
+        })
 @EnableTestContainers(value = ContainerType.MYSQL, reuse = false)
 class TaskMySqlIT {
     @Test
@@ -55,7 +60,8 @@ class TaskMySqlIT {
         }
 
         var transaction = new TransactionTemplate(manager);
-        var deadline = LocalDateTime.now().minusHours(1).withNano(0);
+        var jdbc = new JdbcTemplate(source);
+        var deadline = jdbc.queryForObject("SELECT CURRENT_TIMESTAMP - INTERVAL 1 HOUR", LocalDateTime.class);
         var submission = TaskSubmission.scheduled("order.expire", "order", deadline);
         String id = transaction.execute(status -> tasks.submit(submission));
         String duplicate = transaction.execute(status -> tasks.submit(submission));
@@ -67,8 +73,7 @@ class TaskMySqlIT {
         assertThat(tasks.claim(List.of("ORDER.EXPIRE"))).isEmpty();
         assertThat(tasks.find(id).orElseThrow().attempts()).isZero();
         var previous = tasks.claim(List.of("another.type", "order.expire")).orElseThrow();
-        new JdbcTemplate(source)
-                .update("UPDATE ops_task SET lease_until = CURRENT_TIMESTAMP(6) - INTERVAL 1 SECOND WHERE id = ?", id);
+        jdbc.update("UPDATE ops_task SET lease_until = CURRENT_TIMESTAMP(6) - INTERVAL 1 SECOND WHERE id = ?", id);
         var current = tasks.claim(List.of("order.expire")).orElseThrow();
         assertThat(current.attempt()).isEqualTo(2);
         assertThat(tasks.complete(previous)).isFalse();
