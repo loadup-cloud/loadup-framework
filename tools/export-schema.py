@@ -24,7 +24,8 @@ def render_schema() -> tuple[bytes, int]:
     if not modules.is_dir():
         modules = ROOT.parent / "loadup-modules"
     migrations = sorted(
-        modules.glob("**/src/main/resources/db/migration/framework/*/V*.sql"),
+        (source for namespace in ("framework", "modules") for source in
+         modules.glob(f"**/src/main/resources/db/migration/{namespace}/*/V*.sql")),
         key=lambda path: (int(path.name[1:].split("__", 1)[0]), path.as_posix()),
     )
     if not migrations:

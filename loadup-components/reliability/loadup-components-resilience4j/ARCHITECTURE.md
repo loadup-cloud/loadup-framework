@@ -57,7 +57,6 @@ resilience4j:
 
 | 消费者        | 用法                         | 实例命名                              |
 |---------------|------------------------------|---------------------------------------|
-| gotone-engine | provider 级熔断 + 重试装饰器 | `gotone-<channelType>-<providerName>` |
 
 ## 扩展点：Redis binder（规划）
 
