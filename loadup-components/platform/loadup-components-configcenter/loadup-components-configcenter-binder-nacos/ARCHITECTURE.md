@@ -1,54 +1,5 @@
-# LoadUp ConfigCenter Binder Nacos 架构
+# ConfigCenter Nacos 架构
 
-## 职责与边界
+`NacosConfigCenterAutoConfiguration` 在 `binder-type=nacos` 时创建 Provider。Provider 用 SDK 获取初始文档并注册一个监听器，将文档变更分发给对应键的订阅者。Bean 销毁时解除 SDK 监听并停止客户端。
 
-配置中心的具体后端适配模块；由集成方按需引入。
-
-## Maven 依赖边界
-
-直接依赖的框架模块：
-
-- `loadup-components-configcenter-api`
-- `loadup-commons-json`
-
-直接依赖的外部坐标（不含测试与 provided scope）：
-
-- `com.alibaba.nacos:nacos-client`
-- `org.yaml:snakeyaml`
-- `org.springframework.boot:spring-boot-starter`
-- `com.github.spotbugs:spotbugs-annotations`
-
-## 实现入口
-
-主要入口文件：
-
-- [ `NacosConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/nacos/autoconfigure/NacosConfigCenterAutoConfiguration.java)
-- [ `NacosConfigCenterProvider`](src/main/java/io/github/loadup/components/configcenter/nacos/NacosConfigCenterProvider.java)
-
-## 分层与调用路径
-
-`ConfigCenterTemplate` 把配置读取与监听委派给唯一的 `ConfigCenterProvider`。
-
-```text
-业务代码 → API/facade → 当前 binder → 第三方引擎或基础设施
-```
-
-binder 实现框架契约，把实现库及其配置隔离在业务 API 之外。
-
-## 装配规则
-
-- [ `NacosConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/nacos/autoconfigure/NacosConfigCenterAutoConfiguration.java)
-  是自动配置入口。
-    - `@ConditionalOnClass(NacosFactory.class)`
-    - `@ConditionalOnProperty(prefix = "loadup.configcenter", name = "binder-type", havingValue = "nacos")`
-
-## 配置归属
-
-- [ `NacosConfigCenterProperties`](src/main/java/io/github/loadup/components/configcenter/nacos/NacosConfigCenterProperties.java)
-  绑定 `loadup.configcenter.binder.nacos`。
-
-## 设计取舍
-
-选择独立 binder，使配置中心实现的依赖留在集成应用；替换底层实现时，业务侧仍使用 `ConfigCenterTemplate` 契约。
-
-集成方式与配置示例见 [README.md](README.md)。
+写入和删除按整个配置文档进行。Provider 读取最新内容与 MD5，根据键修改文档，并调用 SDK 的 CAS 发布。写操作的返回值反映提交结果，读取快照和回调随 SDK 通知更新。

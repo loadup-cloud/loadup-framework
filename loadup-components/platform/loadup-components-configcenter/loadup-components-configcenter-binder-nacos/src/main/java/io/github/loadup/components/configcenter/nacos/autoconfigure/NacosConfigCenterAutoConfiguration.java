@@ -33,9 +33,9 @@ import org.springframework.context.annotation.Bean;
 @EnableConfigurationProperties(NacosConfigCenterProperties.class)
 public class NacosConfigCenterAutoConfiguration {
 
-    @Bean
-    @ConditionalOnMissingBean
-    public ConfigCenterProvider nacosConfigCenterProvider(NacosConfigCenterProperties config) {
+    @Bean(destroyMethod = "close")
+    @ConditionalOnMissingBean(ConfigCenterProvider.class)
+    public NacosConfigCenterProvider nacosConfigCenterProvider(NacosConfigCenterProperties config) {
         return new NacosConfigCenterProvider(config);
     }
 }

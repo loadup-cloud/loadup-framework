@@ -1,48 +1,11 @@
-# LoadUp ConfigCenter Binder Nacos
+# ConfigCenter Binder Nacos
 
-配置中心的具体后端适配模块；由集成方按需引入。
+使用 `loadup-components-configcenter-binder-nacos` 和 `loadup.configcenter.binder-type: nacos`。在 `loadup.configcenter.binder.nacos` 配置 `server-addr`、`namespace`、`data-id`、`group`、`file-extension`、毫秒级 `timeout` 和可选的 `username`、`password`。文档格式支持 `properties`、`yaml` 和 `yml`。
 
-## 引入
+| 能力 | 支持 |
+|---|---|
+| 查值、列出键 | SDK 文档快照 |
+| 注解或程序化监听 | SDK 文档监听，按键对比变更 |
+| 写入和删除 | 读取最新完整文档后携带 MD5 原子比较并发布，冲突时返回 `false` |
 
-```xml
-<dependency>
-    <groupId>io.github.loadup-cloud</groupId>
-    <artifactId>loadup-components-configcenter-binder-nacos</artifactId>
-</dependency>
-```
-
-## 装配与配置
-
-模块提供以下自动配置入口；实际启用条件和配置项以对应类及父模块 README 为准：
-
-- `NacosConfigCenterAutoConfiguration`
-
-## 设计
-
-内部边界、依赖与源码入口见 [ARCHITECTURE.md](ARCHITECTURE.md)。
-
-## 接入步骤
-
-通过 `loadup.configcenter.binder-type` 选择 local、nacos 或 apollo；业务层注入 `ConfigCenterTemplate`。
-此 jar 负责接入具体技术实现；业务模块继续面向 API/facade 编程。
-
-## 最小配置
-
-```yaml
-loadup:
-  configcenter:
-    binder-type: nacos
-```
-
-同一应用只启用与该值对应的 binder；其他可选项见下方配置类及父模块 README。
-
-## 配置入口
-
-| 前缀                               | 配置类                                                                                                                         |
-|------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|
-| `loadup.configcenter.binder.nacos` | [`NacosConfigCenterProperties`](src/main/java/io/github/loadup/components/configcenter/nacos/NacosConfigCenterProperties.java) |
-
-## 自动装配
-
-- [ `NacosConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/nacos/autoconfigure/NacosConfigCenterAutoConfiguration.java)
-    - 启用条件：`@ConditionalOnProperty(prefix = "loadup.configcenter", name = "binder-type", havingValue = "nacos")`。
+变更通过 SDK 推送后进入本地快照。每次写入会重新渲染整个配置文档，适合将配置单独放在应用专用的 `data-id`。

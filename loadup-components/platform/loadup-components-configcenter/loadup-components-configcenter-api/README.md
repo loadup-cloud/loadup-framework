@@ -1,47 +1,5 @@
-# LoadUp ConfigCenter Components API
+# ConfigCenter API
 
-配置中心的业务契约与接口模块；实现由独立模块提供。
+业务库依赖 `loadup-components-configcenter-api`，通过 `ConfigCenterTemplate` 操作配置或用 `@DynamicConfig` 绑定字段和回调。应用通过 binder 依赖和 `loadup.configcenter.binder-type` 选择 `xxl-conf`、`nacos` 或 `apollo`。
 
-## 引入
-
-```xml
-<dependency>
-    <groupId>io.github.loadup-cloud</groupId>
-    <artifactId>loadup-components-configcenter-api</artifactId>
-</dependency>
-```
-
-## 装配与配置
-
-模块提供以下自动配置入口；实际启用条件和配置项以对应类及父模块 README 为准：
-
-- `ConfigCenterAutoConfiguration`
-
-## 设计
-
-内部边界、依赖与源码入口见 [ARCHITECTURE.md](ARCHITECTURE.md)。
-
-## 接入步骤
-
-通过 `loadup.configcenter.binder-type` 选择 local、nacos 或 apollo；业务层注入 `ConfigCenterTemplate`。
-运行时还需在应用侧引入一种对应 binder；仅有接口 jar 不会创建实际后端能力。
-
-## 配置入口
-
-| 前缀                  | 配置类                                                                                                         |
-|-----------------------|----------------------------------------------------------------------------------------------------------------|
-| `loadup.configcenter` | [`ConfigCenterProperties`](src/main/java/io/github/loadup/components/configcenter/ConfigCenterProperties.java) |
-
-## 对外契约
-
-- [`ConfigCenterProvider`](src/main/java/io/github/loadup/components/configcenter/ConfigCenterProvider.java)
-- [`ConfigCenterTemplate`](src/main/java/io/github/loadup/components/configcenter/ConfigCenterTemplate.java)
-
-业务代码只注入 `ConfigCenterTemplate`。例如 `getConfig("feature.order", "off")` 读取配置并
-设置默认值；需要热更新时可用 `addListener("feature.order", listener)` 订阅变更。
-`setConfig`、`removeConfig` 和 `listKeys` 也由同一契约提供，具体持久化行为由 binder 决定。
-
-## 自动装配
-
-- [ `ConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/autoconfigure/ConfigCenterAutoConfiguration.java)
-    - 启用条件：`@ConditionalOnSingleCandidate(ConfigCenterProvider.class)`。
+使用方式、回调约定和能力矩阵见 [ConfigCenter](../README.md)。

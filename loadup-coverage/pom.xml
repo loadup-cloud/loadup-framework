@@ -84,7 +84,7 @@
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>
-            <artifactId>loadup-components-configcenter-binder-local</artifactId>
+            <artifactId>loadup-components-configcenter-binder-xxl-conf</artifactId>
         </dependency>
         <dependency>
             <groupId>io.github.loadup-cloud</groupId>

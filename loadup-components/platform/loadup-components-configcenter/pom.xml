@@ -11,11 +11,11 @@
     <artifactId>loadup-components-configcenter</artifactId>
     <packaging>pom</packaging>
     <name>ComponentConfigCenter</name>
-    <description>Dynamic configuration access with local, Nacos and Apollo backends.</description>
+    <description>Dynamic configuration access with XXL-Conf, Nacos and Apollo backends.</description>
 
     <modules>
         <module>loadup-components-configcenter-api</module>
-        <module>loadup-components-configcenter-binder-local</module>
+        <module>loadup-components-configcenter-binder-xxl-conf</module>
         <module>loadup-components-configcenter-binder-nacos</module>
         <module>loadup-components-configcenter-binder-apollo</module>
     </modules>

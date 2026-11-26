@@ -1,48 +1,11 @@
-# LoadUp ConfigCenter Binder Apollo
+# ConfigCenter Binder Apollo
 
-配置中心的具体后端适配模块；由集成方按需引入。
+使用 `loadup-components-configcenter-binder-apollo` 和 `loadup.configcenter.binder-type: apollo`。在 `loadup.configcenter.binder.apollo` 配置 `meta`、`app-id`、`env`、`cluster` 和 `namespace`。默认环境、集群和 namespace 分别为 `DEV`、`default` 和 `application`。
 
-## 引入
+| 能力 | 支持 |
+|---|---|
+| 查值、列出键 | Apollo SDK 已发布的 namespace |
+| 注解或程序化监听 | Apollo SDK namespace 监听 |
+| 写入和删除 | 可选。配置 `portal-url`、`portal-token` 和 `portal-operator` 后启用，token 需要目标 namespace 的编辑和发布权限 |
 
-```xml
-<dependency>
-    <groupId>io.github.loadup-cloud</groupId>
-    <artifactId>loadup-components-configcenter-binder-apollo</artifactId>
-</dependency>
-```
-
-## 装配与配置
-
-模块提供以下自动配置入口；实际启用条件和配置项以对应类及父模块 README 为准：
-
-- `ApolloConfigCenterAutoConfiguration`
-
-## 设计
-
-内部边界、依赖与源码入口见 [ARCHITECTURE.md](ARCHITECTURE.md)。
-
-## 接入步骤
-
-通过 `loadup.configcenter.binder-type` 选择 local、nacos 或 apollo；业务层注入 `ConfigCenterTemplate`。
-此 jar 负责接入具体技术实现；业务模块继续面向 API/facade 编程。
-
-## 最小配置
-
-```yaml
-loadup:
-  configcenter:
-    binder-type: apollo
-```
-
-同一应用只启用与该值对应的 binder；其他可选项见下方配置类及父模块 README。
-
-## 配置入口
-
-| 前缀                                | 配置类                                                                                                                            |
-|-------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
-| `loadup.configcenter.binder.apollo` | [`ApolloConfigCenterProperties`](src/main/java/io/github/loadup/components/configcenter/apollo/ApolloConfigCenterProperties.java) |
-
-## 自动装配
-
-- [ `ApolloConfigCenterAutoConfiguration`](src/main/java/io/github/loadup/components/configcenter/apollo/autoconfigure/ApolloConfigCenterAutoConfiguration.java)
-    - 启用条件：`@ConditionalOnProperty(prefix = "loadup.configcenter", name = "binder-type", havingValue = "apollo")`。
+Portal 发布以 namespace 为单位，发布时会一并提交该 namespace 下的其他待发布变更。建议为程序化发布配置专用 namespace。编辑成功后发布仍可能失败，此时方法返回 `false`，编辑内容可能保留在 Portal 草稿中。

@@ -19,7 +19,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "loadup.configcenter")
 public class ConfigCenterProperties {
-    private String binderType = "local";
+    private String binderType;
 
     public String getBinderType() {
         return binderType;

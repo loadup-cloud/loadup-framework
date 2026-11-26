@@ -16,22 +16,22 @@
 package io.github.loadup.components.configcenter.apollo;
 
 import com.ctrip.framework.apollo.Config;
+import com.ctrip.framework.apollo.ConfigChangeListener;
 import com.ctrip.framework.apollo.ConfigService;
-import io.github.loadup.commons.log.LogUtil;
+import io.github.loadup.components.configcenter.ConfigCenterListeners;
 import io.github.loadup.components.configcenter.ConfigCenterProvider;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
-public class ApolloConfigCenterProvider implements ConfigCenterProvider {
-
+public class ApolloConfigCenterProvider implements ConfigCenterProvider, AutoCloseable {
     private final Config apolloConfig;
-    private final ConcurrentHashMap<String, List<Consumer<String>>> listeners = new ConcurrentHashMap<>();
+    private final ApolloConfigPublisher publisher;
+    private final ConfigCenterListeners listeners = new ConfigCenterListeners();
+    private final ConfigChangeListener sdkListener = event -> event.changedKeys()
+            .forEach(key -> listeners.dispatch(key, event.getChange(key).getNewValue()));
 
     public ApolloConfigCenterProvider(ApolloConfigCenterProperties config) {
+        publisher = ApolloConfigPublisher.create(config);
         System.setProperty("app.id", config.getAppId());
         if (config.getMeta() != null) {
             System.setProperty("apollo.meta", config.getMeta());
@@ -42,18 +42,8 @@ public class ApolloConfigCenterProvider implements ConfigCenterProvider {
         if (config.getCluster() != null) {
             System.setProperty("apollo.cluster", config.getCluster());
         }
-        this.apolloConfig = ConfigService.getConfig(config.getNamespace());
-
-        this.apolloConfig.addChangeListener(changeEvent -> {
-            Set<String> keys = changeEvent.changedKeys();
-            for (String key : keys) {
-                List<Consumer<String>> ls = listeners.get(key);
-                if (ls != null) {
-                    String newValue = changeEvent.getChange(key).getNewValue();
-                    ls.forEach(l -> l.accept(newValue));
-                }
-            }
-        });
+        apolloConfig = ConfigService.getConfig(config.getNamespace());
+        apolloConfig.addChangeListener(sdkListener);
     }
 
     @Override
@@ -63,20 +53,12 @@ public class ApolloConfigCenterProvider implements ConfigCenterProvider {
 
     @Override
     public boolean setConfig(String key, String value) {
-        LogUtil.warn(
-                ApolloConfigCenterProvider.class,
-                "Apollo does not support client-side writes; use Apollo Portal Open API to set key {}",
-                key);
-        return false;
+        return publisher != null && publisher.publish(key, value);
     }
 
     @Override
     public boolean removeConfig(String key) {
-        LogUtil.warn(
-                ApolloConfigCenterProvider.class,
-                "Apollo does not support client-side removes; use Apollo Portal Open API to remove key {}",
-                key);
-        return false;
+        return publisher != null && publisher.remove(key);
     }
 
     @Override
@@ -88,19 +70,17 @@ public class ApolloConfigCenterProvider implements ConfigCenterProvider {
     }
 
     @Override
-    public void addListener(String key, Consumer<String> listener) {
-        listeners
-                .computeIfAbsent(key, k -> Collections.synchronizedList(new ArrayList<>()))
-                .add(listener);
-    }
-
-    @Override
-    public void removeListener(String key) {
-        listeners.remove(key);
+    public Runnable subscribe(String key, Consumer<String> listener) {
+        return listeners.subscribe(key, listener);
     }
 
     @Override
     public String getBinderType() {
         return "apollo";
+    }
+
+    @Override
+    public void close() {
+        apolloConfig.removeChangeListener(sdkListener);
     }
 }

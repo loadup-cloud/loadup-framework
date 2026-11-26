@@ -20,16 +20,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.alibaba.nacos.api.NacosFactory;
+import com.alibaba.nacos.api.config.ConfigQueryResult;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
@@ -55,7 +53,8 @@ class NacosConfigCenterProviderContractTest {
     @Test
     void readsInitialSnapshotAndListsMatchingKeysInOrder() throws Exception {
         ConfigService sdk = mock(ConfigService.class);
-        when(sdk.getConfig(DATA_ID, GROUP, 3000)).thenReturn("payment.timeout=1000\npayment.mode=sync\nother=value");
+        when(sdk.getConfigAndSignListener(eq(DATA_ID), eq(GROUP), eq(3000L), any(Listener.class)))
+                .thenReturn("payment.timeout=1000\npayment.mode=sync\nother=value");
         try (var factory = mockStatic(NacosFactory.class)) {
             factory.when(() -> NacosFactory.createConfigService(any(Properties.class)))
                     .thenReturn(sdk);
@@ -71,21 +70,25 @@ class NacosConfigCenterProviderContractTest {
     @Test
     void successfulWritesReadLatestServerStateAndPublishWholeDocument() throws Exception {
         ConfigService sdk = mock(ConfigService.class);
-        when(sdk.getConfig(DATA_ID, GROUP, 3000))
-                .thenReturn("a=old", "a=old\nexternal=retained", "a=new\nexternal=retained");
-        when(sdk.publishConfig(eq(DATA_ID), eq(GROUP), anyString())).thenReturn(true);
+        when(sdk.getConfigAndSignListener(eq(DATA_ID), eq(GROUP), eq(3000L), any(Listener.class)))
+                .thenReturn("a=old");
+        when(sdk.getConfigWithResult(DATA_ID, GROUP, 3000))
+                .thenReturn(
+                        new ConfigQueryResult("a=old\nexternal=retained", "md5-before"),
+                        new ConfigQueryResult("a=new\nexternal=retained", "md5-after"));
+        when(sdk.publishConfigCas(eq(DATA_ID), eq(GROUP), anyString(), anyString(), eq("properties")))
+                .thenReturn(true);
         try (var factory = mockStatic(NacosFactory.class)) {
             factory.when(() -> NacosFactory.createConfigService(any(Properties.class)))
                     .thenReturn(sdk);
             var provider = new NacosConfigCenterProvider(new NacosConfigCenterProperties());
             assertThat(provider.setConfig("a", "new")).isTrue();
-            assertThat(provider.getConfig("a")).isEqualTo("new");
-            assertThat(provider.getConfig("external")).isEqualTo("retained");
+            assertThat(provider.getConfig("a")).isEqualTo("old");
             assertThat(provider.removeConfig("a")).isTrue();
-            assertThat(provider.getConfig("a")).isNull();
-            assertThat(provider.getConfig("external")).isEqualTo("retained");
             var contents = ArgumentCaptor.forClass(String.class);
-            verify(sdk, times(2)).publishConfig(eq(DATA_ID), eq(GROUP), contents.capture());
+            verify(sdk)
+                    .publishConfigCas(eq(DATA_ID), eq(GROUP), contents.capture(), eq("md5-before"), eq("properties"));
+            verify(sdk).publishConfigCas(eq(DATA_ID), eq(GROUP), contents.capture(), eq("md5-after"), eq("properties"));
             Properties first = new Properties(), second = new Properties();
             first.load(new StringReader(contents.getAllValues().get(0)));
             second.load(new StringReader(contents.getAllValues().get(1)));
@@ -97,8 +100,12 @@ class NacosConfigCenterProviderContractTest {
     @Test
     void rejectedAndFailedWritesDoNotMutatePublishedSnapshot() throws Exception {
         ConfigService sdk = mock(ConfigService.class);
-        when(sdk.getConfig(DATA_ID, GROUP, 3000)).thenReturn("a=old");
-        when(sdk.publishConfig(eq(DATA_ID), eq(GROUP), anyString()))
+        when(sdk.getConfigAndSignListener(eq(DATA_ID), eq(GROUP), eq(3000L), any(Listener.class)))
+                .thenReturn("a=old");
+        when(sdk.getConfigWithResult(DATA_ID, GROUP, 3000))
+                .thenReturn(new ConfigQueryResult("a=old", "md5"), new ConfigQueryResult("a=old", "md5"))
+                .thenThrow(new NacosException(500, "synthetic read failure"));
+        when(sdk.publishConfigCas(eq(DATA_ID), eq(GROUP), anyString(), eq("md5"), eq("properties")))
                 .thenReturn(false)
                 .thenThrow(new NacosException(500, "synthetic publish failure"));
         try (var factory = mockStatic(NacosFactory.class)) {
@@ -108,13 +115,6 @@ class NacosConfigCenterProviderContractTest {
             assertThat(provider.setConfig("a", "new")).isFalse();
             assertThat(provider.removeConfig("a")).isFalse();
             assertThat(provider.getConfig("a")).isEqualTo("old");
-            doReturn(false).when(sdk).publishConfig(eq(DATA_ID), eq(GROUP), anyString());
-            assertThat(provider.removeConfig("a")).isFalse();
-            doThrow(new NacosException(500, "write failed"))
-                    .when(sdk)
-                    .publishConfig(eq(DATA_ID), eq(GROUP), anyString());
-            assertThat(provider.setConfig("a", "new")).isFalse();
-            when(sdk.getConfig(DATA_ID, GROUP, 3000)).thenThrow(new NacosException(500, "read failed"));
             assertThat(provider.setConfig("a", "new")).isFalse();
             assertThat(provider.removeConfig("a")).isFalse();
             assertThat(provider.getConfig("a")).isEqualTo("old");
@@ -124,21 +124,44 @@ class NacosConfigCenterProviderContractTest {
     @Test
     void removingMissingKeyIsSuccessfulWithoutPublishing() throws Exception {
         ConfigService sdk = mock(ConfigService.class);
-        when(sdk.getConfig(DATA_ID, GROUP, 3000)).thenReturn("a=old");
+        when(sdk.getConfigAndSignListener(eq(DATA_ID), eq(GROUP), eq(3000L), any(Listener.class)))
+                .thenReturn("a=old");
+        when(sdk.getConfigWithResult(DATA_ID, GROUP, 3000)).thenReturn(new ConfigQueryResult("a=old", "md5"));
         try (var factory = mockStatic(NacosFactory.class)) {
             factory.when(() -> NacosFactory.createConfigService(any(Properties.class)))
                     .thenReturn(sdk);
             var provider = new NacosConfigCenterProvider(new NacosConfigCenterProperties());
             assertThat(provider.removeConfig("absent")).isTrue();
             assertThat(provider.getConfig("a")).isEqualTo("old");
-            verify(sdk, never()).publishConfig(anyString(), anyString(), anyString());
+            verify(sdk, never()).publishConfigCas(anyString(), anyString(), anyString(), anyString(), anyString());
+        }
+    }
+
+    @Test
+    void deletingTheLastKeyPublishesANonblankEmptyDocument() throws Exception {
+        ConfigService sdk = mock(ConfigService.class);
+        when(sdk.getConfigWithResult(DATA_ID, GROUP, 3000)).thenReturn(new ConfigQueryResult("a=old", "md5"));
+        when(sdk.publishConfigCas(eq(DATA_ID), eq(GROUP), anyString(), eq("md5"), eq("properties")))
+                .thenReturn(true);
+        try (var factory = mockStatic(NacosFactory.class)) {
+            factory.when(() -> NacosFactory.createConfigService(any(Properties.class)))
+                    .thenReturn(sdk);
+            var provider = new NacosConfigCenterProvider(new NacosConfigCenterProperties());
+            assertThat(provider.removeConfig("a")).isTrue();
+            var content = ArgumentCaptor.forClass(String.class);
+            verify(sdk).publishConfigCas(eq(DATA_ID), eq(GROUP), content.capture(), eq("md5"), eq("properties"));
+            assertThat(content.getValue()).isNotBlank();
+            var parsed = new Properties();
+            parsed.load(new StringReader(content.getValue()));
+            assertThat(parsed).isEmpty();
         }
     }
 
     @Test
     void singleSdkListenerRefreshesChangedAddedAndDeletedKeysAndHonorsUnsubscribe() throws Exception {
         ConfigService sdk = mock(ConfigService.class);
-        when(sdk.getConfig(DATA_ID, GROUP, 3000)).thenReturn("changed=old\nremoved=old\nstable=same");
+        when(sdk.getConfigAndSignListener(eq(DATA_ID), eq(GROUP), eq(3000L), any(Listener.class)))
+                .thenReturn("changed=old\nremoved=old\nstable=same");
         try (var factory = mockStatic(NacosFactory.class)) {
             factory.when(() -> NacosFactory.createConfigService(any(Properties.class)))
                     .thenReturn(sdk);
@@ -147,12 +170,12 @@ class NacosConfigCenterProviderContractTest {
                     additional = new ArrayList<>(),
                     removed = new ArrayList<>(),
                     stable = new ArrayList<>();
-            provider.addListener("changed", changed::add);
-            provider.addListener("changed", additional::add);
-            provider.addListener("removed", removed::add);
-            provider.addListener("stable", stable::add);
+            Runnable unsubscribe = provider.subscribe("changed", changed::add);
+            provider.subscribe("changed", additional::add);
+            provider.subscribe("removed", removed::add);
+            provider.subscribe("stable", stable::add);
             var capture = ArgumentCaptor.forClass(Listener.class);
-            verify(sdk).addListener(eq(DATA_ID), eq(GROUP), capture.capture());
+            verify(sdk).getConfigAndSignListener(eq(DATA_ID), eq(GROUP), eq(3000L), capture.capture());
             Listener listener = capture.getValue();
             listener.getExecutor().execute(() -> listener.receiveConfigInfo("changed=new\nstable=same\nadded=value"));
             assertThat(changed).containsExactly("new");
@@ -163,33 +186,21 @@ class NacosConfigCenterProviderContractTest {
             assertThat(provider.getConfig("removed")).isNull();
             listener.receiveConfigInfo("changed=new\nstable=same\nadded=value");
             assertThat(changed).containsExactly("new");
-            provider.removeListener("changed");
+            unsubscribe.run();
             listener.receiveConfigInfo("changed=after\nstable=same\nadded=value");
             assertThat(changed).containsExactly("new");
-            assertThat(additional).containsExactly("new");
+            assertThat(additional).containsExactly("new", "after");
             assertThat(provider.getConfig("changed")).isEqualTo("after");
         }
     }
 
     @Test
-    void checkedSdkCreationAndListenerFailuresRetainSystemErrorCode() throws Exception {
+    void checkedSdkCreationFailureRetainsSystemErrorCode() throws Exception {
         NacosException failure = new NacosException(500, "synthetic unavailable");
         try (var factory = mockStatic(NacosFactory.class)) {
             factory.when(() -> NacosFactory.createConfigService(any(Properties.class)))
                     .thenThrow(failure);
             assertThatThrownBy(() -> new NacosConfigCenterProvider(new NacosConfigCenterProperties()))
-                    .isInstanceOfSatisfying(
-                            CommonException.class,
-                            error -> assertThat(error.getResultCode()).isEqualTo(CommonResultCodeEnum.SYS_ERROR))
-                    .hasCause(failure);
-        }
-        ConfigService sdk = mock(ConfigService.class);
-        doThrow(failure).when(sdk).addListener(eq(DATA_ID), eq(GROUP), any(Listener.class));
-        try (var factory = mockStatic(NacosFactory.class)) {
-            factory.when(() -> NacosFactory.createConfigService(any(Properties.class)))
-                    .thenReturn(sdk);
-            var provider = new NacosConfigCenterProvider(new NacosConfigCenterProperties());
-            assertThatThrownBy(() -> provider.addListener("key", value -> {}))
                     .isInstanceOfSatisfying(
                             CommonException.class,
                             error -> assertThat(error.getResultCode()).isEqualTo(CommonResultCodeEnum.SYS_ERROR))
@@ -201,20 +212,23 @@ class NacosConfigCenterProviderContractTest {
     void initialSnapshotFailureFailsFastWithOriginalCause() throws Exception {
         ConfigService sdk = mock(ConfigService.class);
         NacosException failure = new NacosException(500, "synthetic initial load failure");
-        when(sdk.getConfig(DATA_ID, GROUP, 3000)).thenThrow(failure);
+        when(sdk.getConfigAndSignListener(eq(DATA_ID), eq(GROUP), eq(3000L), any(Listener.class)))
+                .thenThrow(failure);
         try (var factory = mockStatic(NacosFactory.class)) {
             factory.when(() -> NacosFactory.createConfigService(any(Properties.class)))
                     .thenReturn(sdk);
             assertThatThrownBy(() -> new NacosConfigCenterProvider(new NacosConfigCenterProperties()))
                     .isInstanceOf(IllegalStateException.class)
                     .hasCause(failure);
+            verify(sdk).shutDown();
         }
     }
 
     @Test
     void bindsAllSdkOptionsAndHonorsConsumerProviderAndBinderSelection() throws Exception {
         ConfigService sdk = mock(ConfigService.class);
-        when(sdk.getConfig("payments.yaml", "PAYMENTS", 1200)).thenReturn("payment:\n  timeout: 42");
+        when(sdk.getConfigAndSignListener(eq("payments.yaml"), eq("PAYMENTS"), eq(1200L), any(Listener.class)))
+                .thenReturn("payment:\n  timeout: 42");
         AtomicReference<Properties> captured = new AtomicReference<>();
         var runner = new ApplicationContextRunner()
                 .withConfiguration(AutoConfigurations.of(NacosConfigCenterAutoConfiguration.class))
@@ -248,7 +262,7 @@ class NacosConfigCenterProviderContractTest {
             runner.withBean(ConfigCenterProvider.class, () -> custom)
                     .run(context -> assertThat(context.getBean(ConfigCenterProvider.class))
                             .isSameAs(custom));
-            runner.withPropertyValues("loadup.configcenter.binder-type=local")
+            runner.withPropertyValues("loadup.configcenter.binder-type=xxl-conf")
                     .run(context -> assertThat(context).doesNotHaveBean(ConfigCenterProvider.class));
         }
     }

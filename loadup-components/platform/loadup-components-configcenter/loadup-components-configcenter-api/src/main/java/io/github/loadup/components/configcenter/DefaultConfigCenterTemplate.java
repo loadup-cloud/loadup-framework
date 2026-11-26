@@ -15,11 +15,15 @@
  */
 package io.github.loadup.components.configcenter;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class DefaultConfigCenterTemplate implements ConfigCenterTemplate {
     private final ConfigCenterProvider provider;
+    private final Map<String, List<Runnable>> listeners = new HashMap<>();
 
     public DefaultConfigCenterTemplate(ConfigCenterProvider provider) {
         this.provider = provider;
@@ -52,12 +56,16 @@ public class DefaultConfigCenterTemplate implements ConfigCenterTemplate {
     }
 
     @Override
-    public void addListener(String key, Consumer<String> listener) {
-        provider.addListener(key, listener);
+    public synchronized void addListener(String key, Consumer<String> listener) {
+        Runnable unsubscribe = provider.subscribe(key, listener);
+        listeners.computeIfAbsent(key, ignored -> new ArrayList<>()).add(unsubscribe);
     }
 
     @Override
-    public void removeListener(String key) {
-        provider.removeListener(key);
+    public synchronized void removeListener(String key) {
+        List<Runnable> subscriptions = listeners.remove(key);
+        if (subscriptions != null) {
+            subscriptions.forEach(Runnable::run);
+        }
     }
 }

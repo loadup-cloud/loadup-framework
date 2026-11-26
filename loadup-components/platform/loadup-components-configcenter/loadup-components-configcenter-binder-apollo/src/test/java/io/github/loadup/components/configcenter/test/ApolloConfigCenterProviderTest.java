@@ -19,6 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.RETURNS_SELF;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
@@ -31,7 +33,12 @@ import com.ctrip.framework.apollo.ConfigService;
 import com.ctrip.framework.apollo.enums.PropertyChangeType;
 import com.ctrip.framework.apollo.model.ConfigChange;
 import com.ctrip.framework.apollo.model.ConfigChangeEvent;
+import com.ctrip.framework.apollo.openapi.client.ApolloOpenApiClient;
+import com.ctrip.framework.apollo.openapi.client.ApolloOpenApiClient.ApolloOpenApiClientBuilder;
+import com.ctrip.framework.apollo.openapi.dto.NamespaceReleaseDTO;
+import com.ctrip.framework.apollo.openapi.dto.OpenItemDTO;
 import io.github.loadup.components.configcenter.ConfigCenterProvider;
+import io.github.loadup.components.configcenter.DefaultConfigCenterTemplate;
 import io.github.loadup.components.configcenter.apollo.ApolloConfigCenterProperties;
 import io.github.loadup.components.configcenter.apollo.ApolloConfigCenterProvider;
 import io.github.loadup.components.configcenter.apollo.autoconfigure.ApolloConfigCenterAutoConfiguration;
@@ -107,9 +114,10 @@ class ApolloConfigCenterProviderTest {
             var provider = new ApolloConfigCenterProvider(settings());
             var capture = ArgumentCaptor.forClass(ConfigChangeListener.class);
             verify(sdk).addChangeListener(capture.capture());
+            var template = new DefaultConfigCenterTemplate(provider);
             List<String> first = new ArrayList<>(), second = new ArrayList<>();
-            provider.addListener("key", first::add);
-            provider.addListener("key", second::add);
+            template.addListener("key", first::add);
+            template.addListener("key", second::add);
             capture.getValue()
                     .onChange(new ConfigChangeEvent(
                             "unit-app",
@@ -147,7 +155,7 @@ class ApolloConfigCenterProviderTest {
                                             null,
                                             PropertyChangeType.DELETED))));
             assertThat(first).containsExactly("new", null);
-            provider.removeListener("key");
+            template.removeListener("key");
             capture.getValue()
                     .onChange(new ConfigChangeEvent(
                             "unit-app",
@@ -162,7 +170,7 @@ class ApolloConfigCenterProviderTest {
                                             "after",
                                             PropertyChangeType.ADDED))));
             assertThat(second).containsExactly("new", null);
-            provider.addListener("key", first::add);
+            template.addListener("key", first::add);
             capture.getValue()
                     .onChange(new ConfigChangeEvent(
                             "unit-app",
@@ -178,6 +186,48 @@ class ApolloConfigCenterProviderTest {
                                             PropertyChangeType.MODIFIED))));
             assertThat(first).containsExactly("new", null, "replaced");
             assertThat(second).containsExactly("new", null);
+        }
+    }
+
+    @Test
+    void portalEditsBeforePublishingAndKeepsReleaseFailureVisible() {
+        Config sdk = mock(Config.class);
+        var portal = mock(ApolloOpenApiClient.class);
+        var builder = mock(ApolloOpenApiClientBuilder.class, RETURNS_SELF);
+        when(builder.build()).thenReturn(portal);
+        var properties = settings();
+        properties.setPortalUrl("http://portal.invalid");
+        properties.setPortalToken("synthetic-token");
+        properties.setPortalOperator("ci-user");
+
+        try (var sdkFactory = mockStatic(ConfigService.class);
+                var portalFactory = mockStatic(ApolloOpenApiClient.class)) {
+            sdkFactory.when(() -> ConfigService.getConfig("application")).thenReturn(sdk);
+            portalFactory.when(ApolloOpenApiClient::newBuilder).thenReturn(builder);
+            var template = new DefaultConfigCenterTemplate(new ApolloConfigCenterProvider(properties));
+            assertThat(template.setConfig("feature.enabled", "true")).isTrue();
+            when(portal.getItem("synthetic-unit-app", "DEV", "default", "application", "feature.enabled"))
+                    .thenReturn(new OpenItemDTO());
+            when(portal.publishNamespace(eq("synthetic-unit-app"), eq("DEV"), eq("default"), eq("application"), any()))
+                    .thenThrow(new IllegalStateException("synthetic release failure"));
+            assertThat(template.removeConfig("feature.enabled")).isFalse();
+
+            var edits = inOrder(portal);
+            var item = ArgumentCaptor.forClass(OpenItemDTO.class);
+            var release = ArgumentCaptor.forClass(NamespaceReleaseDTO.class);
+            edits.verify(portal)
+                    .createOrUpdateItem(
+                            eq("synthetic-unit-app"), eq("DEV"), eq("default"), eq("application"), item.capture());
+            edits.verify(portal)
+                    .publishNamespace(
+                            eq("synthetic-unit-app"), eq("DEV"), eq("default"), eq("application"), release.capture());
+            edits.verify(portal)
+                    .removeItem("synthetic-unit-app", "DEV", "default", "application", "feature.enabled", "ci-user");
+            edits.verify(portal)
+                    .publishNamespace(eq("synthetic-unit-app"), eq("DEV"), eq("default"), eq("application"), any());
+            assertThat(item.getValue().getKey()).isEqualTo("feature.enabled");
+            assertThat(item.getValue().getValue()).isEqualTo("true");
+            assertThat(release.getValue().getReleasedBy()).isEqualTo("ci-user");
         }
     }
 
@@ -229,7 +279,7 @@ class ApolloConfigCenterProviderTest {
             runner.withBean(ConfigCenterProvider.class, () -> custom)
                     .run(context -> assertThat(context.getBean(ConfigCenterProvider.class))
                             .isSameAs(custom));
-            runner.withPropertyValues("loadup.configcenter.binder-type=local")
+            runner.withPropertyValues("loadup.configcenter.binder-type=xxl-conf")
                     .run(context -> assertThat(context).doesNotHaveBean(ConfigCenterProvider.class));
             factory.verify(() -> ConfigService.getConfig("payments"), times(1));
         }

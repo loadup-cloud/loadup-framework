@@ -23,6 +23,7 @@ public interface ConfigCenterTemplate {
 
     String getConfig(String key, String defaultValue);
 
+    /** Publishes a value and returns whether the backend accepted the operation. */
     boolean setConfig(String key, String value);
 
     boolean removeConfig(String key);
@@ -31,5 +32,6 @@ public interface ConfigCenterTemplate {
 
     void addListener(String key, Consumer<String> listener);
 
+    /** Removes listeners added through this template for the given key. */
     void removeListener(String key);
 }

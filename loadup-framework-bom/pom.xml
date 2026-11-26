@@ -756,7 +756,7 @@
             </dependency>
             <dependency>
                 <groupId>io.github.loadup-cloud</groupId>
-                <artifactId>loadup-components-configcenter-binder-local</artifactId>
+                <artifactId>loadup-components-configcenter-binder-xxl-conf</artifactId>
                 <version>${loadup.framework.version}</version>
             </dependency>
             <dependency>
@@ -778,6 +778,11 @@
             <dependency>
                 <groupId>com.ctrip.framework.apollo</groupId>
                 <artifactId>apollo-client</artifactId>
+                <version>${apollo.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ctrip.framework.apollo</groupId>
+                <artifactId>apollo-openapi</artifactId>
                 <version>${apollo.version}</version>
             </dependency>
             <!-- ========== loadup-components-configcenter end ==========-->

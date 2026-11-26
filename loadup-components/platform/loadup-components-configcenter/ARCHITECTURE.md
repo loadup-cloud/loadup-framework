@@ -1,61 +1,7 @@
-# loadup-components-configcenter — 架构设计
+# ConfigCenter 架构
 
-## 1. 概述
+ConfigCenter 采用单后端模式。API 定义 `ConfigCenterTemplate`、`ConfigCenterProvider` 和 `@DynamicConfig`。各 binder 按 `loadup.configcenter.binder-type` 装配 Provider，并持有底层 SDK 或 OpenAPI 客户端的生命周期。API 自动配置在存在唯一 Provider 时装配默认 Template 和注解处理器。
 
-配置中心组件采用 **Mode A（单后端选择）**：业务侧只依赖 `ConfigCenterTemplate`，通过
-`loadup.configcenter.binder-type` + 对应 binder 依赖选择后端。所有 binder 实现
-`ConfigCenterProvider` SPI，由 api 模块的自动装配创建 `DefaultConfigCenterTemplate`。
+Template 委托 Provider 处理查询和发布。注解处理器和 Template 通过同一个 Provider 注册独立订阅，Provider 返回单个订阅的解除操作。Template 保存程序化订阅，Spring bean 的销毁回调清理注解订阅。
 
-## 2. 模块依赖
-
-```
-loadup-components-configcenter-api          (facade + SPI + 自动装配)
-        ↑
-        ├── binder-local     (零外部依赖，进程内 Map)
-        ├── binder-nacos     (nacos-client)
-        ├── binder-apollo    (apollo-client)
-        └── test             (单测 + Local IT)
-```
-
-装配顺序：binder 自动配置声明 `@AutoConfiguration(before = ConfigCenterAutoConfiguration.class)`，
-保证 `ConfigCenterProvider` 先注册，api 的 `@ConditionalOnSingleCandidate(ConfigCenterProvider.class)`
-再创建 `ConfigCenterTemplate`。
-
-## 3. Nacos binder 设计
-
-Nacos 以文件（`dataId + group`）为单位存储配置，LoadUp facade 是 key-value，因此：
-
-- **解析**：`NacosConfigContent` 把整文件解析为扁平 `Map<String, String>`。
-    - `properties`：`java.util.Properties` 解析；
-    - `yaml/yml`：SnakeYAML 解析，嵌套 map 展开为点号键，集合序列化为 JSON 字符串；
-- **快照**：构造时加载一次，`getConfig(key)` 读内存快照，不每次访问 Nacos；
-- **写**：读取最新文件 → 修改目标键 → 整文件发布（并发语义：last-writer-wins 按文件粒度）；
-- **监听**：对 `dataId` 注册一个共享 Nacos `Listener`，收到推送后全量重解析，与旧快照逐键
-  比对，仅对实际变化的 key 分发 `Consumer<String>`（删除分发 `null`）；
-- **键列表**：`listKeys(prefix)` 从快照过滤。
-
-`spring.config.import=nacos:` 属于另一条集成路线（把 Nacos 当 Spring Environment 数据源），
-与 key-value facade 不冲突，文档化但不重复实现。
-
-## 4. Apollo binder 设计
-
-- **初始化**：`app.id` / `apollo.meta` / `env` / `apollo.cluster`（注意是 `apollo.cluster`，
-  不是 `idc`）系统属性 + `ConfigService.getConfig(namespace)`；
-- **读 / 键列表**：`getProperty(key, null)` / `getPropertyNames()`；
-- **监听**：`addChangeListener` 按变更 key 分发；
-- **写**：Apollo 客户端不支持写，返回 `false` + 告警日志，运维走 Portal OpenAPI。
-
-## 5. 本地 binder 设计
-
-进程内 `ConcurrentHashMap`，`setConfig` 同步分发变更，`removeConfig` 分发 `null`，用于开发与
-测试，不提供持久化。
-
-## 6. 扩展新后端
-
-1. 新增 `loadup-components-configcenter-binder-{impl}` 模块，依赖 api；
-2. 实现 `ConfigCenterProvider`；
-3. 写 `{Impl}ConfigCenterAutoConfiguration`，条件注解
-   `@ConditionalOnProperty(prefix = "loadup.configcenter", name = "binder-type", havingValue = "{impl}")`
-   并声明 `@AutoConfiguration(before = ConfigCenterAutoConfiguration.class)`；
-4. 在 `loadup-framework-bom` BOM 注册坐标；
-5. 在 test 模块补充同一套 `ConfigCenterTemplate` 契约测试。
+XXL-Conf 用官方 OpenAPI 做查键、查值和长轮询。收到变更信号后批量重查当前订阅键，等待超时和重连期间也会重新对比。Nacos 将一个 `dataId + group` 文档转换为键值快照，用 SDK 订阅刷新。Apollo 用 SDK 订阅已发布配置，可选的 Portal OpenAPI 负责编辑和发布。

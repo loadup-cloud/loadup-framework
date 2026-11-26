@@ -27,9 +27,8 @@ public interface ConfigCenterProvider {
 
     List<String> listKeys(String prefix);
 
-    void addListener(String key, Consumer<String> listener);
-
-    void removeListener(String key);
+    /** Registers a change listener and returns its unsubscribe action. */
+    Runnable subscribe(String key, Consumer<String> listener);
 
     String getBinderType();
 }

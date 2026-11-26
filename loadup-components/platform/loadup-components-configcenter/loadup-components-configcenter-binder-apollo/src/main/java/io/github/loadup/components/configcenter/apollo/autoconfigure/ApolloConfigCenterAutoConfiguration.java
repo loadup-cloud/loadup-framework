@@ -33,9 +33,9 @@ import org.springframework.context.annotation.Bean;
 @EnableConfigurationProperties(ApolloConfigCenterProperties.class)
 public class ApolloConfigCenterAutoConfiguration {
 
-    @Bean
-    @ConditionalOnMissingBean
-    public ConfigCenterProvider apolloConfigCenterProvider(ApolloConfigCenterProperties config) {
+    @Bean(destroyMethod = "close")
+    @ConditionalOnMissingBean(ConfigCenterProvider.class)
+    public ApolloConfigCenterProvider apolloConfigCenterProvider(ApolloConfigCenterProperties config) {
         return new ApolloConfigCenterProvider(config);
     }
 }

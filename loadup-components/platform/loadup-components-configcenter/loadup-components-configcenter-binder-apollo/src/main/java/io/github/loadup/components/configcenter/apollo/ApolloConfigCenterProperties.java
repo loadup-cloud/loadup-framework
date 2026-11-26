@@ -24,6 +24,9 @@ public class ApolloConfigCenterProperties {
     private String env = "DEV";
     private String cluster = "default";
     private String namespace = "application";
+    private String portalUrl;
+    private String portalToken;
+    private String portalOperator;
 
     public String getMeta() {
         return meta;
@@ -63,5 +66,29 @@ public class ApolloConfigCenterProperties {
 
     public void setNamespace(String namespace) {
         this.namespace = namespace;
+    }
+
+    public String getPortalUrl() {
+        return portalUrl;
+    }
+
+    public void setPortalUrl(String portalUrl) {
+        this.portalUrl = portalUrl;
+    }
+
+    public String getPortalToken() {
+        return portalToken;
+    }
+
+    public void setPortalToken(String portalToken) {
+        this.portalToken = portalToken;
+    }
+
+    public String getPortalOperator() {
+        return portalOperator;
+    }
+
+    public void setPortalOperator(String portalOperator) {
+        this.portalOperator = portalOperator;
     }
 }
