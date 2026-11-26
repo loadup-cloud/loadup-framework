@@ -76,7 +76,7 @@ jobs:
       - name: Build once and run tests
         id: build
         run: |
-          mvn -B -ntp -U -T 1 -Pgithub,component-coverage clean install \
+          mvn -B -ntp  -T 1C -Pgithub,component-coverage clean install \
             -DskipTests=false -Dskip.unit.tests=false -Dskip.integration.tests=false \
             -Denforcer.skip=true \
             -Dtestcontainers.reuse.enable=false -Dspring.profiles.active=ci
