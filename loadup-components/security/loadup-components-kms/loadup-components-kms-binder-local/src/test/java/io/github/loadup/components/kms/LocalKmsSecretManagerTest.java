@@ -29,17 +29,37 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 class LocalKmsSecretManagerTest {
     @Test
+    void encryptsWithFreshNoncesAndRejectsTheWrongKeyOrTamperedCiphertext(@TempDir Path root) throws Exception {
+        var runner = localContext(root);
+        runner.run(context -> {
+            var kms = context.getBean(KmsTemplate.class);
+            var key = KmsKeyRef.latest("credentials");
+            byte[] plaintext = {0, 1, 2};
+
+            var encrypted = kms.encrypt(key, plaintext);
+            assertThat(kms.encrypt(key, plaintext).value()).isNotEqualTo(encrypted.value());
+            assertThat(kms.decrypt(encrypted.keyRef(), encrypted)).containsExactly(plaintext);
+            assertThat(kms.decrypt(key, kms.encrypt(key, new byte[0]))).isEmpty();
+            assertThatThrownBy(() -> kms.decrypt(KmsKeyRef.latest("other-credentials"), encrypted))
+                    .isInstanceOf(IllegalArgumentException.class);
+
+            String envelope = encrypted.value();
+            int payloadStart = envelope.lastIndexOf(':') + 1;
+            char replacement = envelope.charAt(payloadStart) == 'A' ? 'B' : 'A';
+            var changed = new KmsCiphertext(
+                    encrypted.keyName(),
+                    encrypted.version(),
+                    envelope.substring(0, payloadStart) + replacement + envelope.substring(payloadStart + 1));
+            assertThatThrownBy(() -> kms.decrypt(key, changed))
+                    .isInstanceOf(KmsException.class)
+                    .hasNoCause();
+        });
+    }
+
+    @Test
     void writesOnlyCiphertextAndReadsTheLatestValueAfterRestart(@TempDir Path root) throws Exception {
-        Path keyStore = root.resolve("keys.p12");
         Path directory = root.resolve("secrets");
-        writeKeyStore(keyStore);
-        var runner = new ApplicationContextRunner()
-                .withConfiguration(
-                        AutoConfigurations.of(LocalKmsAutoConfiguration.class, LocalKmsSecretAutoConfiguration.class))
-                .withPropertyValues(
-                        "loadup.kms.enabled=true",
-                        "KMS_KEYSTORE_PASSWORD=fixture-password",
-                        "loadup.kms.local.key-store-location=" + keyStore.toUri());
+        var runner = localContext(root);
         runner.run(context ->
                 assertThat(context).hasSingleBean(KmsTemplate.class).doesNotHaveBean(KmsSecretManager.class));
         var secretsRunner = runner.withPropertyValues(
@@ -80,6 +100,29 @@ class LocalKmsSecretManagerTest {
         });
     }
 
+    @Test
+    void enablingSecretsRequiresStorageAndAKeyAlias(@TempDir Path root) throws Exception {
+        var runner = localContext(root).withPropertyValues("loadup.kms.secrets-enabled=true");
+        runner.run(context ->
+                assertThat(context).getFailure().hasRootCauseMessage("loadup.kms.local.secret-directory is required"));
+        runner.withPropertyValues("loadup.kms.local.secret-directory=" + root.resolve("secrets"))
+                .run(context -> assertThat(context)
+                        .getFailure()
+                        .hasRootCauseMessage("loadup.kms.secret-key-alias is required"));
+    }
+
+    private static ApplicationContextRunner localContext(Path root) throws Exception {
+        Path keyStore = root.resolve("keys.p12");
+        writeKeyStore(keyStore);
+        return new ApplicationContextRunner()
+                .withConfiguration(
+                        AutoConfigurations.of(LocalKmsAutoConfiguration.class, LocalKmsSecretAutoConfiguration.class))
+                .withPropertyValues(
+                        "loadup.kms.enabled=true",
+                        "KMS_KEYSTORE_PASSWORD=fixture-password",
+                        "loadup.kms.local.key-store-location=" + keyStore.toUri());
+    }
+
     private static void writeKeyStore(Path path) throws Exception {
         char[] password = "fixture-password".toCharArray();
         var generator = KeyGenerator.getInstance("AES");
@@ -88,6 +131,10 @@ class LocalKmsSecretManagerTest {
         store.load(null, password);
         store.setEntry(
                 "credentials",
+                new KeyStore.SecretKeyEntry(generator.generateKey()),
+                new KeyStore.PasswordProtection(password));
+        store.setEntry(
+                "other-credentials",
                 new KeyStore.SecretKeyEntry(generator.generateKey()),
                 new KeyStore.PasswordProtection(password));
         try (var output = Files.newOutputStream(path)) {

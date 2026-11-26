@@ -476,6 +476,27 @@ class OpenBaoKmsTest {
         }
     }
 
+    @Test
+    void rejectsMalformedSecretDataAndDoesNotPatchWithoutAValidVersion() {
+        try (var secrets = secretManager()) {
+            forcedPath = "/data/payments-token";
+            forcedResponse = Map.of("data", Map.of("data", Map.of("value", 123)));
+            assertThatThrownBy(() -> secrets.get("payments-token"))
+                    .hasMessage("KMS operation failed: INVALID_RESPONSE")
+                    .hasNoCause();
+
+            forcedPath = "/metadata/payments-token";
+            forcedResponse = Map.of("data", Map.of("current_version", "2"));
+            assertThatThrownBy(() -> secrets.update("payments-token", "synthetic-new-value"))
+                    .hasMessage("KMS operation failed: INVALID_RESPONSE")
+                    .hasNoCause();
+        }
+        assertThat(requests)
+                .extracting(Request::path)
+                .containsExactly(
+                        "/v1/payments/secrets/data/payments-token", "/v1/payments/secrets/metadata/payments-token");
+    }
+
     private Map<String, Object> metadataData() {
         return new HashMap<>(Map.of(
                 "name",

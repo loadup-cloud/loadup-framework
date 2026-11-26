@@ -45,6 +45,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.jdbc.datasource.DelegatingDataSource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.util.ClassUtils;
 
@@ -80,18 +81,17 @@ class DatabaseKmsKeyFilesIT {
         var ref = KmsKeyRef.latest("payments");
         byte[] message = {1, 2, 3};
         var encrypted = files.loadTemplate(id, storePassword, keyPassword).encrypt(ref, message);
-        var runner = new ApplicationContextRunner()
-                .withConfiguration(AutoConfigurations.of(DatabaseKmsAutoConfiguration.class))
-                .withBean(DataSource.class, () -> dataSource)
+        var runner = databaseContext()
                 .withPropertyValues(
-                        "loadup.kms.enabled=true",
-                        "loadup.kms.binder=database",
                         "loadup.kms.database.file-id=" + id,
                         "KMS_KEYSTORE_PASSWORD=fixture-store",
                         "loadup.kms.database.key-password-env=KMS_ENTRY_PASSWORD",
                         "KMS_ENTRY_PASSWORD=fixture-entry");
         runner.run(context -> {
-            assertThat(context).hasSingleBean(KmsTemplate.class).doesNotHaveBean(DatabaseKmsKeyFiles.class);
+            assertThat(context)
+                    .hasSingleBean(KmsTemplate.class)
+                    .doesNotHaveBean(DatabaseKmsKeyFiles.class)
+                    .doesNotHaveBean(KmsSecretManager.class);
             assertThat(context.getBean(KmsTemplate.class)).isInstanceOf(KeyStoreKmsTemplate.class);
             assertThat(context.getBean(KmsTemplate.class).decrypt(ref, encrypted))
                     .containsExactly(message);
@@ -103,7 +103,10 @@ class DatabaseKmsKeyFilesIT {
             assertThat(context.getBean(KmsTemplate.class).decrypt(ref, encrypted))
                     .containsExactly(message);
         });
-        runner.run(context -> assertThat(context).hasFailed());
+        runner.run(context -> assertThat(context)
+                .getFailure()
+                .hasRootCauseInstanceOf(KmsException.class)
+                .hasRootCauseMessage("KMS operation failed: NOT_FOUND"));
         assertThatThrownBy(() -> files.importFile(id, new ByteArrayInputStream(file), storePassword, keyPassword))
                 .isInstanceOf(IllegalStateException.class);
     }
@@ -138,18 +141,34 @@ class DatabaseKmsKeyFilesIT {
     }
 
     @Test
+    void rejectsAnInvalidFileWithoutReservingItsId() throws Exception {
+        String id = UUID.randomUUID().toString();
+        char[] password = "fixture-password".toCharArray();
+        var files = new DatabaseKmsKeyFiles(dataSource);
+        byte[] invalidFile = {0x30, 0x00};
+        assertThatThrownBy(() -> files.importFile(id, new ByteArrayInputStream(invalidFile), password, password))
+                .isInstanceOf(KmsException.class)
+                .hasMessage("KMS operation failed: INVALID_REQUEST");
+        assertThatThrownBy(() -> files.loadTemplate(id, password, password))
+                .isInstanceOf(KmsException.class)
+                .hasMessage("KMS operation failed: NOT_FOUND");
+
+        files.importFile(id, new ByteArrayInputStream(testFile(password, password)), password, password);
+        assertThat(files.loadTemplate(id, password, password)
+                        .metadata("payments")
+                        .supportsEncryption())
+                .isTrue();
+    }
+
+    @Test
     void persistsCiphertextOnlyAndReadsUpdatedSecretAfterRestart() throws Exception {
         String fileId = UUID.randomUUID().toString();
         char[] password = "fixture-password".toCharArray();
         byte[] file = testFile(password, password);
         new DatabaseKmsKeyFiles(dataSource).importFile(fileId, new ByteArrayInputStream(file), password, password);
 
-        var runner = new ApplicationContextRunner()
-                .withConfiguration(AutoConfigurations.of(DatabaseKmsAutoConfiguration.class))
-                .withBean(DataSource.class, () -> dataSource)
+        var runner = databaseContext()
                 .withPropertyValues(
-                        "loadup.kms.enabled=true",
-                        "loadup.kms.binder=database",
                         "loadup.kms.secrets-enabled=true",
                         "loadup.kms.secret-key-alias=payments",
                         "loadup.kms.database.file-id=" + fileId,
@@ -178,6 +197,14 @@ class DatabaseKmsKeyFilesIT {
 
         runner.run(context -> assertThat(context.getBean(KmsSecretManager.class).get("payments-token"))
                 .isEqualTo("更新凭据"));
+    }
+
+    private ApplicationContextRunner databaseContext() {
+        // Contexts under test borrow connections from the pool owned by the outer test context.
+        return new ApplicationContextRunner()
+                .withConfiguration(AutoConfigurations.of(DatabaseKmsAutoConfiguration.class))
+                .withBean(DataSource.class, () -> new DelegatingDataSource(dataSource))
+                .withPropertyValues("loadup.kms.enabled=true", "loadup.kms.binder=database");
     }
 
     private static KeyStore rsaStore(Path path, String password) throws Exception {

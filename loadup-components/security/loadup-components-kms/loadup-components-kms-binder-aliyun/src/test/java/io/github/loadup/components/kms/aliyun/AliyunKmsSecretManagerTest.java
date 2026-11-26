@@ -39,6 +39,8 @@ import io.github.loadup.components.kms.KmsException;
 import io.github.loadup.components.kms.aliyun.config.AliyunKmsProperties;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class AliyunKmsSecretManagerTest {
     private final Client client = mock(Client.class);
@@ -137,5 +139,32 @@ class AliyunKmsSecretManagerTest {
                 .isInstanceOf(KmsException.class)
                 .hasMessage("KMS operation failed: NOT_FOUND")
                 .hasNoCause();
+    }
+
+    @ParameterizedTest
+    @CsvSource({"Generic,binary", "Rds,text"})
+    void onlyReturnsGenericTextSecrets(String type, String dataType) throws Exception {
+        when(client.getSecretValueWithOptions(any(), any()))
+                .thenReturn(new GetSecretValueResponse()
+                        .setBody(new GetSecretValueResponseBody()
+                                .setSecretName("secret")
+                                .setSecretType(type)
+                                .setSecretDataType(dataType)
+                                .setSecretData("synthetic-value")));
+        assertThatThrownBy(() -> secrets.get("secret"))
+                .isInstanceOf(KmsException.class)
+                .hasMessage("KMS operation failed: INVALID_RESPONSE");
+    }
+
+    @Test
+    void rejectsAnAcknowledgementForADifferentWriteVersion() throws Exception {
+        when(client.putSecretValueWithOptions(any(), any()))
+                .thenReturn(new PutSecretValueResponse()
+                        .setBody(new PutSecretValueResponseBody()
+                                .setSecretName("secret")
+                                .setVersionId("different-version")));
+        assertThatThrownBy(() -> secrets.update("secret", "new-value"))
+                .isInstanceOf(KmsException.class)
+                .hasMessage("KMS operation failed: INVALID_RESPONSE");
     }
 }
