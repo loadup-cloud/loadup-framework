@@ -60,23 +60,35 @@ class SchedulerTemplateTest {
     void bindsConfiguredSchedulesAndDispatchesOnlyTheirTaskNames() throws Exception {
         var provider = mock(SchedulerProvider.class);
         var configured = mock(ScheduledTask.class);
+        var defaultScheduled = mock(ScheduledTask.class);
         var manual = mock(ScheduledTask.class);
         when(configured.name()).thenReturn("configured");
+        when(configured.defaultCron()).thenReturn("0 0 8 * * *");
+        when(defaultScheduled.name()).thenReturn("default-scheduled");
+        when(defaultScheduled.defaultCron()).thenReturn("0 0 8 * * *");
         when(manual.name()).thenReturn("manual");
         var calls = ArgumentCaptor.forClass(SchedulerProvider.TaskTrigger.class);
         new ApplicationContextRunner()
                 .withConfiguration(AutoConfigurations.of(SchedulerAutoConfiguration.class))
                 .withBean(SchedulerProvider.class, () -> provider)
                 .withBean("configured", ScheduledTask.class, () -> configured)
+                .withBean("defaultScheduled", ScheduledTask.class, () -> defaultScheduled)
                 .withBean("manual", ScheduledTask.class, () -> manual)
                 .withPropertyValues(
                         "loadup.scheduler.tasks[0].name=configured",
                         "loadup.scheduler.tasks[0].cron=0 15 9 * * mon-fri")
                 .run(context -> {
                     verify(provider)
-                            .start(eq(List.of(new TaskSchedule("configured", "0 15 9 ? * MON-FRI"))), calls.capture());
+                            .start(
+                                    eq(List.of(
+                                            new TaskSchedule("configured", "0 15 9 ? * MON-FRI"),
+                                            new TaskSchedule("default-scheduled", "0 0 8 * * ?"))),
+                                    calls.capture());
                     calls.getValue().trigger("configured");
                     verify(configured).execute();
+                    calls.getValue().trigger("default-scheduled");
+                    verify(defaultScheduled).execute();
+                    assertThatThrownBy(() -> calls.getValue().trigger(null)).isInstanceOf(CommonException.class);
                     assertThatThrownBy(() -> calls.getValue().trigger("manual")).isInstanceOf(CommonException.class);
                     context.getBean(SchedulerTemplate.class).trigger("manual");
                     verify(manual).execute();

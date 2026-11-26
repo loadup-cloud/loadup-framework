@@ -18,6 +18,7 @@ package io.github.loadup.components.kms;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import io.github.loadup.components.kms.keystore.KeyStoreKmsSecretManager;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.KeyStore;
@@ -62,10 +63,7 @@ class LocalKmsSecretManagerTest {
         var runner = localContext(root);
         runner.run(context ->
                 assertThat(context).hasSingleBean(KmsTemplate.class).doesNotHaveBean(KmsSecretManager.class));
-        var secretsRunner = runner.withPropertyValues(
-                "loadup.kms.secrets-enabled=true",
-                "loadup.kms.secret-key-alias=credentials",
-                "loadup.kms.local.secret-directory=" + directory);
+        var secretsRunner = withSecrets(runner, directory);
         secretsRunner.run(context -> {
             assertThat(context).hasSingleBean(KmsSecretManager.class);
             var secrets = context.getBean(KmsSecretManager.class);
@@ -77,12 +75,7 @@ class LocalKmsSecretManagerTest {
             assertThat(secrets.get("payments-token")).isEqualTo("原始凭据");
             secrets.update("payments-token", "更新凭据");
         });
-        Path file;
-        try (var files = Files.list(directory)) {
-            file = files.filter(path -> path.toString().endsWith(".enc"))
-                    .findFirst()
-                    .orElseThrow();
-        }
+        Path file = secretFile(directory);
         String updatedCiphertext = Files.readString(file);
         assertThat(updatedCiphertext).startsWith("local:v1:").doesNotContain("原始凭据", "更新凭据", "payments-token");
         secretsRunner.run(context -> {
@@ -97,6 +90,54 @@ class LocalKmsSecretManagerTest {
             }
             assertThatThrownBy(() -> secrets.get("different-name"))
                     .hasMessage("KMS operation failed: INVALID_RESPONSE");
+        });
+    }
+
+    @Test
+    void distinguishesMissingSecretsFromInvalidFiles(@TempDir Path root) throws Exception {
+        Path directory = root.resolve("secrets");
+        withSecrets(localContext(root), directory).run(context -> {
+            var secrets = context.getBean(KmsSecretManager.class);
+            assertThatThrownBy(() -> secrets.get("test-token"))
+                    .isInstanceOfSatisfying(
+                            KmsException.class,
+                            failure -> assertThat(failure.getCode()).isEqualTo(KmsException.Code.NOT_FOUND));
+
+            secrets.create("test-token", "synthetic-token");
+            Path file = secretFile(directory);
+            Files.write(file, new byte[KeyStoreKmsSecretManager.MAX_CIPHERTEXT_LENGTH + 1]);
+            assertThatThrownBy(() -> secrets.get("test-token"))
+                    .isInstanceOfSatisfying(
+                            KmsException.class,
+                            failure -> assertThat(failure.getCode()).isEqualTo(KmsException.Code.INVALID_RESPONSE));
+
+            Files.delete(file);
+            Files.createDirectory(file);
+            assertThatThrownBy(() -> secrets.update("test-token", "synthetic-replacement"))
+                    .isInstanceOfSatisfying(
+                            KmsException.class,
+                            failure -> assertThat(failure.getCode()).isEqualTo(KmsException.Code.INVALID_RESPONSE));
+        });
+    }
+
+    @Test
+    void reportsUnavailableStorageWhenTheDirectoryOrLockCannotBeOpened(@TempDir Path root) throws Exception {
+        var runner = localContext(root);
+        Path blocked = Files.createFile(root.resolve("blocked"));
+        withSecrets(runner, blocked)
+                .run(context -> assertThat(context)
+                        .getFailure()
+                        .hasRootCauseInstanceOf(KmsException.class)
+                        .hasRootCauseMessage("KMS operation failed: UNAVAILABLE"));
+
+        Path directory = Files.createDirectory(root.resolve("secrets"));
+        Files.createDirectory(directory.resolve(".write-lock"));
+        withSecrets(runner, directory).run(context -> {
+            var secrets = context.getBean(KmsSecretManager.class);
+            assertThatThrownBy(() -> secrets.create("test-token", "synthetic-token"))
+                    .isInstanceOfSatisfying(
+                            KmsException.class,
+                            failure -> assertThat(failure.getCode()).isEqualTo(KmsException.Code.UNAVAILABLE));
         });
     }
 
@@ -121,6 +162,21 @@ class LocalKmsSecretManagerTest {
                         "loadup.kms.enabled=true",
                         "KMS_KEYSTORE_PASSWORD=fixture-password",
                         "loadup.kms.local.key-store-location=" + keyStore.toUri());
+    }
+
+    private static ApplicationContextRunner withSecrets(ApplicationContextRunner runner, Path directory) {
+        return runner.withPropertyValues(
+                "loadup.kms.secrets-enabled=true",
+                "loadup.kms.secret-key-alias=credentials",
+                "loadup.kms.local.secret-directory=" + directory);
+    }
+
+    private static Path secretFile(Path directory) throws Exception {
+        try (var files = Files.list(directory)) {
+            return files.filter(path -> path.toString().endsWith(".enc"))
+                    .findFirst()
+                    .orElseThrow();
+        }
     }
 
     private static void writeKeyStore(Path path) throws Exception {
