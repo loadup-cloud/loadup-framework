@@ -11,10 +11,13 @@ loadup:
         cron: "0 * * * * *"
 ```
 
-启动时 binder 按任务名同步标记为 `loadup-scheduler` 的任务定义。新增任务自动创建，Cron 变更更新原 jobId，配置中移除的任务在下次启动时停用。应用停止时保留定义和运行历史。
-同步作用域是一个 PowerJob App。同一个 App 的所有副本应使用相同任务列表，新增任务或变更清单时应先启动一个副本完成同步，再扩容。PowerJob 的创建接口没有按任务名称原子写入的能力。
+启动时 binder 按任务名同步标记为 `loadup-scheduler` 的任务定义。新增任务自动创建，Cron 变更更新原
+jobId，配置中移除的任务在下次启动时停用。应用停止时保留定义和运行历史。
+同步作用域是一个 PowerJob App。同一个 App 的所有副本应使用相同任务列表，新增任务或变更清单时应先启动一个副本完成同步，再扩容。PowerJob
+的创建接口没有按任务名称原子写入的能力。
 
-升级已有部署时，先停用指向 `loadupSchedulerProcessor` 且参数与配置任务同名的手工任务，再启用自动同步，以避免重复触发。原生业务 Processor 的任务仍由 PowerJob 管理。
+升级已有部署时，先停用指向 `loadupSchedulerProcessor` 且参数与配置任务同名的手工任务，再启用自动同步，以避免重复触发。原生业务
+Processor 的任务仍由 PowerJob 管理。
 
 ## 部署与配置
 
@@ -39,9 +42,12 @@ powerjob:
 Worker 的配置、线程限制、发现、心跳、存储和关闭使用官方 `powerjob.worker.*`。多 Pod 下每个 Worker 需要独立的本地工作目录，按官方
 `-Dpowerjob.worker.workspace=/...` 设置；DISK 存储也不能代替业务幂等或数据恢复。
 
-选择 `powerjob` binder 会自动启用管理 Client，默认沿用 Worker 的 appName 和 Server 地址。两者应指向同一个 PowerJob App。密码由部署环境提供。消费工程也可提供自己的同类型 Bean。仅使用原生 SDK 的应用可单独通过 `powerjob.client.enabled: true` 启用 Client。
+选择 `powerjob` binder 会自动启用管理 Client，默认沿用 Worker 的 appName 和 Server 地址。两者应指向同一个 PowerJob
+App。密码由部署环境提供。消费工程也可提供自己的同类型 Bean。仅使用原生 SDK 的应用可单独通过 `powerjob.client.enabled: true`
+启用 Client。
 
-显式选择其他 binder 时，PowerJob 的自动配置会退让，已同步的远端定义仍由原 PowerJob App 持有。切换前应停用这些定义或通过空任务列表执行一次同步，避免旧平台仍尝试派发。
+显式选择其他 binder 时，PowerJob 的自动配置会退让，已同步的远端定义仍由原 PowerJob App
+持有。切换前应停用这些定义或通过空任务列表执行一次同步，避免旧平台仍尝试派发。
 
 ## 开发 Processor
 
@@ -69,9 +75,9 @@ Processor 验证并绑定可信租户。框架不会从任意 jobParams 自动�
 
 | 能力                        | 契约                                                                                |
 |-----------------------------|-------------------------------------------------------------------------------------|
-| Scheduler 扫描入口          | 根据 tasks 自动注册并按任务名分派 ScheduledTask                            |
+| Scheduler 扫描入口          | 根据 tasks 自动注册并按任务名分派 ScheduledTask                                     |
 | Worker 生命周期             | 官方 Starter，原生配置与自动装配                                                    |
-| 管理 Client                 | PowerJob binder 自动启用，启动认证，关闭释放，允许覆盖                                         |
+| 管理 Client                 | PowerJob binder 自动启用，启动认证，关闭释放，允许覆盖                              |
 | 动态路由到处理器 / 调度策略 | 官方 Spring Processor / Server / SDK                                                |
 | 执行观测                    | Spring 管理的 BasicProcessor.process 建立 `loadup.powerjob.process` Observation     |
 | 指标标签                    | processor 类名、outcome；不以 jobId、instanceId、租户或 payload 作标签              |

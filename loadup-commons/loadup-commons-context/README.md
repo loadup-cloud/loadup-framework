@@ -118,4 +118,5 @@ FilterChain，使重新分派能恢复元数据。请求属性是进程内部对
 
 设计边界见 [ARCHITECTURE.md](ARCHITECTURE.md)。
 
-部署 code 由 runtime 的 `DeploymentIdentity` 统一装配；入口层只校验请求头，不再派生 tenant ExecutionContext，数据库和后台任务也不读取该值选择连接解析 schema。
+部署 code 由 runtime 的 `DeploymentIdentity` 统一装配；入口层只校验请求头，不再派生 tenant
+ExecutionContext，数据库和后台任务也不读取该值选择连接解析 schema。

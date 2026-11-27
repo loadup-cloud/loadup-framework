@@ -53,4 +53,5 @@ ERROR 分派沿用当前作用域，独立 ASYNC/ERROR 分派从属性重新绑�
 clean suppressed。Servlet 重新分派与 Boot/Micrometer 装饰器组合有对应测试。构建/测试结果按统一验证记录
 由集成方在真实入口、持久任务与目标性能场景中验证。
 
-部署 code 由 runtime 的 `DeploymentIdentity` 统一装配；入口层只校验请求头，不再派生 tenant ExecutionContext，数据库和后台任务也不读取该值选择连接解析 schema。
+部署 code 由 runtime 的 `DeploymentIdentity` 统一装配；入口层只校验请求头，不再派生 tenant
+ExecutionContext，数据库和后台任务也不读取该值选择连接解析 schema。

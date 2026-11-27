@@ -101,8 +101,9 @@ class DatabaseDfsTemplateIT {
         String fileId = UUID.randomUUID().toString();
         var now = LocalDateTime.now();
         jdbc.update(
-                "INSERT INTO dfs_file (id, filename, file_size, content_type, content, metadata_json, created_at, updated_at, deleted) "
-                        + "VALUES (:id, :filename, :fileSize, :contentType, :content, :metadataJson, :createdAt, :updatedAt, FALSE)",
+                "INSERT INTO dfs_file (id, filename, file_size, content_type, content, metadata_json, created_at,"
+                        + " updated_at, deleted) VALUES (:id, :filename, :fileSize, :contentType, :content, :metadataJson,"
+                        + " :createdAt, :updatedAt, FALSE)",
                 new MapSqlParameterSource()
                         .addValue("id", fileId)
                         .addValue("filename", "legacy.txt")

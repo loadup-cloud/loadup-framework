@@ -131,7 +131,8 @@ class TaskIT {
         String id = publish();
         repository.claim(List.of("test.created")).orElseThrow();
         jdbc.update(
-                "UPDATE loadup_task SET attempts = ?, lease_until = (clock_timestamp() + INTERVAL '-1 seconds') WHERE id = ?",
+                "UPDATE loadup_task SET attempts = ?, lease_until = (clock_timestamp() + INTERVAL '-1 seconds') WHERE"
+                        + " id = ?",
                 properties.getMaxAttempts(),
                 id);
         assertThat(repository.claim(List.of("test.created"))).isEmpty();
@@ -152,7 +153,8 @@ class TaskIT {
         String expired = publish();
         repository.claim(List.of("test.created")).orElseThrow();
         jdbc.update(
-                "UPDATE loadup_task SET attempts = ?, lease_until = clock_timestamp() - INTERVAL '1 second' WHERE id = ?",
+                "UPDATE loadup_task SET attempts = ?, lease_until = clock_timestamp() - INTERVAL '1 second' WHERE id ="
+                        + " ?",
                 properties.getMaxAttempts(),
                 expired);
         String unsupported = publish();

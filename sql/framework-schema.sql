@@ -10,14 +10,14 @@
 
 CREATE TABLE IF NOT EXISTS loadup_sequence_allocation
 (
-    id            VARCHAR(64) COLLATE "C"        NOT NULL PRIMARY KEY,
+    id            VARCHAR(64) COLLATE "C"  NOT NULL PRIMARY KEY,
 
     created_at    TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
     updated_at    TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    deleted       BOOLEAN                        NOT NULL DEFAULT FALSE,
-    scope_key     VARCHAR(160) COLLATE "C"       NOT NULL,
-    max_allocated BIGINT                         NOT NULL,
-    max_value     BIGINT                         NOT NULL,
+    deleted       BOOLEAN                  NOT NULL DEFAULT FALSE,
+    scope_key     VARCHAR(160) COLLATE "C" NOT NULL,
+    max_allocated BIGINT                   NOT NULL,
+    max_value     BIGINT                   NOT NULL,
     CONSTRAINT chk_loadup_sequence_bounds CHECK (max_allocated >= 0 AND max_allocated <= max_value AND max_value > 0),
     CONSTRAINT chk_loadup_sequence_deleted CHECK (NOT deleted)
 );
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS dfs_file
     filename      VARCHAR(255) NOT NULL,
     file_size     BIGINT       NOT NULL DEFAULT 0,
     content_type  VARCHAR(255),
-    content       BYTEA        NOT NULL,
+    content BYTEA NOT NULL,
     metadata_json TEXT,
     created_at    TIMESTAMP(6) NOT NULL,
     updated_at    TIMESTAMP(6) NOT NULL,
@@ -47,15 +47,15 @@ CREATE TABLE IF NOT EXISTS dfs_file
 
 CREATE TABLE IF NOT EXISTS global_unique
 (
-    id           VARCHAR(64) COLLATE "C"        NOT NULL,
+    id           VARCHAR(64) COLLATE "C"  NOT NULL,
 
-    unique_key   VARCHAR(255) COLLATE "C"       NOT NULL,
-    biz_type     VARCHAR(64) COLLATE "C"        NOT NULL,
-    biz_id       VARCHAR(100) COLLATE "C"                DEFAULT NULL,
-    request_data TEXT                                    DEFAULT NULL,
+    unique_key   VARCHAR(255) COLLATE "C" NOT NULL,
+    biz_type     VARCHAR(64) COLLATE "C"  NOT NULL,
+    biz_id       VARCHAR(100) COLLATE "C"          DEFAULT NULL,
+    request_data TEXT                              DEFAULT NULL,
     created_at   TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
     updated_at   TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    deleted      BOOLEAN                        NOT NULL DEFAULT FALSE,
+    deleted      BOOLEAN                  NOT NULL DEFAULT FALSE,
     PRIMARY KEY (id)
 );
 
@@ -69,34 +69,36 @@ CREATE INDEX IF NOT EXISTS idx_global_unique_created_at ON global_unique (create
 -- BEGIN loadup-components/reliability/loadup-components-task/src/main/resources/db/task/pg/schema.sql
 -- SHA-256: 263824f8b0f0e7a111fad565b325d3eeb943a3b1cacaa2f32b744601209a6825
 -- PostgreSQL initial schema; installed by the consuming application.
-CREATE TABLE loadup_task (
-    id VARCHAR(64) COLLATE "C" PRIMARY KEY,
-    created_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    updated_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    task_type VARCHAR(128) COLLATE "C" NOT NULL,
-    biz_id VARCHAR(128) COLLATE "C" NOT NULL,
-    payload TEXT,
-    trace_id VARCHAR(64),
+CREATE TABLE loadup_task
+(
+    id              VARCHAR(64) COLLATE "C" PRIMARY KEY,
+    created_at      TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
+    updated_at      TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
+    task_type       VARCHAR(128) COLLATE "C" NOT NULL,
+    biz_id          VARCHAR(128) COLLATE "C" NOT NULL,
+    payload         TEXT,
+    trace_id        VARCHAR(64),
     next_execute_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    status VARCHAR(16) NOT NULL CHECK (status IN ('PENDING','RUNNING','FAILED','CANCELLED')),
-    attempts INT NOT NULL DEFAULT 0 CHECK (attempts >= 0),
-    max_attempts INT NOT NULL CHECK (max_attempts > 0),
-    lease_until TIMESTAMP(6) WITHOUT TIME ZONE,
-    claim_token VARCHAR(64),
-    last_error VARCHAR(256)
+    status          VARCHAR(16)              NOT NULL CHECK (status IN ('PENDING', 'RUNNING', 'FAILED', 'CANCELLED')),
+    attempts        INT                      NOT NULL DEFAULT 0 CHECK (attempts >= 0),
+    max_attempts    INT                      NOT NULL CHECK (max_attempts > 0),
+    lease_until     TIMESTAMP(6) WITHOUT TIME ZONE,
+    claim_token     VARCHAR(64),
+    last_error      VARCHAR(256)
 );
-CREATE INDEX loadup_task_ready ON loadup_task(status,next_execute_at,id);
-CREATE INDEX loadup_task_lease ON loadup_task(status,lease_until,id);
-CREATE UNIQUE INDEX loadup_task_business ON loadup_task(task_type,biz_id);
-CREATE TABLE loadup_task_operation (
-    id VARCHAR(64) PRIMARY KEY,
-    created_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    updated_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    task_id VARCHAR(64) NOT NULL,
-    operator_id VARCHAR(64) NOT NULL,
-    reason VARCHAR(512) NOT NULL
+CREATE INDEX loadup_task_ready ON loadup_task (status, next_execute_at, id);
+CREATE INDEX loadup_task_lease ON loadup_task (status, lease_until, id);
+CREATE UNIQUE INDEX loadup_task_business ON loadup_task (task_type, biz_id);
+CREATE TABLE loadup_task_operation
+(
+    id          VARCHAR(64) PRIMARY KEY,
+    created_at  TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
+    updated_at  TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
+    task_id     VARCHAR(64)  NOT NULL,
+    operator_id VARCHAR(64)  NOT NULL,
+    reason      VARCHAR(512) NOT NULL
 );
-CREATE INDEX idx_loadup_task_operation_task_id ON loadup_task_operation(task_id);
+CREATE INDEX idx_loadup_task_operation_task_id ON loadup_task_operation (task_id);
 -- END loadup-components/reliability/loadup-components-task/src/main/resources/db/task/pg/schema.sql
 
 -- BEGIN loadup-components/security/loadup-components-kms/loadup-components-kms-binder-database/src/main/resources/db/schema/kms_key_file.sql
@@ -104,7 +106,7 @@ CREATE INDEX idx_loadup_task_operation_task_id ON loadup_task_operation(task_id)
 CREATE TABLE IF NOT EXISTS kms_key_file
 (
     id         VARCHAR(64) PRIMARY KEY,
-    content    BYTEA        NOT NULL CHECK (octet_length(content) BETWEEN 1 AND 4194304),
+    content BYTEA NOT NULL CHECK (octet_length(content) BETWEEN 1 AND 4194304),
     created_at TIMESTAMP(6) NOT NULL,
     updated_at TIMESTAMP(6) NOT NULL,
     deleted    BOOLEAN      NOT NULL DEFAULT FALSE
@@ -116,10 +118,10 @@ CREATE TABLE IF NOT EXISTS kms_key_file
 CREATE TABLE IF NOT EXISTS kms_secret
 (
     id         VARCHAR(64) NOT NULL PRIMARY KEY,
-    ciphertext TEXT         NOT NULL CHECK (char_length(ciphertext) BETWEEN 1 AND 42000),
+    ciphertext TEXT        NOT NULL CHECK (char_length(ciphertext) BETWEEN 1 AND 42000),
     created_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
     updated_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    deleted    BOOLEAN      NOT NULL DEFAULT FALSE
+    deleted    BOOLEAN     NOT NULL DEFAULT FALSE
 );
 -- END loadup-components/security/loadup-components-kms/loadup-components-kms-binder-database/src/main/resources/db/schema/kms_secret.sql
 
@@ -182,18 +184,18 @@ CREATE INDEX idx_dictionary_item_display ON dictionary_item (type_id, enabled, s
 
 CREATE TABLE file_resource
 (
-    id             VARCHAR(64) COLLATE "C"        NOT NULL PRIMARY KEY,
+    id             VARCHAR(64) COLLATE "C"  NOT NULL PRIMARY KEY,
 
-    owner_id       VARCHAR(64) COLLATE "C"        NOT NULL,
-    storage_id     VARCHAR(512) COLLATE "C"       NOT NULL,
-    filename       VARCHAR(255) COLLATE "C"       NOT NULL,
-    content_type   VARCHAR(255) COLLATE "C"       NOT NULL,
-    content_length BIGINT                         NOT NULL,
-    provider       VARCHAR(64) COLLATE "C"        NOT NULL,
-    state          VARCHAR(32) COLLATE "C"        NOT NULL,
+    owner_id       VARCHAR(64) COLLATE "C"  NOT NULL,
+    storage_id     VARCHAR(512) COLLATE "C" NOT NULL,
+    filename       VARCHAR(255) COLLATE "C" NOT NULL,
+    content_type   VARCHAR(255) COLLATE "C" NOT NULL,
+    content_length BIGINT                   NOT NULL,
+    provider       VARCHAR(64) COLLATE "C"  NOT NULL,
+    state          VARCHAR(32) COLLATE "C"  NOT NULL,
     created_at     TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
     updated_at     TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    deleted        BOOLEAN                        NOT NULL DEFAULT FALSE
+    deleted        BOOLEAN                  NOT NULL DEFAULT FALSE
 );
 
 CREATE UNIQUE INDEX uk_file_resource_storage ON file_resource (provider, storage_id);
@@ -204,14 +206,14 @@ CREATE INDEX idx_file_resource_cleanup ON file_resource (state, updated_at);
 
 CREATE TABLE file_resource_reference
 (
-    id             VARCHAR(64) COLLATE "C"        NOT NULL PRIMARY KEY,
+    id             VARCHAR(64) COLLATE "C"  NOT NULL PRIMARY KEY,
 
-    file_id        VARCHAR(64) COLLATE "C"        NOT NULL,
-    reference_type VARCHAR(128) COLLATE "C"       NOT NULL,
-    reference_id   VARCHAR(128) COLLATE "C"       NOT NULL,
+    file_id        VARCHAR(64) COLLATE "C"  NOT NULL,
+    reference_type VARCHAR(128) COLLATE "C" NOT NULL,
+    reference_id   VARCHAR(128) COLLATE "C" NOT NULL,
     created_at     TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
     updated_at     TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    deleted        BOOLEAN                        NOT NULL DEFAULT FALSE
+    deleted        BOOLEAN                  NOT NULL DEFAULT FALSE
 );
 
 CREATE UNIQUE INDEX uk_file_resource_reference ON file_resource_reference (file_id, reference_type, reference_id);
@@ -550,22 +552,22 @@ CREATE TABLE IF NOT EXISTS upms_user_config
 
 CREATE TABLE transfer_task
 (
-    id              VARCHAR(64) COLLATE "C"        NOT NULL PRIMARY KEY,
+    id              VARCHAR(64) COLLATE "C" NOT NULL PRIMARY KEY,
 
-    owner_id        VARCHAR(64) COLLATE "C"        NOT NULL,
-    kind            VARCHAR(16) COLLATE "C"        NOT NULL,
-    handler_key     VARCHAR(64) COLLATE "C"        NOT NULL,
+    owner_id        VARCHAR(64) COLLATE "C" NOT NULL,
+    kind            VARCHAR(16) COLLATE "C" NOT NULL,
+    handler_key     VARCHAR(64) COLLATE "C" NOT NULL,
     source_file_id  VARCHAR(64) COLLATE "C",
     result_file_id  VARCHAR(64) COLLATE "C",
-    status          VARCHAR(16) COLLATE "C"        NOT NULL,
-    processed_count BIGINT                         NOT NULL DEFAULT 0,
-    total_count     BIGINT                         NOT NULL DEFAULT 0,
+    status          VARCHAR(16) COLLATE "C" NOT NULL,
+    processed_count BIGINT                  NOT NULL DEFAULT 0,
+    total_count     BIGINT                  NOT NULL DEFAULT 0,
     error_message   VARCHAR(500) COLLATE "C",
     created_at      TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
     started_at      TIMESTAMP(6) WITHOUT TIME ZONE,
     finished_at     TIMESTAMP(6) WITHOUT TIME ZONE,
     updated_at      TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    deleted         BOOLEAN                        NOT NULL DEFAULT FALSE
+    deleted         BOOLEAN                 NOT NULL DEFAULT FALSE
 );
 
 CREATE INDEX idx_transfer_owner ON transfer_task (owner_id, created_at);
@@ -574,14 +576,14 @@ CREATE INDEX idx_transfer_status ON transfer_task (status, created_at);
 
 CREATE TABLE transfer_task_option
 (
-    task_id      VARCHAR(64) COLLATE "C"        NOT NULL,
-    option_name  VARCHAR(64) COLLATE "C"        NOT NULL,
-    option_value VARCHAR(1000) COLLATE "C"      NOT NULL,
-    id           VARCHAR(64) COLLATE "C"        NOT NULL PRIMARY KEY,
+    task_id      VARCHAR(64) COLLATE "C"   NOT NULL,
+    option_name  VARCHAR(64) COLLATE "C"   NOT NULL,
+    option_value VARCHAR(1000) COLLATE "C" NOT NULL,
+    id           VARCHAR(64) COLLATE "C"   NOT NULL PRIMARY KEY,
 
     created_at   TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
     updated_at   TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
-    deleted      BOOLEAN                        NOT NULL DEFAULT FALSE
+    deleted      BOOLEAN                   NOT NULL DEFAULT FALSE
 );
 
 CREATE UNIQUE INDEX uk_transfer_option ON transfer_task_option (task_id, option_name);
@@ -589,94 +591,102 @@ CREATE UNIQUE INDEX uk_transfer_option ON transfer_task_option (task_id, option_
 
 -- BEGIN loadup-modules/loadup-modules-form/loadup-modules-form-core/src/main/resources/db/migration/framework/form/V20261123000001__create_form.sql
 -- SHA-256: 555019064deafc0d737d3dbe210549a16a22c47c378f92447c29a9fde16e6442
-CREATE TABLE form_field (
-    id VARCHAR(36) PRIMARY KEY,
-    namespace VARCHAR(64) NOT NULL,
-    field_key VARCHAR(64) NOT NULL,
-    value_type VARCHAR(16) NOT NULL,
-    multiple BOOLEAN NOT NULL,
+CREATE TABLE form_field
+(
+    id             VARCHAR(36) PRIMARY KEY,
+    namespace      VARCHAR(64) NOT NULL,
+    field_key      VARCHAR(64) NOT NULL,
+    value_type     VARCHAR(16) NOT NULL,
+    multiple       BOOLEAN     NOT NULL,
     value_set_code VARCHAR(255),
-    unit VARCHAR(64),
-    system_owned BOOLEAN NOT NULL,
+    unit           VARCHAR(64),
+    system_owned   BOOLEAN     NOT NULL,
     UNIQUE (namespace, field_key)
 );
 
-CREATE TABLE form_field_version (
-    id VARCHAR(36) PRIMARY KEY,
-    field_id VARCHAR(36) NOT NULL REFERENCES form_field(id),
-    version_no INTEGER NOT NULL CHECK (version_no > 0),
-    definition TEXT NOT NULL,
+CREATE TABLE form_field_version
+(
+    id         VARCHAR(36) PRIMARY KEY,
+    field_id   VARCHAR(36) NOT NULL REFERENCES form_field (id),
+    version_no INTEGER     NOT NULL CHECK (version_no > 0),
+    definition TEXT        NOT NULL,
     UNIQUE (field_id, version_no)
 );
 
-CREATE TABLE form_definition_version (
-    id VARCHAR(36) PRIMARY KEY,
-    namespace VARCHAR(64) NOT NULL,
-    kind VARCHAR(16) NOT NULL CHECK (kind IN ('GROUP', 'TEMPLATE')),
-    code VARCHAR(64) NOT NULL,
-    version_no INTEGER NOT NULL CHECK (version_no > 0),
-    status VARCHAR(16) NOT NULL CHECK (status IN ('DRAFT', 'PUBLISHED', 'RETIRED')),
-    row_version BIGINT NOT NULL CHECK (row_version > 0),
-    definition TEXT NOT NULL,
+CREATE TABLE form_definition_version
+(
+    id          VARCHAR(36) PRIMARY KEY,
+    namespace   VARCHAR(64) NOT NULL,
+    kind        VARCHAR(16) NOT NULL CHECK (kind IN ('GROUP', 'TEMPLATE')),
+    code        VARCHAR(64) NOT NULL,
+    version_no  INTEGER     NOT NULL CHECK (version_no > 0),
+    status      VARCHAR(16) NOT NULL CHECK (status IN ('DRAFT', 'PUBLISHED', 'RETIRED')),
+    row_version BIGINT      NOT NULL CHECK (row_version > 0),
+    definition  TEXT        NOT NULL,
     UNIQUE (namespace, kind, code, version_no)
 );
 
-CREATE TABLE form_release (
-    id VARCHAR(36) PRIMARY KEY,
-    template_version_id VARCHAR(36) NOT NULL UNIQUE REFERENCES form_definition_version(id),
-    snapshot TEXT NOT NULL,
-    schema_hash CHAR(64) NOT NULL,
-    published_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE form_release
+(
+    id                  VARCHAR(36) PRIMARY KEY,
+    template_version_id VARCHAR(36) NOT NULL UNIQUE REFERENCES form_definition_version (id),
+    snapshot            TEXT        NOT NULL,
+    schema_hash         CHAR(64)    NOT NULL,
+    published_at        TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE form_instance (
-    id VARCHAR(36) PRIMARY KEY,
-    release_id VARCHAR(36) NOT NULL REFERENCES form_release(id),
-    namespace VARCHAR(64) NOT NULL,
-    actor VARCHAR(256) NOT NULL,
-    start_key VARCHAR(128) NOT NULL,
-    submit_key VARCHAR(128),
-    row_version BIGINT NOT NULL CHECK (row_version > 0),
-    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+CREATE TABLE form_instance
+(
+    id           VARCHAR(36) PRIMARY KEY,
+    release_id   VARCHAR(36)  NOT NULL REFERENCES form_release (id),
+    namespace    VARCHAR(64)  NOT NULL,
+    actor        VARCHAR(256) NOT NULL,
+    start_key    VARCHAR(128) NOT NULL,
+    submit_key   VARCHAR(128),
+    row_version  BIGINT       NOT NULL CHECK (row_version > 0),
+    created_at   TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     submitted_at TIMESTAMP WITH TIME ZONE,
     UNIQUE (namespace, actor, start_key),
     CHECK ((submit_key IS NULL) = (submitted_at IS NULL))
 );
 
-CREATE TABLE form_instance_item (
-    instance_id VARCHAR(36) NOT NULL REFERENCES form_instance(id),
-    item_key VARCHAR(128) NOT NULL,
+CREATE TABLE form_instance_item
+(
+    instance_id VARCHAR(36)  NOT NULL REFERENCES form_instance (id),
+    item_key    VARCHAR(128) NOT NULL,
     PRIMARY KEY (instance_id, item_key)
 );
 
-CREATE TABLE form_instance_value (
-    instance_id VARCHAR(36) NOT NULL,
-    item_key VARCHAR(128) NOT NULL,
-    field_version_id VARCHAR(36) NOT NULL REFERENCES form_field_version(id),
-    value_json TEXT NOT NULL,
-    value_origin VARCHAR(24) NOT NULL,
+CREATE TABLE form_instance_value
+(
+    instance_id      VARCHAR(36)  NOT NULL,
+    item_key         VARCHAR(128) NOT NULL,
+    field_version_id VARCHAR(36)  NOT NULL REFERENCES form_field_version (id),
+    value_json       TEXT         NOT NULL,
+    value_origin     VARCHAR(24)  NOT NULL,
     PRIMARY KEY (instance_id, item_key, field_version_id),
-    FOREIGN KEY (instance_id, item_key) REFERENCES form_instance_item(instance_id, item_key)
+    FOREIGN KEY (instance_id, item_key) REFERENCES form_instance_item (instance_id, item_key)
 );
 -- END loadup-modules/loadup-modules-form/loadup-modules-form-core/src/main/resources/db/migration/framework/form/V20261123000001__create_form.sql
 
 -- BEGIN loadup-modules/loadup-modules-approval/loadup-modules-approval-core/src/main/resources/db/migration/framework/approval/V20261125000001__create_approval.sql
 -- SHA-256: 95e26a92549582afbc3b385ffa628d3dc7bda318acce803e88996a74f6a86746
-CREATE TABLE approval_definition (
-    id varchar(36) PRIMARY KEY,
-    app_code varchar(64) NOT NULL,
-    flow_key varchar(64) NOT NULL,
-    version integer NOT NULL CHECK (version > 0),
-    name varchar(200) NOT NULL,
-    status varchar(16) NOT NULL CHECK (status IN ('DRAFT', 'ACTIVE', 'RETIRED')),
+CREATE TABLE approval_definition
+(
+    id           varchar(36) PRIMARY KEY,
+    app_code     varchar(64)  NOT NULL,
+    flow_key     varchar(64)  NOT NULL,
+    version      integer      NOT NULL CHECK (version > 0),
+    name         varchar(200) NOT NULL,
+    status       varchar(16)  NOT NULL CHECK (status IN ('DRAFT', 'ACTIVE', 'RETIRED')),
     spec_jsonb jsonb NOT NULL,
-    spec_hash char(64) NOT NULL,
-    revision bigint NOT NULL CHECK (revision > 0),
-    created_by varchar(200) NOT NULL,
-    updated_by varchar(200) NOT NULL,
+    spec_hash    char(64)     NOT NULL,
+    revision     bigint       NOT NULL CHECK (revision > 0),
+    created_by   varchar(200) NOT NULL,
+    updated_by   varchar(200) NOT NULL,
     published_by varchar(200),
     published_at timestamptz,
-    retired_by varchar(200),
+    retired_by   varchar(200),
     retired_at timestamptz,
     UNIQUE (app_code, flow_key, version),
     UNIQUE (app_code, flow_key, id)
@@ -685,26 +695,27 @@ CREATE TABLE approval_definition (
 CREATE UNIQUE INDEX approval_definition_draft_idx ON approval_definition (app_code, flow_key) WHERE status = 'DRAFT';
 CREATE UNIQUE INDEX approval_definition_active_idx ON approval_definition (app_code, flow_key) WHERE status = 'ACTIVE';
 
-CREATE TABLE approval_instance (
-    id varchar(36) PRIMARY KEY,
-    definition_id varchar(36) NOT NULL,
-    app_code varchar(64) NOT NULL,
-    flow_key varchar(64) NOT NULL,
-    business_type varchar(64) NOT NULL,
-    business_id varchar(128) NOT NULL,
-    business_version varchar(64) NOT NULL,
-    content_hash varchar(128) NOT NULL,
-    title varchar(200) NOT NULL,
-    applicant_id varchar(200) NOT NULL,
-    start_key varchar(128) NOT NULL,
-    request_hash char(64) NOT NULL,
-    status varchar(16) NOT NULL CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED', 'WITHDRAWN')),
-    revision bigint NOT NULL CHECK (revision > 0),
+CREATE TABLE approval_instance
+(
+    id               varchar(36) PRIMARY KEY,
+    definition_id    varchar(36)  NOT NULL,
+    app_code         varchar(64)  NOT NULL,
+    flow_key         varchar(64)  NOT NULL,
+    business_type    varchar(64)  NOT NULL,
+    business_id      varchar(128) NOT NULL,
+    business_version varchar(64)  NOT NULL,
+    content_hash     varchar(128) NOT NULL,
+    title            varchar(200) NOT NULL,
+    applicant_id     varchar(200) NOT NULL,
+    start_key        varchar(128) NOT NULL,
+    request_hash     char(64)     NOT NULL,
+    status           varchar(16)  NOT NULL CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED', 'WITHDRAWN')),
+    revision         bigint       NOT NULL CHECK (revision > 0),
     created_at timestamptz NOT NULL DEFAULT now(),
     finished_at timestamptz,
     delivery_task_id varchar(64),
     delivered_at timestamptz,
-    FOREIGN KEY (app_code, flow_key, definition_id) REFERENCES approval_definition(app_code, flow_key, id),
+    FOREIGN KEY (app_code, flow_key, definition_id) REFERENCES approval_definition (app_code, flow_key, id),
     UNIQUE (app_code, start_key),
     CHECK ((status = 'PENDING') = (finished_at IS NULL))
 );
@@ -715,19 +726,20 @@ CREATE INDEX approval_instance_business_idx ON approval_instance
     (app_code, flow_key, business_type, business_id, business_version);
 CREATE INDEX approval_instance_applicant_idx ON approval_instance (app_code, applicant_id, created_at DESC);
 
-CREATE TABLE approval_instance_step (
-    id varchar(36) PRIMARY KEY,
-    instance_id varchar(36) NOT NULL REFERENCES approval_instance(id),
-    step_key varchar(64) NOT NULL,
-    step_order integer NOT NULL CHECK (step_order > 0),
-    step_name varchar(200) NOT NULL,
+CREATE TABLE approval_instance_step
+(
+    id               varchar(36) PRIMARY KEY,
+    instance_id      varchar(36)  NOT NULL REFERENCES approval_instance (id),
+    step_key         varchar(64)  NOT NULL,
+    step_order       integer      NOT NULL CHECK (step_order > 0),
+    step_name        varchar(200) NOT NULL,
     rule_snapshot jsonb NOT NULL,
     assignee_user_id varchar(200),
     assignee_role_id varchar(200),
-    status varchar(16) NOT NULL CHECK (status IN ('WAITING', 'PENDING', 'APPROVED', 'REJECTED', 'CANCELLED')),
+    status           varchar(16)  NOT NULL CHECK (status IN ('WAITING', 'PENDING', 'APPROVED', 'REJECTED', 'CANCELLED')),
     activated_at timestamptz,
     completed_at timestamptz,
-    completed_by varchar(200),
+    completed_by     varchar(200),
     UNIQUE (instance_id, id),
     UNIQUE (instance_id, step_key),
     UNIQUE (instance_id, step_order),
@@ -738,21 +750,24 @@ CREATE UNIQUE INDEX approval_step_live_idx ON approval_instance_step (instance_i
 CREATE INDEX approval_step_user_idx ON approval_instance_step (assignee_user_id) WHERE status = 'PENDING';
 CREATE INDEX approval_step_role_idx ON approval_instance_step (assignee_role_id) WHERE status = 'PENDING';
 
-CREATE TABLE approval_action (
-    id varchar(36) PRIMARY KEY,
-    instance_id varchar(36) NOT NULL REFERENCES approval_instance(id),
-    step_id varchar(36),
-    action varchar(24) NOT NULL CHECK (action IN ('SUBMITTED', 'ASSIGNEE_CHANGED', 'APPROVED_STEP', 'REJECTED_STEP', 'WITHDRAWN')),
-    actor_id varchar(200) NOT NULL,
+CREATE TABLE approval_action
+(
+    id                varchar(36) PRIMARY KEY,
+    instance_id       varchar(36)  NOT NULL REFERENCES approval_instance (id),
+    step_id           varchar(36),
+    action            varchar(24)  NOT NULL CHECK (action IN
+                                                   ('SUBMITTED', 'ASSIGNEE_CHANGED', 'APPROVED_STEP', 'REJECTED_STEP',
+                                                    'WITHDRAWN')),
+    actor_id          varchar(200) NOT NULL,
     matched_principal varchar(205),
-    reason varchar(2000),
+    reason            varchar(2000),
     changes_jsonb jsonb NOT NULL DEFAULT '[]'::jsonb,
-    command_key varchar(128) NOT NULL,
-    command_hash char(64) NOT NULL,
-    result_revision bigint NOT NULL,
+    command_key       varchar(128) NOT NULL,
+    command_hash      char(64)     NOT NULL,
+    result_revision   bigint       NOT NULL,
     result_jsonb jsonb NOT NULL,
     occurred_at timestamptz NOT NULL DEFAULT now(),
-    FOREIGN KEY (instance_id, step_id) REFERENCES approval_instance_step(instance_id, id),
+    FOREIGN KEY (instance_id, step_id) REFERENCES approval_instance_step (instance_id, id),
     UNIQUE (instance_id, command_key),
     UNIQUE (instance_id, result_revision)
 );
@@ -783,164 +798,177 @@ CREATE INDEX idx_inbox_message_unread ON inbox_message (recipient_id, archived_a
 
 -- BEGIN loadup-modules/loadup-modules-gotone/loadup-modules-gotone-core/src/main/resources/db/migration/modules/gotone/V20261126000002__create_gotone.sql
 -- SHA-256: b07514c6f9eb2cfce5781fc23c6a072800c8ae18648ee5d3f84ab96b1b204ec4
-CREATE TABLE gotone_service (
-    id VARCHAR(64) NOT NULL PRIMARY KEY,
-    created_at TIMESTAMP(6) NOT NULL,
-    updated_at TIMESTAMP(6) NOT NULL,
-    deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    service_code VARCHAR(64) NOT NULL,
-    name VARCHAR(200) NOT NULL,
-    description VARCHAR(500),
-    enabled BOOLEAN NOT NULL,
-    version INTEGER NOT NULL DEFAULT 0,
+CREATE TABLE gotone_service
+(
+    id              VARCHAR(64)  NOT NULL PRIMARY KEY,
+    created_at      TIMESTAMP(6) NOT NULL,
+    updated_at      TIMESTAMP(6) NOT NULL,
+    deleted         BOOLEAN      NOT NULL DEFAULT FALSE,
+    service_code    VARCHAR(64)  NOT NULL,
+    name            VARCHAR(200) NOT NULL,
+    description     VARCHAR(500),
+    enabled         BOOLEAN      NOT NULL,
+    version         INTEGER      NOT NULL DEFAULT 0,
     active_revision INTEGER,
     UNIQUE (service_code)
 );
 
-CREATE TABLE gotone_service_draft (
-    id VARCHAR(64) NOT NULL PRIMARY KEY,
-    created_at TIMESTAMP(6) NOT NULL,
-    updated_at TIMESTAMP(6) NOT NULL,
-    deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    service_code VARCHAR(64) NOT NULL,
-    actor VARCHAR(128) NOT NULL,
-    config TEXT,
+CREATE TABLE gotone_service_draft
+(
+    id           VARCHAR(64)  NOT NULL PRIMARY KEY,
+    created_at   TIMESTAMP(6) NOT NULL,
+    updated_at   TIMESTAMP(6) NOT NULL,
+    deleted      BOOLEAN      NOT NULL DEFAULT FALSE,
+    service_code VARCHAR(64)  NOT NULL,
+    actor        VARCHAR(128) NOT NULL,
+    config       TEXT,
     UNIQUE (service_code, actor)
 );
 
-CREATE TABLE gotone_service_revision (
-    id VARCHAR(64) NOT NULL PRIMARY KEY,
-    created_at TIMESTAMP(6) NOT NULL,
-    updated_at TIMESTAMP(6) NOT NULL,
-    deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    service_code VARCHAR(64) NOT NULL,
-    revision INTEGER NOT NULL,
-    required_parameters TEXT NOT NULL,
-    published_by VARCHAR(128) NOT NULL,
-    published_at TIMESTAMP(6) NOT NULL,
+CREATE TABLE gotone_service_revision
+(
+    id                  VARCHAR(64)  NOT NULL PRIMARY KEY,
+    created_at          TIMESTAMP(6) NOT NULL,
+    updated_at          TIMESTAMP(6) NOT NULL,
+    deleted             BOOLEAN      NOT NULL DEFAULT FALSE,
+    service_code        VARCHAR(64)  NOT NULL,
+    revision            INTEGER      NOT NULL,
+    required_parameters TEXT         NOT NULL,
+    published_by        VARCHAR(128) NOT NULL,
+    published_at        TIMESTAMP(6) NOT NULL,
     UNIQUE (service_code, revision)
 );
 
-CREATE TABLE gotone_service_channel_map (
-    id VARCHAR(64) NOT NULL PRIMARY KEY,
-    created_at TIMESTAMP(6) NOT NULL,
-    updated_at TIMESTAMP(6) NOT NULL,
-    deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    service_code VARCHAR(64) NOT NULL,
-    revision INTEGER NOT NULL,
-    channel VARCHAR(16) NOT NULL CHECK (channel IN ('SMS','EMAIL','PUSH','IN_APP','WEBHOOK')),
-    fields TEXT NOT NULL,
+CREATE TABLE gotone_service_channel_map
+(
+    id           VARCHAR(64)  NOT NULL PRIMARY KEY,
+    created_at   TIMESTAMP(6) NOT NULL,
+    updated_at   TIMESTAMP(6) NOT NULL,
+    deleted      BOOLEAN      NOT NULL DEFAULT FALSE,
+    service_code VARCHAR(64)  NOT NULL,
+    revision     INTEGER      NOT NULL,
+    channel      VARCHAR(16)  NOT NULL CHECK (channel IN ('SMS', 'EMAIL', 'PUSH', 'IN_APP', 'WEBHOOK')),
+    fields       TEXT         NOT NULL,
     UNIQUE (service_code, revision, channel)
 );
 
-CREATE TABLE gotone_provider_account (
-    id VARCHAR(64) NOT NULL PRIMARY KEY,
-    created_at TIMESTAMP(6) NOT NULL,
-    updated_at TIMESTAMP(6) NOT NULL,
-    deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    account_code VARCHAR(64) NOT NULL,
-    channel VARCHAR(16) NOT NULL CHECK (channel IN ('SMS','EMAIL','PUSH','WEBHOOK')),
-    adapter VARCHAR(64) NOT NULL,
-    enabled BOOLEAN NOT NULL,
-    priority INTEGER NOT NULL,
-    secret_ref VARCHAR(132),
-    connect_timeout_ms INTEGER NOT NULL,
-    request_timeout_ms INTEGER NOT NULL,
-    version INTEGER NOT NULL,
-    settings TEXT NOT NULL,
+CREATE TABLE gotone_provider_account
+(
+    id                 VARCHAR(64)  NOT NULL PRIMARY KEY,
+    created_at         TIMESTAMP(6) NOT NULL,
+    updated_at         TIMESTAMP(6) NOT NULL,
+    deleted            BOOLEAN      NOT NULL DEFAULT FALSE,
+    account_code       VARCHAR(64)  NOT NULL,
+    channel            VARCHAR(16)  NOT NULL CHECK (channel IN ('SMS', 'EMAIL', 'PUSH', 'WEBHOOK')),
+    adapter            VARCHAR(64)  NOT NULL,
+    enabled            BOOLEAN      NOT NULL,
+    priority           INTEGER      NOT NULL,
+    secret_ref         VARCHAR(132),
+    connect_timeout_ms INTEGER      NOT NULL,
+    request_timeout_ms INTEGER      NOT NULL,
+    version            INTEGER      NOT NULL,
+    settings           TEXT         NOT NULL,
     UNIQUE (account_code)
 );
 
-CREATE TABLE gotone_sms_template_binding (
-    id VARCHAR(64) NOT NULL PRIMARY KEY,
-    created_at TIMESTAMP(6) NOT NULL,
-    updated_at TIMESTAMP(6) NOT NULL,
-    deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    map_id VARCHAR(64) NOT NULL,
-    account_code VARCHAR(64) NOT NULL,
+CREATE TABLE gotone_sms_template_binding
+(
+    id                 VARCHAR(64)  NOT NULL PRIMARY KEY,
+    created_at         TIMESTAMP(6) NOT NULL,
+    updated_at         TIMESTAMP(6) NOT NULL,
+    deleted            BOOLEAN      NOT NULL DEFAULT FALSE,
+    map_id             VARCHAR(64)  NOT NULL,
+    account_code       VARCHAR(64)  NOT NULL,
     remote_template_id VARCHAR(200) NOT NULL,
-    remote_signature VARCHAR(200),
-    variable_mapping TEXT NOT NULL,
-    service_code VARCHAR(64) NOT NULL,
-    revision INTEGER NOT NULL,
+    remote_signature   VARCHAR(200),
+    variable_mapping   TEXT         NOT NULL,
+    service_code       VARCHAR(64)  NOT NULL,
+    revision           INTEGER      NOT NULL,
     UNIQUE (map_id, account_code)
 );
 
-CREATE TABLE gotone_request (
-    id VARCHAR(64) NOT NULL PRIMARY KEY,
-    created_at TIMESTAMP(6) NOT NULL,
-    updated_at TIMESTAMP(6) NOT NULL,
-    deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    source VARCHAR(128) NOT NULL,
-    request_key VARCHAR(128) NOT NULL,
-    content_digest VARCHAR(64) NOT NULL,
-    service_code VARCHAR(64) NOT NULL,
-    revision INTEGER NOT NULL,
-    sender_id VARCHAR(64),
-    parameters TEXT NOT NULL,
-    accepted_at TIMESTAMP(6) NOT NULL,
-    expires_at TIMESTAMP(6) NOT NULL,
-    target_count INTEGER NOT NULL,
+CREATE TABLE gotone_request
+(
+    id             VARCHAR(64)  NOT NULL PRIMARY KEY,
+    created_at     TIMESTAMP(6) NOT NULL,
+    updated_at     TIMESTAMP(6) NOT NULL,
+    deleted        BOOLEAN      NOT NULL DEFAULT FALSE,
+    source         VARCHAR(128) NOT NULL,
+    request_key    VARCHAR(128) NOT NULL,
+    content_digest VARCHAR(64)  NOT NULL,
+    service_code   VARCHAR(64)  NOT NULL,
+    revision       INTEGER      NOT NULL,
+    sender_id      VARCHAR(64),
+    parameters     TEXT         NOT NULL,
+    accepted_at    TIMESTAMP(6) NOT NULL,
+    expires_at     TIMESTAMP(6) NOT NULL,
+    target_count   INTEGER      NOT NULL,
     UNIQUE (source, request_key)
 );
 
-CREATE TABLE gotone_delivery (
-    id VARCHAR(64) NOT NULL PRIMARY KEY,
-    created_at TIMESTAMP(6) NOT NULL,
-    updated_at TIMESTAMP(6) NOT NULL,
-    deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    request_id VARCHAR(64) NOT NULL,
-    map_id VARCHAR(64) NOT NULL,
-    channel VARCHAR(16) NOT NULL,
-    target_key VARCHAR(64) NOT NULL,
-    masked_target VARCHAR(40) NOT NULL,
-    snapshot TEXT NOT NULL,
-    status VARCHAR(16) NOT NULL CHECK (status IN ('PENDING','RETRY_WAIT','SENDING','SENT','UNKNOWN','FAILED','EXPIRED')),
-    attempt_no INTEGER NOT NULL DEFAULT 0,
-    sender_id VARCHAR(64),
-    expires_at TIMESTAMP(6) NOT NULL,
+CREATE TABLE gotone_delivery
+(
+    id            VARCHAR(64)  NOT NULL PRIMARY KEY,
+    created_at    TIMESTAMP(6) NOT NULL,
+    updated_at    TIMESTAMP(6) NOT NULL,
+    deleted       BOOLEAN      NOT NULL DEFAULT FALSE,
+    request_id    VARCHAR(64)  NOT NULL,
+    map_id        VARCHAR(64)  NOT NULL,
+    channel       VARCHAR(16)  NOT NULL,
+    target_key    VARCHAR(64)  NOT NULL,
+    masked_target VARCHAR(40)  NOT NULL,
+    snapshot      TEXT         NOT NULL,
+    status        VARCHAR(16)  NOT NULL CHECK (status IN
+                                               ('PENDING', 'RETRY_WAIT', 'SENDING', 'SENT', 'UNKNOWN', 'FAILED',
+                                                'EXPIRED')),
+    attempt_no    INTEGER      NOT NULL DEFAULT 0,
+    sender_id     VARCHAR(64),
+    expires_at    TIMESTAMP(6) NOT NULL,
     UNIQUE (request_id, channel, target_key)
 );
 
-CREATE TABLE gotone_delivery_attempt (
-    id VARCHAR(64) NOT NULL PRIMARY KEY,
-    created_at TIMESTAMP(6) NOT NULL,
-    updated_at TIMESTAMP(6) NOT NULL,
-    deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    delivery_id VARCHAR(64) NOT NULL,
-    number INTEGER NOT NULL,
-    account_code VARCHAR(64),
+CREATE TABLE gotone_delivery_attempt
+(
+    id             VARCHAR(64)  NOT NULL PRIMARY KEY,
+    created_at     TIMESTAMP(6) NOT NULL,
+    updated_at     TIMESTAMP(6) NOT NULL,
+    deleted        BOOLEAN      NOT NULL DEFAULT FALSE,
+    delivery_id    VARCHAR(64)  NOT NULL,
+    number         INTEGER      NOT NULL,
+    account_code   VARCHAR(64),
     config_version INTEGER,
-    status VARCHAR(16) NOT NULL,
-    reason VARCHAR(64),
-    remote_id VARCHAR(256),
-    started_at TIMESTAMP(6) NOT NULL,
-    finished_at TIMESTAMP(6),
+    status         VARCHAR(16)  NOT NULL,
+    reason         VARCHAR(64),
+    remote_id      VARCHAR(256),
+    started_at     TIMESTAMP(6) NOT NULL,
+    finished_at    TIMESTAMP(6),
     UNIQUE (delivery_id, number)
 );
 
-CREATE TABLE gotone_delivery_resolution (
-    id VARCHAR(64) NOT NULL PRIMARY KEY,
-    created_at TIMESTAMP(6) NOT NULL,
-    updated_at TIMESTAMP(6) NOT NULL,
-    deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    delivery_id VARCHAR(64) NOT NULL,
-    attempt_no INTEGER NOT NULL,
-    accepted BOOLEAN NOT NULL,
-    reason VARCHAR(500) NOT NULL,
-    actor VARCHAR(128) NOT NULL,
+CREATE TABLE gotone_delivery_resolution
+(
+    id          VARCHAR(64)  NOT NULL PRIMARY KEY,
+    created_at  TIMESTAMP(6) NOT NULL,
+    updated_at  TIMESTAMP(6) NOT NULL,
+    deleted     BOOLEAN      NOT NULL DEFAULT FALSE,
+    delivery_id VARCHAR(64)  NOT NULL,
+    attempt_no  INTEGER      NOT NULL,
+    accepted    BOOLEAN      NOT NULL,
+    reason      VARCHAR(500) NOT NULL,
+    actor       VARCHAR(128) NOT NULL,
     resolved_at TIMESTAMP(6) NOT NULL,
     UNIQUE (delivery_id, attempt_no)
 );
 
-CREATE TABLE gotone_delivery_retry (
-    id VARCHAR(64) NOT NULL PRIMARY KEY,
-    created_at TIMESTAMP(6) NOT NULL,
-    updated_at TIMESTAMP(6) NOT NULL,
-    deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    delivery_id VARCHAR(64) NOT NULL,
-    actor VARCHAR(128) NOT NULL,
-    reason VARCHAR(500) NOT NULL,
+CREATE TABLE gotone_delivery_retry
+(
+    id           VARCHAR(64)  NOT NULL PRIMARY KEY,
+    created_at   TIMESTAMP(6) NOT NULL,
+    updated_at   TIMESTAMP(6) NOT NULL,
+    deleted      BOOLEAN      NOT NULL DEFAULT FALSE,
+    delivery_id  VARCHAR(64)  NOT NULL,
+    actor        VARCHAR(128) NOT NULL,
+    reason       VARCHAR(500) NOT NULL,
     requested_at TIMESTAMP(6) NOT NULL
 );
 

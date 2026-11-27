@@ -1,6 +1,7 @@
 # Framework 完整初始化 SQL
 
-组件的 `src/main/resources/db/schema/*.sql`、Task 的 PostgreSQL `db/task/pg/schema.sql` 和业务模块的 `src/main/resources/db/migration/framework/<module>/V*.sql`
+组件的 `src/main/resources/db/schema/*.sql`、Task 的 PostgreSQL `db/task/pg/schema.sql` 和业务模块的
+`src/main/resources/db/migration/framework/<module>/V*.sql`
 是维护源；修改源文件后运行：
 
 ```bash
@@ -14,11 +15,11 @@ python3 tools/export-schema.py --check
 
 保留两种交付形式：
 
-| 形式 | 用途 |
-|---|---|
-| 组件资源中的 `db/schema/*.sql` | 保留原始模板，消费应用可按依赖生成应用级 Flyway 迁移，由启动迁移自动执行 |
-| 业务模块资源中的 `db/migration/framework/<module>/V*.sql` | 保留原始 Flyway 自动迁移文件及版本、内容，应用显式选择该模块的 location |
-| `sql/framework-schema.sql` | 全部组件及业务模块的完整初始化整合版，可通过 psql 或数据库工具手动导入 |
+| 形式                                                      | 用途                                                                     |
+|-----------------------------------------------------------|--------------------------------------------------------------------------|
+| 组件资源中的 `db/schema/*.sql`                            | 保留原始模板，消费应用可按依赖生成应用级 Flyway 迁移，由启动迁移自动执行 |
+| 业务模块资源中的 `db/migration/framework/<module>/V*.sql` | 保留原始 Flyway 自动迁移文件及版本、内容，应用显式选择该模块的 location  |
+| `sql/framework-schema.sql`                                | 全部组件及业务模块的完整初始化整合版，可通过 psql 或数据库工具手动导入   |
 
 组件模板覆盖 Sequence Allocation、DFS Database、Gotone JDBC Store、Task、GlobalUnique 和 KMS Database。
 业务迁移来自相邻 Modules 仓库，实际清单可在整合版中按 `-- BEGIN` 查看。

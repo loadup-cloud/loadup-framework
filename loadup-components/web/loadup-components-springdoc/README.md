@@ -41,7 +41,8 @@ scalar:
 
 ## Jackson 兼容性
 
-SpringDoc 3.2.1 面向 Spring Boot 4.2，使用 Swagger Core 3.0.0 和 Jackson 3 解析模型并生成 OpenAPI 文档。直接声明 Swagger 注解时使用
+SpringDoc 3.2.1 面向 Spring Boot 4.2，使用 Swagger Core 3.0.0 和 Jackson 3 解析模型并生成 OpenAPI 文档。直接声明 Swagger
+注解时使用
 `io.swagger.core.v3:swagger-annotations`。Java 注解的导入仍为 `io.swagger.v3.oas.annotations`。
 
 MVC 业务 JSON 与 Swagger 分别配置各自的 Jackson 3 mapper。定制 OpenAPI Schema 时使用 SpringDoc / Swagger 的扩展点。

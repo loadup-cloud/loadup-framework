@@ -129,17 +129,16 @@ class XxlConfConfigCenterTest {
 
             String operation = exchange.getRequestURI().getPath().substring("/xxl-conf/openapi/confdata/".length());
             String current = value.get();
-            String response =
-                    switch (operation) {
-                        case "queryKey" -> """
-                        {"code":200,"success":true,"data":{"appnameKeyData":{"payments":["unrelated","feature.enabled"]}}}
-                        """;
-                        case "queryData" -> configuration(request, current);
-                        case "monitor" -> """
-                        {"code":500,"msg":"Monitor key update: env=test, appname=payments, key=feature.enabled"}
-                        """;
-                        default -> throw new IllegalArgumentException(operation);
-                    };
+            String response = switch (operation) {
+                case "queryKey" -> """
+                    {"code":200,"success":true,"data":{"appnameKeyData":{"payments":["unrelated","feature.enabled"]}}}
+                    """;
+                case "queryData" -> configuration(request, current);
+                case "monitor" -> """
+                    {"code":500,"msg":"Monitor key update: env=test, appname=payments, key=feature.enabled"}
+                    """;
+                default -> throw new IllegalArgumentException(operation);
+            };
             byte[] bytes = response.getBytes(StandardCharsets.UTF_8);
             exchange.getResponseHeaders().set("Content-Type", "application/json");
             exchange.sendResponseHeaders(200, bytes.length);
@@ -153,17 +152,17 @@ class XxlConfConfigCenterTest {
                 || !request.contains("\"feature.enabled\"")
                 || !request.contains("\"simpleQuery\":false")) {
             return """
-                    {"code":500,"msg":"query failed"}
-                    """;
+                {"code":500,"msg":"query failed"}
+                """;
         }
         if (current == null) {
             return """
-                    {"code":200,"data":{"confData":{}}}
-                    """;
+                {"code":200,"data":{"confData":{}}}
+                """;
         }
         return """
-                {"code":200,"data":{"confData":{"payments":{"feature.enabled":{"env":"test","appname":"payments","key":"feature.enabled","value":"%s","valueMd5":"test"}}}}}
-                """.formatted(current);
+            {"code":200,"data":{"confData":{"payments":{"feature.enabled":{"env":"test","appname":"payments","key":"feature.enabled","value":"%s","valueMd5":"test"}}}}}
+            """.formatted(current);
     }
 
     static final class FeatureFlags {

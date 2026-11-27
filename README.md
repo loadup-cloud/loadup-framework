@@ -19,13 +19,13 @@ LoadUp 是供其他应用消费的 SDK。本仓库聚合可复用模块，不包
 
 ## 能力与目录
 
-| 目录                                                   | 内容                                                                                                    |
-|--------------------------------------------------------|---------------------------------------------------------------------------------------------------------|
-| [`loadup-framework-bom`](loadup-framework-bom/README.md) | 统一依赖版本的 BOM                                                                                      |
-| [`loadup-commons`](loadup-commons/README.md)           | 通用数据契约、错误、上下文、JSON、日志、脱敏与工具                                                                           |
-| [`loadup-components`](loadup-components/README.md)     | Web MVC、认证授权、指标追踪、缓存、数据库、分布式锁、文件存储、通知、调度等技术组件                     |
-| [`loadup-modules`](../loadup-modules/README.md)           | 可复用业务模块，包含 UPMS、审计中心、数据字典、文件资源、站内通知、导入导出任务 |
-| [`loadup-testify`](../loadup-testify/README.md)           | 集成测试辅助能力                                                                                        |
+| 目录                                                     | 内容                                                                                |
+|----------------------------------------------------------|-------------------------------------------------------------------------------------|
+| [`loadup-framework-bom`](loadup-framework-bom/README.md) | 统一依赖版本的 BOM                                                                  |
+| [`loadup-commons`](loadup-commons/README.md)             | 通用数据契约、错误、上下文、JSON、日志、脱敏与工具                                  |
+| [`loadup-components`](loadup-components/README.md)       | Web MVC、认证授权、指标追踪、缓存、数据库、分布式锁、文件存储、通知、调度等技术组件 |
+| [`loadup-modules`](../loadup-modules/README.md)          | 可复用业务模块，包含 UPMS、审计中心、数据字典、文件资源、站内通知、导入导出任务     |
+| [`loadup-testify`](../loadup-testify/README.md)          | 集成测试辅助能力                                                                    |
 
 模块的接入方式、配置项和设计说明见各目录的 README 与 ARCHITECTURE
 文档，也可在[文档站](https://loadup-docs.laysan.site/docs/)按能力查找。
@@ -96,7 +96,8 @@ python3 doc-sync-agent.py --module loadup-components/data/loadup-components-data
 python3 doc-sync-agent.py --module loadup-components/data/loadup-components-database --check
 ```
 
-依次预览、更新和核对同一模块。多个模块可重复传入 `--module`。在与 Modules、Testify 共享的站点上使用定向同步，避免全量清理其他仓库的页面。站点维护见 [文档站说明](../docs/README.md)。
+依次预览、更新和核对同一模块。多个模块可重复传入 `--module`。在与 Modules、Testify
+共享的站点上使用定向同步，避免全量清理其他仓库的页面。站点维护见 [文档站说明](../docs/README.md)。
 
 ## Maven 质量检查
 

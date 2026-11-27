@@ -5,15 +5,15 @@ binder。分类聚合 POM 组织 Maven 子模块，具体工件决定运行时�
 
 ## 功能分类
 
-| 分类 | 能力 |
-| --- | --- |
-| [数据与存储](data/README.md) | KV 与缓存、数据库、数据库处理器、文件存储 |
-| [调度与执行](execution/README.md) | 任务调度、执行流水线 |
-| [应用集成](integration/README.md) | HTTP 客户端、RPC |
-| [平台基础](platform/README.md) | 配置中心、运行时装配、应用观测、业务扩展、测试容器 |
-| [应用可靠性](reliability/README.md) | 持久化任务、异步结果、分布式锁、幂等声明、调用容错 |
-| [安全与身份](security/README.md) | OAuth2 与 JWT、方法授权、服务身份、密钥与机密管理、报文签名、验证码 |
-| [Web 接入](web/README.md) | WebMVC、接口文档 |
+| 分类                                | 能力                                                                |
+|-------------------------------------|---------------------------------------------------------------------|
+| [数据与存储](data/README.md)        | KV 与缓存、数据库、数据库处理器、文件存储                           |
+| [调度与执行](execution/README.md)   | 任务调度、执行流水线                                                |
+| [应用集成](integration/README.md)   | HTTP 客户端、RPC                                                    |
+| [平台基础](platform/README.md)      | 配置中心、运行时装配、应用观测、业务扩展、测试容器                  |
+| [应用可靠性](reliability/README.md) | 持久化任务、异步结果、分布式锁、幂等声明、调用容错                  |
+| [安全与身份](security/README.md)    | OAuth2 与 JWT、方法授权、服务身份、密钥与机密管理、报文签名、验证码 |
+| [Web 接入](web/README.md)           | WebMVC、接口文档                                                    |
 
 分类目录设有 reactor 聚合 POM。消费应用选用具体的组件或 binder 工件，Java 包名和配置前缀由组件维护。以下示例引入 WebMVC。
 

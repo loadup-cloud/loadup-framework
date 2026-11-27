@@ -16,7 +16,8 @@ mvnd clean deploy -Prelease
 手动启用 `release` 后，同一 POM 内默认的 `github` profile 停用，Central 插件接管发布。若同一正式版本需要双仓发布，分别执行上述命令。
 
 现有 Framework CI 的 Maven 命令显式固定 `github`，覆盖率任务使用 `-Pgithub,component-coverage`，不会启用 `release`。
-这是因为 Maven 激活同一 POM 的其他 profile 时会停用 `activeByDefault` profile；本地组合使用其他 profile 时也应显式带上 `github`。
+这是因为 Maven 激活同一 POM 的其他 profile 时会停用 `activeByDefault` profile；本地组合使用其他 profile 时也应显式带上
+`github`。
 
 发布凭证由本机 Maven settings 管理：`github` server 使用具有目标 GitHub Packages 写权限的凭证，
 `central` server 使用 Central Portal 生成的用户 token。GPG 使用本机可用的签名私钥及其口令配置，POM 不保存凭证或私钥。

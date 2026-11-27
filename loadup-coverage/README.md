@@ -17,7 +17,8 @@ mvnd -B -ntp -T 1 -Pcomponent-coverage -pl '!loadup-framework-bom' --fail-at-end
 ```
 
 第一步执行一次完整构建并安装 reactor 依赖；第二步仅调用命名插件 execution，复用同批 classes 与合并 exec，不运行生命周期，不需要也不能添加
-`clean`。第一步在各组件的 `verify` 阶段根据测试源码检查相应的 JaCoCo 文件存在且非空。排除 `loadup-framework-bom` 是因为该 BOM
+`clean`。第一步在各组件的 `verify` 阶段根据测试源码检查相应的 JaCoCo 文件存在且非空。排除 `loadup-framework-bom` 是因为该
+BOM
 直接继承 Spring Boot，不继承根 POM 的命名 execution。
 
 上述命令跳过格式和 SpotBugs，供覆盖率验收使用；CI 首步还执行 SpotBugs/PMD，快速质量任务检查格式、License

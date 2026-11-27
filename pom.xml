@@ -86,7 +86,7 @@
         <enforcer-plugin.version>3.7.0</enforcer-plugin.version>
 
         <!-- Code quality tool versions -->
-        <palantir-java-format.version>2.98.0</palantir-java-format.version>
+        <palantir-java-format.version>2.103.0</palantir-java-format.version>
 
         <spring.boot.version>4.2.0</spring.boot.version>
         <loadup.framework.version>${project.version}</loadup.framework.version>

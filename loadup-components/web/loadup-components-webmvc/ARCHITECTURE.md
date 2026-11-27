@@ -104,13 +104,15 @@ loadup:
 ```
 
 max-size 为正整数字节大小，必须小于 Integer.MAX_VALUE；path-prefix 是以 / 开始、结束的目录前缀。
-RequestBodyLimitAdvice 在认证过滤器之后、MVC 请求转换之前对已匹配路由执行限制，包含 context path 或编码拼写时仍按 MVC 映射判断。
+RequestBodyLimitAdvice 在认证过滤器之后、MVC 请求转换之前对已匹配路由执行限制，包含 context path 或编码拼写时仍按 MVC
+映射判断。
 先检查声明长度，再最多读取 limit + 1 字节，完整检查未知长度、虚假长度与 JSON 尾随空白后才交给消息转换器。
 以 UTF-8 等实际传输字节计数，不按字符数；有界缓存会增加每个并发请求的内存，应用仍需约束并发、连接池和网络读取时间。
 
 超限是传输拒绝：HTTP 413 + PARAM_ILLEGAL FailureResponse，不执行控制器；ApiResponseAdvice 不把 413 改为 200。
 其他小报文的参数/业务错误保持原 HTTP 200，前缀外的回调、文件流与认证入口保留原协议。
-这不是全站上传限制，也不代替容器、反向代理、网关的请求时间/并发/大小约束；无 @RequestBody 的直接 Servlet 流读取不在该 Advice 范围。
+这不是全站上传限制，也不代替容器、反向代理、网关的请求时间/并发/大小约束；无 @RequestBody 的直接 Servlet 流读取不在该 Advice
+范围。
 ConfigMap 更新不会自动更新此配置，默认重启生效。RequestBodyLimitAdviceTest 已补回归源码，未执行构建或测试。
 
 ## 原生协议响应
@@ -125,7 +127,8 @@ ProtocolResponseTest 已补文本/JSON 原文、非 2xx、方法/类标记、普
 ## MVC 线程模型
 
 组件沿用 Boot 原生 Servlet 执行模型，不创建请求线程池。消费方可用 spring.threads.virtual.enabled 试验虚拟线程，保持连接池和业务并发预算。
-MvcThreadModelTest 使用独立配置名，在回环地址启动真实 Servlet 容器，分别检查平台/虚拟请求线程、并发合成身份与 ScopedValue 隔离、异常后清理。
+MvcThreadModelTest 使用独立配置名，在回环地址启动真实 Servlet 容器，分别检查平台/虚拟请求线程、并发合成身份与 ScopedValue
+隔离、异常后清理。
 这是线程契约测试源码，不装配业务数据库/渠道，不证明真实 JWT 或金融等价。测试未运行，默认启用决策仍需消费方压测与发布验收。
 
 ## 部署 code 入口校验

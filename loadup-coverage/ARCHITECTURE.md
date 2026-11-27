@@ -10,7 +10,7 @@
 | 阶段                              | 位置           | 行为                                                                                               |
 |-----------------------------------|----------------|----------------------------------------------------------------------------------------------------|
 | initialize / pre-integration-test | 各测试模块     | prepare-agent 写入 unit / IT 独立文件；Surefire/Failsafe 使用 `@{argLine}` 延迟读取 agent          |
-| verify                            | 本次构建的组件 | Ant 按测试源码命名发现预期套件，校验对应 exec 存在且非空                                          |
+| verify                            | 本次构建的组件 | Ant 按测试源码命名发现预期套件，校验对应 exec 存在且非空                                           |
 | verify                            | 本模块         | JaCoCo `merge` 合并组件 unit / IT 数据，`report-aggregate` 生成 HTML/XML/CSV                       |
 | 后续显式 goal 调用                | 每个运行时组件 | Enforcer 确认 classes 目录与合并数据存在，再执行 JaCoCo BUNDLE 的 LINE / BRANCH COVEREDRATIO ≥0.90 |
 

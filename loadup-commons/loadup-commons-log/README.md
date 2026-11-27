@@ -22,7 +22,8 @@ loadup:
     console-pattern: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{traceId:-},%X{spanId:-}] %logger{36} - %msg%n%wEx"
 ```
 
-Runtime 模块通过 Spring Boot `EnvironmentPostProcessor` 设置 `logging.pattern.console` 与 `logging.pattern.file` 默认值；集成方显式配置的
+Runtime 模块通过 Spring Boot `EnvironmentPostProcessor` 设置 `logging.pattern.console` 与 `logging.pattern.file`
+默认值；集成方显式配置的
 `logging.pattern.console` / `logging.pattern.file` 具有更高优先级。`LogContext` 统一使用 `traceId`、`spanId` 和
 `requestId` MDC 键。
 

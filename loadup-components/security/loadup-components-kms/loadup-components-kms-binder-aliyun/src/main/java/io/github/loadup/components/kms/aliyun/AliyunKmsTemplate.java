@@ -216,9 +216,9 @@ public final class AliyunKmsTemplate implements KmsTemplate {
     public List<KmsVerificationKey> verificationKeys(String alias) {
         KmsKeyRef.latest(alias); // Validate before embedding the alias in the SDK's JSON filter.
         String filters = """
-                [{"Key":"TagKey","Values":["%s"]},{"Key":"TagValue","Values":["%s"]},
-                 {"Key":"KeyUsage","Values":["SIGN/VERIFY"]},{"Key":"KeyState","Values":["Enabled"]}]
-                """.formatted(SIGNING_ALIAS_TAG, alias);
+            [{"Key":"TagKey","Values":["%s"]},{"Key":"TagValue","Values":["%s"]},
+             {"Key":"KeyUsage","Values":["SIGN/VERIFY"]},{"Key":"KeyState","Values":["Enabled"]}]
+            """.formatted(SIGNING_ALIAS_TAG, alias);
         var keys = new ArrayList<KmsVerificationKey>();
         var seen = new HashSet<String>();
         for (int page = 1; ; page++) {
@@ -346,13 +346,12 @@ public final class AliyunKmsTemplate implements KmsTemplate {
 
     private static KmsKeyType keyType(DescribeKeyResponseBodyKeyMetadata metadata) {
         String spec = requireResponse(metadata.getKeySpec());
-        KmsKeyType type =
-                switch (spec) {
-                    case "Aliyun_AES_256", "AES_256" -> KmsKeyType.AES_256_GCM;
-                    case "RSA_2048" -> KmsKeyType.RSA_2048;
-                    case "RSA_3072" -> KmsKeyType.RSA_3072;
-                    default -> throw new KmsException(Code.INVALID_REQUEST);
-                };
+        KmsKeyType type = switch (spec) {
+            case "Aliyun_AES_256", "AES_256" -> KmsKeyType.AES_256_GCM;
+            case "RSA_2048" -> KmsKeyType.RSA_2048;
+            case "RSA_3072" -> KmsKeyType.RSA_3072;
+            default -> throw new KmsException(Code.INVALID_REQUEST);
+        };
         String usage = type == KmsKeyType.AES_256_GCM ? "ENCRYPT/DECRYPT" : "SIGN/VERIFY";
         if (!Objects.equals(usage, metadata.getKeyUsage())) {
             throw new KmsException(Code.INVALID_REQUEST);

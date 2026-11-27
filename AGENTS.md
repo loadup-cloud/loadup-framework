@@ -49,7 +49,8 @@ LoadUp 是一个 **被消费的框架/SDK**，通过 `loadup-framework-bom` BOM 
   Maven。
 - 需要验证编译、注解处理或依赖装配时使用 Maven build；不完全禁止构建。优先选择受影响模块及其依赖，用户要求整体构建时执行整体构建。
 - Maven 编译必须带 `clean`，避免 MapStruct 等注解处理器增量生成时发生 `FilerException`。
-- 接入 database 编译期处理器时，处理器内部维护唯一配置，模块无需同步配置；版本由 framework BOM 管理。详见 [database processor 文档](loadup-components/data/loadup-components-database-processor/README.md)。
+- 接入 database 编译期处理器时，处理器内部维护唯一配置，模块无需同步配置；版本由 framework BOM
+  管理。详见 [database processor 文档](loadup-components/data/loadup-components-database-processor/README.md)。
 - 明确区分格式化、编译、单测与真实环境集成测试；未运行的验证不得标为通过。根据任务需要选择测试和检查跳过参数，避免无收益的重复全量执行。
 - Spotless 不绑定 Maven 生命周期，`clean install/verify/package` 不会因格式问题中断；格式检查与修复手动执行
   `mvnd spotless:check` / `mvnd spotless:apply`（或 `./spotless.sh check|apply`）。CI 在快速质量任务中显式执行
@@ -104,7 +105,8 @@ loadup-testify  → 仅 test scope，深度依赖框架内部类型
 
 ## 组件设计规范
 
-> 项目概况见 [README.md](README.md)，仓库依赖边界见 [ARCHITECTURE.md](ARCHITECTURE.md)，组件设计以对应模块 `ARCHITECTURE.md` 为准。
+> 项目概况见 [README.md](README.md)，仓库依赖边界见 [ARCHITECTURE.md](ARCHITECTURE.md)，组件设计以对应模块
+> `ARCHITECTURE.md` 为准。
 > 核心原则：底层 OSS + 薄集成；业务侧 API 尽量采用业界标准接口（Spring Cache、S3、OpenTelemetry、Spring MVC
 > 等）；自创接口仅限标准表达不了的语义；每个组件 README 必须维护能力矩阵契约表。
 
@@ -160,7 +162,8 @@ loadup-components-{name}/
 - 自动配置之间的 `after` / `before` 优先使用类引用（如 `after = XxxAutoConfiguration.class`），由编译器校验目标存在。
 - 目标类不在当前模块编译类路径时（可选 binder、可选集成组件），使用 `afterName` / `beforeName` 字符串，避免为了排序引入实现依赖。
 - 排序只应表达真实的激活顺序，不要用 `@AutoConfiguration(after=...)` 替代包边界或模块依赖。
-- 包名按用途区分：`*.autoconfigure` 放置注册在 `AutoConfiguration.imports` 的自动配置；`*.config` 放置普通 `@Configuration` 与 `@ConfigurationProperties`。
+- 包名按用途区分：`*.autoconfigure` 放置注册在 `AutoConfiguration.imports` 的自动配置；`*.config` 放置普通
+  `@Configuration` 与 `@ConfigurationProperties`。
 
 ---
 
@@ -204,14 +207,14 @@ loadup-modules-{mod}/
 | 5  | 字符串拼接 SQL                                          | 参数化 Spring JDBC SQL                                                                                                                                                        |
 | 6  | `@Table` 放在 domain 层                                 | DO（`XxxDO extends BaseDO`）只放在 `infrastructure.dataobject`                                                                                                                |
 | 7  | 子模块 `<parent>` 指向模块自身 pom                      | 所有子模块 `<parent>` 统一指向根 `loadup-parent`                                                                                                                              |
-| 8  | 子模块内写 `<version>` 引用同项目模块                   | 版本由 `loadup-framework-bom` BOM 统一管理                                                                                                                                     |
+| 8  | 子模块内写 `<version>` 引用同项目模块                   | 版本由 `loadup-framework-bom` BOM 统一管理                                                                                                                                    |
 | 9  | 表主键 `BIGINT AUTO_INCREMENT`                          | 主键 `VARCHAR(64)`，默认由 database 的 `IdGenerator` 生成业务 ID；序列表元数据显式使用 UUID 防止递归                                                                          |
 | 10 | 无必要的业务模块横向依赖                                | 保持清晰依赖方向，跨模块能力优先通过公开接口集成                                                                                                                              |
 | 11 | Java 文件中写中文注释或 Javadoc                         | 注释/Javadoc 统一使用英文；中文只允许出现在 `*.md` 文档文件中                                                                                                                 |
-| 12 | 脱离所属迁移改写字段类型 | PostgreSQL 布尔字段遵循所属迁移的 BOOLEAN 定义；整数标记保留其 CHECK 约束                                                                                                                                                     |
+| 12 | 脱离所属迁移改写字段类型                                | PostgreSQL 布尔字段遵循所属迁移的 BOOLEAN 定义；整数标记保留其 CHECK 约束                                                                                                     |
 | 13 | DO 中重复定义 id/createdAt/updatedAt/deleted            | 这些字段在 `BaseDO` 中已定义                                                                                                                                                  |
 | 14 | Mapper 中写额外 SQL 方法                                | 用 `QueryWrapper` 在 GatewayImpl 中操作                                                                                                                                       |
-| 15 | 新增三方依赖不在 BOM 中声明                             | 版本管理集中在 `loadup-framework-bom/pom.xml`                                                                                                                                  |
+| 15 | 新增三方依赖不在 BOM 中声明                             | 版本管理集中在 `loadup-framework-bom/pom.xml`                                                                                                                                 |
 | 16 | 使用 Lombok（`@Data`/`@Getter`/`@Slf4j`/`@Builder` 等） | 写显式 Java 代码；DTO/Command/Query 优先使用 Java `record`；日志打印使用 `LogUtil.info/warn/error(Source.class, ...)`；仅第三方日志适配需要 Logger 时使用 `LogUtil.getLogger` |
 | 17 | 使用 a.equals(b)                                        | 使用StringUtils.equals() 或者Objects.equals()                                                                                                                                 |
 
@@ -231,7 +234,9 @@ updated_at TIMESTAMP(6) WITHOUT TIME ZONE NOT NULL,
 deleted    BOOLEAN NOT NULL DEFAULT FALSE
 ```
 
-- **固定部署与 Schema 隔离**：一套部署服务一个租户，`loadup.deployment.code` 是部署常量，`loadup.database.schema` 是唯一业务 schema；连接池与 Flyway 使用同一来源，启动时校验实际 schema。业务表不包含 `tenant_id` 列，唯一键和索引只包含业务列；不存在请求租户、动态路由或多租户连接配置。
+- **固定部署与 Schema 隔离**：一套部署服务一个租户，`loadup.deployment.code` 是部署常量，`loadup.database.schema` 是唯一业务
+  schema；连接池与 Flyway 使用同一来源，启动时校验实际 schema。业务表不包含 `tenant_id`
+  列，唯一键和索引只包含业务列；不存在请求租户、动态路由或多租户连接配置。
 - 迁移脚本保持 schema 无关，不写死 schema 名；Flyway 使用与连接池同源的唯一 `loadup.database.schema`。后台 worker（Task、
   Task 等）直接使用本应用固定 schema，不跨 schema 扫描。
 - 非关系型资源（Redis 锁/异步结果 key、DFS 对象路径）使用部署固定命名空间；部署之间不共享这些键空间。
@@ -249,7 +254,8 @@ Commons、Components、Modules、Testify，例如 `LoadUp Commons JSON`、`LoadU
 保持大写，JetCache、JobRunr、ConfigCenter、AuthServer、RetryTask、GlobalUnique、WebMVC、SpringDoc、Testcontainers、Resilience4j、NanoCaptcha
 保持约定拼写。根项目、应用、BOM 分别使用 `LoadUp Framework`、`LoadUp Application`、`LoadUp Dependencies`；Gotone channels 聚合为
 `LoadUp Components Gotone Channels`。详细用途写入 description，名称保持空格分隔的统一结构。 每个 POM 均显式声明简短英文
-`<description>`，说明实际职责；client/core/web（或保留完整分层模块的 domain/app/infrastructure/test）分别描述公开契约、领域与用例实现、HTTP 入口和测试范围，未实现的传输能力如实标明状态。
+`<description>`，说明实际职责；client/core/web（或保留完整分层模块的 domain/app/infrastructure/test）分别描述公开契约、领域与用例实现、HTTP
+入口和测试范围，未实现的传输能力如实标明状态。
 
 | 类型              | 规则                                     | 示例                             |
 |-------------------|------------------------------------------|----------------------------------|
@@ -381,11 +387,15 @@ multipart，下载可以返回流式二进制。`loadup-components-webmvc` 对 A
 
 ## 文档策略
 
-- 为仓库根目录及各 Maven 模块维护中文 `README.md` 和 `ARCHITECTURE.md`。根 README 提供快速开始，多模块仓库同时提供模块索引。子模块说明自身接入与边界，并链接上级的共享说明。
+- 为仓库根目录及各 Maven 模块维护中文 `README.md` 和 `ARCHITECTURE.md`。根 README
+  提供快速开始，多模块仓库同时提供模块索引。子模块说明自身接入与边界，并链接上级的共享说明。
 - `README.md` 是接入手册。说明用途、依赖坐标或启动方式、必要配置、调用入口和最小可用示例。
-- `ARCHITECTURE.md` 是架构与设计文档。说明职责边界、依赖、设计决策和关键约束。遇到复杂分支、跨模块调用、事务边界或状态迁移，按需补充 Mermaid 流程图、时序图或状态图。
-- 改动接口、配置、依赖、启动方式或关键行为时，对照源码与配置更新受影响的文档和导航。交付前检查示例、相对链接及 Mermaid 语法，按实际执行情况记录验证结果。
-- 面向读者的 Hugo 文档站独立构建，模块源文档是正文入口。使用 `doc-sync-agent.py --module <reactor-path> --apply` 定向同步受影响的页面并用 `--check` 核对。站点首页与导航按 [文档站维护说明](../docs/README.md) 管理。
+- `ARCHITECTURE.md` 是架构与设计文档。说明职责边界、依赖、设计决策和关键约束。遇到复杂分支、跨模块调用、事务边界或状态迁移，按需补充
+  Mermaid 流程图、时序图或状态图。
+- 改动接口、配置、依赖、启动方式或关键行为时，对照源码与配置更新受影响的文档和导航。交付前检查示例、相对链接及 Mermaid
+  语法，按实际执行情况记录验证结果。
+- 面向读者的 Hugo 文档站独立构建，模块源文档是正文入口。使用 `doc-sync-agent.py --module <reactor-path> --apply`
+  定向同步受影响的页面并用 `--check` 核对。站点首页与导航按 [文档站维护说明](../docs/README.md) 管理。
 
 ## 日志、观测与任务收尾
 
@@ -459,8 +469,8 @@ multipart，下载可以返回流式二进制。`loadup-components-webmvc` 对 A
   UTF-8 bytes, matching BCrypt's byte limit. Create, register, change and reset entry points validate before encoding or
   persistence; login accepts existing credentials without applying a new-password policy.
 - Public business pagination defaults to page 1 and size 20; explicit invalid values are rejected and size is capped at
-  100. Sort fields use declared whitelists; never pass user input to SQL ordering. Audit Controller and Facade share
-  AuditPageQuery; the fixed schema is supplied by deployment configuration, not by the request.
+    100. Sort fields use declared whitelists; never pass user input to SQL ordering. Audit Controller and Facade share
+         AuditPageQuery; the fixed schema is supplied by deployment configuration, not by the request.
 - JDBC writes explicitly maintain persistence createdAt/updatedAt. Business event and expiry timestamps use injected
   Clock with Clock.systemDefaultZone () defaults and convert using clock.getZone (). Each module qualifies its named
   `<module>Clock`; infrastructure lease clocks are separately qualified. Verification-code createdAt is an in-memory
@@ -520,7 +530,8 @@ multipart，下载可以返回流式二进制。`loadup-components-webmvc` 对 A
 - For deadline tasks read Scheduler and Task README/ARCHITECTURE. Scheduler uses one Provider binder (local
   Spring @Scheduled or PowerJob); it only wakes scanners. Do not use @Async as a timer or create a remote engine job per
   business record.
-- Task uses its own TaskWorker poller and owns transactional submission, planned execution, conditional claims, leases and retries. Submit within
+- Task uses its own TaskWorker poller and owns transactional submission, planned execution, conditional claims, leases
+  and retries. Submit within
   the business transaction on the same DataSource. Expired-lease recovery is at-least-once: handlers must be idempotent;
   token fencing protects task acknowledgements, not external side effects. XXL-JOB/JobRunr binders are not implemented.
 
@@ -532,13 +543,15 @@ multipart，下载可以返回流式二进制。`loadup-components-webmvc` 对 A
   使用提供方级基础地址，K8s Service DNS 和本地覆盖均由应用配置；通用能力不引入 Pay 业务 DTO 或专用 pay-common。
 - 内部 HTTP 入口使用 Resource Server 完整 JWT 校验，身份和租户从可信 token 建立；每次传播目标 audience 的凭证。
   业务失败沿用 ResultCode 白名单，网络调用置于本地事务外，保留幂等和未知结果语义。
-- 修改可选 Triple 时读取 [Dubbo binder 规范](loadup-components/integration/loadup-components-rpc/loadup-components-rpc-binder-dubbo/README.md)。
+- 修改可选 Triple
+  时读取 [Dubbo binder 规范](loadup-components/integration/loadup-components-rpc/loadup-components-rpc-binder-dubbo/README.md)。
   其内部 exp-only 信任模型不适用于 HTTP；保留该协议的网络隔离要求。
 - 业务时间采用系统默认 zone 或业务 Clock 的 zone；JWT epoch、Instant 保持绝对时间。不强制 JVM/JDBC/K8s 固定时区。
 
 ## 代码质量审查
 
-- 修改 Java 代码时，代理检查改动涉及的代码风格、潜在缺陷、安全问题、重复及复杂逻辑，参考 Checkstyle、SpotBugs（含 Find Security Bugs）和 PMD 的检查范围。适用时参考 `config/quality/` 中保留的规则和排除配置，并在交付时说明未能验证的风险。
+- 修改 Java 代码时，代理检查改动涉及的代码风格、潜在缺陷、安全问题、重复及复杂逻辑，参考 Checkstyle、SpotBugs（含 Find Security
+  Bugs）和 PMD 的检查范围。适用时参考 `config/quality/` 中保留的规则和排除配置，并在交付时说明未能验证的风险。
 
 ## 快速开发阶段
 

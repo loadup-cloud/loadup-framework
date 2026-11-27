@@ -11,19 +11,20 @@ commons → components → modules → 消费工程
 
 ## 功能分类与职责
 
-| 分类 | 组件 |
-| --- | --- |
-| [数据与存储](data/ARCHITECTURE.md) | KV 与缓存、数据库、数据库处理器、文件存储 |
-| [调度与执行](execution/ARCHITECTURE.md) | 任务调度、执行流水线 |
-| [应用集成](integration/ARCHITECTURE.md) | HTTP 客户端、RPC |
-| [平台基础](platform/ARCHITECTURE.md) | 配置中心、运行时装配、应用观测、业务扩展、测试容器 |
-| [应用可靠性](reliability/ARCHITECTURE.md) | 持久化任务、异步结果、分布式锁、幂等声明、调用容错 |
-| [安全与身份](security/ARCHITECTURE.md) | OAuth2 与 JWT、方法授权、服务身份、密钥与机密管理、报文签名、验证码 |
-| [Web 接入](web/ARCHITECTURE.md) | WebMVC、接口文档 |
+| 分类                                      | 组件                                                                |
+|-------------------------------------------|---------------------------------------------------------------------|
+| [数据与存储](data/ARCHITECTURE.md)        | KV 与缓存、数据库、数据库处理器、文件存储                           |
+| [调度与执行](execution/ARCHITECTURE.md)   | 任务调度、执行流水线                                                |
+| [应用集成](integration/ARCHITECTURE.md)   | HTTP 客户端、RPC                                                    |
+| [平台基础](platform/ARCHITECTURE.md)      | 配置中心、运行时装配、应用观测、业务扩展、测试容器                  |
+| [应用可靠性](reliability/ARCHITECTURE.md) | 持久化任务、异步结果、分布式锁、幂等声明、调用容错                  |
+| [安全与身份](security/ARCHITECTURE.md)    | OAuth2 与 JWT、方法授权、服务身份、密钥与机密管理、报文签名、验证码 |
+| [Web 接入](web/ARCHITECTURE.md)           | WebMVC、接口文档                                                    |
 
 ## Maven 与运行边界
 
-父 reactor 通过七个分类 POM 聚合具体组件。组件继承的 Maven Parent 由各自 POM 声明，依赖通过 BOM 对齐。运行期选择以具体组件的依赖、自动配置和宿主设置为准。
+父 reactor 通过七个分类 POM 聚合具体组件。组件继承的 Maven Parent 由各自 POM 声明，依赖通过 BOM
+对齐。运行期选择以具体组件的依赖、自动配置和宿主设置为准。
 
 ## 组件内部结构
 

@@ -33,10 +33,10 @@ public final class DatabaseKmsSecretStore implements KeyStoreKmsSecretManager.St
     public boolean create(String id, String ciphertext) {
         try {
             return jdbc.sql("""
-                            INSERT INTO kms_secret (id, ciphertext, created_at, updated_at, deleted)
-                            VALUES (?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, FALSE)
-                            ON CONFLICT (id) DO NOTHING
-                            """).param(id).param(ciphertext).update() == 1;
+                INSERT INTO kms_secret (id, ciphertext, created_at, updated_at, deleted)
+                VALUES (?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, FALSE)
+                ON CONFLICT (id) DO NOTHING
+                """).param(id).param(ciphertext).update() == 1;
         } catch (DataAccessException failure) {
             throw new KmsException(KmsException.Code.UNAVAILABLE);
         }
@@ -46,9 +46,9 @@ public final class DatabaseKmsSecretStore implements KeyStoreKmsSecretManager.St
     public boolean update(String id, String ciphertext) {
         try {
             return jdbc.sql("""
-                            UPDATE kms_secret SET ciphertext = ?, updated_at = CURRENT_TIMESTAMP
-                            WHERE id = ? AND deleted = FALSE
-                            """).param(ciphertext).param(id).update() == 1;
+                UPDATE kms_secret SET ciphertext = ?, updated_at = CURRENT_TIMESTAMP
+                WHERE id = ? AND deleted = FALSE
+                """).param(ciphertext).param(id).update() == 1;
         } catch (DataAccessException failure) {
             throw new KmsException(KmsException.Code.UNAVAILABLE);
         }
