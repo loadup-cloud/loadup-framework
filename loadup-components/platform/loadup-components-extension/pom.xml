@@ -8,7 +8,7 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-extension</artifactId>
-    <name>ComponentExtension</name>
+    <name>LoadUp Components Extension</name>
     <description>Business scenario extension registration, selection and execution.</description>
 
     <dependencies>

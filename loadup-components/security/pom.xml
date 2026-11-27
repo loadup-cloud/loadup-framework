@@ -9,7 +9,7 @@
     </parent>
     <artifactId>security</artifactId>
     <packaging>pom</packaging>
-    <name>ComponentSecurity</name>
+    <name>LoadUp Components Security</name>
 
     <modules>
 

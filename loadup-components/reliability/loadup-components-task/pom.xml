@@ -8,7 +8,7 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-task</artifactId>
-    <name>ComponentTask</name>
+    <name>LoadUp Components Task</name>
     <description>Transactional persistent tasks with leased execution and retries.</description>
     <properties>
         <loadup.coverage.skip>false</loadup.coverage.skip>

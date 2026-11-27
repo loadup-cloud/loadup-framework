@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>loadup-components-resilience4j</artifactId>
-    <name>ComponentResilience4j</name>
+    <name>LoadUp Components Resilience4j</name>
     <description>Resilience4j integration, Spring AOP advice and Micrometer metrics.</description>
 
     <dependencies>

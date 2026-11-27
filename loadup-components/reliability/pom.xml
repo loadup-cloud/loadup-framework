@@ -10,7 +10,7 @@
     </parent>
     <artifactId>reliability</artifactId>
     <packaging>pom</packaging>
-    <name>ComponentReliability</name>
+    <name>LoadUp Components Reliability</name>
 
     <modules>
 

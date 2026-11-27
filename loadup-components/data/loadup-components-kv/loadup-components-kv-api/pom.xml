@@ -8,7 +8,7 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-kv-api</artifactId>
-    <name>ComponentCache API</name>
+    <name>LoadUp Components Cache API</name>
     <description>Spring Cache integration contracts and cache policy configuration.</description>
 
     <dependencies>

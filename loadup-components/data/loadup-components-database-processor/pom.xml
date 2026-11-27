@@ -8,7 +8,7 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-database-processor</artifactId>
-    <name>ComponentDatabase Processor</name>
+    <name>LoadUp Components Database Processor</name>
     <description>Fixed persistence generation conventions backed by the official MyBatis-Flex processor.</description>
     <dependencies>
         <dependency>

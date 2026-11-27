@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>loadup-components-configcenter-binder-apollo</artifactId>
-    <name>ComponentConfigCenter Binder Apollo</name>
+    <name>LoadUp Components ConfigCenter Binder Apollo</name>
     <description>Apollo configuration queries, subscriptions and Portal publishing.</description>
 
     <dependencies>

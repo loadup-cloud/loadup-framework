@@ -9,7 +9,7 @@
     </parent>
     <artifactId>loadup-components-scheduler</artifactId>
     <packaging>pom</packaging>
-    <name>ComponentScheduler</name>
+    <name>LoadUp Components Scheduler</name>
     <description>Pluggable wake-up scheduling for application scanners.</description>
     <modules>
         <module>loadup-components-scheduler-api</module>

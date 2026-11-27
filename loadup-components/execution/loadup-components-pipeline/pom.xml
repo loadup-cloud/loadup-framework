@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>loadup-components-pipeline</artifactId>
-    <name>ComponentPipeline</name>
+    <name>LoadUp Components Pipeline</name>
     <description>Ordered processing pipelines with validation, preparation and result assembly.</description>
 
     <dependencies>

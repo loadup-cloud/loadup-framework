@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>loadup-components-authorization</artifactId>
-    <name>ComponentAuthorization</name>
+    <name>LoadUp Components Authorization</name>
     <description>Spring Security method authorization and access decision integration.</description>
 
     <dependencies>

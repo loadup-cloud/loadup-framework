@@ -10,7 +10,7 @@
 
     <artifactId>loadup-components-kv</artifactId>
     <packaging>pom</packaging>
-    <name>ComponentCache</name>
+    <name>LoadUp Components Cache</name>
     <description>Spring Cache integration with selectable Caffeine, Redis and JetCache backends.</description>
 
     <modules>

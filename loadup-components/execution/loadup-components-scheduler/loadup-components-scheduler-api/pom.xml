@@ -8,7 +8,7 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-scheduler-api</artifactId>
-    <name>ComponentScheduler API</name>
+    <name>LoadUp Components Scheduler API</name>
     <description>Scheduled task contracts and single-provider lifecycle.</description>
     <properties>
         <loadup.coverage.skip>false</loadup.coverage.skip>

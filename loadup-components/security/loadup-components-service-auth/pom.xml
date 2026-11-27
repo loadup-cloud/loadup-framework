@@ -8,7 +8,7 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-service-auth</artifactId>
-    <name>ComponentService Auth</name>
+    <name>LoadUp Components Service Auth</name>
     <description>Shared OAuth2 client credentials acquisition and caching for service calls.</description>
     <dependencies>
         <dependency>

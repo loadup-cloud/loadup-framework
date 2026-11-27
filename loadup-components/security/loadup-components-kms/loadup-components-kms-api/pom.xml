@@ -8,7 +8,7 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-kms-api</artifactId>
-    <name>ComponentKMS api</name>
+    <name>LoadUp Components KMS api</name>
     <properties>
         <!-- Temporary coverage gate exemption; continue collecting report data. -->
         <loadup.coverage.skip>true</loadup.coverage.skip>

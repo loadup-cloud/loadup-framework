@@ -10,7 +10,7 @@
     </parent>
     <artifactId>integration</artifactId>
     <packaging>pom</packaging>
-    <name>ComponentIntegration</name>
+    <name>LoadUp Components Integration</name>
     <modules>
 
         <module>loadup-components-http</module>

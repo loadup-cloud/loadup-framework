@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>loadup-components-configcenter-binder-xxl-conf</artifactId>
-    <name>ComponentConfigCenter Binder XXL-Conf</name>
+    <name>LoadUp Components ConfigCenter Binder XXL-Conf</name>
     <description>XXL-Conf OpenAPI queries and change subscriptions.</description>
 
     <dependencies>

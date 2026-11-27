@@ -8,7 +8,7 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-scheduler-binder-local</artifactId>
-    <name>ComponentScheduler Binder Local</name>
+    <name>LoadUp Components Scheduler Binder Local</name>
     <description>Spring Scheduled wake-ups without external infrastructure.</description>
     <properties>
         <loadup.coverage.skip>false</loadup.coverage.skip>

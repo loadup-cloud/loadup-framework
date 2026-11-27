@@ -10,7 +10,7 @@
     </parent>
     <artifactId>data</artifactId>
     <packaging>pom</packaging>
-    <name>ComponentData</name>
+    <name>LoadUp Components Data</name>
     <modules>
 
         <module>loadup-components-kv</module>

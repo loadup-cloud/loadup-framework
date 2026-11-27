@@ -8,7 +8,7 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-observability</artifactId>
-    <name>ComponentObservability</name>
+    <name>LoadUp Components Observability</name>
     <description>Micrometer metrics, tracing integration and annotated service digest logs.</description>
     <properties>
         <loadup.coverage.skip>false</loadup.coverage.skip>

@@ -8,7 +8,7 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-kms-binder-openbao</artifactId>
-    <name>ComponentKMS binder-openbao</name>
+    <name>LoadUp Components KMS binder-openbao</name>
     <properties>
         <loadup.coverage.skip>false</loadup.coverage.skip>
     </properties>

@@ -9,7 +9,7 @@
     </parent>
     <artifactId>execution</artifactId>
     <packaging>pom</packaging>
-    <name>ComponentExecution</name>
+    <name>LoadUp Components Execution</name>
     <description>Pluggable wake-up scheduling for application scanners.</description>
     <modules>
         <module>loadup-components-scheduler</module>

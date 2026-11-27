@@ -8,7 +8,7 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-kv-binder-caffeine</artifactId>
-    <name>ComponentCache Binder Caffeine</name>
+    <name>LoadUp Components Cache Binder Caffeine</name>
     <description>Caffeine backend for local Spring Cache storage.</description>
 
     <dependencies>

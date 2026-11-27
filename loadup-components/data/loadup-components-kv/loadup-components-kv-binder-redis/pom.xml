@@ -8,7 +8,7 @@
         <relativePath>../../../../pom.xml</relativePath>
     </parent>
     <artifactId>loadup-components-kv-binder-redis</artifactId>
-    <name>ComponentCache Binder Redis</name>
+    <name>LoadUp Components Cache Binder Redis</name>
     <description>Redis backend for shared Spring Cache storage.</description>
 
     <dependencies>

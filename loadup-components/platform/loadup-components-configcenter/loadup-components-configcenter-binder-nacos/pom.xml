@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>loadup-components-configcenter-binder-nacos</artifactId>
-    <name>ComponentConfigCenter Binder Nacos</name>
+    <name>LoadUp Components ConfigCenter Binder Nacos</name>
     <description>Nacos configuration retrieval and change subscriptions.</description>
 
     <dependencies>

@@ -9,7 +9,7 @@
     </parent>
     <artifactId>loadup-components-kms</artifactId>
     <packaging>pom</packaging>
-    <name>ComponentKMS</name>
+    <name>LoadUp Components KMS</name>
     <modules>
         <module>loadup-components-kms-api</module>
         <module>loadup-components-kms-keystore</module>

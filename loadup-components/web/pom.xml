@@ -10,7 +10,7 @@
     </parent>
     <artifactId>web</artifactId>
     <packaging>pom</packaging>
-    <name>ComponentWeb</name>
+    <name>LoadUp Components Web</name>
 
     <modules>
 

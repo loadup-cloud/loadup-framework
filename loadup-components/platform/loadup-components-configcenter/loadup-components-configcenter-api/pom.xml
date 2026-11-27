@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>loadup-components-configcenter-api</artifactId>
-    <name>ComponentConfigCenter API</name>
+    <name>LoadUp Components ConfigCenter API</name>
     <description>Configuration access, change listeners and provider contracts.</description>
 
     <dependencies>

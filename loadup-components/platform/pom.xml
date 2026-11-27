@@ -9,7 +9,7 @@
     </parent>
     <artifactId>platform</artifactId>
     <packaging>pom</packaging>
-    <name>ComponentPlatform</name>
+    <name>LoadUp Components Platform</name>
 
     <modules>
 
