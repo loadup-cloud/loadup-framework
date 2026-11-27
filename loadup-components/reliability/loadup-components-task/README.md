@@ -72,6 +72,8 @@ Task 自动注册 `loadup-task-scan`，每分钟触发一次，可通过 `loadup
 
 实例只领取本地已注册 Handler 的任务类型。`loadup.task.task-type` 可进一步缩小范围；没有可执行 Handler 时不启动扫描。`worker-enabled: false` 关闭自动扫描，仍可登记和管理任务，也可手工调用 `TaskDispatcher.execute()`。所有后台访问使用应用固定 schema，不恢复请求身份。
 
+Handler 可通过 `supportsConcurrentExecution()` 启用并发处理独立任务。Dispatcher 单批最多执行四个任务；未启用的 Handler 在扫描线程中依次运行。
+
 ## 管理
 
 submit 返回任务 ID；find(id) 查询完整任务，find(type,bizId) 返回最新登记项，仅供业务定位。cancel(id) 支持 PENDING/RUNNING/FAILED；reschedule(id,time) 支持 PENDING/FAILED/CANCELLED；retryFailed(id,operator,reason) 只接受 FAILED，保留任务 ID、payload 和原计划时间并记录人工操作。

@@ -24,10 +24,13 @@ import io.micrometer.observation.ObservationRegistry;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.MDC;
 
 public final class TaskDispatcher {
+    private static final int MAX_CONCURRENT_TASKS = 4;
 
     private final JdbcTaskRepository repository;
     private final TaskProperties properties;
@@ -74,58 +77,86 @@ public final class TaskDispatcher {
     }
 
     private void dispatchBatch() {
-        for (int i = 0; i < properties.getBatchSize() && !Thread.currentThread().isInterrupted(); i++) {
-            var next = repository.claim(taskTypes);
-            if (next.isEmpty()) {
-                break;
-            }
-            var claim = next.orElseThrow();
-            Map<String, String> previous = MDC.getCopyOfContextMap();
-            long started = System.nanoTime();
-            String outcome = "failure";
-            Observation observation = Observation.createNotStarted("loadup.task.handle", observations);
-            try {
-                MDC.clear();
-                if (claim.event().traceId() != null) {
-                    MDC.put("originTraceId", claim.event().traceId());
-                }
-                observation.start();
-                try (Observation.Scope unusedScope = observation.openScope()) {
-                    TaskHandler handler = handlers.get(claim.event().taskType());
-                    try {
-                        handler.handle(claim.event());
-                    } catch (Exception exception) {
-                        throw new HandlerFailure(exception);
-                    }
-                    outcome = repository.complete(claim) ? "success" : "lease_lost";
-                }
-            } catch (Exception exception) {
-                Exception failure = exception instanceof HandlerFailure wrapper ? wrapper.failure : exception;
-                observation.error(new IllegalStateException(
-                        "Task handler failed: " + failure.getClass().getSimpleName()));
-                outcome = repository.fail(claim, failure) ? "failure" : "lease_lost";
-                LogUtil.warn(
-                        TaskDispatcher.class,
-                        "Task delivery failed eventId={} attempt={} errorType={}",
-                        claim.event().id(),
-                        claim.attempt(),
-                        failure.getClass().getSimpleName());
-                if (failure instanceof InterruptedException) {
+        var slots = new Semaphore(MAX_CONCURRENT_TASKS);
+        var threadFactory =
+                Thread.ofVirtual().inheritInheritableThreadLocals(false).factory();
+        try (var executor = Executors.newThreadPerTaskExecutor(threadFactory)) {
+            for (int i = 0;
+                    i < properties.getBatchSize() && !Thread.currentThread().isInterrupted();
+                    i++) {
+                try {
+                    slots.acquire();
+                } catch (InterruptedException failure) {
                     Thread.currentThread().interrupt();
+                    return;
+                }
+                var next = repository.claim(taskTypes);
+                if (next.isEmpty()) {
+                    return;
+                }
+                var claim = next.orElseThrow();
+                var handler = handlers.get(claim.event().taskType());
+                if (handler.supportsConcurrentExecution()) {
+                    executor.execute(() -> {
+                        try {
+                            dispatch(claim, handler);
+                        } finally {
+                            slots.release();
+                        }
+                    });
+                } else {
+                    dispatch(claim, handler);
+                    slots.release();
+                }
+            }
+        }
+    }
+
+    private void dispatch(JdbcTaskRepository.Claim claim, TaskHandler handler) {
+        Map<String, String> previous = MDC.getCopyOfContextMap();
+        long started = System.nanoTime();
+        String outcome = "failure";
+        Observation observation = Observation.createNotStarted("loadup.task.handle", observations);
+        try {
+            MDC.clear();
+            if (claim.event().traceId() != null) {
+                MDC.put("originTraceId", claim.event().traceId());
+            }
+            observation.start();
+            try (Observation.Scope unusedScope = observation.openScope()) {
+                try {
+                    handler.handle(claim.event());
+                } catch (Exception exception) {
+                    throw new HandlerFailure(exception);
+                }
+                outcome = repository.complete(claim) ? "success" : "lease_lost";
+            }
+        } catch (Exception exception) {
+            Exception failure = exception instanceof HandlerFailure wrapper ? wrapper.failure : exception;
+            observation.error(new IllegalStateException(
+                    "Task handler failed: " + failure.getClass().getSimpleName()));
+            outcome = repository.fail(claim, failure) ? "failure" : "lease_lost";
+            LogUtil.warn(
+                    TaskDispatcher.class,
+                    "Task delivery failed eventId={} attempt={} errorType={}",
+                    claim.event().id(),
+                    claim.attempt(),
+                    failure.getClass().getSimpleName());
+            if (failure instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+        } finally {
+            try {
+                observation.stop();
+                if (metrics != null) {
+                    metrics.timer("loadup.task.delivery", "outcome", outcome)
+                            .record(System.nanoTime() - started, TimeUnit.NANOSECONDS);
                 }
             } finally {
-                try {
-                    observation.stop();
-                    if (metrics != null) {
-                        metrics.timer("loadup.task.delivery", "outcome", outcome)
-                                .record(System.nanoTime() - started, TimeUnit.NANOSECONDS);
-                    }
-                } finally {
-                    if (previous == null) {
-                        MDC.clear();
-                    } else {
-                        MDC.setContextMap(previous);
-                    }
+                if (previous == null) {
+                    MDC.clear();
+                } else {
+                    MDC.setContextMap(previous);
                 }
             }
         }

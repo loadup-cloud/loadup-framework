@@ -18,5 +18,10 @@ package io.github.loadup.components.task;
 public interface TaskHandler {
     String taskType();
 
+    /** Opt in when separate task claims can safely execute at the same time. */
+    default boolean supportsConcurrentExecution() {
+        return false;
+    }
+
     void handle(TaskExecution task) throws Exception;
 }
