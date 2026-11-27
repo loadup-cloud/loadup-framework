@@ -659,16 +659,15 @@ class OpenBaoKmsTest {
             secretValues.put(name, concurrentValue);
         }
         int cas = request.path("options").path("cas").asInt(-1);
-        boolean valid =
-                switch (exchange.getRequestMethod()) {
-                    case "POST" -> version == 0 && cas == 0;
-                    case "PATCH" ->
-                        version > 0
-                                && cas == version
-                                && "application/merge-patch+json"
-                                        .equals(exchange.getRequestHeaders().getFirst("Content-Type"));
-                    default -> false;
-                };
+        boolean valid = switch (exchange.getRequestMethod()) {
+            case "POST" -> version == 0 && cas == 0;
+            case "PATCH" ->
+                version > 0
+                        && cas == version
+                        && "application/merge-patch+json"
+                                .equals(exchange.getRequestHeaders().getFirst("Content-Type"));
+            default -> false;
+        };
         if (!valid) {
             send(exchange, 400, Map.of("errors", List.of("synthetic write failure")));
             return;

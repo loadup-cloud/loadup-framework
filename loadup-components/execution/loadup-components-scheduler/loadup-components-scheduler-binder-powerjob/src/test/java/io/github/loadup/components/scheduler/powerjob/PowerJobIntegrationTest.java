@@ -61,18 +61,17 @@ class PowerJobIntegrationTest {
     }
 
     private static BasicProcessor proxy(BasicProcessor processor, ObservationRegistry registry, String implementation) {
-        BasicProcessor target =
-                switch (implementation) {
-                    case "anonymous" ->
-                        new BasicProcessor() {
-                            @Override
-                            public ProcessResult process(TaskContext context) throws Exception {
-                                return processor.process(context);
-                            }
-                        };
-                    case "jdk", "cglib" -> new DelegatingProcessor(processor);
-                    default -> processor;
+        BasicProcessor target = switch (implementation) {
+            case "anonymous" ->
+                new BasicProcessor() {
+                    @Override
+                    public ProcessResult process(TaskContext context) throws Exception {
+                        return processor.process(context);
+                    }
                 };
+            case "jdk", "cglib" -> new DelegatingProcessor(processor);
+            default -> processor;
+        };
         var factory = new ProxyFactory(target);
         factory.setProxyTargetClass("cglib".equals(implementation));
         factory.addAdvisor(new PowerJobProcessorAdvisor(registry));

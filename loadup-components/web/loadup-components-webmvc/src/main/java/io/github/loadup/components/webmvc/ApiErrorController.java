@@ -57,14 +57,13 @@ public class ApiErrorController implements ErrorController {
                     "API request failed; failureType={}",
                     failure == null ? "unknown" : failure.getClass().getName());
         }
-        CommonResultCodeEnum code =
-                switch (status) {
-                    case 400, 405, 415 -> CommonResultCodeEnum.PARAM_ILLEGAL;
-                    case 401 -> CommonResultCodeEnum.UNAUTHENTICATED;
-                    case 403 -> CommonResultCodeEnum.ACCESS_DENIED;
-                    case 404 -> CommonResultCodeEnum.NOT_FOUND;
-                    default -> CommonResultCodeEnum.SYS_ERROR;
-                };
+        CommonResultCodeEnum code = switch (status) {
+            case 400, 405, 415 -> CommonResultCodeEnum.PARAM_ILLEGAL;
+            case 401 -> CommonResultCodeEnum.UNAUTHENTICATED;
+            case 403 -> CommonResultCodeEnum.ACCESS_DENIED;
+            case 404 -> CommonResultCodeEnum.NOT_FOUND;
+            default -> CommonResultCodeEnum.SYS_ERROR;
+        };
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(FailureResponse.of(code));
     }
 }

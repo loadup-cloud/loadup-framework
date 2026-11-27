@@ -75,11 +75,10 @@ public record KmsVerificationKey(KmsKeyRef actual, RSAPublicKey publicKey) {
             if (signature.length != (key.getModulus().bitLength() + 7) / 8) {
                 return false;
             }
-            var verifier =
-                    switch (algorithm) {
-                        case RSA_SHA256_PKCS1 -> Signature.getInstance("SHA256withRSA");
-                        case RSA_SHA256_PSS -> Signature.getInstance("RSASSA-PSS");
-                    };
+            var verifier = switch (algorithm) {
+                case RSA_SHA256_PKCS1 -> Signature.getInstance("SHA256withRSA");
+                case RSA_SHA256_PSS -> Signature.getInstance("RSASSA-PSS");
+            };
             if (algorithm == KmsSignatureAlgorithm.RSA_SHA256_PSS) {
                 verifier.setParameter(new PSSParameterSpec("SHA-256", "MGF1", MGF1ParameterSpec.SHA256, 32, 1));
             }
