@@ -102,7 +102,7 @@
         <aliyun-credentials.version>1.0.8</aliyun-credentials.version>
         <aliyun-tea-util.version>0.2.28</aliyun-tea-util.version>
         <aliyun-tea.version>1.4.1</aliyun-tea.version>
-        <aliyun-tea-openapi.version>0.3.19</aliyun-tea-openapi.version>
+        <aliyun-tea-openapi.version>0.3.20</aliyun-tea-openapi.version>
         <resilience4j.version>2.4.0</resilience4j.version>
 
         <!-- API Documentation -->
