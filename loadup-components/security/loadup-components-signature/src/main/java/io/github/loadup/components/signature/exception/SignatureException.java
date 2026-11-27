@@ -37,9 +37,7 @@ public class SignatureException extends CommonException {
         return this.errorCode;
     }
 
-    /**
-     * Categorized signature errors.
-     */
+    /** Categorized signature errors. */
     public enum SignatureErrorCode implements ResultCode {
         INVALID_KEY("Invalid key"),
         INVALID_ALGORITHM("Unsupported algorithm"),

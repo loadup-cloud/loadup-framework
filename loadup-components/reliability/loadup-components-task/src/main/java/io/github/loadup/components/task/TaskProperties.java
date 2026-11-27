@@ -149,8 +149,9 @@ public class TaskProperties {
                     || lease.compareTo(Duration.ofDays(30)) > 0
                     || retryDelay == null
                     || retryDelay.toMillis() < 1
-                    || retryDelay.compareTo(Duration.ofDays(1)) > 0)
+                    || retryDelay.compareTo(Duration.ofDays(1)) > 0) {
                 throw new IllegalArgumentException("Invalid task type policy");
+            }
         }
     }
 
@@ -158,7 +159,9 @@ public class TaskProperties {
         if (dbType == null || tablePrefix == null || !tablePrefix.matches("(?:[a-z][a-z0-9_]{0,48})?")) {
             throw new IllegalArgumentException("Invalid task database type or table prefix");
         }
-        if (taskType != null) TaskSubmission.required(taskType, "taskType", 128);
+        if (taskType != null) {
+            TaskSubmission.required(taskType, "taskType", 128);
+        }
         types.keySet().forEach(type -> {
             TaskSubmission.required(type, "taskType", 128);
             policy(type).validate();

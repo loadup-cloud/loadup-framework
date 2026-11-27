@@ -25,7 +25,9 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.core.env.Environment;
 
-/** Shared caller defaults; explicit settings at the supplied application/API prefix take precedence. */
+/**
+ * Shared caller defaults; explicit settings at the supplied application/API prefix take precedence.
+ */
 public final class RpcClientDefaults {
     private RpcClientDefaults() {}
 

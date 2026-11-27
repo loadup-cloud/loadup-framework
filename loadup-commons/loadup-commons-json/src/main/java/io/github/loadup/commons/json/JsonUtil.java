@@ -57,12 +57,9 @@ public class JsonUtil {
     private static final ObjectMapper objectMapper = initObjectMapper();
 
     /**
-     *
-     *
      * <ul>
      *   <li>Register custom serializers for Java time types
      * </ul>
-     *
      */
     private static ObjectMapper initObjectMapper() {
         return customize(JsonMapper.builder()).build();
@@ -82,9 +79,7 @@ public class JsonUtil {
                 .disable(DeserializationFeature.ACCEPT_FLOAT_AS_INT);
     }
 
-    /**
-     * Apply the framework JSON conventions to a Jackson 3 mapper builder.
-     */
+    /** Apply the framework JSON conventions to a Jackson 3 mapper builder. */
     public static JsonMapper.Builder customize(JsonMapper.Builder builder) {
         SimpleModule javaTimeModule = new SimpleModule();
         javaTimeModule.addSerializer(
@@ -227,7 +222,6 @@ public class JsonUtil {
     }
 
     /**
-     *
      * @param inputStream InputStream
      */
     public static <T> T fromJson(InputStream inputStream, Class<T> valueType) {

@@ -55,7 +55,9 @@ class RpcIdentityProviderFilterTest {
         String header = encode("{\"alg\":\"RS256\"}");
         String claims = encode("{\"sub\":\"payment\",\"username\":\"service\",\"tenant_id\":\"tenant\","
                 + "\"roles\":[\"SERVICE\"],\"permissions\":[\"pay:test\"],"
-                + "\"exp\":" + expiresAt.getEpochSecond() + "}");
+                + "\"exp\":"
+                + expiresAt.getEpochSecond()
+                + "}");
         return header + "." + claims + ".c2lnbmF0dXJl";
     }
 

@@ -20,7 +20,8 @@ import java.util.Map;
 import org.springframework.http.HttpMethod;
 
 /**
- * Signs the final URI and encoded body; the supplied byte array is isolated from the outgoing request.
+ * Signs the final URI and encoded body; the supplied byte array is isolated from the outgoing
+ * request.
  */
 @FunctionalInterface
 public interface HttpRequestSigner {

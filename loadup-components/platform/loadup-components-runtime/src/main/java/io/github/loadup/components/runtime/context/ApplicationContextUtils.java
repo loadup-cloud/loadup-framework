@@ -31,7 +31,6 @@ public class ApplicationContextUtils implements ApplicationContextAware {
     }
 
     /**
-     *
      * @throws BeansException
      */
     @Override
@@ -44,7 +43,6 @@ public class ApplicationContextUtils implements ApplicationContextAware {
     }
 
     /**
-     *
      * @throws BeansException
      */
     public static Object getBean(String name) throws BeansException {
@@ -60,7 +58,6 @@ public class ApplicationContextUtils implements ApplicationContextAware {
     }
 
     /**
-     *
      * @throws BeansException
      */
     public static <T> T getBean(String name, Class<T> requiredType) throws BeansException {
@@ -76,7 +73,6 @@ public class ApplicationContextUtils implements ApplicationContextAware {
     }
 
     /**
-     *
      * @throws NoSuchBeanDefinitionException
      */
     public static boolean isSingleton(String name) throws NoSuchBeanDefinitionException {
@@ -91,7 +87,6 @@ public class ApplicationContextUtils implements ApplicationContextAware {
     }
 
     /**
-     *
      * @throws NoSuchBeanDefinitionException
      */
     public static String[] getAliases(String name) throws NoSuchBeanDefinitionException {

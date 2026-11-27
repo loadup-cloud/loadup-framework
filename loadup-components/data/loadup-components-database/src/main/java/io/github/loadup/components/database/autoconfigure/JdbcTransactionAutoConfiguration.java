@@ -25,8 +25,8 @@ import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.transaction.TransactionManager;
 
 /**
- * Selects a DataSource-bound JDBC manager before MyBatis-Flex installs its fallback manager.
- * JDBC business writes and reliability records must participate in the same local transaction.
+ * Selects a DataSource-bound JDBC manager before MyBatis-Flex installs its fallback manager. JDBC
+ * business writes and reliability records must participate in the same local transaction.
  */
 @AutoConfiguration(
         afterName = "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration",
@@ -43,8 +43,8 @@ public class JdbcTransactionAutoConfiguration {
     }
 
     /**
-     * Provides the fluent JDBC client for infrastructure queries. Spring Boot normally supplies
-     * this bean; the fallback keeps narrow test slices and custom auto-configuration working.
+     * Provides the fluent JDBC client for infrastructure queries. Spring Boot normally supplies this
+     * bean; the fallback keeps narrow test slices and custom auto-configuration working.
      */
     @Bean
     @ConditionalOnMissingBean(JdbcClient.class)

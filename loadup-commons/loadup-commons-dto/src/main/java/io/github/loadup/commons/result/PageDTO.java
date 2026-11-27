@@ -55,9 +55,7 @@ public class PageDTO<T> implements DTO {
         return new Builder<>();
     }
 
-    /**
-     * Maps entries while preserving pagination metadata.
-     */
+    /** Maps entries while preserving pagination metadata. */
     public <R> PageDTO<R> map(Function<? super T, ? extends R> mapper) {
         List<R> entries = data.stream().<R>map(mapper).toList();
         return new PageDTO<>(entries, pageInfo);

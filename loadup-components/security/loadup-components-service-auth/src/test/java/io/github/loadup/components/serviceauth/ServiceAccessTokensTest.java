@@ -49,7 +49,8 @@ class ServiceAccessTokensTest {
             basic.add(exchange.getRequestHeaders().getFirst("Authorization"));
             bodies.add(new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
             byte[] response = (status.get() == 200
-                            ? "{\"access_token\":\"token-" + request
+                            ? "{\"access_token\":\"token-"
+                                    + request
                                     + "\",\"token_type\":\"Bearer\",\"expires_in\":300}"
                             : "{\"error\":\"invalid_client\",\"error_description\":\"synthetic-secret\"}")
                     .getBytes(StandardCharsets.UTF_8);

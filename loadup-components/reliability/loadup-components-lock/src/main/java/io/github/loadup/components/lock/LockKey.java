@@ -23,8 +23,8 @@ import java.util.Map;
 /**
  * Namespaced lock identity of one business resource.
  *
- * <p>The deployment namespace comes from the lock configuration, so two deployments sharing a
- * Redis instance never contend for the same key. No request, task or actor selects the namespace.
+ * <p>The deployment namespace comes from the lock configuration, so two deployments sharing a Redis
+ * instance never contend for the same key. No request, task or actor selects the namespace.
  */
 public record LockKey(String business, String resourceId) {
     public LockKey {

@@ -22,39 +22,29 @@ import org.apache.commons.lang3.ArrayUtils;
 
 public class StringUtils {
 
-    /**
-     * The empty String {@code ""}.
-     */
+    /** The empty String {@code ""}. */
     public static final String EMPTY = "";
 
     private static final char BACKSLASH = '\\';
 
     private StringUtils() {}
 
-    /**
-     * Returns true if the given CharSequence is null, empty, or consists only of whitespace.
-     */
+    /** Returns true if the given CharSequence is null, empty, or consists only of whitespace. */
     public static boolean isBlank(CharSequence cs) {
         return cs == null || cs.toString().isBlank();
     }
 
-    /**
-     * Returns true if the given CharSequence is non-null, non-empty, and not all whitespace.
-     */
+    /** Returns true if the given CharSequence is non-null, non-empty, and not all whitespace. */
     public static boolean isNotBlank(CharSequence cs) {
         return !isBlank(cs);
     }
 
-    /**
-     * Returns true if the given CharSequence is null or has length zero.
-     */
+    /** Returns true if the given CharSequence is null or has length zero. */
     public static boolean isEmpty(CharSequence cs) {
         return cs == null || cs.length() == 0;
     }
 
-    /**
-     * Returns true if the given CharSequence is non-null and has a length greater than zero.
-     */
+    /** Returns true if the given CharSequence is non-null and has a length greater than zero. */
     public static boolean isNotEmpty(CharSequence cs) {
         return !isEmpty(cs);
     }
@@ -64,7 +54,6 @@ public class StringUtils {
     }
 
     /**
-     *
      * @since 5.7.14
      */
     private static String formatWith(String strPattern, String placeHolder, Object... argArray) {
@@ -140,9 +129,7 @@ public class StringUtils {
         return template2;
     }
 
-    /**
-     * map = {a: "aValue", b: "bValue"} format("{a} and {b}", map) ---=》 aValue and bValue
-     */
+    /** map = {a: "aValue", b: "bValue"} format("{a} and {b}", map) ---=》 aValue and bValue */
     public static String format(CharSequence template, Map<?, ?> map) {
         return format(template, map, true);
     }
@@ -151,9 +138,7 @@ public class StringUtils {
         return MessageFormat.format(pattern.toString(), arguments);
     }
 
-    /**
-     * to string ,default json style
-     */
+    /** to string ,default json style */
     public static String toString(Object obj) {
         return ToStringAsJson.reflectionToString(obj);
     }

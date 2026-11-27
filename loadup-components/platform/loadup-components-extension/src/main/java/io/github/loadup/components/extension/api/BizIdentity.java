@@ -20,7 +20,6 @@ public interface BizIdentity {
     String getBizCode();
 
     /**
-     *
      * @return useCase
      */
     default String getUseCase() {
@@ -28,7 +27,6 @@ public interface BizIdentity {
     }
 
     /**
-     *
      * @return scenario
      */
     default String getScenario() {

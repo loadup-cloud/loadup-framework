@@ -35,17 +35,13 @@ public final class ResultAssembleBuilder extends AbstractPipelineBuilder {
         super(stages, consumerIndexMap, functionIndexMap, biConsumerIndexMap);
     }
 
-    /**
-     * Close a previously opened transactional block after the assemble stage.
-     */
+    /** Close a previously opened transactional block after the assemble stage. */
     public ResultAssembleBuilder endTx() {
         stageList.add(EndTxMarker.class);
         return this;
     }
 
-    /**
-     * Build the immutable {@link PipelineSpec}.
-     */
+    /** Build the immutable {@link PipelineSpec}. */
     public PipelineSpec build() {
         return new PipelineSpec(stageList, consumerIndexMap, functionIndexMap, biConsumerIndexMap);
     }

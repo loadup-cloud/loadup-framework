@@ -20,9 +20,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "loadup.captcha")
 public class CaptchaProperties {
 
-    /**
-     * Binder selector, one of {@code tianai} (default) / {@code nanocaptcha}.
-     */
+    /** Binder selector, one of {@code tianai} (default) / {@code nanocaptcha}. */
     private String binderType = "tianai";
 
     public String getBinderType() {

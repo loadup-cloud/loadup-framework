@@ -26,34 +26,22 @@ import org.testcontainers.utility.DockerImageName;
 
 public final class SharedElasticsearchContainer {
 
-    /**
-     * Default Elasticsearch version to use
-     */
+    /** Default Elasticsearch version to use */
     public static final String DEFAULT_ELASTICSEARCH_VERSION = "docker.elastic.co/elasticsearch/elasticsearch:8.11.0";
 
-    /**
-     * Enable flag for TestContainers
-     */
+    /** Enable flag for TestContainers */
     private static final AtomicBoolean STARTED = new AtomicBoolean(false);
 
-    /**
-     * The shared Elasticsearch container instance
-     */
+    /** The shared Elasticsearch container instance */
     private static ElasticsearchContainer elasticsearchContainer;
 
-    /**
-     * Elasticsearch HTTP host URL
-     */
+    /** Elasticsearch HTTP host URL */
     private static String httpHostAddress;
 
-    /**
-     * Elasticsearch host
-     */
+    /** Elasticsearch host */
     private static String host;
 
-    /**
-     * Elasticsearch port
-     */
+    /** Elasticsearch port */
     private static Integer port;
 
     private SharedElasticsearchContainer() {

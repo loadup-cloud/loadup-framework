@@ -25,16 +25,12 @@ public final class LogUtil {
 
     private LogUtil() {}
 
-    /**
-     * Returns a logger named after the supplied source class.
-     */
+    /** Returns a logger named after the supplied source class. */
     public static Logger getLogger(Class<?> sourceClass) {
         return LoggerFactory.getLogger(sourceClass);
     }
 
-    /**
-     * Returns a logger with the supplied name.
-     */
+    /** Returns a logger with the supplied name. */
     public static Logger getLogger(String loggerName) {
         return LoggerFactory.getLogger(loggerName);
     }
@@ -60,35 +56,40 @@ public final class LogUtil {
     }
 
     /**
-     * Logs with the calling class as the logger name. Intended for short-lived development diagnostics.
+     * Logs with the calling class as the logger name. Intended for short-lived development
+     * diagnostics.
      */
     public static void trace(String message, Object... arguments) {
         callerLogger().trace(message, arguments);
     }
 
     /**
-     * Logs with the calling class as the logger name. Intended for short-lived development diagnostics.
+     * Logs with the calling class as the logger name. Intended for short-lived development
+     * diagnostics.
      */
     public static void debug(String message, Object... arguments) {
         callerLogger().debug(message, arguments);
     }
 
     /**
-     * Logs with the calling class as the logger name. Intended for short-lived development diagnostics.
+     * Logs with the calling class as the logger name. Intended for short-lived development
+     * diagnostics.
      */
     public static void info(String message, Object... arguments) {
         callerLogger().info(message, arguments);
     }
 
     /**
-     * Logs with the calling class as the logger name. Intended for short-lived development diagnostics.
+     * Logs with the calling class as the logger name. Intended for short-lived development
+     * diagnostics.
      */
     public static void warn(String message, Object... arguments) {
         callerLogger().warn(message, arguments);
     }
 
     /**
-     * Logs with the calling class as the logger name. Intended for short-lived development diagnostics.
+     * Logs with the calling class as the logger name. Intended for short-lived development
+     * diagnostics.
      */
     public static void error(String message, Object... arguments) {
         callerLogger().error(message, arguments);

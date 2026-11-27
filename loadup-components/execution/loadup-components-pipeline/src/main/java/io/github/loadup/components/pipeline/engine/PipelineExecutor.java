@@ -64,8 +64,8 @@ public class PipelineExecutor {
      * Execute a pipeline defined by the given {@link IPipelineDefinition}.
      *
      * @param definition the pipeline definition
-     * @param request    the incoming request object
-     * @param <RES>      the expected response type
+     * @param request the incoming request object
+     * @param <RES> the expected response type
      * @return the assembled response, or the error response if an exception handler ran
      */
     @SuppressWarnings({"unchecked", "rawtypes"})

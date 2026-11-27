@@ -16,29 +16,17 @@
 package io.github.loadup.commons.enums;
 
 public enum TimeUnitEnum implements IEnum {
-    /**
-     * SECOND
-     */
+    /** SECOND */
     SECOND("S", "SECOND"),
-    /**
-     * MINUTE
-     */
+    /** MINUTE */
     MINUTE("I", "MINUTE"),
-    /**
-     * HOUR
-     */
+    /** HOUR */
     HOUR("H", "HOUR"),
-    /**
-     * DAY
-     */
+    /** DAY */
     DAY("D", "DAY"),
-    /**
-     * MONTH
-     */
+    /** MONTH */
     MONTH("D", "MONTH"),
-    /**
-     * YEAR
-     */
+    /** YEAR */
     YEAR("Y", "YEAR"),
     ;
     private String code;

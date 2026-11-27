@@ -28,8 +28,13 @@ import tools.jackson.databind.json.JsonMapper;
 
 class HttpServiceResponsesTest {
     private SuccessResponse<String> response(String code, String status, String data) {
-        String json = "{\"result\":{\"code\":\"" + code + "\",\"status\":\"" + status
-                + "\",\"message\":\"sensitive remote detail\"},\"data\":" + data + "}";
+        String json = "{\"result\":{\"code\":\""
+                + code
+                + "\",\"status\":\""
+                + status
+                + "\",\"message\":\"sensitive remote detail\"},\"data\":"
+                + data
+                + "}";
         return JsonMapper.builder().build().readValue(json, new TypeReference<>() {});
     }
 

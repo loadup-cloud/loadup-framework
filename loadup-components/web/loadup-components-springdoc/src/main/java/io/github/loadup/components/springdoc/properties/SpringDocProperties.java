@@ -20,44 +20,28 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "loadup.springdoc")
 public class SpringDocProperties {
 
-    /**
-     * Whether LoadUp's OpenAPI metadata auto-configuration is enabled.
-     */
+    /** Whether LoadUp's OpenAPI metadata auto-configuration is enabled. */
     private boolean enabled = true;
 
-    /**
-     * OpenAPI {@code info.title}.
-     */
+    /** OpenAPI {@code info.title}. */
     private String title = "LoadUp API";
 
-    /**
-     * OpenAPI {@code info.description}.
-     */
+    /** OpenAPI {@code info.description}. */
     private String description = "LoadUp Framework REST API documentation.";
 
-    /**
-     * OpenAPI {@code info.version}.
-     */
+    /** OpenAPI {@code info.version}. */
     private String version = "0.0.1-SNAPSHOT";
 
-    /**
-     * Whether to register a global JWT Bearer security scheme.
-     */
+    /** Whether to register a global JWT Bearer security scheme. */
     private boolean jwtEnabled = true;
 
-    /**
-     * Name of the JWT security scheme registered in OpenAPI components.
-     */
+    /** Name of the JWT security scheme registered in OpenAPI components. */
     private String jwtSchemeName = "BearerAuth";
 
-    /**
-     * Contact information shown in the API documentation.
-     */
+    /** Contact information shown in the API documentation. */
     private Contact contact = new Contact();
 
-    /**
-     * License information shown in the API documentation.
-     */
+    /** License information shown in the API documentation. */
     private License license = new License();
 
     public boolean isEnabled() {
@@ -124,21 +108,15 @@ public class SpringDocProperties {
         this.license = license;
     }
 
-    /**
-     * Contact sub-properties.
-     */
+    /** Contact sub-properties. */
     public static class Contact {
-        /**
-         * Contact display name.
-         */
+        /** Contact display name. */
         private String name = "LoadUp Team";
-        /**
-         * Contact URL.
-         */
+
+        /** Contact URL. */
         private String url = "https://github.com/loadup-cloud";
-        /**
-         * Contact e-mail.
-         */
+
+        /** Contact e-mail. */
         private String email = "";
 
         public String getName() {
@@ -166,17 +144,12 @@ public class SpringDocProperties {
         }
     }
 
-    /**
-     * License sub-properties.
-     */
+    /** License sub-properties. */
     public static class License {
-        /**
-         * License name.
-         */
+        /** License name. */
         private String name = "Apache-2.0";
-        /**
-         * License URL.
-         */
+
+        /** License URL. */
         private String url = "https://www.apache.org/licenses/LICENSE-2.0.txt";
 
         public String getName() {

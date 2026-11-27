@@ -49,9 +49,7 @@ public final class RpcIdentityProviderFilter implements Filter {
         }
     }
 
-    /**
-     * Injected by Dubbo from the Spring context when a {@link Validator} bean is available.
-     */
+    /** Injected by Dubbo from the Spring context when a {@link Validator} bean is available. */
     public void setValidator(Validator validator) {
         this.validator = validator;
     }

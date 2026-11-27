@@ -33,7 +33,7 @@ public final class JwtSecretValidator {
      * Returns an HS256 key after rejecting missing, short, or known weak secrets.
      *
      * @param propertyName configuration property used in the validation message
-     * @param secret       configured secret
+     * @param secret configured secret
      * @return validated HMAC key
      */
     public static SecretKey requireStrong(String propertyName, String secret) {

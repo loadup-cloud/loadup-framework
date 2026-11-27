@@ -20,7 +20,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TaskTemplate {
-    /** Enqueues work in the caller transaction. Matching queued work returns its existing ID and retains its schedule. */
+    /**
+     * Enqueues work in the caller transaction. Matching queued work returns its existing ID and
+     * retains its schedule.
+     */
     String submit(TaskSubmission submission);
 
     /** Returns a retained queue record. Successful acknowledgement removes the record. */

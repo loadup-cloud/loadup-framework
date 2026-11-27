@@ -23,102 +23,80 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "loadup.flyway")
 public class FlywayProperties {
 
-    /**
-     * Whether to enable Flyway auto-configuration.
-     */
+    /** Whether to enable Flyway auto-configuration. */
     private boolean enabled = true;
 
     /**
-     * Locations of migrations scripts.
-     * Can use Spring resource locations (e.g., classpath:db/migration).
+     * Locations of migrations scripts. Can use Spring resource locations (e.g.,
+     * classpath:db/migration).
      */
     private String[] locations = {"classpath:db/migration"};
 
     /**
      * Name of the schema history table used to track applied migrations.
      *
-     * <p>Defaults to Flyway's {@code flyway_schema_history}. When several independent
-     * migration sets share one database (for example, multiple LoadUp components),
-     * give each set its own table so their version sequences never collide.
+     * <p>Defaults to Flyway's {@code flyway_schema_history}. When several independent migration sets
+     * share one database (for example, multiple LoadUp components), give each set its own table so
+     * their version sequences never collide.
      */
     private String table;
 
     /**
-     * Whether to automatically call baseline when migrate is executed against
-     * a non-empty schema with no metadata table.
+     * Whether to automatically call baseline when migrate is executed against a non-empty schema with
+     * no metadata table.
      */
     private boolean baselineOnMigrate = true;
 
-    /**
-     * Version to tag an existing schema with when executing baseline.
-     */
+    /** Version to tag an existing schema with when executing baseline. */
     private String baselineVersion = "0";
 
-    /**
-     * Description to tag an existing schema with when executing baseline.
-     */
+    /** Description to tag an existing schema with when executing baseline. */
     private String baselineDescription = "<<Flyway Baseline>>";
 
-    /**
-     * Whether to validate migrations.
-     */
+    /** Whether to validate migrations. */
     private boolean validateOnMigrate = true;
 
     /**
      * Whether migrations may be applied out of order.
      *
-     * <p>LoadUp aggregates the migrations of many modules and components into a single schema
-     * history table while each module versions its scripts independently. A newly added module
-     * migration can therefore carry a version lower than the latest applied one. Keeping this
-     * enabled lets such migrations run instead of failing validation on startup.
+     * <p>LoadUp aggregates the migrations of many modules and components into a single schema history
+     * table while each module versions its scripts independently. A newly added module migration can
+     * therefore carry a version lower than the latest applied one. Keeping this enabled lets such
+     * migrations run instead of failing validation on startup.
      */
     private boolean outOfOrder = true;
 
     /**
-     * Whether to disable cleaning of the database.
-     * Should be true in production to prevent accidental data loss.
+     * Whether to disable cleaning of the database. Should be true in production to prevent accidental
+     * data loss.
      */
     private boolean cleanDisabled = true;
 
-    /**
-     * Encoding of SQL migrations.
-     */
+    /** Encoding of SQL migrations. */
     private String encoding = "UTF-8";
 
     /**
-     * Placeholders to replace in SQL migrations.
-     * Example: ${tableName} will be replaced with the value in this map.
+     * Placeholders to replace in SQL migrations. Example: ${tableName} will be replaced with the
+     * value in this map.
      */
     private Map<String, String> placeholders = new HashMap<>();
 
-    /**
-     * Prefix for placeholder in SQL migrations.
-     */
+    /** Prefix for placeholder in SQL migrations. */
     private String placeholderPrefix = "${";
 
-    /**
-     * Suffix for placeholder in SQL migrations.
-     */
+    /** Suffix for placeholder in SQL migrations. */
     private String placeholderSuffix = "}";
 
-    /**
-     * Whether to enable placeholder replacement.
-     */
+    /** Whether to enable placeholder replacement. */
     private boolean placeholderReplacement = true;
 
-    /**
-     * SQL statements to run to initialize a connection immediately after obtaining it.
-     */
+    /** SQL statements to run to initialize a connection immediately after obtaining it. */
     private String[] initSqls = {};
 
-    /**
-     * Target version up to which migrations should be applied.
-     */
+    /** Target version up to which migrations should be applied. */
     private String target;
 
-    /**
-     * Whether to automatically call migrate when the application starts.
-     */
+    /** Whether to automatically call migrate when the application starts. */
     private boolean migrateAtStart = true;
 
     public FlywayProperties(

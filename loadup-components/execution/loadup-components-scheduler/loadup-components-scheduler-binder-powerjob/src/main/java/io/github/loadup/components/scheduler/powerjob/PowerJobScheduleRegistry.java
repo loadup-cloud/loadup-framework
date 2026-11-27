@@ -60,7 +60,8 @@ final class PowerJobScheduleRegistry {
             } else if (isEnabled(job)
                     && PROCESSOR_NAME.equals(job.getProcessorInfo())
                     && desiredNames.contains(job.getJobParams())) {
-                throw new IllegalStateException("Disable the legacy PowerJob definition for '" + job.getJobParams()
+                throw new IllegalStateException("Disable the legacy PowerJob definition for '"
+                        + job.getJobParams()
                         + "' before enabling its configured schedule");
             }
         }

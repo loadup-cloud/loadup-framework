@@ -17,13 +17,9 @@ package io.github.loadup.commons.enums;
 
 public enum BooleanEnum implements IEnum {
 
-    /**
-     * true
-     */
+    /** true */
     TRUE("Y", "True"),
-    /**
-     * false
-     */
+    /** false */
     FALSE("N", "False");
 
     private final String code;

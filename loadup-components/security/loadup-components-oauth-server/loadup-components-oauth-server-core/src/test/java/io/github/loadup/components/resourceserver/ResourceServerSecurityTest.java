@@ -373,7 +373,10 @@ class ResourceServerSecurityTest {
         AtomicInteger jwksRequests = new AtomicInteger();
         server.createContext("/.well-known/openid-configuration", exchange -> {
             metadataRequests.incrementAndGet();
-            byte[] body = ("{\"issuer\":\"" + issuer + "\",\"jwks_uri\":\"" + issuer
+            byte[] body = ("{\"issuer\":\""
+                            + issuer
+                            + "\",\"jwks_uri\":\""
+                            + issuer
                             + "/jwks\",\"id_token_signing_alg_values_supported\":[\"RS256\"]}")
                     .getBytes(StandardCharsets.UTF_8);
             exchange.getResponseHeaders().set("Content-Type", "application/json");

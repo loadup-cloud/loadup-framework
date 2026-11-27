@@ -43,7 +43,6 @@ public class RandomUtil {
     }
 
     /**
-     *
      * @since 4.6.5
      */
     public static SecureRandom createSecureRandom(final byte[] seed) {
@@ -51,8 +50,8 @@ public class RandomUtil {
     }
 
     /**
-     *
-     * <a href="https://stackoverflow.com/questions/137212/how-to-solve-slow-java-securerandom">how-to-solve-slow-java-securerandom</a>
+     * <a
+     * href="https://stackoverflow.com/questions/137212/how-to-solve-slow-java-securerandom">how-to-solve-slow-java-securerandom</a>
      *
      * @since 3.1.2
      */
@@ -61,8 +60,8 @@ public class RandomUtil {
     }
 
     /**
-     *
-     * <a href="https://stackoverflow.com/questions/137212/how-to-solve-slow-java-securerandom">how-to-solve-slow-java-securerandom</a>
+     * <a
+     * href="https://stackoverflow.com/questions/137212/how-to-solve-slow-java-securerandom">how-to-solve-slow-java-securerandom</a>
      *
      * @see #createSecureRandom(byte[])
      * @since 5.5.2
@@ -75,7 +74,8 @@ public class RandomUtil {
      * see: <a
      * href="http://ifeve.com/jvm-random-and-entropy-source/">http://ifeve.com/jvm-random-and-entropy-source/</a>
      *
-     * <a href="https://stackoverflow.com/questions/137212/how-to-solve-slow-java-securerandom">how-to-solve-slow-java-securerandom</a>
+     * <p><a
+     * href="https://stackoverflow.com/questions/137212/how-to-solve-slow-java-securerandom">how-to-solve-slow-java-securerandom</a>
      *
      * @since 5.5.8
      */
@@ -93,7 +93,6 @@ public class RandomUtil {
     }
 
     /**
-     *
      * @since 5.7.12
      */
     public static SecureRandom getSecureRandomStrong() {
@@ -105,7 +104,6 @@ public class RandomUtil {
     }
 
     /**
-     *
      * @see #getSecureRandom()
      * @see #getRandom()
      * @since 4.1.15
@@ -117,7 +115,6 @@ public class RandomUtil {
     // endregion
 
     /**
-     *
      * @since 4.5.9
      */
     public static boolean randomBoolean() {
@@ -129,7 +126,6 @@ public class RandomUtil {
     }
 
     /**
-     *
      * @since 6.0.0
      */
     public static byte[] randomBytes(final int length, Random random) {
@@ -142,7 +138,6 @@ public class RandomUtil {
     }
 
     /**
-     *
      * @since 5.7.15
      */
     public static char randomChinese() {
@@ -152,7 +147,6 @@ public class RandomUtil {
     // region ----- randomInt
 
     /**
-     *
      * @see Random#nextInt()
      */
     public static int randomInt() {
@@ -160,7 +154,6 @@ public class RandomUtil {
     }
 
     /**
-     *
      * @see Random#nextInt(int)
      */
     public static int randomInt(final int limitExclude) {
@@ -182,7 +175,6 @@ public class RandomUtil {
     }
 
     /**
-     *
      * @since 5.2.1
      */
     public static int[] randomInts(final int length) {
@@ -199,7 +191,6 @@ public class RandomUtil {
     // region ----- randomLong
 
     /**
-     *
      * @see ThreadLocalRandom#nextLong()
      * @since 3.3.0
      */
@@ -208,7 +199,6 @@ public class RandomUtil {
     }
 
     /**
-     *
      * @see ThreadLocalRandom#nextLong(long)
      */
     public static long randomLong(final long limitExclude) {
@@ -216,7 +206,6 @@ public class RandomUtil {
     }
 
     /**
-     *
      * @see ThreadLocalRandom#nextLong(long, long)
      * @since 3.3.0
      */
@@ -239,7 +228,6 @@ public class RandomUtil {
     // region ----- randomFloat
 
     /**
-     *
      * @see ThreadLocalRandom#nextFloat()
      */
     public static float randomFloat() {
@@ -251,7 +239,6 @@ public class RandomUtil {
     }
 
     /**
-     *
      * @see ThreadLocalRandom#nextFloat()
      */
     public static float randomFloat(final float minInclude, final float maxExclude) {
@@ -267,7 +254,6 @@ public class RandomUtil {
     // region ----- randomDouble
 
     /**
-     *
      * @see ThreadLocalRandom#nextDouble(double, double)
      * @since 3.3.0
      */
@@ -276,7 +262,6 @@ public class RandomUtil {
     }
 
     /**
-     *
      * @since 4.0.8
      */
     public static double randomDouble(
@@ -286,7 +271,6 @@ public class RandomUtil {
     }
 
     /**
-     *
      * @see ThreadLocalRandom#nextDouble()
      * @since 3.3.0
      */
@@ -295,7 +279,6 @@ public class RandomUtil {
     }
 
     /**
-     *
      * @since 4.0.8
      */
     public static double randomDouble(final int scale, final RoundingMode roundingMode) {
@@ -303,7 +286,6 @@ public class RandomUtil {
     }
 
     /**
-     *
      * @see ThreadLocalRandom#nextDouble(double)
      * @since 3.3.0
      */
@@ -312,7 +294,6 @@ public class RandomUtil {
     }
 
     /**
-     *
      * @since 4.0.8
      */
     public static double randomDouble(final double limit, final int scale, final RoundingMode roundingMode) {
@@ -324,7 +305,6 @@ public class RandomUtil {
     // region ----- randomBigDecimal
 
     /**
-     *
      * @since 4.0.9
      */
     public static BigDecimal randomBigDecimal() {
@@ -332,7 +312,6 @@ public class RandomUtil {
     }
 
     /**
-     *
      * @since 4.0.9
      */
     public static BigDecimal randomBigDecimal(final BigDecimal limitExclude) {
@@ -340,7 +319,6 @@ public class RandomUtil {
     }
 
     /**
-     *
      * @since 4.0.9
      */
     public static BigDecimal randomBigDecimal(final BigDecimal minInclude, final BigDecimal maxExclude) {
@@ -363,7 +341,6 @@ public class RandomUtil {
     }
 
     /**
-     *
      * @since 3.3.0
      */
     public static <T> T randomEle(final T[] array) {
@@ -371,7 +348,6 @@ public class RandomUtil {
     }
 
     /**
-     *
      * @since 3.3.0
      */
     public static <T> T randomEle(final T[] array, int limit) {
@@ -392,7 +368,6 @@ public class RandomUtil {
     }
 
     /**
-     *
      * @since 5.4.5
      */
     public static int[] randomPickInts(final int size, final int[] seed) {
@@ -423,7 +398,6 @@ public class RandomUtil {
     }
 
     /**
-     *
      * @since 4.0.13
      */
     public static String randomStringUpper(final int length) {
@@ -439,7 +413,6 @@ public class RandomUtil {
     }
 
     /**
-     *
      * @since 5.8.28
      */
     public static String randomStringLowerWithoutStr(final int length, final String elemData) {
@@ -476,7 +449,6 @@ public class RandomUtil {
     // region ---- randomChar
 
     /**
-     *
      * @since 3.1.2
      */
     public static char randomNumber() {
@@ -484,7 +456,6 @@ public class RandomUtil {
     }
 
     /**
-     *
      * @since 3.1.2
      */
     public static char randomChar() {
@@ -492,7 +463,6 @@ public class RandomUtil {
     }
 
     /**
-     *
      * @since 3.1.2
      */
     public static char randomChar(final String baseString) {

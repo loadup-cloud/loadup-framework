@@ -28,7 +28,9 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 
-/** Typed management projection; lifecycle and concurrency guarantees remain in OAuthClientManager. */
+/**
+ * Typed management projection; lifecycle and concurrency guarantees remain in OAuthClientManager.
+ */
 public final class OAuthClientManagement {
     private final OAuthClientManager manager;
     private final OAuthClientManagementConverter converter;

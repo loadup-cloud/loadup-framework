@@ -16,25 +16,15 @@
 package io.github.loadup.commons.enums;
 
 public enum PlatFormEnum implements IEnum {
-    /**
-     * X86
-     */
+    /** X86 */
     X86("X86", "X86"),
-    /**
-     * X86_64
-     */
+    /** X86_64 */
     X86_64("X86_64", "X86_64"),
-    /**
-     * ARM64
-     */
+    /** ARM64 */
     ARM64("ARM64", "ARM64"),
-    /**
-     * SPARC
-     */
+    /** SPARC */
     SPARC("SPARC", "SPARC"),
-    /**
-     * MIPS
-     */
+    /** MIPS */
     MIPS("MIPS", "MIPS"),
     ;
     private String code;

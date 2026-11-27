@@ -21,44 +21,28 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @SuppressWarnings("PMD.TestClassWithoutTestCases")
 public class TestContainersProperties {
 
-    /**
-     * Global switch to enable/disable all TestContainers (default: true)
-     */
+    /** Global switch to enable/disable all TestContainers (default: true) */
     private boolean enabled = true;
 
-    /**
-     * MySQL container configuration
-     */
+    /** MySQL container configuration */
     private ContainerConfig mysql = new ContainerConfig();
 
-    /**
-     * PostgreSQL container configuration
-     */
+    /** PostgreSQL container configuration */
     private ContainerConfig postgresql = new ContainerConfig();
 
-    /**
-     * MongoDB container configuration
-     */
+    /** MongoDB container configuration */
     private ContainerConfig mongodb = new ContainerConfig();
 
-    /**
-     * Redis container configuration
-     */
+    /** Redis container configuration */
     private ContainerConfig redis = new ContainerConfig();
 
-    /**
-     * Kafka container configuration
-     */
+    /** Kafka container configuration */
     private ContainerConfig kafka = new ContainerConfig();
 
-    /**
-     * Elasticsearch container configuration
-     */
+    /** Elasticsearch container configuration */
     private ContainerConfig elasticsearch = new ContainerConfig();
 
-    /**
-     * LocalStack container configuration
-     */
+    /** LocalStack container configuration */
     private ContainerConfig localstack = new ContainerConfig();
 
     private boolean reusable;
@@ -142,29 +126,19 @@ public class TestContainersProperties {
      * @since 1.0.0
      */
     public static class ContainerConfig {
-        /**
-         * Enable this specific container (default: false, must be explicitly enabled)
-         */
+        /** Enable this specific container (default: false, must be explicitly enabled) */
         private boolean enabled = false;
 
-        /**
-         * Docker image version (e.g., "mysql:8.0")
-         */
+        /** Docker image version (e.g., "mysql:8.0") */
         private String image;
 
-        /**
-         * Database name (for database containers)
-         */
+        /** Database name (for database containers) */
         private String database;
 
-        /**
-         * Username (for services requiring authentication)
-         */
+        /** Username (for services requiring authentication) */
         private String username;
 
-        /**
-         * Password (for services requiring authentication)
-         */
+        /** Password (for services requiring authentication) */
         private String password;
 
         private boolean reusable = true;

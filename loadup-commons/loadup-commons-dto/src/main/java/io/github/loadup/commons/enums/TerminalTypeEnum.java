@@ -16,29 +16,19 @@
 package io.github.loadup.commons.enums;
 
 public enum TerminalTypeEnum implements IEnum {
-    /**
-     * APP
-     */
+    /** APP */
     APP("APP", "APP"),
 
-    /**
-     * WEB
-     */
+    /** WEB */
     WEB("WEB", "WEB"),
 
-    /**
-     * WAP
-     */
+    /** WAP */
     WAP("WAP", "WAP"),
 
-    /**
-     * SYSTEM
-     */
+    /** SYSTEM */
     SYSTEM("SYSTEM", "SYSTEM"),
 
-    /**
-     * PC
-     */
+    /** PC */
     PC("PC", "PC"),
     ;
 

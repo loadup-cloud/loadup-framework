@@ -552,7 +552,9 @@ class OpenBaoKmsTest {
                                 "data",
                                 Map.of(
                                         "signature",
-                                        "vault:v" + request.path("key_version").asInt() + ":"
+                                        "vault:v"
+                                                + request.path("key_version").asInt()
+                                                + ":"
                                                 + Base64.getEncoder().encodeToString(signer.sign()))));
             } else if (path.contains("/verify/")) {
                 var verifier = signature(request);
@@ -571,7 +573,9 @@ class OpenBaoKmsTest {
                                 "data",
                                 Map.of(
                                         "ciphertext",
-                                        "vault:v" + request.path("key_version").asInt() + ":"
+                                        "vault:v"
+                                                + request.path("key_version").asInt()
+                                                + ":"
                                                 + request.path("plaintext").asString())));
             } else if (path.contains("/decrypt/")) {
                 String envelope = request.path("ciphertext").asString();
@@ -693,7 +697,8 @@ class OpenBaoKmsTest {
 
     private String publicPem(KeyPair pair) {
         return "-----BEGIN PUBLIC KEY-----\n"
-                + Base64.getEncoder().encodeToString(pair.getPublic().getEncoded()) + "\n-----END PUBLIC KEY-----";
+                + Base64.getEncoder().encodeToString(pair.getPublic().getEncoded())
+                + "\n-----END PUBLIC KEY-----";
     }
 
     private void send(HttpExchange exchange, int status, Object body) throws Exception {

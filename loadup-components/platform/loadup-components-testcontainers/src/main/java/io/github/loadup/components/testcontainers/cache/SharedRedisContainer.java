@@ -24,39 +24,27 @@ import org.testcontainers.utility.DockerImageName;
 
 public final class SharedRedisContainer {
 
-    /**
-     * Default Redis version to use
-     */
+    /** Default Redis version to use */
     public static final String DEFAULT_REDIS_VERSION = "redis:7-alpine";
 
-    /**
-     * Redis default port
-     */
+    /** Redis default port */
     public static final int REDIS_PORT = 6379;
 
     private static final AtomicBoolean STARTED = new AtomicBoolean(false);
-    /**
-     * The shared Redis container instance
-     */
+
+    /** The shared Redis container instance */
     private static GenericContainer<?> redisContainer;
-    /**
-     * Redis host for the shared container
-     */
+
+    /** Redis host for the shared container */
     private static String host = "localhost";
 
-    /**
-     * Redis port for the shared container
-     */
+    /** Redis port for the shared container */
     private static Integer port = REDIS_PORT;
 
-    /**
-     * Redis connection URL
-     */
+    /** Redis connection URL */
     private static String url;
 
-    /**
-     * Private constructor to prevent instantiation
-     */
+    /** Private constructor to prevent instantiation */
     private SharedRedisContainer() {
         throw new UnsupportedOperationException("Utility class cannot be instantiated");
     }

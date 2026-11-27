@@ -22,7 +22,7 @@ public interface IDataProcessStage<DATA> extends IProcessStage {
     /**
      * Process the domain model.
      *
-     * @param data    the domain model loaded by {@link IDataPrepareStage}
+     * @param data the domain model loaded by {@link IDataPrepareStage}
      * @param context the shared pipeline context
      */
     void process(DATA data, PipelineContext context);

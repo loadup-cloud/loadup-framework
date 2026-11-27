@@ -196,7 +196,8 @@ public final class OAuthClientManager {
     private RegisteredClient mutate(String id, UnaryOperator<RegisteredClient> mutation, boolean validatePolicy) {
         requireText(id, 100);
         return transactions.execute(status -> {
-            // A row lock serializes management changes across replicas, without a global registration lock.
+            // A row lock serializes management changes across replicas, without a global registration
+            // lock.
             if (jdbc.queryForList("select id from oauth2_registered_client where id = ? for update", String.class, id)
                     .isEmpty()) {
                 throw new CommonException(NOT_FOUND);

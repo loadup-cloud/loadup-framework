@@ -390,7 +390,8 @@ class AliyunKmsTemplateTest {
     private static String publicKeyPem(KeyPair pair) {
         return "-----BEGIN PUBLIC KEY-----\n"
                 + Base64.getMimeEncoder(64, new byte[] {'\n'})
-                        .encodeToString(pair.getPublic().getEncoded()) + "\n-----END PUBLIC KEY-----";
+                        .encodeToString(pair.getPublic().getEncoded())
+                + "\n-----END PUBLIC KEY-----";
     }
 
     private static AliyunKmsProperties properties() {

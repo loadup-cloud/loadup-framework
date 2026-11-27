@@ -15,6 +15,4 @@
  */
 package io.github.loadup.commons.util;
 
-public class EnumUtils {
-    /** getEnumByCode */
-}
+public class EnumUtils {}

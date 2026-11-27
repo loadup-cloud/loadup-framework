@@ -38,57 +38,43 @@ public final class ProcessInTxBuilder extends AbstractPipelineBuilder {
         super(stages, consumerIndexMap, functionIndexMap, biConsumerIndexMap);
     }
 
-    /**
-     * Chain a Spring-bean process stage inside the TX block.
-     */
+    /** Chain a Spring-bean process stage inside the TX block. */
     public ProcessInTxBuilder process(Class<? extends IProcessStage> stage) {
         stageList.add(stage);
         return this;
     }
 
-    /**
-     * Chain an inline biz-process lambda inside the TX block.
-     */
+    /** Chain an inline biz-process lambda inside the TX block. */
     public ProcessInTxBuilder process(Consumer<PipelineContext> consumer) {
         registerBizProcessConsumer(consumer);
         return this;
     }
 
-    /**
-     * Chain an inline data-process lambda inside the TX block.
-     */
+    /** Chain an inline data-process lambda inside the TX block. */
     public <DATA> ProcessInTxBuilder process(BiConsumer<DATA, PipelineContext> biConsumer) {
         registerDataProcessBiConsumer(biConsumer);
         return this;
     }
 
-    /**
-     * Chain a data-prepare stage inside the TX block.
-     */
+    /** Chain a data-prepare stage inside the TX block. */
     public ProcessInTxBuilder prepare(Class<? extends IDataPrepareStage<?>> stage) {
         stageList.add(stage);
         return this;
     }
 
-    /**
-     * Chain an inline data-prepare lambda inside the TX block.
-     */
+    /** Chain an inline data-prepare lambda inside the TX block. */
     public <DATA> ProcessInTxBuilder prepare(Function<PipelineContext, DATA> function) {
         registerDataPrepareFunction(function);
         return this;
     }
 
-    /**
-     * Nest another TX initialiser (e.g. for savepoint semantics).
-     */
+    /** Nest another TX initialiser (e.g. for savepoint semantics). */
     public ProcessInTxBuilder startTx(Class<? extends ITxInitializer> txInitializer) {
         stageList.add(txInitializer);
         return this;
     }
 
-    /**
-     * Close the transactional block and return to the outer process builder.
-     */
+    /** Close the transactional block and return to the outer process builder. */
     public ProcessBuilder endTx() {
         stageList.add(EndTxMarker.class);
         return new ProcessBuilder(stageList, consumerIndexMap, functionIndexMap, biConsumerIndexMap);

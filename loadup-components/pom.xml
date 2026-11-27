@@ -10,7 +10,7 @@
 
     <artifactId>loadup-components</artifactId>
     <packaging>pom</packaging>
-    <name>Components</name>
+    <name>LoadUp Components</name>
     <description>Reusable technical integrations for Spring Boot applications.</description>
 
     <modules>

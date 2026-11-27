@@ -19,8 +19,8 @@ import java.util.List;
 
 public interface SchedulerProvider {
     /**
-     * Apply the validated schedules and route firings back to the application.
-     * Implementations must release local resources if startup fails.
+     * Apply the validated schedules and route firings back to the application. Implementations must
+     * release local resources if startup fails.
      */
     void start(List<TaskSchedule> schedules, TaskTrigger trigger);
 

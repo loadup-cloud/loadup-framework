@@ -25,9 +25,7 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-/**
- * Isolates a single statement failure within the current JDBC transaction.
- */
+/** Isolates a single statement failure within the current JDBC transaction. */
 public final class JdbcSavepointExecutor {
     private JdbcSavepointExecutor() {}
 

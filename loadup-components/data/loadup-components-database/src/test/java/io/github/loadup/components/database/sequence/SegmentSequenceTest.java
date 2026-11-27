@@ -154,7 +154,8 @@ class SegmentSequenceTest {
 
     @Test
     void timeoutDoesNotCancelCommittedAllocation() throws Exception {
-        CountDownLatch entered = new CountDownLatch(1), release = new CountDownLatch(1);
+        CountDownLatch entered = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
         Store store = new Store();
         SequenceProperties p = properties(10);
         p.setWaitTimeout(Duration.ofMillis(25));
@@ -218,7 +219,8 @@ class SegmentSequenceTest {
 
     @Test
     void boundedQueueRejectsAdditionalColdScopes() throws Exception {
-        CountDownLatch entered = new CountDownLatch(1), release = new CountDownLatch(1);
+        CountDownLatch entered = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
         SequenceProperties p = properties(10);
         p.setPrefetchThreads(1);
         p.setQueueCapacity(1);
@@ -470,7 +472,8 @@ class SegmentSequenceTest {
 
     @Test
     void interruptingCallerPreservesItsInterruptAndLeavesAllocationReusable() throws Exception {
-        CountDownLatch entered = new CountDownLatch(1), release = new CountDownLatch(1);
+        CountDownLatch entered = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
         Store store = new Store();
         try (SegmentSequence sequence = new SegmentSequence(
                 (scope, step) -> {

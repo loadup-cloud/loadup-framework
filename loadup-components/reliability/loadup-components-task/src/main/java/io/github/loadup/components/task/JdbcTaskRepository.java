@@ -106,12 +106,16 @@ public class JdbcTaskRepository implements TaskTemplate {
     @Override
     public String submit(TaskSubmission task) {
         requireTransaction(dataSource);
-        if (task == null) throw new IllegalArgumentException("task is required");
+        if (task == null) {
+            throw new IllegalArgumentException("task is required");
+        }
         var policy = properties.policy(task.taskType());
         policy.validate();
         String id = UUID.randomUUID().toString();
         String trace = MDC.get("traceId");
-        if (trace != null && !trace.matches("[a-fA-F0-9]{16,32}")) trace = null;
+        if (trace != null && !trace.matches("[a-fA-F0-9]{16,32}")) {
+            trace = null;
+        }
         jdbc.update(
                 sql.get(Query.UPSERT),
                 id,
@@ -182,7 +186,8 @@ public class JdbcTaskRepository implements TaskTemplate {
     }
 
     private boolean lockOwner(Claim claim) {
-        // MySQL's current timestamp is fixed at statement start. Check the lease after acquiring the lock.
+        // MySQL's current timestamp is fixed at statement start. Check the lease after acquiring the
+        // lock.
         return !jdbc.queryForList(
                         sql.get(Query.LOCK_OWNER), String.class, claim.event().id(), claim.token())
                 .isEmpty();

@@ -43,11 +43,11 @@ public class LoadUpFlywayAutoConfiguration {
     /**
      * Create the Flyway bean with LoadUp-specific configuration.
      *
-     * <p>Registered before Spring Boot's own {@link FlywayAutoConfiguration}
-     * so our configuration takes precedence via {@link ConditionalOnMissingBean}.
+     * <p>Registered before Spring Boot's own {@link FlywayAutoConfiguration} so our configuration
+     * takes precedence via {@link ConditionalOnMissingBean}.
      *
-     * @param dataSource         the primary DataSource
-     * @param properties         LoadUp Flyway properties
+     * @param dataSource the primary DataSource
+     * @param properties LoadUp Flyway properties
      * @param databaseProperties LoadUp database properties, including the single configured schema
      * @return configured Flyway instance
      */
@@ -139,11 +139,11 @@ public class LoadUpFlywayAutoConfiguration {
     /**
      * Registers the migration initializer explicitly.
      *
-     * <p>On Spring Boot 4 the whole {@code FlywayConfiguration} (including the migration
-     * initializer) is skipped when a custom {@link Flyway} bean already exists. Re-registering the
-     * initializer here restores the Boot 3 behavior so migrations run automatically.
+     * <p>On Spring Boot 4 the whole {@code FlywayConfiguration} (including the migration initializer)
+     * is skipped when a custom {@link Flyway} bean already exists. Re-registering the initializer
+     * here restores the Boot 3 behavior so migrations run automatically.
      *
-     * @param flyway            the configured Flyway instance
+     * @param flyway the configured Flyway instance
      * @param migrationStrategy the LoadUp migration strategy
      * @return the migration initializer
      */
@@ -157,9 +157,9 @@ public class LoadUpFlywayAutoConfiguration {
     /**
      * Provide a migration strategy that respects the {@code migrate-at-start} property.
      *
-     * <p>When enabled, migrations run on application startup. When disabled,
-     * the Flyway bean is created but no automatic migration occurs — useful for
-     * environments where migrations are run manually or by an external process.
+     * <p>When enabled, migrations run on application startup. When disabled, the Flyway bean is
+     * created but no automatic migration occurs — useful for environments where migrations are run
+     * manually or by an external process.
      *
      * @param properties LoadUp Flyway properties
      * @return FlywayMigrationStrategy

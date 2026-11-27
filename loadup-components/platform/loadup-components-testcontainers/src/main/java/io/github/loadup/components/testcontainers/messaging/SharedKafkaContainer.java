@@ -24,19 +24,15 @@ import org.testcontainers.utility.DockerImageName;
 
 public final class SharedKafkaContainer {
 
-    /**
-     * Default Kafka version to use
-     */
+    /** Default Kafka version to use */
     public static final String DEFAULT_KAFKA_VERSION = "apache/kafka:4.1.1";
 
     private static final AtomicBoolean STARTED = new AtomicBoolean(false);
-    /**
-     * The shared Kafka container instance
-     */
+
+    /** The shared Kafka container instance */
     private static KafkaContainer kafkaContainer;
-    /**
-     * Kafka bootstrap servers
-     */
+
+    /** Kafka bootstrap servers */
     private static String bootstrapServers;
 
     private SharedKafkaContainer() {

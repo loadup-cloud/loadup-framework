@@ -45,9 +45,7 @@ public final class CacheJsonCodec {
                 .build();
     }
 
-    /**
-     * Serializes a cached value (or the JetCache value holder) to JSON bytes.
-     */
+    /** Serializes a cached value (or the JetCache value holder) to JSON bytes. */
     public byte[] serialize(Object value) {
         try {
             return mapper.writeValueAsBytes(value);
@@ -56,9 +54,7 @@ public final class CacheJsonCodec {
         }
     }
 
-    /**
-     * Deserializes JSON bytes back to the concrete type recorded in the {@code @class} hint.
-     */
+    /** Deserializes JSON bytes back to the concrete type recorded in the {@code @class} hint. */
     public Object deserialize(byte[] bytes) {
         try {
             return mapper.readValue(bytes, Object.class);
@@ -67,9 +63,7 @@ public final class CacheJsonCodec {
         }
     }
 
-    /**
-     * The internal typed {@link ObjectMapper}, e.g. to build a Spring Data Redis serializer.
-     */
+    /** The internal typed {@link ObjectMapper}, e.g. to build a Spring Data Redis serializer. */
     public ObjectMapper objectMapper() {
         return mapper;
     }

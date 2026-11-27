@@ -35,7 +35,8 @@ public final class RpcExceptionCodes {
     }
 
     /**
-     * Returns the declared result code, or an empty string when the failure is not a business rejection.
+     * Returns the declared result code, or an empty string when the failure is not a business
+     * rejection.
      */
     public static String resultCode(Throwable failure) {
         Throwable current = failure;

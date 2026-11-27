@@ -45,9 +45,7 @@ public record PageQuery(
         return new PageQuery(page, size);
     }
 
-    /**
-     * Preserves the calling module's published error code while sharing all bounds.
-     */
+    /** Preserves the calling module's published error code while sharing all bounds. */
     public static PageQuery normalized(Integer page, Integer size, ResultCode code) {
         int index = page == null ? 1 : page;
         int count = size == null ? DEFAULT_PAGE_SIZE : size;

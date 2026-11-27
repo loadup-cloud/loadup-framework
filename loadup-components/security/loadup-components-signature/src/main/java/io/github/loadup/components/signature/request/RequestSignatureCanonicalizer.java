@@ -29,19 +29,42 @@ public final class RequestSignatureCanonicalizer {
         if (content == null || parameters == null) {
             throw new RequestSignatureException(RequestSignatureException.Code.MALFORMED);
         }
-        String canonical = PROTOCOL + "\n"
-                + "app-id:" + parameters.appId() + "\n"
-                + "audience:" + parameters.audience() + "\n"
-                + "key-version:" + parameters.keyVersion() + "\n"
+        String canonical = PROTOCOL
+                + "\n"
+                + "app-id:"
+                + parameters.appId()
+                + "\n"
+                + "audience:"
+                + parameters.audience()
+                + "\n"
+                + "key-version:"
+                + parameters.keyVersion()
+                + "\n"
                 + (parameters.keyFingerprint() == null ? "" : "key-fingerprint:" + parameters.keyFingerprint() + "\n")
-                + "algorithm:" + parameters.algorithm().name() + "\n"
-                + "method:" + content.method() + "\n"
-                + "path:" + content.path() + "\n"
-                + "query:" + content.query() + "\n"
-                + "content-type:" + content.contentType() + "\n"
-                + "timestamp:" + parameters.timestamp() + "\n"
-                + "nonce:" + parameters.nonce() + "\n"
-                + "payload-sha256:" + sha256(content.payload()) + "\n";
+                + "algorithm:"
+                + parameters.algorithm().name()
+                + "\n"
+                + "method:"
+                + content.method()
+                + "\n"
+                + "path:"
+                + content.path()
+                + "\n"
+                + "query:"
+                + content.query()
+                + "\n"
+                + "content-type:"
+                + content.contentType()
+                + "\n"
+                + "timestamp:"
+                + parameters.timestamp()
+                + "\n"
+                + "nonce:"
+                + parameters.nonce()
+                + "\n"
+                + "payload-sha256:"
+                + sha256(content.payload())
+                + "\n";
         return canonical.getBytes(StandardCharsets.UTF_8);
     }
 

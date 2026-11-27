@@ -18,7 +18,6 @@ package io.github.loadup.commons.util.context;
 public class RuntimeUtils {
 
     /**
-     *
      * @since 4.0.5
      */
     public static void addShutdownHook(Runnable hook) {
@@ -26,8 +25,6 @@ public class RuntimeUtils {
     }
 
     /**
-     *
-     *
      * @since 5.3.0
      */
     public static int getProcessorCount() {
@@ -39,7 +36,6 @@ public class RuntimeUtils {
     }
 
     /**
-     *
      * @since 5.3.0
      */
     public static long getFreeMemory() {
@@ -47,7 +43,6 @@ public class RuntimeUtils {
     }
 
     /**
-     *
      * @since 5.3.0
      */
     public static long getTotalMemory() {
@@ -55,7 +50,6 @@ public class RuntimeUtils {
     }
 
     /**
-     *
      * @since 5.3.0
      */
     public static long getMaxMemory() {

@@ -24,9 +24,7 @@ import java.time.LocalDateTime;
 public abstract class BaseDO implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Application-assigned business identifier; MyBatis-Flex never generates this value.
-     */
+    /** Application-assigned business identifier; MyBatis-Flex never generates this value. */
     @Id(keyType = KeyType.None)
     private String id;
 

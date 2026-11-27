@@ -28,29 +28,19 @@ public class LoadUpUser implements Serializable, Principal {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Unique user ID
-     */
+    /** Unique user ID */
     private String userId;
 
-    /**
-     * Username
-     */
+    /** Username */
     private String username;
 
-    /**
-     * User roles (e.g., ["ADMIN", "USER"] or ["ROLE_ADMIN", "ROLE_USER"])
-     */
+    /** User roles (e.g., ["ADMIN", "USER"] or ["ROLE_ADMIN", "ROLE_USER"]) */
     private List<String> roles = Collections.emptyList();
 
-    /**
-     * User permissions (e.g., ["user:read", "user:write"])
-     */
+    /** User permissions (e.g., ["user:read", "user:write"]) */
     private List<String> permissions = Collections.emptyList();
 
-    /**
-     * Additional attributes
-     */
+    /** Additional attributes */
     private Map<String, Object> attributes;
 
     public LoadUpUser(
@@ -72,9 +62,7 @@ public class LoadUpUser implements Serializable, Principal {
         return new Builder();
     }
 
-    /**
-     * Check if user has a specific role
-     */
+    /** Check if user has a specific role */
     public boolean hasRole(String role) {
         if (roles == null || roles.isEmpty()) {
             return false;
@@ -82,9 +70,7 @@ public class LoadUpUser implements Serializable, Principal {
         return roles.contains(role) || roles.contains("ROLE_" + role);
     }
 
-    /**
-     * Check if user has any of the specified roles
-     */
+    /** Check if user has any of the specified roles */
     public boolean hasAnyRole(String... roles) {
         if (this.roles == null || this.roles.isEmpty()) {
             return false;
@@ -97,9 +83,7 @@ public class LoadUpUser implements Serializable, Principal {
         return false;
     }
 
-    /**
-     * Check if user has all of the specified roles
-     */
+    /** Check if user has all of the specified roles */
     public boolean hasAllRoles(String... roles) {
         if (this.roles == null || this.roles.isEmpty()) {
             return false;
@@ -112,9 +96,7 @@ public class LoadUpUser implements Serializable, Principal {
         return true;
     }
 
-    /**
-     * Check if user has a specific permission
-     */
+    /** Check if user has a specific permission */
     public boolean hasPermission(String permission) {
         return permissions != null && permissions.contains(permission);
     }
@@ -127,9 +109,7 @@ public class LoadUpUser implements Serializable, Principal {
         this.userId = userId;
     }
 
-    /**
-     * Returns the stable user ID used by authentication and audit records.
-     */
+    /** Returns the stable user ID used by authentication and audit records. */
     @Override
     public String getName() {
         return this.userId;

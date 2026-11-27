@@ -31,9 +31,7 @@ public final class ServiceTemplate {
         return execute(context, NOOP, action);
     }
 
-    /**
-     * Cleanup also runs on partial initialization failure and cannot hide a primary exception.
-     */
+    /** Cleanup also runs on partial initialization failure and cannot hide a primary exception. */
     public static <T, X extends Throwable> T execute(
             ExecutionContext context, Lifecycle lifecycle, ScopedValue.CallableOp<T, X> action) throws X {
         Objects.requireNonNull(lifecycle, "lifecycle");

@@ -54,7 +54,9 @@ public record KmsSignature(
         return "vault:v" + version + ":" + base64();
     }
 
-    /** Retain this reference from the original, trusted operation for use after an alias is rebound. */
+    /**
+     * Retain this reference from the original, trusted operation for use after an alias is rebound.
+     */
     public KmsKeyRef keyRef() {
         return new KmsKeyRef(keyName, version, providerVersion);
     }

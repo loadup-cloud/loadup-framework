@@ -73,9 +73,7 @@ public final class UserContext {
         return user != null ? user.getUsername() : null;
     }
 
-    /**
-     * Clear the current user from the Spring Security context.
-     */
+    /** Clear the current user from the Spring Security context. */
     public static void clear() {
         SecurityContextHolder.clearContext();
     }

@@ -23,30 +23,25 @@ import java.util.Set;
 
 public final class ExceptionHandlerBus {
 
-    /**
-     * Exception class → handler class mapping.
-     */
+    /** Exception class → handler class mapping. */
     private final Map<Class<? extends Throwable>, Class<? extends IExceptionClassHandler<?>>> exceptionHandlerMap =
             new HashMap<>();
 
     /**
-     * Exception classes that should bypass all handlers and propagate to the caller.
-     * Typically used for unrecoverable system errors.
+     * Exception classes that should bypass all handlers and propagate to the caller. Typically used
+     * for unrecoverable system errors.
      */
     private final Set<Class<? extends Throwable>> overflowExceptions = new HashSet<>();
 
     /**
-     * Fallback handler invoked when no specific handler matches.
-     * Must be set — the executor will throw {@link IllegalStateException} if it is missing
-     * and an unhandled exception occurs.
+     * Fallback handler invoked when no specific handler matches. Must be set — the executor will
+     * throw {@link IllegalStateException} if it is missing and an unhandled exception occurs.
      */
     private Class<? extends IExceptionClassHandler<?>> bottomHandler;
 
     private ExceptionHandlerBus() {}
 
-    /**
-     * Creates a new fluent builder.
-     */
+    /** Creates a new fluent builder. */
     public static ExceptionHandlerBus builder() {
         return new ExceptionHandlerBus();
     }
@@ -57,7 +52,7 @@ public final class ExceptionHandlerBus {
      * Register a handler for a specific exception class (exact match + sub-class matching).
      *
      * @param exceptionClass the exception class to match
-     * @param handlerClass   the Spring-managed bean that handles it
+     * @param handlerClass the Spring-managed bean that handles it
      */
     public ExceptionHandlerBus register(
             Class<? extends Throwable> exceptionClass, Class<? extends IExceptionClassHandler<?>> handlerClass) {
@@ -66,8 +61,8 @@ public final class ExceptionHandlerBus {
     }
 
     /**
-     * Mark an exception class as an overflow — it will be re-thrown to the caller as-is
-     * without invoking any handler.
+     * Mark an exception class as an overflow — it will be re-thrown to the caller as-is without
+     * invoking any handler.
      *
      * @param exceptionClass the exception class to re-throw
      */

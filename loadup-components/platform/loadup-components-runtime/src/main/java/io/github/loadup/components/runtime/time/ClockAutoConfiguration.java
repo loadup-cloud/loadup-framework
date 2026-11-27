@@ -20,9 +20,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
-/**
- * Supplies the shared application clock, unless the application provides one.
- */
+/** Supplies the shared application clock, unless the application provides one. */
 @AutoConfiguration
 public class ClockAutoConfiguration {
     @Bean

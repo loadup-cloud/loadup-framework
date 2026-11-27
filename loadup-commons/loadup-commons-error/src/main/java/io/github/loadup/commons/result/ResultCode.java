@@ -19,9 +19,7 @@ import io.github.loadup.commons.enums.ResultStatusEnum;
 import java.util.Objects;
 
 public interface ResultCode {
-    /**
-     * Validates the enum-only public error vocabulary at response/exception boundaries.
-     */
+    /** Validates the enum-only public error vocabulary at response/exception boundaries. */
     static ResultCode requireFailure(ResultCode value) {
         Objects.requireNonNull(value, "resultCode");
         if (!(value instanceof Enum<?>)) {

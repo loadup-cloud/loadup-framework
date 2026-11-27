@@ -62,8 +62,10 @@ public final class FixedSchemaEnvironmentPostProcessor implements EnvironmentPos
     private static void requireDeclaredTargets(ConfigurableEnvironment environment, String schema) {
         String poolSchema = property(environment, POOL_SCHEMA_PROPERTY);
         if (poolSchema != null && !Objects.equals(poolSchema, schema)) {
-            throw new IllegalStateException("spring.datasource.hikari.schema " + poolSchema
-                    + " conflicts with loadup.database.schema " + schema);
+            throw new IllegalStateException("spring.datasource.hikari.schema "
+                    + poolSchema
+                    + " conflicts with loadup.database.schema "
+                    + schema);
         }
         String url = property(environment, URL_PROPERTY);
         if (url != null) {

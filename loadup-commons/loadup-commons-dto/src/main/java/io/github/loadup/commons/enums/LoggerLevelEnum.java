@@ -16,24 +16,16 @@
 package io.github.loadup.commons.enums;
 
 public enum LoggerLevelEnum implements IEnum {
-    /**
-     * DEBUG
-     */
+    /** DEBUG */
     DEBUG("DEBUG", "DEBUG"),
 
-    /**
-     * INFO
-     */
+    /** INFO */
     INFO("INFO", "INFO"),
 
-    /**
-     * WARN
-     */
+    /** WARN */
     WARN("WARN", "WARN"),
 
-    /**
-     * ERROR
-     */
+    /** ERROR */
     ERROR("ERROR", "ERROR"),
     ;
 

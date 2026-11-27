@@ -217,13 +217,12 @@ public final class HttpTemplate implements AutoCloseable {
             try {
                 client.transport.close();
             } catch (IOException ignored) {
+                // Continue closing the remaining clients.
             }
         }
     }
 
-    /**
-     * Builds first, swaps only after active calls finish, then closes the previous pools.
-     */
+    /** Builds first, swaps only after active calls finish, then closes the previous pools. */
     public synchronized long refresh(HttpProperties properties) {
         if (properties == null || properties.clients().size() > 256) {
             throw new IllegalArgumentException("Invalid HTTP clients");
@@ -321,9 +320,9 @@ public final class HttpTemplate implements AutoCloseable {
     }
 
     /**
-     * Returns a client while holding the template read lock for the caller.
-     * A service client named after an application uses the framework default target
-     * {@code http://<name>:<default-port>} unless it is configured explicitly.
+     * Returns a client while holding the template read lock for the caller. A service client named
+     * after an application uses the framework default target {@code http://<name>:<default-port>}
+     * unless it is configured explicitly.
      */
     private RuntimeClient acquireClient(String name) {
         while (true) {
@@ -369,9 +368,7 @@ public final class HttpTemplate implements AutoCloseable {
         }
     }
 
-    /**
-     * The signer observes the same resolved target and wire bytes used by this exchange.
-     */
+    /** The signer observes the same resolved target and wire bytes used by this exchange. */
     public ResponseEntity<byte[]> exchange(String client, String operation, HttpCall call, HttpRequestSigner signer) {
         return execute(client, operation, call, signer, (response, limit) -> {
             ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -391,15 +388,14 @@ public final class HttpTemplate implements AutoCloseable {
         }
     }
 
-    /**
-     * Does not close the caller's output; failed transfers may have written partial data.
-     */
+    /** Does not close the caller's output; failed transfers may have written partial data. */
     public ResponseEntity<Long> download(String client, String operation, HttpCall call, OutputStream output) {
         return download(client, operation, call, output, null);
     }
 
     /**
-     * Signs the exact resolved URI and empty/body wire bytes before a bounded streamed download. Does not close output.
+     * Signs the exact resolved URI and empty/body wire bytes before a bounded streamed download. Does
+     * not close output.
      */
     public ResponseEntity<Long> download(
             String client, String operation, HttpCall call, OutputStream output, HttpRequestSigner signer) {
@@ -594,6 +590,7 @@ public final class HttpTemplate implements AutoCloseable {
             try {
                 transport.close();
             } catch (IOException ignored) {
+                // Preserve the original client initialization failure.
             }
             throw failure;
         }

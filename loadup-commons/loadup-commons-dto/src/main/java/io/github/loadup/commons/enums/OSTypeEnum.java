@@ -16,38 +16,24 @@
 package io.github.loadup.commons.enums;
 
 public enum OSTypeEnum implements IEnum {
-    /**
-     * Android
-     */
+    /** Android */
     ANDROID("Android", "Android"),
 
-    /**
-     * IOS
-     */
+    /** IOS */
     IOS("IOS", "IOS"),
 
-    /**
-     * Windows
-     */
+    /** Windows */
     WINDOWS("WINDOWS", "Windows"),
 
-    /**
-     * MACOS
-     */
+    /** MACOS */
     MACOS("MACOS", "MacOS"),
 
-    /**
-     * iPadOS
-     */
+    /** iPadOS */
     IPADOS("IPADOS", "iPadOS"),
-    /**
-     * HarmonyOS
-     */
+    /** HarmonyOS */
     HARMONY_OS("HARMONY_OS", "HarmonyOS"),
 
-    /**
-     * Linux
-     */
+    /** Linux */
     LINUX("LINUX", "Linux"),
     ;
 

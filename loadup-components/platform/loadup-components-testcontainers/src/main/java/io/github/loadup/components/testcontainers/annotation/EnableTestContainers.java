@@ -37,12 +37,12 @@ public @interface EnableTestContainers {
     ContainerType[] value() default {};
 
     /**
-     * Whether to reuse containers across test runs.
-     * When enabled, containers will not be stopped after tests complete,
-     * allowing subsequent test runs to reuse the same container instances.
+     * Whether to reuse containers across test runs. When enabled, containers will not be stopped
+     * after tests complete, allowing subsequent test runs to reuse the same container instances.
      *
-     * <p>Note: Container reuse requires Testcontainers to be configured with
-     * reuse enabled in ~/.testcontainers.properties:
+     * <p>Note: Container reuse requires Testcontainers to be configured with reuse enabled in
+     * ~/.testcontainers.properties:
+     *
      * <pre>
      * testcontainers.reuse.enable=true
      * </pre>

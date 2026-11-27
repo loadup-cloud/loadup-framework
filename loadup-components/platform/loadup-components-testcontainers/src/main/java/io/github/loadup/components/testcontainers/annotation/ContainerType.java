@@ -16,38 +16,24 @@
 package io.github.loadup.components.testcontainers.annotation;
 
 public enum ContainerType {
-    /**
-     * MySQL database container
-     */
+    /** MySQL database container */
     MYSQL,
 
-    /**
-     * PostgreSQL database container
-     */
+    /** PostgreSQL database container */
     POSTGRESQL,
 
-    /**
-     * MongoDB database container
-     */
+    /** MongoDB database container */
     MONGODB,
 
-    /**
-     * Redis cache container
-     */
+    /** Redis cache container */
     REDIS,
 
-    /**
-     * Kafka messaging container
-     */
+    /** Kafka messaging container */
     KAFKA,
 
-    /**
-     * Elasticsearch search container
-     */
+    /** Elasticsearch search container */
     ELASTICSEARCH,
 
-    /**
-     * LocalStack AWS services container
-     */
+    /** LocalStack AWS services container */
     LOCALSTACK
 }

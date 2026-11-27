@@ -68,7 +68,8 @@ public class MyBatisFlexAutoConfiguration {
                 if (TransactionSynchronizationManager.hasResource(sessionDataSource)) {
                     return new SpringManagedTransaction(sessionDataSource);
                 }
-                // Flex wraps the application DataSource, while JDBC binds the connection to the original bean.
+                // Flex wraps the application DataSource, while JDBC binds the connection to the
+                // original bean.
                 if (sessionDataSource instanceof FlexDataSource flex
                         && flex.getDataSourceMap().size() == 1) {
                     DataSource target = flex.getDefaultDataSource();

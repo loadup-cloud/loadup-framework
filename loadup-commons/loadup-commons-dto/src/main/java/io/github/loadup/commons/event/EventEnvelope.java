@@ -27,9 +27,7 @@ import jakarta.validation.Valid;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
-/**
- * An internal integration header; never treats a declared producer as authenticated identity.
- */
+/** An internal integration header; never treats a declared producer as authenticated identity. */
 public record EventEnvelope<T>(
         String deliveryId,
         String businessEventId,
@@ -63,9 +61,7 @@ public record EventEnvelope<T>(
         return ToStringAsJson.reflectionToString(this);
     }
 
-    /**
-     * Structural binding only; authenticate the producer and tenant at the transport boundary.
-     */
+    /** Structural binding only; authenticate the producer and tenant at the transport boundary. */
     public void requireSource(String expectedType, String expectedProducer, String expectedId, long expectedVersion) {
         DomainViolation.require(
                 eventType.equals(expectedType)

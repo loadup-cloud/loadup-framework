@@ -21,8 +21,8 @@ import java.util.regex.Pattern;
 /**
  * Immutable deployment code of the running process.
  *
- * <p>The value is a configuration constant. It is never the "current tenant", is never stored in
- * an execution context, and never selects a database connection, schema, identity or permission.
+ * <p>The value is a configuration constant. It is never the "current tenant", is never stored in an
+ * execution context, and never selects a database connection, schema, identity or permission.
  * Request entry points compare an inbound header against this constant; infrastructure pieces that
  * need a stable namespace may read it.
  */

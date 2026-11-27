@@ -63,9 +63,9 @@ public class TianaiCaptchaAutoConfiguration {
     }
 
     /**
-     * Register the background image bundled in the tianai jar for the captcha types that need
-     * one. tianai's {@code DefaultBuiltInResources} only ships templates and fonts; without an
-     * explicit background resource the generators fail at runtime.
+     * Register the background image bundled in the tianai jar for the captcha types that need one.
+     * tianai's {@code DefaultBuiltInResources} only ships templates and fonts; without an explicit
+     * background resource the generators fail at runtime.
      */
     private static void registerDefaultBackgroundResources(TACBuilder builder) {
         Resource background = new Resource("classpath", "META-INF/cut-image/resource/1.jpg");

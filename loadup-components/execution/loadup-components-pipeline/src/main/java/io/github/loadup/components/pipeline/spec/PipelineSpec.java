@@ -33,26 +33,22 @@ import java.util.function.Function;
 @SuppressWarnings("rawtypes")
 public final class PipelineSpec {
 
-    /**
-     * Ordered list of stage classes (Spring beans or inner lambda-stage markers).
-     */
+    /** Ordered list of stage classes (Spring beans or inner lambda-stage markers). */
     private final List<Class<? extends IStage>> stageList;
 
     /**
-     * Index → Consumer mapping for stages that are {@link InnerParamVerifyConsumerStage}
-     * or {@link InnerBizProcessConsumerStage}.
+     * Index → Consumer mapping for stages that are {@link InnerParamVerifyConsumerStage} or {@link
+     * InnerBizProcessConsumerStage}.
      */
     private final Map<Integer, Consumer> consumerIndexMap;
 
     /**
-     * Index → Function mapping for stages that are {@link InnerDataPrepareFunctionStage}
-     * or {@link InnerResultAssembleFunctionStage}.
+     * Index → Function mapping for stages that are {@link InnerDataPrepareFunctionStage} or {@link
+     * InnerResultAssembleFunctionStage}.
      */
     private final Map<Integer, Function> functionIndexMap;
 
-    /**
-     * Index → BiConsumer mapping for stages that are {@link InnerDataProcessBiConsumerStage}.
-     */
+    /** Index → BiConsumer mapping for stages that are {@link InnerDataProcessBiConsumerStage}. */
     private final Map<Integer, BiConsumer> biConsumerIndexMap;
 
     public PipelineSpec(

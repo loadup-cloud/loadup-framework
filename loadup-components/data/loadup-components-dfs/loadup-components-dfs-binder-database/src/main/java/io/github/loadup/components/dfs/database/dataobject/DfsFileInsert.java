@@ -19,9 +19,7 @@ import com.mybatisflex.annotation.Table;
 import io.github.loadup.components.database.dataobject.BaseDO;
 import java.time.LocalDateTime;
 
-/**
- * A database DFS object with an application-assigned ID.
- */
+/** A database DFS object with an application-assigned ID. */
 @Table("dfs_file")
 public class DfsFileInsert extends BaseDO {
     private String filename;

@@ -62,9 +62,7 @@ final class HttpServiceClients {
         return serviceType.cast(proxy);
     }
 
-    /**
-     * The transport response is fully bounded and closed before a converter receives it.
-     */
+    /** The transport response is fully bounded and closed before a converter receives it. */
     static final class BufferedResponse implements ClientHttpResponse {
         private final HttpStatusCode status;
         private final HttpHeaders headers;

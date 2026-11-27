@@ -20,9 +20,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "loadup.cache.binder.caffeine")
 public class CaffeineCacheProperties {
 
-    /**
-     * Maximum number of entries per cache before eviction.
-     */
+    /** Maximum number of entries per cache before eviction. */
     private long maximumSize = 10_000;
 
     public long getMaximumSize() {

@@ -67,7 +67,10 @@ public interface KmsTemplate {
         return KmsVerificationKey.fromPem(ref, pem == null ? publicKey(ref) : pem);
     }
 
-    /** The alias comes from trusted policy. The fingerprint from the wire can only select within that alias. */
+    /**
+     * The alias comes from trusted policy. The fingerprint from the wire can only select within that
+     * alias.
+     */
     default boolean verify(
             String alias, String fingerprint, KmsSignatureAlgorithm algorithm, byte[] message, byte[] signature) {
         for (var key : verificationKeys(alias)) {

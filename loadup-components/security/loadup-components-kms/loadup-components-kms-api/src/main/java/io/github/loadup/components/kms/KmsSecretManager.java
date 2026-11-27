@@ -18,8 +18,8 @@ package io.github.loadup.components.kms;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Stores named UTF-8 secrets in the selected binder's secret backend.
- * Secret names are metadata. Keep sensitive data in values only.
+ * Stores named UTF-8 secrets in the selected binder's secret backend. Secret names are metadata.
+ * Keep sensitive data in values only.
  */
 public interface KmsSecretManager {
     int MAX_VALUE_BYTES = 30 * 1024;
@@ -30,7 +30,10 @@ public interface KmsSecretManager {
     /** Stores a new current value for an existing secret. */
     void update(String name, String value);
 
-    /** Returns the current plaintext value. A missing secret fails with {@link KmsException.Code#NOT_FOUND}. */
+    /**
+     * Returns the current plaintext value. A missing secret fails with {@link
+     * KmsException.Code#NOT_FOUND}.
+     */
     String get(String name);
 
     static void validateName(String name) {

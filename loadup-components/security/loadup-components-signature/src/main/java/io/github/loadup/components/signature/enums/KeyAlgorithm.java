@@ -17,29 +17,19 @@ package io.github.loadup.components.signature.enums;
 
 public enum KeyAlgorithm {
 
-    /**
-     * RSA.
-     */
+    /** RSA. */
     RSA("RSA", 2048),
 
-    /**
-     * DSA.
-     */
+    /** DSA. */
     DSA("DSA", 2048),
 
-    /**
-     * ECDSA (elliptic curve).
-     */
+    /** ECDSA (elliptic curve). */
     EC("EC", 256);
 
-    /**
-     * The JCA algorithm name.
-     */
+    /** The JCA algorithm name. */
     private final String jcaName;
 
-    /**
-     * The default key size in bits.
-     */
+    /** The default key size in bits. */
     private final int defaultKeySize;
 
     KeyAlgorithm(String jcaName, int defaultKeySize) {

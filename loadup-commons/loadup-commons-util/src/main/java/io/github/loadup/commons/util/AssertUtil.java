@@ -181,7 +181,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.isTrue(i &gt; 0, IllegalArgumentException::new);
      * </pre>
@@ -196,7 +195,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.isTrue(i &gt; 0, "The value must be greater than zero");
      * </pre>
@@ -209,7 +207,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.isTrue(i &gt; 0);
      * </pre>
@@ -221,7 +218,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      *  Assert.isFalse(i &gt; 0, ()-&gt;{
      *      // to query relation message
@@ -240,7 +236,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.isFalse(i &lt; 0, "The value must not be negative");
      * </pre>
@@ -253,7 +248,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.isFalse(i &lt; 0);
      * </pre>
@@ -265,7 +259,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.isNull(value, ()-&gt;{
      *      // to query relation message
@@ -283,7 +276,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.isNull(value, "The value must be null");
      * </pre>
@@ -296,7 +288,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.isNull(value);
      * </pre>
@@ -311,7 +302,6 @@ public class AssertUtil {
     // not null
 
     /**
-     *
      * <pre class="code">
      * Assert.notNull(clazz, ()-&gt;{
      *      // to query relation message
@@ -344,7 +334,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.notNull(clazz);
      * </pre>
@@ -359,7 +348,6 @@ public class AssertUtil {
     // empty
 
     /**
-     *
      * <pre class="code">
      * Assert.notEmpty(name, ()-&gt;{
      *      // to query relation message
@@ -379,7 +367,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.notEmpty(name, "Name must not be empty");
      * </pre>
@@ -392,7 +379,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.notEmpty(name);
      * </pre>
@@ -405,7 +391,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.notBlank(name, ()-&gt;{
      *      // to query relation message
@@ -424,7 +409,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.notBlank(name, "Name must not be blank");
      * </pre>
@@ -437,7 +421,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.notBlank(name);
      * </pre>
@@ -451,7 +434,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.notContain(name, "rod", ()-&gt;{
      *      // to query relation message
@@ -471,11 +453,9 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.notContain(name, "rod", "Name must not contain 'rod'");
      * </pre>
-     *
      */
     public static String notContain(
             final String textToSearch, final String subString, final String errorMsgTemplate, final Object... params)
@@ -487,11 +467,9 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.notContain(name, "rod");
      * </pre>
-     *
      */
     public static String notContain(final String textToSearch, final String subString) throws IllegalArgumentException {
         return notContain(
@@ -502,7 +480,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.notEmpty(array, ()-&gt;{
      *      // to query relation message
@@ -521,7 +498,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.notEmpty(array, "The array must have elements");
      * </pre>
@@ -534,7 +510,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.notEmpty(array, "The array must have elements");
      * </pre>
@@ -547,7 +522,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.noNullElements(array, ()-&gt;{
      *      // to query relation message
@@ -567,7 +541,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.noNullElements(array, "The array must not have null elements");
      * </pre>
@@ -580,7 +553,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.noNullElements(array);
      * </pre>
@@ -592,7 +564,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.notEmpty(collection, ()-&gt;{
      *      // to query relation message
@@ -612,7 +583,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.notEmpty(collection, "Collection must have elements");
      * </pre>
@@ -625,7 +595,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.notEmpty(collection);
      * </pre>
@@ -639,7 +608,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.notEmpty(map, ()-&gt;{
      *      // to query relation message
@@ -659,7 +627,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.notEmpty(map, "Map must have entries");
      * </pre>
@@ -672,7 +639,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.notEmpty(map, "Map must have entries");
      * </pre>
@@ -685,7 +651,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.instanceOf(Foo.class, foo);
      * </pre>
@@ -698,7 +663,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.instanceOf(Foo.class, foo, "foo must be an instance of class Foo");
      * </pre>
@@ -717,22 +681,18 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.isAssignable(Number.class, myClass);
      * </pre>
-     *
      */
     public static void isAssignable(final Class<?> superType, final Class<?> subType) throws IllegalArgumentException {
         isAssignable(superType, subType, "{} is not assignable to {})", subType, superType);
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.isAssignable(Number.class, myClass, "myClass must can be assignable to class Number");
      * </pre>
-     *
      */
     public static void isAssignable(
             final Class<?> superType, final Class<?> subType, final String errorMsgTemplate, final Object... params)
@@ -744,14 +704,12 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.state(id == null, ()-&gt;{
      *      // to query relation message
      *      return "relation message to return ";
      *  });
      * </pre>
-     *
      */
     public static void state(final boolean expression, final Supplier<String> errorMsgSupplier)
             throws IllegalStateException {
@@ -761,11 +719,9 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.state(id == null, "The id property must not already be initialized");
      * </pre>
-     *
      */
     public static void state(final boolean expression, final String errorMsgTemplate, final Object... params)
             throws IllegalStateException {
@@ -775,18 +731,15 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      * Assert.state(id == null);
      * </pre>
-     *
      */
     public static void state(final boolean expression) throws IllegalStateException {
         state(expression, "[Assertion failed] - this state invariant must be true");
     }
 
     /**
-     *
      * <pre>
      * 0 &le; index &lt; size
      * </pre>
@@ -799,7 +752,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre>
      * 0 &le; index &lt; size
      * </pre>
@@ -815,7 +767,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * @throws X if value is out of bound
      * @since 5.7.15
      */
@@ -829,7 +780,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * @since 5.7.15
      */
     public static int checkBetween(
@@ -839,7 +789,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * @since 4.1.10
      */
     public static int checkBetween(final int value, final int min, final int max) {
@@ -847,7 +796,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * @throws X if value is out of bound
      * @since 5.7.15
      */
@@ -861,7 +809,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * @since 5.7.15
      */
     public static long checkBetween(
@@ -871,7 +818,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * @since 4.1.10
      */
     public static long checkBetween(final long value, final long min, final long max) {
@@ -879,7 +825,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * @throws X if value is out of bound
      * @since 5.7.15
      */
@@ -894,7 +839,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * @since 5.7.15
      */
     public static double checkBetween(
@@ -908,7 +852,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * @since 4.1.10
      */
     public static double checkBetween(final double value, final double min, final double max) {
@@ -916,7 +859,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * @since 4.1.10
      */
     public static Number checkBetween(final Number value, final Number min, final Number max) {
@@ -933,7 +875,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      *   Assert.notEquals(obj1,obj2);
      * </pre>
@@ -945,7 +886,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      *   Assert.notEquals(obj1,obj2,"obj1 must be not equals obj2");
      * </pre>
@@ -959,7 +899,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * @throws X obj1 must be not equals obj2
      */
     public static <X extends Throwable> void notEquals(
@@ -973,7 +912,6 @@ public class AssertUtil {
     // not equals
 
     /**
-     *
      * <pre class="code">
      *   Assert.isEquals(obj1,obj2);
      * </pre>
@@ -985,7 +923,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * <pre class="code">
      *   Assert.isEquals(obj1,obj2,"obj1 must be equals obj2");
      * </pre>
@@ -999,7 +936,6 @@ public class AssertUtil {
     }
 
     /**
-     *
      * @throws X obj1 must be equals obj2
      */
     public static <X extends Throwable> void equals(

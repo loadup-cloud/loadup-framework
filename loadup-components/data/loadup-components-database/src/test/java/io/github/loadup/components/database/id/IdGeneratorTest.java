@@ -54,8 +54,15 @@ class IdGeneratorTest {
                 assertThat(value).hasSize(hyphens ? 36 : 32);
                 String canonical = hyphens
                         ? value
-                        : value.substring(0, 8) + "-" + value.substring(8, 12) + "-" + value.substring(12, 16) + "-"
-                                + value.substring(16, 20) + "-" + value.substring(20);
+                        : value.substring(0, 8)
+                                + "-"
+                                + value.substring(8, 12)
+                                + "-"
+                                + value.substring(12, 16)
+                                + "-"
+                                + value.substring(16, 20)
+                                + "-"
+                                + value.substring(20);
                 var uuid = UUID.fromString(canonical);
                 assertThat(uuid.variant()).isEqualTo(2);
                 assertThat(uuid.version()).isEqualTo(generator instanceof UuidV4IdGenerator ? 4 : 7);

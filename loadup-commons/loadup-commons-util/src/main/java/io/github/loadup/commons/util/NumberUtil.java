@@ -26,11 +26,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- *
  * <pre>
  * </pre>
- *
- *
  *
  * <ul>
  *   <li><a
@@ -46,7 +43,6 @@ public class NumberUtil {
     // region ----- add
 
     /**
-     *
      * @since 4.0.0
      */
     public static BigDecimal add(final Number... values) {
@@ -66,8 +62,6 @@ public class NumberUtil {
     }
 
     /**
-     *
-     *
      * @since 4.0.0
      */
     public static BigDecimal add(final String... values) {
@@ -91,7 +85,6 @@ public class NumberUtil {
     // region ----- sub
 
     /**
-     *
      * @since 4.0.0
      */
     public static BigDecimal sub(final Number... values) {
@@ -111,7 +104,6 @@ public class NumberUtil {
     }
 
     /**
-     *
      * @since 4.0.0
      */
     public static BigDecimal sub(final String... values) {
@@ -135,7 +127,6 @@ public class NumberUtil {
     // region ----- mul
 
     /**
-     *
      * @since 4.0.0
      */
     public static BigDecimal mul(final Number... values) {
@@ -160,7 +151,6 @@ public class NumberUtil {
     }
 
     /**
-     *
      * @since 4.0.0
      */
     public static BigDecimal mul(final String... values) {
@@ -190,7 +180,6 @@ public class NumberUtil {
     // region ----- div
 
     /**
-     *
      * @since 3.1.0
      */
     public static BigDecimal div(final Number v1, final Number v2) {
@@ -202,7 +191,6 @@ public class NumberUtil {
     }
 
     /**
-     *
      * @since 3.1.0
      */
     public static BigDecimal div(final Number v1, final Number v2, final int scale) {
@@ -218,7 +206,6 @@ public class NumberUtil {
     }
 
     /**
-     *
      * @since 3.1.0
      */
     public static BigDecimal div(final Number v1, final Number v2, int scale, final RoundingMode roundingMode) {
@@ -234,7 +221,6 @@ public class NumberUtil {
     }
 
     /**
-     *
      * @since 5.3.3
      */
     public static int ceilDiv(final int v1, final int v2) {
@@ -254,7 +240,6 @@ public class NumberUtil {
     }
 
     /**
-     *
      * @since 4.1.0
      */
     public static BigDecimal round(final BigDecimal number, final int scale) {
@@ -262,7 +247,6 @@ public class NumberUtil {
     }
 
     /**
-     *
      * @since 3.2.2
      */
     public static String roundStr(final String numberStr, final int scale) {
@@ -274,7 +258,6 @@ public class NumberUtil {
     }
 
     /**
-     *
      * @since 3.2.2
      */
     public static String roundStr(final double v, final int scale, final RoundingMode roundingMode) {
@@ -296,7 +279,6 @@ public class NumberUtil {
     }
 
     /**
-     *
      * @since 3.2.2
      */
     public static String roundStr(final String numberStr, final int scale, final RoundingMode roundingMode) {
@@ -304,8 +286,6 @@ public class NumberUtil {
     }
 
     /**
-     *
-     *
      * <pre>
      * </pre>
      *
@@ -316,7 +296,6 @@ public class NumberUtil {
     }
 
     /**
-     *
      * @since 4.1.0
      */
     public static BigDecimal roundDown(final Number number, final int scale) {
@@ -328,7 +307,6 @@ public class NumberUtil {
     // region ----- decimalFormat
 
     /**
-     *
      * <ul>
      * </ul>
      */
@@ -337,7 +315,6 @@ public class NumberUtil {
     }
 
     /**
-     *
      * <ul>
      * </ul>
      *
@@ -348,7 +325,6 @@ public class NumberUtil {
     }
 
     /**
-     *
      * <ul>
      * </ul>
      *
@@ -359,7 +335,6 @@ public class NumberUtil {
     }
 
     /**
-     *
      * <ul>
      * </ul>
      *
@@ -374,7 +349,6 @@ public class NumberUtil {
     }
 
     /**
-     *
      * @since 3.0.9
      */
     public static String formatMoney(final double value) {
@@ -382,7 +356,6 @@ public class NumberUtil {
     }
 
     /**
-     *
      * @since 3.2.3
      */
     public static String formatPercent(final double number, final int scale) {
@@ -392,7 +365,6 @@ public class NumberUtil {
     }
 
     /**
-     *
      * @since 6.0.0
      */
     public static String formatThousands(final double number, final int scale) {
@@ -484,7 +456,6 @@ public class NumberUtil {
     // region ----- equals
 
     /**
-     *
      * <ul>
      * </ul>
      *
@@ -503,7 +474,6 @@ public class NumberUtil {
     // region ----- toStr
 
     /**
-     *
      * @since 3.0.9
      */
     public static String toStr(final Number number, final String defaultValue) {
@@ -533,7 +503,6 @@ public class NumberUtil {
     }
 
     /**
-     *
      * @since 5.4.6
      */
     public static String toStr(final BigDecimal bigDecimal) {
@@ -541,7 +510,6 @@ public class NumberUtil {
     }
 
     /**
-     *
      * @since 5.4.6
      */
     public static String toStr(BigDecimal bigDecimal, final boolean isStripTrailingZeros) {
@@ -554,7 +522,6 @@ public class NumberUtil {
     // endregion
 
     /**
-     *
      * @since 4.0.9
      */
     public static BigDecimal toBigDecimal(final Number number) {
@@ -580,7 +547,6 @@ public class NumberUtil {
     }
 
     /**
-     *
      * @since 5.4.5
      */
     public static BigInteger toBigInteger(final Number number) {
@@ -595,7 +561,6 @@ public class NumberUtil {
     }
 
     /**
-     *
      * @since 5.4.5
      */
     public static BigInteger toBigInteger(final String numberStr) {
@@ -603,7 +568,6 @@ public class NumberUtil {
     }
 
     /**
-     *
      * <pre>
      * </pre>
      *
@@ -615,7 +579,6 @@ public class NumberUtil {
     }
 
     /**
-     *
      * @since 3.1.2
      */
     public static int zeroToOne(final int value) {
@@ -653,7 +616,6 @@ public class NumberUtil {
     }
 
     /**
-     *
      * @since 3.0.9
      */
     public static BigDecimal nullToZero(final BigDecimal decimal) {
@@ -663,7 +625,6 @@ public class NumberUtil {
     // endregion
 
     /**
-     *
      * @since 4.0.7
      */
     public static boolean isBeside(final long number1, final long number2) {
@@ -671,7 +632,6 @@ public class NumberUtil {
     }
 
     /**
-     *
      * @since 4.0.7
      */
     public static boolean isBeside(final int number1, final int number2) {
@@ -679,7 +639,6 @@ public class NumberUtil {
     }
 
     /**
-     *
      * @since 4.0.7
      */
     public static int partValue(final int total, final int partCount) {
@@ -687,7 +646,6 @@ public class NumberUtil {
     }
 
     /**
-     *
      * @since 4.0.7
      */
     public static int partValue(final int total, final int partCount, final boolean isPlusOneWhenHasRem) {
@@ -699,7 +657,6 @@ public class NumberUtil {
     }
 
     /**
-     *
      * @since 4.1.0
      */
     public static BigDecimal pow(final Number number, final int n) {
@@ -707,7 +664,6 @@ public class NumberUtil {
     }
 
     /**
-     *
      * @since 4.1.0
      */
     public static BigDecimal pow(final BigDecimal number, final int n) {
@@ -715,7 +671,6 @@ public class NumberUtil {
     }
 
     /**
-     *
      * @since 4.1.0
      */
     public static BigDecimal pow(

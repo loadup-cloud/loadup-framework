@@ -24,7 +24,7 @@ public interface GlobalUniqueTemplate {
     /**
      * Claims a business key in the current tenant.
      *
-     * @param bizType   business namespace
+     * @param bizType business namespace
      * @param uniqueKey unique key inside the namespace
      * @return {@code true} for the first claim, otherwise {@code false}
      */
@@ -41,7 +41,7 @@ public interface GlobalUniqueTemplate {
     /**
      * Finds a claim in the current tenant.
      *
-     * @param bizType   business namespace
+     * @param bizType business namespace
      * @param uniqueKey unique key inside the namespace
      * @return the matching record when present
      */

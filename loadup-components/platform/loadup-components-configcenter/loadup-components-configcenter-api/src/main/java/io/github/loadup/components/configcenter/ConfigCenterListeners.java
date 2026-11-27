@@ -22,7 +22,9 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Stores independently removable subscriptions for binders with a shared SDK or OpenAPI listener. */
+/**
+ * Stores independently removable subscriptions for binders with a shared SDK or OpenAPI listener.
+ */
 public final class ConfigCenterListeners {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigCenterListeners.class);
 

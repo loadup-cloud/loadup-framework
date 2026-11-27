@@ -36,9 +36,7 @@ public record PageResult<T>(List<T> records, long total, int page, int size) {
         return new PageResult<>(records, total, page, size);
     }
 
-    /**
-     * Maps entries without changing pagination metadata.
-     */
+    /** Maps entries without changing pagination metadata. */
     public <R> PageResult<R> map(Function<? super T, ? extends R> converter) {
         return new PageResult<>(records.stream().<R>map(converter).toList(), total, page, size);
     }

@@ -328,7 +328,8 @@ public final class SegmentSequence implements Sequence, AutoCloseable {
     }
 
     private static final class Buffer {
-        final long last, size;
+        final long last;
+        final long size;
         final AtomicLong cursor;
 
         Buffer(SequenceRange range) {

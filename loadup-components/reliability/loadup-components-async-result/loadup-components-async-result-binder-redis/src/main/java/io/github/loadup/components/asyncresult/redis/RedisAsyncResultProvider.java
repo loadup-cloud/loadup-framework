@@ -52,7 +52,8 @@ public final class RedisAsyncResultProvider implements AsyncResultProvider {
         """;
     private final RedissonClient client;
     private final String prefix;
-    // This fixed internal protocol has no polymorphic types, time values or application mapper customizations.
+    // This fixed internal protocol has no polymorphic types, time values or application mapper
+    // customizations.
     private final JsonMapper protocol = JsonMapper.builder().build();
 
     public RedisAsyncResultProvider(RedissonClient client, String namespace) {
@@ -66,7 +67,12 @@ public final class RedisAsyncResultProvider implements AsyncResultProvider {
     }
 
     private String key(AsyncReplyKey key) {
-        return prefix + "result:" + encode(key.operation()) + ":" + encode(key.businessId()) + ":"
+        return prefix
+                + "result:"
+                + encode(key.operation())
+                + ":"
+                + encode(key.businessId())
+                + ":"
                 + key.correlationId();
     }
 

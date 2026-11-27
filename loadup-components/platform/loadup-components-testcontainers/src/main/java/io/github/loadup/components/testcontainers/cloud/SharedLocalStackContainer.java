@@ -24,35 +24,27 @@ import org.testcontainers.utility.DockerImageName;
 
 public final class SharedLocalStackContainer {
 
-    /**
-     * Default LocalStack version to use
-     */
+    /** Default LocalStack version to use */
     public static final String DEFAULT_LOCALSTACK_VERSION = "localstack/localstack:3.8.1";
-    /**
-     * Enable flag for TestContainers
-     */
+
+    /** Enable flag for TestContainers */
     private static final boolean ENABLED;
 
     private static final AtomicBoolean STARTED = new AtomicBoolean(false);
-    /**
-     * Default access key for LocalStack
-     */
+
+    /** Default access key for LocalStack */
     private static String accessKey = "test";
-    /**
-     * Default secret key for LocalStack
-     */
+
+    /** Default secret key for LocalStack */
     private static String secretKey = "test";
-    /**
-     * Default region
-     */
+
+    /** Default region */
     private static String region = "us-east-1";
-    /**
-     * The shared LocalStack container instance
-     */
+
+    /** The shared LocalStack container instance */
     private static LocalStackContainer localstackContainer;
-    /**
-     * S3 endpoint URL
-     */
+
+    /** S3 endpoint URL */
     private static String s3Endpoint;
 
     static {
@@ -70,9 +62,7 @@ public final class SharedLocalStackContainer {
         }
     }
 
-    /**
-     * Private constructor to prevent instantiation
-     */
+    /** Private constructor to prevent instantiation */
     private SharedLocalStackContainer() {
         throw new UnsupportedOperationException("Utility class cannot be instantiated");
     }

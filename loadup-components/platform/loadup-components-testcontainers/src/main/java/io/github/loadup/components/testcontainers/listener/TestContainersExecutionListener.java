@@ -37,9 +37,7 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
 @SuppressWarnings("PMD.TestClassWithoutTestCases")
 public class TestContainersExecutionListener extends AbstractTestExecutionListener {
 
-    /**
-     * Thread-local to store container properties before ApplicationContext is created.
-     */
+    /** Thread-local to store container properties before ApplicationContext is created. */
     private static final ThreadLocal<Map<String, String>> CONTAINER_PROPERTIES = new ThreadLocal<>();
 
     /**
@@ -169,7 +167,7 @@ public class TestContainersExecutionListener extends AbstractTestExecutionListen
     /**
      * Start a specific container type and return its connection properties.
      *
-     * @param type  the container type to start
+     * @param type the container type to start
      * @param reuse whether to reuse existing containers
      * @return map of property names to values for Spring environment injection
      */

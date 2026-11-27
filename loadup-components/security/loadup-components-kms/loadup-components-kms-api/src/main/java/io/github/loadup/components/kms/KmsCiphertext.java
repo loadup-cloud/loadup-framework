@@ -35,7 +35,9 @@ public record KmsCiphertext(
         }
     }
 
-    /** Retain this reference from the original, trusted operation for use after an alias is rebound. */
+    /**
+     * Retain this reference from the original, trusted operation for use after an alias is rebound.
+     */
     public KmsKeyRef keyRef() {
         return new KmsKeyRef(keyName, version, providerVersion);
     }

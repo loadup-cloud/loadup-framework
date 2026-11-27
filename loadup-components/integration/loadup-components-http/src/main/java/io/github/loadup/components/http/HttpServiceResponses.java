@@ -42,7 +42,10 @@ public final class HttpServiceResponses {
         throw new HttpCallException(HttpCallException.Kind.RESPONSE_DECODING);
     }
 
-    /** Callers translate only their own explicit whitelist; an arbitrary exception carries no remote code. */
+    /**
+     * Callers translate only their own explicit whitelist; an arbitrary exception carries no remote
+     * code.
+     */
     public static String resultCode(Throwable failure) {
         return failure instanceof RemoteFailure remote ? remote.code : "";
     }

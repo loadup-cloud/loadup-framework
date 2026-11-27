@@ -17,9 +17,7 @@ package io.github.loadup.commons.error;
 
 import java.util.Objects;
 
-/**
- * A pure-domain failure; application adapters map reasons to public result-code enums.
- */
+/** A pure-domain failure; application adapters map reasons to public result-code enums. */
 public final class DomainViolation extends IllegalArgumentException {
     private static final long serialVersionUID = 1L;
     private final Reason reason;

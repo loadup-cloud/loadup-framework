@@ -24,39 +24,27 @@ import org.testcontainers.utility.DockerImageName;
 
 public final class SharedMongoDBContainer {
 
-    /**
-     * Default MongoDB version to use
-     */
+    /** Default MongoDB version to use */
     public static final String DEFAULT_MONGODB_VERSION = "mongo:7.0";
 
-    /**
-     * Default replica set name
-     */
+    /** Default replica set name */
     private static final String DEFAULT_DATABASE_NAME = "testdb";
 
     private static final AtomicBoolean STARTED = new AtomicBoolean(false);
-    /**
-     * The shared MongoDB container instance
-     */
+
+    /** The shared MongoDB container instance */
     private static MongoDBContainer mongodbContainer;
-    /**
-     * MongoDB connection string
-     */
+
+    /** MongoDB connection string */
     private static String connectionString;
 
-    /**
-     * MongoDB host
-     */
+    /** MongoDB host */
     private static String host;
 
-    /**
-     * MongoDB port
-     */
+    /** MongoDB port */
     private static Integer port;
 
-    /**
-     * MongoDB replica set URL
-     */
+    /** MongoDB replica set URL */
     private static String replicaSetUrl;
 
     private SharedMongoDBContainer() {

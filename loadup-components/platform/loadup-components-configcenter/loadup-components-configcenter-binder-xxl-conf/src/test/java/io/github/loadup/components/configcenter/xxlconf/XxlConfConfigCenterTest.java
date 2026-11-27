@@ -108,7 +108,8 @@ class XxlConfConfigCenterTest {
                 .withPropertyValues(
                         "loadup.configcenter.binder-type=xxl-conf",
                         "loadup.configcenter.binder.xxl-conf.address=http://127.0.0.1:"
-                                + server.getAddress().getPort() + "/xxl-conf/",
+                                + server.getAddress().getPort()
+                                + "/xxl-conf/",
                         "loadup.configcenter.binder.xxl-conf.access-token=test-token",
                         "loadup.configcenter.binder.xxl-conf.app-name=payments",
                         "loadup.configcenter.binder.xxl-conf.env=test",

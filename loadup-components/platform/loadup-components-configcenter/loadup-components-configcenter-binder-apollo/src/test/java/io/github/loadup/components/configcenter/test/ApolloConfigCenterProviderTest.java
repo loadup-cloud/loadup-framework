@@ -115,7 +115,8 @@ class ApolloConfigCenterProviderTest {
             var capture = ArgumentCaptor.forClass(ConfigChangeListener.class);
             verify(sdk).addChangeListener(capture.capture());
             var template = new DefaultConfigCenterTemplate(provider);
-            List<String> first = new ArrayList<>(), second = new ArrayList<>();
+            List<String> first = new ArrayList<>();
+            List<String> second = new ArrayList<>();
             template.addListener("key", first::add);
             template.addListener("key", second::add);
             capture.getValue()

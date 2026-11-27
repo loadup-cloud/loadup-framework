@@ -39,73 +39,55 @@ public final class DataPrepareBuilder extends AbstractPipelineBuilder {
         super(stages, consumerIndexMap, functionIndexMap, biConsumerIndexMap);
     }
 
-    /**
-     * Add a Spring-bean data-prepare stage.
-     */
+    /** Add a Spring-bean data-prepare stage. */
     public ProcessBuilder prepare(Class<? extends IDataPrepareStage<?>> stage) {
         stageList.add(stage);
         return new ProcessBuilder(stageList, consumerIndexMap, functionIndexMap, biConsumerIndexMap);
     }
 
-    /**
-     * Add an inline data-prepare stage.
-     */
+    /** Add an inline data-prepare stage. */
     public <DATA> ProcessBuilder prepare(Function<PipelineContext, DATA> function) {
         registerDataPrepareFunction(function);
         return new ProcessBuilder(stageList, consumerIndexMap, functionIndexMap, biConsumerIndexMap);
     }
 
-    /**
-     * Skip prepare — add process stage directly.
-     */
+    /** Skip prepare — add process stage directly. */
     public ProcessBuilder process(Class<? extends IProcessStage> stage) {
         stageList.add(stage);
         return new ProcessBuilder(stageList, consumerIndexMap, functionIndexMap, biConsumerIndexMap);
     }
 
-    /**
-     * Skip prepare — inline biz-process lambda.
-     */
+    /** Skip prepare — inline biz-process lambda. */
     public ProcessBuilder process(Consumer<PipelineContext> consumer) {
         registerBizProcessConsumer(consumer);
         return new ProcessBuilder(stageList, consumerIndexMap, functionIndexMap, biConsumerIndexMap);
     }
 
-    /**
-     * Skip prepare — inline data-process lambda.
-     */
+    /** Skip prepare — inline data-process lambda. */
     public <DATA> ProcessBuilder process(BiConsumer<DATA, PipelineContext> biConsumer) {
         registerDataProcessBiConsumer(biConsumer);
         return new ProcessBuilder(stageList, consumerIndexMap, functionIndexMap, biConsumerIndexMap);
     }
 
-    /**
-     * Skip prepare + process — go directly to assemble.
-     */
+    /** Skip prepare + process — go directly to assemble. */
     public ResultAssembleBuilder assemble(Class<? extends IResultAssembleStage<?>> stage) {
         stageList.add(stage);
         return new ResultAssembleBuilder(stageList, consumerIndexMap, functionIndexMap, biConsumerIndexMap);
     }
 
-    /**
-     * Skip prepare + process — inline assemble lambda.
-     */
+    /** Skip prepare + process — inline assemble lambda. */
     public <RES> ResultAssembleBuilder assemble(Function<PipelineContext, RES> function) {
         registerResultAssembleFunction(function);
         return new ResultAssembleBuilder(stageList, consumerIndexMap, functionIndexMap, biConsumerIndexMap);
     }
 
-    /**
-     * Open a transactional block.
-     */
+    /** Open a transactional block. */
     public ProcessInTxBuilder startTx(Class<? extends ITxInitializer> txInitializer) {
         stageList.add(txInitializer);
         return new ProcessInTxBuilder(stageList, consumerIndexMap, functionIndexMap, biConsumerIndexMap);
     }
 
-    /**
-     * Close a previously opened transactional block.
-     */
+    /** Close a previously opened transactional block. */
     public ProcessBuilder endTx() {
         stageList.add(EndTxMarker.class);
         return new ProcessBuilder(stageList, consumerIndexMap, functionIndexMap, biConsumerIndexMap);

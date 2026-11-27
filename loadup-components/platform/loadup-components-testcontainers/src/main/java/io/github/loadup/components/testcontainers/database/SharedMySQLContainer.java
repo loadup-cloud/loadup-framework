@@ -24,52 +24,39 @@ import org.testcontainers.utility.DockerImageName;
 
 public final class SharedMySQLContainer {
 
-    /**
-     * Default MySQL version to use
-     */
+    /** Default MySQL version to use */
     public static final String DEFAULT_MYSQL_VERSION = "mysql:8.0";
-    /**
-     * JDBC driver class name
-     */
+
+    /** JDBC driver class name */
     public static final String DRIVER_CLASS_NAME = "com.mysql.cj.jdbc.Driver";
-    /**
-     * Default database name
-     */
+
+    /** Default database name */
     private static final String DEFAULT_DATABASE_NAME = "testdb";
-    /**
-     * Default username
-     */
+
+    /** Default username */
     private static final String DEFAULT_USERNAME = "test";
-    /**
-     * Default password
-     */
+
+    /** Default password */
     private static final String DEFAULT_PASSWORD = "test";
 
     private static final AtomicBoolean STARTED = new AtomicBoolean(false);
-    /**
-     * The shared MySQL container instance
-     */
+
+    /** The shared MySQL container instance */
     private static MySQLContainer mysqlContainer;
-    /**
-     * JDBC URL for the shared MySQL container
-     */
+
+    /** JDBC URL for the shared MySQL container */
     private static String jdbcUrl;
-    /**
-     * Username for the shared MySQL container
-     */
+
+    /** Username for the shared MySQL container */
     private static String username;
-    /**
-     * Password for the shared MySQL container
-     */
+
+    /** Password for the shared MySQL container */
     private static String password;
-    /**
-     * Database name for the shared MySQL container
-     */
+
+    /** Database name for the shared MySQL container */
     private static String databaseName;
 
-    /**
-     * Private constructor to prevent instantiation
-     */
+    /** Private constructor to prevent instantiation */
     private SharedMySQLContainer() {
         throw new UnsupportedOperationException("Utility class cannot be instantiated");
     }

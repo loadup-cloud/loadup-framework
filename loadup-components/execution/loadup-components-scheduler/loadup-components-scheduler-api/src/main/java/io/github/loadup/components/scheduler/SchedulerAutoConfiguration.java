@@ -36,7 +36,9 @@ public class SchedulerAutoConfiguration {
             List<SchedulerProvider> providers, List<ScheduledTask> tasks, SchedulerProperties properties) {
         if (providers.size() != 1) {
             throw new IllegalStateException("Expected one scheduler binder for loadup.scheduler.binder-type="
-                    + properties.binderType() + ", found " + providers.size());
+                    + properties.binderType()
+                    + ", found "
+                    + providers.size());
         }
         return new SchedulerTemplate(providers.getFirst(), tasks, properties.tasks());
     }

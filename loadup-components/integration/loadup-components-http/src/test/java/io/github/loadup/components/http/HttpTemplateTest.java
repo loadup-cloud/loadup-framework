@@ -531,7 +531,8 @@ class HttpTemplateTest {
     @Test
     void callerContentTypeAndOperationHeadersRemainAvailable() {
         server.createContext("/headers", exchange -> {
-            String values = exchange.getRequestHeaders().getFirst("Content-Type") + ":"
+            String values = exchange.getRequestHeaders().getFirst("Content-Type")
+                    + ":"
                     + exchange.getRequestHeaders().getFirst("X-Operation");
             byte[] bytes = values.getBytes(StandardCharsets.UTF_8);
             exchange.sendResponseHeaders(200, bytes.length);

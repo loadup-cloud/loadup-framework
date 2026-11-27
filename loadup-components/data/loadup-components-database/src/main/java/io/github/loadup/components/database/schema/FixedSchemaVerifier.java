@@ -25,9 +25,9 @@ import javax.sql.DataSource;
 /**
  * Verifies that the runtime connection really is bound to the configured schema.
  *
- * <p>The check runs while the application context initializes, before any worker or scanner
- * starts. It proves the declared target only; database privileges and cross-schema rejection still
- * require a real database acceptance test.
+ * <p>The check runs while the application context initializes, before any worker or scanner starts.
+ * It proves the declared target only; database privileges and cross-schema rejection still require
+ * a real database acceptance test.
  */
 public final class FixedSchemaVerifier {
 
@@ -43,9 +43,7 @@ public final class FixedSchemaVerifier {
         return schema;
     }
 
-    /**
-     * Fails startup when a physical connection does not resolve to the configured schema.
-     */
+    /** Fails startup when a physical connection does not resolve to the configured schema. */
     public void verify() {
         try (Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();

@@ -68,8 +68,12 @@ class FixedDataSourceIsolationIT {
 
     @AfterEach
     void cleanup() {
-        if (first != null) first.close();
-        if (second != null) second.close();
+        if (first != null) {
+            first.close();
+        }
+        if (second != null) {
+            second.close();
+        }
         script("cleanup.sql");
     }
 

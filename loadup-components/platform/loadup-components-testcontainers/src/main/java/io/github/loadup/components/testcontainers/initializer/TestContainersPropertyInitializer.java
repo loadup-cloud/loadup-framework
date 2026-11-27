@@ -72,9 +72,7 @@ public class TestContainersPropertyInitializer
         }
     }
 
-    /**
-     * Start containers based on configuration properties.
-     */
+    /** Start containers based on configuration properties. */
     private Map<String, String> startContainersFromConfiguration(ConfigurableApplicationContext context) {
         TestContainersProperties config = Binder.get(context.getEnvironment())
                 .bind("loadup.testcontainers", TestContainersProperties.class)
@@ -143,9 +141,7 @@ public class TestContainersPropertyInitializer
         return allProperties;
     }
 
-    /**
-     * Inject properties into ApplicationContext environment.
-     */
+    /** Inject properties into ApplicationContext environment. */
     private void injectProperties(ConfigurableApplicationContext context, Map<String, String> properties) {
         LogUtil.info(
                 TestContainersPropertyInitializer.class,

@@ -22,24 +22,16 @@ public class KeyPairInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * The Base64-encoded public key.
-     */
+    /** The Base64-encoded public key. */
     private String publicKey;
 
-    /**
-     * The Base64-encoded private key.
-     */
+    /** The Base64-encoded private key. */
     private String privateKey;
 
-    /**
-     * The key algorithm.
-     */
+    /** The key algorithm. */
     private String algorithm;
 
-    /**
-     * The key size in bits.
-     */
+    /** The key size in bits. */
     private Integer keySize;
 
     public KeyPairInfo(String publicKey, String privateKey, String algorithm, Integer keySize) {

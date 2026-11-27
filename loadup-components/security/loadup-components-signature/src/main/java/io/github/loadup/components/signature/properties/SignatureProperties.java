@@ -29,24 +29,16 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "loadup.components.signature")
 public class SignatureProperties {
 
-    /**
-     * Whether the signature component is enabled.
-     */
+    /** Whether the signature component is enabled. */
     private boolean enabled = true;
 
-    /**
-     * The default signature algorithm.
-     */
+    /** The default signature algorithm. */
     @NotNull private SignatureAlgorithm defaultSignatureAlgorithm = SignatureAlgorithm.SHA256_WITH_RSA;
 
-    /**
-     * The default digest algorithm.
-     */
+    /** The default digest algorithm. */
     @NotNull private DigestAlgorithm defaultDigestAlgorithm = DigestAlgorithm.SHA256;
 
-    /**
-     * Per-algorithm key sizes in bits.
-     */
+    /** Per-algorithm key sizes in bits. */
     private Map<String, Integer> keySize = createDefaultKeySizeMap();
 
     public SignatureProperties(

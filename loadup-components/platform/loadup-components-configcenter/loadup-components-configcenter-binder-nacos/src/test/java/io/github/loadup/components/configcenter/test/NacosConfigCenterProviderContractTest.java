@@ -48,7 +48,8 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 class NacosConfigCenterProviderContractTest {
-    private static final String DATA_ID = "loadup-config", GROUP = "DEFAULT_GROUP";
+    private static final String DATA_ID = "loadup-config";
+    private static final String GROUP = "DEFAULT_GROUP";
 
     @Test
     void readsInitialSnapshotAndListsMatchingKeysInOrder() throws Exception {
@@ -89,7 +90,8 @@ class NacosConfigCenterProviderContractTest {
             verify(sdk)
                     .publishConfigCas(eq(DATA_ID), eq(GROUP), contents.capture(), eq("md5-before"), eq("properties"));
             verify(sdk).publishConfigCas(eq(DATA_ID), eq(GROUP), contents.capture(), eq("md5-after"), eq("properties"));
-            Properties first = new Properties(), second = new Properties();
+            Properties first = new Properties();
+            Properties second = new Properties();
             first.load(new StringReader(contents.getAllValues().get(0)));
             second.load(new StringReader(contents.getAllValues().get(1)));
             assertThat(first).containsEntry("a", "new").containsEntry("external", "retained");
@@ -166,10 +168,10 @@ class NacosConfigCenterProviderContractTest {
             factory.when(() -> NacosFactory.createConfigService(any(Properties.class)))
                     .thenReturn(sdk);
             var provider = new NacosConfigCenterProvider(new NacosConfigCenterProperties());
-            List<String> changed = new ArrayList<>(),
-                    additional = new ArrayList<>(),
-                    removed = new ArrayList<>(),
-                    stable = new ArrayList<>();
+            List<String> changed = new ArrayList<>();
+            List<String> additional = new ArrayList<>();
+            List<String> removed = new ArrayList<>();
+            List<String> stable = new ArrayList<>();
             Runnable unsubscribe = provider.subscribe("changed", changed::add);
             provider.subscribe("changed", additional::add);
             provider.subscribe("removed", removed::add);

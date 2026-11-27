@@ -24,74 +24,46 @@ import org.testcontainers.utility.DockerImageName;
 
 public final class SharedPostgreSQLContainer {
 
-    /**
-     * Default PostgreSQL version to use
-     */
+    /** Default PostgreSQL version to use */
     public static final String DEFAULT_POSTGRES_VERSION = "postgres:18-alpine";
 
-    /**
-     * Default database name
-     */
+    /** Default database name */
     private static final String DEFAULT_DATABASE_NAME = "testdb";
 
-    /**
-     * Default username
-     */
+    /** Default username */
     private static final String DEFAULT_USERNAME = "test";
 
-    /**
-     * Default password
-     */
+    /** Default password */
     private static final String DEFAULT_PASSWORD = "test";
 
-    /**
-     * JDBC driver class name
-     */
+    /** JDBC driver class name */
     private static final String DRIVER_CLASS_NAME = "org.postgresql.Driver";
 
-    /**
-     * Enable flag for TestContainers
-     */
+    /** Enable flag for TestContainers */
     private static final AtomicBoolean STARTED = new AtomicBoolean(false);
 
-    /**
-     * The shared PostgreSQL container instance
-     */
+    /** The shared PostgreSQL container instance */
     private static PostgreSQLContainer postgresContainer;
 
-    /**
-     * PostgreSQL JDBC URL for the shared container
-     */
+    /** PostgreSQL JDBC URL for the shared container */
     private static String jdbcUrl;
 
-    /**
-     * PostgreSQL username for the shared container
-     */
+    /** PostgreSQL username for the shared container */
     private static String username;
 
-    /**
-     * PostgreSQL password for the shared container
-     */
+    /** PostgreSQL password for the shared container */
     private static String password;
 
-    /**
-     * PostgreSQL database name
-     */
+    /** PostgreSQL database name */
     private static String databaseName;
 
-    /**
-     * PostgreSQL host
-     */
+    /** PostgreSQL host */
     private static String host;
 
-    /**
-     * PostgreSQL port
-     */
+    /** PostgreSQL port */
     private static Integer port;
 
-    /**
-     * Private constructor to prevent instantiation
-     */
+    /** Private constructor to prevent instantiation */
     private SharedPostgreSQLContainer() {
         throw new UnsupportedOperationException("Utility class cannot be instantiated");
     }

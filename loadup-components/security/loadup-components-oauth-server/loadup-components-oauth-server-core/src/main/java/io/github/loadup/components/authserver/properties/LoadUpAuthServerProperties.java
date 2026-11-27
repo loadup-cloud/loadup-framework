@@ -23,9 +23,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "loadup.security.auth-server")
 public class LoadUpAuthServerProperties {
 
-    /**
-     * Issuer identifier of this authorization server (e.g. {@code http://localhost:8080}).
-     */
+    /** Issuer identifier of this authorization server (e.g. {@code http://localhost:8080}). */
     private String issuer = "http://localhost:8080";
 
     private String audience;
@@ -43,9 +41,8 @@ public class LoadUpAuthServerProperties {
     private boolean protocolEndpointsEnabled = true;
 
     private Duration userAccessTokenTtl = Duration.ofMinutes(30);
-    /**
-     * KMS signing reference and retained verification keys used by the SAS binder.
-     */
+
+    /** KMS signing reference and retained verification keys used by the SAS binder. */
     private Signing signing = new Signing();
 
     public boolean isProtocolEndpointsEnabled() {
@@ -88,9 +85,7 @@ public class LoadUpAuthServerProperties {
         this.signing = signing;
     }
 
-    /**
-     * An explicit active key and historical keys to publish through JWKS.
-     */
+    /** An explicit active key and historical keys to publish through JWKS. */
     public static class Signing {
         private SigningKey activeKey = new SigningKey();
         private List<SigningKey> verificationKeys = new ArrayList<>();

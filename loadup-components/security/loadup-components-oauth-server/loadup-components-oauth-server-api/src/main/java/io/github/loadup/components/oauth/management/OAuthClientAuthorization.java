@@ -24,7 +24,10 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
 
-/** Shared-secret client_credentials authorization. Application identity is represented by attributes. */
+/**
+ * Shared-secret client_credentials authorization. Application identity is represented by
+ * attributes.
+ */
 public record OAuthClientAuthorization(
         @NotBlank @Size(max = 200) String clientName,
         @NotEmpty @Size(max = 100) Set<@NotBlank @Size(max = 128) String> scopes,

@@ -22,24 +22,23 @@ import java.util.Objects;
 public class PipelineContext {
 
     /**
-     * Arbitrary key-value bag for cross-stage communication.
-     * Prefer typed getters/setters over raw map access when possible.
+     * Arbitrary key-value bag for cross-stage communication. Prefer typed getters/setters over raw
+     * map access when possible.
      */
     private final Map<String, Object> properties = new HashMap<>();
-    /**
-     * The original request object passed to the pipeline executor.
-     */
+
+    /** The original request object passed to the pipeline executor. */
     private Object request;
-    /**
-     * The domain model set by {@link io.github.loadup.components.pipeline.api.IDataPrepareStage}.
-     */
+
+    /** The domain model set by {@link io.github.loadup.components.pipeline.api.IDataPrepareStage}. */
     private Object model;
-    /**
-     * Runtime class of {@link #model}, used for safe casting.
-     */
+
+    /** Runtime class of {@link #model}, used for safe casting. */
     private Class<?> modelClass;
+
     /**
-     * The response object set by {@link io.github.loadup.components.pipeline.api.IResultAssembleStage}.
+     * The response object set by {@link
+     * io.github.loadup.components.pipeline.api.IResultAssembleStage}.
      */
     private Object response;
 
@@ -49,7 +48,7 @@ public class PipelineContext {
      * Returns the raw request object.
      *
      * @param <REQ> expected type
-     * @param type  the expected request class
+     * @param type the expected request class
      * @return the request cast to {@code type}
      */
     @SuppressWarnings("unchecked")
@@ -57,9 +56,7 @@ public class PipelineContext {
         return type.cast(request);
     }
 
-    /**
-     * Returns the raw request without casting — useful in generic stages.
-     */
+    /** Returns the raw request without casting — useful in generic stages. */
     public Object getRequest() {
         return request;
     }
@@ -75,7 +72,7 @@ public class PipelineContext {
      * Returns the domain model prepared by the data-prepare stage.
      *
      * @param <DATA> expected model type
-     * @param type   the expected model class
+     * @param type the expected model class
      * @return the model cast to {@code type}; may be {@code null} if no prepare stage ran
      */
     @SuppressWarnings("unchecked")
@@ -86,9 +83,7 @@ public class PipelineContext {
         return type.cast(model);
     }
 
-    /**
-     * Returns the raw model without casting.
-     */
+    /** Returns the raw model without casting. */
     public Object getModel() {
         return model;
     }
@@ -105,16 +100,14 @@ public class PipelineContext {
      * Returns the final response object.
      *
      * @param <RES> expected response type
-     * @param type  the expected response class
+     * @param type the expected response class
      */
     @SuppressWarnings("unchecked")
     public <RES> RES getResponse(Class<RES> type) {
         return type.cast(response);
     }
 
-    /**
-     * Returns the raw response without casting.
-     */
+    /** Returns the raw response without casting. */
     public Object getResponse() {
         return response;
     }
@@ -142,7 +135,7 @@ public class PipelineContext {
     /**
      * Stores a property in this context for downstream stages to read.
      *
-     * @param key   the property key
+     * @param key the property key
      * @param value the value; {@code null} removes the entry
      */
     public void putProperty(String key, Object value) {
@@ -153,9 +146,7 @@ public class PipelineContext {
         }
     }
 
-    /**
-     * Returns the runtime class of the model (null if no prepare stage ran).
-     */
+    /** Returns the runtime class of the model (null if no prepare stage ran). */
     public Class<?> getModelClass() {
         return modelClass;
     }

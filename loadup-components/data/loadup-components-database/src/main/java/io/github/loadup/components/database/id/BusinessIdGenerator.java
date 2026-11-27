@@ -70,7 +70,11 @@ public final class BusinessIdGenerator implements IdGenerator {
             throw new CommonException(DatabaseResultCodeEnum.INVALID_INPUT);
         }
         return new SequenceScope(
-                "business-" + command.dataVersion() + command.systemVersion() + command.eventCode() + "-"
+                "business-"
+                        + command.dataVersion()
+                        + command.systemVersion()
+                        + command.eventCode()
+                        + "-"
                         + command.siteId(),
                 date,
                 BusinessIdFormatter.MAX_SEQUENCE);

@@ -31,7 +31,8 @@ public record TaskSchedule(String name, String cron) {
         if (fields.length != 6 || !fields[5].matches("[*?]|[A-Z]{3}(?:-[A-Z]{3})?(?:,[A-Z]{3}(?:-[A-Z]{3})?)*")) {
             throw invalidCron(name);
         }
-        // Quartz requires one unspecified day field. Named weekdays avoid differing numeric conventions.
+        // Quartz requires one unspecified day field. Named weekdays avoid differing numeric
+        // conventions.
         if (fields[5].equals("*") || fields[5].equals("?")) {
             fields[5] = "?";
             if (fields[3].equals("?")) {
@@ -53,7 +54,8 @@ public record TaskSchedule(String name, String cron) {
     }
 
     private static IllegalArgumentException invalidCron(String name) {
-        return new IllegalArgumentException("Invalid scheduler cron for task '" + name
+        return new IllegalArgumentException("Invalid scheduler cron for task '"
+                + name
                 + "': use six fields, named weekdays, and constrain at most one day field");
     }
 }
