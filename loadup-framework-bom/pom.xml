@@ -59,7 +59,7 @@
         <loadup.framework.version>${project.version}</loadup.framework.version>
 
         <!-- ORM and Database -->
-        <mybatis.version>3.5.19</mybatis.version>
+        <mybatis.version>3.6.0</mybatis.version>
         <mybatis-spring.version>4.0.0</mybatis-spring.version>
         <mybatis-flex.version>1.11.8</mybatis-flex.version>
         <flyway.version>13.13.0</flyway.version>
