@@ -310,8 +310,6 @@
                     <configuration>
                         <!-- Framework-owned APT output only; handwritten code remains in scope. -->
                         <excludes>
-                            <exclude>**/dataobject/table/**</exclude>
-                            <exclude>**/mapper/*DOMapper.class</exclude>
                             <exclude>**/converter/*ConverterImpl.class</exclude>
                         </excludes>
                     </configuration>
@@ -517,6 +515,8 @@
                                         <excludes>
                                             <exclude>commons-lang:commons-lang</exclude>
                                             <exclude>cn.hutool</exclude>
+                                            <exclude>com.mybatis-flex:*</exclude>
+                                            <exclude>org.mybatis:*</exclude>
                                             <exclude>com.alibaba:fastjson:[,2.0.0)</exclude>
                                             <exclude>log4j:log4j</exclude>
                                             <exclude>junit:junit</exclude>

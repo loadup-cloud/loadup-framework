@@ -34,7 +34,7 @@ app、domain、infrastructure 边界。UPMS 等需要独立装配的模块分别
 schema 与完整搜索路径。关系表以部署为边界，业务 API 和持久化查询使用各自的业务键。应用内部调用身份由 `DeploymentIdentity`
 表达。
 
-基础读取与逻辑删除使用 MyBatis-Flex 生成的 Mapper，复杂筛选、行锁和批量更新使用参数化 Spring JDBC。两条访问路径共享 Spring
+基础单表读写可使用 Spring Data JDBC，复杂筛选、行锁和批量更新使用参数化 Spring JDBC。业务 SQL 负责删除。两条访问路径共享 Spring
 事务连接。宿主确保非关系存储的命名空间与部署边界一致。
 
 [框架接入](README.md) · [组件设计](loadup-components/ARCHITECTURE.md) · [数据库架构](loadup-components/data/loadup-components-database/ARCHITECTURE.md)

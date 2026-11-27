@@ -15,9 +15,9 @@
  */
 package io.github.loadup.components.dfs.database.dataobject;
 
-import com.mybatisflex.annotation.Table;
 import io.github.loadup.components.database.dataobject.BaseDO;
 import java.time.LocalDateTime;
+import org.springframework.data.relational.core.mapping.Table;
 
 /** A database DFS object with an application-assigned ID. */
 @Table("dfs_file")
@@ -38,8 +38,7 @@ public class DfsFileInsert extends BaseDO {
             byte[] content,
             String metadataJson,
             LocalDateTime createdAt,
-            LocalDateTime updatedAt,
-            boolean deleted) {
+            LocalDateTime updatedAt) {
         setId(id);
         this.filename = filename;
         this.fileSize = fileSize;
@@ -48,7 +47,6 @@ public class DfsFileInsert extends BaseDO {
         this.metadataJson = metadataJson;
         setCreatedAt(createdAt);
         setUpdatedAt(updatedAt);
-        setDeleted(deleted);
     }
 
     public String getFilename() {

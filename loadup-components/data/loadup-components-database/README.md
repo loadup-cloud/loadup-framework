@@ -1,10 +1,10 @@
 # Database 组件接入手册
 
-提供 MyBatis-Flex 和 Spring JDBC 集成、PostgreSQL 固定 schema、事务及业务 ID 分配。宿主负责数据源、驱动和业务迁移。
+提供 Spring Data JDBC 和 Spring JDBC 集成、PostgreSQL 固定 schema、事务及业务 ID 分配。宿主负责数据源、驱动和业务迁移。
 
 ## Maven 依赖
 
-导入 Framework BOM 后添加运行时组件。需要生成 Mapper 的实体模块另行配置 [Database 处理器](../loadup-components-database-processor/README.md)。
+导入 Framework BOM 后添加运行时组件。
 
 ```xml
 <dependency>
@@ -13,7 +13,7 @@
 </dependency>
 ```
 
-组件引入 MyBatis-Flex Spring Boot starter，注册框架 Mapper，使用共享 Spring `Clock`，并在单数据源下提供 JDBC 事务管理器。在同一 Spring 事务内，MyBatis-Flex 和 Spring JDBC 使用同一连接，Mapper 可读取未提交的 JDBC 写入，回滚覆盖两种访问方式。
+组件引入 Spring Data JDBC，使用共享 Spring `Clock`，并为单数据源提供 JDBC 事务管理器。同一 Spring 事务中的 Repository 和显式 JDBC 操作共享连接与回滚边界。
 
 ## 固定 schema 与迁移
 
@@ -39,10 +39,10 @@ Task、Scheduler 和 Transfer 使用同一数据源。部署身份通过 `Deploy
 
 ## 持久化接入
 
-1. 在 infrastructure 中定义带 `com.mybatisflex.annotation.Table` 的 DO，继承 `io.github.loadup.components.database.dataobject.BaseDO`。基类包含 id、createdAt、updatedAt 和 deleted，Flex 主键策略为 `KeyType.None`。
-2. 在实体模块父 POM 配置编译器处理器。Framework BOM 管理处理器版本，编译器选项由消费工程维护。按处理器文档显式选择 LoadUp、MapStruct 和 Spring Boot 元数据处理器。
-3. 用生成的 Mapper、`ServiceImpl<Mapper, DO>` 和 `QueryWrapper` 实现简单筛选、分页和逻辑删除。复杂筛选、`FOR UPDATE`、`IN` 列表及显式列查询通过 infrastructure Gateway 中的 `JdbcClient` 和命名参数完成。可参考 `LoginLogGatewayImpl` 和 `InboxGatewayImpl`。
-4. 显式 SQL 自行设置 ID、审计时间和 Boolean `deleted`，查询显式过滤已删除记录。业务表按部署 schema 隔离。MyBatis-Flex 的读写、计数和 `deleteById` 使用统一逻辑删除配置。分页缺省每页 20 条，上限 100。
+1. 在 infrastructure 定义持久化对象。使用 Spring Data JDBC 映射时标注 `@Table`，继承只映射 ID、创建时间和更新时间的 `BaseDO`。
+2. 简单单表操作使用窄 Repository 或 `JdbcAggregateTemplate`。预先分配 ID 的创建语句显式调用 `insert`。
+3. 复杂筛选、显式投影、分页、行锁及条件更新使用 `JdbcClient` 或 `NamedParameterJdbcTemplate`。绑定参数，固定或白名单化排序列，并检查状态更新的影响行数。
+4. 由业务 SQL 决定删除。软删除表显式定义自己的状态与读写条件。物理删除使用 `DELETE`。显式写入复用 `IdGenerator` 和共享 `Clock`。
 
 ## 业务 ID 与序列
 

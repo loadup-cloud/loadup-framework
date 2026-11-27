@@ -45,7 +45,7 @@ binder 实现框架契约，把实现库及其配置隔离在业务 API 之外�
 
 ## 扩展契约
 
-- `DfsFileInsertMapper` is generated from `DfsFileInsert` by MyBatis-Flex; `DatabaseDfsTemplate` uses it for file reads and inserts.
+- `DatabaseDfsTemplate` 通过参数化 SQL 读取和写入 `dfs_file`，并显式维护软删除。
 
 ## 设计取舍
 

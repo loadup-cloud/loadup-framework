@@ -32,7 +32,7 @@ Boot 的依赖 BOM 不包含这些 execution，第二步通过 Maven 项目选�
 
 ## 排除规则与约束
 
-父 POM 明列 MyBatis-Flex 的 `dataobject/table`、生成的 `DOMapper` 与 Task 的 MapStruct
+父 POM 明列 MapStruct
 实现，报告和门禁采用同一排除配置。手写源码全部计入；新增生成器需要维护配置，不能为达到阈值排除手写 DTO、异常或自动配置。
 
 启用 `component-coverage` 后，父 POM 只在本次构建的 `loadup-components` 非 POM 模块检查

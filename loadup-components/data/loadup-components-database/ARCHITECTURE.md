@@ -2,14 +2,14 @@
 
 ## 持久化边界
 
-组件为 MyBatis-Flex 和 Spring JDBC 提供持久化约定、共享事务、固定 schema、Flyway 装配以及 ID 和序列能力。宿主选择数据源、驱动和部署迁移。简单查询由生成 Mapper、`ServiceImpl` 和 `QueryWrapper` 处理，复杂筛选、加锁、条件更新与批处理使用参数化 JDBC。
+组件为 Spring Data JDBC 和 Spring JDBC 提供持久化约定、共享事务、固定 schema、Flyway 装配以及 ID 和序列能力。宿主选择数据源、驱动和部署迁移。简单单表查询和写入可使用 Repository 与 `JdbcAggregateTemplate`，复杂筛选、加锁、条件更新与批处理使用参数化 JDBC。
 
 ```mermaid
 flowchart TD
-    Gateway["Infrastructure Gateway"] --> Mapper["生成的 MyBatis-Flex Mapper"]
+    Gateway["Infrastructure Gateway"] --> Repository["Spring Data JDBC"]
     Gateway --> JDBC["Spring JdbcClient"]
     Gateway --> ID["IdGenerator"]
-    Mapper --> Tx["Spring 事务连接"]
+    Repository --> Tx["Spring 事务连接"]
     JDBC --> Tx
     Config["loadup.database.schema"] --> Pool["Hikari 固定物理连接 schema"]
     Config --> Flyway["Flyway defaultSchema 与 schemas"]
@@ -19,22 +19,17 @@ flowchart TD
     Flyway --> Schema
 ```
 
-`BaseDO` 维护公共字段。MyBatis-Flex 保留应用指定的 ID。审计时间使用共享业务 Clock 及其时区。
+`BaseDO` 维护公共字段。应用显式分配主键。审计时间使用共享业务 Clock 及其时区。
 
 | 字段 | 列 | 类型 | 行为 |
 | --- | --- | --- | --- |
-| `id` | `id` | `VARCHAR(64)` | 显式赋值，Flex 主键策略为 `KeyType.None` |
+| `id` | `id` | `VARCHAR(64)` | 显式赋值，Spring Data `@Id` 映射 |
 | `createdAt` | `created_at` | `TIMESTAMP(6)` | 插入时写入 |
 | `updatedAt` | `updated_at` | `TIMESTAMP(6)` | 插入与更新时写入 |
-| `deleted` | `deleted` | `BOOLEAN` | false 为有效，true 为已删除 |
 
-`MyBatisFlexCustomizer` 统一逻辑删除、分页缺省值和 banner 设置。带 `deleted` 列的 Mapper 按全局约定读写，显式 SQL 自行设置审计字段及筛选删除标记。
+## 事务
 
-## 编译生成与事务
-
-[注解处理器](../loadup-components-database-processor/ARCHITECTURE.md) 维护唯一的生成策略。每个 `@Table` 实体会得到上一级包下的 `mapper.XxxMapper` 与 `table.XxxTableDef`，表定义汇总于 `Tables`。Mapper 带 `@Mapper` 并继承 `BaseMapper<XxxDO>`。处理器输出与运行时配置各由对应工件维护。
-
-自动配置扫描 `io.github.loadup` 下的 `BaseMapper` 子类型。存在单个数据源且 Gateway 注入时，懒加载的 Mapper 初始化。会话工厂优先复用其 DataSource 或 Flex 包装的单一 DataSource 上的 Spring 连接，其他情形使用 Flex 的默认事务行为。MyBatis 本地缓存为 `STATEMENT`，避免同一事务中 JDBC 更新后读取到会话缓存的旧数据。
+宿主按模块配置 Repository 扫描。两种访问路径共用 DataSource 和 Spring JDBC 事务管理器。业务 Gateway 显式设置 ID 和审计时间。需要逻辑删除的表声明自己的业务状态和 SQL 条件。
 
 ## 固定 schema 与迁移归属
 

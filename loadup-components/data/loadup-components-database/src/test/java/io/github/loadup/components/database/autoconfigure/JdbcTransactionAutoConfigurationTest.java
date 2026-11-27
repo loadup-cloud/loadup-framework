@@ -18,7 +18,6 @@ package io.github.loadup.components.database.autoconfigure;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-import com.mybatisflex.spring.boot.v4.FlexTransactionAutoConfiguration;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -38,22 +37,6 @@ class JdbcTransactionAutoConfigurationTest {
             assertThat(context.getBean(JdbcTransactionManager.class).getDataSource())
                     .isSameAs(source);
         });
-    }
-
-    @Test
-    void selectsJdbcManagerBeforeMyBatisFlexFallback() {
-        var source = mock(DataSource.class);
-        new ApplicationContextRunner()
-                .withConfiguration(AutoConfigurations.of(
-                        FlexTransactionAutoConfiguration.class, JdbcTransactionAutoConfiguration.class))
-                .withBean(DataSource.class, () -> source)
-                .run(context -> {
-                    assertThat(context).hasNotFailed().hasSingleBean(PlatformTransactionManager.class);
-                    assertThat(context).hasSingleBean(JdbcTransactionManager.class);
-                    assertThat(context).doesNotHaveBean(FlexTransactionAutoConfiguration.class);
-                    assertThat(context.getBean(JdbcTransactionManager.class).getDataSource())
-                            .isSameAs(source);
-                });
     }
 
     @Test

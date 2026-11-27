@@ -49,8 +49,6 @@ LoadUp 是一个 **被消费的框架/SDK**，通过 `loadup-framework-bom` BOM 
   Maven。
 - 需要验证编译、注解处理或依赖装配时使用 Maven build；不完全禁止构建。优先选择受影响模块及其依赖，用户要求整体构建时执行整体构建。
 - Maven 编译必须带 `clean`，避免 MapStruct 等注解处理器增量生成时发生 `FilerException`。
-- 接入 database 编译期处理器时，处理器内部维护唯一配置，模块无需同步配置；版本由 framework BOM
-  管理。详见 [database processor 文档](loadup-components/data/loadup-components-database-processor/README.md)。
 - 明确区分格式化、编译、单测与真实环境集成测试；未运行的验证不得标为通过。根据任务需要选择测试和检查跳过参数，避免无收益的重复全量执行。
 - Spotless 不绑定 Maven 生命周期，`clean install/verify/package` 不会因格式问题中断；格式检查与修复手动执行
   `mvnd spotless:check` / `mvnd spotless:apply`（或 `./spotless.sh check|apply`）。CI 在快速质量任务中显式执行
@@ -212,8 +210,8 @@ loadup-modules-{mod}/
 | 10 | 无必要的业务模块横向依赖                                | 保持清晰依赖方向，跨模块能力优先通过公开接口集成                                                                                                                              |
 | 11 | Java 文件中写中文注释或 Javadoc                         | 注释/Javadoc 统一使用英文；中文只允许出现在 `*.md` 文档文件中                                                                                                                 |
 | 12 | 脱离所属迁移改写字段类型                                | PostgreSQL 布尔字段遵循所属迁移的 BOOLEAN 定义；整数标记保留其 CHECK 约束                                                                                                     |
-| 13 | DO 中重复定义 id/createdAt/updatedAt/deleted            | 这些字段在 `BaseDO` 中已定义                                                                                                                                                  |
-| 14 | Mapper 中写额外 SQL 方法                                | 用 `QueryWrapper` 在 GatewayImpl 中操作                                                                                                                                       |
+| 13 | DO 中重复定义 id/createdAt/updatedAt            | 这些字段在 `BaseDO` 中已定义                                                                                                                                                  |
+| 14 | 复杂查询、条件更新或锁定                                | 在 infrastructure Gateway 使用参数化 SQL                                                                                                                                       |
 | 15 | 新增三方依赖不在 BOM 中声明                             | 版本管理集中在 `loadup-framework-bom/pom.xml`                                                                                                                                 |
 | 16 | 使用 Lombok（`@Data`/`@Getter`/`@Slf4j`/`@Builder` 等） | 写显式 Java 代码；DTO/Command/Query 优先使用 Java `record`；日志打印使用 `LogUtil.info/warn/error(Source.class, ...)`；仅第三方日志适配需要 Logger 时使用 `LogUtil.getLogger` |
 | 17 | 使用 a.equals(b)                                        | 使用StringUtils.equals() 或者Objects.equals()                                                                                                                                 |
@@ -367,7 +365,7 @@ multipart，下载可以返回流式二进制。`loadup-components-webmvc` 对 A
 
 ## 技术栈速查
 
-- Java **25** | Spring Boot **4.2.0** | MyBatis-Flex **1.11.8**（简单聚合读取、Tables/Mapper 生成、逻辑删除）
+- Java **25** | Spring Boot **4.2.0** | Spring Data JDBC + Spring JDBC
 - MySQL 8.0+ | Caffeine（本地）| Redis/Redisson（分布式）
 - Resilience4j **2.4.0**（容错；版本由 loadup-framework-bom BOM 统一，跟随 Spring Cloud 2026.0.x）
 - JUnit **6.1.3**（由 Spring Boot BOM 管理）+ `loadup-testify-spring-boot-starter` + Testcontainers
@@ -421,11 +419,9 @@ multipart，下载可以返回流式二进制。`loadup-components-webmvc` 对 A
   `client.spi.XxxProvider` or `XxxHandler`.
 - Facades return client DTOs or JDK values. HTTP envelopes belong to Controllers. Keep domain Gateway ports separate
   from public Facades.
-- Persistence stays in infrastructure. Use generated MyBatis-Flex mappers with `QueryWrapper` for simple aggregates (one
-  or two fixed predicates), paging and logical deletion, and `JdbcClient` for complex queries: three or more predicates,
-  optional filters, pagination with explicit ordering, `FOR UPDATE`, `IN` lists, or explicit column control. Gateway
-  implementations extend `ServiceImpl<Mapper, DO>` (`IService`) for standard reads; keep MapStruct converters separate
-  and Spring-managed.
+- Keep persistence in infrastructure. Use Spring Data JDBC for focused single-table mappings and plain JDBC for
+  explicit SQL, locking, projections, and state transitions. Use `BaseDO` for ID and timestamps. Define deletion
+  semantics in each Gateway and its business schema. Keep MapStruct converters Spring-managed.
 - Repositories expose tenant-free single-tenant signatures (`findById`, `findByDeletedFalse`, ...). Do not accept a
   tenant identifier in repository, gateway or facade methods. Schema selection is the routing layer's responsibility.
 - Explicit SQL maintains ID, audit and soft-delete fields; use the shared `IdGenerator` and injected `Clock` where

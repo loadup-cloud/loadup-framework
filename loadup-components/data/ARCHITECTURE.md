@@ -19,7 +19,6 @@ flowchart LR
 
 - [KV 与缓存](loadup-components-kv/ARCHITECTURE.md)
 - [数据库](loadup-components-database/ARCHITECTURE.md)
-- [数据库处理器](loadup-components-database-processor/ARCHITECTURE.md)
 - [文件存储](loadup-components-dfs/ARCHITECTURE.md)
 
 [接入说明](README.md)

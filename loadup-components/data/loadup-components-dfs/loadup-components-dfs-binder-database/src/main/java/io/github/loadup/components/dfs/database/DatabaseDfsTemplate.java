@@ -15,13 +15,10 @@
  */
 package io.github.loadup.components.dfs.database;
 
-import com.mybatisflex.core.query.QueryWrapper;
 import io.github.loadup.components.dfs.DfsObjectNotFoundException;
 import io.github.loadup.components.dfs.DfsStorageException;
 import io.github.loadup.components.dfs.DfsTemplate;
 import io.github.loadup.components.dfs.database.dataobject.DfsFileInsert;
-import io.github.loadup.components.dfs.database.mapper.DfsFileInsertMapper;
-import io.github.loadup.components.dfs.database.table.Tables;
 import io.github.loadup.components.dfs.model.FileDownloadResponse;
 import io.github.loadup.components.dfs.model.FileMetadata;
 import io.github.loadup.components.dfs.model.FileUploadRequest;
@@ -30,8 +27,9 @@ import java.io.IOException;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import tools.jackson.core.JacksonException;
@@ -42,14 +40,11 @@ public class DatabaseDfsTemplate implements DfsTemplate {
     private static final String BINDER_TYPE = "database";
 
     private final NamedParameterJdbcTemplate jdbc;
-    private final DfsFileInsertMapper files;
     private final ObjectMapper objectMapper;
     private final Clock clock;
 
-    public DatabaseDfsTemplate(
-            NamedParameterJdbcTemplate jdbc, DfsFileInsertMapper files, ObjectMapper objectMapper, Clock clock) {
+    public DatabaseDfsTemplate(NamedParameterJdbcTemplate jdbc, ObjectMapper objectMapper, Clock clock) {
         this.jdbc = jdbc;
-        this.files = files;
         this.objectMapper = objectMapper;
         this.clock = clock;
     }
@@ -71,9 +66,13 @@ public class DatabaseDfsTemplate implements DfsTemplate {
                     content,
                     objectMapper.writeValueAsString(request.metadata()),
                     uploadedAt,
-                    uploadedAt,
-                    false);
-            files.insert(file);
+                    uploadedAt);
+            jdbc.update("""
+                    INSERT INTO dfs_file
+                        (id, filename, file_size, content_type, content, metadata_json, created_at, updated_at, deleted)
+                    VALUES
+                        (:id, :filename, :fileSize, :contentType, :content, :metadataJson, :createdAt, :updatedAt, FALSE)
+                    """, new BeanPropertySqlParameterSource(file));
             return toMetadata(file);
         } catch (IOException | JacksonException e) {
             throw new DfsStorageException(DfsStorageException.Code.OPERATION_FAILED, e);
@@ -97,7 +96,11 @@ public class DatabaseDfsTemplate implements DfsTemplate {
 
     @Override
     public boolean exists(String fileId) {
-        return files.selectCountByQuery(QueryWrapper.create().where(Tables.DFS_FILE_INSERT.ID.eq(fileId))) > 0;
+        return jdbc.queryForObject(
+                        "SELECT COUNT(*) FROM dfs_file WHERE id = :id AND deleted = FALSE",
+                        new MapSqlParameterSource("id", fileId),
+                        Long.class)
+                > 0;
     }
 
     @Override
@@ -106,7 +109,16 @@ public class DatabaseDfsTemplate implements DfsTemplate {
     }
 
     private DfsFileInsert find(String fileId) {
-        return Optional.ofNullable(files.selectOneById(fileId))
+        return jdbc
+                .query(
+                        """
+                        SELECT id, filename, file_size, content_type, content, metadata_json, created_at, updated_at, deleted
+                        FROM dfs_file WHERE id = :id AND deleted = FALSE
+                        """,
+                        new MapSqlParameterSource("id", fileId),
+                        BeanPropertyRowMapper.newInstance(DfsFileInsert.class))
+                .stream()
+                .findFirst()
                 .orElseThrow(() -> new DfsObjectNotFoundException(fileId));
     }
 

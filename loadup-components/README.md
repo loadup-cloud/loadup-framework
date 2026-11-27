@@ -50,7 +50,7 @@ mvnd -B -ntp -T 1 -Pcomponent-coverage -pl '!loadup-framework-bom' --fail-at-end
 
 `loadup-coverage` 是 profile 启用的内部 Maven 聚合模块，使用 JaCoCo 原生 `merge` / `report-aggregate` 及逐 jar `check`，无需
 JaCoCo CLI 或 Python 覆盖率脚本。先收齐全部组件及兄弟测试模块的 unit / IT 数据，再按每个 jar 的实际 classes 校验行、分支覆盖率均
-≥90%；手写 DTO、配置、异常均计入，只排除根 POM 明列的 MyBatis-Flex / MapStruct 生成类型。没有分支的 jar 不产生分支阈值违规。Enforcer
+≥90%；手写 DTO、配置、异常均计入，只排除根 POM 明列的 MapStruct 生成类型。没有分支的 jar 不产生分支阈值违规。Enforcer
 要求当前测试清单中的每份 exec 存在且非空，并在逐 jar 检查前确认 classes 目录和全局数据存在。
 
 聚合报告在 `loadup-coverage/target/site/jacoco-aggregate/index.html`，同目录有 `jacoco.xml` / `jacoco.csv`，每个依赖 jar

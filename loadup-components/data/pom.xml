@@ -14,7 +14,6 @@
     <modules>
 
         <module>loadup-components-kv</module>
-        <module>loadup-components-database-processor</module>
         <module>loadup-components-database</module>
         <module>loadup-components-dfs</module>
     </modules>

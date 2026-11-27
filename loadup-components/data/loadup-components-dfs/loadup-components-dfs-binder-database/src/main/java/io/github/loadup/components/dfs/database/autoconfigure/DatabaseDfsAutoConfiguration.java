@@ -18,7 +18,6 @@ package io.github.loadup.components.dfs.database.autoconfigure;
 import io.github.loadup.components.dfs.DfsTemplate;
 import io.github.loadup.components.dfs.autoconfigure.DfsAutoConfiguration;
 import io.github.loadup.components.dfs.database.DatabaseDfsTemplate;
-import io.github.loadup.components.dfs.database.mapper.DfsFileInsertMapper;
 import java.time.Clock;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -33,7 +32,6 @@ import tools.jackson.databind.ObjectMapper;
         afterName = {
             "io.github.loadup.components.database.autoconfigure.DatabaseCoreAutoConfiguration",
             "org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration",
-            "com.mybatisflex.spring.boot.v4.MybatisFlexAutoConfiguration"
         })
 @ConditionalOnClass({NamedParameterJdbcTemplate.class, ObjectMapper.class})
 @ConditionalOnProperty(prefix = "loadup.dfs", name = "binder-type", havingValue = "database")
@@ -41,8 +39,7 @@ public class DatabaseDfsAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(DfsTemplate.class)
-    public DatabaseDfsTemplate dfsTemplate(
-            NamedParameterJdbcTemplate jdbc, DfsFileInsertMapper files, ObjectMapper objectMapper, Clock clock) {
-        return new DatabaseDfsTemplate(jdbc, files, objectMapper, clock);
+    public DatabaseDfsTemplate dfsTemplate(NamedParameterJdbcTemplate jdbc, ObjectMapper objectMapper, Clock clock) {
+        return new DatabaseDfsTemplate(jdbc, objectMapper, clock);
     }
 }
