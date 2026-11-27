@@ -60,7 +60,7 @@
 
         <!-- ORM and Database -->
         <mybatis.version>3.6.0</mybatis.version>
-        <mybatis-spring.version>4.0.0</mybatis-spring.version>
+        <mybatis-spring.version>4.1.0</mybatis-spring.version>
         <mybatis-flex.version>1.11.8</mybatis-flex.version>
         <flyway.version>13.13.0</flyway.version>
 
